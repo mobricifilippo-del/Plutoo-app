@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
 
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=4" />
   <link rel="icon" href="logo-32.jpg" type="image/jpeg" />
   <meta name="color-scheme" content="only light">
   <meta property="og:title" content="Plutoo 🐾" />
@@ -28,7 +28,8 @@
   <section id="landing" class="screen active">
     <main class="landing">
       <img class="logo-big" src="plutoo-icon-512.png" alt="Plutoo">
-      <button id="ctaEnter" class="btn huge primary">Entra</button>
+      <!-- fallback onclick se per caso l'evento non si aggancia -->
+      <button id="ctaEnter" class="btn huge primary" onclick="window.__enter && window.__enter()">Entra</button>
       <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
     </main>
   </section>
@@ -48,7 +49,7 @@
     </nav>
 
     <main class="content">
-      <!-- Vicino a te (UNA foto per profilo) -->
+      <!-- Vicino a te -->
       <section id="near" class="tabpane active">
         <div id="grid" class="grid"></div>
         <p id="emptyNear" class="empty hidden">Nessun cane vicino… prova ad attivare la posizione 🧭</p>
@@ -122,7 +123,6 @@
     </div>
   </div>
 
-  <!-- JS con nome nuovo per forzare il refresh -->
-  <script src="app_v2.js"></script>
+  <script src="app.js?v=4" defer></script>
 </body>
 </html>
