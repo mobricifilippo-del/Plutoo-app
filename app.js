@@ -1,132 +1,153 @@
-// ====== DATI DEMO ======
+/* ====== DATI DEMO ====== */
 const DOGS = [
-  { id:1, name:"Luna", age:1, breed:"Jack Russell", img:"dog4.jpg" },
-  { id:2, name:"Sofia", age:5, breed:"Levriero Afgano", img:"dog1.jpg" },
-  { id:3, name:"Rocky", age:4, breed:"Meticcio", img:"dog3.jpg" },
-  { id:4, name:"Maya", age:3, breed:"Shiba Inu", img:"dog2.jpg" }
+  { id:1, name:"Luna",  age:1, breed:"Jack Russell",    img:"dog1.jpg", distKm:2.2, online:true },
+  { id:2, name:"Rocky", age:4, breed:"Meticcio",        img:"dog2.jpg", distKm:5.9, online:true },
+  { id:3, name:"Maya",  age:3, breed:"Shiba Inu",       img:"dog3.jpg", distKm:3.2, online:false },
+  { id:4, name:"Sofia", age:5, breed:"Levriero Afgano", img:"dog4.jpg", distKm:1.6, online:true },
 ];
 
-let favourites = new Set(); // match simulati
-let lastCoords = null;
+const state = {
+  view: 'near',            // near | swipe | matches
+  liked: new Set(),
+  swipeIndex: 0
+};
 
-// ====== DOM ======
-const enterBtn = document.getElementById('enterBtn');
-const appEl   = document.getElementById('app');
-const cardsEl = document.getElementById('cards');
-const matchesEl = document.getElementById('matches');
+/* ====== DOM ====== */
+const $ = (s)=>document.querySelector(s);
+const $$= (s)=>document.querySelectorAll(s);
 
-const tabs = document.querySelectorAll('.tab');
-const tabNearby = document.querySelector('[data-tab="nearby"]');
-const tabMatches = document.querySelector('[data-tab="matches"]');
+const landing = $('#landing');
+const app     = $('#app');
 
-const locEnable = document.getElementById('locEnable');
-const locLater  = document.getElementById('locLater');
+const tabs = $$('.tab');
+const viewNear = $('#viewNear');
+const nearGrid = $('#nearGrid');
 
-// ====== FUNZIONI UTILI ======
-function km(x){ return `${x.toFixed(1)} km`; }
+const viewSwipe = $('#viewSwipe');
+const swipeCard = $('#swipeCard');
+const swipeImg  = $('#swipeImg');
+const swipeName = $('#swipeName');
+const swipeAge  = $('#swipeAge');
+const swipeBreed= $('#swipeBreed');
+const swipeDist = $('#swipeDist');
+const swipeEmpty= $('#swipeEmpty');
 
-function randomDistance(){
-  // se ho posizione reale, simulerei una distanza in base alle coordinate;
-  // per la demo basta random 0.8–6.5 km
-  return 0.8 + Math.random()*5.7;
+const viewMatches = $('#viewMatches');
+const matchList   = $('#matchList');
+const matchEmpty  = $('#matchEmpty');
+
+/* ====== ENTRA ====== */
+$('#btnEnter').addEventListener('click', ()=>{
+  landing.classList.add('hidden');
+  app.classList.remove('hidden');
+  app.setAttribute('aria-hidden','false');
+  setView('near');
+});
+
+/* ====== GEO (demo: nasconde il banner, non obbligatoria) ====== */
+$('#geoEnable').addEventListener('click', ()=> $('#geoBar').classList.add('hidden'));
+$('#geoLater').addEventListener('click',  ()=> $('#geoBar').classList.add('hidden'));
+
+/* ====== TABS ====== */
+tabs.forEach(t=>{
+  t.addEventListener('click', ()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    setView(t.dataset.view);
+  });
+});
+
+function setView(view){
+  state.view = view;
+  viewNear.classList.toggle('hidden', view!=='near');
+  viewSwipe.classList.toggle('hidden', view!=='swipe');
+  viewMatches.classList.toggle('hidden', view!=='matches');
+
+  if(view==='near')   renderNear();
+  if(view==='swipe')  renderSwipe();
+  if(view==='matches')renderMatches();
 }
 
-function renderCards(){
-  const html = DOGS.map(d => {
-    const dist = km(randomDistance());
-    return `
-      <article class="card" data-id="${d.id}">
-        <div class="img-wrap">
-          <img src="${d.img}" alt="${d.name}" loading="lazy">
-          <span class="dot-online"></span>
+/* ====== VICINO A TE (griglia UNA foto) ====== */
+function renderNear(){
+  nearGrid.innerHTML = '';
+  DOGS.forEach(d=>{
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${d.img}" alt="${d.name}">
+      <div class="body">
+        <div class="title">${d.name}, ${d.age}</div>
+        <div class="sub">${d.breed}</div>
+        <div class="row">
+          <div style="display:flex;align-items:center;gap:10px;">
+            ${d.online?'<span class="badge" title="online"></span>':''}
+            <span class="km">${d.distKm.toFixed(1)} km</span>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn rowbtn danger" data-act="no"   data-id="${d.id}">✖</button>
+            <button class="btn rowbtn success" data-act="like" data-id="${d.id}">❤</button>
+          </div>
         </div>
-        <div class="info">
-          <p class="name">${d.name}, ${d.age}</p>
-          <p class="meta">${d.breed} <span class="km">${dist}</span></p>
-        </div>
-        <div class="actions">
-          <button class="btn-round btn-no" data-action="no">✕</button>
-          <button class="btn-round btn-yes" data-action="yes">❤</button>
-        </div>
-      </article>
+      </div>
     `;
-  }).join('');
-  cardsEl.innerHTML = html;
+    nearGrid.appendChild(card);
+  });
 }
 
-function renderMatches(){
-  if(!favourites.size){
-    matchesEl.innerHTML = `<p class="empty">Ancora nessun match. Metti qualche <span class="heart">❤️</span>!</p>`;
-    return;
+/* Click su like/no nelle card della griglia */
+nearGrid.addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-act]');
+  if(!btn) return;
+  const id = Number(btn.dataset.id);
+  if(btn.dataset.act==='like'){
+    state.liked.add(id);
+  }else{
+    state.liked.delete(id);
   }
-  const selected = DOGS.filter(d => favourites.has(d.id));
-  matchesEl.innerHTML = selected.map(d => `
+  // feedback veloce
+  btn.style.transform='scale(.96)'; setTimeout(()=>btn.style.transform='',120);
+});
+
+/* ====== SWIPE (card singola) ====== */
+function currentDog(){
+  return DOGS[state.swipeIndex] || null;
+}
+function renderSwipe(){
+  const d = currentDog();
+  if(!d){ swipeCard.classList.add('hidden'); swipeEmpty.classList.remove('hidden'); return; }
+  swipeEmpty.classList.add('hidden'); swipeCard.classList.remove('hidden');
+  swipeImg.src = d.img;
+  swipeName.textContent = d.name;
+  swipeAge.textContent  = `· ${d.age}`;
+  swipeBreed.textContent= d.breed;
+  swipeDist.textContent = `${d.distKm.toFixed(1)} km${d.online?' • online':''}`;
+}
+$('#btnYes').addEventListener('click', ()=>{
+  const d = currentDog(); if(d) state.liked.add(d.id);
+  state.swipeIndex = Math.min(state.swipeIndex+1, DOGS.length);
+  renderSwipe();
+});
+$('#btnNo').addEventListener('click', ()=>{
+  state.swipeIndex = Math.min(state.swipeIndex+1, DOGS.length);
+  renderSwipe();
+});
+
+/* ====== MATCH ====== */
+function renderMatches(){
+  const liked = DOGS.filter(d=>state.liked.has(d.id));
+  matchList.innerHTML = liked.map(d=>`
     <article class="card">
-      <div class="img-wrap"><img src="${d.img}" alt="${d.name}"></div>
-      <div class="info">
-        <p class="name">${d.name}, ${d.age}</p>
-        <p class="meta">${d.breed}</p>
+      <img src="${d.img}" alt="${d.name}">
+      <div class="body">
+        <div class="title">${d.name}, ${d.age}</div>
+        <div class="sub">${d.breed}</div>
+        <div class="row"><span class="km">${d.distKm.toFixed(1)} km</span><span>❤ Match</span></div>
       </div>
     </article>
   `).join('');
+  matchEmpty.style.display = liked.length ? 'none':'block';
 }
 
-// ====== EVENTI ======
-enterBtn.addEventListener('click', () => {
-  appEl.classList.remove('hidden');
-  appEl.setAttribute('aria-hidden','false');
-  document.getElementById('home').scrollIntoView({behavior:'smooth', block:'start'});
-  renderCards();
-});
-
-// attiva posizione (demo: memorizzo coords se disponibili)
-locEnable.addEventListener('click', () => {
-  if(!navigator.geolocation){
-    alert("Geolocalizzazione non disponibile sul dispositivo.");
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      lastCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-      renderCards(); // ricalcola (random) le distanze
-    },
-    () => { /* rifiutata: continuo con random */ renderCards(); }
-  );
-});
-
-locLater.addEventListener('click', () => {
-  renderCards();
-});
-
-// like / dislike
-cardsEl.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-action]');
-  if(!btn) return;
-  const card = e.target.closest('.card');
-  const id = Number(card.dataset.id);
-
-  if(btn.dataset.action === 'yes'){
-    favourites.add(id);
-    btn.textContent = '❤'; // feedback
-  }else{
-    favourites.delete(id);
-    card.style.opacity = .6;
-  }
-});
-
-// tab switching
-tabs.forEach(t => t.addEventListener('click', () => {
-  tabs.forEach(x => x.classList.remove('active'));
-  t.classList.add('active');
-
-  const tab = t.dataset.tab;
-  if(tab === 'nearby'){
-    cardsEl.classList.remove('hidden');
-    matchesEl.classList.add('hidden');
-    renderCards();
-  }else{
-    cardsEl.classList.add('hidden');
-    matchesEl.classList.remove('hidden');
-    renderMatches();
-  }
-}));
+/* ====== AVVIO ====== */
+renderNear(); // se uno atterra già sulla pagina
