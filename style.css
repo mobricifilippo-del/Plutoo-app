@@ -1,0 +1,65 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #fdfdfd;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: #6a1b9a;
+}
+
+.screen {
+  display: none;
+  padding: 20px;
+}
+
+.screen.active {
+  display: block;
+}
+
+#card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 300px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.buttons {
+  margin: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+button.no {
+  background: #e53935;
+  color: white;
+}
+
+button.yes {
+  background: #43a047;
+  color: white;
+}
+
+.profile-btn, .chat-btn {
+  display: block;
+  margin: 10px auto;
+  background: #6a1b9a;
+  color: white;
+}
