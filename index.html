@@ -1,81 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="icon" href="logo-32.jpg" sizes="32x32" />
+  <link rel="icon" type="image/png" href="logo-32.jpg" />
   <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- HEADER -->
+  <!-- NAV TOP -->
   <header class="topbar">
-    <div class="topbar__left">
-      <!-- solo logo grande nella home, qui teniamo il brand "testuale" minimo -->
-    </div>
-    <nav class="topbar__right">
-      <a href="#" class="topbar__link" id="btnLogin">Accedi</a>
-      <span class="dot">·</span>
-      <a href="#" class="topbar__link" id="btnRegister">Registrati</a>
+    <nav class="nav">
+      <div class="nav-spacer"></div>
+      <div class="nav-actions">
+        <a href="#" class="link">Accedi</a>
+        <span class="dot">·</span>
+        <a href="#" class="link">Registrati</a>
+      </div>
     </nav>
   </header>
 
-  <!-- HERO / HOME -->
-  <section class="hero" id="home">
-    <div class="hero__card">
-      <img src="plutoo-icon-512.png" alt="Plutoo" class="hero__logo" />
-      <h1 class="hero__brand">Plutoo</h1>
+  <!-- HOME -->
+  <main id="home" class="home">
+    <div class="logo-card">
+      <img src="plutoo-icon-512.png" alt="Plutoo" class="logo-big" />
+      <h1 class="brand">Plutoo</h1>
     </div>
 
-    <button class="cta" id="enterBtn">Entra</button>
+    <button id="enterBtn" class="btn-primary">Entra</button>
 
-    <p class="hero__note">
-      Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
-    </p>
-  </section>
-
-  <!-- APP -->
-  <main id="app" class="app hidden" aria-hidden="true">
-
-    <!-- Banner geolocalizzazione -->
-    <div class="geo">
-      <div class="geo__text">🎯 Attiva la posizione per vedere i cani vicino a te</div>
-      <div class="geo__actions">
-        <button class="pill pill--primary" id="btnEnableGeo">Attiva</button>
-        <button class="pill pill--ghost" id="btnLater">Più tardi</button>
-      </div>
-    </div>
-
-    <!-- Tab -->
-    <div class="tabs">
-      <button class="tab tab--active" data-tab="near">Vicino a te</button>
-      <button class="tab" data-tab="browse">Scorri</button>
-      <button class="tab" data-tab="match">Match</button>
-    </div>
-
-    <!-- Grid cani -->
-    <section class="grid" id="dogsGrid" data-mode="near">
-      <!-- Le card vengono inserite da app.js -->
-    </section>
-
-    <!-- Stato match vuoto -->
-    <p class="empty hidden" id="emptyMatch">Ancora nessun match. Metti qualche ❤️!</p>
+    <p class="hint">Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.</p>
   </main>
 
-  <!-- (Demo) pannellino login/registrazione a tendina -->
-  <dialog id="authDialog" class="auth">
-    <form method="dialog" class="auth__panel">
-      <h3 id="authTitle">Accedi</h3>
-      <input class="input" type="email" placeholder="Email" required />
-      <input class="input" type="password" placeholder="Password" required />
-      <div class="auth__actions">
-        <button class="pill pill--ghost" value="cancel">Chiudi</button>
-        <button class="pill pill--primary" value="ok">Conferma</button>
+  <!-- APP -->
+  <section id="app" class="app hidden">
+    <!-- Banner geolocalizzazione -->
+    <div class="geo-banner" id="geoBanner">
+      <div class="geo-text">🎯 Attiva la posizione per vedere i cani vicino a te</div>
+      <div class="geo-actions">
+        <button class="chip primary" id="geoOn">Attiva</button>
+        <button class="chip" id="geoLater">Più tardi</button>
       </div>
-    </form>
-  </dialog>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-view="nearby">Vicino a te</button>
+      <button class="tab" data-view="swipe">Scorri</button>
+      <button class="tab" data-view="matches">Match</button>
+    </div>
+
+    <!-- VIEWS -->
+    <div id="nearbyView" class="view">
+      <div id="nearbyGrid" class="grid"></div>
+    </div>
+
+    <div id="swipeView" class="view hidden">
+      <div class="swipe-card" id="swipeCard">
+        <img id="swipeImg" src="" alt="" />
+        <div class="swipe-info">
+          <div class="name-age">
+            <span id="swipeName"></span>
+            <span id="swipeAge"></span>
+          </div>
+          <div id="swipeBreed" class="breed"></div>
+          <div id="swipeDist" class="dist"></div>
+        </div>
+        <div class="actions">
+          <button class="btn-circle danger" id="btnNo">✖</button>
+          <button class="btn-circle success" id="btnYes">❤</button>
+        </div>
+      </div>
+      <p id="swipeEmpty" class="empty hidden">Non ci sono altri profili. Torna domani! 🐶</p>
+    </div>
+
+    <div id="matchesView" class="view hidden">
+      <div id="matchList" class="grid"></div>
+      <p id="matchEmpty" class="empty">Ancora nessun match. Metti qualche ❤!</p>
+    </div>
+  </section>
 
   <script src="app.js"></script>
 </body>
