@@ -7,75 +7,67 @@
 
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="logo-32.jpg" type="image/jpeg" />
+  <meta name="color-scheme" content="only dark">
   <meta property="og:title" content="Plutoo 🐾" />
-  <meta property="og:description" content="La chat per cani: swipe, match, chat." />
+  <meta property="og:description" content="Vicino a te, match e chat per cani." />
   <meta property="og:image" content="plutoo-icon-512.png" />
-  <meta name="color-scheme" content="only light"><!-- forza tema chiaro -->
 </head>
 <body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="left"></div>
+    <div class="center">
+      <img class="brand" src="plutoo-icon-512.png" alt="Plutoo">
+    </div>
+    <div class="right">
+      <a href="#" id="btnLogin" class="toplink">Accedi</a>
+      <span class="sep">·</span>
+      <a href="#" id="btnRegister" class="toplink">Registrati</a>
+    </div>
+  </header>
 
-  <!-- LANDING (UNICA SCHERMATA FISSA) -->
-  <section id="landing" class="screen active">
-    <header class="topbar">
-      <div class="left"></div>
-      <div class="right">
-        <a href="#" id="btnLogin" class="toplink">Accedi</a>
-        <span class="sep">·</span>
-        <a href="#" id="btnRegister" class="toplink">Registrati</a>
-      </div>
-    </header>
+  <!-- CTA GEO -->
+  <div id="geoBar" class="geo-bar hidden">
+    <span>🔓 Vuoi vedere i cani vicino a te?</span>
+    <button id="enableGeo" class="btn pill primary">Attiva posizione</button>
+    <button id="dismissGeo" class="btn pill">Più tardi</button>
+  </div>
 
-    <main class="center">
-      <img class="brand-logo big" src="plutoo-icon-512.png" alt="Plutoo">
-      <!-- niente testo extra sotto il logo -->
-    </main>
-  </section>
+  <!-- TABS -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="near">Vicino a te</button>
+    <button class="tab" data-tab="matches">Match</button>
+  </nav>
 
-  <!-- HOME (MATCH) -->
-  <section id="home" class="screen">
-    <header class="topbar">
-      <div class="left">
-        <img class="logo-mini" src="plutoo-icon-512.png" alt="Plutoo">
-      </div>
-      <div class="right">
-        <span id="planBadge" class="badge">Free</span>
-      </div>
-    </header>
+  <!-- CONTENT -->
+  <main class="content">
+    <!-- NEAR -->
+    <section id="near" class="tabpane active">
+      <div id="grid" class="grid"></div>
+      <p id="emptyNear" class="empty hidden">Nessun cane vicino… prova ad attivare la posizione 🧭</p>
+    </section>
 
-    <main class="deck">
-      <article class="card" id="card">
-        <img id="cardImg" src="" alt="Foto cane">
-        <div class="card-info">
-          <h3 id="cardTitle">—</h3>
-          <p id="cardMeta" class="muted">—</p>
-          <p id="cardBio" class="bio">—</p>
-        </div>
-      </article>
+    <!-- MATCHES -->
+    <section id="matches" class="tabpane">
+      <div id="matchList" class="list"></div>
+      <p id="emptyMatch" class="empty">Ancora nessun match. Metti qualche ❤️!</p>
+    </section>
+  </main>
 
-      <div class="actions">
-        <button id="noBtn"  class="btn circle danger">✖</button>
-        <button id="yesBtn" class="btn circle love">❤</button>
-      </div>
-
-      <p class="helper"><span id="counter">Swipe rimasti: 10</span></p>
-      <button id="openProfile" class="btn outline block">Apri profilo</button>
-    </main>
-  </section>
-
-  <!-- BOTTOM-SHEET: LOGIN -->
+  <!-- SHEET: LOGIN -->
   <div id="sheetLogin" class="sheet">
     <div class="panel">
       <button class="close" data-close="sheetLogin">✕</button>
       <h2>Accedi</h2>
       <div class="form">
-        <input id="loginEmail" placeholder="Email">
-        <input id="loginPwd" type="password" placeholder="Password">
+        <input placeholder="Email">
+        <input type="password" placeholder="Password">
         <button id="loginSubmit" class="btn primary block">Entra</button>
       </div>
     </div>
   </div>
 
-  <!-- BOTTOM-SHEET: REGISTRAZIONE -->
+  <!-- SHEET: REGISTER -->
   <div id="sheetRegister" class="sheet">
     <div class="panel">
       <button class="close" data-close="sheetRegister">✕</button>
@@ -87,10 +79,25 @@
     </div>
   </div>
 
-  <!-- OVERLAY VIDEO PUBBLICITÀ (free) -->
-  <div id="overlay" class="overlay">
-    <div class="loader"></div>
-    <p>Video pubblicitario… <span id="count">3</span>s</p>
+  <!-- CHAT (semplice) -->
+  <div id="chat" class="sheet">
+    <div class="panel">
+      <button class="close" data-close="chat">✕</button>
+      <div class="chat-head">
+        <img id="chatAvatar" class="avatar" src="" alt="">
+        <div>
+          <div id="chatName" class="chat-name">Dog</div>
+          <div class="muted small">Chat</div>
+        </div>
+      </div>
+      <div id="thread" class="thread">
+        <div class="bubble">Ciao! 🐾 Siamo un match!</div>
+      </div>
+      <div class="composer">
+        <input id="chatInput" placeholder="Scrivi un messaggio…">
+        <button id="sendBtn" class="btn primary">Invia</button>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>
