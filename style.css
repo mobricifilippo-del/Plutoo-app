@@ -1,5 +1,4 @@
 :root{
-  /* Tema CHIARO e felice */
   --bg-grad-start:#fafafe;
   --bg-grad-end:#f3f5ff;
   --text:#121212;
@@ -21,24 +20,28 @@ body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
   -webkit-font-smoothing:antialiased;
 }
+body.lock{height:100vh;overflow:hidden} /* blocca scroll su splash */
 
-/* generali */
-.muted{color:var(--muted)}
-.small{font-size:12px}
+.hidden{display:none!important}
+.flex-center{display:flex;flex-direction:column;align-items:center;justify-content:center}
 .screen{display:none;min-height:100dvh}
 .screen.active{display:block}
+
 .brand-logo{width:140px;height:140px;border-radius:20px;box-shadow:var(--shadow);background:#000}
 .brand-logo.small{width:110px;height:110px}
 .brand-name{font-size:28px;font-weight:800;margin-top:10px;color:#1c1c1c}
+.muted{color:var(--muted)}
+.small{font-size:12px}
 
-/* splash/login */
-#splash, #login{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px
+/* auth */
+.auth-card{
+  width:min(520px,92vw);background:#fff;border:1px solid var(--stroke);
+  border-radius:18px;padding:18px;box-shadow:var(--shadow);text-align:center
 }
-#login h1{margin:8px 0 0}
-#login input{
-  width:min(440px,92vw);padding:14px 16px;border-radius:14px;border:1px solid var(--stroke);
-  background:#fff;color:#111;outline:none
+.auth-actions{display:flex;gap:10px;justify-content:center;margin:12px 0 8px}
+.auth-form{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.auth-form input{
+  padding:12px 14px;border-radius:14px;border:1px solid var(--stroke);background:#fff;color:#111
 }
 
 /* bottoni */
@@ -52,28 +55,28 @@ body{
 .btn.love{background:var(--love);color:#fff}
 .btn.danger{background:var(--danger);color:#fff}
 
-/* topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
 .topbar .left{display:flex;align-items:center;gap:10px}
 .logo-mini{width:34px;height:34px;border-radius:8px;box-shadow:var(--shadow);background:#000}
 .appname{font-weight:800}
-.badge{border:1px solid var(--stroke);padding:4px 8px;border-radius:999px;margin-right:6px;color:#333;font-size:12px;background:#fff}
+.badge{border:1px solid var(--stroke);padding:4px 8px;border-radius:999px;margin:0 6px;color:#333;font-size:12px;background:#fff}
+.toplink{color:#333;text-decoration:none;font-size:14px}
+.sep{opacity:.35;margin:0 4px}
 
-/* deck/card */
 .deck{max-width:520px;margin:0 auto;padding:12px 16px}
 .card{
   background:var(--card);border:1px solid var(--stroke);border-radius:20px;overflow:hidden;
   box-shadow:var(--shadow)
 }
 .card.soft{background:#ffffff}
-.card img{width:100%;height:300px;object-fit:cover;display:block} /* FOTO PIÙ PICCOLE */
+.card img{width:100%;height:300px;object-fit:cover;display:block}
 .card-info{padding:12px 14px}
 .card-info h3{margin:0 0 6px}
 .bio{margin:6px 0 0;color:#333}
 .actions{display:flex;justify-content:center;gap:14px;margin:16px 0}
 .helper{text-align:center;color:#555;margin:6px 0}
 
-/* bottom sheet profilo */
+/* sheet profilo */
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:10}
 .sheet.show{display:flex}
 .panel{width:min(560px,96vw);background:#fff;border:1px solid var(--stroke);border-radius:18px 18px 12px 12px;overflow:hidden;box-shadow:var(--shadow);position:relative}
