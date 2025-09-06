@@ -13,12 +13,10 @@
   <meta property="og:image" content="plutoo-icon-512.png" />
 </head>
 <body>
-  <!-- TOPBAR -->
+  <!-- TOPBAR (niente logo piccolo sulla landing) -->
   <header class="topbar">
     <div class="left"></div>
-    <div class="center">
-      <img class="brand" src="plutoo-icon-512.png" alt="Plutoo">
-    </div>
+    <div class="center" id="topBrandSlot"></div>
     <div class="right">
       <a href="#" id="btnLogin" class="toplink">Accedi</a>
       <span class="sep">·</span>
@@ -37,6 +35,7 @@
 
   <!-- HOME -->
   <section id="home" class="screen">
+    <!-- quando entri, in topbar metto il logo piccolo -->
     <!-- Bar geolocalizzazione -->
     <div id="geoBar" class="geo-bar hidden">
       <span>🧭 Attiva la posizione per vedere i cani vicino a te</span>
@@ -51,15 +50,14 @@
       <button class="tab" data-tab="matches">Match</button>
     </nav>
 
-    <!-- Contenuti -->
     <main class="content">
-      <!-- Vicino a te -->
+      <!-- Vicino a te (card con UNA foto) -->
       <section id="near" class="tabpane active">
         <div id="grid" class="grid"></div>
         <p id="emptyNear" class="empty hidden">Nessun cane vicino… prova ad attivare la posizione 🧭</p>
       </section>
 
-      <!-- Scorri (Tinder-like) -->
+      <!-- Scorri -->
       <section id="swipe" class="tabpane">
         <article class="card big" id="swipeCard">
           <img id="swipeImg" src="" alt="Cane">
@@ -83,7 +81,7 @@
     </main>
   </section>
 
-  <!-- SHEET: Login -->
+  <!-- SHEETS -->
   <div id="sheetLogin" class="sheet">
     <div class="panel">
       <button class="close" data-close="sheetLogin">✕</button>
@@ -96,7 +94,6 @@
     </div>
   </div>
 
-  <!-- SHEET: Registrazione -->
   <div id="sheetRegister" class="sheet">
     <div class="panel">
       <button class="close" data-close="sheetRegister">✕</button>
@@ -108,7 +105,6 @@
     </div>
   </div>
 
-  <!-- CHAT -->
   <div id="chat" class="sheet">
     <div class="panel">
       <button class="close" data-close="chat">✕</button>
