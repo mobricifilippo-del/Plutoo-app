@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plutoo 🐾</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Login -->
+  <div id="login-screen" class="screen active">
+    <h1>Plutoo 🐾</h1>
+    <p>Il social a 4 zampe</p>
+    <input type="text" id="dogName" placeholder="Nome del cane">
+    <button onclick="goToScreen('home-screen')">Entra</button>
+  </div>
+
+  <!-- Home / Swipe -->
+  <div id="home-screen" class="screen">
+    <h2>Cani nei dintorni</h2>
+    <div id="card">
+      <img src="dog1.jpg" alt="Cane">
+      <h3>Luna, 3 anni, Labrador</h3>
+      <p>2 km da te • Vaccini ✅</p>
+    </div>
+    <div class="buttons">
+      <button class="no" onclick="swipe('no')">❌</button>
+      <button class="yes" onclick="swipe('yes')">❤️</button>
+    </div>
+    <button class="profile-btn" onclick="goToScreen('profile-screen')">Apri Profilo</button>
+    <button class="chat-btn" onclick="goToScreen('chat-screen')">Vai in Chat</button>
+  </div>
+
+  <!-- Profilo Cane -->
+  <div id="profile-screen" class="screen">
+    <h2>Luna 👑</h2>
+    <img src="dog1.jpg" alt="Cane">
+    <p><strong>Razza:</strong> Labrador Retriever</p>
+    <p><strong>Età:</strong> 3 anni</p>
+    <p><strong>Carattere:</strong> Dolce e giocherellona</p>
+    <button onclick="goToScreen('home-screen')">⬅ Torna</button>
+  </div>
+
+  <!-- Chat -->
+  <div id="chat-screen" class="screen">
+    <h2>Chat con Luna</h2>
+    <div id="messages">
+      <p><strong>Luna:</strong> Bau! 🐾</p>
+    </div>
+    <input type="text" id="chatInput" placeholder="Scrivi un messaggio...">
+    <button onclick="sendMessage()">Invia</button>
+    <button onclick="goToScreen('home-screen')">⬅ Torna</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
