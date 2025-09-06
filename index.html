@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
   <link rel="icon" href="logo-32.jpg" type="image/jpeg" />
   <meta name="color-scheme" content="only light">
   <meta property="og:title" content="Plutoo 🐾" />
@@ -13,7 +13,7 @@
   <meta property="og:image" content="plutoo-icon-512.png" />
 </head>
 <body>
-  <!-- TOPBAR (landing senza logo; logo piccolo lo aggiungo solo dopo l’ingresso) -->
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="left"></div>
     <div class="center" id="topBrandSlot"></div>
@@ -48,7 +48,7 @@
     </nav>
 
     <main class="content">
-      <!-- Vicino a te (card con UNA foto) -->
+      <!-- Vicino a te (UNA foto per profilo) -->
       <section id="near" class="tabpane active">
         <div id="grid" class="grid"></div>
         <p id="emptyNear" class="empty hidden">Nessun cane vicino… prova ad attivare la posizione 🧭</p>
@@ -122,6 +122,7 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <!-- JS con nome nuovo per forzare il refresh -->
+  <script src="app_v2.js"></script>
 </body>
 </html>
