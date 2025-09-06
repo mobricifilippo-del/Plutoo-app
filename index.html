@@ -1,128 +1,82 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
-
-  <link rel="stylesheet" href="style.css?v=4" />
-  <link rel="icon" href="logo-32.jpg" type="image/jpeg" />
-  <meta name="color-scheme" content="only light">
-  <meta property="og:title" content="Plutoo 🐾" />
-  <meta property="og:description" content="Cani vicino a te, swipe e match." />
-  <meta property="og:image" content="plutoo-icon-512.png" />
+  <link rel="icon" href="logo-32.jpg" sizes="32x32" />
+  <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- TOPBAR -->
+
+  <!-- HEADER -->
   <header class="topbar">
-    <div class="left"></div>
-    <div class="center" id="topBrandSlot"></div>
-    <div class="right">
-      <a href="#" id="btnLogin" class="toplink">Accedi</a>
-      <span class="sep">·</span>
-      <a href="#" id="btnRegister" class="toplink">Registrati</a>
+    <div class="topbar__left">
+      <!-- solo logo grande nella home, qui teniamo il brand "testuale" minimo -->
     </div>
+    <nav class="topbar__right">
+      <a href="#" class="topbar__link" id="btnLogin">Accedi</a>
+      <span class="dot">·</span>
+      <a href="#" class="topbar__link" id="btnRegister">Registrati</a>
+    </nav>
   </header>
 
-  <!-- LANDING -->
-  <section id="landing" class="screen active">
-    <main class="landing">
-      <img class="logo-big" src="plutoo-icon-512.png" alt="Plutoo">
-      <!-- fallback onclick se per caso l'evento non si aggancia -->
-      <button id="ctaEnter" class="btn huge primary" onclick="window.__enter && window.__enter()">Entra</button>
-      <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
-    </main>
+  <!-- HERO / HOME -->
+  <section class="hero" id="home">
+    <div class="hero__card">
+      <img src="plutoo-icon-512.png" alt="Plutoo" class="hero__logo" />
+      <h1 class="hero__brand">Plutoo</h1>
+    </div>
+
+    <button class="cta" id="enterBtn">Entra</button>
+
+    <p class="hero__note">
+      Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
+    </p>
   </section>
 
-  <!-- HOME -->
-  <section id="home" class="screen">
-    <div id="geoBar" class="geo-bar hidden">
-      <span>🧭 Attiva la posizione per vedere i cani vicino a te</span>
-      <button id="enableGeo" class="btn pill primary">Attiva</button>
-      <button id="dismissGeo" class="btn pill">Più tardi</button>
-    </div>
+  <!-- APP -->
+  <main id="app" class="app hidden" aria-hidden="true">
 
-    <nav class="tabs">
-      <button class="tab active" data-tab="near">Vicino a te</button>
-      <button class="tab" data-tab="swipe">Scorri</button>
-      <button class="tab" data-tab="matches">Match</button>
-    </nav>
-
-    <main class="content">
-      <!-- Vicino a te -->
-      <section id="near" class="tabpane active">
-        <div id="grid" class="grid"></div>
-        <p id="emptyNear" class="empty hidden">Nessun cane vicino… prova ad attivare la posizione 🧭</p>
-      </section>
-
-      <!-- Scorri -->
-      <section id="swipe" class="tabpane">
-        <article class="card big" id="swipeCard">
-          <img id="swipeImg" src="" alt="Cane">
-          <div class="card-info">
-            <h3 id="swipeTitle">—</h3>
-            <p id="swipeMeta" class="muted">—</p>
-            <p id="swipeBio" class="bio">—</p>
-          </div>
-        </article>
-        <div class="actions center">
-          <button id="noBtn"  class="btn circle danger">✖</button>
-          <button id="yesBtn" class="btn circle love">❤</button>
-        </div>
-      </section>
-
-      <!-- Match -->
-      <section id="matches" class="tabpane">
-        <div id="matchList" class="list"></div>
-        <p id="emptyMatch" class="empty">Ancora nessun match. Metti qualche ❤️!</p>
-      </section>
-    </main>
-  </section>
-
-  <!-- SHEETS -->
-  <div id="sheetLogin" class="sheet">
-    <div class="panel">
-      <button class="close" data-close="sheetLogin">✕</button>
-      <h2>Accedi</h2>
-      <div class="form">
-        <input placeholder="Email">
-        <input type="password" placeholder="Password">
-        <button id="loginSubmit" class="btn primary block">Entra</button>
+    <!-- Banner geolocalizzazione -->
+    <div class="geo">
+      <div class="geo__text">🎯 Attiva la posizione per vedere i cani vicino a te</div>
+      <div class="geo__actions">
+        <button class="pill pill--primary" id="btnEnableGeo">Attiva</button>
+        <button class="pill pill--ghost" id="btnLater">Più tardi</button>
       </div>
     </div>
-  </div>
 
-  <div id="sheetRegister" class="sheet">
-    <div class="panel">
-      <button class="close" data-close="sheetRegister">✕</button>
-      <h2>Registrazione</h2>
-      <div class="form">
-        <input id="dogName" placeholder="Nome del cane">
-        <button id="registerSubmit" class="btn primary block">Crea profilo</button>
-      </div>
+    <!-- Tab -->
+    <div class="tabs">
+      <button class="tab tab--active" data-tab="near">Vicino a te</button>
+      <button class="tab" data-tab="browse">Scorri</button>
+      <button class="tab" data-tab="match">Match</button>
     </div>
-  </div>
 
-  <div id="chat" class="sheet">
-    <div class="panel">
-      <button class="close" data-close="chat">✕</button>
-      <div class="chat-head">
-        <img id="chatAvatar" class="avatar" src="" alt="">
-        <div>
-          <div id="chatName" class="chat-name">Dog</div>
-          <div class="muted small">Chat</div>
-        </div>
-      </div>
-      <div id="thread" class="thread">
-        <div class="bubble">Ciao! 🐾 Siamo un match!</div>
-      </div>
-      <div class="composer">
-        <input id="chatInput" placeholder="Scrivi un messaggio…">
-        <button id="sendBtn" class="btn primary">Invia</button>
-      </div>
-    </div>
-  </div>
+    <!-- Grid cani -->
+    <section class="grid" id="dogsGrid" data-mode="near">
+      <!-- Le card vengono inserite da app.js -->
+    </section>
 
-  <script src="app.js?v=4" defer></script>
+    <!-- Stato match vuoto -->
+    <p class="empty hidden" id="emptyMatch">Ancora nessun match. Metti qualche ❤️!</p>
+  </main>
+
+  <!-- (Demo) pannellino login/registrazione a tendina -->
+  <dialog id="authDialog" class="auth">
+    <form method="dialog" class="auth__panel">
+      <h3 id="authTitle">Accedi</h3>
+      <input class="input" type="email" placeholder="Email" required />
+      <input class="input" type="password" placeholder="Password" required />
+      <div class="auth__actions">
+        <button class="pill pill--ghost" value="cancel">Chiudi</button>
+        <button class="pill pill--primary" value="ok">Conferma</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
 </body>
 </html>
