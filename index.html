@@ -10,63 +10,40 @@
   <meta property="og:title" content="Plutoo 🐾" />
   <meta property="og:description" content="La chat per cani: swipe, match, chat." />
   <meta property="og:image" content="plutoo-icon-512.png" />
-  <meta property="og:type" content="website" />
+  <meta name="color-scheme" content="only light"><!-- forza tema chiaro -->
 </head>
-<!-- blocco lo scroll mentre c’è la splash -->
-<body class="lock">
+<body>
 
-  <!-- SPLASH (brevissima) -->
-  <section id="splash" class="screen active flex-center">
-    <img class="brand-logo" src="plutoo-icon-512.png" alt="Plutoo">
-    <p class="brand-name">Plutoo</p>
+  <!-- LANDING (UNICA SCHERMATA FISSA) -->
+  <section id="landing" class="screen active">
+    <header class="topbar">
+      <div class="left"></div>
+      <div class="right">
+        <a href="#" id="btnLogin" class="toplink">Accedi</a>
+        <span class="sep">·</span>
+        <a href="#" id="btnRegister" class="toplink">Registrati</a>
+      </div>
+    </header>
+
+    <main class="center">
+      <img class="brand-logo big" src="plutoo-icon-512.png" alt="Plutoo">
+      <!-- niente testo extra sotto il logo -->
+    </main>
   </section>
 
-  <!-- LOGIN / REGISTER -->
-  <section id="login" class="screen flex-center">
-    <div class="auth-card">
-      <img class="brand-logo small" src="plutoo-icon-512.png" alt="Plutoo">
-      <h1>Plutoo</h1>
-      <p class="muted">Il social a 4 zampe</p>
-
-      <div class="auth-actions">
-        <button class="btn outline" id="goLogin">Accedi</button>
-        <button class="btn primary" id="goRegister">Registrati</button>
-      </div>
-
-      <!-- mini form registrazione (MVP) -->
-      <div id="registerForm" class="auth-form hidden">
-        <input id="dogName" placeholder="Nome del tuo cane">
-        <button class="btn primary block" id="enterBtn">Entra</button>
-      </div>
-
-      <!-- mini form login (MVP demo) -->
-      <div id="loginForm" class="auth-form hidden">
-        <input placeholder="Email (demo)">
-        <input type="password" placeholder="Password (demo)">
-        <button class="btn primary block" id="loginBtn">Accedi</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOME -->
+  <!-- HOME (MATCH) -->
   <section id="home" class="screen">
     <header class="topbar">
       <div class="left">
         <img class="logo-mini" src="plutoo-icon-512.png" alt="Plutoo">
-        <span class="appname">Plutoo</span>
       </div>
       <div class="right">
-        <a href="#" id="linkLogin" class="toplink">Accedi</a>
-        <span class="sep">·</span>
-        <a href="#" id="linkRegister" class="toplink">Registrati</a>
-        <span class="sep">·</span>
         <span id="planBadge" class="badge">Free</span>
-        <button id="openPremium" class="btn pill gold">Premium 👑</button>
       </div>
     </header>
 
     <main class="deck">
-      <article class="card soft" id="card">
+      <article class="card" id="card">
         <img id="cardImg" src="" alt="Foto cane">
         <div class="card-info">
           <h3 id="cardTitle">—</h3>
@@ -81,71 +58,39 @@
       </div>
 
       <p class="helper"><span id="counter">Swipe rimasti: 10</span></p>
-
       <button id="openProfile" class="btn outline block">Apri profilo</button>
     </main>
   </section>
 
-  <!-- PROFILO (SHEET) -->
-  <div id="sheet" class="sheet">
-    <div class="panel soft">
-      <img id="pImg" class="hero" src="" alt="Cane">
-      <button id="closeSheet" class="close">✕</button>
-      <div class="panel-body">
-        <h2 id="pName">—</h2>
-        <p id="pMeta" class="muted">—</p>
-        <p id="pBio">—</p>
-        <div class="actions">
-          <button id="pNo"  class="btn circle danger">✖</button>
-          <button id="pYes" class="btn circle love">❤</button>
-        </div>
+  <!-- BOTTOM-SHEET: LOGIN -->
+  <div id="sheetLogin" class="sheet">
+    <div class="panel">
+      <button class="close" data-close="sheetLogin">✕</button>
+      <h2>Accedi</h2>
+      <div class="form">
+        <input id="loginEmail" placeholder="Email">
+        <input id="loginPwd" type="password" placeholder="Password">
+        <button id="loginSubmit" class="btn primary block">Entra</button>
       </div>
     </div>
   </div>
 
-  <!-- CHAT -->
-  <section id="chat" class="screen">
-    <header class="topbar">
-      <div class="left">
-        <button id="backHome" class="btn pill">⬅</button>
-        <img id="chatAvatar" class="logo-mini" src="" alt="Dog">
-        <span id="chatWith" class="appname">Chat</span>
+  <!-- BOTTOM-SHEET: REGISTRAZIONE -->
+  <div id="sheetRegister" class="sheet">
+    <div class="panel">
+      <button class="close" data-close="sheetRegister">✕</button>
+      <h2>Registrazione</h2>
+      <div class="form">
+        <input id="dogName" placeholder="Nome del cane">
+        <button id="registerSubmit" class="btn primary block">Crea profilo</button>
       </div>
-    </header>
-
-    <div id="thread" class="thread">
-      <div class="bubble">Ciao! 🐾 Siamo un match!</div>
     </div>
+  </div>
 
-    <div class="composer">
-      <input id="chatInput" placeholder="Scrivi un messaggio…">
-      <button id="sendBtn" class="btn primary">Invia</button>
-    </div>
-  </section>
-
-  <!-- OVERLAY VIDEO (solo Free) -->
+  <!-- OVERLAY VIDEO PUBBLICITÀ (free) -->
   <div id="overlay" class="overlay">
     <div class="loader"></div>
     <p>Video pubblicitario… <span id="count">3</span>s</p>
-    <p class="muted small">Premium 👑 = niente video</p>
-  </div>
-
-  <!-- PREMIUM MODAL -->
-  <div id="premium" class="overlay">
-    <div class="modal soft">
-      <h2>Plutoo Premium 👑</h2>
-      <ul>
-        <li>Swipe illimitati</li>
-        <li>Profili senza video</li>
-        <li>Filtri avanzati (razza, pedigree, città)</li>
-        <li>Nessuna pubblicità</li>
-      </ul>
-      <p class="price"><strong>6,99€/mese</strong></p>
-      <div class="modal-actions">
-        <button id="closePremium" class="btn">Chiudi</button>
-        <button id="activatePremium" class="btn gold">Attiva</button>
-      </div>
-    </div>
   </div>
 
   <script src="app.js"></script>
