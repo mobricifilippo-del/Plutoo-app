@@ -12,21 +12,40 @@
   <meta property="og:image" content="plutoo-icon-512.png" />
   <meta property="og:type" content="website" />
 </head>
-<body>
+<!-- blocco lo scroll mentre c’è la splash -->
+<body class="lock">
 
-  <!-- SPLASH (breve) -->
-  <section id="splash" class="screen active">
+  <!-- SPLASH (brevissima) -->
+  <section id="splash" class="screen active flex-center">
     <img class="brand-logo" src="plutoo-icon-512.png" alt="Plutoo">
     <p class="brand-name">Plutoo</p>
   </section>
 
-  <!-- LOGIN -->
-  <section id="login" class="screen">
-    <img class="brand-logo small" src="plutoo-icon-512.png" alt="Plutoo">
-    <h1>Plutoo</h1>
-    <p class="muted">Il social a 4 zampe</p>
-    <input id="dogName" placeholder="Nome del tuo cane">
-    <button class="btn primary" id="enterBtn">Entra</button>
+  <!-- LOGIN / REGISTER -->
+  <section id="login" class="screen flex-center">
+    <div class="auth-card">
+      <img class="brand-logo small" src="plutoo-icon-512.png" alt="Plutoo">
+      <h1>Plutoo</h1>
+      <p class="muted">Il social a 4 zampe</p>
+
+      <div class="auth-actions">
+        <button class="btn outline" id="goLogin">Accedi</button>
+        <button class="btn primary" id="goRegister">Registrati</button>
+      </div>
+
+      <!-- mini form registrazione (MVP) -->
+      <div id="registerForm" class="auth-form hidden">
+        <input id="dogName" placeholder="Nome del tuo cane">
+        <button class="btn primary block" id="enterBtn">Entra</button>
+      </div>
+
+      <!-- mini form login (MVP demo) -->
+      <div id="loginForm" class="auth-form hidden">
+        <input placeholder="Email (demo)">
+        <input type="password" placeholder="Password (demo)">
+        <button class="btn primary block" id="loginBtn">Accedi</button>
+      </div>
+    </div>
   </section>
 
   <!-- HOME -->
@@ -37,6 +56,10 @@
         <span class="appname">Plutoo</span>
       </div>
       <div class="right">
+        <a href="#" id="linkLogin" class="toplink">Accedi</a>
+        <span class="sep">·</span>
+        <a href="#" id="linkRegister" class="toplink">Registrati</a>
+        <span class="sep">·</span>
         <span id="planBadge" class="badge">Free</span>
         <button id="openPremium" class="btn pill gold">Premium 👑</button>
       </div>
