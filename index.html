@@ -7,9 +7,9 @@
 
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="logo-32.jpg" type="image/jpeg" />
-  <meta name="color-scheme" content="only dark">
+  <meta name="color-scheme" content="only light">
   <meta property="og:title" content="Plutoo 🐾" />
-  <meta property="og:description" content="Vicino a te, match e chat per cani." />
+  <meta property="og:description" content="Cani vicino a te, swipe e match." />
   <meta property="og:image" content="plutoo-icon-512.png" />
 </head>
 <body>
@@ -26,35 +26,64 @@
     </div>
   </header>
 
-  <!-- CTA GEO -->
-  <div id="geoBar" class="geo-bar hidden">
-    <span>🔓 Vuoi vedere i cani vicino a te?</span>
-    <button id="enableGeo" class="btn pill primary">Attiva posizione</button>
-    <button id="dismissGeo" class="btn pill">Più tardi</button>
-  </div>
+  <!-- LANDING -->
+  <section id="landing" class="screen active">
+    <main class="landing">
+      <img class="logo-big" src="plutoo-icon-512.png" alt="Plutoo">
+      <button id="ctaEnter" class="btn huge primary">Entra</button>
+      <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
+    </main>
+  </section>
 
-  <!-- TABS -->
-  <nav class="tabs">
-    <button class="tab active" data-tab="near">Vicino a te</button>
-    <button class="tab" data-tab="matches">Match</button>
-  </nav>
+  <!-- HOME -->
+  <section id="home" class="screen">
+    <!-- Bar geolocalizzazione -->
+    <div id="geoBar" class="geo-bar hidden">
+      <span>🧭 Attiva la posizione per vedere i cani vicino a te</span>
+      <button id="enableGeo" class="btn pill primary">Attiva</button>
+      <button id="dismissGeo" class="btn pill">Più tardi</button>
+    </div>
 
-  <!-- CONTENT -->
-  <main class="content">
-    <!-- NEAR -->
-    <section id="near" class="tabpane active">
-      <div id="grid" class="grid"></div>
-      <p id="emptyNear" class="empty hidden">Nessun cane vicino… prova ad attivare la posizione 🧭</p>
-    </section>
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="near">Vicino a te</button>
+      <button class="tab" data-tab="swipe">Scorri</button>
+      <button class="tab" data-tab="matches">Match</button>
+    </nav>
 
-    <!-- MATCHES -->
-    <section id="matches" class="tabpane">
-      <div id="matchList" class="list"></div>
-      <p id="emptyMatch" class="empty">Ancora nessun match. Metti qualche ❤️!</p>
-    </section>
-  </main>
+    <!-- Contenuti -->
+    <main class="content">
+      <!-- Vicino a te -->
+      <section id="near" class="tabpane active">
+        <div id="grid" class="grid"></div>
+        <p id="emptyNear" class="empty hidden">Nessun cane vicino… prova ad attivare la posizione 🧭</p>
+      </section>
 
-  <!-- SHEET: LOGIN -->
+      <!-- Scorri (Tinder-like) -->
+      <section id="swipe" class="tabpane">
+        <article class="card big" id="swipeCard">
+          <img id="swipeImg" src="" alt="Cane">
+          <div class="card-info">
+            <h3 id="swipeTitle">—</h3>
+            <p id="swipeMeta" class="muted">—</p>
+            <p id="swipeBio" class="bio">—</p>
+          </div>
+        </article>
+        <div class="actions center">
+          <button id="noBtn"  class="btn circle danger">✖</button>
+          <button id="yesBtn" class="btn circle love">❤</button>
+        </div>
+      </section>
+
+      <!-- Match -->
+      <section id="matches" class="tabpane">
+        <div id="matchList" class="list"></div>
+        <p id="emptyMatch" class="empty">Ancora nessun match. Metti qualche ❤️!</p>
+      </section>
+    </main>
+  </section>
+
+  <!-- SHEET: Login -->
   <div id="sheetLogin" class="sheet">
     <div class="panel">
       <button class="close" data-close="sheetLogin">✕</button>
@@ -67,7 +96,7 @@
     </div>
   </div>
 
-  <!-- SHEET: REGISTER -->
+  <!-- SHEET: Registrazione -->
   <div id="sheetRegister" class="sheet">
     <div class="panel">
       <button class="close" data-close="sheetRegister">✕</button>
@@ -79,7 +108,7 @@
     </div>
   </div>
 
-  <!-- CHAT (semplice) -->
+  <!-- CHAT -->
   <div id="chat" class="sheet">
     <div class="panel">
       <button class="close" data-close="chat">✕</button>
