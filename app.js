@@ -16,6 +16,17 @@ const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const showScreen = id => { $$('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
 
+/* Splash velocissima (0.35s) -> Login */
+setTimeout(()=>showScreen('#login'), 350);
+
+/* Login -> Home */
+$('#enterBtn').addEventListener('click', () => {
+  renderCard();
+  updateCounter();
+  showScreen('#home');
+});
+
+/* Render card */
 function renderCard() {
   const d = dogs[i % dogs.length];
   $('#cardImg').src = d.img;
@@ -24,24 +35,12 @@ function renderCard() {
   $('#cardBio').textContent   = d.bio;
 }
 
-/* --------- NAVIGAZIONE --------- */
-// splash -> login
-setTimeout(()=>showScreen('#login'), 800);
-
-// login -> home
-$('#enterBtn').addEventListener('click', () => {
-  renderCard();
-  updateCounter();
-  showScreen('#home');
-});
-
-/* --------- SWIPE --------- */
+/* Swipe */
 function like(){
   if(!checkLimit()) return;
   const d = dogs[i % dogs.length];
   i++; renderCard();
-  // match immediato per demo
-  openChat(d);
+  openChat(d); // match immediato per demo
 }
 function nope(){
   if(!checkLimit()) return;
@@ -50,7 +49,7 @@ function nope(){
 $('#yesBtn').addEventListener('click', like);
 $('#noBtn').addEventListener('click',  nope);
 
-// swipe touch
+/* Swipe touch */
 let startX=null;
 $('#card').addEventListener('touchstart', e=>{ startX=e.changedTouches[0].clientX; });
 $('#card').addEventListener('touchend', e=>{
@@ -61,7 +60,7 @@ $('#card').addEventListener('touchend', e=>{
   startX=null;
 });
 
-/* --------- PROFILO --------- */
+/* Profilo (sheet) */
 $('#openProfile').addEventListener('click', async ()=>{
   const d = dogs[i % dogs.length];
   if(!isPremium) await playAd();
@@ -75,7 +74,7 @@ $('#closeSheet').addEventListener('click', ()=>$('#sheet').classList.remove('sho
 $('#pYes').addEventListener('click', ()=>{ $('#sheet').classList.remove('show'); like(); });
 $('#pNo').addEventListener('click',  ()=>{ $('#sheet').classList.remove('show'); nope(); });
 
-/* --------- CHAT --------- */
+/* Chat */
 function openChat(d){
   $('#chatAvatar').src = d.img;
   $('#chatWith').textContent = `Chat con ${d.name}`;
@@ -95,7 +94,7 @@ $('#sendBtn').addEventListener('click', ()=>{
   $('#thread').scrollTop = $('#thread').scrollHeight;
 });
 
-/* --------- VIDEO (FREE) --------- */
+/* Video (Free) */
 function playAd(){
   return new Promise(resolve=>{
     const ov = $('#overlay');
@@ -108,7 +107,7 @@ function playAd(){
   });
 }
 
-/* --------- LIMITI FREE / PREMIUM --------- */
+/* Free/Premium */
 function checkLimit(){
   if(isPremium) return true;
   if(swipesLeft<=0){ openPremium(); return false; }
