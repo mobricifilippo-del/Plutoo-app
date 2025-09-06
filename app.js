@@ -1,152 +1,157 @@
-/* ===============================
-   PLUTOO – App demo senza backend
-   =============================== */
+// ======= DATI DEMO (una sola foto per cane) =======
+const DOGS = [
+  { id: 1, name: "Luna",  age: 1, breed: "Jack Russell", img: "dog4.jpg", distKm: 2.2, online: true },
+  { id: 2, name: "Sofia", age: 5, breed: "Levriero Afgano", img: "dog1.jpg", distKm: 1.6, online: true },
+  { id: 3, name: "Rocky", age: 4, breed: "Meticcio", img: "dog3.jpg", distKm: 5.9, online: true },
+  { id: 4, name: "Maya",  age: 3, breed: "Shiba Inu", img: "dog2.jpg", distKm: 3.2, online: true },
+];
 
-// --- Stato semplice in memoria
 const state = {
-  tab: 'near',                // near | browse | match
-  likes: new Set(),           // id cani piaciuti
-  dogs: [
-    { id: 'd1', name: 'Luna', age: 1, breed: 'Jack Russell', km: 2.2, img: 'dog3.jpg', online: true },
-    { id: 'd2', name: 'Sofia', age: 5, breed: 'Levriero Afgano', km: 1.6, img: 'dog2.jpg', online: true },
-    { id: 'd3', name: 'Rocky', age: 4, breed: 'Meticcio', km: 5.9, img: 'dog1.jpg', online: false },
-    { id: 'd4', name: 'Maya', age: 3, breed: 'Shiba Inu', km: 3.2, img: 'dog4.jpg', online: true },
-  ],
+  view: "nearby",      // nearby | swipe | matches
+  dogs: [...DOGS],
+  liked: new Set(),
+  swipeIndex: 0,
 };
 
-// --- Selettori principali
-const enterBtn = document.getElementById('enterBtn');
-const appMain  = document.getElementById('app');
-const grid     = document.getElementById('dogsGrid');
-const emptyMatch = document.getElementById('emptyMatch');
+// ======= ELEMENTI =======
+const home      = document.getElementById("home");
+const app       = document.getElementById("app");
+const enterBtn  = document.getElementById("enterBtn");
 
-// Auth dialog demo
-const authDialog = document.getElementById('authDialog');
-document.getElementById('btnLogin').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('authTitle').textContent = 'Accedi';
-  authDialog.showModal();
-});
-document.getElementById('btnRegister').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.getElementById('authTitle').textContent = 'Registrati';
-  authDialog.showModal();
-});
+const tabs      = document.querySelectorAll(".tab");
+const nearbyView= document.getElementById("nearbyView");
+const swipeView = document.getElementById("swipeView");
+const matchesView = document.getElementById("matchesView");
 
-// Entra: mostra la pagina app
-enterBtn.addEventListener('click', () => {
-  document.getElementById('home').classList.add('hidden');
-  appMain.classList.remove('hidden');
-  appMain.setAttribute('aria-hidden', 'false');
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+const nearbyGrid= document.getElementById("nearbyGrid");
+const matchList = document.getElementById("matchList");
+const matchEmpty= document.getElementById("matchEmpty");
 
-// Tabs
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('tab--active'));
-    btn.classList.add('tab--active');
-    state.tab = btn.dataset.tab;
-    render();
-  });
+const swipeCard = document.getElementById("swipeCard");
+const swipeImg  = document.getElementById("swipeImg");
+const swipeName = document.getElementById("swipeName");
+const swipeAge  = document.getElementById("swipeAge");
+const swipeBreed= document.getElementById("swipeBreed");
+const swipeDist = document.getElementById("swipeDist");
+const swipeEmpty= document.getElementById("swipeEmpty");
+
+const btnNo  = document.getElementById("btnNo");
+const btnYes = document.getElementById("btnYes");
+
+const geoBanner = document.getElementById("geoBanner");
+document.getElementById("geoOn").onclick = () => { geoBanner.classList.add("hidden"); };
+document.getElementById("geoLater").onclick = () => { geoBanner.classList.add("hidden"); };
+
+// ======= NAVIGAZIONE =======
+enterBtn.addEventListener("click", () => {
+  home.classList.add("hidden");
+  app.classList.remove("hidden");
+  setView("nearby");
 });
 
-// Geolocalizzazione (demo)
-document.getElementById('btnEnableGeo').addEventListener('click', () => {
-  // Demo: non facciamo nulla, simuliamo successo
-  const geo = document.querySelector('.geo');
-  geo.style.display = 'none';
-});
-document.getElementById('btnLater').addEventListener('click', () => {
-  const geo = document.querySelector('.geo');
-  geo.style.display = 'none';
-});
+tabs.forEach(t => t.addEventListener("click", () => {
+  setView(t.dataset.view);
+}));
 
-// --- Render grid in base al tab
-function render() {
-  let list = state.dogs.slice();
+function setView(view){
+  state.view = view;
+  tabs.forEach(t => t.classList.toggle("active", t.dataset.view === view));
+  nearbyView.classList.toggle("hidden", view !== "nearby");
+  swipeView.classList.toggle("hidden", view !== "swipe");
+  matchesView.classList.toggle("hidden", view !== "matches");
 
-  if (state.tab === 'match') {
-    list = list.filter(d => state.likes.has(d.id));
-  } else if (state.tab === 'near') {
-    // potrebbe essere ordinata per distanza
-    list.sort((a, b) => a.km - b.km);
-  }
-
-  // Contenuto
-  grid.innerHTML = list.map(d => dogCardHTML(d)).join('');
-
-  // Mostra/occulta messaggio vuoto nei match
-  if (state.tab === 'match' && list.length === 0) {
-    emptyMatch.classList.remove('hidden');
-  } else {
-    emptyMatch.classList.add('hidden');
-  }
+  if(view === "nearby") renderNearby();
+  if(view === "swipe")  showCurrentSwipe();
+  if(view === "matches") renderMatches();
 }
 
-// --- Template HTML card (singola immagine per cane)
-function dogCardHTML(d) {
-  return `
-    <article class="dog-card" data-id="${d.id}">
-      <img class="dog-photo" src="${d.img}" alt="${d.name}" />
-      <div class="dog-body">
-        <div class="dog-row">
-          <div>
-            <div class="dog-name">${d.name}, ${d.age}</div>
-            <div class="dog-meta">${d.breed}</div>
+// ======= VICINO A TE (griglia, 1 foto per cane) =======
+function renderNearby(){
+  nearbyGrid.innerHTML = "";
+  state.dogs.forEach(d => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <img class="photo" src="${d.img}" alt="${d.name}" />
+      <div class="body">
+        <div class="title">${d.name}, ${d.age}</div>
+        <div class="sub">${d.breed}</div>
+        <div class="row">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="badge" title="online"></span>
+            <span style="color:#6c45ff;font-weight:900">${d.distKm.toFixed(1)} km</span>
           </div>
-          <div style="text-align:right">
-            ${d.online ? '<span class="badge-online" title="online"></span>' : ''}
-            <div style="color:#6a54ff;font-weight:900">${d.km.toFixed(1)} <span style="color:#7a6cff">km</span></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-circle danger" aria-label="No" onclick="dislike(${d.id})">✖</button>
+            <button class="btn-circle success" aria-label="Like" onclick="like(${d.id})">❤</button>
           </div>
-        </div>
-        <div class="actions">
-          <button class="action btn-nope" data-act="nope">✖</button>
-          <button class="action btn-like" data-act="like">❤</button>
         </div>
       </div>
-    </article>
-  `;
+    `;
+    nearbyGrid.appendChild(card);
+  });
 }
 
-// --- Like / Nope (delegation)
-document.addEventListener('click', (e) => {
-  const likeBtn = e.target.closest('[data-act="like"]');
-  const nopeBtn = e.target.closest('[data-act="nope"]');
-  if (!likeBtn && !nopeBtn) return;
+// ======= SWIPE (card singola) =======
+function currentDog(){
+  return state.dogs[state.swipeIndex] || null;
+}
 
-  const card = (likeBtn || nopeBtn).closest('.dog-card');
-  const id = card?.dataset.id;
-  if (!id) return;
-
-  if (likeBtn) {
-    state.likes.add(id);
+function showCurrentSwipe(){
+  const d = currentDog();
+  if(!d){
+    swipeCard.classList.add("hidden");
+    swipeEmpty.classList.remove("hidden");
+    return;
   }
-  if (nopeBtn) {
-    state.likes.delete(id);
-  }
+  swipeEmpty.classList.add("hidden");
+  swipeCard.classList.remove("hidden");
+  swipeImg.src = d.img;
+  swipeName.textContent = d.name;
+  swipeAge.textContent = `· ${d.age}`;
+  swipeBreed.textContent = d.breed;
+  swipeDist.textContent = `${d.distKm.toFixed(1)} km • online`;
+}
 
-  // feedback visivo (non invasivo) - MICRO SWIPE
-  const cls = likeBtn ? 'swipe-like' : 'swipe-nope';
-  card.classList.add(cls);
-  setTimeout(() => card.classList.remove(cls), 280);
-
-  // se sono in "near/browse" rendo immediata la rimozione visiva
-  if (state.tab !== 'match') {
-    card.style.pointerEvents = 'none';
-    card.style.opacity = '0';
-    setTimeout(() => {
-      card.remove();
-      // se svuoto tutto e sono in near/browse non faccio altro
-    }, 220);
-  } else {
-    // nei match ricalcolo la lista
-    render();
-  }
+btnNo.addEventListener("click", () => {
+  // passa al prossimo senza like
+  state.swipeIndex = Math.min(state.swipeIndex + 1, state.dogs.length);
+  showCurrentSwipe();
 });
 
-// Render iniziale (se l’utente atterra direttamente qui)
-if (!document.getElementById('home') || document.getElementById('home').classList.contains('hidden')) {
-  render();
+btnYes.addEventListener("click", () => {
+  const d = currentDog();
+  if (d) state.liked.add(d.id);
+  state.swipeIndex = Math.min(state.swipeIndex + 1, state.dogs.length);
+  showCurrentSwipe();
+});
+
+// Per sicurezza espongo queste per i bottoni della griglia
+window.like = (id) => { state.liked.add(id); };
+window.dislike = (id) => { /* no-op demo */ };
+
+// ======= MATCH =======
+function renderMatches(){
+  const likedDogs = state.dogs.filter(d => state.liked.has(d.id));
+  matchList.innerHTML = "";
+  matchEmpty.style.display = likedDogs.length ? "none" : "block";
+  likedDogs.forEach(d => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <img class="photo" src="${d.img}" alt="${d.name}" />
+      <div class="body">
+        <div class="title">${d.name}, ${d.age}</div>
+        <div class="sub">${d.breed}</div>
+        <div class="row">
+          <span style="color:#6c45ff;font-weight:900">${d.distKm.toFixed(1)} km</span>
+          <span>❤ Match</span>
+        </div>
+      </div>
+    `;
+    matchList.appendChild(card);
+  });
 }
+
+// ======= AVVIO =======
+renderNearby();
