@@ -16,15 +16,34 @@ const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const showScreen = id => { $$('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
 
-/* Splash velocissima (0.35s) -> Login */
-setTimeout(()=>showScreen('#login'), 350);
+/* Splash velocissima -> Login e sblocco scroll */
+setTimeout(()=>{
+  showScreen('#login');
+  document.body.classList.remove('lock'); // niente scroll bloccato
+}, 350);
 
-/* Login -> Home */
-$('#enterBtn').addEventListener('click', () => {
+/* Auth: mostrare i form senza scorrere pagine */
+$('#goLogin').addEventListener('click', ()=>{
+  $('#registerForm').classList.add('hidden');
+  $('#loginForm').classList.remove('hidden');
+});
+$('#goRegister').addEventListener('click', ()=>{
+  $('#loginForm').classList.add('hidden');
+  $('#registerForm').classList.remove('hidden');
+});
+
+/* Login/Registrazione -> Home (demo) */
+$('#enterBtn').addEventListener('click', enterApp);
+$('#loginBtn').addEventListener('click', enterApp);
+function enterApp(){
   renderCard();
   updateCounter();
   showScreen('#home');
-});
+}
+
+/* Link nella topbar che riportano al login/registrazione */
+$('#linkLogin').addEventListener('click', (e)=>{ e.preventDefault(); showScreen('#login'); $('#loginForm').classList.remove('hidden'); $('#registerForm').classList.add('hidden'); });
+$('#linkRegister').addEventListener('click', (e)=>{ e.preventDefault(); showScreen('#login'); $('#registerForm').classList.remove('hidden'); $('#loginForm').classList.add('hidden'); });
 
 /* Render card */
 function renderCard() {
