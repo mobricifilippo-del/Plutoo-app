@@ -1,17 +1,9 @@
-/* Palette vivace: viola → rosa → giallo */
 :root{
-  --bg1:#f7f2ff;
-  --bg2:#ffeaf1;
-  --bg3:#fff6d6;
-  --text:#1a1a1a;
-  --muted:#5d5d6a;
-  --violet:#7a4ff7;
-  --pink:#ff4faf;
-  --yellow:#ffd24d;
-  --green:#10c679;
-  --red:#f04747;
-  --card:#ffffff;
-  --stroke:#ece8f7;
+  --bg1:#f7f2ff; --bg2:#ffeaf1; --bg3:#fff6d6;
+  --text:#1a1a1a; --muted:#5d5d6a;
+  --violet:#7a4ff7; --pink:#ff4faf; --yellow:#ffd24d;
+  --green:#10c679; --red:#f04747;
+  --card:#ffffff; --stroke:#ece8f7;
   --shadow:0 14px 40px rgba(122,79,247,.18);
 }
 *{box-sizing:border-box}
@@ -21,16 +13,13 @@ body{
   background: radial-gradient(60% 60% at 20% 0%, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  -webkit-font-smoothing:antialiased;
 }
 .hidden{display:none!important}
 
-/* Topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
 .toplink{color:#3b2c7e;text-decoration:none;font-weight:700}
 .sep{opacity:.45;margin:0 6px}
 
-/* Landing */
 .landing{min-height:calc(100dvh - 96px);display:grid;place-items:center;gap:16px;padding:16px}
 .logo-big{width:min(220px,70vw);height:min(220px,70vw);border-radius:28px;box-shadow:var(--shadow);background:#000}
 .btn{border:none;border-radius:16px;padding:12px 18px;background:#fff;color:#111;cursor:pointer;border:1px solid var(--stroke);box-shadow:var(--shadow)}
@@ -38,25 +27,19 @@ body{
 .btn.huge{font-size:18px;padding:14px 24px}
 .hint{color:#6b6780;margin:0}
 
-/* Geo bar */
-.geo-bar{display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 12px;background:#fff3;backdrop-filter:blur(2px)}
+.geo-bar{display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 12px}
 .pill{border-radius:999px}
 
-/* Tabs */
 .tabs{display:flex;gap:8px;justify-content:center;padding:10px 12px}
 .tab{background:#fff;border:1px solid var(--stroke);color:#3b2c7e;border-radius:999px;padding:10px 14px;cursor:pointer;box-shadow:var(--shadow)}
 .tab.active{background:linear-gradient(90deg,var(--violet),var(--pink));color:#fff;border:0}
 
-/* Content */
 .content{max-width:980px;margin:0 auto;padding:10px 12px}
 
-/* === CARD SINGOLA (UNA FOTO) === */
+/* CARD SINGOLA (una foto) */
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media (min-width:840px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr));} }
-.card{
-  background:var(--card);border:1px solid var(--stroke);border-radius:18px;
-  overflow:hidden;box-shadow:var(--shadow);position:relative
-}
+.card{background:var(--card);border:1px solid var(--stroke);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);position:relative}
 .card img{width:100%;height:180px;object-fit:cover;display:block;border-bottom:1px solid var(--stroke)}
 .online{position:absolute;top:10px;left:10px;width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(255,255,255,.8)}
 .card-info{padding:10px 12px}
@@ -68,27 +51,26 @@ body{
 .circle.like{background:linear-gradient(90deg,#10c679,#53e28d);color:#07351e;border:0}
 .circle.no{background:#f04747;color:#fff;border:0}
 
-/* Card grande (Scorri) */
+/* Scorri */
 .card.big img{width:100%;height:360px;object-fit:cover;display:block}
 .bio{margin:6px 0 0;color:#3d3a47}
 .muted{color:#6b6780}
 .actions.center{justify-content:center}
 
-/* Match list */
+/* Match */
 .list{display:flex;flex-direction:column;gap:10px}
 .item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--stroke);border-radius:16px;padding:10px;box-shadow:var(--shadow)}
 .item img{width:56px;height:56px;border-radius:14px;object-fit:cover}
 .item .go{margin-left:auto}
 
-/* Sheets (login, register, chat) */
+/* Sheets + Chat */
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:20}
 .sheet.show{display:flex}
 .panel{width:min(520px,96vw);background:#fff;border:1px solid var(--stroke);border-radius:18px 18px 12px 12px;padding:16px;box-shadow:var(--shadow);position:relative}
 .close{position:absolute;right:12px;top:12px;background:#fff;border:1px solid var(--stroke);border-radius:10px;padding:6px 10px}
 .form{display:flex;flex-direction:column;gap:10px}
-.form input{padding:12px 14px;border-radius:14px;border:1px solid var(--stroke);background:#fff;color:#111}
+.form input{padding:12px 14px;border:1px solid var(--stroke);border-radius:14px;background:#fff;color:#111}
 
-/* Chat */
 .chat-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .avatar{width:44px;height:44px;border-radius:12px;object-fit:cover}
 .chat-name{font-weight:800}
@@ -96,7 +78,6 @@ body{
 .bubble{max-width:80%;background:#f6f3ff;border:1px solid var(--stroke);border-radius:12px;padding:8px 10px;margin:6px 0}
 .bubble.me{background:#e8fff2;border-color:#d8f6e6;margin-left:auto}
 
-/* Stati / schermi */
 .empty{text-align:center;color:#6b6780;margin:16px 0}
 .tabpane{display:none}
 .tabpane.active{display:block}
