@@ -11,7 +11,7 @@ let matches = JSON.parse(localStorage.getItem("plutoo_matches") || "[]");
 let swipeIndex = 0;
 
 /* ------- HELPERS ------- */
-const $ = s => document.querySelector(s);
+const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const show = id => { $$('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
 const km = (a,b)=>{ if(!a||!b) return null;
@@ -22,7 +22,7 @@ const km = (a,b)=>{ if(!a||!b) return null;
 };
 const randKm = ()=> +(Math.random()*7+0.5).toFixed(1);
 
-/* ------- NAV ------- */
+/* ------- TABS ------- */
 $$('.tab').forEach(t=>{
   t.addEventListener('click',()=>{
     $$('.tab').forEach(x=>x.classList.remove('active'));
@@ -37,11 +37,16 @@ $$('.tab').forEach(t=>{
 
 /* ------- LANDING → HOME ------- */
 $('#ctaEnter').addEventListener('click', ()=>{
+  // aggiungo il logo piccolo nella topbar SOLO dopo l’ingresso
+  if(!document.querySelector('.brand-small')){
+    const img=document.createElement('img');
+    img.src='plutoo-icon-512.png'; img.alt='Plutoo'; img.className='brand-small';
+    img.style.width='64px'; img.style.height='64px'; img.style.borderRadius='20px';
+    img.style.boxShadow='0 14px 40px rgba(122,79,247,.18)'; img.style.background='#000';
+    document.getElementById('topBrandSlot').appendChild(img);
+  }
   show('#home');
-  askGeo();        // chiedi geolocalizzazione
-  renderNear();    // mostra subito qualcosa
-  renderSwipe();
-  renderMatches();
+  askGeo(); renderNear(); renderSwipe(); renderMatches();
 });
 
 /* ------- GEO ------- */
@@ -55,7 +60,7 @@ $('#enableGeo').addEventListener('click',()=>{
 });
 $('#dismissGeo').addEventListener('click',()=> $('#geoBar').classList.add('hidden'));
 
-/* ------- VICINO A TE (griglia a coppie) ------- */
+/* ------- VICINO A TE (card UNA foto) ------- */
 function renderNear(){
   const wrap = $('#grid'); wrap.innerHTML='';
   const list = dogs.slice().sort((a,b)=>{
@@ -69,10 +74,7 @@ function renderNear(){
     card.className='card';
     card.innerHTML = `
       ${d.online ? '<span class="online"></span>' : ''}
-      <div class="pair">
-        <img src="${d.img1}" alt="${d.name}">
-        <img src="${d.img2}" alt="${d.name}">
-      </div>
+      <img src="${d.img1}" alt="${d.name}">
       <div class="card-info">
         <div class="title">
           <div class="name">${d.name}, ${d.age} • ${d.breed}</div>
@@ -83,7 +85,7 @@ function renderNear(){
           <button class="circle like">❤</button>
         </div>
       </div>`;
-    card.querySelector('.no').onclick = ()=> card.remove();
+    card.querySelector('.no').onclick   = ()=> card.remove();
     card.querySelector('.like').onclick = ()=> addMatch(d);
     wrap.appendChild(card);
   });
@@ -94,7 +96,7 @@ function renderNear(){
 function renderSwipe(){
   const d = dogs[swipeIndex % dogs.length];
   const distance = userPos ? km(userPos,d.coords) : randKm();
-  $('#swipeImg').src = d.img1;
+  $('#swipeImg').src   = d.img1;
   $('#swipeTitle').textContent = `${d.name}, ${d.age} • ${d.breed}`;
   $('#swipeMeta').textContent  = `${distance} km da te`;
   $('#swipeBio').textContent   = d.bio;
@@ -102,16 +104,16 @@ function renderSwipe(){
 $('#yesBtn').addEventListener('click', ()=>{ addMatch(dogs[swipeIndex % dogs.length]); swipeIndex++; renderSwipe(); });
 $('#noBtn').addEventListener('click',  ()=>{ swipeIndex++; renderSwipe(); });
 
-/* ------- MATCH ------- */
+/* ------- MATCHES ------- */
 function addMatch(d){
-  if(!matches.find(m=>m.id===d.id)){
+  if (!matches.find(m=>m.id===d.id)) {
     matches.push({id:d.id, name:d.name, img:d.img1});
-    localStorage.setItem('plutoo_matches', JSON.stringify(matches));
+    localStorage.setItem("plutoo_matches", JSON.stringify(matches));
   }
   renderMatches();
 }
 function renderMatches(){
-  const box = $('#matchList'); box.innerHTML='';
+  const box = $('#matchList'); box.innerHTML = '';
   matches.forEach(m=>{
     const row = document.createElement('div');
     row.className='item';
@@ -122,7 +124,7 @@ function renderMatches(){
         <div class="muted small">Match</div>
       </div>
       <button class="btn go primary pill">Chat</button>`;
-    row.querySelector('.go').onclick = ()=> openChat(m);
+    row.querySelector('.go').onclick = ()=>openChat(m);
     box.appendChild(row);
   });
   $('#emptyMatch').style.display = matches.length ? 'none' : 'block';
@@ -136,9 +138,11 @@ function openChat(m){
   $('#chat').classList.add('show');
 }
 $('#sendBtn').onclick = ()=>{
-  const t = ($('#chatInput').value||'').trim(); if(!t) return;
-  const b = document.createElement('div'); b.className='bubble me'; b.textContent=t;
-  $('#thread').appendChild(b); $('#chatInput').value=''; $('#thread').scrollTop = $('#thread').scrollHeight;
+  const txt = ($('#chatInput').value||'').trim();
+  if(!txt) return;
+  const b = document.createElement('div'); b.className='bubble me'; b.textContent = txt;
+  $('#thread').appendChild(b);
+  $('#chatInput').value=''; $('#thread').scrollTop = $('#thread').scrollHeight;
 };
 
 /* ------- Login / Register sheets ------- */
