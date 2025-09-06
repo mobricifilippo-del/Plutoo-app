@@ -13,7 +13,7 @@
   <meta property="og:image" content="plutoo-icon-512.png" />
 </head>
 <body>
-  <!-- TOPBAR (niente logo piccolo sulla landing) -->
+  <!-- TOPBAR (landing senza logo; logo piccolo lo aggiungo solo dopo l’ingresso) -->
   <header class="topbar">
     <div class="left"></div>
     <div class="center" id="topBrandSlot"></div>
@@ -35,15 +35,12 @@
 
   <!-- HOME -->
   <section id="home" class="screen">
-    <!-- quando entri, in topbar metto il logo piccolo -->
-    <!-- Bar geolocalizzazione -->
     <div id="geoBar" class="geo-bar hidden">
       <span>🧭 Attiva la posizione per vedere i cani vicino a te</span>
       <button id="enableGeo" class="btn pill primary">Attiva</button>
       <button id="dismissGeo" class="btn pill">Più tardi</button>
     </div>
 
-    <!-- Tabs -->
     <nav class="tabs">
       <button class="tab active" data-tab="near">Vicino a te</button>
       <button class="tab" data-tab="swipe">Scorri</button>
