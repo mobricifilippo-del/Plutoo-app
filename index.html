@@ -4,63 +4,76 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-
-  <link rel="icon" type="image/png" sizes="32x32" href="logo-32.jpg">
-  <link rel="apple-touch-icon" href="plutoo-icon-512.png">
-  <meta name="theme-color" content="#6f46cf">
-
-  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="logo-32.jpg" sizes="32x32" />
+  <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
-  <!-- NAV LEGGERA -->
-  <nav class="topbar">
+  <!-- TOP -->
+  <header class="topbar">
     <div></div>
-    <div class="nav-actions">
+    <nav class="nav-actions">
       <a href="#" class="link">Accedi</a>
       <span class="dot">·</span>
       <a href="#" class="link">Registrati</a>
-    </div>
-  </nav>
-
-  <!-- HOME / HERO -->
-  <header class="hero" id="home">
-    <div class="hero-card">
-      <div class="hero-logo">
-        <img src="logo-32.jpg" alt="Plutoo logo" />
-      </div>
-      <h1 class="brand">Plutoo</h1>
-    </div>
-
-    <button id="enterBtn" class="btn btn-primary">Entra</button>
-    <p class="note">Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.</p>
+    </nav>
   </header>
 
-  <!-- APP -->
-  <main id="app" class="app hidden" aria-hidden="true">
-    <!-- Barra posizione -->
-    <section class="location-banner">
-      <div class="loc-text">🎯 Attiva la posizione per vedere i cani vicino a te</div>
-      <div class="loc-actions">
-        <button id="locEnable" class="btn btn-pill">Attiva</button>
-        <button id="locLater" class="btn btn-pill soft">Più tardi</button>
-      </div>
-    </section>
-
-    <!-- Tabs -->
-    <section class="tabs">
-      <button class="tab active" data-tab="nearby">Vicino a te</button>
-      <button class="tab" data-tab="matches">Match</button>
-    </section>
-
-    <!-- Griglia cani -->
-    <section id="cards" class="grid"></section>
-
-    <!-- Match -->
-    <section id="matches" class="matches hidden">
-      <p class="empty">Ancora nessun match. Metti qualche <span class="heart">❤️</span>!</p>
-    </section>
+  <!-- HOME / LANDING -->
+  <main id="landing" class="landing">
+    <div class="logo-card">
+      <img class="logo-img" src="plutoo-icon-512.png" alt="Plutoo" />
+      <h1 class="brand">Plutoo</h1>
+    </div>
+    <button id="btnEnter" class="btn primary">Entra</button>
+    <p class="note">Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.</p>
   </main>
 
-  <script src="app.js"></script>
+  <!-- APP -->
+  <section id="app" class="app hidden" aria-hidden="true">
+    <!-- GEO -->
+    <div id="geoBar" class="geo">
+      <span>🎯 Attiva la posizione per vedere i cani vicino a te</span>
+      <div class="geo-actions">
+        <button id="geoEnable" class="chip primary">Attiva</button>
+        <button id="geoLater" class="chip">Più tardi</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" data-view="near">Vicino a te</button>
+      <button class="tab" data-view="swipe">Scorri</button>
+      <button class="tab" data-view="matches">Match</button>
+    </div>
+
+    <!-- VIEWS -->
+    <div id="viewNear" class="view">
+      <div id="nearGrid" class="grid"></div>
+    </div>
+
+    <div id="viewSwipe" class="view hidden">
+      <article class="swipe-card" id="swipeCard">
+        <img id="swipeImg" src="" alt="Cane">
+        <div class="swipe-info">
+          <h3 class="swipe-title"><span id="swipeName"></span> <span class="muted" id="swipeAge"></span></h3>
+          <div id="swipeBreed" class="muted"></div>
+          <div id="swipeDist" class="dist"></div>
+        </div>
+        <div class="actions center">
+          <button id="btnNo"  class="btn round danger">✖</button>
+          <button id="btnYes" class="btn round success">❤</button>
+        </div>
+      </article>
+      <p id="swipeEmpty" class="empty hidden">Nient’altro da mostrare adesso 🐶</p>
+    </div>
+
+    <div id="viewMatches" class="view hidden">
+      <div id="matchList" class="grid"></div>
+      <p id="matchEmpty" class="empty">Ancora nessun match. Metti qualche ❤️!</p>
+    </div>
+  </section>
+
+  <script src="app.js?v=5"></script>
 </body>
 </html>
