@@ -1,74 +1,56 @@
-/* --------- DATI DEMO --------- */
+/* --- DATI DEMO --- */
 const dogs = [
-  {name:"Luna",  age:1, breed:"Jack Russell",     dist:"2 km", img:"dog1.jpg", bio:"Vivace e curiosa, ama giocare tutto il giorno!", premium:true},
-  {name:"Rocky", age:4, breed:"Meticcio",         dist:"5 km", img:"dog2.jpg", bio:"Simpatico e fedele, sempre pronto alle coccole.", premium:false},
-  {name:"Maya",  age:3, breed:"Shiba Inu",        dist:"1 km", img:"dog3.jpg", bio:"Orgogliosa e intelligente, passeggiate ogni giorno.", premium:true},
-  {name:"Sofia", age:5, breed:"Levriero Afgano",  dist:"3 km", img:"dog4.jpg", bio:"Elegante e dolce, tranquilla con tutti.", premium:false}
+  {name:"Luna",  age:1, breed:"Jack Russell",     dist:"2 km", img:"dog1.jpg", bio:"Vivace e curiosa, ama giocare tutto il giorno!"},
+  {name:"Rocky", age:4, breed:"Meticcio",         dist:"5 km", img:"dog2.jpg", bio:"Simpatico e fedele, sempre pronto alle coccole."},
+  {name:"Maya",  age:3, breed:"Shiba Inu",        dist:"1 km", img:"dog3.jpg", bio:"Orgogliosa e intelligente, passeggiate ogni giorno."},
+  {name:"Sofia", age:5, breed:"Levriero Afgano",  dist:"3 km", img:"dog4.jpg", bio:"Elegante e dolce, tranquilla con tutti."}
 ];
+let i = 0, swipesLeft = 10, isPremium = false;
 
-/* --------- STATO --------- */
-let i = 0;
-let isPremium = false;
-let swipesLeft = 10;
-
-/* --------- UTILS --------- */
+/* --- HELPERS --- */
 const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
-const showScreen = id => { $$('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
+const show = id => { $$('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
 
-/* Splash velocissima -> Login e sblocco scroll */
-setTimeout(()=>{
-  showScreen('#login');
-  document.body.classList.remove('lock'); // niente scroll bloccato
-}, 350);
-
-/* Auth: mostrare i form senza scorrere pagine */
-$('#goLogin').addEventListener('click', ()=>{
-  $('#registerForm').classList.add('hidden');
-  $('#loginForm').classList.remove('hidden');
-});
-$('#goRegister').addEventListener('click', ()=>{
-  $('#loginForm').classList.add('hidden');
-  $('#registerForm').classList.remove('hidden');
-});
-
-/* Login/Registrazione -> Home (demo) */
-$('#enterBtn').addEventListener('click', enterApp);
-$('#loginBtn').addEventListener('click', enterApp);
-function enterApp(){
-  renderCard();
-  updateCounter();
-  showScreen('#home');
-}
-
-/* Link nella topbar che riportano al login/registrazione */
-$('#linkLogin').addEventListener('click', (e)=>{ e.preventDefault(); showScreen('#login'); $('#loginForm').classList.remove('hidden'); $('#registerForm').classList.add('hidden'); });
-$('#linkRegister').addEventListener('click', (e)=>{ e.preventDefault(); showScreen('#login'); $('#registerForm').classList.remove('hidden'); $('#loginForm').classList.add('hidden'); });
-
-/* Render card */
-function renderCard() {
+function renderCard(){
   const d = dogs[i % dogs.length];
   $('#cardImg').src = d.img;
   $('#cardTitle').textContent = `${d.name}, ${d.age} anni, ${d.breed}`;
   $('#cardMeta').textContent  = `${d.dist} da te`;
   $('#cardBio').textContent   = d.bio;
 }
+function updateCounter(){
+  $('#counter').textContent = isPremium ? 'Swipe illimitati (Premium)' : `Swipe rimasti: ${swipesLeft}`;
+}
 
-/* Swipe */
+/* --- OPEN SHEETS --- */
+$('#btnLogin').onclick    = () => $('#sheetLogin').classList.add('show');
+$('#btnRegister').onclick = () => $('#sheetRegister').classList.add('show');
+$$('.close').forEach(b => b.onclick = () => $('#' + b.dataset.close).classList.remove('show'));
+
+/* --- SUBMIT FORMS (entra subito nei match) --- */
+$('#loginSubmit').onclick = () => { $('#sheetLogin').classList.remove('show'); enterApp(); };
+$('#registerSubmit').onclick = () => { $('#sheetRegister').classList.remove('show'); enterApp(); };
+
+function enterApp(){
+  renderCard();
+  updateCounter();
+  show('#home');
+}
+
+/* --- SWIPE --- */
 function like(){
-  if(!checkLimit()) return;
-  const d = dogs[i % dogs.length];
+  if(!isPremium){ swipesLeft--; if(swipesLeft<0){ swipesLeft=0; return; } updateCounter(); }
   i++; renderCard();
-  openChat(d); // match immediato per demo
 }
 function nope(){
-  if(!checkLimit()) return;
+  if(!isPremium){ swipesLeft--; if(swipesLeft<0){ swipesLeft=0; return; } updateCounter(); }
   i++; renderCard();
 }
-$('#yesBtn').addEventListener('click', like);
-$('#noBtn').addEventListener('click',  nope);
+$('#yesBtn').onclick = like;
+$('#noBtn').onclick  = nope;
 
-/* Swipe touch */
+/* --- TOUCH SWIPE --- */
 let startX=null;
 $('#card').addEventListener('touchstart', e=>{ startX=e.changedTouches[0].clientX; });
 $('#card').addEventListener('touchend', e=>{
@@ -79,68 +61,16 @@ $('#card').addEventListener('touchend', e=>{
   startX=null;
 });
 
-/* Profilo (sheet) */
-$('#openProfile').addEventListener('click', async ()=>{
+/* --- PROFILO + VIDEO FREE --- */
+$('#openProfile').onclick = async ()=>{
   const d = dogs[i % dogs.length];
   if(!isPremium) await playAd();
-  $('#pImg').src = d.img;
-  $('#pName').textContent = d.name;
-  $('#pMeta').textContent = `${d.breed} • ${d.age} anni • ${d.dist}`;
-  $('#pBio').textContent  = d.bio;
-  $('#sheet').classList.add('show');
-});
-$('#closeSheet').addEventListener('click', ()=>$('#sheet').classList.remove('show'));
-$('#pYes').addEventListener('click', ()=>{ $('#sheet').classList.remove('show'); like(); });
-$('#pNo').addEventListener('click',  ()=>{ $('#sheet').classList.remove('show'); nope(); });
-
-/* Chat */
-function openChat(d){
-  $('#chatAvatar').src = d.img;
-  $('#chatWith').textContent = `Chat con ${d.name}`;
-  showScreen('#chat');
-  if(!isPremium) playAd();
-}
-$('#backHome').addEventListener('click', ()=>showScreen('#home'));
-$('#sendBtn').addEventListener('click', ()=>{
-  const input = $('#chatInput');
-  const txt = (input.value||'').trim();
-  if(!txt) return;
-  const b = document.createElement('div');
-  b.className='bubble me';
-  b.textContent = txt;
-  $('#thread').appendChild(b);
-  input.value='';
-  $('#thread').scrollTop = $('#thread').scrollHeight;
-});
-
-/* Video (Free) */
+  alert(`${d.name} • ${d.breed} • ${d.age} anni • ${d.dist}\n\n${d.bio}`); // MVP pulito
+};
 function playAd(){
-  return new Promise(resolve=>{
-    const ov = $('#overlay');
-    ov.classList.add('show');
+  return new Promise(res=>{
+    const ov = $('#overlay'); ov.classList.add('show');
     let c=3; $('#count').textContent=c;
-    const t=setInterval(()=>{
-      c--; $('#count').textContent=c;
-      if(c<=0){ clearInterval(t); ov.classList.remove('show'); resolve(); }
-    },1000);
+    const t=setInterval(()=>{ c--; $('#count').textContent=c; if(c<=0){ clearInterval(t); ov.classList.remove('show'); res(); } },1000);
   });
 }
-
-/* Free/Premium */
-function checkLimit(){
-  if(isPremium) return true;
-  if(swipesLeft<=0){ openPremium(); return false; }
-  swipesLeft--; updateCounter(); return true;
-}
-function updateCounter(){
-  $('#counter').textContent = isPremium ? 'Swipe illimitati (Premium)' : `Swipe rimasti: ${swipesLeft}`;
-}
-function openPremium(){ $('#premium').classList.add('show'); }
-$('#openPremium').addEventListener('click', openPremium);
-$('#closePremium').addEventListener('click', ()=>$('#premium').classList.remove('show'));
-$('#activatePremium').addEventListener('click', ()=>{
-  isPremium = true;
-  $('#planBadge').textContent = 'Premium';
-  $('#premium').classList.remove('show');
-  updateCounter();
-});
