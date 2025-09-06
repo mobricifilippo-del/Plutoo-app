@@ -5,137 +5,126 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="stile.css" />
-
-  <!-- Favicon & Social -->
+  <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="logo-32.jpg" type="image/jpeg" />
   <meta property="og:title" content="Plutoo 🐾" />
-  <meta property="og:description" content="La chat per cani: swipe, match, chat. Semplice e internazionale." />
+  <meta property="og:description" content="La chat per cani: swipe, match, chat." />
   <meta property="og:image" content="plutoo-icon-512.png" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="./" />
 </head>
 <body>
+
   <!-- SPLASH -->
   <section id="splash" class="screen active">
-    <img src="plutoo-icon-512.png" alt="Plutoo">
-    <div class="brand">Plutoo</div>
-    <div class="small">Il social a 4 zampe</div>
+    <img class="brand-logo" src="plutoo-icon-512.png" alt="Plutoo">
+    <p class="brand-name">Plutoo</p>
   </section>
 
   <!-- LOGIN -->
-  <section id="login-screen" class="screen">
-    <img src="plutoo-icon-512.png" alt="Plutoo Logo" />
-    <h1>Plutoo 🐾</h1>
-    <p class="sub">Tutti i profili reali e verificati</p>
-    <input id="dogName" placeholder="Nome del tuo cane" />
-    <button class="cta" id="goHome">Entra</button>
+  <section id="login" class="screen">
+    <img class="brand-logo small" src="plutoo-icon-512.png" alt="Plutoo">
+    <h1>Plutoo</h1>
+    <p class="muted">Il social a 4 zampe</p>
+    <input id="dogName" placeholder="Nome del tuo cane">
+    <button class="btn primary" id="enterBtn">Entra</button>
   </section>
 
-  <!-- HOME / SWIPE -->
-  <section id="home-screen" class="screen">
-    <div class="topbar">
-      <div class="logo">
-        <img src="plutoo-icon-512.png" alt="Logo" />
-        <strong>Plutoo</strong>
+  <!-- HOME -->
+  <section id="home" class="screen">
+    <header class="topbar">
+      <div class="left">
+        <img class="logo-mini" src="plutoo-icon-512.png" alt="Plutoo">
+        <span class="appname">Plutoo</span>
       </div>
-      <div>
-        <span class="badge" id="planBadge">Free</span>
-        <button class="cta" id="goPremium" style="margin-left:8px;background:#ffd54f;color:#111">Premium 👑</button>
+      <div class="right">
+        <span id="planBadge" class="badge">Free</span>
+        <button id="openPremium" class="btn pill gold">Premium 👑</button>
       </div>
-    </div>
+    </header>
 
-    <div class="deck">
-      <div class="card" id="card">
-        <img id="cardImg" src="" alt="Cane" />
-        <div class="info">
-          <div class="title">
-            <h3 id="cardTitle">—</h3>
-            <span class="crown hidden" id="crown">👑 Premium</span>
-          </div>
-          <div class="meta" id="cardMeta">—</div>
+    <main class="deck">
+      <article class="card" id="card">
+        <img id="cardImg" src="" alt="Foto cane">
+        <div class="card-info">
+          <h3 id="cardTitle">—</h3>
+          <p id="cardMeta" class="muted">—</p>
+          <p id="cardBio" class="bio">—</p>
         </div>
-      </div>
+      </article>
 
       <div class="actions">
-        <button class="btn no" id="btnNo">✖</button>
-        <button class="btn yes" id="btnYes">❤</button>
-      </div>
-      <div class="helper">
-        Swipe o usa i bottoni • <span id="swipeLeft">Swipe rimasti: 10</span>
+        <button id="noBtn"  class="btn circle danger">✖</button>
+        <button id="yesBtn" class="btn circle love">❤</button>
       </div>
 
-      <div style="text-align:center;margin-top:8px">
-        <button class="cta" id="openProfile" style="background:#222;border:1px solid #333">Apri profilo</button>
-      </div>
-    </div>
+      <p class="helper"><span id="counter">Swipe rimasti: 10</span></p>
 
-    <div class="foot">Profili completi visibili con video (Free) • Niente video con Premium</div>
+      <button id="openProfile" class="btn outline block">Apri profilo</button>
+    </main>
   </section>
 
-  <!-- PROFILO (SHEET) -->
-  <div id="profileSheet" class="sheet">
+  <!-- PROFILO (BOTTOM SHEET) -->
+  <div id="sheet" class="sheet">
     <div class="panel">
-      <header>
-        <img id="pImg" src="" alt="Foto cane">
-        <button class="close" id="closeProfile">Chiudi ✕</button>
-      </header>
-      <div class="content">
-        <h2 id="pName">— <span class="crown hidden" id="pPremium">👑</span></h2>
-        <div id="pMeta" class="meta">—</div>
+      <img id="pImg" class="hero" src="" alt="Cane">
+      <button id="closeSheet" class="close">✕</button>
+      <div class="panel-body">
+        <h2 id="pName">—</h2>
+        <p id="pMeta" class="muted">—</p>
         <p id="pBio">—</p>
-        <div class="actions" style="margin-top:8px">
-          <button class="btn no" id="pNo">✖</button>
-          <button class="btn yes" id="pYes">❤</button>
+        <div class="actions">
+          <button id="pNo"  class="btn circle danger">✖</button>
+          <button id="pYes" class="btn circle love">❤</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MATCH + CHAT -->
-  <section id="chat-screen" class="screen">
-    <div class="topbar">
-      <div class="logo">
-        <img id="chatAvatar" src="" alt="Dog" />
-        <strong id="chatWith">Chat</strong>
+  <!-- CHAT -->
+  <section id="chat" class="screen">
+    <header class="topbar">
+      <div class="left">
+        <button id="backHome" class="btn pill">⬅</button>
+        <img id="chatAvatar" class="logo-mini" src="" alt="Dog">
+        <span id="chatWith" class="appname">Chat</span>
       </div>
-      <button class="cta" id="backHome" style="background:#222;border:1px solid #333">⬅ Torna</button>
-    </div>
+    </header>
 
-    <div class="thread" id="thread">
-      <div class="msg">Ciao! 🐾 Siamo un match!</div>
+    <div id="thread" class="thread">
+      <div class="bubble">Ciao! 🐾 Siamo un match!</div>
     </div>
 
     <div class="composer">
-      <input id="chatInput" placeholder="Scrivi un messaggio…" />
-      <button class="cta" id="sendBtn">Invia</button>
+      <input id="chatInput" placeholder="Scrivi un messaggio…">
+      <button id="sendBtn" class="btn primary">Invia</button>
     </div>
   </section>
 
-  <!-- OVERLAY VIDEO (finto per Free) -->
+  <!-- OVERLAY VIDEO (solo Free) -->
   <div id="overlay" class="overlay">
-    <div class="spinner"></div>
-    <div>Video pubblicitario… <span id="count">3</span>s</div>
-    <div class="small">Premium 👑 = niente video</div>
+    <div class="loader"></div>
+    <p>Video pubblicitario… <span id="count">3</span>s</p>
+    <p class="muted">Premium 👑 = niente video</p>
   </div>
 
-  <!-- UPSell Premium -->
-  <div id="upsell" class="overlay">
-    <div class="panel" style="max-width:520px">
-      <div class="content">
-        <h2>Plutoo Premium 👑</h2>
-        <p>• Swipe illimitati<br>• Profili senza video<br>• Filtri avanzati (razza, pedigree, città)<br>• Priorità e nessuna pubblicità</p>
-        <p><strong>6,99€/mese</strong></p>
-        <div style="display:flex;gap:8px;justify-content:flex-end">
-          <button class="close" id="closeUpsell">Chiudi</button>
-          <button class="cta" id="activatePremium" style="background:#ffd54f;color:#111">Attiva Premium</button>
-        </div>
+  <!-- PREMIUM MODAL -->
+  <div id="premium" class="overlay">
+    <div class="modal">
+      <h2>Plutoo Premium 👑</h2>
+      <ul>
+        <li>Swipe illimitati</li>
+        <li>Profili senza video</li>
+        <li>Filtri avanzati (razza, pedigree, città)</li>
+        <li>Nessuna pubblicità</li>
+      </ul>
+      <p class="price"><strong>6,99€/mese</strong></p>
+      <div class="modal-actions">
+        <button id="closePremium" class="btn">Chiudi</button>
+        <button id="activatePremium" class="btn gold">Attiva</button>
       </div>
     </div>
   </div>
 
-  <!-- Script -->
   <script src="app.js"></script>
 </body>
 </html>
