@@ -1,100 +1,128 @@
-// Lista dei cani (profili demo)
+/* --------- DATI DEMO --------- */
 const dogs = [
-  {
-    name: "Luna",
-    age: 1,
-    breed: "Jack Russell",
-    dist: "2 km",
-    img: "dog1.jpg",
-    bio: "Vivace e curiosa, ama giocare tutto il giorno!",
-    premium: true
-  },
-  {
-    name: "Rocky",
-    age: 4,
-    breed: "Meticcio",
-    dist: "5 km",
-    img: "dog2.jpg",
-    bio: "Un cane simpatico e fedele, sempre pronto a farsi coccolare.",
-    premium: false
-  },
-  {
-    name: "Maya",
-    age: 3,
-    breed: "Shiba Inu",
-    dist: "1 km",
-    img: "dog3.jpg",
-    bio: "Orgogliosa e intelligente, ama passeggiare al parco.",
-    premium: true
-  },
-  {
-    name: "Sofia",
-    age: 5,
-    breed: "Levriero Afgano",
-    dist: "3 km",
-    img: "dog4.jpg",
-    bio: "Elegante e dolce, perfetta per famiglie tranquille.",
-    premium: false
-  }
+  {name:"Luna",  age:1, breed:"Jack Russell",     dist:"2 km", img:"dog1.jpg", bio:"Vivace e curiosa, ama giocare tutto il giorno!", premium:true},
+  {name:"Rocky", age:4, breed:"Meticcio",         dist:"5 km", img:"dog2.jpg", bio:"Simpatico e fedele, sempre pronto alle coccole.", premium:false},
+  {name:"Maya",  age:3, breed:"Shiba Inu",        dist:"1 km", img:"dog3.jpg", bio:"Orgogliosa e intelligente, passeggiate ogni giorno.", premium:true},
+  {name:"Sofia", age:5, breed:"Levriero Afgano",  dist:"3 km", img:"dog4.jpg", bio:"Elegante e dolce, tranquilla con tutti.", premium:false}
 ];
 
-let currentIndex = 0;
-let swipesLeft = 10;
+/* --------- STATO --------- */
+let i = 0;
 let isPremium = false;
+let swipesLeft = 10;
 
-// Navigazione tra schermate
-function goToScreen(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+/* --------- UTILS --------- */
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const showScreen = id => { $$('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
 
-  if (id === "home-screen") renderCard();
-}
-
-// Mostra profilo cane nella card
 function renderCard() {
-  if (currentIndex >= dogs.length) {
-    document.getElementById("card").innerHTML = "<p>Nessun altro cane nei dintorni 🐾</p>";
-    return;
-  }
-
-  const d = dogs[currentIndex];
-  document.getElementById("card").innerHTML = `
-    <img src="${d.img}" alt="${d.name}">
-    <h3>${d.name}, ${d.age} anni, ${d.breed}</h3>
-    <p>${d.dist} da te</p>
-    <p>${d.bio}</p>
-  `;
+  const d = dogs[i % dogs.length];
+  $('#cardImg').src = d.img;
+  $('#cardTitle').textContent = `${d.name}, ${d.age} anni, ${d.breed}`;
+  $('#cardMeta').textContent  = `${d.dist} da te`;
+  $('#cardBio').textContent   = d.bio;
 }
 
-// Swipe
-function swipe(choice) {
-  if (!isPremium) {
-    swipesLeft--;
-    if (swipesLeft <= 0) {
-      showPremiumPopup();
-      return;
-    }
-  }
+/* --------- NAVIGAZIONE --------- */
+// splash -> login
+setTimeout(()=>showScreen('#login'), 800);
 
-  if (choice === "yes") {
-    goToScreen("chat-screen");
-    document.getElementById("messages").innerHTML =
-      `<p><strong>${dogs[currentIndex].name}:</strong> Bau! 🐾</p>`;
-  } else {
-    currentIndex++;
-    renderCard();
-  }
+// login -> home
+$('#enterBtn').addEventListener('click', () => {
+  renderCard();
+  updateCounter();
+  showScreen('#home');
+});
+
+/* --------- SWIPE --------- */
+function like(){
+  if(!checkLimit()) return;
+  const d = dogs[i % dogs.length];
+  i++; renderCard();
+  // match immediato per demo
+  openChat(d);
+}
+function nope(){
+  if(!checkLimit()) return;
+  i++; renderCard();
+}
+$('#yesBtn').addEventListener('click', like);
+$('#noBtn').addEventListener('click',  nope);
+
+// swipe touch
+let startX=null;
+$('#card').addEventListener('touchstart', e=>{ startX=e.changedTouches[0].clientX; });
+$('#card').addEventListener('touchend', e=>{
+  if(startX==null) return;
+  const dx = e.changedTouches[0].clientX - startX;
+  if(dx>60) like();
+  if(dx<-60) nope();
+  startX=null;
+});
+
+/* --------- PROFILO --------- */
+$('#openProfile').addEventListener('click', async ()=>{
+  const d = dogs[i % dogs.length];
+  if(!isPremium) await playAd();
+  $('#pImg').src = d.img;
+  $('#pName').textContent = d.name;
+  $('#pMeta').textContent = `${d.breed} • ${d.age} anni • ${d.dist}`;
+  $('#pBio').textContent  = d.bio;
+  $('#sheet').classList.add('show');
+});
+$('#closeSheet').addEventListener('click', ()=>$('#sheet').classList.remove('show'));
+$('#pYes').addEventListener('click', ()=>{ $('#sheet').classList.remove('show'); like(); });
+$('#pNo').addEventListener('click',  ()=>{ $('#sheet').classList.remove('show'); nope(); });
+
+/* --------- CHAT --------- */
+function openChat(d){
+  $('#chatAvatar').src = d.img;
+  $('#chatWith').textContent = `Chat con ${d.name}`;
+  showScreen('#chat');
+  if(!isPremium) playAd();
+}
+$('#backHome').addEventListener('click', ()=>showScreen('#home'));
+$('#sendBtn').addEventListener('click', ()=>{
+  const input = $('#chatInput');
+  const txt = (input.value||'').trim();
+  if(!txt) return;
+  const b = document.createElement('div');
+  b.className='bubble me';
+  b.textContent = txt;
+  $('#thread').appendChild(b);
+  input.value='';
+  $('#thread').scrollTop = $('#thread').scrollHeight;
+});
+
+/* --------- VIDEO (FREE) --------- */
+function playAd(){
+  return new Promise(resolve=>{
+    const ov = $('#overlay');
+    ov.classList.add('show');
+    let c=3; $('#count').textContent=c;
+    const t=setInterval(()=>{
+      c--; $('#count').textContent=c;
+      if(c<=0){ clearInterval(t); ov.classList.remove('show'); resolve(); }
+    },1000);
+  });
 }
 
-// Chat
-function sendMessage() {
-  const input = document.getElementById("chatInput");
-  if (input.value.trim() === "") return;
-  document.getElementById("messages").innerHTML += `<p><strong>Tu:</strong> ${input.value}</p>`;
-  input.value = "";
+/* --------- LIMITI FREE / PREMIUM --------- */
+function checkLimit(){
+  if(isPremium) return true;
+  if(swipesLeft<=0){ openPremium(); return false; }
+  swipesLeft--; updateCounter(); return true;
 }
-
-// Premium popup
-function showPremiumPopup() {
-  alert("Hai finito gli swipe gratuiti! Passa a Premium 👑");
+function updateCounter(){
+  $('#counter').textContent = isPremium ? 'Swipe illimitati (Premium)' : `Swipe rimasti: ${swipesLeft}`;
 }
+function openPremium(){ $('#premium').classList.add('show'); }
+$('#openPremium').addEventListener('click', openPremium);
+$('#closePremium').addEventListener('click', ()=>$('#premium').classList.remove('show'));
+$('#activatePremium').addEventListener('click', ()=>{
+  isPremium = true;
+  $('#planBadge').textContent = 'Premium';
+  $('#premium').classList.remove('show');
+  updateCounter();
+});
