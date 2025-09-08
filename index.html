@@ -5,26 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plutoo 🐾</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="plutoo-icon-512.png" type="image/png">
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <header>
+  <header class="topbar">
+    <h1 class="logo">Plutoo</h1>
     <nav>
-      <div class="logo">Plutoo</div>
-      <div class="auth-links">
-        <a href="#">Accedi</a>
-        <a href="#">Registrati</a>
-      </div>
+      <a href="#">Accedi</a> · <a href="#">Registrati</a>
     </nav>
   </header>
 
   <!-- HOME -->
   <section id="home" class="page active">
-    <div class="home-container">
-      <img src="plutoo-icon-512.png" alt="Logo Plutoo" class="logo-img">
-      <h1>Plutoo</h1>
-      <button id="enterBtn" class="btn">Entra</button>
-      <p>Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
+    <div class="logo-box">
+      <img src="plutoo-icon-512.png" alt="Plutoo Logo" class="logo-big">
+      <h2>Plutoo</h2>
     </div>
+    <button id="enterBtn" class="btn">Entra</button>
+    <p class="info">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
   </section>
 
   <!-- APP -->
@@ -35,23 +34,8 @@
       <button id="matchBtn" class="tab">Match</button>
     </div>
 
-    <!-- Sezione cani vicini -->
-    <div id="nearby" class="tab-content active">
-      <div id="dogsContainer" class="dogs-container"></div>
-    </div>
-
-    <!-- Sezione swipe (per ora uguale a vicino) -->
-    <div id="swipe" class="tab-content hidden">
-      <div id="swipeContainer" class="dogs-container"></div>
-    </div>
-
-    <!-- Sezione match -->
-    <div id="matches" class="tab-content hidden">
-      <p>I tuoi match ❤️</p>
-      <div id="matchesContainer" class="dogs-container"></div>
-    </div>
+    <!-- Container dinamico -->
+    <div id="contentArea"></div>
   </section>
-
-  <script src="app.js"></script>
 </body>
 </html>
