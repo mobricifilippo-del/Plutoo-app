@@ -1,3 +1,4 @@
+// Cane demo
 const dogs = [
   { name: "Luna", age: 1, breed: "Jack Russell", distance: "2.2 km", img: "dog1.jpg" },
   { name: "Sofia", age: 5, breed: "Levriero Afgano", distance: "1.6 km", img: "dog2.jpg" },
@@ -7,107 +8,109 @@ const dogs = [
 
 let matches = [];
 
-// Navigazione schermate
-function showScreen(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+// elementi
+const homePage = document.getElementById("home");
+const appPage = document.getElementById("app");
+const enterBtn = document.getElementById("enterBtn");
+
+const nearbyBtn = document.getElementById("nearbyBtn");
+const swipeBtn = document.getElementById("swipeBtn");
+const matchBtn = document.getElementById("matchBtn");
+
+const nearby = document.getElementById("nearby");
+const swipe = document.getElementById("swipe");
+const matchesSection = document.getElementById("matches");
+
+const dogsContainer = document.getElementById("dogsContainer");
+const swipeContainer = document.getElementById("swipeContainer");
+const matchesContainer = document.getElementById("matchesContainer");
+
+// entra nell'app
+enterBtn.addEventListener("click", () => {
+  homePage.classList.add("hidden");
+  appPage.classList.remove("hidden");
+  renderDogs();
+  renderSwipe();
+});
+
+// tabs
+function switchTab(tab) {
+  [nearbyBtn, swipeBtn, matchBtn].forEach(b => b.classList.remove("active"));
+  [nearby, swipe, matchesSection].forEach(s => s.classList.add("hidden"));
+
+  if (tab === "nearby") {
+    nearbyBtn.classList.add("active");
+    nearby.classList.remove("hidden");
+  } else if (tab === "swipe") {
+    swipeBtn.classList.add("active");
+    swipe.classList.remove("hidden");
+  } else {
+    matchBtn.classList.add("active");
+    matchesSection.classList.remove("hidden");
+    renderMatches();
+  }
 }
 
-// HOME -> NEARBY
-document.getElementById("enterBtn").addEventListener("click", () => {
-  showScreen("nearby");
-  renderDogList();
-});
+nearbyBtn.addEventListener("click", () => switchTab("nearby"));
+swipeBtn.addEventListener("click", () => switchTab("swipe"));
+matchBtn.addEventListener("click", () => switchTab("matches"));
 
-// Tabs
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    showScreen(btn.dataset.tab);
-    if (btn.dataset.tab === "nearby") renderDogList();
-    if (btn.dataset.tab === "swipe") renderSwipe();
-    if (btn.dataset.tab === "match") renderMatch();
-  });
-});
-
-// Lista cani
-function renderDogList() {
-  const container = document.getElementById("dogList");
-  container.innerHTML = "";
+// render
+function renderDogs() {
+  dogsContainer.innerHTML = "";
   dogs.forEach(dog => {
     const card = document.createElement("div");
-    card.className = "dog-card";
+    card.classList.add("dog-card");
     card.innerHTML = `
       <img src="${dog.img}" alt="${dog.name}">
-      <div class="info">
-        <h3>${dog.name}, ${dog.age}</h3>
-        <p>${dog.breed}</p>
-        <p class="distance">${dog.distance}</p>
-      </div>
-      <div class="actions">
+      <div class="dog-info"><b>${dog.name}, ${dog.age}</b><br>${dog.breed}<br><span style="color:#6b3cff">${dog.distance}</span></div>
+      <div class="dog-actions">
         <button class="dislike">✖</button>
         <button class="like">❤</button>
       </div>
     `;
-    card.querySelector(".like").addEventListener("click", () => {
-      if (!matches.includes(dog)) {
-        matches.push(dog);
-      }
-      alert(`Hai messo ❤ a ${dog.name}`);
-    });
-    container.appendChild(card);
+    card.querySelector(".like").addEventListener("click", () => addMatch(dog));
+    dogsContainer.appendChild(card);
   });
 }
 
-// Swipe singolo
 function renderSwipe() {
-  const container = document.getElementById("swipeContainer");
-  container.innerHTML = "";
+  swipeContainer.innerHTML = "";
   dogs.forEach(dog => {
     const card = document.createElement("div");
-    card.className = "swipe-card";
+    card.classList.add("dog-card");
     card.innerHTML = `
       <img src="${dog.img}" alt="${dog.name}">
-      <div class="info">
-        <h3>${dog.name}, ${dog.age}</h3>
-        <p>${dog.breed}</p>
-        <p class="distance">${dog.distance}</p>
-      </div>
-      <div class="actions">
+      <div class="dog-info"><b>${dog.name}, ${dog.age}</b><br>${dog.breed}<br><span style="color:#6b3cff">${dog.distance}</span></div>
+      <div class="dog-actions">
         <button class="dislike">✖</button>
         <button class="like">❤</button>
       </div>
     `;
-    card.querySelector(".like").addEventListener("click", () => {
-      if (!matches.includes(dog)) {
-        matches.push(dog);
-      }
-      alert(`Hai messo ❤ a ${dog.name}`);
-    });
-    container.appendChild(card);
+    card.querySelector(".like").addEventListener("click", () => addMatch(dog));
+    swipeContainer.appendChild(card);
   });
 }
 
-// Match
-function renderMatch() {
-  const container = document.getElementById("matchList");
-  container.innerHTML = "";
+function addMatch(dog) {
+  if (!matches.includes(dog)) {
+    matches.push(dog);
+  }
+}
+
+function renderMatches() {
+  matchesContainer.innerHTML = "";
   if (matches.length === 0) {
-    container.innerHTML = "<p>Nessun match ancora. Metti qualche ❤!</p>";
+    matchesContainer.innerHTML = "<p>Ancora nessun match ❤️</p>";
   } else {
     matches.forEach(dog => {
       const card = document.createElement("div");
-      card.className = "dog-card";
+      card.classList.add("dog-card");
       card.innerHTML = `
         <img src="${dog.img}" alt="${dog.name}">
-        <div class="info">
-          <h3>${dog.name}, ${dog.age}</h3>
-          <p>${dog.breed}</p>
-          <p class="distance">${dog.distance}</p>
-        </div>
+        <div class="dog-info"><b>${dog.name}, ${dog.age}</b><br>${dog.breed}</div>
       `;
-      container.appendChild(card);
+      matchesContainer.appendChild(card);
     });
   }
 }
