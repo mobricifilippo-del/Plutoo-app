@@ -5,50 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plutoo 🐾</title>
   <link rel="stylesheet" href="style.css">
-  <script defer src="app.js"></script>
 </head>
 <body>
-  <!-- Barra in alto -->
-  <header class="topbar">
-    <div></div>
+  <header>
     <nav>
-      <a href="#">Accedi</a>
-      <span>·</span>
-      <a href="#">Registrati</a>
+      <div class="logo">Plutoo</div>
+      <div class="auth-links">
+        <a href="#">Accedi</a>
+        <a href="#">Registrati</a>
+      </div>
     </nav>
   </header>
 
   <!-- HOME -->
-  <div id="home" class="screen active">
-    <div class="logo-box">
-      <img src="plutoo-icon-512.png" alt="Plutoo logo" class="logo-big">
-      <h1 class="app-title">Plutoo</h1>
+  <section id="home" class="page active">
+    <div class="home-container">
+      <img src="plutoo-icon-512.png" alt="Logo Plutoo" class="logo-img">
+      <h1>Plutoo</h1>
+      <button id="enterBtn" class="btn">Entra</button>
+      <p>Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
     </div>
-    <button id="enterBtn" class="primary-btn">Entra</button>
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.
-    </p>
-  </div>
+  </section>
 
-  <!-- CANI VICINI -->
-  <div id="nearby" class="screen">
+  <!-- APP -->
+  <section id="app" class="page hidden">
     <div class="tabs">
-      <button class="tab-btn active" data-tab="nearby">Vicino a te</button>
-      <button class="tab-btn" data-tab="swipe">Scorri</button>
-      <button class="tab-btn" data-tab="match">Match</button>
+      <button id="nearbyBtn" class="tab active">Vicino a te</button>
+      <button id="swipeBtn" class="tab">Scorri</button>
+      <button id="matchBtn" class="tab">Match</button>
     </div>
-    <div id="dogList" class="dog-grid"></div>
-  </div>
 
-  <!-- SWIPE -->
-  <div id="swipe" class="screen">
-    <div id="swipeContainer" class="swipe-container"></div>
-  </div>
+    <!-- Sezione cani vicini -->
+    <div id="nearby" class="tab-content active">
+      <div id="dogsContainer" class="dogs-container"></div>
+    </div>
 
-  <!-- MATCH -->
-  <div id="match" class="screen">
-    <h2>I tuoi match ❤️</h2>
-    <div id="matchList" class="dog-grid"></div>
-  </div>
+    <!-- Sezione swipe (per ora uguale a vicino) -->
+    <div id="swipe" class="tab-content hidden">
+      <div id="swipeContainer" class="dogs-container"></div>
+    </div>
+
+    <!-- Sezione match -->
+    <div id="matches" class="tab-content hidden">
+      <p>I tuoi match ❤️</p>
+      <div id="matchesContainer" class="dogs-container"></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
 </body>
 </html>
