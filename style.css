@@ -1,245 +1,150 @@
-/* ===========================
-   Plutoo — STYLE.CSS (mobile-first)
-   =========================== */
-
-/* ---------- CSS reset piccolo ---------- */
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-img { display: block; max-width: 100%; height: auto; }
-button { font: inherit; }
-
-/* ---------- Variabili colori ---------- */
 :root{
-  --bg-1: #fde7f3;   /* rosa chiarissimo */
-  --bg-2: #fff1c9;   /* giallo crema */
-  --purple: #6d42d8;
-  --purple-2:#7e4cf0;
+  --bg1:#FFE7B8;
+  --bg2:#F9C0B8;
+  --bg3:#E6D5FF;
+  --card:#111214;
   --text:#1b1b1f;
-  --muted:#6b6b76;
-  --card:#ffffffcc;
-  --card-dark:#0f0f12;
-  --ok:#16a34a;
-  --no:#ef4444;
-  --shadow: 0 20px 40px rgba(0,0,0,.18);
-  --ring: 0 0 0 6px rgba(109,66,216,.15);
+  --muted:#6a6a74;
+  --brand:#6E45E2;
+  --brand2:#B44593;
+  --ok:#19b56b;
+  --no:#f55454;
+  --white:#fff;
 }
 
-/* ---------- Sfondo ---------- */
+/* RESET */
+*{box-sizing:border-box}
+html,body{height:100%}
 body{
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: var(--text);
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  color:var(--text);
   background:
-    radial-gradient(1200px 600px at 10% 0%, var(--bg-1) 0%, transparent 60%),
-    radial-gradient(1200px 700px at 90% 80%, var(--bg-2) 0%, transparent 60%),
-    linear-gradient(180deg, #fff 0%, #fff 100%);
-  min-height: 100svh;
+    radial-gradient(1200px 600px at 10% -10%, var(--bg3) 0, transparent 50%),
+    radial-gradient(1000px 600px at 100% 0%, var(--bg2) 0, transparent 50%),
+    linear-gradient(180deg,var(--bg1),#fdf2d5 35%, #f9c7c1 65%, #e9dcff 100%);
 }
 
-/* ---------- Top right: Accedi / Registrati ---------- */
-.topbar{
-  max-width: 920px;
-  margin: 0 auto;
-  padding: 14px 16px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 18px;
-  font-weight: 700;
-}
-.topbar a{
-  color: #5c3bd6;
-  text-decoration: none;
-}
-.topbar a:hover{ text-decoration: underline; }
+/* UTILS */
+.hidden{display:none}
+.active{display:block}
 
-/* ---------- Hero con logo grande ---------- */
-.hero{
-  max-width: 920px;
-  margin: 16px auto 24px;
-  padding: 0 16px;
-  text-align: center;
+/* HEADER */
+header{
+  position:sticky; top:0; z-index:10;
+  backdrop-filter:saturate(120%) blur(6px);
+  background:rgba(255,255,255,.35);
 }
-.logo-card{
-  margin: 8px auto 22px;
-  background: var(--card-dark);
-  color: #fff;
-  width: min(520px, 92vw);
-  border-radius: 28px;
-  box-shadow: var(--shadow);
-  padding: 28px 22px 32px;
+nav{
+  max-width:960px; margin:0 auto; padding:12px 16px;
+  text-align:right; font-weight:600;
 }
-.logo-badge{
-  width: 168px;
-  aspect-ratio: 1/1;
-  margin: 0 auto 12px;
-  background: #000;
-  border-radius: 18px;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 10px 24px rgba(0,0,0,.35);
-}
-.logo-badge img{
-  width: 78%;
-  height: auto;
-  border-radius: 14px;
-}
-.brand{
-  font-size: clamp(40px, 8vw, 64px);
-  line-height: 1.05;
-  margin: 8px 0 0;
-  font-weight: 800;
-  letter-spacing: .2px;
+nav a{color:#5b44cc; text-decoration:none}
+nav a:hover{text-decoration:underline}
+
+/* LAYOUT SECTIONS */
+section{max-width:960px; margin:0 auto; padding:24px 16px}
+
+/* ===== HOME ===== */
+#home{
+  min-height:calc(100dvh - 56px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:24px;
 }
 
-/* ---------- CTA ENTRA ---------- */
-.cta-wrap{ margin-top: 14px; }
+/* box nero del logo, senza testo duplicato */
+.logo-box{
+  width:min(520px, 88vw);
+  aspect-ratio: 1.6 / 1;          /* rettangolo morbido */
+  background:var(--card);
+  border-radius:28px;
+  box-shadow:0 25px 60px rgba(0,0,0,.25);
+  display:flex; align-items:center; justify-content:center;
+  padding:18px;
+}
+
+/* immagine del logo dentro al box */
+.logo-img{
+  width:38%;
+  max-width:220px;
+  height:auto;
+  display:block;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,.35));
+}
+
+/* bottone Entra */
 .btn{
-  appearance: none;
-  border: 0;
-  cursor: pointer;
-  padding: 14px 26px;
-  border-radius: 18px;
-  font-weight: 800;
-  transition: transform .06s ease, filter .2s ease;
+  padding:14px 28px;
+  border:none; border-radius:16px;
+  font-size:1.05rem; font-weight:700; color:var(--white);
+  background:linear-gradient(90deg,var(--brand),var(--brand2));
+  box-shadow:0 12px 24px rgba(110,69,226,.35);
 }
-.btn:active{ transform: translateY(1px); }
-.btn-primary{
-  color: #fff;
-  background: linear-gradient(135deg, var(--purple), #ff4fb7 70%);
-  box-shadow: 0 12px 26px rgba(109,66,216,.28);
-}
-.btn-primary:hover{ filter: brightness(1.03); }
+.btn:active{transform:translateY(1px)}
 
-/* ---------- Nota geolocalizzazione ---------- */
-.notice{
-  max-width: 920px;
-  margin: 20px auto 10px;
-  padding: 0 16px;
-  color: var(--muted);
-  text-align: center;
+/* testo di aiuto */
+.hint{
+  max-width:560px; text-align:center; line-height:1.45;
+  color:var(--muted); margin:0 12px;
 }
 
-/* ---------- Tabs (Vicino / Scorri / Match) ---------- */
-.tabs{
-  max-width: 980px;
-  margin: 10px auto 12px;
-  padding: 0 16px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
+/* ===== TABS / LISTE ===== */
+.tabs{display:flex; gap:10px; margin:8px 0 18px}
 .tab{
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: #ffffffb8;
-  backdrop-filter: blur(6px);
-  border: 1px solid #ffffff80;
-  color: var(--text);
-  font-weight: 700;
-  cursor: pointer;
+  padding:10px 14px; border-radius:20px; border:none; font-weight:700;
+  background:#f1ebff; color:#4b3fd6;
 }
-.tab.active{
-  color: #fff;
-  background: linear-gradient(135deg, var(--purple), var(--purple-2));
-  box-shadow: var(--ring);
+.tab.active{background:#6f62ff; color:#fff}
+
+.tab-content.hidden{display:none}
+
+/* griglia cani */
+.dog-list{
+  display:grid;
+  grid-template-columns: repeat( auto-fill, minmax(260px,1fr) );
+  gap:18px;
 }
 
-/* ---------- Sezioni (mostrate/nascoste via JS) ---------- */
-.view{ display: none; }
-.view.active{ display: block; }
-
-/* ---------- Lista cani (grid) ---------- */
-.list{
-  max-width: 980px;
-  margin: 8px auto 60px;
-  padding: 0 14px 6px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-@media (min-width: 860px){
-  .list{ grid-template-columns: repeat(3, 1fr); }
-}
-
-/* Card del cane */
+/* card cane */
 .card{
-  background: #fff;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 10px 26px rgba(0,0,0,.12);
-  border: 1px solid #ffffff;
-  display: flex;
-  flex-direction: column;
+  background:#fff; border-radius:20px; overflow:hidden;
+  box-shadow:0 12px 28px rgba(0,0,0,.12);
+  display:flex; flex-direction:column;
 }
-.card .pic{
-  width: 100%;
-  aspect-ratio: 4/3;
-  object-fit: cover;
+.card img{
+  width:100%; height:200px; object-fit:cover;
+  display:block;
 }
-.card .meta{
-  padding: 12px 14px 10px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: start;
-  gap: 8px;
-}
-.card .name{
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-}
-.card .breed{ margin: 0; color: var(--muted); font-weight: 600; }
-.card .km{
-  font-weight: 900;
-  color: var(--purple);
-  align-self: center;
-}
-.card .actions{
-  display: flex;
-  gap: 14px;
-  padding: 12px 14px 16px;
-}
-.icon-btn{
-  flex: 1;
-  padding: 14px 0;
-  border-radius: 999px;
-  color: #fff;
-  font-weight: 900;
-  border: 0;
-  cursor: pointer;
-}
-.icon-btn.no{ background: var(--no); }
-.icon-btn.yes{ background: var(--ok); }
+.card .info{padding:12px 14px 10px}
+.card .row{display:flex; align-items:center; justify-content:space-between}
+.card .name{font-weight:800; font-size:1.05rem}
+.card .meta{color:var(--muted); font-weight:600}
 
-/* ---------- Swipe (card singola) ---------- */
-.swipe-wrap{
-  max-width: 540px;
-  margin: 8px auto 70px;
-  padding: 0 14px;
+/* azioni */
+.actions{display:flex; gap:12px; padding:12px 14px 16px}
+.actions button{
+  flex:1; padding:12px 0; font-weight:800; border:none; border-radius:26px; color:#fff
+}
+.actions .no{background:var(--no)}
+.actions .yes{background:var(--ok)}
+
+/* swipe container (per la vista “Scorri”) */
+.swipe-container{
+  max-width:520px; margin:0 auto; position:relative; min-height:420px;
 }
 .swipe-card{
-  background: #fff;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 10px 26px rgba(0,0,0,.14);
-  border: 1px solid #ffffff;
+  position:absolute; inset:0;
+  background:#fff; border-radius:22px; overflow:hidden;
+  box-shadow:0 14px 30px rgba(0,0,0,.18);
+  display:flex; flex-direction:column;
+  animation:pop .18s ease-out;
 }
-.swipe-card .pic{ width:100%; aspect-ratio: 4/5; object-fit: cover; }
-.swipe-card .meta{ padding: 12px 14px 6px; }
-.swipe-actions{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  padding: 12px 14px 16px;
-}
+.swipe-card img{width:100%; height:300px; object-fit:cover}
+.swipe-card .info{padding:14px 16px 8px}
+@keyframes pop{from{transform:scale(.98); opacity:.6} to{transform:scale(1); opacity:1}}
 
-/* ---------- Messaggi vuoti / raggi di luce ---------- */
-.empty{
-  text-align:center;
-  color: var(--muted);
-  font-weight: 700;
-  margin: 18px 0 60px;
+/* piccoli miglioramenti mobile */
+@media (max-width:420px){
+  .logo-box{border-radius:24px}
+  .logo-img{width:46%}
 }
-
-/* ---------- Utility nascondi ---------- */
-.hidden{ display:none !important; }
