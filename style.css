@@ -1,94 +1,245 @@
-/* RESET */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ===========================
+   Plutoo — STYLE.CSS (mobile-first)
+   =========================== */
+
+/* ---------- CSS reset piccolo ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+img { display: block; max-width: 100%; height: auto; }
+button { font: inherit; }
+
+/* ---------- Variabili colori ---------- */
 :root{
-  --violet:#6c5ce7; --pink:#e84393; --green:#00b894; --red:#d63031;
-  --fg:#2d3436; --muted:#636e72; --card:#ffffff; --shadow:0 10px 30px rgba(0,0,0,.10);
+  --bg-1: #fde7f3;   /* rosa chiarissimo */
+  --bg-2: #fff1c9;   /* giallo crema */
+  --purple: #6d42d8;
+  --purple-2:#7e4cf0;
+  --text:#1b1b1f;
+  --muted:#6b6b76;
+  --card:#ffffffcc;
+  --card-dark:#0f0f12;
+  --ok:#16a34a;
+  --no:#ef4444;
+  --shadow: 0 20px 40px rgba(0,0,0,.18);
+  --ring: 0 0 0 6px rgba(109,66,216,.15);
 }
-html,body{ height:100%; font-family: 'Inter', system-ui, -apple-system, Arial, sans-serif; color:var(--fg); }
+
+/* ---------- Sfondo ---------- */
 body{
-  background: linear-gradient(180deg,#ffe8ac 0%, #ffccb8 45%, #e9d5ff 100%);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 600px at 10% 0%, var(--bg-1) 0%, transparent 60%),
+    radial-gradient(1200px 700px at 90% 80%, var(--bg-2) 0%, transparent 60%),
+    linear-gradient(180deg, #fff 0%, #fff 100%);
+  min-height: 100svh;
 }
 
-/* PAGINE */
-.page{ min-height:100dvh; }
-.hidden{ display:none !important; }
-.active{ display:block; }
+/* ---------- Top right: Accedi / Registrati ---------- */
+.topbar{
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  font-weight: 700;
+}
+.topbar a{
+  color: #5c3bd6;
+  text-decoration: none;
+}
+.topbar a:hover{ text-decoration: underline; }
 
-/* TOPBAR HOME */
-.topbar{ padding:14px 18px; display:flex; justify-content:flex-end; }
-.auth{ display:flex; gap:8px; align-items:center; }
-.auth-link{ color:#4c3aff; text-decoration:none; font-weight:700; }
-
-/* HERO HOME */
-.hero{ padding:28px 18px 40px; display:grid; place-items:center; gap:22px; }
+/* ---------- Hero con logo grande ---------- */
+.hero{
+  max-width: 920px;
+  margin: 16px auto 24px;
+  padding: 0 16px;
+  text-align: center;
+}
 .logo-card{
-  width:320px; max-width:86vw; padding:28px 18px; border-radius:26px;
-  background:#111; color:#fff; box-shadow: var(--shadow);
-  display:grid; place-items:center; gap:14px;
+  margin: 8px auto 22px;
+  background: var(--card-dark);
+  color: #fff;
+  width: min(520px, 92vw);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  padding: 28px 22px 32px;
 }
-.logo-card img{ width:92px; height:92px; }
-.logo-card h1{ font-weight:900; font-size:42px; letter-spacing:.5px; }
-
-.btn-cta{
-  background: linear-gradient(90deg,var(--violet),var(--pink));
-  color:#fff; border:none; border-radius:18px; padding:14px 22px; font-size:18px;
-  box-shadow: var(--shadow); min-width:160px; font-weight:800;
+.logo-badge{
+  width: 168px;
+  aspect-ratio: 1/1;
+  margin: 0 auto 12px;
+  background: #000;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
 }
-.hint{ text-align:center; color:var(--muted); padding:0 18px; }
-
-/* APP BAR */
-.appbar{
-  display:flex; justify-content:space-between; align-items:center;
-  padding:10px 14px;
+.logo-badge img{
+  width: 78%;
+  height: auto;
+  border-radius: 14px;
 }
-.brand-mini{ display:flex; align-items:center; gap:8px; font-weight:900; }
-.brand-mini img{ width:32px; height:32px; }
-
-/* GEO BANNER */
-.geo-banner{
-  margin:12px; padding:12px; border-radius:16px; background:rgba(255,255,255,.6);
-  display:flex; justify-content:space-between; align-items:center; gap:10px; box-shadow: var(--shadow);
+.brand{
+  font-size: clamp(40px, 8vw, 64px);
+  line-height: 1.05;
+  margin: 8px 0 0;
+  font-weight: 800;
+  letter-spacing: .2px;
 }
-.geo-actions{ display:flex; gap:8px; }
-.pill{ padding:8px 14px; border-radius:20px; border:none; background:#eee; font-weight:700; }
-.pill.primary{ background: linear-gradient(90deg,var(--violet),var(--pink)); color:#fff; }
 
-/* TABS */
-.tabs{ display:flex; justify-content:center; gap:10px; margin:10px 0 2px; }
-.tab{ border:none; background:#eef1f3; color:#333; font-weight:800; padding:10px 16px; border-radius:18px; }
-.tab.active{ color:#fff; background: linear-gradient(90deg,var(--violet),var(--pink)); }
-
-/* GRID CANI (Vicino a te + Match) */
-.grid{
-  padding:14px; display:grid; grid-template-columns: 1fr 1fr; gap:14px;
+/* ---------- CTA ENTRA ---------- */
+.cta-wrap{ margin-top: 14px; }
+.btn{
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 14px 26px;
+  border-radius: 18px;
+  font-weight: 800;
+  transition: transform .06s ease, filter .2s ease;
 }
+.btn:active{ transform: translateY(1px); }
+.btn-primary{
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple), #ff4fb7 70%);
+  box-shadow: 0 12px 26px rgba(109,66,216,.28);
+}
+.btn-primary:hover{ filter: brightness(1.03); }
+
+/* ---------- Nota geolocalizzazione ---------- */
+.notice{
+  max-width: 920px;
+  margin: 20px auto 10px;
+  padding: 0 16px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------- Tabs (Vicino / Scorri / Match) ---------- */
+.tabs{
+  max-width: 980px;
+  margin: 10px auto 12px;
+  padding: 0 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.tab{
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #ffffffb8;
+  backdrop-filter: blur(6px);
+  border: 1px solid #ffffff80;
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.tab.active{
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple), var(--purple-2));
+  box-shadow: var(--ring);
+}
+
+/* ---------- Sezioni (mostrate/nascoste via JS) ---------- */
+.view{ display: none; }
+.view.active{ display: block; }
+
+/* ---------- Lista cani (grid) ---------- */
+.list{
+  max-width: 980px;
+  margin: 8px auto 60px;
+  padding: 0 14px 6px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+@media (min-width: 860px){
+  .list{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Card del cane */
 .card{
-  background:var(--card); border-radius:18px; overflow:hidden; box-shadow: var(--shadow);
+  background: #fff;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(0,0,0,.12);
+  border: 1px solid #ffffff;
+  display: flex;
+  flex-direction: column;
 }
-.card img{ width:100%; height:190px; object-fit:cover; display:block; }
-.card .meta{ padding:12px; }
-.card h3{ font-size:20px; margin-bottom:4px; }
-.card p{ color:var(--muted); }
-.card .row{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
-.badge-online{ width:10px; height:10px; background:#2ecc71; border-radius:50%; }
-
-/* BOTTONI LIKE/NO */
-.actions{ display:flex; gap:14px; justify-content:center; padding:12px 10px 16px; }
-.btn-round{
-  width:54px; height:54px; border-radius:50%; border:none; color:#fff; font-size:22px; font-weight:900;
-  display:grid; place-items:center; box-shadow: var(--shadow);
+.card .pic{
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
 }
-.btn-no{ background:var(--red); }
-.btn-yes{ background:var(--green); }
+.card .meta{
+  padding: 12px 14px 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 8px;
+}
+.card .name{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+.card .breed{ margin: 0; color: var(--muted); font-weight: 600; }
+.card .km{
+  font-weight: 900;
+  color: var(--purple);
+  align-self: center;
+}
+.card .actions{
+  display: flex;
+  gap: 14px;
+  padding: 12px 14px 16px;
+}
+.icon-btn{
+  flex: 1;
+  padding: 14px 0;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 900;
+  border: 0;
+  cursor: pointer;
+}
+.icon-btn.no{ background: var(--no); }
+.icon-btn.yes{ background: var(--ok); }
 
-/* SWIPE (una carta per volta) */
-.swipe-wrap{ padding:16px; }
+/* ---------- Swipe (card singola) ---------- */
+.swipe-wrap{
+  max-width: 540px;
+  margin: 8px auto 70px;
+  padding: 0 14px;
+}
 .swipe-card{
-  background:var(--card); border-radius:20px; overflow:hidden; box-shadow: var(--shadow);
+  background: #fff;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(0,0,0,.14);
+  border: 1px solid #ffffff;
 }
-.swipe-card img{ width:100%; height:360px; object-fit:cover; }
-.swipe-card .meta{ padding:14px; }
-.swipe-actions{ display:flex; gap:18px; justify-content:center; padding:14px 0 18px; }
+.swipe-card .pic{ width:100%; aspect-ratio: 4/5; object-fit: cover; }
+.swipe-card .meta{ padding: 12px 14px 6px; }
+.swipe-actions{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 12px 14px 16px;
+}
 
-/* piccolo spacing finale */
-#contentArea{ padding-bottom:28px; }
+/* ---------- Messaggi vuoti / raggi di luce ---------- */
+.empty{
+  text-align:center;
+  color: var(--muted);
+  font-weight: 700;
+  margin: 18px 0 60px;
+}
+
+/* ---------- Utility nascondi ---------- */
+.hidden{ display:none !important; }
