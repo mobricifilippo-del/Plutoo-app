@@ -1,111 +1,138 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const home = document.getElementById("home");
-  const app = document.getElementById("app");
-  const enterBtn = document.getElementById("enter-btn");
-  const tabs = document.querySelectorAll(".tab");
-  const contents = document.querySelectorAll(".tab-content");
+// Dati demo (singola foto per cane)
+const DOGS = [
+  {id:1, name:'Luna',  age:1, breed:'Jack Russell',   dist:2.2, img:'dog3.jpg'},
+  {id:2, name:'Sofia', age:5, breed:'Levriero Afgano',dist:1.6, img:'dog1.jpg'},
+  {id:3, name:'Rocky', age:4, breed:'Meticcio',       dist:5.9, img:'dog2.jpg'},
+  {id:4, name:'Maya',  age:3, breed:'Shiba Inu',      dist:3.2, img:'dog4.jpg'}
+];
 
-  const nearbyDogsContainer = document.getElementById("nearby-dogs");
-  const swipeContainer = document.getElementById("swipe-container");
-  const matchDogsContainer = document.getElementById("match-dogs");
+const qs = s => document.querySelector(s);
+const qsa = s => [...document.querySelectorAll(s)];
 
-  // Dati fittizi
-  const dogs = [
-    { name: "Luna", age: 1, breed: "Jack Russell", distance: "2.2 km", img: "dog1.jpg" },
-    { name: "Sofia", age: 5, breed: "Levriero Afgano", distance: "1.6 km", img: "dog2.jpg" },
-    { name: "Rocky", age: 4, breed: "Meticcio", distance: "5.9 km", img: "dog3.jpg" },
-    { name: "Maya", age: 3, breed: "Shiba Inu", distance: "3.2 km", img: "dog4.jpg" }
-  ];
+function showPage(id){
+  qsa('.page').forEach(p => p.classList.add('hidden'));
+  qs('#'+id).classList.remove('hidden');
+}
 
-  let matches = [];
+function setActiveTab(which){
+  qsa('.tab').forEach(t => t.classList.remove('active'));
+  qsa('.tab-content').forEach(c => c.classList.add('hidden'));
+  qs(`.tab[data-tab="${which}"]`).classList.add('active');
+  qs(`#tab-${which}`).classList.remove('hidden');
+}
 
-  // Mostra pagina app
-  enterBtn.addEventListener("click", () => {
-    home.classList.remove("active");
-    app.classList.add("active");
+// Render “Vicino a te”
+function renderNearby(){
+  const wrap = qs('#nearbyList');
+  wrap.innerHTML = '';
+  DOGS.forEach(d => {
+    wrap.insertAdjacentHTML('beforeend', `
+      <article class="card">
+        <img src="${d.img}" alt="${d.name}">
+        <div class="info">
+          <div class="row">
+            <div class="name">${d.name}, ${d.age}</div>
+            <div class="meta">${d.dist} km</div>
+          </div>
+          <div class="meta">${d.breed}</div>
+        </div>
+        <div class="actions">
+          <button class="no"  data-id="${d.id}">✖</button>
+          <button class="yes" data-id="${d.id}">❤</button>
+        </div>
+      </article>
+    `);
+  });
+}
+
+// Render stack “Scorri”
+function renderSwipe(){
+  const stack = qs('#swipeStack');
+  stack.innerHTML = '';
+  [...DOGS].reverse().forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'swipe-card';
+    card.dataset.id = d.id;
+    card.innerHTML = `
+      <img src="${d.img}" alt="${d.name}">
+      <div class="info">
+        <div class="row">
+          <div class="name">${d.name}, ${d.age}</div>
+          <div class="meta">${d.dist} km</div>
+        </div>
+        <div class="meta">${d.breed}</div>
+      </div>`;
+    stack.appendChild(card);
+  });
+}
+
+function likeTop(liked){
+  const stack = qs('#swipeStack');
+  const top = stack.lastElementChild;
+  if(!top) return;
+  top.style.transition = 'transform .25s ease, opacity .25s ease';
+  top.style.transform = `translate(${liked?'+120':'-120'}%, -10%) rotate(${liked?'+12':'-12'}deg)`;
+  top.style.opacity = '0';
+  setTimeout(()=> top.remove(), 250);
+  if(liked){
+    const id = +top.dataset.id;
+    const dog = DOGS.find(d=>d.id===id);
+    addMatch(dog);
+  }
+}
+
+function addMatch(d){
+  const list = qs('#matchList');
+  qs('#matchEmpty').style.display = 'none';
+  list.insertAdjacentHTML('afterbegin', `
+    <article class="card">
+      <img src="${d.img}" alt="${d.name}">
+      <div class="info">
+        <div class="row">
+          <div class="name">${d.name}, ${d.age}</div>
+          <div class="meta">Match!</div>
+        </div>
+        <div class="meta">${d.breed}</div>
+      </div>
+    </article>
+  `);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Entra → va alla pagina liste
+  qs('#enterBtn').addEventListener('click', () => {
+    showPage('lists');
+    setActiveTab('nearby');
     renderNearby();
     renderSwipe();
-    renderMatches();
   });
 
-  // Cambio tab
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      contents.forEach(c => c.classList.remove("active"));
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.target).classList.add("active");
+  // 2) Tabs
+  qsa('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const name = btn.dataset.tab;
+      setActiveTab(name);
     });
   });
 
-  // Render Vicino a te
-  function renderNearby() {
-    nearbyDogsContainer.innerHTML = "";
-    dogs.forEach(dog => {
-      const card = document.createElement("div");
-      card.classList.add("dog-card");
-      card.innerHTML = `
-        <img src="${dog.img}" alt="${dog.name}">
-        <div class="dog-info">
-          <h3>${dog.name}, ${dog.age}</h3>
-          <p>${dog.breed}</p>
-          <p><strong>${dog.distance}</strong></p>
-        </div>
-        <div class="dog-actions">
-          <button class="no">✖</button>
-          <button class="yes">❤</button>
-        </div>
-      `;
-      card.querySelector(".yes").addEventListener("click", () => addMatch(dog));
-      nearbyDogsContainer.appendChild(card);
-    });
-  }
+  // 3) Bottoni swipe
+  qs('#btnNo').addEventListener('click', ()=> likeTop(false));
+  qs('#btnYes').addEventListener('click',()=> likeTop(true));
 
-  // Render Swipe
-  function renderSwipe() {
-    swipeContainer.innerHTML = "";
-    dogs.slice().reverse().forEach(dog => {
-      const card = document.createElement("div");
-      card.classList.add("swipe-card");
-      card.innerHTML = `
-        <img src="${dog.img}" alt="${dog.name}">
-        <div class="dog-info">
-          <h3>${dog.name}, ${dog.age}</h3>
-          <p>${dog.breed} - <strong>${dog.distance}</strong></p>
-        </div>
-      `;
-      card.addEventListener("click", () => addMatch(dog));
-      swipeContainer.appendChild(card);
-    });
-  }
-
-  // Render Matches
-  function renderMatches() {
-    matchDogsContainer.innerHTML = "";
-    if (matches.length === 0) {
-      matchDogsContainer.innerHTML = "<p>Nessun match ancora ❤️</p>";
-      return;
+  // 4) Like/No direttamente dalle card “Vicino a te”
+  qs('#lists').addEventListener('click', (e)=>{
+    if(e.target.matches('.actions .yes')){
+      const id = +e.target.dataset.id;
+      const dog = DOGS.find(d=>d.id===id);
+      addMatch(dog);
     }
-    matches.forEach(dog => {
-      const card = document.createElement("div");
-      card.classList.add("dog-card");
-      card.innerHTML = `
-        <img src="${dog.img}" alt="${dog.name}">
-        <div class="dog-info">
-          <h3>${dog.name}, ${dog.age}</h3>
-          <p>${dog.breed}</p>
-          <p><strong>${dog.distance}</strong></p>
-        </div>
-      `;
-      matchDogsContainer.appendChild(card);
-    });
-  }
-
-  // Aggiungi Match
-  function addMatch(dog) {
-    if (!matches.includes(dog)) {
-      matches.push(dog);
-      renderMatches();
+    if(e.target.matches('.actions .no')){
+      e.target.closest('.card').remove();
     }
-  }
+  });
+
+  // (opzionale) finta geolocalizzazione
+  qs('#enableGeo').addEventListener('click', ()=>{
+    alert('Geolocalizzazione attivata (demo)');
+  });
 });
