@@ -1,65 +1,49 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plutoo 🐾</title>
-  <link rel="icon" href="plutoo-icon-512.png" type="image/png" />
-  <link rel="stylesheet" href="style.css" />
-  <script defer src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- HOME (schermata intera) -->
+  <!-- HOME -->
   <section id="home" class="page active">
-    <header class="topbar">
-      <nav class="auth">
-        <a href="#" class="auth-link">Accedi</a>
-        <span>·</span>
-        <a href="#" class="auth-link">Registrati</a>
-      </nav>
-    </header>
-
-    <div class="hero">
-      <div class="logo-card">
-        <img src="plutoo-icon-512.png" alt="Plutoo" />
-        <h1>Plutoo</h1>
-      </div>
-
-      <button id="enterBtn" class="btn-cta">Entra</button>
-      <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
+    <div class="logo-container">
+      <img src="plutoo-icon-512.png" alt="Plutoo Logo" class="logo">
+      <h1 class="app-title">Plutoo</h1>
     </div>
+    <button id="enter-btn" class="btn">Entra</button>
+    <p class="subtitle">
+      Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
+    </p>
   </section>
 
-  <!-- APP (pagina dopo “Entra”) -->
-  <section id="app" class="page hidden">
-    <header class="appbar">
-      <div class="brand-mini">
-        <img src="plutoo-icon-512.png" alt="Plutoo" />
-        <span>Plutoo</span>
-      </div>
-      <nav class="auth">
-        <a href="#" class="auth-link">Accedi</a>
-        <span>·</span>
-        <a href="#" class="auth-link">Registrati</a>
-      </nav>
-    </header>
-
-    <div class="geo-banner">
-      <div>🎯 Attiva la posizione per vedere i cani vicino a te</div>
-      <div class="geo-actions">
-        <button id="geoEnable" class="pill primary">Attiva</button>
-        <button id="geoLater" class="pill">Più tardi</button>
-      </div>
-    </div>
-
+  <!-- APP -->
+  <section id="app" class="page">
     <div class="tabs">
-      <button id="nearbyTab" class="tab active">Vicino a te</button>
-      <button id="swipeTab" class="tab">Scorri</button>
-      <button id="matchTab" class="tab">Match</button>
+      <button class="tab active" data-target="nearby">Vicino a te</button>
+      <button class="tab" data-target="swipe">Scorri</button>
+      <button class="tab" data-target="matches">Match</button>
     </div>
 
-    <!-- area contenuti dinamici -->
-    <main id="contentArea"></main>
+    <!-- VICINO A TE -->
+    <div id="nearby" class="tab-content active">
+      <div class="dog-grid" id="nearby-dogs"></div>
+    </div>
+
+    <!-- SCORRI -->
+    <div id="swipe" class="tab-content">
+      <div class="swipe-container" id="swipe-container"></div>
+    </div>
+
+    <!-- MATCH -->
+    <div id="matches" class="tab-content">
+      <h2>I tuoi match ❤️</h2>
+      <div class="dog-grid" id="match-dogs"></div>
+    </div>
   </section>
+
+  <script src="app.js"></script>
 </body>
 </html>
