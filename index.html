@@ -7,40 +7,45 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Barra di navigazione -->
+  <header>
+    <h2 class="app-title">Plutoo</h2>
+    <nav>
+      <a href="#">Accedi</a> ·
+      <a href="#">Registrati</a>
+    </nav>
+  </header>
+
   <!-- HOME -->
-  <section id="home" class="page active">
-    <div class="logo-container">
-      <img src="plutoo-icon-512.png" alt="Plutoo Logo" class="logo">
-      <h1 class="app-title">Plutoo</h1>
+  <section id="home" class="active">
+    <div class="logo-box">
+      <img src="plutoo-icon-512.png" alt="Plutoo logo" class="logo-img">
+      <h1>Plutoo</h1>
     </div>
-    <button id="enter-btn" class="btn">Entra</button>
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
-    </p>
+    <button id="enterBtn" class="btn">Entra</button>
+    <p>Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
   </section>
 
-  <!-- APP -->
-  <section id="app" class="page">
+  <!-- PAGINA PRINCIPALE -->
+  <section id="main" class="hidden">
     <div class="tabs">
-      <button class="tab active" data-target="nearby">Vicino a te</button>
-      <button class="tab" data-target="swipe">Scorri</button>
-      <button class="tab" data-target="matches">Match</button>
+      <button id="nearbyBtn" class="tab active">Vicino a te</button>
+      <button id="swipeBtn" class="tab">Scorri</button>
+      <button id="matchBtn" class="tab">Match</button>
     </div>
 
-    <!-- VICINO A TE -->
+    <!-- Contenitori -->
     <div id="nearby" class="tab-content active">
-      <div class="dog-grid" id="nearby-dogs"></div>
+      <div class="dog-list" id="dogList"></div>
     </div>
 
-    <!-- SCORRI -->
-    <div id="swipe" class="tab-content">
-      <div class="swipe-container" id="swipe-container"></div>
+    <div id="swipe" class="tab-content hidden">
+      <div class="swipe-container" id="swipeContainer"></div>
     </div>
 
-    <!-- MATCH -->
-    <div id="matches" class="tab-content">
-      <h2>I tuoi match ❤️</h2>
-      <div class="dog-grid" id="match-dogs"></div>
+    <div id="matches" class="tab-content hidden">
+      <p id="noMatches">Ancora nessun match. Metti qualche ❤️!</p>
+      <div class="dog-list" id="matchList"></div>
     </div>
   </section>
 
