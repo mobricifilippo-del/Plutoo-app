@@ -1,158 +1,94 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
+/* RESET */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --violet:#6c5ce7; --pink:#e84393; --green:#00b894; --red:#d63031;
+  --fg:#2d3436; --muted:#636e72; --card:#ffffff; --shadow:0 10px 30px rgba(0,0,0,.10);
+}
+html,body{ height:100%; font-family: 'Inter', system-ui, -apple-system, Arial, sans-serif; color:var(--fg); }
+body{
+  background: linear-gradient(180deg,#ffe8ac 0%, #ffccb8 45%, #e9d5ff 100%);
 }
 
-/* Sfondo con gradient */
-body {
-  background: linear-gradient(180deg, #ffeaa7, #fab1a0, #a29bfe);
-  min-height: 100vh;
-  color: #333;
-  text-align: center;
-}
+/* PAGINE */
+.page{ min-height:100dvh; }
+.hidden{ display:none !important; }
+.active{ display:block; }
 
-/* Topbar */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  font-size: 14px;
-}
+/* TOPBAR HOME */
+.topbar{ padding:14px 18px; display:flex; justify-content:flex-end; }
+.auth{ display:flex; gap:8px; align-items:center; }
+.auth-link{ color:#4c3aff; text-decoration:none; font-weight:700; }
 
-.topbar .logo {
-  font-size: 20px;
-  font-weight: bold;
+/* HERO HOME */
+.hero{ padding:28px 18px 40px; display:grid; place-items:center; gap:22px; }
+.logo-card{
+  width:320px; max-width:86vw; padding:28px 18px; border-radius:26px;
+  background:#111; color:#fff; box-shadow: var(--shadow);
+  display:grid; place-items:center; gap:14px;
 }
+.logo-card img{ width:92px; height:92px; }
+.logo-card h1{ font-weight:900; font-size:42px; letter-spacing:.5px; }
 
-.topbar a {
-  text-decoration: none;
-  color: #6c5ce7;
-  font-weight: 600;
+.btn-cta{
+  background: linear-gradient(90deg,var(--violet),var(--pink));
+  color:#fff; border:none; border-radius:18px; padding:14px 22px; font-size:18px;
+  box-shadow: var(--shadow); min-width:160px; font-weight:800;
 }
+.hint{ text-align:center; color:var(--muted); padding:0 18px; }
 
-/* HOME */
-.logo-box {
-  margin-top: 60px;
+/* APP BAR */
+.appbar{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 14px;
 }
+.brand-mini{ display:flex; align-items:center; gap:8px; font-weight:900; }
+.brand-mini img{ width:32px; height:32px; }
 
-.logo-big {
-  width: 150px;
-  height: 150px;
+/* GEO BANNER */
+.geo-banner{
+  margin:12px; padding:12px; border-radius:16px; background:rgba(255,255,255,.6);
+  display:flex; justify-content:space-between; align-items:center; gap:10px; box-shadow: var(--shadow);
 }
+.geo-actions{ display:flex; gap:8px; }
+.pill{ padding:8px 14px; border-radius:20px; border:none; background:#eee; font-weight:700; }
+.pill.primary{ background: linear-gradient(90deg,var(--violet),var(--pink)); color:#fff; }
 
-.logo-box h2 {
-  font-size: 32px;
-  margin-top: 10px;
-}
+/* TABS */
+.tabs{ display:flex; justify-content:center; gap:10px; margin:10px 0 2px; }
+.tab{ border:none; background:#eef1f3; color:#333; font-weight:800; padding:10px 16px; border-radius:18px; }
+.tab.active{ color:#fff; background: linear-gradient(90deg,var(--violet),var(--pink)); }
 
-.btn {
-  margin-top: 30px;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 25px;
-  font-size: 16px;
-  cursor: pointer;
-  color: #fff;
-  background: linear-gradient(90deg, #6c5ce7, #e84393);
+/* GRID CANI (Vicino a te + Match) */
+.grid{
+  padding:14px; display:grid; grid-template-columns: 1fr 1fr; gap:14px;
 }
+.card{
+  background:var(--card); border-radius:18px; overflow:hidden; box-shadow: var(--shadow);
+}
+.card img{ width:100%; height:190px; object-fit:cover; display:block; }
+.card .meta{ padding:12px; }
+.card h3{ font-size:20px; margin-bottom:4px; }
+.card p{ color:var(--muted); }
+.card .row{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+.badge-online{ width:10px; height:10px; background:#2ecc71; border-radius:50%; }
 
-.info {
-  margin-top: 20px;
-  font-size: 14px;
+/* BOTTONI LIKE/NO */
+.actions{ display:flex; gap:14px; justify-content:center; padding:12px 10px 16px; }
+.btn-round{
+  width:54px; height:54px; border-radius:50%; border:none; color:#fff; font-size:22px; font-weight:900;
+  display:grid; place-items:center; box-shadow: var(--shadow);
 }
+.btn-no{ background:var(--red); }
+.btn-yes{ background:var(--green); }
 
-/* APP */
-.page.hidden {
-  display: none;
+/* SWIPE (una carta per volta) */
+.swipe-wrap{ padding:16px; }
+.swipe-card{
+  background:var(--card); border-radius:20px; overflow:hidden; box-shadow: var(--shadow);
 }
+.swipe-card img{ width:100%; height:360px; object-fit:cover; }
+.swipe-card .meta{ padding:14px; }
+.swipe-actions{ display:flex; gap:18px; justify-content:center; padding:14px 0 18px; }
 
-.page.active {
-  display: block;
-}
-
-/* Tabs */
-.tabs {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-  gap: 10px;
-}
-
-.tab {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  background: #dfe6e9;
-}
-
-.tab.active {
-  background: linear-gradient(90deg, #6c5ce7, #e84393);
-  color: #fff;
-}
-
-/* Cards dei cani */
-.dog-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  padding: 15px;
-}
-
-.dog-card {
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  overflow: hidden;
-  text-align: left;
-}
-
-.dog-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.dog-card .info {
-  padding: 10px;
-}
-
-.dog-card h3 {
-  font-size: 16px;
-  margin-bottom: 5px;
-}
-
-.dog-card p {
-  font-size: 13px;
-  color: #555;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-around;
-  padding: 10px;
-}
-
-.actions button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.actions .no {
-  background: #d63031;
-  color: #fff;
-}
-
-.actions .yes {
-  background: #00b894;
-  color: #fff;
-}
+/* piccolo spacing finale */
+#contentArea{ padding-bottom:28px; }
