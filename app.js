@@ -1,4 +1,4 @@
-// Dati demo (singola foto per cane)
+// Dati demo (foto singola per cane)
 const DOGS = [
   {id:1, name:'Luna',  age:1, breed:'Jack Russell',   dist:2.2, img:'dog3.jpg'},
   {id:2, name:'Sofia', age:5, breed:'Levriero Afgano',dist:1.6, img:'dog1.jpg'},
@@ -21,7 +21,6 @@ function setActiveTab(which){
   qs(`#tab-${which}`).classList.remove('hidden');
 }
 
-// Render “Vicino a te”
 function renderNearby(){
   const wrap = qs('#nearbyList');
   wrap.innerHTML = '';
@@ -45,7 +44,6 @@ function renderNearby(){
   });
 }
 
-// Render stack “Scorri”
 function renderSwipe(){
   const stack = qs('#swipeStack');
   stack.innerHTML = '';
@@ -99,7 +97,7 @@ function addMatch(d){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1) Entra → va alla pagina liste
+  // Entra → pagina liste
   qs('#enterBtn').addEventListener('click', () => {
     showPage('lists');
     setActiveTab('nearby');
@@ -107,19 +105,18 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSwipe();
   });
 
-  // 2) Tabs
+  // Tabs
   qsa('.tab').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const name = btn.dataset.tab;
-      setActiveTab(name);
+      setActiveTab(btn.dataset.tab);
     });
   });
 
-  // 3) Bottoni swipe
+  // Swipe buttons
   qs('#btnNo').addEventListener('click', ()=> likeTop(false));
   qs('#btnYes').addEventListener('click',()=> likeTop(true));
 
-  // 4) Like/No direttamente dalle card “Vicino a te”
+  // Like/No dalle card della griglia
   qs('#lists').addEventListener('click', (e)=>{
     if(e.target.matches('.actions .yes')){
       const id = +e.target.dataset.id;
@@ -131,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // (opzionale) finta geolocalizzazione
+  // Demo geolocalizzazione
   qs('#enableGeo').addEventListener('click', ()=>{
     alert('Geolocalizzazione attivata (demo)');
   });
