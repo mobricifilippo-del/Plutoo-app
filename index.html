@@ -1,41 +1,65 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="plutoo-icon-512.png" type="image/png">
-  <script src="app.js" defer></script>
+  <link rel="icon" href="plutoo-icon-512.png" type="image/png" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="app.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <h1 class="logo">Plutoo</h1>
-    <nav>
-      <a href="#">Accedi</a> · <a href="#">Registrati</a>
-    </nav>
-  </header>
-
-  <!-- HOME -->
+  <!-- HOME (schermata intera) -->
   <section id="home" class="page active">
-    <div class="logo-box">
-      <img src="plutoo-icon-512.png" alt="Plutoo Logo" class="logo-big">
-      <h2>Plutoo</h2>
+    <header class="topbar">
+      <nav class="auth">
+        <a href="#" class="auth-link">Accedi</a>
+        <span>·</span>
+        <a href="#" class="auth-link">Registrati</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div class="logo-card">
+        <img src="plutoo-icon-512.png" alt="Plutoo" />
+        <h1>Plutoo</h1>
+      </div>
+
+      <button id="enterBtn" class="btn-cta">Entra</button>
+      <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
     </div>
-    <button id="enterBtn" class="btn">Entra</button>
-    <p class="info">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
   </section>
 
-  <!-- APP -->
+  <!-- APP (pagina dopo “Entra”) -->
   <section id="app" class="page hidden">
-    <div class="tabs">
-      <button id="nearbyBtn" class="tab active">Vicino a te</button>
-      <button id="swipeBtn" class="tab">Scorri</button>
-      <button id="matchBtn" class="tab">Match</button>
+    <header class="appbar">
+      <div class="brand-mini">
+        <img src="plutoo-icon-512.png" alt="Plutoo" />
+        <span>Plutoo</span>
+      </div>
+      <nav class="auth">
+        <a href="#" class="auth-link">Accedi</a>
+        <span>·</span>
+        <a href="#" class="auth-link">Registrati</a>
+      </nav>
+    </header>
+
+    <div class="geo-banner">
+      <div>🎯 Attiva la posizione per vedere i cani vicino a te</div>
+      <div class="geo-actions">
+        <button id="geoEnable" class="pill primary">Attiva</button>
+        <button id="geoLater" class="pill">Più tardi</button>
+      </div>
     </div>
 
-    <!-- Container dinamico -->
-    <div id="contentArea"></div>
+    <div class="tabs">
+      <button id="nearbyTab" class="tab active">Vicino a te</button>
+      <button id="swipeTab" class="tab">Scorri</button>
+      <button id="matchTab" class="tab">Match</button>
+    </div>
+
+    <!-- area contenuti dinamici -->
+    <main id="contentArea"></main>
   </section>
 </body>
 </html>
