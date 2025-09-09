@@ -1,134 +1,81 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="icon" href="plutoo-icon-512.png" />
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css" />
 </head>
+<body>
 
-<!-- partiamo SEMPRE dalla home -->
-<body class="page-home">
+  <!-- HEADER MINI -->
   <header class="topbar">
-    <nav class="auth">
-      <a href="#" class="link">Accedi</a>
+    <nav class="auth-links">
+      <a href="#" class="auth-link">Accedi</a>
       <span class="dot">·</span>
-      <a href="#" class="link">Registrati</a>
+      <a href="#" class="auth-link">Registrati</a>
     </nav>
   </header>
 
+  <!-- PAGINE SPA -->
   <main>
-    <!-- HOME (solo logo + CTA) -->
-    <section id="page-home" class="view">
-      <div class="hero-card">
-        <!-- SOLO icona (niente scritta nel logo) -->
-        <img src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
-      </div>
+    <!-- HOME -->
+    <section id="page-home" class="page is-active">
+      <div class="hero">
+        <!-- SOLO IMMAGINE LOGO, NESSUN TESTO DOPPIO -->
+        <div class="logo-card">
+          <img src="logo-32.jpg" alt="Plutoo" class="logo-img" />
+        </div>
 
-      <button id="btnEnter" class="cta">Entra</button>
-      <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
+        <button id="btn-enter" class="cta">Entra</button>
+        <p class="note">
+          Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
+        </p>
+      </div>
     </section>
 
-    <!-- LISTE VICINO A TE -->
-    <section id="page-lists" class="view">
-      <div class="geo-banner">
-        <span>🎯 Attiva la posizione per vedere i cani vicino a te</span>
-        <div class="geo-actions">
-          <button id="btnGeo" class="pill primary">Attiva</button>
-          <button class="pill">Più tardi</button>
+    <!-- EXLORE / VICINO A TE -->
+    <section id="page-explore" class="page">
+      <div class="head-band">
+        <div class="loc-text">
+          🎯 Attiva la posizione per vedere i cani vicino a te
+        </div>
+        <div class="loc-actions">
+          <button id="btn-enable-geo" class="pill primary">Attiva</button>
+          <button id="btn-later" class="pill">Più tardi</button>
         </div>
       </div>
 
       <div class="tabs">
-        <button id="tabNear"  class="tab active">Vicino a te</button>
-        <button id="tabSwipe" class="tab">Scorri</button>
-        <button id="tabMatch" class="tab">Match</button>
+        <button data-tab="nearby" class="tab is-active">Vicino a te</button>
+        <button data-tab="swipe" class="tab">Scorri</button>
+        <button data-tab="matches" class="tab">Match</button>
       </div>
 
-      <div class="cards-grid" id="nearGrid">
-        <!-- 4 cani demo -->
-        <article class="card">
-          <div class="badge online"></div>
-          <img src="dog3.jpg" alt="Luna" class="card-img" />
-          <div class="card-body">
-            <h3 class="title">Luna, 1</h3>
-            <p class="sub">Jack Russell</p>
-            <div class="distance">2.2 <span>km</span></div>
-            <div class="actions">
-              <button class="btn danger">✖</button>
-              <button class="btn success">❤</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="badge online"></div>
-          <img src="dog1.jpg" alt="Sofia" class="card-img" />
-          <div class="card-body">
-            <h3 class="title">Sofia, 5</h3>
-            <p class="sub">Levriero Afgano</p>
-            <div class="distance">1.6 <span>km</span></div>
-            <div class="actions">
-              <button class="btn danger">✖</button>
-              <button class="btn success">❤</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="badge online"></div>
-          <img src="dog2.jpg" alt="Rocky" class="card-img" />
-          <div class="card-body">
-            <h3 class="title">Rocky, 4</h3>
-            <p class="sub">Meticcio</p>
-            <div class="distance">5.9 <span>km</span></div>
-            <div class="actions">
-              <button class="btn danger">✖</button>
-              <button class="btn success">❤</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="badge online"></div>
-          <img src="dog4.jpg" alt="Maya" class="card-img" />
-          <div class="card-body">
-            <h3 class="title">Maya, 3</h3>
-            <p class="sub">Shiba Inu</p>
-            <div class="distance">3.2 <span>km</span></div>
-            <div class="actions">
-              <button class="btn danger">✖</button>
-              <button class="btn success">❤</button>
-            </div>
-          </div>
-        </article>
+      <!-- LISTE CONTENUTO -->
+      <div id="view-nearby" class="view is-active">
+        <div id="nearby-grid" class="grid"></div>
       </div>
-    </section>
 
-    <!-- SCORRI (card singola, X / ❤) -->
-    <section id="page-swipe" class="view">
-      <div class="swipe-wrap">
-        <article class="swipe-card">
-          <img id="swipeImg" src="dog1.jpg" alt="Dog" class="swipe-img" />
-          <div class="swipe-info">
-            <h3 id="swipeTitle">Sofia, 5</h3>
-            <p id="swipeSub" class="sub">Levriero Afgano • 1.6 km</p>
-          </div>
-          <div class="swipe-actions">
-            <button id="btnNo"  class="btn danger">✖</button>
-            <button id="btnYes" class="btn success">❤</button>
-          </div>
-        </article>
+      <div id="view-swipe" class="view">
+        <div id="swipe-card" class="swipe-wrap"></div>
+        <div class="swipe-actions">
+          <button id="btn-dislike" class="round red" aria-label="No">
+            ✖
+          </button>
+          <button id="btn-like" class="round green" aria-label="Mi piace">
+            ❤
+          </button>
+        </div>
       </div>
-    </section>
 
-    <!-- MATCH -->
-    <section id="page-match" class="view">
-      <p class="empty">Ancora nessun match. Metti qualche ❤!</p>
+      <div id="view-matches" class="view">
+        <div id="matches-grid" class="grid"></div>
+        <p id="matches-empty" class="empty">Ancora nessun match. Metti qualche ❤!</p>
+      </div>
     </section>
   </main>
 
-  <script src="app.js?v=4" defer></script>
+  <script src="app.js"></script>
 </body>
 </html>
