@@ -1,24 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
+  <link rel="icon" href="plutoo-icon-512.png" />
+  <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- NAV BAR -->
+  <!-- HEADER -->
   <header>
     <nav>
-      <a href="#" id="loginLink">Accedi</a> ·
+      <a href="#" id="loginLink">Accedi</a>
+      <span> · </span>
       <a href="#" id="signupLink">Registrati</a>
     </nav>
   </header>
 
-  <!-- HOME -->
-  <section id="home" class="active">
+  <!-- HOME (solo logo + bottone) -->
+  <section id="home" class="page active">
     <div class="logo-box">
-      <img src="plutoo-icon-512.png" alt="Logo Plutoo" class="logo-img" />
+      <!-- SOLO IMMAGINE: niente scritta duplicata -->
+      <img class="logo-img" src="logo-32.jpg" alt="Plutoo logo" />
     </div>
 
     <button id="enterBtn" class="btn">Entra</button>
@@ -28,24 +32,41 @@
     </p>
   </section>
 
-  <!-- APP -->
-  <section id="main" class="hidden">
+  <!-- PAGINA LISTE (Vicino/Scorri/Match) -->
+  <section id="lists" class="page hidden">
+    <div class="top-cta">
+      <div class="pos-text">🎯 Attiva la posizione per vedere i cani vicino a te</div>
+      <div class="pos-actions">
+        <button id="enableGeo" class="chip primary">Attiva</button>
+        <button class="chip">Più tardi</button>
+      </div>
+    </div>
+
     <div class="tabs">
-      <button id="nearbyBtn" class="tab active">Vicino a te</button>
-      <button id="swipeBtn" class="tab">Scorri</button>
-      <button id="matchBtn" class="tab">Match</button>
+      <button class="tab active" data-tab="nearby">Vicino a te</button>
+      <button class="tab" data-tab="swipe">Scorri</button>
+      <button class="tab" data-tab="matches">Match</button>
     </div>
 
-    <div id="nearby" class="tab-content active">
-      <div id="dogList" class="dog-list"></div>
+    <!-- Vicino a te -->
+    <div id="tab-nearby" class="tab-content active">
+      <div id="nearbyList" class="dog-list"></div>
     </div>
 
-    <div id="swipe" class="tab-content hidden">
-      <div id="swipeContainer" class="swipe-container"></div>
+    <!-- Scorri (scheda singola con cuori/X) -->
+    <div id="tab-swipe" class="tab-content hidden">
+      <div class="swipe-container">
+        <div id="swipeStack"></div>
+      </div>
+      <div class="actions">
+        <button id="btnNo"  class="no">✖</button>
+        <button id="btnYes" class="yes">❤</button>
+      </div>
     </div>
 
-    <div id="matches" class="tab-content hidden">
-      <p id="noMatches">Ancora nessun match. Metti qualche ❤️!</p>
+    <!-- Match -->
+    <div id="tab-matches" class="tab-content hidden">
+      <p class="hint" id="matchEmpty">Ancora nessun match. Metti qualche ❤!</p>
       <div id="matchList" class="dog-list"></div>
     </div>
   </section>
