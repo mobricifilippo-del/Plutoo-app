@@ -1,83 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="icon" href="logo-32.jpg" />
-  <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="plutoo-icon-512.png" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
+
+<!-- partiamo SEMPRE dalla home -->
 <body class="page-home">
-  <!-- Barra login/registrazione -->
   <header class="topbar">
     <nav class="auth">
-      <a href="#" class="auth-link">Accedi</a>
+      <a href="#" class="link">Accedi</a>
       <span class="dot">·</span>
-      <a href="#" class="auth-link">Registrati</a>
+      <a href="#" class="link">Registrati</a>
     </nav>
   </header>
 
-  <!-- HOME -->
-  <section id="home" class="page">
-    <img class="brand-mark" src="plutoo-icon-512.png" alt="Plutoo" />
-    <h1 class="sr-only">Plutoo</h1>
-    <button id="enterBtn" class="btn btn-primary">Entra</button>
-    <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
-  </section>
-
-  <!-- LISTE / RICERCA -->
-  <section id="lists" class="page" aria-hidden="true">
-    <!-- notifica geolocalizzazione -->
-    <div class="geo-banner">
-      <div class="geo-text">🎯 Attiva la posizione per vedere i cani vicino a te</div>
-      <div class="geo-actions">
-        <button class="chip chip-primary" id="geoEnable">Attiva</button>
-        <button class="chip" id="geoLater">Più tardi</button>
+  <main>
+    <!-- HOME (solo logo + CTA) -->
+    <section id="page-home" class="view">
+      <div class="hero-card">
+        <!-- SOLO icona (niente scritta nel logo) -->
+        <img src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
       </div>
-    </div>
 
-    <!-- Tabs -->
-    <div class="tabs" role="tablist">
-      <button class="tab active" data-tab="nearby" role="tab" aria-selected="true">Vicino a te</button>
-      <button class="tab" data-tab="swipe" role="tab" aria-selected="false">Scorri</button>
-      <button class="tab" data-tab="match" role="tab" aria-selected="false">Match</button>
-    </div>
+      <button id="btnEnter" class="cta">Entra</button>
+      <p class="hint">Attiveremo la posizione per mostrarti i cani <b>online</b> vicino a te.</p>
+    </section>
 
-    <!-- VICINO A TE (griglia) -->
-    <div id="nearby" class="tabpanel active" role="tabpanel">
-      <div id="cardsGrid" class="grid"></div>
-    </div>
-
-    <!-- SCORRI (scheda singola) -->
-    <div id="swipe" class="tabpanel" role="tabpanel">
-      <div id="swipeCard" class="swipe-card is-empty">
-        <div class="swipe-photo-wrap">
-          <img id="swipePhoto" alt="" />
+    <!-- LISTE VICINO A TE -->
+    <section id="page-lists" class="view">
+      <div class="geo-banner">
+        <span>🎯 Attiva la posizione per vedere i cani vicino a te</span>
+        <div class="geo-actions">
+          <button id="btnGeo" class="pill primary">Attiva</button>
+          <button class="pill">Più tardi</button>
         </div>
-        <div class="swipe-meta">
-          <div class="who">
-            <span id="swipeName" class="name"></span>,
-            <span id="swipeAge" class="age"></span>
+      </div>
+
+      <div class="tabs">
+        <button id="tabNear"  class="tab active">Vicino a te</button>
+        <button id="tabSwipe" class="tab">Scorri</button>
+        <button id="tabMatch" class="tab">Match</button>
+      </div>
+
+      <div class="cards-grid" id="nearGrid">
+        <!-- 4 cani demo -->
+        <article class="card">
+          <div class="badge online"></div>
+          <img src="dog3.jpg" alt="Luna" class="card-img" />
+          <div class="card-body">
+            <h3 class="title">Luna, 1</h3>
+            <p class="sub">Jack Russell</p>
+            <div class="distance">2.2 <span>km</span></div>
+            <div class="actions">
+              <button class="btn danger">✖</button>
+              <button class="btn success">❤</button>
+            </div>
           </div>
-          <div id="swipeBreed" class="breed"></div>
-          <div id="swipeDist" class="distance"></div>
-        </div>
-        <div class="swipe-actions">
-          <button id="btnNo" class="btn-circle danger" aria-label="No">✖</button>
-          <button id="btnYes" class="btn-circle success" aria-label="Mi piace">❤</button>
-        </div>
+        </article>
+
+        <article class="card">
+          <div class="badge online"></div>
+          <img src="dog1.jpg" alt="Sofia" class="card-img" />
+          <div class="card-body">
+            <h3 class="title">Sofia, 5</h3>
+            <p class="sub">Levriero Afgano</p>
+            <div class="distance">1.6 <span>km</span></div>
+            <div class="actions">
+              <button class="btn danger">✖</button>
+              <button class="btn success">❤</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="badge online"></div>
+          <img src="dog2.jpg" alt="Rocky" class="card-img" />
+          <div class="card-body">
+            <h3 class="title">Rocky, 4</h3>
+            <p class="sub">Meticcio</p>
+            <div class="distance">5.9 <span>km</span></div>
+            <div class="actions">
+              <button class="btn danger">✖</button>
+              <button class="btn success">❤</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="badge online"></div>
+          <img src="dog4.jpg" alt="Maya" class="card-img" />
+          <div class="card-body">
+            <h3 class="title">Maya, 3</h3>
+            <p class="sub">Shiba Inu</p>
+            <div class="distance">3.2 <span>km</span></div>
+            <div class="actions">
+              <button class="btn danger">✖</button>
+              <button class="btn success">❤</button>
+            </div>
+          </div>
+        </article>
       </div>
-      <div id="swipeEmpty" class="empty hidden">Niente altri cani per ora. Torna più tardi 🐶</div>
-    </div>
+    </section>
+
+    <!-- SCORRI (card singola, X / ❤) -->
+    <section id="page-swipe" class="view">
+      <div class="swipe-wrap">
+        <article class="swipe-card">
+          <img id="swipeImg" src="dog1.jpg" alt="Dog" class="swipe-img" />
+          <div class="swipe-info">
+            <h3 id="swipeTitle">Sofia, 5</h3>
+            <p id="swipeSub" class="sub">Levriero Afgano • 1.6 km</p>
+          </div>
+          <div class="swipe-actions">
+            <button id="btnNo"  class="btn danger">✖</button>
+            <button id="btnYes" class="btn success">❤</button>
+          </div>
+        </article>
+      </div>
+    </section>
 
     <!-- MATCH -->
-    <div id="match" class="tabpanel" role="tabpanel">
-      <div id="matchList" class="match-list"></div>
-      <div id="matchEmpty" class="empty">Ancora nessun match. Metti qualche ❤!</div>
-    </div>
-  </section>
+    <section id="page-match" class="view">
+      <p class="empty">Ancora nessun match. Metti qualche ❤!</p>
+    </section>
+  </main>
 
-  <script src="app.js" defer></script>
+  <script src="app.js?v=4" defer></script>
 </body>
 </html>
