@@ -1,3 +1,6 @@
+/* scroll fluido anche senza JS */
+html{ scroll-behavior:smooth }
+
 /* ====== Reset ====== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 img { display: block; max-width: 100%; height: auto; }
@@ -35,7 +38,7 @@ body{
   padding: 18px 16px;
   display:flex; align-items:center; justify-content:space-between;
 }
-.brand{ font-weight:800; opacity:0 } /* nascosto: evitiamo doppia scritta sotto il logo */
+.brand{ font-weight:800; opacity:0 }
 .auth .link{ color:var(--primary1); text-decoration:none; font-weight:700 }
 .auth .link:hover{ text-decoration:underline }
 .auth .dot{ margin:0 8px; color:#a1a1aa }
@@ -50,12 +53,12 @@ body{
 .logo-wrap{
   display:flex; align-items:center; justify-content:center;
   margin: 12px auto 18px;
-  background: transparent;   /* niente banda nera */
-  box-shadow: none;          /* nessuna ombra scura */
+  background: transparent;
+  box-shadow: none;
   border-radius: 0;
 }
 .logo-img{
-  width: 220px;   /* regola qui se lo vuoi più grande/piccolo */
+  width: 220px;
   height: auto;
   border-radius: 24px;
   box-shadow: 0 12px 30px rgba(0,0,0,.18);
@@ -70,9 +73,7 @@ body{
   box-shadow: 0 10px 24px rgba(0,0,0,.18);
 }
 .btn-primary:active{ transform: translateY(1px) }
-.subtitle{
-  margin-top:12px; color:var(--muted);
-}
+.subtitle{ margin-top:12px; color:var(--muted); }
 
 /* ====== App container ====== */
 .app{
@@ -109,11 +110,11 @@ body{
 /* ====== Griglia card ====== */
 .grid{
   display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));  /* due colonne anche su mobile */
+  grid-template-columns: repeat(2, minmax(0,1fr));
   gap: 18px;
 }
 @media (max-width: 360px){
-  .grid{ grid-template-columns: 1fr; } /* una colonna solo su telefoni piccolissimi */
+  .grid{ grid-template-columns: 1fr; }
 }
 
 /* ====== Card ====== */
