@@ -1,79 +1,95 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="stile.css">
 </head>
 <body>
-
-  <!-- HEADER MINI -->
-  <header class="topbar">
-    <nav class="auth-links">
-      <a href="#" class="auth-link">Accedi</a>
-      <span class="dot">·</span>
-      <a href="#" class="auth-link">Registrati</a>
+  <!-- Barra in alto -->
+  <header class="top-bar">
+    <nav>
+      <a href="#">Accedi</a> · <a href="#">Registrati</a>
     </nav>
   </header>
 
-  <!-- PAGINE SPA -->
-  <main>
-    <!-- HOME -->
-    <section id="page-home" class="page is-active">
-      <div class="hero">
-        <!-- SOLO IMMAGINE LOGO, NESSUN TESTO DOPPIO -->
-        <div class="logo-card">
-          <img src="logo-32.jpg" alt="Plutoo" class="logo-img" />
-        </div>
+  <!-- Schermata iniziale -->
+  <section class="intro">
+    <div class="logo-container">
+      <img src="logo-32.jpg" alt="Plutoo" class="logo">
+    </div>
+    <button class="btn-primary">Entra</button>
+    <p class="intro-text">
+      Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
+    </p>
+  </section>
 
-        <button id="btn-enter" class="cta">Entra</button>
-        <p class="note">
-          Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
-        </p>
-      </div>
-    </section>
+  <!-- Schermata posizione -->
+  <section class="location">
+    <p>🎯 Attiva la posizione per vedere i cani vicino a te</p>
+    <div class="location-buttons">
+      <button class="btn-secondary">Attiva</button>
+      <button class="btn-secondary">Più tardi</button>
+    </div>
+  </section>
 
-    <!-- EXLORE / VICINO A TE -->
-    <section id="page-explore" class="page">
-      <div class="head-band">
-        <div class="loc-text">
-          🎯 Attiva la posizione per vedere i cani vicino a te
-        </div>
-        <div class="loc-actions">
-          <button id="btn-enable-geo" class="pill primary">Attiva</button>
-          <button id="btn-later" class="pill">Più tardi</button>
-        </div>
-      </div>
+  <!-- Tabs -->
+  <section class="tabs">
+    <button class="tab active">Vicino a te</button>
+    <button class="tab">Scorri</button>
+    <button class="tab">Match</button>
+  </section>
 
-      <div class="tabs">
-        <button data-tab="nearby" class="tab is-active">Vicino a te</button>
-        <button data-tab="swipe" class="tab">Scorri</button>
-        <button data-tab="matches" class="tab">Match</button>
+  <!-- Card dei cani -->
+  <main class="cards">
+    <div class="card">
+      <img src="cane1.jpg" alt="Cane 1">
+      <div class="card-info">
+        <h2>Luna, 1</h2>
+        <p>Jack Russell</p>
       </div>
+      <div class="actions">
+        <button class="dislike">❌</button>
+        <button class="like">💚</button>
+      </div>
+    </div>
 
-      <!-- LISTE CONTENUTO -->
-      <div id="view-nearby" class="view is-active">
-        <div id="nearby-grid" class="grid"></div>
+    <div class="card">
+      <img src="cane2.jpg" alt="Cane 2">
+      <div class="card-info">
+        <h2>Rocky, 3</h2>
+        <p>Labrador</p>
       </div>
+      <div class="actions">
+        <button class="dislike">❌</button>
+        <button class="like">💚</button>
+      </div>
+    </div>
 
-      <div id="view-swipe" class="view">
-        <div id="swipe-card" class="swipe-wrap"></div>
-        <div class="swipe-actions">
-          <button id="btn-dislike" class="round red" aria-label="No">
-            ✖
-          </button>
-          <button id="btn-like" class="round green" aria-label="Mi piace">
-            ❤
-          </button>
-        </div>
+    <div class="card">
+      <img src="cane3.jpg" alt="Cane 3">
+      <div class="card-info">
+        <h2>Bella, 2</h2>
+        <p>Shiba Inu</p>
       </div>
+      <div class="actions">
+        <button class="dislike">❌</button>
+        <button class="like">💚</button>
+      </div>
+    </div>
 
-      <div id="view-matches" class="view">
-        <div id="matches-grid" class="grid"></div>
-        <p id="matches-empty" class="empty">Ancora nessun match. Metti qualche ❤!</p>
+    <div class="card">
+      <img src="cane4.jpg" alt="Cane 4">
+      <div class="card-info">
+        <h2>Max, 4</h2>
+        <p>Golden Retriever</p>
       </div>
-    </section>
+      <div class="actions">
+        <button class="dislike">❌</button>
+        <button class="like">💚</button>
+      </div>
+    </div>
   </main>
 
   <script src="app.js"></script>
