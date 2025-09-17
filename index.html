@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=11" />
+  <link rel="stylesheet" href="./style.css?v=13" />
 </head>
 <body>
   <header class="topbar">
@@ -16,20 +16,22 @@
     </nav>
   </header>
 
-  <section class="hero">
+  <!-- VIEW 1: HERO -->
+  <section id="hero" class="hero">
     <div class="logo-wrap">
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- Link che fa scroll alla lista -->
-    <a href="#cardsTop" id="enterBtn" class="btn-primary">Entra</a>
+    <!-- clic: passa alla VIEW 2 -->
+    <button id="enterBtn" class="btn-primary" type="button">Entra</button>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
     </p>
   </section>
 
-  <main id="app" class="app">
+  <!-- VIEW 2: LISTA (stessa pagina ma “schermata” diversa) -->
+  <main id="listView" class="app" aria-hidden="true">
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -47,24 +49,53 @@
       <button class="tab" data-view="match">Match</button>
     </div>
 
-    <!-- Bersaglio per lo scroll -->
     <div id="cardsTop" aria-hidden="true"></div>
-
-    <!-- Le card vengono riempite dal tuo app.js -->
     <section id="cards" class="grid"></section>
   </main>
 
-  <!-- Tieni il TUO app.js, non serve cambiarlo -->
+  <!-- NAV: cambia schermata senza toccare il tuo app.js -->
   <script>
-    // Fallback nel caso qualche JS altrove facesse preventDefault
-    document.addEventListener('DOMContentLoaded', function(){
+    (function () {
+      const body = document.body;
+      const hero = document.getElementById('hero');
+      const list = document.getElementById('listView');
       const btn = document.getElementById('enterBtn');
-      btn.addEventListener('click', function(){
-        // se l'ancora fosse bloccata da JS esterni, forzo l'hash:
-        setTimeout(() => { if(location.hash !== '#cardsTop') location.hash = '#cardsTop'; }, 0);
-      }, {passive:true});
-    });
+
+      function showHero() {
+        body.classList.remove('show-list');
+        hero.setAttribute('aria-hidden', 'false');
+        list.setAttribute('aria-hidden', 'true');
+        if (location.hash === '#list') history.replaceState({}, '', '#');
+        window.scrollTo(0, 0);
+      }
+
+      function showList(push = true) {
+        body.classList.add('show-list');
+        hero.setAttribute('aria-hidden', 'true');
+        list.setAttribute('aria-hidden', 'false');
+        if (push && location.hash !== '#list') history.pushState({v:'list'}, '', '#list');
+        window.scrollTo(0, 0);
+      }
+
+      // click su “Entra” -> lista (schermata 2)
+      btn.addEventListener('click', () => showList(true));
+
+      // back/forward del browser
+      window.addEventListener('popstate', () => {
+        if (location.hash === '#list') showList(false);
+        else showHero();
+      });
+
+      // deep-link: se apri con #list, parti già sulla lista
+      if (location.hash === '#list') {
+        showList(false);
+      } else {
+        showHero();
+      }
+    })();
   </script>
+
+  <!-- Tieni il TUO app.js così com’è -->
   <script src="./app.js?v=9"></script>
 </body>
 </html>
