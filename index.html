@@ -4,10 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=9" />
+  <link rel="stylesheet" href="./style.css?v=10" />
 </head>
 <body>
-  <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand">Plutoo</div>
     <nav class="auth">
@@ -17,20 +16,20 @@
     </nav>
   </header>
 
-  <!-- HERO (HOME) -->
   <section class="hero">
     <div class="logo-wrap">
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
-    <button id="enterBtn" class="btn-primary">Entra</button>
+
+    <!-- QUI: link ancora, non solo bottone -->
+    <a href="#app" id="enterBtn" class="btn-primary">Entra</a>
+
     <p class="subtitle">
       Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
     </p>
   </section>
 
-  <!-- APP -->
   <main id="app" class="app">
-    <!-- Banner geolocalizzazione -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -42,14 +41,12 @@
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" data-view="near">Vicino a te</button>
       <button class="tab" data-view="browse">Scorri</button>
       <button class="tab" data-view="match">Match</button>
     </div>
 
-    <!-- Cards -->
     <section id="cards" class="grid"></section>
   </main>
 
