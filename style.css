@@ -1,6 +1,7 @@
 /* scroll fluido anche senza JS */
 html{ scroll-behavior:smooth }
-
+html { scroll-behavior: smooth; }      /* scroll fluido */
+#cardsTop { scroll-margin-top: 90px; } /* evita che il target resti coperto, regola il valore se serve */
 /* ====== Reset ====== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 img { display: block; max-width: 100%; height: auto; }
