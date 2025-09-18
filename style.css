@@ -1,98 +1,58 @@
-/* Reset + base */
-* { box-sizing:border-box; margin:0; padding:0 }
-:root{
-  --bg1:#ffe0d1; --bg2:#e5c7ff;
-  --card:#fff; --ink:#1f2937; --muted:#6b7280;
-  --brand:#7c3aed; --brand2:#ef008f;
-  --ok:#10b981; --no:#ef4444;
-  --chip:#f3f4f6;
-  --radius:22px;
-}
-html,body{height:100%}
-body{
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  color:var(--ink);
-  background:linear-gradient(180deg,var(--bg1),var(--bg2));
-}
+/* RESET */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#1f2937;background:#fde2e4}
+img{display:block;max-width:100%}
 
-/* Topbar */
-.topbar{
-  height:56px; display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px; position:sticky; top:0; background:linear-gradient(180deg,var(--bg1),var(--bg2));
-  z-index:10;
-}
+/* LAYOUT comuni */
+.view{min-height:100dvh;background:linear-gradient(180deg,#ffe6dc 0%,#e7c7ff 100%);padding:16px 16px 40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 4px}
 .topbar .brand{font-weight:700}
-.topbar .back{color:#6d28d9; text-decoration:none}
+.back{color:#7c3aed;text-decoration:none}
+.auth .link{color:#6d28d9;text-decoration:none}
+.auth .dot{margin:0 6px;color:#b6a7d9}
 
-/* Auth right */
-.auth{display:flex; align-items:center; gap:10px}
-.auth .dot{color:#a78bfa}
-.auth .link{color:#6d28d9; text-decoration:none}
+/* HOME */
+.hero-card{margin:12px auto 16px;max-width:520px;aspect-ratio:3/4;border-radius:28px;background:#f2e6ff;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 40px rgba(0,0,0,.15)}
+.logo{width:78%;height:auto}
+.btn-primary{display:inline-block;margin:8px auto 12px;padding:14px 26px;border-radius:14px;background:linear-gradient(90deg,#5b21b6,#ec4899);color:#fff;text-decoration:none;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.subtitle{color:#4b5563;text-align:center;max-width:520px;margin:0 auto}
 
-/* HERO */
-.hero{min-height:100dvh; display:flex; flex-direction:column; align-items:center; gap:20px; padding:20px}
-.logo-wrap{
-  width:90%; max-width:520px; background:#f2e8ff; border-radius:28px; padding:24px;
-  box-shadow:0 25px 50px rgba(0,0,0,.15) inset, 0 15px 30px rgba(0,0,0,.08);
-}
-.logo-img{width:100%; display:block; border-radius:12px}
-.btn-primary{
-  display:inline-block; padding:14px 28px; border-radius:999px; color:#fff; text-decoration:none;
-  font-weight:700; background:linear-gradient(90deg,var(--brand),var(--brand2)); box-shadow:0 8px 20px rgba(124,58,237,.35)
-}
-.subtitle{max-width:600px; text-align:center; color:var(--muted)}
-
-/* Location card */
-.location-card{
-  margin:14px 16px; background:var(--card); border-radius:16px; padding:14px; display:flex; justify-content:space-between; align-items:center;
-  box-shadow:0 10px 30px rgba(0,0,0,.06)
-}
-.location-card .left{display:flex; gap:12px; align-items:center}
+/* CARD posizione */
+.location-card{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 12px 30px rgba(0,0,0,.1);margin:6px 0 12px}
+.location-card .left{display:flex;align-items:center;gap:12px}
 .location-card .title{font-weight:600}
-.chip{background:var(--chip); border:none; border-radius:999px; padding:10px 14px}
-.chip-primary{background:linear-gradient(90deg,var(--brand),var(--brand2)); color:#fff}
+.chip{border:none;border-radius:999px;padding:10px 16px;background:#f3f4f6}
+.chip-primary{background:linear-gradient(90deg,#5b21b6,#ec4899);color:#fff}
 
-/* Tabs */
-.tabs{display:flex; gap:12px; padding:0 16px 10px}
-.tab{border:none; border-radius:999px; padding:10px 16px; background:#efe8ff; color:#6d28d9}
-.tab.active{background:#5b21b6; color:#fff}
+/* TABS */
+.tabs{display:flex;gap:12px;margin:8px 0 12px}
+.tab{padding:10px 16px;border-radius:999px;background:#efe7ff;border:none;color:#5b21b6}
+.tab.active{background:#5b21b6;color:#fff}
 
-/* Grid & cards */
-.grid{padding:0 12px 60px; display:grid; gap:16px}
-.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-.grid.one{grid-template-columns:1fr}
+/* GRIGLIA LISTA: 2 colonne anche su mobile */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.12)}
+.card .pic{position:relative}
+.card .pic img{width:100%;height:190px;object-fit:cover}
+.badge{position:absolute;top:10px;right:10px;padding:6px 10px;background:#fff;border-radius:999px;font-size:12px}
+.dot{position:absolute;left:10px;top:10px;width:12px;height:12px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px #fff}
+.card .body{padding:12px}
+.name{font-weight:800;margin-bottom:2px}
+.breed{color:#6b7280;margin-bottom:10px}
+.actions{display:flex;gap:14px;justify-content:center;margin:8px 0 4px}
+.btn-round{width:64px;height:64px;border-radius:50%;border:none;font-size:26px;display:grid;place-items:center;color:#fff;box-shadow:0 6px 12px rgba(0,0,0,.2)}
+.btn-no{background:#ef4444}
+.btn-yes{background:#10b981}
+.btn-round:active{transform:scale(.98)}
 
-.card{background:var(--card); border-radius:18px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.08)}
-.pic{position:relative; aspect-ratio:16/11; overflow:hidden}
-.pic img{width:100%; height:100%; object-fit:cover; display:block}
-.badge{
-  position:absolute; top:10px; right:10px; background:#fff; color:#4b5563; font-weight:700; border-radius:999px; padding:6px 10px; box-shadow:0 6px 16px rgba(0,0,0,.15)
-}
-.pic .dot{
-  position:absolute; top:12px; left:12px; width:12px; height:12px; background:#22c55e; border:2px solid #fff; border-radius:50%
-}
+/* SCORRI: singola card grande */
+.single-wrap{max-width:560px;margin:0 auto}
+.single .pic img{height:280px}
 
-.body{padding:14px 16px}
-.name{font-size:20px; font-weight:800}
-.breed{color:var(--muted); margin-top:4px}
-.actions{display:flex; gap:18px; justify-content:center; padding:14px 0}
-.btn-round{
-  width:66px; height:66px; border-radius:50%; border:none; box-shadow:0 8px 20px rgba(0,0,0,.15);
-  font-size:28px; line-height:66px; text-align:center; background:#fff
-}
-.btn-no{border:4px solid var(--no)}
-.btn-yes{border:4px solid var(--ok)}
-
-/* Detail */
-.detail{min-height:100dvh}
-.hidden{display:none}
-.dogsheet{max-width:900px; margin:10px auto 40px; background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.1)}
-.dphoto{width:100%; aspect-ratio:16/10; object-fit:cover; display:block}
-.dinfo{padding:16px}
-.dmeta{color:var(--muted); margin:6px 0 10px}
-.drow{margin:6px 0}
-
-/* Small phones: per “Scorri” forziamo 1 colonna automaticamente quando .one è attivo */
-@media (min-width: 820px){
-  .grid.two{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
+/* PROFILO */
+.profile{max-width:740px;margin:0 auto;background:#fff;border-radius:20px;padding:12px;box-shadow:0 10px 26px rgba(0,0,0,.12)}
+.profile .hero{border-radius:16px;overflow:hidden}
+.profile .title{font-size:22px;font-weight:800;margin:10px 4px 4px}
+.profile .sub{color:#6b7280;margin:0 4px 12px}
+dl{display:grid;grid-template-columns:120px 1fr;gap:10px 14px}
+dt{color:#6b7280}
