@@ -1,90 +1,123 @@
-/* ===== Dataset demo (tutti online per non “perdere” cani) ===== */
+/* v1.3 – Adattato al tuo HTML “lungo” (Entra = <a href="#list">, tab senza data-attr) */
+
+/* ===== Dati demo (tutti online) ===== */
 const dogs = [
   { id:1, name:'Luna',  age:1, breed:'Jack Russell',     distance:2.2, image:'./dog1.jpg',
-    online:true,  char:'Giocherellona, curiosa', energy:'Alta', mate:'Convive bene con altri cani', zone:'Centro' , verified:true },
+    online:true, about:'Cucciola sprint, ama inseguire la pallina.',
+    temper:'Giocherellona', energy:'Alta', social:'Ottima con cani piccoli', area:'Centro', verified:true },
   { id:2, name:'Rocky', age:3, breed:'Labrador',         distance:1.6, image:'./dog2.jpg',
-    online:true,  char:'Dolce e paziente',    energy:'Media', mate:'Ottimo con bambini',         zone:'Lungomare', verified:true },
+    online:true, about:'Socievole, adora correre al parco.',
+    temper:'Dolce', energy:'Media', social:'Perfetto con bimbi', area:'Lungomare', verified:true },
   { id:3, name:'Bella', age:2, breed:'Shiba Inu',        distance:3.2, image:'./dog3.jpg',
-    online:true,  char:'Indipendente',        energy:'Media', mate:'Meglio cani piccoli',        zone:'Parco Nord', verified:false },
+    online:true, about:'Tranquilla, passeggiate soft.',
+    temper:'Indipendente', energy:'Media', social:'Selettiva', area:'Parco Nord', verified:false },
   { id:4, name:'Max',   age:4, breed:'Golden Retriever', distance:5.9, image:'./dog4.jpg',
-    online:true,  char:'Affettuoso',          energy:'Alta',  mate:'Ama compagnia',              zone:'Periferia', verified:true },
+    online:true, about:'Super coccolone, educatissimo.',
+    temper:'Gentile', energy:'Alta', social:'Ama compagnia', area:'Periferia', verified:true },
+  // quinto per riempire di più la griglia (riusa un’immagine)
+  { id:5, name:'Maya',  age:2, breed:'Border Collie',    distance:2.9, image:'./dog2.jpg',
+    online:true, about:'Intelligentissima e attiva.',
+    temper:'Vivace', energy:'Altissima', social:'Ottima con cani energici', area:'Villa', verified:true },
 ];
 
-/* ===== Stato ===== */
-let matches = new Set();
-let currentView = 'near';   // 'near' | 'browse' | 'match'
-let swipeIndex  = 0;        // per “Scorri”
+let liked = new Set();
+let currentView = 'near';     // 'near' | 'browse' | 'match'
+let browseIndex  = 0;
 
 /* ===== Helpers ===== */
 const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
-const show = (el, v) => (el.hidden = !v);
+const show = (el, on) => { el.hidden = !on; };
 
-/* ===== Routing su hash ===== */
-function route() {
-  const hash = location.hash || '#home';
-  show($('#home'),    hash === '#home');
-  show($('#list'),    hash === '#list');
-  show($('#profile'), hash.startsWith('#profile'));
-
-  if (hash === '#list') {
-    setView(currentView);
-    window.scrollTo(0,0); // niente “appendi sotto”
-  } else if (hash.startsWith('#profile')) {
-    const id = Number(new URLSearchParams(hash.split('?')[1]).get('id'));
-    openProfile(id);
+/* ===== Router: #detail-<id> gestito via JS, #list/#home via CSS :target ===== */
+function route(){
+  const h = location.hash || '#home';
+  if (h.startsWith('#detail-')) {
+    // nascondi list & home (anche se :target mostra list, lo forziamo)
+    $('#list').style.display = 'none';
+    $('#home').style.display = 'none';
+    show($('#detail'), true);
+    const id = Number(h.replace('#detail-',''));
+    openDetail(id);
+  } else {
+    // ritorna il controllo a CSS :target
+    $('#list').style.display = '';
+    $('#home').style.display = '';
+    show($('#detail'), false);
+    if (h === '#list') {
+      // quando entri in list, renderizza la vista attuale e scrollTop
+      render();
+      window.scrollTo(0,0);
+    }
   }
 }
 window.addEventListener('hashchange', route);
 
-/* ===== Render griglia a coppie ===== */
-function renderGrid(list) {
-  const wrap = $('#grid');
-  wrap.innerHTML = '';
-  list.forEach(d => {
-    const card = document.createElement('article');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="pic">
-        <img src="${d.image}" alt="Foto di ${d.name}">
-        <span class="badge">${d.distance.toFixed(1)} km</span>
-        ${d.online ? '<span class="dot"></span>' : ''}
-      </div>
-      <div class="body">
-        <div class="name">${d.name}, ${d.age}</div>
-        <div class="breed">${d.breed}</div>
-        <div class="actions">
-          <button class="btn-round btn-no" aria-label="No"><span class="emoji">😭</span></button>
-          <button class="btn-round btn-yes" aria-label="Mi piace"><span class="emoji">❤️</span></button>
-        </div>
-      </div>
-    `;
-    // apri profilo
-    card.querySelector('.pic').addEventListener('click', () => {
-      location.hash = `#profile?id=${d.id}`;
-    });
-    // like / dislike
-    card.querySelector('.btn-yes').addEventListener('click', () => { matches.add(d.id); });
-    card.querySelector('.btn-no').addEventListener('click',  () => {});
-    wrap.appendChild(card);
-  });
-}
-
-/* ===== Deck singola card (Scorri) ===== */
-function renderDeck(list) {
-  const card = $('#deckCard');
-  card.innerHTML = '';
-  if (list.length === 0) {
-    card.innerHTML = `<div class="card body" style="padding:20px">Nessun elemento.</div>`;
+/* ===== Render LIST ===== */
+function render(){
+  if (currentView === 'browse') {
+    show($('#deck'), true);
+    show($('#cards'), false);
+    const pool = [...dogs]; // tutti (tutti online in demo)
+    if (pool.length === 0) { $('#deckCard').innerHTML = `<div style="padding:16px">Nessun amico.</div>`; return; }
+    if (browseIndex >= pool.length) browseIndex = 0;
+    paintDeck(pool[browseIndex]);
     return;
   }
-  if (swipeIndex >= list.length) swipeIndex = 0;
-  const d = list[swipeIndex];
 
+  // near/match → griglia a coppie
+  show($('#deck'), false);
+  show($('#cards'), true);
+
+  let list = [...dogs];
+  if (currentView === 'near') {
+    list = list.filter(d => d.online).sort((a,b)=> a.distance - b.distance);
+  } else { // match
+    list = list.filter(d => liked.has(d.id));
+  }
+
+  const wrap = $('#cards');
+  wrap.innerHTML = '';
+  if (list.length === 0) {
+    wrap.innerHTML = `<p style="color:#6b7280;padding:10px 0">Ancora nessun match. Premi ❤️.</p>`;
+    return;
+  }
+
+  list.forEach(d => wrap.appendChild(makeCard(d)));
+}
+
+function makeCard(d){
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="pic" data-open="${d.id}">
+      <img loading="lazy" src="${d.image}" alt="Foto di ${d.name}">
+      <span class="badge">${d.distance.toFixed(1)} km</span>
+      ${d.online ? '<span class="dot"></span>' : ''}
+    </div>
+    <div class="body">
+      <div class="name">${d.name}, ${d.age}</div>
+      <div class="breed">${d.breed}</div>
+      <div class="actions">
+        <button class="btn-round btn-no"  aria-label="No"><span class="emoji">🥲</span></button>
+        <button class="btn-round btn-yes" aria-label="Mi piace"><span class="emoji">❤️</span></button>
+      </div>
+    </div>
+  `;
+  // apri profilo
+  card.querySelector('[data-open]').addEventListener('click', ()=>{ location.hash = `#detail-${d.id}`; });
+  // like
+  card.querySelector('.btn-yes').addEventListener('click', ()=> liked.add(d.id));
+  return card;
+}
+
+/* ===== Scorri (una card) ===== */
+function paintDeck(d){
+  const card = $('#deckCard');
   card.className = 'card card-big';
   card.innerHTML = `
-    <div class="pic">
-      <img src="${d.image}" alt="Foto di ${d.name}">
+    <div class="pic" data-open="${d.id}">
+      <img loading="lazy" src="${d.image}" alt="Foto di ${d.name}">
       <span class="badge">${d.distance.toFixed(1)} km</span>
       ${d.online ? '<span class="dot"></span>' : ''}
     </div>
@@ -93,61 +126,46 @@ function renderDeck(list) {
       <div class="breed">${d.breed}</div>
     </div>
   `;
+  card.querySelector('[data-open]').addEventListener('click', ()=>{ location.hash = `#detail-${d.id}`; });
 
-  card.querySelector('.pic').addEventListener('click', () => {
-    location.hash = `#profile?id=${d.id}`;
-  });
-
-  $('#swipeYes').onclick = () => { matches.add(d.id); swipeIndex++; renderDeck(list); };
-  $('#swipeNo').onclick  = () => { swipeIndex++; renderDeck(list); };
+  $('#swipeYes').onclick = ()=>{ liked.add(d.id); browseIndex = (browseIndex+1)%dogs.length; paintDeck(dogs[browseIndex]); };
+  $('#swipeNo').onclick  = ()=>{ browseIndex = (browseIndex+1)%dogs.length; paintDeck(dogs[browseIndex]); };
 }
 
-/* ===== Tabs / viste ===== */
-function setView(view) {
-  currentView = view;
-  $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.view === view));
-
-  let list = [...dogs];
-  if (view === 'near')  list = list.filter(d => d.online).sort((a,b)=>a.distance-b.distance);
-  if (view === 'match') list = list.filter(d => matches.has(d.id));
-
-  const useDeck = (view === 'browse');  // “Scorri” = una sola card
-  show($('#deck'), useDeck);
-  show($('#grid'), !useDeck);
-
-  if (useDeck) { renderDeck(list); }
-  else         { renderGrid(list);  }
-}
-
-/* ===== Profilo ===== */
-function openProfile(id) {
+/* ===== Dettaglio ===== */
+function openDetail(id){
   const d = dogs.find(x => x.id === id);
-  if (!d) return location.hash = '#list';
+  if (!d) { location.hash = '#list'; return; }
+  $('#dPhoto').src = d.image; $('#dPhoto').alt = `Foto di ${d.name}`;
+  $('#dName').textContent = `${d.name}, ${d.age}`;
+  $('#dMeta').textContent = `${d.breed} · ${d.distance.toFixed(1)} km ${d.online ? '· online' : ''} ${d.verified ? '· 🔒 profilo sicuro' : ''}`;
+  $('#dAbout').textContent = d.about || '';
+  $('#dTemper').textContent = d.temper || '—';
+  $('#dEnergy').textContent = d.energy || '—';
+  $('#dSocial').textContent = d.social || '—';
+  $('#dArea').textContent   = d.area   || '—';
 
-  $('#pImg').src = d.image;
-  $('#pImg').alt = `Foto di ${d.name}`;
-  $('#pName').textContent = `${d.name}, ${d.age}`;
-  $('#pBreed').textContent = d.breed;
-  $('#pChar').textContent = d.char;
-  $('#pEnergy').textContent = d.energy;
-  $('#pMate').textContent = d.mate;
-  $('#pZone').textContent = d.zone;
-  $('#pBadge').style.display = d.verified ? 'inline-flex' : 'none';
-
-  $('#pYes').onclick = () => { matches.add(d.id); alert('Aggiunto ai preferiti ❤'); };
-  $('#pNo').onclick  = () => { alert('Capito 😭'); };
+  // azioni nel profilo
+  $('#pYes').onclick = ()=>{ liked.add(d.id); alert('Aggiunto ai preferiti ❤'); };
+  $('#pNo').onclick  = ()=>{};
 }
 
-/* ===== Eventi iniziali ===== */
-$('#enterBtn').addEventListener('click', (e)=>{
-  e.preventDefault();
-  location.hash = '#list';
-  window.scrollTo(0,0);
+/* ===== Tabs (senza data-view nell’HTML): mappo per indice ===== */
+const tabs = $$('.tab');
+const views = ['near','browse','match'];
+tabs.forEach((btn, i) => {
+  btn.addEventListener('click', () => {
+    tabs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = views[i] || 'near';
+    render();
+  });
 });
-$('#locOn').addEventListener('click', () => alert('Posizione attivata (demo).'));
-$('#locLater').addEventListener('click', () => alert('Ok, più tardi.'));
 
-$$('.tab').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+/* ===== Geo demo ===== */
+$('#locOn').addEventListener('click', ()=> alert('Posizione attivata (demo).'));
+$('#locLater').addEventListener('click', ()=> alert('Ok, più tardi.'));
 
-route();                 // prima render
-if (!location.hash) location.hash = '#home';
+/* ===== Avvio ===== */
+route();                // applica subito la logica hash/home/list/detail
+// se non c’è hash, resta su HOME (CSS gestisce)
