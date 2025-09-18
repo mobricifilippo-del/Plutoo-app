@@ -1,13 +1,6 @@
 :root{
-  --bg1:#ffe1c8;
-  --bg2:#eec9ff;
-  --card:#ffffff;
-  --ink:#1f2937;
-  --muted:#6b7280;
-  --brand1:#6c3bff;
-  --brand2:#ff4aa2;
-  --ok:#19c37d;
-  --no:#ff4d4d;
+  --bg1:#ffe1c8; --bg2:#eec9ff; --card:#ffffff; --ink:#1f2937; --muted:#6b7280;
+  --brand1:#6c3bff; --brand2:#ff4aa2; --ok:#19c37d; --no:#ff4d4d;
   --ring: 0 10px 30px rgba(0,0,0,.08);
 }
 
@@ -19,63 +12,48 @@ body{
   background:linear-gradient(180deg,var(--bg1),var(--bg2));
 }
 
-/* -------- topbar -------- */
+/* topbar */
 .topbar{
-  height:52px;
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:center;
-  padding:0 14px;
+  height:52px; display:grid; grid-template-columns:1fr auto 1fr;
+  align-items:center; padding:0 14px;
 }
 .topbar .brand{ text-align:center; font-weight:700; }
 .topbar .back{ color:#5b5b5b; text-decoration:none; }
-.topbar .auth{
-  display:flex; gap:.5rem; justify-content:center; align-items:center;
-}
+.topbar .auth{ display:flex; gap:.5rem; justify-content:center; align-items:center; width:100%; }
 .topbar .auth .link{ color:#7c3aed; text-decoration:none; font-weight:600; }
 .topbar .auth .dot{ color:#c3b5ff; }
 
-/* home specific: keep auth centered */
+/* home: auth centrata sempre */
 .homebar{ grid-template-columns:1fr; }
 .homebar .auth.center{ justify-content:center; }
 
-/* -------- hero -------- */
+/* hero */
 .hero{
-  min-height:100dvh;
-  display:flex; flex-direction:column; align-items:center;
+  min-height:100dvh; display:flex; flex-direction:column; align-items:center;
   padding:16px 16px 32px;
 }
 .logo-wrap{
-  width:min(720px,92vw);
-  background:#eddafc7a;
-  border-radius:28px;
-  box-shadow:var(--ring);
-  padding:24px 16px;
-  margin-top:8px;
+  width:min(720px,92vw); background:#eddafc7a; border-radius:28px;
+  box-shadow:var(--ring); padding:24px 16px; margin-top:8px;
 }
 .logo-img{width:100%;height:auto;display:block;border-radius:20px}
 
 .btn-primary{
-  display:inline-block; margin:18px auto 12px; padding:14px 28px;
-  background:linear-gradient(135deg,var(--brand1),var(--brand2));
-  color:#fff; border:none; border-radius:14px; text-decoration:none; font-weight:700;
-  box-shadow:var(--ring);
+  display:inline-block; padding:14px 28px; background:linear-gradient(135deg,var(--brand1),var(--brand2));
+  color:#fff; border:none; border-radius:14px; text-decoration:none; font-weight:700; box-shadow:var(--ring);
+  margin:18px auto 12px;
+  /* forza al centro anche se qualcosa interferisce */
+  align-self:center;
 }
-.btn.primary{ /* alias */ }
-
-.btn.ghost{
-  background:#fff; color:var(--ink); border:1px solid #e5e7eb; border-radius:10px; padding:10px 14px;
-}
+.btn.ghost{ background:#fff; color:var(--ink); border:1px solid #e5e7eb; border-radius:10px; padding:10px 14px; }
 .small{ font-size:.9rem; padding:10px 14px; }
 
-/* subtitle */
 .subtitle{ color:var(--muted); text-align:center; max-width:28rem; }
 
-/* footer links */
 .site-footer{ display:flex; gap:.5rem; justify-content:center; align-items:center; margin:22px 0 8px; color:#9ca3af; }
 .site-footer .foot-link{ color:#8b5cf6; text-decoration:none; }
 
-/* -------- list view -------- */
+/* list view */
 .app{ min-height:100dvh; padding-bottom:32px; }
 .location-card{
   background:#fff; margin:12px 14px; padding:12px; border-radius:14px; box-shadow:var(--ring);
@@ -87,19 +65,13 @@ body{
 .chip-primary{ background:linear-gradient(135deg,var(--brand1),var(--brand2)); color:#fff; border:none; }
 .chip-outline{ background:#fff; }
 
-/* tabs + filter button */
-.toolbar{
-  display:flex; justify-content:space-between; align-items:center; gap:8px;
-  padding:0 14px; margin-top:6px;
-}
+/* tabs + filter */
+.toolbar{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:0 14px; margin-top:6px; }
 .tabs{ display:flex; gap:10px; }
-.tab{
-  padding:10px 14px; border-radius:999px; border:none;
-  background:#efe8ff; color:#4c1d95; font-weight:600;
-}
+.tab{ padding:10px 14px; border-radius:999px; border:none; background:#efe8ff; color:#4c1d95; font-weight:600; }
 .tab.active{ background:linear-gradient(135deg,var(--brand1),var(--brand2)); color:#fff; }
 
-/* filters panel */
+/* filtri */
 .filters{ background:#fff; margin:10px 14px; padding:12px; border-radius:14px; box-shadow:var(--ring); }
 .filters.hidden{ display:none; }
 .filters .row{ display:flex; gap:12px; align-items:center; margin:8px 0; }
@@ -107,31 +79,20 @@ body{
 .filters select{ flex:1; padding:10px; border:1px solid #e5e7eb; border-radius:10px; }
 
 /* cards */
-.grid{
-  display:grid; grid-template-columns:1fr 1fr; gap:14px;
-  padding:14px;
-}
+.grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:14px; }
 @media (max-width:640px){ .grid{ grid-template-columns:1fr 1fr; } }
-.card{
-  background:var(--card); border-radius:18px; overflow:hidden; box-shadow:var(--ring);
-}
+.card{ background:var(--card); border-radius:18px; overflow:hidden; box-shadow:var(--ring); }
 .pic{ position:relative; }
 .pic img{ width:100%; height:220px; object-fit:cover; display:block; }
-.badge{
-  position:absolute; top:12px; right:12px; background:#fff; padding:6px 10px; border-radius:999px; font-weight:700;
-  box-shadow:var(--ring);
-}
+.badge{ position:absolute; top:12px; right:12px; background:#fff; padding:6px 10px; border-radius:999px; font-weight:700; box-shadow:var(--ring); }
 .dot{ width:10px; height:10px; background:#19c37d; border-radius:50%; position:absolute; top:10px; left:10px; border:2px solid #fff; }
 .body{ padding:12px; }
 .name{ font-size:1.1rem; font-weight:800; }
 .breed{ color:var(--muted); margin-bottom:8px; }
 .actions{ display:flex; gap:16px; justify-content:flex-start; padding:4px 0 10px; }
-.btn-round{
-  width:56px; height:56px; border-radius:50%; border:none; box-shadow:0 6px 14px rgba(0,0,0,.12);
-  font-size:28px; display:grid; place-items:center; background:#fff;
-}
+.btn-round{ width:56px; height:56px; border-radius:50%; border:none; box-shadow:0 6px 14px rgba(0,0,0,.12); font-size:28px; display:grid; place-items:center; background:#fff; }
 .btn-no{ color:var(--no); }
 .btn-yes{ color:var(--ok); }
 
-/* browse = 1 card per riga */
+/* “Scorri” e “Match” = una card per riga */
 .grid.single{ grid-template-columns:1fr; }
