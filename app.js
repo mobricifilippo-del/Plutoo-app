@@ -1,4 +1,4 @@
-/* ====== Dataset demo ====== */
+/* === Dataset demo === */
 const dogs = [
   { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2, image:'./dog2.jpg', online:true  },
   { id:2, name:'Rocky', age:3, breed:'Labrador',          distance:1.6, image:'./dog1.jpg', online:true  },
@@ -7,43 +7,40 @@ const dogs = [
 ];
 
 let matches = new Set();
-let currentView = 'near';     // near | browse | match
-let browseIndex = 0;          // per "Scorri" (un cane alla volta)
+let currentView = 'near';      // near | browse | match
+let browseIndex = 0;           // indice per Scorri (una card alla volta)
 
-/* ====== Helpers ====== */
-const $  = sel => document.querySelector(sel);
-const $$ = sel => document.querySelectorAll(sel);
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
 
-/* ====== Render ====== */
-function render(){
+/* ===== Render ===== */
+function render() {
   const wrap = $('#cards');
   wrap.innerHTML = '';
 
-  let list = [...dogs];
+  let list = [];
 
   if (currentView === 'near') {
     wrap.classList.remove('single');
-    list = list.filter(d => d.online).sort((a,b)=>a.distance-b.distance);
+    list = dogs.filter(d=>d.online).sort((a,b)=>a.distance-b.distance);
   }
 
   if (currentView === 'browse') {
-    // mostra UNA sola card alla volta
     wrap.classList.add('single');
-    const item = dogs[browseIndex % dogs.length];
-    list = [item];
+    list = [ dogs[browseIndex % dogs.length] ];   // UNA card
   }
 
   if (currentView === 'match') {
     wrap.classList.remove('single');
-    list = list.filter(d => matches.has(d.id));
+    list = dogs.filter(d=>matches.has(d.id));
   }
 
-  if (list.length === 0) {
-    wrap.innerHTML = `<p style="color:#6b7280;padding:10px 0;text-align:center">Nessun risultato qui.</p>`;
+  if (!list.length) {
+    wrap.innerHTML = `<p style="color:#6b7280;padding:10px;text-align:center">Nessun risultato qui.</p>`;
     return;
   }
 
-  list.forEach(d => {
+  list.forEach(d=>{
     const card = document.createElement('article');
     card.className = 'card';
     card.innerHTML = `
@@ -56,58 +53,52 @@ function render(){
         <div class="name">${d.name}, ${d.age}</div>
         <div class="breed">${d.breed}</div>
         <div class="actions">
-          <button class="btn-round btn-no" data-act="no"  data-id="${d.id}" aria-label="Scarta">❌</button>
-          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" aria-label="Mi piace">❤</button>
+          <button class="btn-round btn-no"  data-act="no"  data-id="${d.id}" aria-label="Scarta">🥲</button>
+          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" aria-label="Mi piace">❤️</button>
         </div>
       </div>`;
     wrap.appendChild(card);
 
-    // click sulla card → profilo (placeholder hash)
-    card.addEventListener('click', (e)=>{
-      const isBtn = e.target.closest('button');
-      if (isBtn) return; // evita conflitti coi bottoni
+    // click card → profilo (placeholder)
+    card.addEventListener('click',(e)=>{
+      if (e.target.closest('button')) return;
       alert(`Profilo di ${d.name} (placeholder).`);
     });
   });
 }
 
-/* ====== Eventi ====== */
+/* ===== Eventi ===== */
 // Tabs
 $$('.tab').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+  btn.addEventListener('click',()=>{
     $$('.tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    currentView = btn.dataset.view;
+    currentView = btn.dataset.view;       // near | browse | match
     render();
   });
 });
-// attiva tab iniziale "Vicino a te"
+// Attiva tab iniziale
 document.querySelector('.tab[data-view="near"]').classList.add('active');
 
-// Like / Dislike
+// Like/No
 $('#cards').addEventListener('click', (e)=>{
   const t = e.target.closest('button[data-id]');
   if (!t) return;
   const id = Number(t.dataset.id);
 
-  if (t.dataset.act === 'yes') {
-    matches.add(id);
-  } else {
-    // niente, scartato
-  }
+  if (t.dataset.act === 'yes') matches.add(id);
 
   if (currentView === 'browse') {
-    browseIndex = (browseIndex + 1) % dogs.length;
+    browseIndex = (browseIndex + 1) % dogs.length;  // passa al prossimo
   } else {
-    // nel grid facciamo un leggero effetto e rerender
-    t.animate([{ transform:'scale(1)' },{ transform:'scale(1.08)' },{ transform:'scale(1)' }], { duration: 180 });
+    t.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:180});
   }
   render();
 });
 
-// Geoloc (demo)
-$('#locOn').addEventListener('click', ()=> alert('Posizione attivata (demo).'));
-$('#locLater').addEventListener('click', ()=> alert('Ok, più tardi.'));
+// Geo (demo)
+$('#locOn').addEventListener('click',()=>alert('Posizione attivata (demo).'));
+$('#locLater').addEventListener('click',()=>alert('Ok, più tardi.'));
 
-// Avvio
+// Start
 render();
