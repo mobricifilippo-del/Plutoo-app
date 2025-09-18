@@ -4,17 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=35" />
+  <link rel="stylesheet" href="./style.css?v=23" />
 </head>
 <body>
 
-  <!-- LISTA -->
+  <!-- LIST VIEW -->
   <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
       <a href="#home" class="back" aria-label="Indietro">← Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+        <a href="#" class="link">Accedi</a>
+        <span class="dot">·</span>
+        <a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
@@ -29,72 +31,51 @@
       </div>
     </div>
 
-    <div class="toolbar">
-      <div class="tabs">
-        <button class="tab active" data-view="near">Vicino a te</button>
-        <button class="tab" data-view="browse">Scorri</button>
-        <button class="tab" data-view="match">Match</button>
-      </div>
-      <button id="filterBtn" class="chip chip-outline">Filtri ▾</button>
+    <div class="tabs">
+      <button class="tab" data-view="near">Vicino a te</button>
+      <button class="tab" data-view="browse">Scorri</button>
+      <button class="tab" data-view="match">Match</button>
+      <button class="filters-btn" id="filtersBtn">Filtri ▾</button>
     </div>
-
-    <!-- Filtri -->
-    <section id="filters" class="filters hidden" aria-label="Filtri">
-      <div class="row">
-        <label for="breed">Razza</label>
-        <select id="breed">
-          <option value="">Qualsiasi</option>
-          <option>Jack Russell</option>
-          <option>Labrador</option>
-          <option>Shiba Inu</option>
-          <option>Golden Retriever</option>
-        </select>
-      </div>
-      <div class="row">
-        <label for="age">Età</label>
-        <select id="age">
-          <option value="">Qualsiasi</option>
-          <option value="0-1">Cucciolo (0–1)</option>
-          <option value="2-5">Giovane (2–5)</option>
-          <option value="6-99">Adulto (6+)</option>
-        </select>
-      </div>
-      <div class="row actions">
-        <button id="applyFilters" class="btn-primary small">Applica</button>
-        <button id="clearFilters" class="btn ghost small">Pulisci</button>
-      </div>
-    </section>
 
     <section id="cards" class="grid"></section>
 
-    <footer class="site-footer">
-      <a href="#" class="foot-link">Privacy</a><span class="dot">·</span><a href="#" class="foot-link">Termini</a>
+    <footer class="legal">
+      <a href="#" class="link">Privacy</a>
+      <span class="dot">·</span>
+      <a href="#" class="link">Termini</a>
     </footer>
   </main>
 
-  <!-- HOME -->
+  <!-- HOME (HERO) -->
   <section id="home" class="hero">
     <header class="topbar homebar">
+      <div class="brand-spacer"></div>
       <nav class="auth center">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+        <a href="#" class="link">Accedi</a>
+        <span class="dot">·</span>
+        <a href="#" class="link">Registrati</a>
       </nav>
+      <div class="brand-spacer"></div>
     </header>
 
     <div class="logo-wrap">
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
+    <a href="#list" class="btn-primary" id="enterLink" aria-label="Entra">Entra</a>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
     </p>
 
-    <footer class="site-footer">
-      <a href="#" class="foot-link">Privacy</a><span class="dot">·</span><a href="#" class="foot-link">Termini</a>
+    <footer class="legal home-legal">
+      <a href="#" class="link">Privacy</a>
+      <span class="dot">·</span>
+      <a href="#" class="link">Termini</a>
     </footer>
   </section>
 
-  <script src="./app.js?v=35"></script>
+  <script src="./app.js?v=23"></script>
 </body>
 </html>
