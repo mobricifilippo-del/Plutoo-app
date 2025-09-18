@@ -4,70 +4,91 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=31" />
+  <!-- CSS PERFETTO v1.3: NON TOCCARE -->
+  <link rel="stylesheet" href="./style.css?v=golden1" />
 </head>
 <body>
 
-  <!-- LIST -->
-  <main id="list" class="app" aria-label="Amici vicino a te">
+  <!-- ===== VIEW 2 – LIST (prima per usare :target) ===== -->
+  <main id="list" class="app" aria-label="Cani vicino a te">
     <header class="topbar">
-      <a href="#home" class="back" aria-label="Indietro">← Indietro</a>
+      <a href="#home" class="back">← Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
-    <div class="location-card">
+    <section class="location-card">
       <div class="left">
-        <span class="bullseye">🎯</span>
+        <span class="emoji">🎯</span>
         <div class="title">Attiva la posizione per vedere gli amici vicino a te</div>
       </div>
       <div class="right">
-        <button class="chip chip-primary" id="locOn">Attiva</button>
-        <button class="chip" id="locLater">Più tardi</button>
+        <button id="locOn" class="chip chip-primary">Attiva</button>
+        <button id="locLater" class="chip">Più tardi</button>
       </div>
-    </div>
+    </section>
 
-    <div class="tabs">
-      <button class="tab" data-view="near">Vicino a te</button>
+    <div class="tabs" role="tablist" aria-label="Viste">
+      <button class="tab active" data-view="near">Vicino a te</button>
       <button class="tab" data-view="browse">Scorri</button>
       <button class="tab" data-view="match">Match</button>
-      <button class="filters-btn" id="filtersBtn">Filtri ▾</button>
+
+      <!-- Filtri semplici (non rompono il layout) -->
+      <select id="breedFilter" class="chip" style="margin-left:auto">
+        <option value="">Razza (tutte)</option>
+        <option>Jack Russell</option>
+        <option>Labrador</option>
+        <option>Shiba Inu</option>
+        <option>Golden Retriever</option>
+      </select>
+      <select id="ageFilter" class="chip" style="margin-left:8px">
+        <option value="">Età (tutte)</option>
+        <option value="0-1">0–1</option>
+        <option value="2-3">2–3</option>
+        <option value="4+">4+</option>
+      </select>
     </div>
 
-    <section id="cards" class="grid"></section>
+    <!-- Vicino/Match: griglia 2 colonne -->
+    <section id="cards" class="grid" aria-live="polite"></section>
 
-    <footer class="legal">
-      <a href="#" class="link">Privacy</a><span class="dot">·</span><a href="#" class="link">Termini</a>
-    </footer>
+    <!-- Scorri: UNA card alla volta -->
+    <section id="deck" class="deck" hidden aria-live="polite"></section>
+
+    <!-- Dettaglio profilo -->
+    <section id="detail" class="detail" hidden>
+      <header class="topbar">
+        <a href="#list" class="back" id="closeDetail">← Indietro</a>
+        <div class="brand">Profilo</div>
+        <div></div>
+      </header>
+      <article class="dogsheet" id="dogsheet"></article>
+    </section>
   </main>
 
-  <!-- HOME -->
+  <!-- ===== VIEW 1 – HOME ===== -->
   <section id="home" class="hero">
-    <header class="topbar homebar">
-      <div class="brand-spacer"></div>
-      <nav class="auth center">
+    <header class="topbar">
+      <div></div>
+      <!-- Centro garantito senza toccare il CSS -->
+      <nav class="auth" style="justify-self:center">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
-      <div class="brand-spacer"></div>
+      <div></div>
     </header>
 
     <div class="logo-wrap">
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <a href="#list" class="btn-primary" id="enterLink" aria-label="Entra">Entra</a>
+    <!-- Link (non button) per attivare :target -->
+    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
 
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
-    </p>
-
-    <footer class="legal home-legal">
-      <a href="#" class="link">Privacy</a><span class="dot">·</span><a href="#" class="link">Termini</a>
-    </footer>
+    <p class="subtitle">Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.</p>
   </section>
 
-  <script src="./app.js?v=31"></script>
+  <script src="./app.js?v=golden1"></script>
 </body>
 </html>
