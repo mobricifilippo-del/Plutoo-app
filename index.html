@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=20" />
+  <link rel="stylesheet" href="./style.css?v=30" />
 </head>
 <body>
 
-  <!-- VIEW 2 messa PRIMA per usare :target ~ (niente JS) -->
+  <!-- VIEW 2 (LISTA) messa PRIMA per usare :target in CSS (niente JS per il cambio schermata) -->
   <main id="list" class="app" aria-label="Cani vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">&larr; Indietro</a>
+      <a href="#home" class="back" aria-label="Torna alla home">← Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
@@ -30,9 +30,9 @@
     </div>
 
     <div class="tabs">
-      <button class="tab active">Vicino a te</button>
-      <button class="tab">Scorri</button>
-      <button class="tab">Match</button>
+      <button class="tab active" data-view="near">Vicino a te</button>
+      <button class="tab" data-view="browse">Scorri</button>
+      <button class="tab" data-view="match">Match</button>
     </div>
 
     <section id="cards" class="grid"></section>
@@ -51,18 +51,15 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- LINK, non bottone: cambia hash => cambia schermata -->
-    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
+    <!-- Link che CAMBIA SCHERMATA (url diventa #list) -->
+    <a href="#list" class="btn-primary" id="enterBtn">Entra</a>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
     </p>
-
-    <!-- se vuoi un’anteprima subito sotto (facoltativa) -->
-    <div class="teaser"></div>
   </section>
 
-  <!-- Tuo JS di sempre -->
-  <script src="./app.js?v=9"></script>
+  <!-- JS -->
+  <script src="./app.js?v=30"></script>
 </body>
 </html>
