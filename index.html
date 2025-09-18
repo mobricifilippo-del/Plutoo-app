@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=30" />
+  <link rel="stylesheet" href="./style.css?v=100" />
 </head>
 <body>
 
-  <!-- VIEW 2 (LISTA) messa PRIMA per usare :target in CSS (niente JS per il cambio schermata) -->
-  <main id="list" class="app" aria-label="Cani vicino a te">
+  <!-- LISTA (prima per usare :target senza JS) -->
+  <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
       <a href="#home" class="back" aria-label="Torna alla home">← Indietro</a>
       <div class="brand">Plutoo</div>
@@ -18,10 +18,11 @@
       </nav>
     </header>
 
+    <!-- Banner posizione -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
-        <div class="title">Attiva la posizione per vedere i cani vicino a te</div>
+        <div class="title">Attiva la posizione per vedere gli <strong>amici</strong> vicino a te</div>
       </div>
       <div class="right">
         <button class="chip chip-primary" id="locOn">Attiva</button>
@@ -29,16 +30,22 @@
       </div>
     </div>
 
+    <!-- Tabs + bottone filtri -->
     <div class="tabs">
       <button class="tab active" data-view="near">Vicino a te</button>
       <button class="tab" data-view="browse">Scorri</button>
       <button class="tab" data-view="match">Match</button>
+
+      <button class="filters-chip" id="openFilters" aria-haspopup="dialog">
+        Filtri ▾ <span id="filtersCount" class="badge-count" hidden>0</span>
+      </button>
     </div>
 
+    <!-- Contenuto (griglia o singola card) -->
     <section id="cards" class="grid"></section>
   </main>
 
-  <!-- VIEW 1 (HOME / HERO) -->
+  <!-- HOME -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
@@ -51,15 +58,91 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- Link che CAMBIA SCHERMATA (url diventa #list) -->
     <a href="#list" class="btn-primary" id="enterBtn">Entra</a>
 
     <p class="subtitle">
-      Attiveremo la posizione per mostrarti i cani <strong>online</strong> vicino a te.
+      Attiveremo la posizione per mostrarti gli <strong>amici</strong> online vicino a te.
     </p>
   </section>
 
-  <!-- JS -->
-  <script src="./app.js?v=30"></script>
+  <!-- BOTTOM SHEET FILTRI -->
+  <div id="filterSheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+    <div class="sheet-backdrop" id="sheetClose"></div>
+    <div class="sheet-body">
+      <div class="sheet-head">
+        <div class="drag"></div>
+        <h2 id="sheetTitle">Filtri</h2>
+      </div>
+
+      <form id="filtersForm" class="filters-form">
+        <div class="field">
+          <label for="breedFilter">Razza</label>
+          <select id="breedFilter" name="breed">
+            <option value="all">Tutte</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="ageFilter">Età</label>
+          <select id="ageFilter" name="age">
+            <option value="all">Tutte</option>
+            <option value="puppy">Cucciolo (0–1)</option>
+            <option value="young">Giovane (1–3)</option>
+            <option value="adult">Adulto (3–7)</option>
+            <option value="senior">Senior (7+)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="coatFilter">Pelo</label>
+          <select id="coatFilter" name="coat">
+            <option value="all">Tutti</option>
+            <option value="corto">Corto</option>
+            <option value="medio">Medio</option>
+            <option value="lungo">Lungo</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label class="switch">
+            <input type="checkbox" id="onlineOnly" />
+            <span class="slider"></span>
+            <span class="lab">Solo online</span>
+          </label>
+
+          <div class="field small">
+            <label for="distanceFilter">Distanza (km)</label>
+            <input type="range" id="distanceFilter" min="1" max="100" step="1" value="50" />
+            <div class="range-val"><span id="distanceVal">50</span> km</div>
+          </div>
+        </div>
+
+        <div class="sheet-actions">
+          <button type="button" class="btn ghost" id="resetFilters">Azzera</button>
+          <button type="submit" class="btn primary">Applica</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PROFILO (SHEET) -->
+  <div id="profileSheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="profileTitle" hidden>
+    <div class="sheet-backdrop" id="profileClose"></div>
+    <div class="sheet-body profile">
+      <div class="sheet-head">
+        <div class="drag"></div>
+        <h2 id="profileTitle">Profilo</h2>
+      </div>
+
+      <div id="profileContent"></div>
+
+      <div class="sheet-actions">
+        <button class="btn danger" id="profileNo" aria-label="Scarta">😢 Scarta</button>
+        <button class="btn love" id="profileYes" aria-label="Mi piace">❤ Mi piace</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./app.js?v=100"></script>
 </body>
 </html>
