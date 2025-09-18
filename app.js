@@ -1,11 +1,11 @@
-/* ===== Dataset demo con info profilo ===== */
+/* ===== Dataset demo (tutti online per non “perdere” cani) ===== */
 const dogs = [
   { id:1, name:'Luna',  age:1, breed:'Jack Russell',     distance:2.2, image:'./dog1.jpg',
     online:true,  char:'Giocherellona, curiosa', energy:'Alta', mate:'Convive bene con altri cani', zone:'Centro' , verified:true },
   { id:2, name:'Rocky', age:3, breed:'Labrador',         distance:1.6, image:'./dog2.jpg',
     online:true,  char:'Dolce e paziente',    energy:'Media', mate:'Ottimo con bambini',         zone:'Lungomare', verified:true },
   { id:3, name:'Bella', age:2, breed:'Shiba Inu',        distance:3.2, image:'./dog3.jpg',
-    online:false, char:'Indipendente',        energy:'Media', mate:'Meglio cani piccoli',        zone:'Parco Nord', verified:false },
+    online:true,  char:'Indipendente',        energy:'Media', mate:'Meglio cani piccoli',        zone:'Parco Nord', verified:false },
   { id:4, name:'Max',   age:4, breed:'Golden Retriever', distance:5.9, image:'./dog4.jpg',
     online:true,  char:'Affettuoso',          energy:'Alta',  mate:'Ama compagnia',              zone:'Periferia', verified:true },
 ];
@@ -13,14 +13,14 @@ const dogs = [
 /* ===== Stato ===== */
 let matches = new Set();
 let currentView = 'near';   // 'near' | 'browse' | 'match'
-let swipeIndex  = 0;        // per la vista "Scorri"
+let swipeIndex  = 0;        // per “Scorri”
 
 /* ===== Helpers ===== */
 const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const show = (el, v) => (el.hidden = !v);
 
-/* ===== Routing semplice su hash ===== */
+/* ===== Routing su hash ===== */
 function route() {
   const hash = location.hash || '#home';
   show($('#home'),    hash === '#home');
@@ -28,7 +28,8 @@ function route() {
   show($('#profile'), hash.startsWith('#profile'));
 
   if (hash === '#list') {
-    setView(currentView);   // render secondo tab
+    setView(currentView);
+    window.scrollTo(0,0); // niente “appendi sotto”
   } else if (hash.startsWith('#profile')) {
     const id = Number(new URLSearchParams(hash.split('?')[1]).get('id'));
     openProfile(id);
@@ -36,7 +37,7 @@ function route() {
 }
 window.addEventListener('hashchange', route);
 
-/* ===== Render LISTA a coppie ===== */
+/* ===== Render griglia a coppie ===== */
 function renderGrid(list) {
   const wrap = $('#grid');
   wrap.innerHTML = '';
@@ -58,7 +59,7 @@ function renderGrid(list) {
         </div>
       </div>
     `;
-    // click apre profilo
+    // apri profilo
     card.querySelector('.pic').addEventListener('click', () => {
       location.hash = `#profile?id=${d.id}`;
     });
@@ -69,7 +70,7 @@ function renderGrid(list) {
   });
 }
 
-/* ===== Render DECK singola card (Scorri) ===== */
+/* ===== Deck singola card (Scorri) ===== */
 function renderDeck(list) {
   const card = $('#deckCard');
   card.innerHTML = '';
@@ -138,10 +139,15 @@ function openProfile(id) {
 }
 
 /* ===== Eventi iniziali ===== */
+$('#enterBtn').addEventListener('click', (e)=>{
+  e.preventDefault();
+  location.hash = '#list';
+  window.scrollTo(0,0);
+});
 $('#locOn').addEventListener('click', () => alert('Posizione attivata (demo).'));
 $('#locLater').addEventListener('click', () => alert('Ok, più tardi.'));
 
 $$('.tab').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
 
-route();           // prima render secondo hash
+route();                 // prima render
 if (!location.hash) location.hash = '#home';
