@@ -4,33 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=40" />
+  <link rel="stylesheet" href="./style.css?v=130" />
 </head>
 <body>
 
-  <!-- HOME -->
-  <section id="home" class="hero">
-    <header class="topbar">
-      <div></div>
-      <nav class="auth"><a href="#" class="link">Accedi</a> <span class="dot">·</span> <a href="#" class="link">Registrati</a></nav>
-    </header>
-
-    <div class="logo-wrap">
-      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
-    </div>
-
-    <!-- Bottone (niente href che fa scroll) -->
-    <button id="enterBtn" class="btn-primary">Entra</button>
-
-    <p class="subtitle">Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.</p>
-  </section>
-
-  <!-- LISTA -->
-  <main id="list" class="app" hidden>
+  <!-- VIEW LIST (prima, per usare :target ~ ) -->
+  <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
       <a href="#home" class="back">← Indietro</a>
       <div class="brand">Plutoo</div>
-      <nav class="auth"><a href="#" class="link">Accedi</a> <span class="dot">·</span> <a href="#" class="link">Registrati</a></nav>
+      <nav class="auth">
+        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+      </nav>
     </header>
 
     <div class="location-card">
@@ -45,53 +30,73 @@
     </div>
 
     <div class="tabs" role="tablist">
-      <button class="tab active" data-view="near">Vicino a te</button>
-      <button class="tab" data-view="browse">Scorri</button>
-      <button class="tab" data-view="match">Match</button>
+      <button class="tab active">Vicino a te</button>
+      <button class="tab">Scorri</button>
+      <button class="tab">Match</button>
     </div>
 
     <!-- Griglia a coppie -->
-    <section id="grid" class="grid" aria-live="polite"></section>
+    <section id="cards" class="grid" aria-live="polite"></section>
 
     <!-- Deck singola card (solo in “Scorri”) -->
     <section id="deck" class="deck" hidden>
       <article id="deckCard" class="card card-big"></article>
       <div class="swipe-actions">
-        <button id="swipeNo"  class="btn-round btn-no"  aria-label="No"><span class="emoji">😭</span></button>
+        <button id="swipeNo"  class="btn-round btn-no"  aria-label="No"><span class="emoji">🥲</span></button>
         <button id="swipeYes" class="btn-round btn-yes" aria-label="Mi piace"><span class="emoji">❤️</span></button>
       </div>
     </section>
   </main>
 
-  <!-- PROFILO -->
-  <section id="profile" class="profile" hidden>
+  <!-- VIEW HOME -->
+  <section id="home" class="hero">
+    <header class="topbar">
+      <div></div>
+      <nav class="auth">
+        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+      </nav>
+    </header>
+
+    <div class="logo-wrap">
+      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
+    </div>
+
+    <!-- Link (non bottone) per cambiare vista -->
+    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
+
+    <p class="subtitle">
+      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
+    </p>
+
+    <div class="teaser"></div>
+  </section>
+
+  <!-- VIEW DETTAGLIO (gestita da JS quando hash inizia per #detail-) -->
+  <section id="detail" class="detail" hidden aria-live="polite">
     <header class="topbar">
       <a href="#list" class="back">← Indietro</a>
       <div class="brand">Profilo</div>
       <div></div>
     </header>
 
-    <div class="profile-wrap">
-      <div class="profile-pic">
-        <img id="pImg" src="" alt="">
-        <span id="pBadge" class="badge safe" title="Profilo verificato">🔒 Sicuro</span>
+    <article class="dogsheet">
+      <img id="dPhoto" class="dphoto" alt="">
+      <div class="dinfo">
+        <h1 id="dName"></h1>
+        <div id="dMeta" class="dmeta"></div>
+        <p  id="dAbout" class="dabout"></p>
+        <div class="drow"><strong>Carattere:</strong> <span id="dTemper"></span></div>
+        <div class="drow"><strong>Energia:</strong>   <span id="dEnergy"></span></div>
+        <div class="drow"><strong>Convivenza:</strong> <span id="dSocial"></span></div>
+        <div class="drow"><strong>Zona:</strong>       <span id="dArea"></span></div>
+        <div class="profile-actions">
+          <button id="pNo"  class="btn-round btn-no"><span class="emoji">🥲</span></button>
+          <button id="pYes" class="btn-round btn-yes"><span class="emoji">❤️</span></button>
+        </div>
       </div>
-      <h1 id="pName" class="profile-name"></h1>
-      <div id="pBreed" class="profile-breed"></div>
-      <ul class="profile-info">
-        <li><strong>Carattere:</strong> <span id="pChar"></span></li>
-        <li><strong>Energia:</strong> <span id="pEnergy"></span></li>
-        <li><strong>Convivenza:</strong> <span id="pMate"></span></li>
-        <li><strong>Zona:</strong> <span id="pZone"></span></li>
-      </ul>
-
-      <div class="profile-actions">
-        <button id="pNo"  class="btn-round btn-no"><span class="emoji">😭</span></button>
-        <button id="pYes" class="btn-round btn-yes"><span class="emoji">❤️</span></button>
-      </div>
-    </div>
+    </article>
   </section>
 
-  <script src="./app.js?v=40"></script>
+  <script src="./app.js?v=130"></script>
 </body>
 </html>
