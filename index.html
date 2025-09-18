@@ -4,22 +4,51 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <meta name="theme-color" content="#6a39ff" />
-  <!-- PWA -->
+  <link rel="stylesheet" href="./style.css?v=21" />
+
+  <!-- Manifest e PWA -->
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="stylesheet" href="./style.css?v=140" />
+  <meta name="theme-color" content="#ff7ac6" />
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('Service Worker registrato'))
+        .catch(err => console.error('Errore SW:', err));
+    }
+  </script>
 </head>
 <body>
 
-  <!-- =================== LISTA (prima per :target) =================== -->
+  <!-- HERO / HOME -->
+  <section id="home" class="hero">
+    <header class="topbar">
+      <div></div>
+      <nav class="auth">
+        <a href="#" class="link">Accedi</a><span class="dot">·</span>
+        <a href="#" class="link">Registrati</a>
+      </nav>
+    </header>
+
+    <div class="logo-wrap">
+      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
+    </div>
+
+    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
+
+    <p class="subtitle">
+      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
+    </p>
+  </section>
+
+  <!-- LISTA CANI -->
   <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">← Indietro</a>
+      <a href="#home" class="back">&larr; Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
-        <a href="#privacy" class="link">Privacy</a><span class="dot">·</span>
-        <a href="#terms" class="link">Termini</a><span class="dot">·</span>
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+        <a href="#" class="link">Accedi</a><span class="dot">·</span>
+        <a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
@@ -34,143 +63,15 @@
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs" role="tablist">
-      <button class="tab active">Vicino a te</button>
-      <button class="tab">Scorri</button>
-      <button class="tab">Match</button>
-      <button id="openFilters" class="tab tab-ghost" aria-controls="filters">Filtri ⤵︎</button>
+    <div class="tabs">
+      <button class="tab active" data-view="near">Vicino a te</button>
+      <button class="tab" data-view="browse">Scorri</button>
+      <button class="tab" data-view="match">Match</button>
     </div>
 
-    <!-- Griglia a coppie -->
-    <section id="cards" class="grid" aria-live="polite"></section>
-
-    <!-- Scorri (una card sola) -->
-    <section id="deck" class="deck" hidden>
-      <article id="deckCard" class="card card-big"></article>
-      <div class="swipe-actions">
-        <button id="swipeNo"  class="btn-round btn-no"  aria-label="No"><span class="emoji">🥲</span></button>
-        <button id="swipeYes" class="btn-round btn-yes" aria-label="Mi piace"><span class="emoji">❤️</span></button>
-      </div>
-    </section>
+    <section id="cards" class="grid"></section>
   </main>
 
-  <!-- =================== HOME =================== -->
-  <section id="home" class="hero">
-    <header class="topbar">
-      <div></div>
-      <nav class="auth">
-        <a href="#privacy" class="link">Privacy</a><span class="dot">·</span>
-        <a href="#terms" class="link">Termini</a><span class="dot">·</span>
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
-      </nav>
-    </header>
-
-    <div class="logo-wrap">
-      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
-    </div>
-
-    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
-
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
-    </p>
-
-    <div class="teaser"></div>
-  </section>
-
-  <!-- =================== DETTAGLIO PROFILO =================== -->
-  <section id="detail" class="detail" hidden aria-live="polite">
-    <header class="topbar">
-      <a href="#list" class="back">← Indietro</a>
-      <div class="brand">Profilo</div>
-      <div></div>
-    </header>
-
-    <article class="dogsheet">
-      <img id="dPhoto" class="dphoto" alt="">
-      <div class="dinfo">
-        <h1 id="dName"></h1>
-        <div id="dMeta" class="dmeta"></div>
-        <p  id="dAbout" class="dabout"></p>
-        <div class="drow"><strong>Carattere:</strong> <span id="dTemper"></span></div>
-        <div class="drow"><strong>Energia:</strong>   <span id="dEnergy"></span></div>
-        <div class="drow"><strong>Convivenza:</strong> <span id="dSocial"></span></div>
-        <div class="drow"><strong>Zona:</strong>       <span id="dArea"></span></div>
-
-        <div class="profile-actions">
-          <button id="pNo"  class="btn-round btn-no"><span class="emoji">🥲</span></button>
-          <button id="pYes" class="btn-round btn-yes"><span class="emoji">❤️</span></button>
-          <button id="pReport" class="btn-outline">Segnala profilo</button>
-        </div>
-      </div>
-    </article>
-  </section>
-
-  <!-- =================== FILTRI (drawer a tendina) =================== -->
-  <aside id="filters" class="drawer" hidden>
-    <div class="drawer-head">
-      <div class="drawer-title">Filtri ricerca</div>
-      <button id="closeFilters" class="btn-mini">✕</button>
-    </div>
-    <form id="filterForm" class="drawer-body">
-      <label class="fld">
-        <span>Razza</span>
-        <select id="fBreed">
-          <option value="">Qualsiasi</option>
-          <option>Labrador</option>
-          <option>Jack Russell</option>
-          <option>Shiba Inu</option>
-          <option>Golden Retriever</option>
-          <option>Border Collie</option>
-        </select>
-      </label>
-
-      <label class="fld">
-        <span>Taglia</span>
-        <select id="fSize">
-          <option value="">Qualsiasi</option>
-          <option value="S">Piccola</option>
-          <option value="M">Media</option>
-          <option value="L">Grande</option>
-        </select>
-      </label>
-
-      <label class="fld">
-        <span>Età (max)</span>
-        <input id="fAge" type="number" min="0" max="20" placeholder="es. 4" />
-      </label>
-
-      <div class="drawer-actions">
-        <button type="button" id="resetFilters" class="btn-secondary">Azzera</button>
-        <button type="submit" class="btn-primary small">Applica</button>
-      </div>
-    </form>
-  </aside>
-
-  <!-- =================== PRIVACY / TERMINI (modali pagina) =================== -->
-  <section id="privacy" class="policy">
-    <div class="policy-card">
-      <h2>Privacy</h2>
-      <p>Usiamo la posizione solo per mostrarti amici nelle vicinanze. Le foto caricate devono ritrarre esclusivamente animali. Puoi chiedere la rimozione in qualsiasi momento.</p>
-      <a class="btn-primary small" href="#home">Ok</a>
-    </div>
-  </section>
-
-  <section id="terms" class="policy">
-    <div class="policy-card">
-      <h2>Termini</h2>
-      <p>L’app è per incontri tra proprietari di animali; niente contenuti offensivi o non pertinenti. Account che violano le regole verranno sospesi.</p>
-      <a class="btn-primary small" href="#home">Ok</a>
-    </div>
-  </section>
-
-  <!-- =================== COOKIE/PRIVACY BANNER =================== -->
-  <div id="cookieBar" class="cookiebar" hidden>
-    <div>Usiamo cookie tecnici per far funzionare l’app. Leggi <a href="#privacy">Privacy</a>.</div>
-    <button id="cookieOk" class="btn-mini">Ok</button>
-  </div>
-
-  <script src="./app.js?v=140"></script>
+  <script src="./app.js?v=21"></script>
 </body>
 </html>
