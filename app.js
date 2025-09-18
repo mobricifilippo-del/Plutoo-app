@@ -1,4 +1,4 @@
-/* ===== Dataset demo (5 elementi) ===== */
+/* ===== Dataset demo ===== */
 const dogs = [
   { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2, image:'./dog1.jpg', online:true,
     profile:{ char:'Dolce e curiosa', energy:'Alta', home:'Bimbi ok • Gatti no', zone:'Roma EUR' } },
@@ -14,15 +14,13 @@ const dogs = [
 
 let matches = new Set();
 let currentView = 'near';    // near | scroll | match
-let scrollIndex = 0;         // indice per la vista “Scorri”
+let scrollIndex = 0;
 
 /* ===== Helpers ===== */
 const $  = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
-function byNear(list){
-  return list.filter(d => d.online).sort((a,b)=>a.distance-b.distance);
-}
+function byNear(list){ return list.filter(d => d.online).sort((a,b)=>a.distance-b.distance); }
 
 /* ===== Rendering ===== */
 function renderList(){
@@ -39,7 +37,6 @@ function renderList(){
     list = list.filter(d => matches.has(d.id));
     wrap.classList.add('two-cols');
   } else if (currentView === 'scroll'){
-    // single card
     const base = byNear(list);
     if (base.length === 0){ wrap.innerHTML = emptyMsg(); return; }
     if (scrollIndex >= base.length) scrollIndex = 0;
@@ -69,86 +66,58 @@ function cardEl(d){
       </div>
     </div>
   `;
-  // profilo al tap immagine o titolo
   el.querySelector('.pic img').addEventListener('click', ()=>openProfile(d));
   el.querySelector('.name').addEventListener('click', ()=>openProfile(d));
   return el;
 }
 
-function emptyMsg(){
-  return `<p class="muted" style="padding:14px;text-align:center">Nessun risultato qui.</p>`;
-}
+function emptyMsg(){ return `<p class="muted" style="padding:14px;text-align:center">Nessun risultato qui.</p>`; }
 
 /* ===== Profilo ===== */
 function openProfile(d){
   const sec = $('#profile');
-  $('#pImage').src = d.image;
-  $('#pImage').alt = `Foto di ${d.name}`;
+  $('#pImage').src = d.image; $('#pImage').alt = `Foto di ${d.name}`;
   $('#pName').textContent = `${d.name}, ${d.age}`;
   $('#pBreed').textContent = d.breed;
   $('#profileTitle').textContent = d.name;
-
   $('#pChar').textContent   = d.profile?.char   ?? '—';
   $('#pEnergy').textContent = d.profile?.energy ?? '—';
   $('#pHome').textContent   = d.profile?.home   ?? '—';
   $('#pZone').textContent   = d.profile?.zone   ?? '—';
-
   $('#pYes').onclick = ()=>{ matches.add(d.id); closeProfile(); renderList(); };
   $('#pNo').onclick  = ()=>{ skip(d.id); closeProfile(); renderList(); };
-
-  sec.classList.remove('hidden');
-  sec.setAttribute('aria-hidden','false');
+  sec.classList.remove('hidden'); sec.setAttribute('aria-hidden','false');
   location.hash = '#profile';
 }
 function closeProfile(){
   const sec = $('#profile');
-  sec.classList.add('hidden');
-  sec.setAttribute('aria-hidden','true');
+  sec.classList.add('hidden'); sec.setAttribute('aria-hidden','true');
   location.hash = '#list';
 }
 
 /* ===== Azioni ===== */
-function like(id){
-  matches.add(id);
-}
-function skip(id){
-  // sposta in coda (per “scroll”)
-  const idx = dogs.findIndex(d => d.id === id);
-  if (idx>=0){ dogs.push(...dogs.splice(idx,1)); }
-}
+function like(id){ matches.add(id); }
+function skip(id){ const idx = dogs.findIndex(d => d.id === id); if (idx>=0){ dogs.push(...dogs.splice(idx,1)); } }
 
 /* ===== Eventi globali ===== */
 $('#cards').addEventListener('click',(e)=>{
-  const btn = e.target.closest('button[data-id]');
-  if (!btn) return;
+  const btn = e.target.closest('button[data-id]'); if (!btn) return;
   const id = Number(btn.dataset.id);
-  if (btn.dataset.act === 'yes'){ like(id); }
-  else { skip(id); }
-  if (currentView === 'scroll'){ scrollIndex = 0; } // riparti dal primo disponibile
+  if (btn.dataset.act === 'yes'){ like(id); } else { skip(id); }
+  if (currentView === 'scroll'){ scrollIndex = 0; }
   renderList();
 });
-
 $$('.tab').forEach(t => t.addEventListener('click', ()=>{
   $$('.tab').forEach(x => x.classList.remove('active'));
   t.classList.add('active');
   currentView = t.dataset.view;
   renderList();
 }));
-
-// Geo (demo)
 $('#locOn')?.addEventListener('click', ()=>alert('Posizione attivata (demo).'));
 $('#locLater')?.addEventListener('click', ()=>alert('Ok, più tardi.'));
-
-// Back dal profilo
 $('#profileBack').addEventListener('click', (e)=>{ e.preventDefault(); closeProfile(); });
 
 /* ===== Avvio ===== */
-function init(){
-  // se atterri su #list, render subito
-  if (location.hash === '#list' || location.hash === '') currentView = 'near';
-  renderList();
-}
-window.addEventListener('hashchange', ()=>{
-  if (location.hash === '#list'){ closeProfile(); }
-});
+function init(){ if (location.hash === '#list' || location.hash === '') currentView = 'near'; renderList(); }
+window.addEventListener('hashchange', ()=>{ if (location.hash === '#list'){ closeProfile(); } });
 init();
