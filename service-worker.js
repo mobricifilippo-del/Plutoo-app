@@ -1,9 +1,9 @@
-const CACHE_NAME = "plutoo-cache-v23";
+const CACHE_NAME = "plutoo-cache-v24";
 const urlsToCache = [
   "./",
-  "./index.html?v=23",
-  "./style.css?v=23",
-  "./app.js?v=23",
+  "./index.html?v=24",
+  "./style.css?v=24",
+  "./app.js?v=24",
   "./dog1.jpg","./dog2.jpg","./dog3.jpg","./dog4.jpg",
   "./logo-32.jpg"
 ];
@@ -11,13 +11,9 @@ const urlsToCache = [
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)));
 });
-
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((res) => res || fetch(event.request))
-  );
+  event.respondWith(caches.match(event.request).then((res) => res || fetch(event.request)));
 });
-
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
