@@ -4,41 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=31" />
+  <link rel="stylesheet" href="./style.css?v=32" />
 </head>
 <body>
 
-  <!-- HOME -->
-  <section id="view-home" class="view view-home">
+  <!-- VIEW: LISTA CANI -->
+  <main id="view-list" class="view app" aria-label="Amici vicino a te">
     <header class="topbar">
-      <div></div>
-      <nav class="auth">
-        <a href="#" class="link">Accedi</a>
-        <span class="dot">·</span>
-        <a href="#" class="link">Registrati</a>
-      </nav>
-    </header>
-
-    <div class="hero-card">
-      <img class="logo" src="./logo-32.jpg" alt="Plutoo" />
-    </div>
-
-    <a id="enter" class="btn-primary" href="#list">Entra</a>
-
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
-    </p>
-  </section>
-
-  <!-- LISTA / TABS -->
-  <main id="view-list" class="view view-list" aria-label="Amici vicino a te">
-    <header class="topbar">
-      <a class="back" href="#home">← Indietro</a>
+      <a href="#view-home" class="back">&larr; Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
-        <a href="#" class="link">Accedi</a>
-        <span class="dot">·</span>
-        <a href="#" class="link">Registrati</a>
+        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
@@ -62,18 +38,27 @@
     <section id="cards" class="grid"></section>
   </main>
 
-  <!-- PROFILO CANE -->
-  <section id="view-profile" class="view view-profile" aria-label="Profilo">
+  <!-- VIEW: HOME -->
+  <section id="view-home" class="view hero">
     <header class="topbar">
-      <a class="back" href="#list">← Indietro</a>
-      <div class="brand">Profilo</div>
       <div></div>
+      <nav class="auth">
+        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+      </nav>
     </header>
 
-    <article id="profileContent" class="profile"></article>
+    <div class="logo-wrap">
+      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
+    </div>
+
+    <!-- Link per cambiare vista -->
+    <a href="#view-list" class="btn-primary" id="enterLink">Entra</a>
+
+    <p class="subtitle">
+      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
+    </p>
   </section>
 
-  <!-- ROUTER SENZA FRAMEWORK -->
-  <script src="./app.js?v=31"></script>
+  <script src="./app.js?v=32"></script>
 </body>
 </html>
