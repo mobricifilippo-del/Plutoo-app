@@ -2,9 +2,9 @@
 const dogs = [
   { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2, image:'./dog1.jpg', online:true  },
   { id:2, name:'Rocky', age:3, breed:'Labrador',          distance:1.6, image:'./dog2.jpg', online:true  },
-  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         distance:3.2, image:'./dog3.jpg', online:false },
+  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         distance:3.2, image:'./dog3.jpg', online:true  }, // <- era false
   { id:4, name:'Max',   age:4, breed:'Golden Retriever',  distance:5.9, image:'./dog4.jpg', online:true  },
-  { id:5, name:'Milo',  age:1, breed:'Labrador',          distance:4.1, image:'./dog2.jpg', online:true  },
+  { id:5, name:'Milo',  age:1, breed:'Labrador',          distance:4.1, image:'./dog2.jpg', online:true  }, // 5° cane
 ];
 
 let matches = new Set();
@@ -26,21 +26,19 @@ function applyFilters(list){
 
 function render(){
   const wrap = $('#cards');
-  const grid = wrap.classList;
   wrap.innerHTML = '';
+  const grid = wrap.classList;
 
   let list = [...dogs];
 
   if (currentView === 'near'){
     list = list.filter(d => d.online).sort((a,b)=>a.distance-b.distance);
-    grid.remove('single');
-  }
-  else if (currentView === 'browse'){
-    grid.add('single');        // 1 card alla volta
-  }
-  else if (currentView === 'match'){
+    grid.remove('single');        // 2 colonne
+  } else if (currentView === 'browse'){
+    grid.add('single');           // 1 card alla volta
+  } else if (currentView === 'match'){
     list = list.filter(d => matches.has(d.id));
-    grid.add('single');
+    grid.add('single');           // 1 card alla volta
   }
 
   list = applyFilters(list);
@@ -72,25 +70,16 @@ function render(){
   });
 }
 
-/* ---- routing semplice con hash (#home / #list) ---- */
+/* routing semplice: #home / #list */
 function go(view){
-  if (view === 'list'){
-    $('#home').style.display = 'none';
-    $('#list').style.display = 'block';
-  } else {
-    $('#home').style.display = 'block';
-    $('#list').style.display = 'none';
-  }
+  if (view === 'list'){ $('#home').style.display='none'; $('#list').style.display='block'; }
+  else { $('#home').style.display='block'; $('#list').style.display='none'; }
 }
-window.addEventListener('hashchange', () => {
-  go(location.hash.replace('#','') || 'home');
-});
+window.addEventListener('hashchange', ()=> go(location.hash.replace('#','') || 'home'));
 go(location.hash.replace('#','') || 'home');
 
-/* ---- eventi ---- */
-$('#enterLink').addEventListener('click', ()=> {
-  location.hash = '#list';
-});
+/* eventi */
+$('#enterLink').addEventListener('click', ()=> { location.hash = '#list'; });
 
 $$('.tab').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -105,27 +94,23 @@ $('#cards').addEventListener('click',(e)=>{
   const b = e.target.closest('button[data-id]');
   if(!b) return;
   const id = +b.dataset.id;
-  if (b.dataset.act==='yes'){
-    matches.add(id);
-  } else {
+  if (b.dataset.act==='yes'){ matches.add(id); }
+  else {
     const i = dogs.findIndex(d=>d.id===id);
-    if (i>=0) dogs.push(...dogs.splice(i,1));
+    if (i>=0) dogs.push(...dogs.splice(i,1)); // manda in fondo
   }
   render();
 });
 
 /* filtri */
-$('#filterBtn').addEventListener('click', ()=>{
-  $('#filters').classList.toggle('hidden');
-});
+$('#filterBtn').addEventListener('click', ()=> $('#filters').classList.toggle('hidden'));
 $('#applyFilters').addEventListener('click', ()=>{
   filters.breed = $('#breed').value.trim();
   filters.age   = $('#age').value.trim();
   render();
 });
 $('#clearFilters').addEventListener('click', ()=>{
-  filters = {breed:'', age:''};
-  $('#breed').value = ''; $('#age').value = '';
+  filters = {breed:'', age:''}; $('#breed').value=''; $('#age').value='';
   render();
 });
 
