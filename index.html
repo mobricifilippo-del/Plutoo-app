@@ -4,28 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=21" />
-
-  <!-- Manifest e PWA -->
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <meta name="theme-color" content="#ff7ac6" />
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('Service Worker registrato'))
-        .catch(err => console.error('Errore SW:', err));
-    }
-  </script>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css?v=23" />
 </head>
 <body>
 
-  <!-- HERO / HOME -->
+  <!-- ====== HOME (lasciata intatta nello stile) ====== -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
       <nav class="auth">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span>
+        <a href="#" class="link">Accedi</a>
+        <span class="dot">·</span>
         <a href="#" class="link">Registrati</a>
       </nav>
     </header>
@@ -34,20 +24,24 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
+    <!-- Link, non bottone: cambia hash e basta -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
     </p>
+
+    <div class="teaser"></div>
   </section>
 
-  <!-- LISTA CANI -->
+  <!-- ====== LISTA / APP ====== -->
   <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">&larr; Indietro</a>
+      <a href="#home" class="back" aria-label="Indietro">&larr; Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span>
+        <a href="#" class="link">Accedi</a>
+        <span class="dot">·</span>
         <a href="#" class="link">Registrati</a>
       </nav>
     </header>
@@ -63,15 +57,58 @@
       </div>
     </div>
 
-    <div class="tabs">
-      <button class="tab active" data-view="near">Vicino a te</button>
-      <button class="tab" data-view="browse">Scorri</button>
-      <button class="tab" data-view="match">Match</button>
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-view="near" role="tab" aria-selected="true">Vicino a te</button>
+      <button class="tab" data-view="scroll" role="tab">Scorri</button>
+      <button class="tab" data-view="match" role="tab">Match</button>
     </div>
 
-    <section id="cards" class="grid"></section>
+    <section id="cards" class="grid" aria-live="polite"></section>
   </main>
 
-  <script src="./app.js?v=21"></script>
+  <!-- ====== PROFILO CANE ====== -->
+  <section id="profile" class="profile hidden" aria-hidden="true">
+    <header class="topbar">
+      <a href="#list" class="back" id="profileBack">&larr; Indietro</a>
+      <div class="brand" id="profileTitle">Profilo</div>
+      <div></div>
+    </header>
+
+    <div class="profile-body">
+      <img id="pImage" alt="" class="p-img">
+      <h2 id="pName"></h2>
+      <p id="pBreed" class="muted"></p>
+
+      <div class="p-info">
+        <p><strong>Carattere:</strong> <span id="pChar">—</span></p>
+        <p><strong>Energia:</strong> <span id="pEnergy">—</span></p>
+        <p><strong>Convivenza:</strong> <span id="pHome">—</span></p>
+        <p><strong>Zona:</strong> <span id="pZone">—</span></p>
+      </div>
+
+      <div class="p-actions">
+        <button class="btn-round btn-no" id="pNo" title="Passo">🥲</button>
+        <button class="btn-round btn-yes" id="pYes" title="Mi piace">❤️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fallback: anche senza JS forza l’hash #list -->
+  <script>
+    (function () {
+      var btn = document.getElementById('enterLink');
+      if (btn) btn.addEventListener('click', function () {
+        if (location.hash !== '#list') location.hash = '#list';
+      });
+    })();
+  </script>
+
+  <script src="./app.js?v=23" defer></script>
+  <script>
+    // Registrazione SW (silenziosa)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js?v=23').catch(()=>{});
+    }
+  </script>
 </body>
 </html>
