@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=31" />
+  <link rel="stylesheet" href="./style.css?v=40" />
 </head>
 <body>
 
-  <!-- HOME (lascio il layout pulito e invariato nello spirito che ti piaceva) -->
+  <!-- HOME -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
@@ -19,12 +19,14 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
+    <!-- Bottone (niente href che fa scroll) -->
+    <button id="enterBtn" class="btn-primary">Entra</button>
+
     <p class="subtitle">Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.</p>
   </section>
 
-  <!-- LISTA (griglia a coppie) -->
-  <main id="list" class="app">
+  <!-- LISTA -->
+  <main id="list" class="app" hidden>
     <header class="topbar">
       <a href="#home" class="back">← Indietro</a>
       <div class="brand">Plutoo</div>
@@ -48,19 +50,20 @@
       <button class="tab" data-view="match">Match</button>
     </div>
 
-    <!-- Lista a coppie -->
+    <!-- Griglia a coppie -->
     <section id="grid" class="grid" aria-live="polite"></section>
-    <!-- Deck singola card (mostrato solo in “Scorri”) -->
+
+    <!-- Deck singola card (solo in “Scorri”) -->
     <section id="deck" class="deck" hidden>
       <article id="deckCard" class="card card-big"></article>
       <div class="swipe-actions">
-        <button id="swipeNo"   class="btn-round btn-no"   aria-label="No"><span class="emoji">😭</span></button>
-        <button id="swipeYes"  class="btn-round btn-yes"  aria-label="Mi piace"><span class="emoji">❤️</span></button>
+        <button id="swipeNo"  class="btn-round btn-no"  aria-label="No"><span class="emoji">😭</span></button>
+        <button id="swipeYes" class="btn-round btn-yes" aria-label="Mi piace"><span class="emoji">❤️</span></button>
       </div>
     </section>
   </main>
 
-  <!-- PROFILO CANE -->
+  <!-- PROFILO -->
   <section id="profile" class="profile" hidden>
     <header class="topbar">
       <a href="#list" class="back">← Indietro</a>
@@ -89,6 +92,6 @@
     </div>
   </section>
 
-  <script src="./app.js?v=31"></script>
+  <script src="./app.js?v=40"></script>
 </body>
 </html>
