@@ -1,22 +1,21 @@
-/* v1.3 – Adattato al tuo HTML “lungo” (Entra = <a href="#list">, tab senza data-attr) */
+/* v1.4 – PWA + privacy banner + filtri + report; base perfetta intatta */
 
-/* ===== Dati demo (tutti online) ===== */
+/* Dati demo (aggiunta taglia) */
 const dogs = [
-  { id:1, name:'Luna',  age:1, breed:'Jack Russell',     distance:2.2, image:'./dog1.jpg',
-    online:true, about:'Cucciola sprint, ama inseguire la pallina.',
+  { id:1, name:'Luna',  age:1, breed:'Jack Russell',     size:'S', distance:2.2, image:'./dog1.jpg',
+    online:true,  about:'Cucciola sprint, ama inseguire la pallina.',
     temper:'Giocherellona', energy:'Alta', social:'Ottima con cani piccoli', area:'Centro', verified:true },
-  { id:2, name:'Rocky', age:3, breed:'Labrador',         distance:1.6, image:'./dog2.jpg',
-    online:true, about:'Socievole, adora correre al parco.',
+  { id:2, name:'Rocky', age:3, breed:'Labrador',         size:'L', distance:1.6, image:'./dog2.jpg',
+    online:true,  about:'Socievole, adora correre al parco.',
     temper:'Dolce', energy:'Media', social:'Perfetto con bimbi', area:'Lungomare', verified:true },
-  { id:3, name:'Bella', age:2, breed:'Shiba Inu',        distance:3.2, image:'./dog3.jpg',
-    online:true, about:'Tranquilla, passeggiate soft.',
+  { id:3, name:'Bella', age:2, breed:'Shiba Inu',        size:'M', distance:3.2, image:'./dog3.jpg',
+    online:true,  about:'Tranquilla, passeggiate soft.',
     temper:'Indipendente', energy:'Media', social:'Selettiva', area:'Parco Nord', verified:false },
-  { id:4, name:'Max',   age:4, breed:'Golden Retriever', distance:5.9, image:'./dog4.jpg',
-    online:true, about:'Super coccolone, educatissimo.',
+  { id:4, name:'Max',   age:4, breed:'Golden Retriever', size:'L', distance:5.9, image:'./dog4.jpg',
+    online:true,  about:'Super coccolone, educatissimo.',
     temper:'Gentile', energy:'Alta', social:'Ama compagnia', area:'Periferia', verified:true },
-  // quinto per riempire di più la griglia (riusa un’immagine)
-  { id:5, name:'Maya',  age:2, breed:'Border Collie',    distance:2.9, image:'./dog2.jpg',
-    online:true, about:'Intelligentissima e attiva.',
+  { id:5, name:'Maya',  age:2, breed:'Border Collie',    size:'M', distance:2.9, image:'./dog2.jpg',
+    online:true,  about:'Intelligentissima e attiva.',
     temper:'Vivace', energy:'Altissima', social:'Ottima con cani energici', area:'Villa', verified:true },
 ];
 
@@ -24,65 +23,45 @@ let liked = new Set();
 let currentView = 'near';     // 'near' | 'browse' | 'match'
 let browseIndex  = 0;
 
-/* ===== Helpers ===== */
+/* Helpers */
 const $  = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const show = (el, on) => { el.hidden = !on; };
 
-/* ===== Router: #detail-<id> gestito via JS, #list/#home via CSS :target ===== */
+/* Router: #detail-<id> via JS, #list/#home via CSS :target */
 function route(){
   const h = location.hash || '#home';
   if (h.startsWith('#detail-')) {
-    // nascondi list & home (anche se :target mostra list, lo forziamo)
-    $('#list').style.display = 'none';
-    $('#home').style.display = 'none';
+    $('#list').style.display = 'none'; $('#home').style.display = 'none';
     show($('#detail'), true);
     const id = Number(h.replace('#detail-',''));
     openDetail(id);
   } else {
-    // ritorna il controllo a CSS :target
-    $('#list').style.display = '';
-    $('#home').style.display = '';
+    $('#list').style.display = ''; $('#home').style.display = '';
     show($('#detail'), false);
-    if (h === '#list') {
-      // quando entri in list, renderizza la vista attuale e scrollTop
-      render();
-      window.scrollTo(0,0);
-    }
+    if (h === '#list') { render(); window.scrollTo(0,0); }
   }
 }
 window.addEventListener('hashchange', route);
 
-/* ===== Render LIST ===== */
+/* Render list/deck */
 function render(){
   if (currentView === 'browse') {
-    show($('#deck'), true);
-    show($('#cards'), false);
-    const pool = [...dogs]; // tutti (tutti online in demo)
-    if (pool.length === 0) { $('#deckCard').innerHTML = `<div style="padding:16px">Nessun amico.</div>`; return; }
+    show($('#deck'), true); show($('#cards'), false);
+    const pool = applyFilters(dogs);
+    if (pool.length === 0) { $('#deckCard').innerHTML = `<div class="card" style="padding:16px">Nessun amico con questi filtri.</div>`; return; }
     if (browseIndex >= pool.length) browseIndex = 0;
-    paintDeck(pool[browseIndex]);
+    paintDeck(pool[browseIndex], pool);
     return;
   }
+  show($('#deck'), false); show($('#cards'), true);
 
-  // near/match → griglia a coppie
-  show($('#deck'), false);
-  show($('#cards'), true);
+  let list = applyFilters(dogs);
+  if (currentView === 'near') list = list.filter(d => d.online).sort((a,b)=> a.distance - b.distance);
+  if (currentView === 'match') list = list.filter(d => liked.has(d.id));
 
-  let list = [...dogs];
-  if (currentView === 'near') {
-    list = list.filter(d => d.online).sort((a,b)=> a.distance - b.distance);
-  } else { // match
-    list = list.filter(d => liked.has(d.id));
-  }
-
-  const wrap = $('#cards');
-  wrap.innerHTML = '';
-  if (list.length === 0) {
-    wrap.innerHTML = `<p style="color:#6b7280;padding:10px 0">Ancora nessun match. Premi ❤️.</p>`;
-    return;
-  }
-
+  const wrap = $('#cards'); wrap.innerHTML = '';
+  if (list.length === 0) { wrap.innerHTML = `<p style="padding:10px;color:#6b7280">Nessun amico con questi filtri.</p>`; return; }
   list.forEach(d => wrap.appendChild(makeCard(d)));
 }
 
@@ -104,15 +83,13 @@ function makeCard(d){
       </div>
     </div>
   `;
-  // apri profilo
   card.querySelector('[data-open]').addEventListener('click', ()=>{ location.hash = `#detail-${d.id}`; });
-  // like
   card.querySelector('.btn-yes').addEventListener('click', ()=> liked.add(d.id));
   return card;
 }
 
-/* ===== Scorri (una card) ===== */
-function paintDeck(d){
+/* Scorri */
+function paintDeck(d, pool){
   const card = $('#deckCard');
   card.className = 'card card-big';
   card.innerHTML = `
@@ -128,11 +105,11 @@ function paintDeck(d){
   `;
   card.querySelector('[data-open]').addEventListener('click', ()=>{ location.hash = `#detail-${d.id}`; });
 
-  $('#swipeYes').onclick = ()=>{ liked.add(d.id); browseIndex = (browseIndex+1)%dogs.length; paintDeck(dogs[browseIndex]); };
-  $('#swipeNo').onclick  = ()=>{ browseIndex = (browseIndex+1)%dogs.length; paintDeck(dogs[browseIndex]); };
+  $('#swipeYes').onclick = ()=>{ liked.add(d.id); browseIndex = (browseIndex+1)%pool.length; paintDeck(pool[browseIndex], pool); };
+  $('#swipeNo').onclick  = ()=>{ browseIndex = (browseIndex+1)%pool.length; paintDeck(pool[browseIndex], pool); };
 }
 
-/* ===== Dettaglio ===== */
+/* Dettaglio */
 function openDetail(id){
   const d = dogs.find(x => x.id === id);
   if (!d) { location.hash = '#list'; return; }
@@ -145,27 +122,62 @@ function openDetail(id){
   $('#dSocial').textContent = d.social || '—';
   $('#dArea').textContent   = d.area   || '—';
 
-  // azioni nel profilo
   $('#pYes').onclick = ()=>{ liked.add(d.id); alert('Aggiunto ai preferiti ❤'); };
   $('#pNo').onclick  = ()=>{};
+  $('#pReport').onclick = ()=>{ alert('Grazie. La tua segnalazione è stata inviata.'); };
 }
 
-/* ===== Tabs (senza data-view nell’HTML): mappo per indice ===== */
-const tabs = $$('.tab');
-const views = ['near','browse','match'];
-tabs.forEach((btn, i) => {
-  btn.addEventListener('click', () => {
-    tabs.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentView = views[i] || 'near';
-    render();
-  });
-});
+/* Tabs (indice 0/1/2 → near/browse/match) */
+const tabs = $$('.tab'); const views = ['near','browse','match'];
+tabs.forEach((btn,i)=> btn.addEventListener('click', ()=>{ tabs.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentView = views[i]||'near'; render(); }));
 
-/* ===== Geo demo ===== */
+/* Geo demo */
 $('#locOn').addEventListener('click', ()=> alert('Posizione attivata (demo).'));
 $('#locLater').addEventListener('click', ()=> alert('Ok, più tardi.'));
 
-/* ===== Avvio ===== */
-route();                // applica subito la logica hash/home/list/detail
-// se non c’è hash, resta su HOME (CSS gestisce)
+/* Drawer filtri */
+const drawer = $('#filters');
+$('#openFilters').addEventListener('click', ()=> drawer.hidden = false);
+$('#closeFilters').addEventListener('click', ()=> drawer.hidden = true);
+$('#resetFilters').addEventListener('click', ()=>{ $('#fBreed').value=''; $('#fSize').value=''; $('#fAge').value=''; saveFilters(); render(); });
+$('#filterForm').addEventListener('submit', e=>{ e.preventDefault(); saveFilters(); drawer.hidden = true; render(); });
+
+function saveFilters(){
+  const data = { breed: $('#fBreed').value.trim(), size: $('#fSize').value, age: Number($('#fAge').value||0) };
+  localStorage.setItem('plutoo_filters', JSON.stringify(data));
+}
+function loadFilters(){
+  try{
+    const data = JSON.parse(localStorage.getItem('plutoo_filters')||'{}');
+    if(data.breed) $('#fBreed').value = data.breed;
+    if(data.size)  $('#fSize').value  = data.size;
+    if(data.age)   $('#fAge').value   = data.age;
+    return data;
+  }catch{ return {}; }
+}
+function applyFilters(arr){
+  const f = loadFilters();
+  return arr.filter(d=>{
+    if(f.breed && d.breed !== f.breed) return false;
+    if(f.size  && d.size  !== f.size)  return false;
+    if(f.age   && d.age   >  f.age)    return false;
+    return true;
+  });
+}
+
+/* Cookie/Privacy banner */
+(function cookieBanner(){
+  const bar = $('#cookieBar'), btn = $('#cookieOk');
+  if(!localStorage.getItem('plutoo_cookie_ok')){
+    bar.hidden = false;
+    btn.onclick = ()=>{ localStorage.setItem('plutoo_cookie_ok','1'); bar.hidden = true; };
+  }
+})();
+
+/* PWA: registra service worker se presente */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=> navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+}
+
+/* Avvio */
+route(); // applica hash corrente
