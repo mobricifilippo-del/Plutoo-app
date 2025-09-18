@@ -95,3 +95,36 @@ body{
 #list{display:none}
 #list:target{display:block}
 #list:target ~ #home{display:none}
+/* ===== FIX VISIBILITÀ / GRIGLIA LISTA CANI ===== */
+/* Supporta diversi id/classi del contenitore (compat) */
+#cards, #lista, .cards{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:18px;
+  margin:14px 0 80px;
+}
+@media (max-width:640px){
+  #cards, #lista, .cards{ grid-template-columns:1fr; }
+}
+
+/* Card base (qualunque wrapper usi) */
+#cards > *, #lista > *, .cards > *{
+  background:#fff;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 10px 22px rgba(0,0,0,.10);
+}
+
+/* Immagini uniformi */
+#cards img, #lista img, .cards img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+}
+
+/* Compatibilità cambio-sezione (se hai id diversi) */
+#home{display:block}
+#list, #lista-page{display:none}
+#list:target, #lista-page:target{display:block}
+#list:target ~ #home, #lista-page:target ~ #home{display:none}
