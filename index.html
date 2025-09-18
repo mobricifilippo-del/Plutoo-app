@@ -4,18 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=32" />
+  <link rel="stylesheet" href="./style.css?v=31" />
 </head>
 <body>
 
-  <!-- VIEW: LISTA CANI -->
-  <main id="view-list" class="view app" aria-label="Amici vicino a te">
+  <!-- HOME (lascio il layout pulito e invariato nello spirito che ti piaceva) -->
+  <section id="home" class="hero">
     <header class="topbar">
-      <a href="#view-home" class="back">&larr; Indietro</a>
+      <div></div>
+      <nav class="auth"><a href="#" class="link">Accedi</a> <span class="dot">·</span> <a href="#" class="link">Registrati</a></nav>
+    </header>
+
+    <div class="logo-wrap">
+      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
+    </div>
+
+    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
+    <p class="subtitle">Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.</p>
+  </section>
+
+  <!-- LISTA (griglia a coppie) -->
+  <main id="list" class="app">
+    <header class="topbar">
+      <a href="#home" class="back">← Indietro</a>
       <div class="brand">Plutoo</div>
-      <nav class="auth">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
-      </nav>
+      <nav class="auth"><a href="#" class="link">Accedi</a> <span class="dot">·</span> <a href="#" class="link">Registrati</a></nav>
     </header>
 
     <div class="location-card">
@@ -29,36 +42,53 @@
       </div>
     </div>
 
-    <div class="tabs">
+    <div class="tabs" role="tablist">
       <button class="tab active" data-view="near">Vicino a te</button>
       <button class="tab" data-view="browse">Scorri</button>
       <button class="tab" data-view="match">Match</button>
     </div>
 
-    <section id="cards" class="grid"></section>
+    <!-- Lista a coppie -->
+    <section id="grid" class="grid" aria-live="polite"></section>
+    <!-- Deck singola card (mostrato solo in “Scorri”) -->
+    <section id="deck" class="deck" hidden>
+      <article id="deckCard" class="card card-big"></article>
+      <div class="swipe-actions">
+        <button id="swipeNo"   class="btn-round btn-no"   aria-label="No"><span class="emoji">😭</span></button>
+        <button id="swipeYes"  class="btn-round btn-yes"  aria-label="Mi piace"><span class="emoji">❤️</span></button>
+      </div>
+    </section>
   </main>
 
-  <!-- VIEW: HOME -->
-  <section id="view-home" class="view hero">
+  <!-- PROFILO CANE -->
+  <section id="profile" class="profile" hidden>
     <header class="topbar">
+      <a href="#list" class="back">← Indietro</a>
+      <div class="brand">Profilo</div>
       <div></div>
-      <nav class="auth">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
-      </nav>
     </header>
 
-    <div class="logo-wrap">
-      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
+    <div class="profile-wrap">
+      <div class="profile-pic">
+        <img id="pImg" src="" alt="">
+        <span id="pBadge" class="badge safe" title="Profilo verificato">🔒 Sicuro</span>
+      </div>
+      <h1 id="pName" class="profile-name"></h1>
+      <div id="pBreed" class="profile-breed"></div>
+      <ul class="profile-info">
+        <li><strong>Carattere:</strong> <span id="pChar"></span></li>
+        <li><strong>Energia:</strong> <span id="pEnergy"></span></li>
+        <li><strong>Convivenza:</strong> <span id="pMate"></span></li>
+        <li><strong>Zona:</strong> <span id="pZone"></span></li>
+      </ul>
+
+      <div class="profile-actions">
+        <button id="pNo"  class="btn-round btn-no"><span class="emoji">😭</span></button>
+        <button id="pYes" class="btn-round btn-yes"><span class="emoji">❤️</span></button>
+      </div>
     </div>
-
-    <!-- Link per cambiare vista -->
-    <a href="#view-list" class="btn-primary" id="enterLink">Entra</a>
-
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
-    </p>
   </section>
 
-  <script src="./app.js?v=32"></script>
+  <script src="./app.js?v=31"></script>
 </body>
 </html>
