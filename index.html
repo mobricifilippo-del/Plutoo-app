@@ -4,15 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./style.css?v=24" />
+  <link rel="stylesheet" href="./style.css?v=31" />
 </head>
 <body>
 
-  <!-- ====== HOME ====== -->
-  <section id="home" class="hero">
-    <header class="topbar">
-      <div></div>
+  <!-- ===== VISTA HOME ===== -->
+  <section id="home" class="view view--home" aria-label="Home">
+    <header class="top">
       <nav class="auth">
         <a href="#" class="link">Accedi</a>
         <span class="dot">·</span>
@@ -20,23 +18,24 @@
       </nav>
     </header>
 
-    <div class="logo-wrap">
+    <div class="hero-card">
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
+    <a id="enterLink" class="btn-primary">Entra</a>
+    <p class="subtitle">Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.</p>
 
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
-    </p>
-
-    <div class="teaser"></div>
+    <footer class="site-footer">
+      <a href="#" class="foot-link">Privacy</a>
+      <span class="dot">·</span>
+      <a href="#" class="foot-link">Termini</a>
+    </footer>
   </section>
 
-  <!-- ====== LISTA ====== -->
-  <main id="list" class="app" aria-label="Amici vicino a te">
-    <header class="topbar">
-      <a href="#home" class="back" aria-label="Indietro">&larr; Indietro</a>
+  <!-- ===== VISTA LISTA ===== -->
+  <main id="list" class="view view--list" aria-label="Cani vicino a te">
+    <header class="appbar">
+      <button id="backHome" class="back">← Indietro</button>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a>
@@ -56,68 +55,21 @@
       </div>
     </div>
 
-    <div class="tabs" role="tablist">
-      <button class="tab active" data-view="near" role="tab" aria-selected="true">Vicino a te</button>
-      <button class="tab" data-view="scroll" role="tab">Scorri</button>
-      <button class="tab" data-view="match" role="tab">Match</button>
+    <div class="tabs">
+      <button class="tab" data-view="near">Vicino a te</button>
+      <button class="tab" data-view="browse">Scorri</button>
+      <button class="tab" data-view="match">Match</button>
     </div>
 
     <section id="cards" class="grid"></section>
+
+    <footer class="site-footer">
+      <a href="#" class="foot-link">Privacy</a>
+      <span class="dot">·</span>
+      <a href="#" class="foot-link">Termini</a>
+    </footer>
   </main>
 
-  <!-- ====== PROFILO CANE ====== -->
-  <section id="profile" class="profile hidden" aria-hidden="true">
-    <header class="topbar">
-      <a href="#list" class="back" id="profileBack">&larr; Indietro</a>
-      <div class="brand" id="profileTitle">Profilo</div>
-      <div></div>
-    </header>
-
-    <div class="profile-body">
-      <img id="pImage" alt="" class="p-img">
-      <h2 id="pName"></h2>
-      <p id="pBreed" class="muted"></p>
-
-      <div class="p-info">
-        <p><strong>Carattere:</strong> <span id="pChar">—</span></p>
-        <p><strong>Energia:</strong> <span id="pEnergy">—</span></p>
-        <p><strong>Convivenza:</strong> <span id="pHome">—</span></p>
-        <p><strong>Zona:</strong> <span id="pZone">—</span></p>
-      </div>
-
-      <div class="p-actions">
-        <button class="btn-round btn-no" id="pNo" title="Passo">🥲</button>
-        <button class="btn-round btn-yes" id="pYes" title="Mi piace">❤️</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ====== FOOTER (link legali in basso) ====== -->
-  <footer class="site-footer">
-    <div class="inner">
-      <span>© 2025 Plutoo</span>
-      <span class="sep">·</span>
-      <a href="#privacy" class="foot-link">Privacy</a>
-      <span class="sep">·</span>
-      <a href="#terms" class="foot-link">Termini</a>
-    </div>
-  </footer>
-
-  <!-- Fallback per “Entra” -->
-  <script>
-    (function () {
-      var btn = document.getElementById('enterLink');
-      if (btn) btn.addEventListener('click', function () {
-        if (location.hash !== '#list') location.hash = '#list';
-      });
-    })();
-  </script>
-
-  <script src="./app.js?v=24" defer></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=24').catch(()=>{});
-    }
-  </script>
+  <script src="./app.js?v=31"></script>
 </body>
 </html>
