@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./style.css?v=23" />
+  <link rel="stylesheet" href="./style.css?v=24" />
 </head>
 <body>
 
-  <!-- ====== HOME (lasciata intatta nello stile) ====== -->
+  <!-- ====== HOME ====== -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
@@ -24,7 +24,6 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- Link, non bottone: cambia hash e basta -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
 
     <p class="subtitle">
@@ -34,7 +33,7 @@
     <div class="teaser"></div>
   </section>
 
-  <!-- ====== LISTA / APP ====== -->
+  <!-- ====== LISTA ====== -->
   <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
       <a href="#home" class="back" aria-label="Indietro">&larr; Indietro</a>
@@ -63,7 +62,7 @@
       <button class="tab" data-view="match" role="tab">Match</button>
     </div>
 
-    <section id="cards" class="grid" aria-live="polite"></section>
+    <section id="cards" class="grid"></section>
   </main>
 
   <!-- ====== PROFILO CANE ====== -->
@@ -93,7 +92,18 @@
     </div>
   </section>
 
-  <!-- Fallback: anche senza JS forza l’hash #list -->
+  <!-- ====== FOOTER (link legali in basso) ====== -->
+  <footer class="site-footer">
+    <div class="inner">
+      <span>© 2025 Plutoo</span>
+      <span class="sep">·</span>
+      <a href="#privacy" class="foot-link">Privacy</a>
+      <span class="sep">·</span>
+      <a href="#terms" class="foot-link">Termini</a>
+    </div>
+  </footer>
+
+  <!-- Fallback per “Entra” -->
   <script>
     (function () {
       var btn = document.getElementById('enterLink');
@@ -103,11 +113,10 @@
     })();
   </script>
 
-  <script src="./app.js?v=23" defer></script>
+  <script src="./app.js?v=24" defer></script>
   <script>
-    // Registrazione SW (silenziosa)
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js?v=23').catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=24').catch(()=>{});
     }
   </script>
 </body>
