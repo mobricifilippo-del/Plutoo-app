@@ -8,10 +8,32 @@
 </head>
 <body>
 
-  <!-- VIEW: LISTA -->
-  <main id="list" class="app" aria-label="Amici vicino a te">
+  <!-- HOME -->
+  <section id="view-home" class="view view-home">
     <header class="topbar">
-      <a href="#home" class="back">&larr; Indietro</a>
+      <div></div>
+      <nav class="auth">
+        <a href="#" class="link">Accedi</a>
+        <span class="dot">·</span>
+        <a href="#" class="link">Registrati</a>
+      </nav>
+    </header>
+
+    <div class="hero-card">
+      <img class="logo" src="./logo-32.jpg" alt="Plutoo" />
+    </div>
+
+    <a id="enter" class="btn-primary" href="#list">Entra</a>
+
+    <p class="subtitle">
+      Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
+    </p>
+  </section>
+
+  <!-- LISTA / TABS -->
+  <main id="view-list" class="view view-list" aria-label="Amici vicino a te">
+    <header class="topbar">
+      <a class="back" href="#home">← Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a>
@@ -31,60 +53,27 @@
       </div>
     </div>
 
-    <div class="tabs" id="tabs">
+    <div class="tabs">
       <button class="tab active" data-view="near">Vicino a te</button>
       <button class="tab" data-view="browse">Scorri</button>
       <button class="tab" data-view="match">Match</button>
     </div>
 
-    <section id="cards" class="grid two"></section>
+    <section id="cards" class="grid"></section>
   </main>
 
-  <!-- VIEW: HOME -->
-  <section id="home" class="hero">
+  <!-- PROFILO CANE -->
+  <section id="view-profile" class="view view-profile" aria-label="Profilo">
     <header class="topbar">
-      <div></div>
-      <nav class="auth">
-        <a href="#" class="link">Accedi</a>
-        <span class="dot">·</span>
-        <a href="#" class="link">Registrati</a>
-      </nav>
-    </header>
-
-    <div class="logo-wrap">
-      <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
-    </div>
-
-    <a href="#list" class="btn-primary" id="enterLink">Entra</a>
-
-    <p class="subtitle">
-      Attiveremo la posizione per mostrarti gli amici <strong>online</strong> vicino a te.
-    </p>
-    <div class="teaser"></div>
-  </section>
-
-  <!-- VIEW: DETTAGLIO CANE -->
-  <section id="detail" class="detail hidden" aria-live="polite">
-    <header class="topbar">
-      <a href="#list" class="back">&larr; Indietro</a>
+      <a class="back" href="#list">← Indietro</a>
       <div class="brand">Profilo</div>
       <div></div>
     </header>
 
-    <article class="dogsheet">
-      <img id="dPhoto" class="dphoto" alt="">
-      <div class="dinfo">
-        <h1 id="dName"></h1>
-        <div id="dMeta" class="dmeta"></div>
-        <p id="dAbout" class="dabout"></p>
-        <div class="drow"><strong>Carattere:</strong> <span id="dTemper"></span></div>
-        <div class="drow"><strong>Energia:</strong> <span id="dEnergy"></span></div>
-        <div class="drow"><strong>Convivenza:</strong> <span id="dSocial"></span></div>
-        <div class="drow"><strong>Zona:</strong> <span id="dArea"></span></div>
-      </div>
-    </article>
+    <article id="profileContent" class="profile"></article>
   </section>
 
+  <!-- ROUTER SENZA FRAMEWORK -->
   <script src="./app.js?v=31"></script>
 </body>
 </html>
