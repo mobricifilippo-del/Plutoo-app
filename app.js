@@ -1,86 +1,78 @@
-/* ===== dataset demo ===== */
+/* ====== Dataset demo ====== */
 const dogs = [
-  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2, image:'./dog1.jpg', online:true  },
-  { id:2, name:'Rocky', age:3, breed:'Labrador',          distance:1.6, image:'./dog2.jpg', online:true  },
-  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         distance:3.2, image:'./dog3.jpg', online:true  }, // <- era false
+  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2, image:'./dog2.jpg', online:true  },
+  { id:2, name:'Rocky', age:3, breed:'Labrador',          distance:1.6, image:'./dog1.jpg', online:true  },
+  { id:3, name:'Milo',  age:1, breed:'Labrador',          distance:4.1, image:'./dog1.jpg', online:true  },
   { id:4, name:'Max',   age:4, breed:'Golden Retriever',  distance:5.9, image:'./dog4.jpg', online:true  },
-  { id:5, name:'Milo',  age:1, breed:'Labrador',          distance:4.1, image:'./dog2.jpg', online:true  }, // 5° cane
 ];
 
 let matches = new Set();
-let currentView = 'near'; // near | browse | match
-let filters = { breed:'', age:'' };
+let currentView = 'near';     // near | browse | match
+let browseIndex = 0;          // per "Scorri" (un cane alla volta)
 
-const $  = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
+/* ====== Helpers ====== */
+const $  = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
 
-function applyFilters(list){
-  let out = [...list];
-  if (filters.breed) out = out.filter(d => d.breed === filters.breed);
-  if (filters.age){
-    const [min,max] = filters.age.split('-').map(Number);
-    out = out.filter(d => d.age >= min && d.age <= max);
-  }
-  return out;
-}
-
+/* ====== Render ====== */
 function render(){
   const wrap = $('#cards');
   wrap.innerHTML = '';
-  const grid = wrap.classList;
 
   let list = [...dogs];
 
-  if (currentView === 'near'){
+  if (currentView === 'near') {
+    wrap.classList.remove('single');
     list = list.filter(d => d.online).sort((a,b)=>a.distance-b.distance);
-    grid.remove('single');        // 2 colonne
-  } else if (currentView === 'browse'){
-    grid.add('single');           // 1 card alla volta
-  } else if (currentView === 'match'){
-    list = list.filter(d => matches.has(d.id));
-    grid.add('single');           // 1 card alla volta
   }
 
-  list = applyFilters(list);
+  if (currentView === 'browse') {
+    // mostra UNA sola card alla volta
+    wrap.classList.add('single');
+    const item = dogs[browseIndex % dogs.length];
+    list = [item];
+  }
 
-  if (list.length === 0){
-    wrap.innerHTML = `<p style="color:#6b7280;padding:16px">Nessun risultato qui.</p>`;
+  if (currentView === 'match') {
+    wrap.classList.remove('single');
+    list = list.filter(d => matches.has(d.id));
+  }
+
+  if (list.length === 0) {
+    wrap.innerHTML = `<p style="color:#6b7280;padding:10px 0;text-align:center">Nessun risultato qui.</p>`;
     return;
   }
 
-  list.forEach(d=>{
-    const el = document.createElement('article');
-    el.className = 'card';
-    el.innerHTML = `
+  list.forEach(d => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
       <div class="pic">
         <img src="${d.image}" alt="Foto di ${d.name}">
         <span class="badge">${d.distance.toFixed(1)} km</span>
-        ${d.online ? '<span class="dot"></span>' : ''}
+        ${d.online ? '<span class="dot-online"></span>' : ''}
       </div>
       <div class="body">
         <div class="name">${d.name}, ${d.age}</div>
         <div class="breed">${d.breed}</div>
         <div class="actions">
-          <button class="btn-round btn-no"  data-id="${d.id}" data-act="no">✖</button>
-          <button class="btn-round btn-yes" data-id="${d.id}" data-act="yes">❤</button>
+          <button class="btn-round btn-no" data-act="no"  data-id="${d.id}" aria-label="Scarta">❌</button>
+          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" aria-label="Mi piace">❤</button>
         </div>
-      </div>
-    `;
-    wrap.appendChild(el);
+      </div>`;
+    wrap.appendChild(card);
+
+    // click sulla card → profilo (placeholder hash)
+    card.addEventListener('click', (e)=>{
+      const isBtn = e.target.closest('button');
+      if (isBtn) return; // evita conflitti coi bottoni
+      alert(`Profilo di ${d.name} (placeholder).`);
+    });
   });
 }
 
-/* routing semplice: #home / #list */
-function go(view){
-  if (view === 'list'){ $('#home').style.display='none'; $('#list').style.display='block'; }
-  else { $('#home').style.display='block'; $('#list').style.display='none'; }
-}
-window.addEventListener('hashchange', ()=> go(location.hash.replace('#','') || 'home'));
-go(location.hash.replace('#','') || 'home');
-
-/* eventi */
-$('#enterLink').addEventListener('click', ()=> { location.hash = '#list'; });
-
+/* ====== Eventi ====== */
+// Tabs
 $$('.tab').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     $$('.tab').forEach(b=>b.classList.remove('active'));
@@ -89,33 +81,33 @@ $$('.tab').forEach(btn=>{
     render();
   });
 });
+// attiva tab iniziale "Vicino a te"
+document.querySelector('.tab[data-view="near"]').classList.add('active');
 
-$('#cards').addEventListener('click',(e)=>{
-  const b = e.target.closest('button[data-id]');
-  if(!b) return;
-  const id = +b.dataset.id;
-  if (b.dataset.act==='yes'){ matches.add(id); }
-  else {
-    const i = dogs.findIndex(d=>d.id===id);
-    if (i>=0) dogs.push(...dogs.splice(i,1)); // manda in fondo
+// Like / Dislike
+$('#cards').addEventListener('click', (e)=>{
+  const t = e.target.closest('button[data-id]');
+  if (!t) return;
+  const id = Number(t.dataset.id);
+
+  if (t.dataset.act === 'yes') {
+    matches.add(id);
+  } else {
+    // niente, scartato
+  }
+
+  if (currentView === 'browse') {
+    browseIndex = (browseIndex + 1) % dogs.length;
+  } else {
+    // nel grid facciamo un leggero effetto e rerender
+    t.animate([{ transform:'scale(1)' },{ transform:'scale(1.08)' },{ transform:'scale(1)' }], { duration: 180 });
   }
   render();
 });
 
-/* filtri */
-$('#filterBtn').addEventListener('click', ()=> $('#filters').classList.toggle('hidden'));
-$('#applyFilters').addEventListener('click', ()=>{
-  filters.breed = $('#breed').value.trim();
-  filters.age   = $('#age').value.trim();
-  render();
-});
-$('#clearFilters').addEventListener('click', ()=>{
-  filters = {breed:'', age:''}; $('#breed').value=''; $('#age').value='';
-  render();
-});
-
-/* geoloc (demo) */
-$('#locOn').addEventListener('click', ()=> alert('Posizione attivata (demo)'));
+// Geoloc (demo)
+$('#locOn').addEventListener('click', ()=> alert('Posizione attivata (demo).'));
 $('#locLater').addEventListener('click', ()=> alert('Ok, più tardi.'));
 
+// Avvio
 render();
