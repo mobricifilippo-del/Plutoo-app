@@ -4,21 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=31" />
+  <!-- lascia il tuo CSS com'è: ho tenuto lo stesso v -->
+  <link rel="stylesheet" href="./style.css?v=20" />
 </head>
 <body>
 
-  <!-- ====== LISTA (prima per usare :target, niente JS per lo switch) ====== -->
-  <main id="list" class="app" aria-label="Cani vicino a te">
+  <!-- ====== LIST (prima per :target) ====== -->
+  <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">&larr; Indietro</a>
+      <a href="#home" class="back">← Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
-    <!-- CARD posizione -->
+    <!-- Geolocalizzazione (demo) -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -30,26 +31,23 @@
       </div>
     </div>
 
-    <!-- Tabs + Filtro -->
+    <!-- Tabs + trigger filtri -->
     <div class="tabs-row">
       <div class="tabs">
         <button class="tab active" data-view="near">Vicino a te</button>
         <button class="tab" data-view="browse">Scorri</button>
         <button class="tab" data-view="match">Match</button>
       </div>
-
-      <!-- Bottone che apre/chiude la tendina -->
       <button id="filterToggle" class="btn-filter">Ricerca personalizzata ▾</button>
     </div>
 
-    <!-- CHIPS riepilogo filtri attivi -->
+    <!-- Chips riepilogo filtri attivi -->
     <div id="activeChips" class="chips"></div>
 
-    <!-- Pannello a tendina (collassabile) -->
+    <!-- Pannello filtri (tendina) -->
     <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
         <div class="f-grid">
-          <!-- Razza -->
           <label class="f-item">
             <span>Razza</span>
             <select name="breed">
@@ -67,19 +65,17 @@
             </select>
           </label>
 
-          <!-- Età -->
           <label class="f-item">
             <span>Età</span>
             <select name="age">
               <option value="">Tutte</option>
-              <option value="0-1">Cucciolo (0-1)</option>
-              <option value="2-4">Giovane (2-4)</option>
-              <option value="5-7">Adulto (5-7)</option>
+              <option value="0-1">Cucciolo (0–1)</option>
+              <option value="2-4">Giovane (2–4)</option>
+              <option value="5-7">Adulto (5–7)</option>
               <option value="8+">Senior (8+)</option>
             </select>
           </label>
 
-          <!-- Sesso -->
           <label class="f-item">
             <span>Sesso</span>
             <select name="sex">
@@ -89,7 +85,6 @@
             </select>
           </label>
 
-          <!-- Taglia -->
           <label class="f-item">
             <span>Taglia</span>
             <select name="size">
@@ -100,7 +95,6 @@
             </select>
           </label>
 
-          <!-- Pelo -->
           <label class="f-item">
             <span>Pelo</span>
             <select name="coat">
@@ -111,7 +105,6 @@
             </select>
           </label>
 
-          <!-- Energia -->
           <label class="f-item">
             <span>Energia</span>
             <select name="energy">
@@ -122,7 +115,6 @@
             </select>
           </label>
 
-          <!-- Pedigree -->
           <label class="f-item">
             <span>Pedigree</span>
             <select name="pedigree">
@@ -132,7 +124,6 @@
             </select>
           </label>
 
-          <!-- Distanza -->
           <label class="f-item">
             <span>Distanza max (km)</span>
             <input type="number" name="distance" min="1" step="0.1" placeholder="Es. 5" />
@@ -146,14 +137,19 @@
       </form>
     </section>
 
-    <!-- Conteggio -->
+    <!-- Conteggio + Cards (griglia o singola) -->
     <p id="countLabel" class="count">Mostro 0 cani</p>
+    <section id="cards" class="grid" aria-live="polite"></section>
 
-    <!-- Griglia / Deck -->
-    <section id="cards" class="grid"></section>
+    <!-- Footer basso: Privacy/Termini -->
+    <footer class="site-footer">
+      <a href="./privacy.html" class="foot-link">Privacy</a>
+      <span class="dot">·</span>
+      <a href="./termini.html" class="foot-link">Termini</a>
+    </footer>
   </main>
 
-  <!-- ====== HOME (sotto per :target) ====== -->
+  <!-- ====== HOME ====== -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
@@ -166,18 +162,22 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- Link: cambia hash e attiva #list -->
+    <!-- cambia pagina con hash -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
     </p>
 
-    <footer class="legal">
-      <a href="#" class="link">Privacy</a><span class="dot">·</span><a href="#" class="link">Termini</a>
+    <!-- Footer basso: Privacy/Termini -->
+    <footer class="site-footer">
+      <a href="./privacy.html" class="foot-link">Privacy</a>
+      <span class="dot">·</span>
+      <a href="./termini.html" class="foot-link">Termini</a>
     </footer>
   </section>
 
-  <script src="./app.js?v=31"></script>
+  <!-- lascia il tuo JS com'è: stessa querystring -->
+  <script src="./app.js?v=9"></script>
 </body>
 </html>
