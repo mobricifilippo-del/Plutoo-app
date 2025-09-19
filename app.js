@@ -1,7 +1,7 @@
-/* Plutoo v2-stable — lista 2 colonne, Scorri 1 alla volta, Match, profilo con galleria, filtri razza/età, badge 🐾 blu */
+/* Plutoo v2-stable2 — JS compatibile Android (no optional chaining), lista 2 colonne, Scorri, Match, profilo, filtri razza/età, 🐾 blu */
 
-/* ====== DATASET DEMO (usa i tuoi file ./dog1.jpg ... ./dog4.jpg) ====== */
-const dogs = [
+/* ====== DATASET DEMO ====== */
+var dogs = [
   { id:1,  name:'Luna',  age:1, breed:'Jack Russell',     distance:2.2, image:'./dog2.jpg', online:true,
     verified:true, lastSeen:'2025-09-19T10:12:00Z',
     photos:['./dog2.jpg','./dog1.jpg','./dog3.jpg'],
@@ -52,11 +52,11 @@ const dogs = [
   { id:12, name:'Maya',  age:2, breed:'Golden Retriever', distance:4.8, image:'./dog4.jpg', online:true,
     verified:false, lastSeen:'2025-09-19T09:55:00Z',
     photos:['./dog4.jpg','./dog2.jpg'],
-    character:'Solare', energy:'Alta', living:'Famiglia', area:'Parioli', posts:[] },
+    character:'Solare', energy:'Alta', living:'Famiglia', area:'Parioli', posts:[] }
 ];
 
-/* ====== RAZZE PER IL SELECT ====== */
-const BREEDS = [
+/* ====== RAZZE ====== */
+var BREEDS = [
   'Labrador','Golden Retriever','Jack Russell','Shiba Inu',
   'Pastore Tedesco','Bulldog Francese','Beagle','Barboncino (Poodle)',
   'Chihuahua','Cocker Spaniel','Border Collie','Carlino (Pug)','Dobermann',
@@ -64,61 +64,66 @@ const BREEDS = [
 ];
 
 /* ====== STATO ====== */
-let matches = new Set();
-let currentView = 'near';   // near | browse | match
-let deckIndex = 0;
-const photoIndexByDog = new Map();
+var matches = new Set();
+var currentView = 'near';   // near | browse | match
+var deckIndex = 0;
+var photoIndexByDog = new Map();
 
-/* ====== HELPERS DOM ====== */
-const $  = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
-const cardsEl  = $('#cards');
-const deckEl   = $('#deck');
-const detailEl = $('#detail');
-const sheetEl  = $('#dogsheet');
+/* ====== HELPERS ====== */
+function $(s){ return document.querySelector(s); }
+function $$(s){ return document.querySelectorAll(s); }
+
+var cardsEl  = $('#cards');
+var deckEl   = $('#deck');
+var detailEl = $('#detail');
+var sheetEl  = $('#dogsheet');
 
 /* ====== FILTRI (razza + età) ====== */
 function initBreedOptions(){
-  const sel = $('#breedFilter');
+  var sel = document.getElementById('breedFilter');
   if (!sel) return;
-  sel.innerHTML = '<option value="">Razza (tutte)</option>' + BREEDS.map(b=>`<option>${b}</option>`).join('');
+  var html = '<option value="">Razza (tutte)</option>';
+  for (var i=0;i<BREEDS.length;i++){ html += '<option>'+BREEDS[i]+'</option>'; }
+  sel.innerHTML = html;
 }
 function getFilters(){
+  var breedSel = document.getElementById('breedFilter');
+  var ageSel   = document.getElementById('ageFilter');
   return {
-    breed: $('#breedFilter')?.value || '',
-    age:   $('#ageFilter')?.value || ''
+    breed: breedSel ? breedSel.value : '',
+    age:   ageSel ? ageSel.value : ''
   };
 }
 function applyFilters(list){
-  const f = getFilters();
-  let out = [...list];
-  if (f.breed) out = out.filter(d => d.breed === f.breed);
-  if (f.age === '0-1') out = out.filter(d => d.age <= 1);
-  if (f.age === '2-3') out = out.filter(d => d.age >= 2 && d.age <= 3);
-  if (f.age === '4+')  out = out.filter(d => d.age >= 4);
+  var f = getFilters();
+  var out = list.slice();
+  if (f.breed) out = out.filter(function(d){ return d.breed === f.breed; });
+  if (f.age === '0-1') out = out.filter(function(d){ return d.age <= 1; });
+  if (f.age === '2-3') out = out.filter(function(d){ return d.age >= 2 && d.age <= 3; });
+  if (f.age === '4+')  out = out.filter(function(d){ return d.age >= 4; });
   return out;
 }
 function updateResultsInfo(count){
-  const el = $('#resultsInfo'); if (!el) return;
-  el.textContent = `Mostro ${count} cane${count===1?'':'i'}`;
+  var el = document.getElementById('resultsInfo'); if (!el) return;
+  el.textContent = 'Mostro ' + count + ' cane' + (count===1?'':'i');
 }
 
 /* ====== RENDER ====== */
 function render(){
-  const isDeck = (currentView === 'browse');
-  cardsEl.hidden = isDeck;
-  deckEl.hidden  = !isDeck;
+  var isDeck = (currentView === 'browse');
+  if (cardsEl) cardsEl.hidden = isDeck;
+  if (deckEl)  deckEl.hidden  = !isDeck;
 
-  let list = applyFilters(dogs);
+  var list = applyFilters(dogs);
 
   if (currentView === 'near'){
-    list = list.filter(d => d.online).sort((a,b)=>a.distance-b.distance);
+    list = list.filter(function(d){ return d.online; }).sort(function(a,b){ return a.distance-b.distance; });
     renderGrid(list);
   } else if (currentView === 'match'){
-    list = list.filter(d => matches.has(d.id));
+    list = list.filter(function(d){ return matches.has(d.id); });
     renderGrid(list);
   } else {
-    if (!list.length){ deckEl.innerHTML=''; updateResultsInfo(0); return; }
+    if (!list.length){ if (deckEl) deckEl.innerHTML=''; updateResultsInfo(0); return; }
     if (deckIndex >= list.length) deckIndex = 0;
     updateResultsInfo(list.length);
     renderDeck(list[deckIndex]);
@@ -127,66 +132,67 @@ function render(){
 
 function renderGrid(list){
   updateResultsInfo(list.length);
+  if (!cardsEl) return;
   if (!list.length){
-    cardsEl.innerHTML = `<p style="padding:12px 16px;color:#6b7280">Nessun risultato qui.</p>`;
+    cardsEl.innerHTML = '<p style="padding:12px 16px;color:#6b7280">Nessun risultato qui.</p>';
     return;
   }
   cardsEl.innerHTML = '';
-  list.forEach(d=>{
-    const el = document.createElement('article');
+  list.forEach(function(d){
+    var el = document.createElement('article');
     el.className = 'card';
-    el.innerHTML = `
-      <div class="pic">
-        <img src="${d.image}" alt="Foto di ${d.name}" data-open="${d.id}">
-        <span class="badge">${d.distance.toFixed(1)} km</span>
-        ${d.online ? '<span class="dot"></span>' : ''}
-      </div>
-      <div class="body">
-        <div class="name">${d.name}, ${d.age}${d.verified ? '<span class="badge-verify">🐾</span>' : ''}</div>
-        <div class="breed">${d.breed}</div>
-        <div class="actions">
-          <button class="btn-round btn-no" data-act="no"  data-id="${d.id}"><span class="emoji">🥲</span></button>
-          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}"><span class="emoji">❤️</span></button>
-        </div>
-      </div>`;
+    el.innerHTML =
+      '<div class="pic">' +
+        '<img src="'+d.image+'" alt="Foto di '+d.name+'" data-open="'+d.id+'">' +
+        '<span class="badge">'+d.distance.toFixed(1)+' km</span>' +
+        (d.online ? '<span class="dot"></span>' : '') +
+      '</div>' +
+      '<div class="body">' +
+        '<div class="name">'+d.name+', '+d.age+(d.verified?'<span class="badge-verify">🐾</span>':'')+'</div>' +
+        '<div class="breed">'+d.breed+'</div>' +
+        '<div class="actions">' +
+          '<button class="btn-round btn-no" data-act="no"  data-id="'+d.id+'"><span class="emoji">🥲</span></button>' +
+          '<button class="btn-round btn-yes" data-act="yes" data-id="'+d.id+'"><span class="emoji">❤️</span></button>' +
+        '</div>' +
+      '</div>';
     cardsEl.appendChild(el);
   });
 }
 
 function renderDeck(d){
-  deckEl.innerHTML = `
-    <article class="card card-big" id="deckCard">
-      <div class="pic">
-        <img src="${d.image}" alt="Foto di ${d.name}" data-open="${d.id}">
-        <span class="badge">${d.distance.toFixed(1)} km</span>
-        ${d.online ? '<span class="dot"></span>' : ''}
-      </div>
-      <div class="body">
-        <div class="name">${d.name}, ${d.age}${d.verified ? '<span class="badge-verify">🐾</span>' : ''}</div>
-        <div class="breed">${d.breed}</div>
-        <div class="swipe-actions">
-          <button class="btn-round btn-no" data-act="no"  data-id="${d.id}"><span class="emoji">🥲</span></button>
-          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}"><span class="emoji">❤️</span></button>
-        </div>
-      </div>
-    </article>`;
+  if (!deckEl) return;
+  deckEl.innerHTML =
+    '<article class="card card-big" id="deckCard">' +
+      '<div class="pic">' +
+        '<img src="'+d.image+'" alt="Foto di '+d.name+'" data-open="'+d.id+'">' +
+        '<span class="badge">'+d.distance.toFixed(1)+' km</span>' +
+        (d.online ? '<span class="dot"></span>' : '') +
+      '</div>' +
+      '<div class="body">' +
+        '<div class="name">'+d.name+', '+d.age+(d.verified?'<span class="badge-verify">🐾</span>':'')+'</div>' +
+        '<div class="breed">'+d.breed+'</div>' +
+        '<div class="swipe-actions">' +
+          '<button class="btn-round btn-no" data-act="no"  data-id="'+d.id+'"><span class="emoji">🥲</span></button>' +
+          '<button class="btn-round btn-yes" data-act="yes" data-id="'+d.id+'"><span class="emoji">❤️</span></button>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
 }
 
 /* ====== PROFILO (overlay) ====== */
-let savedScrollY = 0;
+var savedScrollY = 0;
 function showDetailOverlay(){
   savedScrollY = window.scrollY || 0;
   document.body.style.position = 'fixed';
-  document.body.style.top = `-${savedScrollY}px`;
+  document.body.style.top = '-' + savedScrollY + 'px';
   document.body.style.left = '0';
   document.body.style.right = '0';
   document.body.style.width = '100%';
-  detailEl.hidden = false;
-  Object.assign(detailEl.style,{position:'fixed',inset:'0',background:'#fff',zIndex:'9999',overflowY:'auto'});
+  if (detailEl) detailEl.hidden = false;
+  if (detailEl) Object.assign(detailEl.style,{position:'fixed',inset:'0',background:'#fff',zIndex:'9999',overflowY:'auto'});
 }
 function hideDetailOverlay(){
-  detailEl.hidden = true;
-  detailEl.removeAttribute('style');
+  if (detailEl){ detailEl.hidden = true; detailEl.removeAttribute('style'); }
   document.body.style.position = '';
   document.body.style.top = '';
   document.body.style.left = '';
@@ -194,91 +200,83 @@ function hideDetailOverlay(){
   document.body.style.width = '';
   window.scrollTo(0, savedScrollY || 0);
 }
-
 function timeSince(iso){
   if (!iso) return '';
-  const then = new Date(iso).getTime();
-  const diff = Math.max(0, Date.now() - then);
-  const m = Math.floor(diff/60000), h = Math.floor(m/60), d = Math.floor(h/24);
-  if (d>0) return `${d}g fa`;
-  if (h>0) return `${h}h fa`;
-  if (m>0) return `${m}m fa`;
+  var then = new Date(iso).getTime();
+  var diff = Math.max(0, Date.now() - then);
+  var m = Math.floor(diff/60000), h = Math.floor(m/60), d = Math.floor(h/24);
+  if (d>0) return d+'g fa';
+  if (h>0) return h+'h fa';
+  if (m>0) return m+'m fa';
   return 'ora';
 }
-
 function renderDetail(d){
-  const photos = d.photos && d.photos.length ? d.photos : [d.image];
-  const idx = photoIndexByDog.get(d.id) ?? 0;
-  const total = photos.length;
-  const current = ((idx % total) + total) % total;
+  if (!sheetEl) return;
+  var photos = (d.photos && d.photos.length) ? d.photos : [d.image];
+  var idx = photoIndexByDog.has(d.id) ? photoIndexByDog.get(d.id) : 0;
+  var total = photos.length;
+  var current = ((idx % total) + total) % total;
 
-  const thumbHtml = photos.map((p,i)=>`
-    <img src="${p}" data-thumb="${i}" alt="thumb ${i+1}"
-      style="width:64px;height:64px;object-fit:cover;border-radius:10px;opacity:${i===current?1:.6};outline:${i===current?'3px solid #e9d5ff':'none'}">
-  `).join('');
+  var thumbHtml = '';
+  for (var i=0;i<photos.length;i++){
+    thumbHtml += '<img src="'+photos[i]+'" data-thumb="'+i+'" alt="thumb '+(i+1)+'" ' +
+      'style="width:64px;height:64px;object-fit:cover;border-radius:10px;opacity:'+(i===current?1:.6)+';outline:'+(i===current?'3px solid #e9d5ff':'none')+'">';
+  }
 
-  const onlineRow = d.online
-    ? `<div class="drow"><strong>Stato:</strong> <span style="color:#10b981">🟢 Online ora</span></div>`
-    : `<div class="drow"><strong>Stato:</strong> <span style="color:#6b7280">Ultimo accesso: ${timeSince(d.lastSeen)}</span></div>`;
+  var onlineRow = d.online
+    ? '<div class="drow"><strong>Stato:</strong> <span style="color:#10b981">🟢 Online ora</span></div>'
+    : '<div class="drow"><strong>Stato:</strong> <span style="color:#6b7280">Ultimo accesso: '+timeSince(d.lastSeen)+'</span></div>';
 
-  sheetEl.innerHTML = `
-    <div style="position:relative">
-      <img id="bigPhoto" class="dphoto" src="${photos[current]}" alt="Foto di ${d.name}"
-           data-id="${d.id}" data-idx="${current}">
-      <div style="position:absolute;right:10px;bottom:10px;background:#00000080;color:#fff;padding:6px 10px;border-radius:12px;font-weight:700">
-        ${current+1}/${total}
-      </div>
-    </div>
+  sheetEl.innerHTML =
+    '<div style="position:relative">' +
+      '<img id="bigPhoto" class="dphoto" src="'+photos[current]+'" alt="Foto di '+d.name+'" data-id="'+d.id+'" data-idx="'+current+'">' +
+      '<div style="position:absolute;right:10px;bottom:10px;background:#00000080;color:#fff;padding:6px 10px;border-radius:12px;font-weight:700">'+(current+1)+'/'+total+'</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;overflow:auto;padding:10px 12px 6px">'+thumbHtml+'</div>' +
+    '<div class="dinfo">' +
+      '<h2 style="margin:0 0 6px;display:flex;align-items:center;gap:6px"><span>'+d.name+', '+d.age+'</span>'+(d.verified?'<span class="badge-verify">🐾</span>':'')+'</h2>' +
+      '<div class="dmeta">'+d.breed+' • '+d.distance.toFixed(1)+' km</div>' +
+      onlineRow +
+      '<div class="drow"><strong>Carattere:</strong> '+d.character+'</div>' +
+      '<div class="drow"><strong>Energia:</strong> '+d.energy+'</div>' +
+      '<div class="drow"><strong>Convivenza:</strong> '+d.living+'</div>' +
+      '<div class="drow"><strong>Zona:</strong> '+d.area+'</div>' +
+      '<div class="profile-actions">' +
+        '<button class="btn-round btn-no" data-act="no"  data-id="'+d.id+'"><span class="emoji">🥲</span></button>' +
+        '<button class="btn-round btn-yes" data-act="yes" data-id="'+d.id+'"><span class="emoji">❤️</span></button>' +
+      '</div>' +
+      '<h3 style="margin:16px 0 8px">Aggiornamenti</h3>' +
+      ((d.posts && d.posts.length)
+        ? d.posts.map(function(po){
+            return '<div style="background:#fff;border-radius:14px;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,.06);margin:10px 0">' +
+                     '<div style="font-weight:700;margin-bottom:6px">'+d.name+'</div>' +
+                     '<div style="color:#6b7280;font-size:.9rem;margin-bottom:8px">'+po.ts+'</div>' +
+                     '<div>'+po.text+'</div>' +
+                   '</div>';
+          }).join('')
+        : '<div style="color:#9ca3af">Nessun aggiornamento ancora.</div>'
+      ) +
+    '</div>';
 
-    <div style="display:flex;gap:10px;overflow:auto;padding:10px 12px 6px">${thumbHtml}</div>
-
-    <div class="dinfo">
-      <h2 style="margin:0 0 6px;display:flex;align-items:center;gap:6px">
-        <span>${d.name}, ${d.age}</span>${d.verified ? '<span class="badge-verify">🐾</span>' : ''}
-      </h2>
-      <div class="dmeta">${d.breed} • ${d.distance.toFixed(1)} km</div>
-      ${onlineRow}
-      <div class="drow"><strong>Carattere:</strong> ${d.character}</div>
-      <div class="drow"><strong>Energia:</strong> ${d.energy}</div>
-      <div class="drow"><strong>Convivenza:</strong> ${d.living}</div>
-      <div class="drow"><strong>Zona:</strong> ${d.area}</div>
-
-      <div class="profile-actions">
-        <button class="btn-round btn-no" data-act="no"  data-id="${d.id}"><span class="emoji">🥲</span></button>
-        <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}"><span class="emoji">❤️</span></button>
-      </div>
-
-      <h3 style="margin:16px 0 8px">Aggiornamenti</h3>
-      ${
-        (d.posts && d.posts.length)
-        ? d.posts.map(po=>`
-          <div style="background:#fff;border-radius:14px;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,.06);margin:10px 0">
-            <div style="font-weight:700;margin-bottom:6px">${d.name}</div>
-            <div style="color:#6b7280;font-size:.9rem;margin-bottom:8px">${po.ts}</div>
-            <div>${po.text}</div>
-          </div>`).join('')
-        : `<div style="color:#9ca3af">Nessun aggiornamento ancora.</div>`
-      }
-    </div>
-  `;
-
-  // swipe foto mobile
-  const big = document.getElementById('bigPhoto');
-  let touchX = null;
-  big.addEventListener('touchstart', e=>{ touchX = e.changedTouches[0].clientX; }, {passive:true});
-  big.addEventListener('touchend', e=>{
-    if (touchX == null) return;
-    const dx = e.changedTouches[0].clientX - touchX; touchX = null;
-    if (Math.abs(dx) < 30) return;
-    const dir = dx < 0 ? 1 : -1;
-    const next = ((current + dir) % total + total) % total;
-    photoIndexByDog.set(d.id, next);
-    renderDetail(d);
-  }, {passive:true});
+  // swipe foto
+  var big = document.getElementById('bigPhoto');
+  var touchX = null;
+  if (big){
+    big.addEventListener('touchstart', function(e){ touchX = e.changedTouches[0].clientX; }, {passive:true});
+    big.addEventListener('touchend', function(e){
+      if (touchX == null) return;
+      var dx = e.changedTouches[0].clientX - touchX; touchX = null;
+      if (Math.abs(dx) < 30) return;
+      var dir = dx < 0 ? 1 : -1;
+      var next = ((current + dir) % total + total) % total;
+      photoIndexByDog.set(d.id, next);
+      renderDetail(d);
+    }, {passive:true});
+  }
 }
 
 function openDetail(id){
-  const d = dogs.find(x=>x.id===id);
+  var d = dogs.find(function(x){ return x.id===id; });
   if (!d) return;
   if (!photoIndexByDog.has(d.id)) photoIndexByDog.set(d.id, 0);
   renderDetail(d);
@@ -287,13 +285,13 @@ function openDetail(id){
 
 /* ====== ANIMAZIONI ====== */
 function animateGridAction(button, yes){
-  const card = button.closest('.card'); if (!card) return;
+  var card = button ? button.closest('.card') : null; if (!card) return;
   if (yes){
     card.animate(
       [{transform:'scale(1)',opacity:1},{transform:'scale(1.04)',opacity:1},{transform:'scale(.96)',opacity:.9},
        {transform:'scale(.98)',opacity:.85},{transform:'scale(1)',opacity:0}],
       {duration:280,easing:'ease-in-out'}
-    ).onfinish = ()=> render();
+    ).onfinish = function(){ render(); };
   } else {
     card.animate(
       [{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},
@@ -303,15 +301,15 @@ function animateGridAction(button, yes){
   }
 }
 function animateDeckAction(yes){
-  const card = $('#deckCard'); if (!card) return;
-  const dir = yes ? 1 : -1;
+  var card = document.getElementById('deckCard'); if (!card) return;
+  var dir = yes ? 1 : -1;
   card.animate(
     [{transform:'translateX(0) rotate(0deg)',opacity:1},
-     {transform:`translateX(${dir*20}px) rotate(${dir*2}deg)`,opacity:1},
-     {transform:`translateX(${dir*120}px) rotate(${dir*8}deg)`,opacity:0}],
+     {transform:'translateX('+(dir*20)+'px) rotate('+(dir*2)+'deg)',opacity:1},
+     {transform:'translateX('+(dir*120)+'px) rotate('+(dir*8)+'deg)',opacity:0}],
     {duration:260,easing:'ease-in-out'}
-  ).onfinish = ()=>{
-    const filtered = applyFilters(dogs);
+  ).onfinish = function(){
+    var filtered = applyFilters(dogs);
     deckIndex = (deckIndex + 1) % (filtered.length || 1);
     render();
   };
@@ -319,56 +317,58 @@ function animateDeckAction(yes){
 
 /* ====== EVENTI ====== */
 // Tabs
-$$('.tab').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    $$('.tab').forEach(x=>x.classList.remove('active'));
+$$('.tab').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    $$('.tab').forEach(function(x){ x.classList.remove('active'); });
     btn.classList.add('active');
-    currentView = btn.dataset.view; // near | browse | match
+    currentView = btn.getAttribute('data-view'); // near | browse | match
     if (currentView === 'browse') deckIndex = 0;
     render();
   });
 });
 
-// Filtri reattivi (razza/età)
-['breedFilter','ageFilter'].forEach(id=>{
-  const el = document.getElementById(id);
-  el?.addEventListener('change', ()=>{ deckIndex = 0; render(); });
+// Filtri reattivi
+['breedFilter','ageFilter'].forEach(function(id){
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('change', function(){ deckIndex = 0; render(); });
 });
 
 // Geo (demo)
-$('#locOn').addEventListener('click', ()=> alert('Posizione attivata (demo).'));
-$('#locLater').addEventListener('click', ()=> alert('Ok, più tardi.'));
+var locOn = document.getElementById('locOn');
+if (locOn) locOn.addEventListener('click', function(){ alert('Posizione attivata (demo).'); });
+var locLater = document.getElementById('locLater');
+if (locLater) locLater.addEventListener('click', function(){ alert('Ok, più tardi.'); });
 
-// Click globali: apri profilo, thumbs, like/dislike
-document.addEventListener('click', (e)=>{
-  const open = e.target.closest('[data-open]');
-  if (open){ openDetail(Number(open.dataset.open)); return; }
+// Click globali
+document.addEventListener('click', function(e){
+  var open = e.target.closest ? e.target.closest('[data-open]') : null;
+  if (open){ openDetail(Number(open.getAttribute('data-open'))); return; }
 
-  const th = e.target.closest('[data-thumb]');
+  var th = e.target.closest ? e.target.closest('[data-thumb]') : null;
   if (th){
-    const big = document.getElementById('bigPhoto');
-    const dogId = Number(big?.dataset.id);
-    const idx   = Number(th.dataset.thumb);
+    var big = document.getElementById('bigPhoto');
+    var dogId = big && big.dataset ? Number(big.dataset.id) : NaN;
+    var idx   = Number(th.getAttribute('data-thumb'));
     if (!isNaN(dogId) && !isNaN(idx)){
       photoIndexByDog.set(dogId, idx);
-      const d = dogs.find(x=>x.id===dogId);
+      var d = dogs.find(function(x){ return x.id===dogId; });
       if (d) renderDetail(d);
     }
     return;
   }
 
-  const b = e.target.closest('button[data-id]');
+  var b = e.target.closest ? e.target.closest('button[data-id]') : null;
   if (!b) return;
-  const id  = Number(b.dataset.id);
-  const yes = (b.dataset.act === 'yes');
+  var id  = Number(b.getAttribute('data-id'));
+  var yes = (b.getAttribute('data-act') === 'yes');
 
   if (yes) matches.add(id);
   else {
-    const i = dogs.findIndex(d=>d.id===id);
-    if (i>=0) dogs.push(...dogs.splice(i,1)); // skip → fondo
+    var i = dogs.findIndex(function(d){ return d.id===id; });
+    if (i>=0) dogs.push.apply(dogs, dogs.splice(i,1)); // skip → fondo
   }
 
-  if (e.target.closest('.profile-actions')){
+  if (e.target.closest && e.target.closest('.profile-actions')){
     b.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:160});
     return;
   }
@@ -378,10 +378,13 @@ document.addEventListener('click', (e)=>{
 });
 
 // Chiudi profilo
-$('#closeDetail').addEventListener('click', (e)=>{
-  e.preventDefault();
-  hideDetailOverlay();
-});
+var closeDetailBtn = document.getElementById('closeDetail');
+if (closeDetailBtn){
+  closeDetailBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    hideDetailOverlay();
+  });
+}
 
 /* ====== AVVIO ====== */
 initBreedOptions();
