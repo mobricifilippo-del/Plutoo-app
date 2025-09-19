@@ -4,91 +4,178 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <!-- CSS PERFETTO v1.3: NON TOCCARE -->
-  <link rel="stylesheet" href="./style.css?v=golden1" />
+  <link rel="stylesheet" href="./style.css?v=adv1" />
 </head>
 <body>
 
-  <!-- ===== VIEW 2 – LIST (prima per usare :target) ===== -->
+  <!-- LIST VIEW PRIMA per la regola :target -->
   <main id="list" class="app" aria-label="Cani vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">← Indietro</a>
+      <a href="#home" class="back">&larr; Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
-    <section class="location-card">
+    <!-- Card posizione -->
+    <div class="location-card">
       <div class="left">
-        <span class="emoji">🎯</span>
+        <span class="bullseye">🎯</span>
         <div class="title">Attiva la posizione per vedere gli amici vicino a te</div>
       </div>
       <div class="right">
-        <button id="locOn" class="chip chip-primary">Attiva</button>
-        <button id="locLater" class="chip">Più tardi</button>
+        <button class="chip chip-primary" id="locOn">Attiva</button>
+        <button class="chip" id="locLater">Più tardi</button>
       </div>
-    </section>
+    </div>
 
-    <div class="tabs" role="tablist" aria-label="Viste">
+    <!-- Tabs -->
+    <div class="tabs">
       <button class="tab active" data-view="near">Vicino a te</button>
       <button class="tab" data-view="browse">Scorri</button>
       <button class="tab" data-view="match">Match</button>
-
-      <!-- Filtri semplici (non rompono il layout) -->
-      <select id="breedFilter" class="chip" style="margin-left:auto">
-        <option value="">Razza (tutte)</option>
-        <option>Jack Russell</option>
-        <option>Labrador</option>
-        <option>Shiba Inu</option>
-        <option>Golden Retriever</option>
-      </select>
-      <select id="ageFilter" class="chip" style="margin-left:8px">
-        <option value="">Età (tutte)</option>
-        <option value="0-1">0–1</option>
-        <option value="2-3">2–3</option>
-        <option value="4+">4+</option>
-      </select>
     </div>
 
-    <!-- Vicino/Match: griglia 2 colonne -->
-    <section id="cards" class="grid" aria-live="polite"></section>
+    <!-- Barra filtri base -->
+    <div class="filters-bar">
+      <select id="breedFilter" class="select"></select>
+      <select id="ageFilter" class="select">
+        <option value="">Età (tutte)</option>
+        <option value="0-1">Cucciolo (0–1)</option>
+        <option value="2-3">Giovane (2–3)</option>
+        <option value="4+">Adulto 4+</option>
+      </select>
+      <button id="filtersToggle" class="chip-outline">Ricerca avanzata ▾</button>
+    </div>
 
-    <!-- Scorri: UNA card alla volta -->
-    <section id="deck" class="deck" hidden aria-live="polite"></section>
+    <!-- Pannello ricerca avanzata -->
+    <section id="filtersPanel" class="filters-panel" hidden>
+      <div class="filters-grid">
+        <!-- Sezione BASE -->
+        <div class="filters-section">
+          <div class="filters-title">Base</div>
+          <div class="row">
+            <label for="sexFilter">Sesso</label>
+            <select id="sexFilter" class="select">
+              <option value="">Tutti</option>
+              <option>Maschio</option>
+              <option>Femmina</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="intactFilter">Stato riproduttivo</label>
+            <select id="intactFilter" class="select">
+              <option value="">Tutti</option>
+              <option value="intact">Integro</option>
+              <option value="fixed">Sterilizzato/Castrato</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="sizeFilter">Taglia</label>
+            <select id="sizeFilter" class="select">
+              <option value="">Tutte</option>
+              <option>Piccola</option>
+              <option>Media</option>
+              <option>Grande</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="distanceFilter">Distanza</label>
+            <select id="distanceFilter" class="select">
+              <option value="">Qualsiasi</option>
+              <option value="5">≤ 5 km</option>
+              <option value="10">≤ 10 km</option>
+              <option value="25">≤ 25 km</option>
+              <option value="50">≤ 50 km</option>
+            </select>
+          </div>
+        </div>
 
-    <!-- Dettaglio profilo -->
+        <!-- Sezione ACCOPPIAMENTO -->
+        <div class="filters-section">
+          <div class="filters-title">Accoppiamento</div>
+          <div class="row">
+            <label for="pedigreeFilter">Pedigree</label>
+            <select id="pedigreeFilter" class="select">
+              <option value="">Indifferente</option>
+              <option value="yes">Sì</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div class="row">
+            <label>Test sanitari</label>
+            <div class="checks">
+              <label><input type="checkbox" id="testHD"> Anche (HD)</label>
+              <label><input type="checkbox" id="testED"> Gomiti (ED)</label>
+              <label><input type="checkbox" id="testECVO"> Occhi (ECVO)</label>
+              <label><input type="checkbox" id="testGEN"> Genetici</label>
+            </div>
+          </div>
+          <div class="row">
+            <label for="inHeatFilter">Femmine in calore</label>
+            <select id="inHeatFilter" class="select">
+              <option value="">Indifferente</option>
+              <option value="yes">Sì</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="expFilter">Esperienza</label>
+            <select id="expFilter" class="select">
+              <option value="">Tutti</option>
+              <option value="0">Nessuna</option>
+              <option value="1">1 cucciolata</option>
+              <option value="2+">Esperto</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="filters-actions">
+        <label class="remember"><input type="checkbox" id="rememberFilters"> Ricorda filtri</label>
+        <div class="spacer"></div>
+        <button id="resetFilters" class="chip">Azzera</button>
+        <button id="applyFilters" class="chip chip-primary">Applica</button>
+      </div>
+    </section>
+
+    <!-- Risultati -->
+    <div class="results-info" id="resultsInfo">Mostro 0 cani</div>
+    <section id="cards" class="grid"></section>
+
+    <!-- Deck Scorri (1 alla volta) -->
+    <section id="deck" class="deck" hidden></section>
+
+    <!-- Overlay profilo -->
     <section id="detail" class="detail" hidden>
       <header class="topbar">
-        <a href="#list" class="back" id="closeDetail">← Indietro</a>
+        <a href="#" id="closeDetail" class="back">&larr; Indietro</a>
         <div class="brand">Profilo</div>
         <div></div>
       </header>
-      <article class="dogsheet" id="dogsheet"></article>
+      <article id="dogsheet" class="dogsheet"></article>
     </section>
   </main>
 
-  <!-- ===== VIEW 1 – HOME ===== -->
+  <!-- HOME / HERO -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
-      <!-- Centro garantito senza toccare il CSS -->
-      <nav class="auth" style="justify-self:center">
+      <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
-      <div></div>
     </header>
 
     <div class="logo-wrap">
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- Link (non button) per attivare :target -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
-
-    <p class="subtitle">Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.</p>
+    <p class="subtitle">Attiveremo la posizione per mostrarti gli amici <strong>online</strong> vicino a te.</p>
+    <div class="teaser"></div>
   </section>
 
-  <script src="./app.js?v=golden3"></script>
+  <script src="./app.js?v=adv1"></script>
 </body>
 </html>
