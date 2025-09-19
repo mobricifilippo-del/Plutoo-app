@@ -71,11 +71,22 @@ const dogs = [
     character:'Leale', energy:'Media', living:'Tranquillità', area:'Balduina', posts:[] },
 ];
 
+/* ====== RAZZE DISPONIBILI (filtro esteso) ====== */
+const BREEDS = [
+  'Labrador', 'Golden Retriever', 'Jack Russell', 'Shiba Inu',
+  'Pastore Tedesco', 'Bulldog Francese', 'Bulldog Inglese', 'Beagle',
+  'Barboncino (Poodle)', 'Chihuahua', 'Cocker Spaniel', 'Border Collie',
+  'Carlino (Pug)', 'Dobermann', 'Rottweiler', 'Husky Siberiano',
+  'Maltese', 'Bassotto', 'Yorkshire Terrier', 'Pinscher',
+  'Akita Inu', 'Setter Inglese', 'Springer Spaniel', 'Shar Pei',
+  'American Staffordshire', 'Boxer', 'Cane Corso', 'Dalmata',
+  'Weimaraner', 'Whippet'
+];
+
 /* ====== STATO ====== */
 let matches = new Set();
 let currentView = 'near';   // near | browse | match
 let deckIndex = 0;
-// indice foto per ogni cane nel profilo
 const photoIndexByDog = new Map();
 
 const $  = s => document.querySelector(s);
@@ -87,6 +98,12 @@ const detailEl = $('#detail');
 const sheetEl  = $('#dogsheet');
 
 /* ====== FILTRI ====== */
+function initBreedOptions() {
+  const sel = document.getElementById('breedFilter');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Razza (tutte)</option>' +
+    BREEDS.map(b => `<option>${b}</option>`).join('');
+}
 function getFilters(){
   const breed = $('#breedFilter')?.value || '';
   const age   = $('#ageFilter')?.value || '';
@@ -108,14 +125,43 @@ function timeSince(iso){
   const then = new Date(iso).getTime();
   const now  = Date.now();
   const diff = Math.max(0, now - then);
-  const sec = Math.floor(diff/1000);
-  const min = Math.floor(sec/60);
+  const min = Math.floor(diff/60000);
   const hr  = Math.floor(min/60);
   const day = Math.floor(hr/24);
   if (day>0) return `${day}g fa`;
   if (hr>0)  return `${hr}h fa`;
   if (min>0) return `${min}m fa`;
   return `ora`;
+}
+
+/* ====== BADGE: Zampetta con spunta (SVG inline) ====== */
+function pawCheckSVG(sizePx=22){
+  const s = sizePx;
+  return `
+<svg width="${s}" height="${s}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <circle cx="12" cy="12" r="12" fill="#10b981"/>
+  <!-- zampa (pad + dita) -->
+  <circle cx="12" cy="14" r="4" fill="#ffffff"/>
+  <circle cx="8.5" cy="10" r="1.6" fill="#ffffff"/>
+  <circle cx="12" cy="9" r="1.6" fill="#ffffff"/>
+  <circle cx="15.5" cy="10" r="1.6" fill="#ffffff"/>
+  <circle cx="10" cy="12.5" r="1.2" fill="#ffffff" opacity=".0"/>
+  <!-- spunta -->
+  <path d="M8.5 12.6l2.2 2.2 4.8-4.8" fill="none" stroke="#10b981" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M8.5 12.6l2.2 2.2 4.8-4.8" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+</svg>`;
+}
+function badgeCardHTML(){
+  return `<span title="Profilo verificato"
+    style="position:absolute;left:10px;bottom:10px;display:inline-block;box-shadow:0 4px 12px rgba(0,0,0,.15);border-radius:999px;overflow:hidden;">
+    ${pawCheckSVG(22)}
+  </span>`;
+}
+function badgeInlineHTML(){
+  return `<span title="Profilo verificato"
+    style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;vertical-align:middle">
+    ${pawCheckSVG(18)}
+  </span>`;
 }
 
 /* ====== RENDER ====== */
@@ -154,7 +200,7 @@ function renderGrid(list){
         <img src="${d.image}" alt="Foto di ${d.name}" data-open="${d.id}">
         <span class="badge">${d.distance.toFixed(1)} km</span>
         ${d.online ? '<span class="dot"></span>' : ''}
-        ${d.verified ? '<span title="Profilo verificato" style="position:absolute;left:10px;bottom:10px;background:#e0f2fe;color:#0369a1;border-radius:999px;padding:4px 8px;font-size:.8rem;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.15)">✔️</span>' : ''}
+        ${d.verified ? badgeCardHTML() : ''}
       </div>
       <div class="body">
         <div class="name">${d.name}, ${d.age}</div>
@@ -176,7 +222,7 @@ function renderDeck(d){
         <img src="${d.image}" alt="Foto di ${d.name}" data-open="${d.id}">
         <span class="badge">${d.distance.toFixed(1)} km</span>
         ${d.online ? '<span class="dot"></span>' : ''}
-        ${d.verified ? '<span title="Profilo verificato" style="position:absolute;left:10px;bottom:10px;background:#e0f2fe;color:#0369a1;border-radius:999px;padding:4px 8px;font-size:.8rem;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.15)">✔️</span>' : ''}
+        ${d.verified ? badgeCardHTML() : ''}
       </div>
       <div class="body">
         <div class="name">${d.name}, ${d.age}</div>
@@ -237,10 +283,7 @@ function renderDetail(d){
       `).join('')
     : `<div style="color:#9ca3af">Nessun aggiornamento ancora.</div>`;
 
-  const verifiedBadge = d.verified
-    ? `<span title="Profilo verificato" style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;background:#e0f2fe;color:#0369a1;border-radius:999px;padding:4px 8px;font-size:.85rem;font-weight:700">✔️ Verificato</span>`
-    : '';
-
+  const verifiedIcon = d.verified ? badgeInlineHTML() : '';
   const onlineRow = d.online
     ? `<div class="drow"><strong>Stato:</strong> <span style="color:#10b981">🟢 Online ora</span></div>`
     : `<div class="drow"><strong>Stato:</strong> <span style="color:#6b7280">Ultimo accesso: ${timeSince(d.lastSeen)}</span></div>`;
@@ -263,7 +306,7 @@ function renderDetail(d){
     <!-- Info -->
     <div class="dinfo">
       <h2 style="margin:0 0 6px;display:flex;align-items:center;flex-wrap:wrap;gap:6px">
-        <span>${d.name}, ${d.age}</span>${verifiedBadge}
+        <span>${d.name}, ${d.age}</span>${verifiedIcon}
       </h2>
       <div class="dmeta">${d.breed} • ${d.distance.toFixed(1)} km</div>
       ${onlineRow}
@@ -430,5 +473,22 @@ $('#closeDetail').addEventListener('click', (e)=>{
   hideDetailOverlay();
 });
 
+/* ====== LANDING SMART: atterra su #list se richiesto o già visitato ====== */
+function smartLanding() {
+  const params = new URLSearchParams(location.search);
+  const wantsList = params.get('start') === 'list';
+  const alreadyVisited = localStorage.getItem('plutooVisited') === '1';
+
+  if (!location.hash && (wantsList || alreadyVisited)) {
+    location.hash = '#list';
+  }
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('#enterLink');
+    if (a) localStorage.setItem('plutooVisited', '1');
+  }, { passive: true });
+}
+
 /* ====== AVVIO ====== */
+initBreedOptions();
+smartLanding();
 render();
