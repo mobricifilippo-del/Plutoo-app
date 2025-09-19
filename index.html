@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=v2-stable" />
+  <link rel="stylesheet" href="./style.css?v=v2-stable2" />
 </head>
 <body>
 
-  <!-- LIST PRIMA per usare :target (niente JS per cambiare pagina) -->
+  <!-- LIST PRIMA per usare :target -->
   <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
       <a href="#home" class="back" aria-label="Torna indietro">&larr; Indietro</a>
@@ -18,7 +18,6 @@
       </nav>
     </header>
 
-    <!-- Posizione -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -30,14 +29,12 @@
       </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" data-view="near">Vicino a te</button>
       <button class="tab" data-view="browse">Scorri</button>
       <button class="tab" data-view="match">Match</button>
     </div>
 
-    <!-- Filtri base -->
     <div class="filters-bar">
       <select id="breedFilter" class="select"></select>
       <select id="ageFilter" class="select">
@@ -50,13 +47,9 @@
       <div id="resultsInfo" class="results-info">Mostro 0 cani</div>
     </div>
 
-    <!-- Lista (griglia) -->
     <section id="cards" class="grid"></section>
-
-    <!-- Scorri (uno alla volta) -->
     <section id="deck" class="deck" hidden></section>
 
-    <!-- Profilo (overlay) -->
     <section id="detail" class="detail" hidden>
       <header class="topbar">
         <a href="#" id="closeDetail" class="back">&larr; Indietro</a>
@@ -80,13 +73,12 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- Link (non bottone) per cambiare schermata senza JS -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
     <p class="subtitle">Cerca amici <strong>online</strong> intorno a te.</p>
 
     <div class="teaser"></div>
   </section>
 
-  <script src="./app.js?v=v2-stable"></script>
+  <script src="./app.js?v=v2-stable2"></script>
 </body>
 </html>
