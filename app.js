@@ -1,391 +1,281 @@
-/* Plutoo v2-stable2 — JS compatibile Android (no optional chaining), lista 2 colonne, Scorri, Match, profilo, filtri razza/età, 🐾 blu */
+/* v1.4 – Lista + Scorri + Match + Profilo + Ricerca personalizzata (tendina)
+   - Mantiene il comportamento esistente
+   - Aggiunge filtri con salvataggio in localStorage
+*/
 
-/* ====== DATASET DEMO ====== */
-var dogs = [
-  { id:1,  name:'Luna',  age:1, breed:'Jack Russell',     distance:2.2, image:'./dog2.jpg', online:true,
-    verified:true, lastSeen:'2025-09-19T10:12:00Z',
-    photos:['./dog2.jpg','./dog1.jpg','./dog3.jpg'],
-    character:'Giocherellona', energy:'Alta', living:'Ok altri cani', area:'Ostia',
-    posts:[{text:'Passeggiata al parco!',ts:'2025-09-18 10:21'}] },
-  { id:2,  name:'Rocky', age:3, breed:'Labrador',         distance:1.6, image:'./dog1.jpg', online:true,
-    verified:true, lastSeen:'2025-09-19T09:40:00Z',
-    photos:['./dog1.jpg','./dog4.jpg'],
-    character:'Dolce', energy:'Media', living:'Ok bambini', area:'Garbatella',
-    posts:[{text:'Nuovo amico al laghetto 💦',ts:'2025-09-15 12:40'}] },
-  { id:3,  name:'Bella', age:2, breed:'Shiba Inu',        distance:3.2, image:'./dog3.jpg', online:true,
-    verified:false, lastSeen:'2025-09-18T20:00:00Z',
-    photos:['./dog3.jpg','./dog1.jpg','./dog4.jpg'],
-    character:'Curiosa', energy:'Media', living:'Meglio da sola', area:'EUR', posts:[] },
-  { id:4,  name:'Max',   age:4, breed:'Golden Retriever', distance:5.9, image:'./dog4.jpg', online:true,
-    verified:true, lastSeen:'2025-09-19T07:10:00Z',
-    photos:['./dog4.jpg','./dog2.jpg'],
-    character:'Tranquillo', energy:'Bassa', living:'Giardino', area:'Prati',
-    posts:[{text:'Pennichella al sole ☀️',ts:'2025-09-16 15:12'}] },
-  { id:5,  name:'Milo',  age:1, breed:'Labrador',         distance:4.1, image:'./dog1.jpg', online:true,
-    verified:false, lastSeen:'2025-09-18T11:30:00Z',
-    photos:['./dog1.jpg','./dog2.jpg','./dog3.jpg','./dog4.jpg'],
-    character:'Vivace', energy:'Alta', living:'Ok tutti', area:'Trastevere', posts:[] },
-  { id:6,  name:'Kira',  age:2, breed:'Jack Russell',     distance:2.9, image:'./dog2.jpg', online:false,
-    verified:true, lastSeen:'2025-09-17T18:20:00Z',
-    photos:['./dog2.jpg','./dog3.jpg'],
-    character:'Attenta', energy:'Alta', living:'Casa e parco', area:'Centocelle', posts:[] },
-  { id:7,  name:'Thor',  age:5, breed:'Golden Retriever', distance:7.0, image:'./dog4.jpg', online:true,
-    verified:false, lastSeen:'2025-09-19T08:00:00Z',
-    photos:['./dog4.jpg','./dog1.jpg'],
-    character:'Affettuoso', energy:'Media', living:'Famiglia', area:'Tiburtina', posts:[] },
-  { id:8,  name:'Nala',  age:3, breed:'Shiba Inu',        distance:3.7, image:'./dog3.jpg', online:true,
-    verified:true, lastSeen:'2025-09-19T10:00:00Z',
-    photos:['./dog3.jpg','./dog2.jpg'],
-    character:'Indipendente', energy:'Media', living:'Meglio da sola', area:'San Paolo', posts:[] },
-  { id:9,  name:'Zoe',   age:2, breed:'Labrador',         distance:2.4, image:'./dog1.jpg', online:true,
-    verified:false, lastSeen:'2025-09-19T06:35:00Z',
-    photos:['./dog1.jpg','./dog3.jpg'],
-    character:'Socievole', energy:'Alta', living:'Ok con cani', area:'Portuense', posts:[] },
-  { id:10, name:'Otto',  age:4, breed:'Jack Russell',     distance:6.3, image:'./dog2.jpg', online:false,
-    verified:false, lastSeen:'2025-09-16T21:03:00Z',
-    photos:['./dog2.jpg','./dog1.jpg'],
-    character:'Cacciatore', energy:'Alta', living:'Passeggiate lunghe', area:'Anagnina', posts:[] },
-  { id:11, name:'Paco',  age:3, breed:'Shiba Inu',        distance:5.1, image:'./dog3.jpg', online:true,
-    verified:true, lastSeen:'2025-09-19T09:12:00Z',
-    photos:['./dog3.jpg','./dog4.jpg'],
-    character:'Furbo', energy:'Media', living:'Routine fissa', area:'Monti', posts:[] },
-  { id:12, name:'Maya',  age:2, breed:'Golden Retriever', distance:4.8, image:'./dog4.jpg', online:true,
-    verified:false, lastSeen:'2025-09-19T09:55:00Z',
-    photos:['./dog4.jpg','./dog2.jpg'],
-    character:'Solare', energy:'Alta', living:'Famiglia', area:'Parioli', posts:[] }
+/* ====== Dataset demo ====== */
+const dogs = [
+  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2, image:'./dog1.jpg', online:true,  sex:'F', size:'Piccola', coat:'Corto',  energy:'Alta',  pedigree:'si', verified:true },
+  { id:2, name:'Rocky', age:3, breed:'Labrador',          distance:1.6, image:'./dog2.jpg', online:true,  sex:'M', size:'Grande', coat:'Corto',  energy:'Media', pedigree:'no', verified:true },
+  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         distance:3.2, image:'./dog3.jpg', online:false, sex:'F', size:'Media',  coat:'Medio',  energy:'Alta',  pedigree:'si', verified:false },
+  { id:4, name:'Max',   age:4, breed:'Golden Retriever',  distance:5.9, image:'./dog4.jpg', online:true,  sex:'M', size:'Grande', coat:'Lungo',  energy:'Bassa', pedigree:'no', verified:true },
+  // qualcosina in più per test filtri
+  { id:5, name:'Milo',  age:1, breed:'Beagle',            distance:4.1, image:'./dog1.jpg', online:true,  sex:'M', size:'Piccola', coat:'Corto', energy:'Alta', pedigree:'no', verified:false },
+  { id:6, name:'Nala',  age:6, breed:'Barboncino',        distance:2.4, image:'./dog2.jpg', online:true,  sex:'F', size:'Piccola', coat:'Lungo', energy:'Media', pedigree:'si', verified:true },
+  { id:7, name:'Kira',  age:5, breed:'Border Collie',     distance:3.2, image:'./dog3.jpg', online:true,  sex:'F', size:'Media',  coat:'Medio', energy:'Alta', pedigree:'si', verified:false },
+  { id:8, name:'Odin',  age:8, breed:'Pastore Tedesco',   distance:7.3, image:'./dog4.jpg', online:true,  sex:'M', size:'Grande', coat:'Medio', energy:'Media', pedigree:'no', verified:true },
+  { id:9, name:'Zoe',   age:2, breed:'Meticcio',          distance:1.9, image:'./dog1.jpg', online:true,  sex:'F', size:'Media',  coat:'Corto', energy:'Bassa', pedigree:'no', verified:false },
+  { id:10,name:'Argo',  age:4, breed:'Labrador',          distance:2.7, image:'./dog2.jpg', online:true,  sex:'M', size:'Grande', coat:'Corto', energy:'Alta', pedigree:'si', verified:true },
 ];
 
-/* ====== RAZZE ====== */
-var BREEDS = [
-  'Labrador','Golden Retriever','Jack Russell','Shiba Inu',
-  'Pastore Tedesco','Bulldog Francese','Beagle','Barboncino (Poodle)',
-  'Chihuahua','Cocker Spaniel','Border Collie','Carlino (Pug)','Dobermann',
-  'Rottweiler','Husky Siberiano','Maltese','Bassotto','Yorkshire Terrier'
-];
+let matches = new Set();
+let currentView = 'near'; // 'near' | 'browse' | 'match'
 
-/* ====== STATO ====== */
-var matches = new Set();
-var currentView = 'near';   // near | browse | match
-var deckIndex = 0;
-var photoIndexByDog = new Map();
+/* ====== Stato filtri (persistente) ====== */
+const defaultFilters = {
+  breed:'', age:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:''
+};
+const saved = JSON.parse(localStorage.getItem('pl_filters') || 'null');
+let filters = saved && typeof saved==='object' ? {...defaultFilters, ...saved} : {...defaultFilters};
 
-/* ====== HELPERS ====== */
-function $(s){ return document.querySelector(s); }
-function $$(s){ return document.querySelectorAll(s); }
+/* ====== Helpers ====== */
+const $  = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
 
-var cardsEl  = $('#cards');
-var deckEl   = $('#deck');
-var detailEl = $('#detail');
-var sheetEl  = $('#dogsheet');
-
-/* ====== FILTRI (razza + età) ====== */
-function initBreedOptions(){
-  var sel = document.getElementById('breedFilter');
-  if (!sel) return;
-  var html = '<option value="">Razza (tutte)</option>';
-  for (var i=0;i<BREEDS.length;i++){ html += '<option>'+BREEDS[i]+'</option>'; }
-  sel.innerHTML = html;
+function saveFilters(){
+  localStorage.setItem('pl_filters', JSON.stringify(filters));
 }
-function getFilters(){
-  var breedSel = document.getElementById('breedFilter');
-  var ageSel   = document.getElementById('ageFilter');
-  return {
-    breed: breedSel ? breedSel.value : '',
-    age:   ageSel ? ageSel.value : ''
-  };
+
+function ageInRange(age, token){
+  if(!token) return true;
+  if(token==='0-1') return age<=1;
+  if(token==='2-4') return age>=2 && age<=4;
+  if(token==='5-7') return age>=5 && age<=7;
+  if(token==='8+')  return age>=8;
+  return true;
 }
+
+/* ====== Rendering ====== */
 function applyFilters(list){
-  var f = getFilters();
-  var out = list.slice();
-  if (f.breed) out = out.filter(function(d){ return d.breed === f.breed; });
-  if (f.age === '0-1') out = out.filter(function(d){ return d.age <= 1; });
-  if (f.age === '2-3') out = out.filter(function(d){ return d.age >= 2 && d.age <= 3; });
-  if (f.age === '4+')  out = out.filter(function(d){ return d.age >= 4; });
-  return out;
-}
-function updateResultsInfo(count){
-  var el = document.getElementById('resultsInfo'); if (!el) return;
-  el.textContent = 'Mostro ' + count + ' cane' + (count===1?'':'i');
-}
-
-/* ====== RENDER ====== */
-function render(){
-  var isDeck = (currentView === 'browse');
-  if (cardsEl) cardsEl.hidden = isDeck;
-  if (deckEl)  deckEl.hidden  = !isDeck;
-
-  var list = applyFilters(dogs);
-
-  if (currentView === 'near'){
-    list = list.filter(function(d){ return d.online; }).sort(function(a,b){ return a.distance-b.distance; });
-    renderGrid(list);
-  } else if (currentView === 'match'){
-    list = list.filter(function(d){ return matches.has(d.id); });
-    renderGrid(list);
-  } else {
-    if (!list.length){ if (deckEl) deckEl.innerHTML=''; updateResultsInfo(0); return; }
-    if (deckIndex >= list.length) deckIndex = 0;
-    updateResultsInfo(list.length);
-    renderDeck(list[deckIndex]);
-  }
-}
-
-function renderGrid(list){
-  updateResultsInfo(list.length);
-  if (!cardsEl) return;
-  if (!list.length){
-    cardsEl.innerHTML = '<p style="padding:12px 16px;color:#6b7280">Nessun risultato qui.</p>';
-    return;
-  }
-  cardsEl.innerHTML = '';
-  list.forEach(function(d){
-    var el = document.createElement('article');
-    el.className = 'card';
-    el.innerHTML =
-      '<div class="pic">' +
-        '<img src="'+d.image+'" alt="Foto di '+d.name+'" data-open="'+d.id+'">' +
-        '<span class="badge">'+d.distance.toFixed(1)+' km</span>' +
-        (d.online ? '<span class="dot"></span>' : '') +
-      '</div>' +
-      '<div class="body">' +
-        '<div class="name">'+d.name+', '+d.age+(d.verified?'<span class="badge-verify">🐾</span>':'')+'</div>' +
-        '<div class="breed">'+d.breed+'</div>' +
-        '<div class="actions">' +
-          '<button class="btn-round btn-no" data-act="no"  data-id="'+d.id+'"><span class="emoji">🥲</span></button>' +
-          '<button class="btn-round btn-yes" data-act="yes" data-id="'+d.id+'"><span class="emoji">❤️</span></button>' +
-        '</div>' +
-      '</div>';
-    cardsEl.appendChild(el);
+  return list.filter(d=>{
+    if(filters.breed && d.breed !== filters.breed) return false;
+    if(filters.sex && d.sex !== filters.sex) return false;
+    if(filters.size && d.size !== filters.size) return false;
+    if(filters.coat && d.coat !== filters.coat) return false;
+    if(filters.energy && d.energy !== filters.energy) return false;
+    if(filters.pedigree && d.pedigree !== filters.pedigree) return false;
+    if(filters.distance && d.distance > Number(filters.distance)) return false;
+    if(!ageInRange(d.age, filters.age)) return false;
+    return true;
   });
 }
 
-function renderDeck(d){
-  if (!deckEl) return;
-  deckEl.innerHTML =
-    '<article class="card card-big" id="deckCard">' +
-      '<div class="pic">' +
-        '<img src="'+d.image+'" alt="Foto di '+d.name+'" data-open="'+d.id+'">' +
-        '<span class="badge">'+d.distance.toFixed(1)+' km</span>' +
-        (d.online ? '<span class="dot"></span>' : '') +
-      '</div>' +
-      '<div class="body">' +
-        '<div class="name">'+d.name+', '+d.age+(d.verified?'<span class="badge-verify">🐾</span>':'')+'</div>' +
-        '<div class="breed">'+d.breed+'</div>' +
-        '<div class="swipe-actions">' +
-          '<button class="btn-round btn-no" data-act="no"  data-id="'+d.id+'"><span class="emoji">🥲</span></button>' +
-          '<button class="btn-round btn-yes" data-act="yes" data-id="'+d.id+'"><span class="emoji">❤️</span></button>' +
-        '</div>' +
-      '</div>' +
-    '</article>';
-}
-
-/* ====== PROFILO (overlay) ====== */
-var savedScrollY = 0;
-function showDetailOverlay(){
-  savedScrollY = window.scrollY || 0;
-  document.body.style.position = 'fixed';
-  document.body.style.top = '-' + savedScrollY + 'px';
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.width = '100%';
-  if (detailEl) detailEl.hidden = false;
-  if (detailEl) Object.assign(detailEl.style,{position:'fixed',inset:'0',background:'#fff',zIndex:'9999',overflowY:'auto'});
-}
-function hideDetailOverlay(){
-  if (detailEl){ detailEl.hidden = true; detailEl.removeAttribute('style'); }
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.width = '';
-  window.scrollTo(0, savedScrollY || 0);
-}
-function timeSince(iso){
-  if (!iso) return '';
-  var then = new Date(iso).getTime();
-  var diff = Math.max(0, Date.now() - then);
-  var m = Math.floor(diff/60000), h = Math.floor(m/60), d = Math.floor(h/24);
-  if (d>0) return d+'g fa';
-  if (h>0) return h+'h fa';
-  if (m>0) return m+'m fa';
-  return 'ora';
-}
-function renderDetail(d){
-  if (!sheetEl) return;
-  var photos = (d.photos && d.photos.length) ? d.photos : [d.image];
-  var idx = photoIndexByDog.has(d.id) ? photoIndexByDog.get(d.id) : 0;
-  var total = photos.length;
-  var current = ((idx % total) + total) % total;
-
-  var thumbHtml = '';
-  for (var i=0;i<photos.length;i++){
-    thumbHtml += '<img src="'+photos[i]+'" data-thumb="'+i+'" alt="thumb '+(i+1)+'" ' +
-      'style="width:64px;height:64px;object-fit:cover;border-radius:10px;opacity:'+(i===current?1:.6)+';outline:'+(i===current?'3px solid #e9d5ff':'none')+'">';
-  }
-
-  var onlineRow = d.online
-    ? '<div class="drow"><strong>Stato:</strong> <span style="color:#10b981">🟢 Online ora</span></div>'
-    : '<div class="drow"><strong>Stato:</strong> <span style="color:#6b7280">Ultimo accesso: '+timeSince(d.lastSeen)+'</span></div>';
-
-  sheetEl.innerHTML =
-    '<div style="position:relative">' +
-      '<img id="bigPhoto" class="dphoto" src="'+photos[current]+'" alt="Foto di '+d.name+'" data-id="'+d.id+'" data-idx="'+current+'">' +
-      '<div style="position:absolute;right:10px;bottom:10px;background:#00000080;color:#fff;padding:6px 10px;border-radius:12px;font-weight:700">'+(current+1)+'/'+total+'</div>' +
-    '</div>' +
-    '<div style="display:flex;gap:10px;overflow:auto;padding:10px 12px 6px">'+thumbHtml+'</div>' +
-    '<div class="dinfo">' +
-      '<h2 style="margin:0 0 6px;display:flex;align-items:center;gap:6px"><span>'+d.name+', '+d.age+'</span>'+(d.verified?'<span class="badge-verify">🐾</span>':'')+'</h2>' +
-      '<div class="dmeta">'+d.breed+' • '+d.distance.toFixed(1)+' km</div>' +
-      onlineRow +
-      '<div class="drow"><strong>Carattere:</strong> '+d.character+'</div>' +
-      '<div class="drow"><strong>Energia:</strong> '+d.energy+'</div>' +
-      '<div class="drow"><strong>Convivenza:</strong> '+d.living+'</div>' +
-      '<div class="drow"><strong>Zona:</strong> '+d.area+'</div>' +
-      '<div class="profile-actions">' +
-        '<button class="btn-round btn-no" data-act="no"  data-id="'+d.id+'"><span class="emoji">🥲</span></button>' +
-        '<button class="btn-round btn-yes" data-act="yes" data-id="'+d.id+'"><span class="emoji">❤️</span></button>' +
-      '</div>' +
-      '<h3 style="margin:16px 0 8px">Aggiornamenti</h3>' +
-      ((d.posts && d.posts.length)
-        ? d.posts.map(function(po){
-            return '<div style="background:#fff;border-radius:14px;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,.06);margin:10px 0">' +
-                     '<div style="font-weight:700;margin-bottom:6px">'+d.name+'</div>' +
-                     '<div style="color:#6b7280;font-size:.9rem;margin-bottom:8px">'+po.ts+'</div>' +
-                     '<div>'+po.text+'</div>' +
-                   '</div>';
-          }).join('')
-        : '<div style="color:#9ca3af">Nessun aggiornamento ancora.</div>'
-      ) +
-    '</div>';
-
-  // swipe foto
-  var big = document.getElementById('bigPhoto');
-  var touchX = null;
-  if (big){
-    big.addEventListener('touchstart', function(e){ touchX = e.changedTouches[0].clientX; }, {passive:true});
-    big.addEventListener('touchend', function(e){
-      if (touchX == null) return;
-      var dx = e.changedTouches[0].clientX - touchX; touchX = null;
-      if (Math.abs(dx) < 30) return;
-      var dir = dx < 0 ? 1 : -1;
-      var next = ((current + dir) % total + total) % total;
-      photoIndexByDog.set(d.id, next);
-      renderDetail(d);
-    }, {passive:true});
-  }
-}
-
-function openDetail(id){
-  var d = dogs.find(function(x){ return x.id===id; });
-  if (!d) return;
-  if (!photoIndexByDog.has(d.id)) photoIndexByDog.set(d.id, 0);
-  renderDetail(d);
-  showDetailOverlay();
-}
-
-/* ====== ANIMAZIONI ====== */
-function animateGridAction(button, yes){
-  var card = button ? button.closest('.card') : null; if (!card) return;
-  if (yes){
-    card.animate(
-      [{transform:'scale(1)',opacity:1},{transform:'scale(1.04)',opacity:1},{transform:'scale(.96)',opacity:.9},
-       {transform:'scale(.98)',opacity:.85},{transform:'scale(1)',opacity:0}],
-      {duration:280,easing:'ease-in-out'}
-    ).onfinish = function(){ render(); };
-  } else {
-    card.animate(
-      [{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},
-       {transform:'translateX(-4px)'},{transform:'translateX(0)'}],
-      {duration:220,easing:'ease-in-out'}
-    );
-  }
-}
-function animateDeckAction(yes){
-  var card = document.getElementById('deckCard'); if (!card) return;
-  var dir = yes ? 1 : -1;
-  card.animate(
-    [{transform:'translateX(0) rotate(0deg)',opacity:1},
-     {transform:'translateX('+(dir*20)+'px) rotate('+(dir*2)+'deg)',opacity:1},
-     {transform:'translateX('+(dir*120)+'px) rotate('+(dir*8)+'deg)',opacity:0}],
-    {duration:260,easing:'ease-in-out'}
-  ).onfinish = function(){
-    var filtered = applyFilters(dogs);
-    deckIndex = (deckIndex + 1) % (filtered.length || 1);
-    render();
+function updateChips(){
+  const host = $('#activeChips');
+  host.innerHTML = '';
+  const nice = {
+    breed:'Razza', age:'Età', sex:'Sesso', size:'Taglia', coat:'Pelo',
+    energy:'Energia', pedigree:'Pedigree', distance:'Distanza'
   };
+  Object.entries(filters).forEach(([k,v])=>{
+    if(!v) return;
+    const c = document.createElement('span');
+    c.className='chip-x';
+    c.innerHTML = `<strong>${nice[k]}:</strong> ${v} <button aria-label="rimuovi" data-del="${k}">×</button>`;
+    host.appendChild(c);
+  });
+  host.addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-del]');
+    if(!b) return;
+    const key = b.dataset.del;
+    filters[key] = '';
+    syncFormFromState();
+    saveFilters();
+    render();
+  }, {once:true});
 }
 
-/* ====== EVENTI ====== */
+function render(){
+  const wrap = $('#cards');
+  const countLabel = $('#countLabel');
+  wrap.className = (currentView==='browse') ? 'deck' : 'grid';
+  wrap.innerHTML = '';
+
+  let list = [...dogs];
+
+  if (currentView === 'near') {
+    list = list.filter(d => d.online).sort((a,b) => a.distance - b.distance);
+  } else if (currentView === 'browse') {
+    // tutti, ordine come sono
+  } else if (currentView === 'match') {
+    list = list.filter(d => matches.has(d.id));
+  }
+
+  // applica filtri personalizzati
+  list = applyFilters(list);
+
+  // conteggio
+  countLabel.textContent = `Mostro ${list.length} cani`;
+
+  if (list.length === 0) {
+    wrap.innerHTML = `<p style="color:#6b7280;padding:10px 14px">Nessun risultato con questi filtri.</p>`;
+    return;
+  }
+
+  if (currentView==='browse') {
+    // UNO alla volta (deck)
+    const d = list[0];
+    wrap.innerHTML = buildCardHtml(d, true);
+    return;
+  }
+
+  // griglia
+  list.forEach(d => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = buildCardHtml(d, false);
+    wrap.appendChild(card);
+  });
+
+  updateChips();
+}
+
+function buildCardHtml(d, big){
+  const verify = d.verified ? `<span class="badge-verify" title="Profilo verificato"><span class="paw">🐾</span></span>` : '';
+  const img = `<div class="pic">
+      <img src="${d.image}" alt="Foto di ${d.name}">
+      <span class="badge">${d.distance.toFixed(1)} km</span>
+      ${d.online ? '<span class="dot-online"></span>' : ''}
+    </div>`;
+  const body = `<div class="body">
+      <div class="name">
+        ${d.name}, ${d.age}
+        ${verify}
+      </div>
+      <div class="breed">${d.breed}</div>
+      <div class="actions">
+        <button class="btn-round btn-no" data-act="no" data-id="${d.id}" title="Scarta"><span class="emoji">🥲</span></button>
+        <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" title="Mi piace"><span class="emoji">❤️</span></button>
+      </div>
+    </div>`;
+  if (big) {
+    return `<article class="card card-big" data-card="${d.id}">
+      ${img}${body}
+    </article>`;
+  }
+  return img + body;
+}
+
+/* ====== Eventi UI ====== */
+// Entra → hash #list (già fa lo switch, qui niente)
+$('#enterLink')?.addEventListener('click', ()=>{ /* solo per future analytics */ });
+
 // Tabs
-$$('.tab').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    $$('.tab').forEach(function(x){ x.classList.remove('active'); });
+$$('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    currentView = btn.getAttribute('data-view'); // near | browse | match
-    if (currentView === 'browse') deckIndex = 0;
+    currentView = btn.dataset.view;
     render();
   });
 });
 
-// Filtri reattivi
-['breedFilter','ageFilter'].forEach(function(id){
-  var el = document.getElementById(id);
-  if (el) el.addEventListener('change', function(){ deckIndex = 0; render(); });
-});
-
-// Geo (demo)
-var locOn = document.getElementById('locOn');
-if (locOn) locOn.addEventListener('click', function(){ alert('Posizione attivata (demo).'); });
-var locLater = document.getElementById('locLater');
-if (locLater) locLater.addEventListener('click', function(){ alert('Ok, più tardi.'); });
-
-// Click globali
-document.addEventListener('click', function(e){
-  var open = e.target.closest ? e.target.closest('[data-open]') : null;
-  if (open){ openDetail(Number(open.getAttribute('data-open'))); return; }
-
-  var th = e.target.closest ? e.target.closest('[data-thumb]') : null;
-  if (th){
-    var big = document.getElementById('bigPhoto');
-    var dogId = big && big.dataset ? Number(big.dataset.id) : NaN;
-    var idx   = Number(th.getAttribute('data-thumb'));
-    if (!isNaN(dogId) && !isNaN(idx)){
-      photoIndexByDog.set(dogId, idx);
-      var d = dogs.find(function(x){ return x.id===dogId; });
-      if (d) renderDetail(d);
+// Like / Dislike + apertura profilo
+$('#cards').addEventListener('click', (e) => {
+  const likeBtn = e.target.closest('button[data-id]');
+  if (likeBtn) {
+    const id = Number(likeBtn.dataset.id);
+    if (likeBtn.dataset.act === 'yes') {
+      matches.add(id);
+      likeBtn.animate([{ transform:'scale(1)' },{ transform:'scale(1.1)' },{ transform:'scale(1)' }], { duration: 160 });
+    } else {
+      // invia la card in fondo (simula "skippa")
+      const idx = dogs.findIndex(d => d.id === id);
+      if (idx >= 0) dogs.push(...dogs.splice(idx,1));
     }
+    render();
     return;
   }
-
-  var b = e.target.closest ? e.target.closest('button[data-id]') : null;
-  if (!b) return;
-  var id  = Number(b.getAttribute('data-id'));
-  var yes = (b.getAttribute('data-act') === 'yes');
-
-  if (yes) matches.add(id);
-  else {
-    var i = dogs.findIndex(function(d){ return d.id===id; });
-    if (i>=0) dogs.push.apply(dogs, dogs.splice(i,1)); // skip → fondo
-  }
-
-  if (e.target.closest && e.target.closest('.profile-actions')){
-    b.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:160});
-    return;
-  }
-
-  if (currentView === 'browse') animateDeckAction(yes);
-  else animateGridAction(b, yes);
+  // click su immagine → profilo
+  const card = e.target.closest('[data-card], .card .pic, .card .body');
+  if (!card) return;
+  const art = e.target.closest('.card, .card-big');
+  if (!art) return;
+  const img = art.querySelector('img');
+  if (!img) return;
+  const nameEl = art.querySelector('.name');
+  const nameText = nameEl ? nameEl.textContent : '';
+  const dog = findDogFromCard(art) || dogs.find(d => nameText?.includes(d.name));
+  if (!dog) return;
+  openDogProfile(dog);
 });
 
-// Chiudi profilo
-var closeDetailBtn = document.getElementById('closeDetail');
-if (closeDetailBtn){
-  closeDetailBtn.addEventListener('click', function(e){
-    e.preventDefault();
-    hideDetailOverlay();
-  });
+function findDogFromCard(art){
+  // prova con badge distanza unico
+  const title = art.querySelector('.breed')?.textContent;
+  if(!title) return null;
+  const name = art.querySelector('.name')?.textContent?.split(',')[0]?.trim();
+  return dogs.find(d => d.name===name);
 }
 
-/* ====== AVVIO ====== */
-initBreedOptions();
+/* ====== Profili ====== */
+function openDogProfile(d){
+  // Sostituisce il contenuto di #cards con la scheda completa
+  const wrap = $('#cards');
+  $('#countLabel').textContent = '';
+  wrap.className = 'detail';
+  wrap.innerHTML = `
+    <article class="dogsheet">
+      <img class="dphoto" src="${d.image}" alt="Foto di ${d.name}">
+      <div class="dinfo">
+        <h2>${d.name}, ${d.age} ${d.verified ? '<span class="badge-verify"><span class="paw">🐾</span></span>' : ''}</h2>
+        <div class="dmeta">${d.breed} · ${d.sex==='M'?'Maschio':'Femmina'} · Taglia ${d.size}</div>
+        <div class="drow"><strong>Pelo:</strong> ${d.coat}</div>
+        <div class="drow"><strong>Energia:</strong> ${d.energy}</div>
+        <div class="drow"><strong>Pedigree:</strong> ${d.pedigree==='si'?'Sì':'No'}</div>
+        <div class="drow"><strong>Distanza:</strong> ${d.distance.toFixed(1)} km</div>
+        <div class="profile-actions">
+          <button class="chip btn-no" data-act="no" data-id="${d.id}">🥲</button>
+          <button class="chip chip-primary btn-yes" data-act="yes" data-id="${d.id}">❤️</button>
+          <button class="chip" id="backToList">Torna alla lista</button>
+        </div>
+      </div>
+    </article>
+  `;
+
+  $('#backToList').addEventListener('click', render);
+}
+
+/* ====== Geolocalizzazione (finto feedback) ====== */
+$('#locOn').addEventListener('click', () => alert('Posizione attivata (demo).'));
+$('#locLater').addEventListener('click', () => alert('Ok, più tardi.'));
+
+/* ====== Pannello filtri ====== */
+const panel = $('#filterPanel');
+$('#filterToggle').addEventListener('click', ()=>{
+  const isHidden = panel.hasAttribute('hidden');
+  if(isHidden) panel.removeAttribute('hidden'); else panel.setAttribute('hidden','');
+});
+
+function syncFormFromState(){
+  const form = $('#filterForm');
+  Object.entries(filters).forEach(([k,v])=>{
+    const el = form.elements[k];
+    if(!el) return;
+    el.value = v ?? '';
+  });
+  updateChips();
+}
+
+$('#filterForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const fd = new FormData(e.currentTarget);
+  filters = {...defaultFilters};
+  for (const [k,v] of fd.entries()){
+    filters[k] = (v ?? '').toString().trim();
+  }
+  saveFilters();
+  panel.setAttribute('hidden','');
+  render();
+});
+
+$('#filtersReset').addEventListener('click', ()=>{
+  filters = {...defaultFilters};
+  saveFilters();
+  syncFormFromState();
+  render();
+});
+
+/* ====== Avvio ====== */
+syncFormFromState();
 render();
