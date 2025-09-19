@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="./style.css?v=adv1" />
+  <link rel="stylesheet" href="./style.css?v=v2-stable" />
 </head>
 <body>
 
-  <!-- LIST VIEW PRIMA per la regola :target -->
-  <main id="list" class="app" aria-label="Cani vicino a te">
+  <!-- LIST PRIMA per usare :target (niente JS per cambiare pagina) -->
+  <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">&larr; Indietro</a>
+      <a href="#home" class="back" aria-label="Torna indietro">&larr; Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
-    <!-- Card posizione -->
+    <!-- Posizione -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -37,7 +37,7 @@
       <button class="tab" data-view="match">Match</button>
     </div>
 
-    <!-- Barra filtri base -->
+    <!-- Filtri base -->
     <div class="filters-bar">
       <select id="breedFilter" class="select"></select>
       <select id="ageFilter" class="select">
@@ -46,108 +46,17 @@
         <option value="2-3">Giovane (2–3)</option>
         <option value="4+">Adulto 4+</option>
       </select>
-      <button id="filtersToggle" class="chip-outline">Ricerca avanzata ▾</button>
+      <div class="spacer"></div>
+      <div id="resultsInfo" class="results-info">Mostro 0 cani</div>
     </div>
 
-    <!-- Pannello ricerca avanzata -->
-    <section id="filtersPanel" class="filters-panel" hidden>
-      <div class="filters-grid">
-        <!-- Sezione BASE -->
-        <div class="filters-section">
-          <div class="filters-title">Base</div>
-          <div class="row">
-            <label for="sexFilter">Sesso</label>
-            <select id="sexFilter" class="select">
-              <option value="">Tutti</option>
-              <option>Maschio</option>
-              <option>Femmina</option>
-            </select>
-          </div>
-          <div class="row">
-            <label for="intactFilter">Stato riproduttivo</label>
-            <select id="intactFilter" class="select">
-              <option value="">Tutti</option>
-              <option value="intact">Integro</option>
-              <option value="fixed">Sterilizzato/Castrato</option>
-            </select>
-          </div>
-          <div class="row">
-            <label for="sizeFilter">Taglia</label>
-            <select id="sizeFilter" class="select">
-              <option value="">Tutte</option>
-              <option>Piccola</option>
-              <option>Media</option>
-              <option>Grande</option>
-            </select>
-          </div>
-          <div class="row">
-            <label for="distanceFilter">Distanza</label>
-            <select id="distanceFilter" class="select">
-              <option value="">Qualsiasi</option>
-              <option value="5">≤ 5 km</option>
-              <option value="10">≤ 10 km</option>
-              <option value="25">≤ 25 km</option>
-              <option value="50">≤ 50 km</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Sezione ACCOPPIAMENTO -->
-        <div class="filters-section">
-          <div class="filters-title">Accoppiamento</div>
-          <div class="row">
-            <label for="pedigreeFilter">Pedigree</label>
-            <select id="pedigreeFilter" class="select">
-              <option value="">Indifferente</option>
-              <option value="yes">Sì</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-          <div class="row">
-            <label>Test sanitari</label>
-            <div class="checks">
-              <label><input type="checkbox" id="testHD"> Anche (HD)</label>
-              <label><input type="checkbox" id="testED"> Gomiti (ED)</label>
-              <label><input type="checkbox" id="testECVO"> Occhi (ECVO)</label>
-              <label><input type="checkbox" id="testGEN"> Genetici</label>
-            </div>
-          </div>
-          <div class="row">
-            <label for="inHeatFilter">Femmine in calore</label>
-            <select id="inHeatFilter" class="select">
-              <option value="">Indifferente</option>
-              <option value="yes">Sì</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-          <div class="row">
-            <label for="expFilter">Esperienza</label>
-            <select id="expFilter" class="select">
-              <option value="">Tutti</option>
-              <option value="0">Nessuna</option>
-              <option value="1">1 cucciolata</option>
-              <option value="2+">Esperto</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="filters-actions">
-        <label class="remember"><input type="checkbox" id="rememberFilters"> Ricorda filtri</label>
-        <div class="spacer"></div>
-        <button id="resetFilters" class="chip">Azzera</button>
-        <button id="applyFilters" class="chip chip-primary">Applica</button>
-      </div>
-    </section>
-
-    <!-- Risultati -->
-    <div class="results-info" id="resultsInfo">Mostro 0 cani</div>
+    <!-- Lista (griglia) -->
     <section id="cards" class="grid"></section>
 
-    <!-- Deck Scorri (1 alla volta) -->
+    <!-- Scorri (uno alla volta) -->
     <section id="deck" class="deck" hidden></section>
 
-    <!-- Overlay profilo -->
+    <!-- Profilo (overlay) -->
     <section id="detail" class="detail" hidden>
       <header class="topbar">
         <a href="#" id="closeDetail" class="back">&larr; Indietro</a>
@@ -158,7 +67,7 @@
     </section>
   </main>
 
-  <!-- HOME / HERO -->
+  <!-- HOME -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
@@ -171,11 +80,13 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
+    <!-- Link (non bottone) per cambiare schermata senza JS -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
-    <p class="subtitle">Attiveremo la posizione per mostrarti gli amici <strong>online</strong> vicino a te.</p>
+    <p class="subtitle">Cerca amici <strong>online</strong> intorno a te.</p>
+
     <div class="teaser"></div>
   </section>
 
-  <script src="./app.js?v=adv1"></script>
+  <script src="./app.js?v=v2-stable"></script>
 </body>
 </html>
