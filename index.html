@@ -4,22 +4,45 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo 🐾</title>
-  <!-- lascia il tuo CSS com'è: ho tenuto lo stesso v -->
   <link rel="stylesheet" href="./style.css?v=20" />
+  <style>
+    /* Stile banner cookie */
+    #cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111827;
+      color: #fff;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      z-index: 9999;
+    }
+    #cookie-banner button {
+      background: #6a39ff;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ====== LIST (prima per :target) ====== -->
-  <main id="list" class="app" aria-label="Amici vicino a te">
+  <!-- VIEW 2 (LIST) -->
+  <main id="list" class="app" aria-label="Cani vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">← Indietro</a>
+      <a href="#home" class="back">&larr; Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
-    <!-- Geolocalizzazione (demo) -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -31,125 +54,22 @@
       </div>
     </div>
 
-    <!-- Tabs + trigger filtri -->
-    <div class="tabs-row">
-      <div class="tabs">
-        <button class="tab active" data-view="near">Vicino a te</button>
-        <button class="tab" data-view="browse">Scorri</button>
-        <button class="tab" data-view="match">Match</button>
-      </div>
-      <button id="filterToggle" class="btn-filter">Ricerca personalizzata ▾</button>
+    <div class="tabs">
+      <button class="tab active" data-view="near">Vicino a te</button>
+      <button class="tab" data-view="browse">Scorri</button>
+      <button class="tab" data-view="match">Match</button>
     </div>
 
-    <!-- Chips riepilogo filtri attivi -->
-    <div id="activeChips" class="chips"></div>
+    <section id="cards" class="grid"></section>
 
-    <!-- Pannello filtri (tendina) -->
-    <section id="filterPanel" class="filter-panel" hidden>
-      <form id="filterForm">
-        <div class="f-grid">
-          <label class="f-item">
-            <span>Razza</span>
-            <select name="breed">
-              <option value="">Tutte</option>
-              <option>Jack Russell</option>
-              <option>Labrador</option>
-              <option>Shiba Inu</option>
-              <option>Golden Retriever</option>
-              <option>Beagle</option>
-              <option>Bulldog Francese</option>
-              <option>Barboncino</option>
-              <option>Border Collie</option>
-              <option>Pastore Tedesco</option>
-              <option>Meticcio</option>
-            </select>
-          </label>
-
-          <label class="f-item">
-            <span>Età</span>
-            <select name="age">
-              <option value="">Tutte</option>
-              <option value="0-1">Cucciolo (0–1)</option>
-              <option value="2-4">Giovane (2–4)</option>
-              <option value="5-7">Adulto (5–7)</option>
-              <option value="8+">Senior (8+)</option>
-            </select>
-          </label>
-
-          <label class="f-item">
-            <span>Sesso</span>
-            <select name="sex">
-              <option value="">Qualsiasi</option>
-              <option value="M">Maschio</option>
-              <option value="F">Femmina</option>
-            </select>
-          </label>
-
-          <label class="f-item">
-            <span>Taglia</span>
-            <select name="size">
-              <option value="">Tutte</option>
-              <option>Piccola</option>
-              <option>Media</option>
-              <option>Grande</option>
-            </select>
-          </label>
-
-          <label class="f-item">
-            <span>Pelo</span>
-            <select name="coat">
-              <option value="">Qualsiasi</option>
-              <option>Corto</option>
-              <option>Medio</option>
-              <option>Lungo</option>
-            </select>
-          </label>
-
-          <label class="f-item">
-            <span>Energia</span>
-            <select name="energy">
-              <option value="">Qualsiasi</option>
-              <option>Bassa</option>
-              <option>Media</option>
-              <option>Alta</option>
-            </select>
-          </label>
-
-          <label class="f-item">
-            <span>Pedigree</span>
-            <select name="pedigree">
-              <option value="">Indifferente</option>
-              <option value="si">Sì</option>
-              <option value="no">No</option>
-            </select>
-          </label>
-
-          <label class="f-item">
-            <span>Distanza max (km)</span>
-            <input type="number" name="distance" min="1" step="0.1" placeholder="Es. 5" />
-          </label>
-        </div>
-
-        <div class="f-actions">
-          <button type="button" id="filtersReset" class="chip">Reset</button>
-          <button type="submit" class="chip chip-primary">Applica</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- Conteggio + Cards (griglia o singola) -->
-    <p id="countLabel" class="count">Mostro 0 cani</p>
-    <section id="cards" class="grid" aria-live="polite"></section>
-
-    <!-- Footer basso: Privacy/Termini -->
     <footer class="site-footer">
-      <a href="./privacy.html" class="foot-link">Privacy</a>
+      <a href="privacy.html?v=1" id="privacyLink" class="foot-link">Privacy</a>
       <span class="dot">·</span>
-      <a href="./termini.html" class="foot-link">Termini</a>
+      <a href="termini.html?v=1" id="termsLink" class="foot-link">Termini</a>
     </footer>
   </main>
 
-  <!-- ====== HOME ====== -->
+  <!-- VIEW 1 (HOME) -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
@@ -162,22 +82,57 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- cambia pagina con hash -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
     </p>
 
-    <!-- Footer basso: Privacy/Termini -->
+    <div class="teaser"></div>
+
     <footer class="site-footer">
-      <a href="./privacy.html" class="foot-link">Privacy</a>
+      <a href="privacy.html?v=1" id="privacyLink2" class="foot-link">Privacy</a>
       <span class="dot">·</span>
-      <a href="./termini.html" class="foot-link">Termini</a>
+      <a href="termini.html?v=1" id="termsLink2" class="foot-link">Termini</a>
     </footer>
   </section>
 
-  <!-- lascia il tuo JS com'è: stessa querystring -->
+  <!-- Banner Cookie -->
+  <div id="cookie-banner" style="display:none;">
+    <span>Usiamo cookie per migliorare la tua esperienza. Continuando accetti la nostra <a href="privacy.html" style="color:#6a39ff;">Privacy Policy</a>.</span>
+    <button id="acceptCookies">Accetta</button>
+  </div>
+
+  <!-- JS principale -->
   <script src="./app.js?v=9"></script>
+
+  <!-- Fix Privacy/Termini + Cookie -->
+  <script>
+    // Forza navigazione Privacy/Termini
+    function forceLink(id, url) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.location.href = url;
+      });
+    }
+    forceLink('privacyLink', 'privacy.html?v=1');
+    forceLink('termsLink', 'termini.html?v=1');
+    forceLink('privacyLink2', 'privacy.html?v=1');
+    forceLink('termsLink2', 'termini.html?v=1');
+
+    // Cookie banner
+    const banner = document.getElementById('cookie-banner');
+    const acceptBtn = document.getElementById('acceptCookies');
+
+    if (!localStorage.getItem('cookiesAccepted')) {
+      banner.style.display = 'flex';
+    }
+
+    acceptBtn.addEventListener('click', () => {
+      localStorage.setItem('cookiesAccepted', 'true');
+      banner.style.display = 'none';
+    });
+  </script>
 </body>
 </html>
