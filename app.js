@@ -230,7 +230,7 @@ function render() {
             <span class="emoji">🥲</span>
           </button>
           <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" aria-label="Mi piace">
-            <span class="emoji">❤</span>
+            <span class="emoji">❤️</span>
           </button>
         </div>
       </div>
