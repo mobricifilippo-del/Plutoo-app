@@ -1,464 +1,400 @@
-/* Plutoo v1.5 – Scorri con animazioni ripristinate (❤️/🥲), filtri tendina+chip, griglia 2 col, profilo, match
-   - Solo JS: nessuna modifica a index.html / style.css
-   - Compatibile Android (no optional chaining)
-*/
+/* Plutoo – app.js (build coerente) */
 
-/* ====== Dataset demo ====== */
-var dogs = [
-  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2, image:'./dog1.jpg', online:true,  sex:'F', size:'Piccola', coat:'Corto',  energy:'Alta',  pedigree:'si', verified:true },
-  { id:2, name:'Rocky', age:3, breed:'Labrador',          distance:1.6, image:'./dog2.jpg', online:true,  sex:'M', size:'Grande', coat:'Corto',  energy:'Media', pedigree:'no', verified:true },
-  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         distance:3.2, image:'./dog3.jpg', online:false, sex:'F', size:'Media',  coat:'Medio',  energy:'Alta',  pedigree:'si', verified:false },
-  { id:4, name:'Max',   age:4, breed:'Golden Retriever',  distance:5.9, image:'./dog4.jpg', online:true,  sex:'M', size:'Grande', coat:'Lungo',  energy:'Bassa', pedigree:'no', verified:true },
-  { id:5, name:'Milo',  age:1, breed:'Beagle',            distance:4.1, image:'./dog1.jpg', online:true,  sex:'M', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'no', verified:false },
-  { id:6, name:'Nala',  age:6, breed:'Barboncino',        distance:2.4, image:'./dog2.jpg', online:true,  sex:'F', size:'Piccola', coat:'Lungo', energy:'Media', pedigree:'si', verified:true },
-  { id:7, name:'Kira',  age:5, breed:'Border Collie',     distance:3.2, image:'./dog3.jpg', online:true,  sex:'F', size:'Media',  coat:'Medio', energy:'Alta',  pedigree:'si', verified:false },
-  { id:8, name:'Odin',  age:8, breed:'Pastore Tedesco',   distance:7.3, image:'./dog4.jpg', online:true,  sex:'M', size:'Grande', coat:'Medio', energy:'Media', pedigree:'no', verified:true },
-  { id:9, name:'Zoe',   age:2, breed:'Meticcio',          distance:1.9, image:'./dog1.jpg', online:true,  sex:'F', size:'Media',  coat:'Corto', energy:'Bassa', pedigree:'no', verified:false },
-  { id:10,name:'Argo',  age:4, breed:'Labrador',          distance:2.7, image:'./dog2.jpg', online:true,  sex:'M', size:'Grande', coat:'Corto', energy:'Alta',  pedigree:'si', verified:true }
+/* ========== DATASET (stesse foto ovunque) ========== */
+const dogs = [
+  {
+    id: 1,
+    name: "Rocky",
+    age: 3,
+    breed: "Labrador",
+    distance: 1.6,
+    sex: "M",
+    size: "Grande",
+    coat: "Corto",
+    energy: "Alta",
+    pedigree: true,
+    online: true,
+    verified: true,
+    photos: ["./dog1.jpg"], // prima foto = cover, usata ovunque
+    about: "Socievole, ama l’acqua e correre al parco.",
+    zone: "Roma EUR"
+  },
+  {
+    id: 2,
+    name: "Luna",
+    age: 1,
+    breed: "Jack Russell",
+    distance: 2.2,
+    sex: "F",
+    size: "Piccola",
+    coat: "Corto",
+    energy: "Alta",
+    pedigree: false,
+    online: true,
+    verified: true,
+    photos: ["./dog2.jpg"],
+    about: "Curiosa e molto giocherellona.",
+    zone: "Roma Monteverde"
+  },
+  {
+    id: 3,
+    name: "Milo",
+    age: 1,
+    breed: "Labrador",
+    distance: 4.1,
+    sex: "M",
+    size: "Grande",
+    coat: "Corto",
+    energy: "Media",
+    pedigree: false,
+    online: true,
+    verified: false,
+    photos: ["./dog3.jpg"],
+    about: "Cucciolo educato, ama gli altri cani.",
+    zone: "Roma Appio"
+  },
+  {
+    id: 4,
+    name: "Max",
+    age: 4,
+    breed: "Golden Retriever",
+    distance: 5.9,
+    sex: "M",
+    size: "Grande",
+    coat: "Lungo",
+    energy: "Media",
+    pedigree: true,
+    online: true,
+    verified: false,
+    photos: ["./dog4.jpg"],
+    about: "Dolcissimo, perfetto per famiglie.",
+    zone: "Roma Nomentana"
+  }
 ];
 
-/* ====== Stato app ====== */
-var matches = new Set();
-var currentView = 'near';          // near | browse | match
-var deckIndex = 0;                 // indice corrente per "Scorri"
-
-/* ====== Filtri (persistenti) ====== */
-var defaultFilters = {
-  breed:'', age:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:''
+/* ========== STATO ========== */
+let view = "near"; // near | browse | match
+let idxBrowse = 0; // indice per “Scorri”
+const matches = new Set();
+const filters = {
+  breed: "",
+  age: "",
+  sex: "",
+  size: "",
+  coat: "",
+  energy: "",
+  pedigree: "",
+  distance: ""
 };
-var saved = null;
-try { saved = JSON.parse(localStorage.getItem('pl_filters') || 'null'); } catch(e){ saved = null; }
-var filters = saved && typeof saved==='object' ? merge(defaultFilters, saved) : clone(defaultFilters);
 
-function clone(o){ return JSON.parse(JSON.stringify(o)); }
-function merge(a,b){ var r=clone(a); for (var k in b) r[k]=b[k]; return r; }
-function saveFilters(){ try { localStorage.setItem('pl_filters', JSON.stringify(filters)); } catch(e){} }
+/* ========== HELPERS ========== */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const km = v => `${v.toFixed(1)} km`;
+const pawBadge = verified => verified ? `<span title="Profilo verificato" style="color:#2563eb;margin-left:6px">🐾</span>` : "";
 
-/* ====== Helpers DOM ====== */
-function $(s){ return document.querySelector(s); }
-function $$(s){ return document.querySelectorAll(s); }
+/* ========== FILTRI ========== */
+function applyFilters(list) {
+  return list.filter(d => {
+    if (filters.breed && d.breed !== filters.breed) return false;
 
-/* ====== Età ====== */
-function ageInRange(age, token){
-  if(!token) return true;
-  if(token==='0-1') return age<=1;
-  if(token==='2-4') return age>=2 && age<=4;
-  if(token==='5-7') return age>=5 && age<=7;
-  if(token==='8+')  return age>=8;
-  return true;
-}
+    if (filters.age) {
+      const a = d.age;
+      if (filters.age === "0-1" && !(a >= 0 && a <= 1)) return false;
+      if (filters.age === "2-4" && !(a >= 2 && a <= 4)) return false;
+      if (filters.age === "5-7" && !(a >= 5 && a <= 7)) return false;
+      if (filters.age === "8+"  && !(a >= 8)) return false;
+    }
 
-/* ====== Filtraggio ====== */
-function applyFilters(list){
-  return list.filter(function(d){
-    if(filters.breed && d.breed !== filters.breed) return false;
-    if(filters.sex && d.sex !== filters.sex) return false;
-    if(filters.size && d.size !== filters.size) return false;
-    if(filters.coat && d.coat !== filters.coat) return false;
-    if(filters.energy && d.energy !== filters.energy) return false;
-    if(filters.pedigree && d.pedigree !== filters.pedigree) return false;
-    if(filters.distance && d.distance > Number(filters.distance)) return false;
-    if(!ageInRange(d.age, filters.age)) return false;
+    if (filters.sex && d.sex !== filters.sex) return false;
+    if (filters.size && d.size !== filters.size) return false;
+    if (filters.coat && d.coat !== filters.coat) return false;
+    if (filters.energy && d.energy !== filters.energy) return false;
+    if (filters.pedigree) {
+      const need = filters.pedigree === "si";
+      if (d.pedigree !== need) return false;
+    }
+    if (filters.distance) {
+      const max = Number(filters.distance);
+      if (!Number.isNaN(max) && d.distance > max) return false;
+    }
     return true;
   });
 }
 
-/* ====== Liste per vista ====== */
-function getListForCurrentView(){
-  var list = dogs.slice();
-  if (currentView === 'near'){
-    list = list.filter(function(d){ return d.online; }).sort(function(a,b){ return a.distance - b.distance; });
-  } else if (currentView === 'match'){
-    list = list.filter(function(d){ return matches.has(d.id); });
-  } else {
-    // browse: lasciamo l’ordine originale
-  }
-  return applyFilters(list);
-}
-
-/* ====== Chips riepilogo ====== */
-function updateChips(){
-  var host = $('#activeChips');
-  if (!host) return;
-  host.innerHTML = '';
-  var nice = { breed:'Razza', age:'Età', sex:'Sesso', size:'Taglia', coat:'Pelo', energy:'Energia', pedigree:'Pedigree', distance:'Distanza' };
-  for (var k in filters){
-    var v = filters[k];
-    if(!v) continue;
-    var c = document.createElement('span');
-    c.className = 'chip-x';
-    c.innerHTML = '<strong>'+nice[k]+':</strong> '+v+' <button aria-label="rimuovi" data-del="'+k+'">×</button>';
-    host.appendChild(c);
-  }
-  host.onclick = function(e){
-    var b = e.target && e.target.closest ? e.target.closest('button[data-del]') : null;
-    if(!b) return;
-    var key = b.getAttribute('data-del');
-    filters[key] = '';
-    syncFormFromState();
-    saveFilters();
-    // riparti dal primo in browse per coerenza
-    if (currentView==='browse') deckIndex = 0;
-    render();
+function chipsFromFilters() {
+  const map = {
+    breed: v => `Razza: ${v}`,
+    age: v => `Età: ${v}`,
+    sex: v => (v === "M" ? "Maschio" : "Femmina"),
+    size: v => `Taglia: ${v}`,
+    coat: v => `Pelo: ${v}`,
+    energy: v => `Energia: ${v}`,
+    pedigree: v => (v === "si" ? "Pedigree: sì" : "Pedigree: no"),
+    distance: v => `≤ ${v} km`
   };
+  const chips = Object.entries(filters)
+    .filter(([, v]) => v !== "" && v != null)
+    .map(([k, v]) => `<button class="chip" data-chip="${k}">${map[k](v)} ✕</button>`);
+  return chips.join("");
 }
 
-/* ====== Render ====== */
-function render(){
-  var wrap = $('#cards');
-  var countLabel = $('#countLabel');
-  if (!wrap || !countLabel) return;
+/* ========== RENDER ========== */
+function render() {
+  const cards = $("#cards");
+  const countLabel = $("#countLabel");
+  const chipsWrap = $("#activeChips");
 
-  var list = getListForCurrentView();
+  let list = dogs.slice();
 
-  // imposta layout contenitore
-  wrap.className = (currentView==='browse') ? 'deck' : (currentView==='match' ? 'grid' : 'grid');
+  // vista
+  if (view === "near") {
+    list = list.filter(d => d.online).sort((a, b) => a.distance - b.distance);
+    cards.classList.remove("deck");
+    cards.classList.add("grid");
+  }
+  if (view === "browse") {
+    cards.classList.remove("grid");
+    cards.classList.add("deck");
+  }
+  if (view === "match") {
+    list = list.filter(d => matches.has(d.id));
+    cards.classList.remove("deck");
+    cards.classList.add("grid");
+  }
 
-  // conteggio
-  countLabel.textContent = 'Mostro ' + list.length + ' cani';
+  // filtri
+  list = applyFilters(list);
 
-  // vuoto
-  if (!list.length){
-    wrap.innerHTML = '<p style="color:#6b7280;padding:10px 14px">Nessun risultato con questi filtri.</p>';
-    updateChips();
+  // label conteggio
+  countLabel.textContent = `Mostro ${list.length} cani`;
+
+  // chips attive
+  chipsWrap.innerHTML = chipsFromFilters();
+
+  // rendering
+  cards.innerHTML = "";
+
+  if (view === "browse") {
+    // singola scheda (tipo Tinder)
+    if (list.length === 0) {
+      cards.innerHTML = `<p class="count" style="opacity:.7">Nessun risultato qui.</p>`;
+      return;
+    }
+    // teniamo idxBrowse dentro range
+    if (idxBrowse >= list.length) idxBrowse = 0;
+    const d = list[idxBrowse];
+
+    const el = document.createElement("article");
+    el.className = "card card-big";
+    el.innerHTML = `
+      <div class="pic">
+        <img src="${d.photos[0]}" alt="Foto di ${d.name}">
+        <span class="badge">${km(d.distance)}</span>
+        ${d.online ? '<span class="dot"></span>' : ""}
+      </div>
+      <div class="body">
+        <div class="name">${d.name}, ${d.age} ${pawBadge(d.verified)}</div>
+        <div class="breed">${d.breed}</div>
+        <div class="swipe-actions">
+          <button class="btn-round btn-no" data-act="no" data-id="${d.id}" aria-label="No">
+            <span class="emoji">🥲</span>
+          </button>
+          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" aria-label="Mi piace">
+            <span class="emoji">❤</span>
+          </button>
+        </div>
+      </div>
+    `;
+    // click su immagine -> profilo
+    el.querySelector("img").addEventListener("click", () => openProfile(d.id));
+    cards.appendChild(el);
     return;
   }
 
-  // SCORRI (uno alla volta)
-  if (currentView === 'browse'){
-    if (deckIndex >= list.length) deckIndex = 0;
-    var d = list[deckIndex];
-    wrap.innerHTML = buildCardHtml(d, true);
-    updateChips();
-    return;
-  }
-
-  // GRIGLIA (vicino / match)
-  wrap.innerHTML = '';
-  for (var i=0;i<list.length;i++){
-    var d2 = list[i];
-    var art = document.createElement('article');
-    art.className = 'card';
-    art.innerHTML = buildCardHtml(d2, false);
-    wrap.appendChild(art);
-  }
-  updateChips();
+  // griglia (near/match)
+  list.forEach(d => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="pic">
+        <img src="${d.photos[0]}" alt="Foto di ${d.name}">
+        <span class="badge">${km(d.distance)}</span>
+        ${d.online ? '<span class="dot"></span>' : ""}
+      </div>
+      <div class="body">
+        <div class="name">${d.name}, ${d.age} ${pawBadge(d.verified)}</div>
+        <div class="breed">${d.breed}</div>
+        <div class="actions">
+          <button class="btn-round btn-no" data-act="no" data-id="${d.id}" aria-label="No">
+            <span class="emoji">🥲</span>
+          </button>
+          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" aria-label="Mi piace">
+            <span class="emoji">❤</span>
+          </button>
+        </div>
+      </div>
+    `;
+    card.querySelector("img").addEventListener("click", () => openProfile(d.id));
+    cards.appendChild(card);
+  });
 }
 
-/* ====== Card HTML ====== */
-function buildCardHtml(d, big){
-  var verify = d.verified ? '<span class="badge-verify" title="Profilo verificato"><span class="paw">🐾</span></span>' : '';
-  var img = ''
-    + '<div class="pic">'
-    +   '<img src="'+d.image+'" alt="Foto di '+d.name+'">'
-    +   '<span class="badge">'+d.distance.toFixed(1)+' km</span>'
-    +   (d.online ? '<span class="dot-online"></span>' : '')
-    + '</div>';
-  var body = ''
-    + '<div class="body">'
-    +   '<div class="name">'+d.name+', '+d.age+verify+'</div>'
-    +   '<div class="breed">'+d.breed+'</div>'
-    +   '<div class="actions">'
-    +     '<button class="btn-round btn-no" data-act="no"  data-id="'+d.id+'" title="Scarta"><span class="emoji">🥲</span></button>'
-    +     '<button class="btn-round btn-yes" data-act="yes" data-id="'+d.id+'" title="Mi piace"><span class="emoji">❤️</span></button>'
-    +   '</div>'
-    + '</div>';
+/* ========== PROFILO (modale, nessun HTML da aggiungere) ========== */
+function openProfile(id) {
+  const d = dogs.find(x => x.id === id);
+  if (!d) return;
 
-  if (big) return '<article class="card card-big" data-card="'+d.id+'">'+img+body+'</article>';
-  return img + body;
+  // rimuovi eventuale modale aperta
+  closeProfile();
+
+  const overlay = document.createElement("div");
+  overlay.id = "dog-modal";
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.35);
+    display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:20px 12px;
+  `;
+
+  const sheet = document.createElement("div");
+  sheet.style.cssText = `
+    width:min(900px,100%);background:#fff;border-radius:20px;overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+  `;
+  sheet.innerHTML = `
+    <div style="position:relative">
+      <img src="${d.photos[0]}" class="dphoto" alt="Foto di ${d.name}" style="width:100%;height:260px;object-fit:cover;display:block">
+      <button id="dm-close" aria-label="Chiudi" style="position:absolute;top:10px;right:10px;background:#111827;opacity:.85;color:#fff;border:0;border-radius:12px;padding:8px 10px">✕</button>
+    </div>
+    <div class="dinfo" style="padding:16px">
+      <h2 style="margin:0 0 6px 0;font-size:22px;font-weight:800">
+        ${d.name}, ${d.age} ${pawBadge(d.verified)}
+      </h2>
+      <div class="dmeta" style="color:#6b7280;margin-bottom:8px">
+        ${d.breed} · ${d.sex === "M" ? "Maschio" : "Femmina"} · ${d.size} · Pelo ${d.coat} · ${km(d.distance)}
+      </div>
+      <div class="drow"><strong>Energia:</strong> ${d.energy || "—"}</div>
+      <div class="drow"><strong>Pedigree:</strong> ${d.pedigree ? "Sì" : "No"}</div>
+      <div class="drow"><strong>Zona:</strong> ${d.zone || "—"}</div>
+      <p style="margin:10px 0 0">${d.about || ""}</p>
+
+      <div class="profile-actions" style="display:flex;gap:14px;margin-top:14px">
+        <button class="btn-round btn-no" data-act="no" data-id="${d.id}" aria-label="No"><span class="emoji">🥲</span></button>
+        <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}" aria-label="Mi piace"><span class="emoji">❤</span></button>
+      </div>
+    </div>
+  `;
+
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
+
+  $("#dm-close", sheet).addEventListener("click", closeProfile);
+  overlay.addEventListener("click", e => { if (e.target === overlay) closeProfile(); });
+
+  // azioni like/no anche nel profilo
+  sheet.addEventListener("click", e => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    handleAction(btn.dataset.act, Number(btn.dataset.id), { from: "detail" });
+  });
 }
 
-/* ====== Animazioni ====== */
-function animateGridAction(button, yes){
-  var card = button ? button.closest('.card') : null; if (!card) return;
-  if (yes){
-    card.animate(
-      [{transform:'scale(1)',opacity:1},{transform:'scale(1.04)',opacity:1},{transform:'scale(.96)',opacity:.92},
-       {transform:'scale(.98)',opacity:.88},{transform:'scale(1)',opacity:0}],
-      {duration:260,easing:'ease-in-out'}
-    ).onfinish = function(){ render(); };
-  } else {
-    card.animate(
-      [{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},
-       {transform:'translateX(-4px)'},{transform:'translateX(0)'}],
-      {duration:200,easing:'ease-in-out'}
+function closeProfile() {
+  const el = $("#dog-modal");
+  if (el) el.remove();
+}
+
+/* ========== AZIONI (like/skip) ========== */
+function handleAction(act, id, ctx = {}) {
+  const i = dogs.findIndex(d => d.id === id);
+  if (i < 0) return;
+
+  if (act === "yes") {
+    matches.add(id);
+    // animazione pulsante
+    const btn = document.querySelector(`button[data-id="${id}"][data-act="yes"]`);
+    if (btn) btn.animate(
+      [{ transform: "scale(1)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }],
+      { duration: 180 }
     );
+  } else if (act === "no") {
+    // simula “skippa”: manda il cane in fondo
+    dogs.push(...dogs.splice(i, 1));
   }
+
+  // se arriva dal profilo, chiudi
+  if (ctx.from === "detail") closeProfile();
+
+  if (view === "browse") {
+    // vai al prossimo nel deck
+    idxBrowse = (idxBrowse + 1) % applyFilters(dogs).length || 0;
+  }
+
+  render();
 }
 
-function animateDeckAction(yes){
-  var wrap = $('#cards');
-  if (!wrap) return;
-  var card = wrap.querySelector('.card-big') || wrap.querySelector('.card');
-  if (!card) return;
+/* ========== EVENTI UI ========== */
 
-  var dir = yes ? 1 : -1;
-  var anim = card.animate(
-    [
-      { transform:'translateX(0) rotate(0deg)', opacity:1 },
-      { transform:'translateX('+(dir*20)+'px) rotate('+(dir*2)+'deg)', opacity:1 },
-      { transform:'translateX('+(dir*160)+'px) rotate('+(dir*10)+'deg)', opacity:0 }
-    ],
-    { duration:260, easing:'ease-in-out' }
-  );
-
-  anim.onfinish = function(){
-    var list = getListForCurrentView();
-    if (list.length > 0){
-      deckIndex = (deckIndex + 1) % list.length;
-    } else {
-      deckIndex = 0;
-    }
-    render();
-  };
-}
-
-/* ====== Eventi globali ====== */
-// Entra (hash swap già gestito da :target)
-var enter = $('#enterLink');
-if (enter){ enter.addEventListener('click', function(){}); }
-
-// Tabs
-$$('.tab').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    $$('.tab').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    currentView = btn.getAttribute('data-view');
-    if (currentView === 'browse') deckIndex = 0;
+// tabs
+$$(".tab").forEach(t => {
+  t.addEventListener("click", () => {
+    $$(".tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    view = t.dataset.view;
+    if (view !== "browse") idxBrowse = 0;
     render();
   });
 });
 
-// Like / Dislike + open profilo
-$('#cards').addEventListener('click', function(e){
-  var likeBtn = e.target.closest ? e.target.closest('button[data-id]') : null;
-
-  // Click sui bottoni
-  if (likeBtn){
-    var id = Number(likeBtn.getAttribute('data-id'));
-    var isYes = likeBtn.getAttribute('data-act') === 'yes';
-
-    if (isYes) { matches.add(id); }
-
-    if (currentView === 'browse'){
-      // animazione slide e avanzamento
-      animateDeckAction(isYes);
-    } else {
-      // griglia: animazione e eventuale skip → sposta in fondo
-      if (!isYes){
-        var idx = dogs.findIndex(function(d){ return d.id===id; });
-        if (idx>=0) dogs.push.apply(dogs, dogs.splice(idx,1));
-      }
-      animateGridAction(likeBtn, isYes);
-    }
-    return;
-  }
-
-  // Click su card/immagine → apri profilo
-  var art = e.target.closest ? e.target.closest('.card, .card-big') : null;
-  if (!art) return;
-
-  // recupera il cane dalla card (dal nome)
-  var nameEl = art.querySelector('.name');
-  var nameText = nameEl ? nameEl.textContent : '';
-  var name = nameText ? nameText.split(',')[0].trim() : '';
-  var dog = dogs.find(function(d){ return d.name===name; });
-  if (!dog) return;
-
-  openDogProfile(dog);
+// like / no nelle liste
+$("#cards").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-act]");
+  if (!btn) return;
+  handleAction(btn.dataset.act, Number(btn.dataset.id));
 });
 
-/* ====== Profilo cane ====== */
-function openDogProfile(d){
-  var wrap = $('#cards');
-  var countLabel = $('#countLabel');
-  if (countLabel) countLabel.textContent = '';
-  wrap.className = 'detail';
-  wrap.innerHTML =
-    '<article class="dogsheet">'
-    + '  <img class="dphoto" src="'+d.image+'" alt="Foto di '+d.name+'">'
-    + '  <div class="dinfo">'
-    + '    <h2>'+d.name+', '+d.age+' '+(d.verified ? '<span class="badge-verify"><span class="paw">🐾</span></span>' : '')+'</h2>'
-    + '    <div class="dmeta">'+d.breed+' · '+(d.sex==='M'?'Maschio':'Femmina')+' · Taglia '+d.size+'</div>'
-    + '    <div class="drow"><strong>Pelo:</strong> '+d.coat+'</div>'
-    + '    <div class="drow"><strong>Energia:</strong> '+d.energy+'</div>'
-    + '    <div class="drow"><strong>Pedigree:</strong> '+(d.pedigree==='si'?'Sì':'No')+'</div>'
-    + '    <div class="drow"><strong>Distanza:</strong> '+d.distance.toFixed(1)+' km</div>'
-    + '    <div class="profile-actions">'
-    + '      <button class="chip btn-no" data-act="no" data-id="'+d.id+'">🥲</button>'
-    + '      <button class="chip chip-primary btn-yes" data-act="yes" data-id="'+d.id+'">❤️</button>'
-    + '      <button class="chip" id="backToList">Torna alla lista</button>'
-    + '    </div>'
-    + '  </div>'
-    + '</article>';
+// toggle pannello filtri
+$("#filterToggle")?.addEventListener("click", () => {
+  const p = $("#filterPanel");
+  if (!p) return;
+  p.hidden = !p.hidden;
+});
 
-  var back = $('#backToList');
-  if (back){ back.addEventListener('click', function(){ render(); }); }
-}
+// submit filtri
+$("#filterForm")?.addEventListener("submit", e => {
+  e.preventDefault();
+  const fd = new FormData(e.currentTarget);
+  Object.keys(filters).forEach(k => (filters[k] = (fd.get(k) || "").toString().trim()));
+  idxBrowse = 0;
+  $("#filterPanel").hidden = true;
+  render();
+});
 
-/* ====== Geolocalizzazione (demo) ====== */
-var locOn = $('#locOn'); if (locOn) locOn.addEventListener('click', function(){ alert('Posizione attivata (demo).'); });
-var locLater = $('#locLater'); if (locLater) locLater.addEventListener('click', function(){ alert('Ok, più tardi.'); });
+// reset filtri
+$("#filtersReset")?.addEventListener("click", () => {
+  Object.keys(filters).forEach(k => (filters[k] = ""));
+  $("#filterForm").reset();
+  idxBrowse = 0;
+  render();
+});
 
-/* ====== Pannello filtri ====== */
-var panel = $('#filterPanel');
-var toggle = $('#filterToggle');
-if (toggle){ toggle.addEventListener('click', function(){
-  var hidden = panel.hasAttribute('hidden');
-  if (hidden) panel.removeAttribute('hidden'); else panel.setAttribute('hidden','');
-}); }
-
-function syncFormFromState(){
-  var form = $('#filterForm'); if (!form) return;
-  for (var k in filters){
-    var el = form.elements[k];
-    if (!el) continue;
-    el.value = filters[k] || '';
+// rimozione chip singolo
+$("#activeChips").addEventListener("click", e => {
+  const chip = e.target.closest("button[data-chip]");
+  if (!chip) return;
+  const key = chip.dataset.chip;
+  filters[key] = "";
+  // resettare anche campo nel form se presente
+  const el = $(`[name="${key}"]`, $("#filterForm"));
+  if (el) {
+    if (el.tagName === "SELECT") el.value = "";
+    else el.value = "";
   }
-  updateChips();
-}
+  render();
+});
 
-var formEl = $('#filterForm');
-if (formEl){
-  formEl.addEventListener('submit', function(e){
-    e.preventDefault();
-    var fd = new FormData(formEl);
-    // reset
-    filters = clone(defaultFilters);
-    fd.forEach(function(v,k){ filters[k] = String(v||'').trim(); });
-    saveFilters();
-    // riparti dal primo in Scorri
-    deckIndex = 0;
-    panel.setAttribute('hidden','');
-    render();
-  });
-}
+// geolocalizzazione (demo)
+$("#locOn")?.addEventListener("click", () => alert("Posizione attivata (demo)."));
+$("#locLater")?.addEventListener("click", () => alert("Ok, più tardi."));
 
-var resetBtn = $('#filtersReset');
-if (resetBtn){
-  resetBtn.addEventListener('click', function(){
-    filters = clone(defaultFilters);
-    saveFilters();
-    deckIndex = 0;
-    syncFormFromState();
-    render();
-  });
-}
-
-/* ====== Avvio ====== */
-syncFormFromState();
+/* ========== AVVIO ========== */
 render();
-/* ====== Animazioni e avanzamento per "Scorri" (aggiunta non invasiva) ====== */
-(function () {
-  const cardsRoot = document.querySelector('#cards');
-  if (!cardsRoot) return;
-
-  // Piccolo helper: siamo in vista "Scorri" se esiste una card "big"
-  const isScrollView = () => !!document.querySelector('.card-big');
-
-  cardsRoot.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-act]');
-    if (!btn) return;
-
-    // Se non sono in "Scorri" esco: nelle griglie non faccio swipe/animazioni
-    if (!isScrollView()) return;
-
-    const card = btn.closest('.card');
-    if (!card) return;
-
-    // Mini pulse sull’icona
-    btn.animate(
-      [{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }],
-      { duration: 220, easing: 'ease-out' }
-    );
-
-    const liked = btn.dataset.act === 'yes';
-    const id = Number(btn.dataset.id || btn.getAttribute('data-id'));
-    const dir = liked ? 1 : -1;        // destre = like, sinistra = skip
-    const tilt = liked ? 8 : -8;
-
-    // Swipe della card
-    const anim = card.animate(
-      [
-        { transform: 'translateX(0) rotate(0deg)', opacity: 1 },
-        { transform: `translateX(${dir * 40}px) rotate(${tilt}deg)`, opacity: 0.9, offset: 0.4 },
-        { transform: `translateX(${dir * 160}px) rotate(${tilt * 2}deg)`, opacity: 0 }
-      ],
-      { duration: 420, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' }
-    );
-
-    anim.addEventListener('finish', () => {
-      // Avanza alla prossima card (riusa lo stato già esistente)
-      if (typeof window.advanceScrollView === 'function') {
-        window.advanceScrollView({ liked, id });
-      } else {
-        // fallback generico: aggiorna matches e sposta l'elemento in coda, poi rerender
-        try {
-          if (liked && window.matches) window.matches.add(id);
-          if (Array.isArray(window.dogs)) {
-            const i = window.dogs.findIndex(d => Number(d.id) === id);
-            if (i > -1) window.dogs.push(...window.dogs.splice(i, 1));
-          }
-          if (typeof window.render === 'function') window.render();
-        } catch (_) {
-          // silenzioso: non rompo nulla se i nomi non coincidono
-        }
-      }
-    });
-  });
-})();
-/* ====== Like dal PROFILO cane (detail) ====== */
-(function () {
-  // toast leggero
-  function toast(msg) {
-    const t = document.createElement('div');
-    t.textContent = msg;
-    t.style.cssText =
-      'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);'+
-      'background:#111827;color:#fff;padding:10px 14px;border-radius:12px;'+
-      'font-size:14px;opacity:.98;z-index:9999;box-shadow:0 8px 20px rgba(0,0,0,.25)';
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(), 1400);
-  }
-
-  // set globale per i match, se non c'è lo creo
-  if (!window.matches) window.matches = new Set();
-
-  // intercetto click su bottoni del profilo (❤️ / 😢)
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.detail button[data-act], .dogsheet button[data-act]');
-    if (!btn) return;
-
-    const act = btn.dataset.act;
-    const id  = Number(btn.dataset.id || btn.getAttribute('data-id') || 0);
-    const isLike = act === 'yes';
-
-    // piccola animazione sul bottone
-    btn.animate(
-      [{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }],
-      { duration: 220, easing: 'ease-out' }
-    );
-
-    // aggiorno stato
-    try {
-      if (isLike) window.matches.add(id);
-      else window.matches.delete(id);
-    } catch { /* silenzioso */ }
-
-    // se hai una render() globale la richiamo per aggiornare tab Match / badge ecc.
-    if (typeof window.render === 'function') {
-      try { window.render(); } catch {}
-    }
-
-    // feedback e ritorno alla lista
-    toast(isLike ? 'Aggiunto ai preferiti' : 'Rimosso dai preferiti');
-
-    // torna alla schermata precedente (lista) dopo un attimo
-    setTimeout(() => {
-      // se usi hash views
-      if (location.hash && location.hash !== '#list') {
-        try { history.back(); } catch { location.hash = '#list'; }
-      }
-    }, 240);
-  });
-})();
