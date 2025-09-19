@@ -348,3 +348,62 @@ if (resetBtn){
 /* ====== Avvio ====== */
 syncFormFromState();
 render();
+/* ====== Animazioni e avanzamento per "Scorri" (aggiunta non invasiva) ====== */
+(function () {
+  const cardsRoot = document.querySelector('#cards');
+  if (!cardsRoot) return;
+
+  // Piccolo helper: siamo in vista "Scorri" se esiste una card "big"
+  const isScrollView = () => !!document.querySelector('.card-big');
+
+  cardsRoot.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+
+    // Se non sono in "Scorri" esco: nelle griglie non faccio swipe/animazioni
+    if (!isScrollView()) return;
+
+    const card = btn.closest('.card');
+    if (!card) return;
+
+    // Mini pulse sull’icona
+    btn.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }],
+      { duration: 220, easing: 'ease-out' }
+    );
+
+    const liked = btn.dataset.act === 'yes';
+    const id = Number(btn.dataset.id || btn.getAttribute('data-id'));
+    const dir = liked ? 1 : -1;        // destre = like, sinistra = skip
+    const tilt = liked ? 8 : -8;
+
+    // Swipe della card
+    const anim = card.animate(
+      [
+        { transform: 'translateX(0) rotate(0deg)', opacity: 1 },
+        { transform: `translateX(${dir * 40}px) rotate(${tilt}deg)`, opacity: 0.9, offset: 0.4 },
+        { transform: `translateX(${dir * 160}px) rotate(${tilt * 2}deg)`, opacity: 0 }
+      ],
+      { duration: 420, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' }
+    );
+
+    anim.addEventListener('finish', () => {
+      // Avanza alla prossima card (riusa lo stato già esistente)
+      if (typeof window.advanceScrollView === 'function') {
+        window.advanceScrollView({ liked, id });
+      } else {
+        // fallback generico: aggiorna matches e sposta l'elemento in coda, poi rerender
+        try {
+          if (liked && window.matches) window.matches.add(id);
+          if (Array.isArray(window.dogs)) {
+            const i = window.dogs.findIndex(d => Number(d.id) === id);
+            if (i > -1) window.dogs.push(...window.dogs.splice(i, 1));
+          }
+          if (typeof window.render === 'function') window.render();
+        } catch (_) {
+          // silenzioso: non rompo nulla se i nomi non coincidono
+        }
+      }
+    });
+  });
+})();
