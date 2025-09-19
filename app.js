@@ -407,3 +407,58 @@ render();
     });
   });
 })();
+/* ====== Like dal PROFILO cane (detail) ====== */
+(function () {
+  // toast leggero
+  function toast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText =
+      'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);'+
+      'background:#111827;color:#fff;padding:10px 14px;border-radius:12px;'+
+      'font-size:14px;opacity:.98;z-index:9999;box-shadow:0 8px 20px rgba(0,0,0,.25)';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 1400);
+  }
+
+  // set globale per i match, se non c'è lo creo
+  if (!window.matches) window.matches = new Set();
+
+  // intercetto click su bottoni del profilo (❤️ / 😢)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.detail button[data-act], .dogsheet button[data-act]');
+    if (!btn) return;
+
+    const act = btn.dataset.act;
+    const id  = Number(btn.dataset.id || btn.getAttribute('data-id') || 0);
+    const isLike = act === 'yes';
+
+    // piccola animazione sul bottone
+    btn.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }],
+      { duration: 220, easing: 'ease-out' }
+    );
+
+    // aggiorno stato
+    try {
+      if (isLike) window.matches.add(id);
+      else window.matches.delete(id);
+    } catch { /* silenzioso */ }
+
+    // se hai una render() globale la richiamo per aggiornare tab Match / badge ecc.
+    if (typeof window.render === 'function') {
+      try { window.render(); } catch {}
+    }
+
+    // feedback e ritorno alla lista
+    toast(isLike ? 'Aggiunto ai preferiti' : 'Rimosso dai preferiti');
+
+    // torna alla schermata precedente (lista) dopo un attimo
+    setTimeout(() => {
+      // se usi hash views
+      if (location.hash && location.hash !== '#list') {
+        try { history.back(); } catch { location.hash = '#list'; }
+      }
+    }, 240);
+  });
+})();
