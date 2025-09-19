@@ -6,43 +6,43 @@
   <title>Plutoo 🐾</title>
   <link rel="stylesheet" href="./style.css?v=20" />
   <style>
-    /* Stile banner cookie */
+    /* Banner cookie: sempre in primo piano */
     #cookie-banner {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      left: 0; right: 0; bottom: 0;
+      display: none; /* mostrato via JS se non accettato */
       background: #111827;
       color: #fff;
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 14px 16px;
       font-size: 14px;
-      z-index: 9999;
+      z-index: 99999;
+      box-shadow: 0 -6px 16px rgba(0,0,0,.25);
+      align-items: center; justify-content: space-between; gap: 10px;
     }
+    #cookie-banner .cb-text a { color: #8b5cf6; text-decoration: underline; }
+    #cookie-banner .cb-actions { display: flex; gap: 10px; }
     #cookie-banner button {
-      background: #6a39ff;
-      color: #fff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
+      background: #6a39ff; color: #fff; border: 0;
+      padding: 8px 14px; border-radius: 10px; cursor: pointer;
+    }
+    #cookie-banner button.cb-ghost {
+      background: #374151;
     }
   </style>
 </head>
 <body>
 
-  <!-- VIEW 2 (LIST) -->
-  <main id="list" class="app" aria-label="Cani vicino a te">
+  <!-- ====== LIST (prima per :target) ====== -->
+  <main id="list" class="app" aria-label="Amici vicino a te">
     <header class="topbar">
-      <a href="#home" class="back">&larr; Indietro</a>
+      <a href="#home" class="back">← Indietro</a>
       <div class="brand">Plutoo</div>
       <nav class="auth">
         <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
       </nav>
     </header>
 
+    <!-- Geolocalizzazione (demo) -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -54,14 +54,117 @@
       </div>
     </div>
 
-    <div class="tabs">
-      <button class="tab active" data-view="near">Vicino a te</button>
-      <button class="tab" data-view="browse">Scorri</button>
-      <button class="tab" data-view="match">Match</button>
+    <!-- Tabs + trigger filtri -->
+    <div class="tabs-row">
+      <div class="tabs">
+        <button class="tab active" data-view="near">Vicino a te</button>
+        <button class="tab" data-view="browse">Scorri</button>
+        <button class="tab" data-view="match">Match</button>
+      </div>
+      <button id="filterToggle" class="btn-filter">Ricerca personalizzata ▾</button>
     </div>
 
-    <section id="cards" class="grid"></section>
+    <!-- Chips riepilogo filtri attivi -->
+    <div id="activeChips" class="chips"></div>
 
+    <!-- Pannello filtri (tendina) -->
+    <section id="filterPanel" class="filter-panel" hidden>
+      <form id="filterForm">
+        <div class="f-grid">
+          <label class="f-item">
+            <span>Razza</span>
+            <select name="breed">
+              <option value="">Tutte</option>
+              <option>Jack Russell</option>
+              <option>Labrador</option>
+              <option>Shiba Inu</option>
+              <option>Golden Retriever</option>
+              <option>Beagle</option>
+              <option>Bulldog Francese</option>
+              <option>Barboncino</option>
+              <option>Border Collie</option>
+              <option>Pastore Tedesco</option>
+              <option>Meticcio</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Età</span>
+            <select name="age">
+              <option value="">Tutte</option>
+              <option value="0-1">Cucciolo (0–1)</option>
+              <option value="2-4">Giovane (2–4)</option>
+              <option value="5-7">Adulto (5–7)</option>
+              <option value="8+">Senior (8+)</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Sesso</span>
+            <select name="sex">
+              <option value="">Qualsiasi</option>
+              <option value="M">Maschio</option>
+              <option value="F">Femmina</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Taglia</span>
+            <select name="size">
+              <option value="">Tutte</option>
+              <option>Piccola</option>
+              <option>Media</option>
+              <option>Grande</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Pelo</span>
+            <select name="coat">
+              <option value="">Qualsiasi</option>
+              <option>Corto</option>
+              <option>Medio</option>
+              <option>Lungo</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Energia</span>
+            <select name="energy">
+              <option value="">Qualsiasi</option>
+              <option>Bassa</option>
+              <option>Media</option>
+              <option>Alta</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Pedigree</span>
+            <select name="pedigree">
+              <option value="">Indifferente</option>
+              <option value="si">Sì</option>
+              <option value="no">No</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Distanza max (km)</span>
+            <input type="number" name="distance" min="1" step="0.1" placeholder="Es. 5" />
+          </label>
+        </div>
+
+        <div class="f-actions">
+          <button type="button" id="filtersReset" class="chip">Reset</button>
+          <button type="submit" class="chip chip-primary">Applica</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Conteggio + Cards (griglia o singola) -->
+    <p id="countLabel" class="count">Mostro 0 cani</p>
+    <section id="cards" class="grid" aria-live="polite"></section>
+
+    <!-- Footer basso: Privacy/Termini -->
     <footer class="site-footer">
       <a href="privacy.html?v=1" id="privacyLink" class="foot-link">Privacy</a>
       <span class="dot">·</span>
@@ -69,7 +172,7 @@
     </footer>
   </main>
 
-  <!-- VIEW 1 (HOME) -->
+  <!-- ====== HOME ====== -->
   <section id="home" class="hero">
     <header class="topbar">
       <div></div>
@@ -82,14 +185,14 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
+    <!-- cambia pagina con hash -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
     </p>
 
-    <div class="teaser"></div>
-
+    <!-- Footer basso: Privacy/Termini -->
     <footer class="site-footer">
       <a href="privacy.html?v=1" id="privacyLink2" class="foot-link">Privacy</a>
       <span class="dot">·</span>
@@ -98,9 +201,15 @@
   </section>
 
   <!-- Banner Cookie -->
-  <div id="cookie-banner" style="display:none;">
-    <span>Usiamo cookie per migliorare la tua esperienza. Continuando accetti la nostra <a href="privacy.html" style="color:#6a39ff;">Privacy Policy</a>.</span>
-    <button id="acceptCookies">Accetta</button>
+  <div id="cookie-banner">
+    <span class="cb-text">
+      Usiamo cookie per migliorare la tua esperienza. Continuando accetti la nostra
+      <a href="privacy.html?v=1">Privacy Policy</a>.
+    </span>
+    <div class="cb-actions">
+      <button class="cb-ghost" id="cookieLater">Più tardi</button>
+      <button id="acceptCookies">Accetta</button>
+    </div>
   </div>
 
   <!-- JS principale -->
@@ -121,18 +230,31 @@
     forceLink('privacyLink2', 'privacy.html?v=1');
     forceLink('termsLink2', 'termini.html?v=1');
 
-    // Cookie banner
-    const banner = document.getElementById('cookie-banner');
-    const acceptBtn = document.getElementById('acceptCookies');
+    // ===== Cookie banner =====
+    (function(){
+      var KEY = 'plutoo_cookies_v2'; // chiave nuova per forzare la prima visualizzazione
+      var banner = document.getElementById('cookie-banner');
+      var btnOK = document.getElementById('acceptCookies');
+      var btnLater = document.getElementById('cookieLater');
 
-    if (!localStorage.getItem('cookiesAccepted')) {
-      banner.style.display = 'flex';
-    }
+      try {
+        var accepted = localStorage.getItem(KEY) === 'true';
+        if (!accepted) banner.style.display = 'flex';
+      } catch(e) {
+        // se localStorage non è disponibile, mostra comunque
+        banner.style.display = 'flex';
+      }
 
-    acceptBtn.addEventListener('click', () => {
-      localStorage.setItem('cookiesAccepted', 'true');
-      banner.style.display = 'none';
-    });
+      if (btnOK) btnOK.addEventListener('click', function(){
+        try { localStorage.setItem(KEY, 'true'); } catch(e){}
+        banner.style.display = 'none';
+      });
+
+      if (btnLater) btnLater.addEventListener('click', function(){
+        // solo chiudi per la sessione corrente
+        banner.style.display = 'none';
+      });
+    })();
   </script>
 </body>
 </html>
