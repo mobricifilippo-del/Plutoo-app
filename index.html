@@ -6,28 +6,19 @@
   <title>Plutoo 🐾</title>
   <link rel="stylesheet" href="./style.css?v=20" />
   <style>
-    /* Banner cookie: sempre in primo piano */
+    /* Banner cookie */
     #cookie-banner {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      display: none; /* mostrato via JS se non accettato */
-      background: #111827;
-      color: #fff;
-      padding: 14px 16px;
-      font-size: 14px;
-      z-index: 99999;
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: none; background: #111827; color: #fff;
+      padding: 14px 16px; font-size: 14px; z-index: 99999;
       box-shadow: 0 -6px 16px rgba(0,0,0,.25);
       align-items: center; justify-content: space-between; gap: 10px;
     }
     #cookie-banner .cb-text a { color: #8b5cf6; text-decoration: underline; }
     #cookie-banner .cb-actions { display: flex; gap: 10px; }
-    #cookie-banner button {
-      background: #6a39ff; color: #fff; border: 0;
-      padding: 8px 14px; border-radius: 10px; cursor: pointer;
-    }
-    #cookie-banner button.cb-ghost {
-      background: #374151;
-    }
+    #cookie-banner button { background: #6a39ff; color: #fff; border: 0;
+      padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+    #cookie-banner button.cb-ghost { background: #374151; }
   </style>
 </head>
 <body>
@@ -42,7 +33,7 @@
       </nav>
     </header>
 
-    <!-- Geolocalizzazione (demo) -->
+    <!-- Geolocalizzazione -->
     <div class="location-card">
       <div class="left">
         <span class="bullseye">🎯</span>
@@ -54,7 +45,7 @@
       </div>
     </div>
 
-    <!-- Tabs + trigger filtri -->
+    <!-- Tabs -->
     <div class="tabs-row">
       <div class="tabs">
         <button class="tab active" data-view="near">Vicino a te</button>
@@ -64,10 +55,10 @@
       <button id="filterToggle" class="btn-filter">Ricerca personalizzata ▾</button>
     </div>
 
-    <!-- Chips riepilogo filtri attivi -->
+    <!-- Chips filtri -->
     <div id="activeChips" class="chips"></div>
 
-    <!-- Pannello filtri (tendina) -->
+    <!-- Pannello filtri -->
     <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
         <div class="f-grid">
@@ -160,12 +151,19 @@
       </form>
     </section>
 
-    <!-- Conteggio + Cards (griglia o singola) -->
+    <!-- Cards -->
     <p id="countLabel" class="count">Mostro 0 cani</p>
     <section id="cards" class="grid" aria-live="polite"></section>
 
-    <!-- Footer basso: Privacy/Termini -->
+    <!-- Footer con sponsor (LIST) -->
     <footer class="site-footer">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:6px">
+        <span style="font-size:12px;opacity:.8">Sponsor ufficiale</span>
+        <a href="http://www.gelatofido.it/" target="_blank" rel="noopener">
+          <img src="./sponsor-logo.png" alt="Fido - Il gelato per il tuo amico"
+               loading="lazy" style="height:22px;width:auto;display:block;opacity:.95">
+        </a>
+      </div>
       <a href="privacy.html?v=1" id="privacyLink" class="foot-link">Privacy</a>
       <span class="dot">·</span>
       <a href="termini.html?v=1" id="termsLink" class="foot-link">Termini</a>
@@ -185,22 +183,28 @@
       <img src="./logo-32.jpg" alt="Plutoo" class="logo-img" />
     </div>
 
-    <!-- cambia pagina con hash -->
     <a href="#list" class="btn-primary" id="enterLink">Entra</a>
 
     <p class="subtitle">
       Attiveremo la posizione per mostrarti gli <strong>amici</strong> vicino a te.
     </p>
 
-    <!-- Footer basso: Privacy/Termini -->
+    <!-- Footer con sponsor (HOME) -->
     <footer class="site-footer">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:6px">
+        <span style="font-size:12px;opacity:.8">Sponsor ufficiale</span>
+        <a href="http://www.gelatofido.it/" target="_blank" rel="noopener">
+          <img src="./sponsor-logo.png" alt="Fido - Il gelato per il tuo amico"
+               loading="lazy" style="height:28px;width:auto;display:block;opacity:.95">
+        </a>
+      </div>
       <a href="privacy.html?v=1" id="privacyLink2" class="foot-link">Privacy</a>
       <span class="dot">·</span>
       <a href="termini.html?v=1" id="termsLink2" class="foot-link">Termini</a>
     </footer>
   </section>
 
-  <!-- Banner Cookie -->
+  <!-- Cookie banner -->
   <div id="cookie-banner">
     <span class="cb-text">
       Usiamo cookie per migliorare la tua esperienza. Continuando accetti la nostra
@@ -212,17 +216,13 @@
     </div>
   </div>
 
-  <!-- JS principale -->
+  <!-- JS principale: lascia il TUO file lungo -->
   <script src="./app.js?v=9"></script>
-
-  <!-- Fix Privacy/Termini + Cookie -->
   <script>
-    // Forza navigazione Privacy/Termini
     function forceLink(id, url) {
       var el = document.getElementById(id);
       if (el) el.addEventListener('click', function (e) {
-        e.preventDefault();
-        window.location.href = url;
+        e.preventDefault(); window.location.href = url;
       });
     }
     forceLink('privacyLink', 'privacy.html?v=1');
@@ -230,28 +230,20 @@
     forceLink('privacyLink2', 'privacy.html?v=1');
     forceLink('termsLink2', 'termini.html?v=1');
 
-    // ===== Cookie banner =====
     (function(){
-      var KEY = 'plutoo_cookies_v2'; // chiave nuova per forzare la prima visualizzazione
+      var KEY = 'plutoo_cookies_v2';
       var banner = document.getElementById('cookie-banner');
       var btnOK = document.getElementById('acceptCookies');
       var btnLater = document.getElementById('cookieLater');
-
       try {
         var accepted = localStorage.getItem(KEY) === 'true';
         if (!accepted) banner.style.display = 'flex';
-      } catch(e) {
-        // se localStorage non è disponibile, mostra comunque
-        banner.style.display = 'flex';
-      }
-
+      } catch(e) { banner.style.display = 'flex'; }
       if (btnOK) btnOK.addEventListener('click', function(){
         try { localStorage.setItem(KEY, 'true'); } catch(e){}
         banner.style.display = 'none';
       });
-
       if (btnLater) btnLater.addEventListener('click', function(){
-        // solo chiudi per la sessione corrente
         banner.style.display = 'none';
       });
     })();
