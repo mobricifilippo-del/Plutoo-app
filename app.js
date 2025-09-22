@@ -398,3 +398,192 @@ $("#locLater")?.addEventListener("click", () => alert("Ok, più tardi."));
 
 /* ========== AVVIO ========== */
 render();
+/* ===== PATCH: Scorri + Dettaglio cane (appendi in fondo al file) ===== */
+
+// Stato per "Scorri" (un cane alla volta)
+let _browseList = [];
+let _browsePos = 0;
+
+// Rende 1 cane alla volta in modalità "Scorri"
+function renderBrowseOne(list) {
+  const wrap = document.getElementById('cards');
+  if (!wrap) return;
+  _browseList = list.slice();
+  if (_browseList.length === 0) {
+    wrap.innerHTML = `<p style="color:#6b7280;padding:10px">Nessun cane trovato.</p>`;
+    return;
+  }
+  // sicurezza su indice
+  if (_browsePos >= _browseList.length) _browsePos = 0;
+  const d = _browseList[_browsePos];
+
+  wrap.className = 'deck';
+  wrap.innerHTML = `
+    <article class="card card-big" data-id="${d.id}">
+      <div class="pic">
+        <img src="${d.image}" alt="${d.name}">
+        <span class="badge">${(d.distance ?? 0).toFixed ? d.distance.toFixed(1) : d.distance || ''} ${d.distance ? 'km' : ''}</span>
+        ${d.online ? '<span class="dot"></span>' : ''}
+      </div>
+      <div class="body">
+        <div class="name">${d.name}${d.age != null ? ', ' + d.age : ''}</div>
+        <div class="breed">${d.breed || ''}</div>
+        <div class="swipe-actions">
+          <button class="btn-round btn-no" data-act="no" data-id="${d.id}"><span class="emoji">🥲</span></button>
+          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}"><span class="emoji">❤</span></button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+// Hook al tuo render() esistente: se la vista è "browse" mostra 1 cane
+(function patchRenderBrowse(){
+  try {
+    const _origRender = render;
+    window.render = function(){
+      _origRender();
+      // dopo il render originale, se siamo in "Scorri" rimpiazzo la griglia con 1 cane
+      if (typeof currentView !== 'undefined' && currentView === 'browse') {
+        // Ricostruisco la stessa lista filtrata del tuo render originale
+        // Parto dal dataset che usi (dogs / DOGS). Provo a recuperarlo in modo robusto:
+        const source = (typeof dogs !== 'undefined' && Array.isArray(dogs)) ? dogs
+                     : (typeof DOGS !== 'undefined' && Array.isArray(DOGS)) ? DOGS
+                     : [];
+        // Applico i filtri di base già noti (online vicino / match) in modo soft:
+        let list = source.slice();
+        if (typeof matches !== 'undefined' && matches instanceof Set && currentView === 'match') {
+          list = list.filter(d => matches.has(d.id));
+        } else if (currentView === 'near') {
+          list = list.filter(d => d.online);
+        }
+        // Se hai filtri avanzati nel form, provo a rispettarli (non rompo nulla se non ci sono)
+        const ff = document.getElementById('filterForm');
+        if (ff) {
+          const data = new FormData(ff);
+          const f = Object.fromEntries(data.entries());
+          list = list.filter(d=>{
+            if(f.breed && d.breed!==f.breed) return false;
+            if(f.age){
+              const a = Number(d.age);
+              if(f.age==='0-1' && a>1) return false;
+              if(f.age==='2-4' && (a<2||a>4)) return false;
+              if(f.age==='5-7' && (a<5||a>7)) return false;
+              if(f.age==='8+' && a<8) return false;
+            }
+            if(f.sex && d.sex!==f.sex) return false;
+            if(f.size && d.size!==f.size) return false;
+            if(f.coat && d.coat!==f.coat) return false;
+            if(f.energy && d.energy!==f.energy) return false;
+            if(f.pedigree && d.pedigree!==f.pedigree) return false;
+            if(f.distance && d.distance && Number(d.distance) > Number(f.distance)) return false;
+            return true;
+          });
+        }
+        // Ordino per distanza se c'è
+        list.sort((a,b)=> (a.distance||999) - (b.distance||999));
+        renderBrowseOne(list);
+      }
+    };
+  } catch(e) {
+    // se qualcosa va storto, non rompo il render originale
+    console.warn('Patch Scorri non applicata:', e);
+  }
+})();
+
+/* ===== Animazioni & avanzamento su "Scorri" ===== */
+document.getElementById('cards')?.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-act][data-id]');
+  const card = e.target.closest('article.card-big');
+  // Apertura profilo se clicchi la foto o il nome
+  const clickOnPicOrName = e.target.closest('.pic, .name');
+  if (clickOnPicOrName && card && currentView === 'browse') {
+    const id = Number(card.getAttribute('data-id'));
+    openDogDetailById(id);
+    return;
+  }
+  if (!btn) return;
+  const act = btn.dataset.act;
+  const id = Number(btn.dataset.id);
+
+  if (act === 'yes') {
+    // like + animazione (pulsazione)
+    try { btn.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:200}); } catch(_) {}
+    if (typeof matches !== 'undefined' && matches instanceof Set) matches.add(id);
+  } else {
+    // "skippa" semplicemente
+    try { btn.animate([{transform:'translateY(0)'},{transform:'translateY(2px)'},{transform:'translateY(0)'}],{duration:160}); } catch(_) {}
+  }
+  // Avanza al prossimo cane solo in "Scorri"
+  if (currentView === 'browse' && _browseList.length) {
+    _browsePos = (_browsePos + 1) % _browseList.length;
+    renderBrowseOne(_browseList);
+  }
+});
+
+/* ===== Pagina dettaglio stile "Facebook" (solo JS, senza toccare HTML/CSS) ===== */
+function ensureDetailSection(){
+  let d = document.getElementById('detail');
+  if (!d) {
+    d = document.createElement('section');
+    d.id = 'detail';
+    d.className = 'detail';
+    d.hidden = true; // il tuo CSS ha [hidden]{display:none!important}
+    document.body.appendChild(d);
+  }
+  return d;
+}
+
+function openDogDetailById(id){
+  const source = (typeof dogs !== 'undefined' && Array.isArray(dogs)) ? dogs
+               : (typeof DOGS !== 'undefined' && Array.isArray(DOGS)) ? DOGS
+               : [];
+  const d = source.find(x=>Number(x.id)===Number(id));
+  if (!d) return;
+
+  const host = ensureDetailSection();
+  host.innerHTML = `
+    <header class="topbar">
+      <a href="#" class="back" id="detailBack">← Indietro</a>
+      <div class="brand">${d.name}</div>
+      <div></div>
+    </header>
+
+    <article class="dogsheet">
+      <img class="dphoto" src="${d.image || d.photo}" alt="${d.name}">
+      <div class="dinfo">
+        <div class="name" style="font-weight:900;font-size:20px">${d.name}${d.age!=null?`, ${d.age}`:''}</div>
+        <div class="dmeta">${d.breed || ''}${d.sex?` • ${d.sex}`:''}${d.size?` • ${d.size}`:''}</div>
+        <div class="drow">${d.coat?`Pelo: ${d.coat} • `:''}${d.energy?`Energia: ${d.energy} • `:''}${d.pedigree?`Pedigree: ${d.pedigree}`:''}</div>
+        <div class="profile-actions">
+          <button class="btn-round btn-no" data-act="no" data-id="${d.id}"><span class="emoji">🥲</span></button>
+          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}"><span class="emoji">❤</span></button>
+        </div>
+      </div>
+    </article>
+  `;
+
+  // mostra dettaglio, nascondi home/list (senza toccare il CSS globale)
+  showSectionInline('detail');
+
+  // back
+  host.querySelector('#detailBack')?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    showSectionInline('list'); // torna alla lista (o ripristina come preferisci)
+  });
+}
+
+// Utility per mostrare solo la sezione voluta (override inline, non rompe :target)
+function showSectionInline(which){
+  ['home','list','detail'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === which) {
+      el.hidden = false;
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+      if (id === 'detail') el.hidden = true;
+    }
+  });
+}
