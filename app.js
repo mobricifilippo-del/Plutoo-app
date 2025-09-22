@@ -320,3 +320,46 @@
     }
   });
 })();
+/* ===== PATCH: toggle pannello "Ricerca personalizzata" (tendina) ===== */
+(function(){
+  var btn   = document.getElementById('filterToggle');
+  var panel = document.getElementById('filterPanel');
+  var form  = document.getElementById('filterForm');
+  var reset = document.getElementById('filtersReset');
+  if (!btn || !panel) return;
+
+  // stile inline per l'animazione (senza toccare il CSS)
+  panel.style.overflow = 'hidden';
+  panel.style.transition = 'max-height 220ms ease';
+  // stato iniziale: chiuso
+  panel.hidden = true;
+  panel.style.maxHeight = '0px';
+
+  function openPanel(){
+    panel.hidden = false;
+    // calcola l'altezza reale e la anima
+    requestAnimationFrame(function(){
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+    });
+  }
+  function closePanel(){
+    panel.style.maxHeight = '0px';
+    // nasconde a fine animazione
+    setTimeout(function(){ panel.hidden = true; }, 220);
+  }
+
+  var isOpen = false;
+  btn.addEventListener('click', function(){
+    if (isOpen) closePanel(); else openPanel();
+    isOpen = !isOpen;
+  });
+
+  // Chiudi quando applichi o resetti i filtri
+  if (form) form.addEventListener('submit', function(e){
+    // il tuo handler principale farà già e.preventDefault(); qui solo chiudiamo
+    closePanel(); isOpen = false;
+  });
+  if (reset) reset.addEventListener('click', function(){
+    closePanel(); isOpen = false;
+  });
+})();
