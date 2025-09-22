@@ -1,197 +1,115 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Plutoo 🐾</title>
-  <link rel="icon" href="logo-32.jpg" />
-  <link rel="stylesheet" href="style.css?v=60" />
-
-  <!-- AdSense AUTO ADS (non rompe layout; serve approvazione dominio per vedere annunci) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5458345293928736" crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plutoo</title>
+  <link rel="stylesheet" href="style.css?v=70" />
 </head>
 <body>
-
-  <!-- ===== TOPBAR ===== -->
+  <!-- NAV SEMPLICE -->
   <header class="topbar">
-    <button class="back" id="backBtn" aria-label="Indietro">←</button>
-    <h1>Plutoo</h1>
+    <button class="back" onclick="history.back()">← Indietro</button>
+    <div class="brand">Plutoo</div>
     <nav class="auth">
-      <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+      <a href="#" class="link">Accedi</a>
+      <a href="#" class="link">Registrati</a>
     </nav>
   </header>
 
-  <!-- ===== TABS + FILTRI ===== -->
-  <section class="tabs-row">
-    <div class="tabs">
-      <button class="chip active" data-view="near">Vicino a te</button>
-      <button class="chip" data-view="swipe">Scorri</button>
-      <button class="chip" data-view="match">Match</button>
+  <!-- LANDING (visibile solo se data-view='home') -->
+  <section id="home" data-view="home">
+    <div class="hero">
+      <img src="logo-32.jpg" alt="" class="ghost" />
+      <div class="heart">
+        <img src="dog1.jpg" alt="" class="hero-dogs" />
+        <h1 class="logo">Plutoo</h1>
+      </div>
+      <button class="btn gradient" onclick="App.enter()">Entra</button>
+      <p class="sub">Cerca amici intorno a te.</p>
+      <div class="policy">
+        <a href="privacy.html" target="_blank">Privacy</a>
+        <span>·</span>
+        <a href="termini.html" target="_blank">Termini</a>
+      </div>
     </div>
 
-    <button id="filterToggle" class="btn-filter" aria-expanded="false">Ricerca personalizzata ▾</button>
+    <footer class="sponsor">
+      <div class="sponsor-title">Sponsor ufficiale</div>
+      <a href="http://www.gelatofido.it/" target="_blank" rel="noopener">
+        <img src="sponsor-logo.png" class="sponsor-logo" alt="Sponsor Fido" />
+      </a>
+    </footer>
   </section>
 
-  <!-- Pannello filtri (tendina) -->
-  <section id="filterPanel" class="filter-panel" hidden>
-    <form id="filterForm" autocomplete="off">
-      <div class="f-grid">
-        <label class="f-item">
-          <span>Razza</span>
-          <select name="breed">
-            <option value="">Tutte</option>
-            <option>Jack Russell</option><option>Labrador</option><option>Shiba Inu</option>
-            <option>Golden Retriever</option><option>Beagle</option><option>Bulldog Francese</option>
-            <option>Barboncino</option><option>Border Collie</option><option>Pastore Tedesco</option>
-            <option>Meticcio</option>
-          </select>
-        </label>
-
-        <label class="f-item">
-          <span>Età</span>
-          <select name="age">
-            <option value="">Tutte</option>
-            <option value="0-1">Cucciolo (0–1)</option>
-            <option value="2-4">Giovane (2–4)</option>
-            <option value="5-7">Adulto (5–7)</option>
-            <option value="8+">Senior (8+)</option>
-          </select>
-        </label>
-
-        <label class="f-item">
-          <span>Sesso</span>
-          <select name="sex">
-            <option value="">Qualsiasi</option>
-            <option value="M">Maschio</option>
-            <option value="F">Femmina</option>
-          </select>
-        </label>
-
-        <label class="f-item">
-          <span>Taglia</span>
-          <select name="size">
-            <option value="">Tutte</option>
-            <option>Piccola</option><option>Media</option><option>Grande</option>
-          </select>
-        </label>
-
-        <label class="f-item">
-          <span>Pelo</span>
-          <select name="coat">
-            <option value="">Qualsiasi</option>
-            <option>Corto</option><option>Medio</option><option>Lungo</option>
-          </select>
-        </label>
-
-        <label class="f-item">
-          <span>Solo verificati 🐾</span>
-          <input type="checkbox" name="verifiedOnly" />
-        </label>
-
-        <label class="f-item">
-          <span>Distanza max (km)</span>
-          <input type="number" name="distance" min="1" step="0.1" placeholder="Es. 5" />
-        </label>
+  <!-- APP -->
+  <main id="app" data-view="app" hidden>
+    <div class="cta">
+      <div class="cta-icon">🎯</div>
+      <div class="cta-text">Attiva la posizione per vedere gli amici vicino a te</div>
+      <div class="cta-actions">
+        <button class="chip gradient-sm">Attiva</button>
+        <button class="chip">Più tardi</button>
       </div>
+    </div>
 
-      <div class="f-actions">
-        <button type="button" id="filtersReset" class="chip">Reset</button>
-        <button type="submit" class="chip chip-primary">Applica</button>
+    <div class="tabs">
+      <button class="tab" data-tab="near" onclick="App.show('near')">Vicino a te</button>
+      <button class="tab" data-tab="browse" onclick="App.show('browse')">Scorri</button>
+      <button class="tab" data-tab="match" onclick="App.show('match')">Match</button>
+
+      <div class="search-dd">
+        <button class="dd-btn" onclick="App.toggleSearch()">Ricerca personalizzata ▾</button>
+        <div id="searchPanel" class="dd-panel" hidden>
+          <label><span>Razza</span><input id="fBreed" placeholder="es. Labrador" /></label>
+          <label><span>Zona</span><input id="fArea" placeholder="es. Roma" /></label>
+          <label><span>Pedigree</span>
+            <select id="fPed"><option value="">Qualsiasi</option><option>Sì</option><option>No</option></select>
+          </label>
+          <div class="dd-actions">
+            <button class="btn" onclick="App.clearFilters()">Pulisci</button>
+            <button class="btn gradient" onclick="App.apply()">Applica</button>
+          </div>
+        </div>
       </div>
-    </form>
-  </section>
+    </div>
 
-  <!-- Chips riepilogo filtri -->
-  <div id="activeChips" class="chips"></div>
+    <!-- COUNTER -->
+    <p class="count"><span id="counter">Mostro 0 profili</span></p>
 
-  <!-- ===== CONTENUTO ===== -->
-  <main id="content" aria-live="polite">
-    <!-- “Vicino a te” = griglia 2 col -->
-    <section id="near" class="grid"></section>
+    <!-- VISTA: VICINO A TE (griglia) -->
+    <section id="near" class="grid" aria-live="polite"></section>
 
-    <!-- “Scorri” = card singola centrata -->
-    <section id="swipe" class="deck" hidden></section>
+    <!-- VISTA: SCORRI (card singola centrata) -->
+    <section id="browse" class="deck" hidden>
+      <div id="deckCard" class="card-big card-enter"></div>
+    </section>
 
-    <!-- “Match” = griglia dei preferiti -->
-    <section id="match" class="grid" hidden></section>
+    <!-- VISTA: MATCH (placeholder) -->
+    <section id="match" class="empty" hidden>
+      <p>Nessun match… ancora 🐾</p>
+    </section>
+
+    <!-- SPONSOR FOOTER -->
+    <footer class="sponsor">
+      <div class="sponsor-title">Sponsor ufficiale</div>
+      <a href="http://www.gelatofido.it/" target="_blank" rel="noopener">
+        <img src="sponsor-logo.png" class="sponsor-logo" alt="Sponsor Fido" />
+      </a>
+    </footer>
+
+    <!-- BANNER STICKY (slot visivo; puoi integrare AdMob webView o AdSense in futuro) -->
+    <div class="ad-sticky" role="complementary" aria-label="annuncio">
+      <div class="ad-sticky-inner">Spazio banner</div>
+    </div>
   </main>
 
-  <!-- ===== DETTAGLIO PROFILO (modale) ===== -->
-  <section id="detail" class="detail" hidden aria-modal="true" role="dialog">
-    <div class="dogsheet">
-      <button class="close-detail" id="closeDetail" aria-label="Chiudi">✕</button>
-      <img id="dPhoto" class="dphoto" alt="">
-      <div class="dinfo">
-        <h2 id="dTitle"></h2>
-        <div id="dMeta" class="dmeta"></div>
-        <div class="drow"><b>Energia:</b> <span id="dEnergy"></span></div>
-        <div class="drow"><b>Pedigree:</b> <span id="dPedigree"></span></div>
-        <div class="drow"><b>Zona:</b> <span id="dArea"></span></div>
-        <p id="dDesc" class="ddesc"></p>
+  <!-- MODAL DETTAGLIO CANE -->
+  <dialog id="dogModal" class="modal">
+    <button class="modal-x" onclick="App.closeModal()">✕</button>
+    <div id="modalBody"></div>
+  </dialog>
 
-        <!-- Azioni profilo -->
-        <div class="profile-actions">
-          <button class="btn-round btn-no" data-act="no"><span class="emoji">🥲</span></button>
-          <button class="btn-round btn-yes" data-act="yes"><span class="emoji">❤️</span></button>
-        </div>
-
-        <!-- ===== Verifica (upload documenti) ===== -->
-        <div class="verify-box">
-          <h3>Verifica profilo 🐾</h3>
-          <p>Carica i documenti per ottenere il badge di verifica (demo front-end).</p>
-          <form id="verifyForm">
-            <label class="upload">
-              <span>Documento del cane (libretto/pedigree)</span>
-              <input type="file" name="dogdoc" accept=".jpg,.jpeg,.png,.pdf" required>
-            </label>
-            <label class="upload">
-              <span>Documento del proprietario</span>
-              <input type="file" name="ownerdoc" accept=".jpg,.jpeg,.png,.pdf" required>
-            </label>
-            <button type="submit" class="chip chip-primary">Invia</button>
-            <span id="verifyStatus" class="verify-status" aria-live="polite"></span>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== SPONSOR (centrato) ===== -->
-  <footer class="sponsor">
-    <div class="sponsor-title">Sponsor ufficiale</div>
-    <a id="sponsorLink" href="http://www.gelatofido.it/" target="_blank" rel="noopener">
-      <img src="sponsor-logo.png" alt="Sponsor Fido" class="sponsor-logo" />
-    </a>
-  </footer>
-
-  <!-- ===== Banner AdSense sticky in basso (si mostra quando disponibile) ===== -->
-  <div id="adSticky" class="ad-sticky" style="display:none">
-    <div class="ad-sticky-inner">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5458345293928736"
-           data-ad-slot="8955087050"
-           data-ad-format="auto"
-           data-full-width-responsive="true"
-           data-adtest="on"></ins>
-    </div>
-  </div>
-
-  <!-- ===== Cookie banner semplice ===== -->
-  <div id="cookie-banner" hidden>
-    <span>Usiamo cookie per migliorare l’esperienza. <a href="privacy.html">Privacy</a></span>
-    <div class="cb-actions">
-      <button id="acceptCookies" class="chip chip-primary">Accetta</button>
-    </div>
-  </div>
-
-  <!-- ===== JS ===== -->
-  <script src="app.js?v=60"></script>
-  <script>
-    // inizializza primo slot banner quando la pagina è pronta
-    window.addEventListener('load', () => {
-      try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){}
-    });
-  </script>
+  <script src="app.js?v=70"></script>
 </body>
 </html>
