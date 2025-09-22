@@ -1,365 +1,286 @@
-/* Plutoo – app.js FULL
-   - Vista: Vicino a te (griglia 2 colonne)
-   - Vista: Scorri (una card, like/dislike animati)
-   - Vista: Match (lista dei like)
-   - Dettaglio cane a PAGINA INTERA (non overlay)
-   - Nessuna modifica richiesta ad HTML/CSS
-*/
+/* ===== Dataset demo ===== */
+const dogs = [
+  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      distance:2.2,
+    sex:'F', size:'Piccola', coat:'Corto', energy:'Alta', pedigree:'No', area:'Roma – Monteverde',
+    desc:'Curiosa e molto giocherellona.', image:'./dog1.jpg', online:true,  verified:true },
+  { id:2, name:'Rocky', age:3, breed:'Labrador',          distance:1.6,
+    sex:'M', size:'Media',  coat:'Corto', energy:'Media', pedigree:'No', area:'Roma – Eur',
+    desc:'Affettuoso e molto fedele.', image:'./dog2.jpg', online:true,  verified:false },
+  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         distance:3.2,
+    sex:'F', size:'Piccola', coat:'Medio', energy:'Media', pedigree:'Sì', area:'Roma – Prati',
+    desc:'Elegante, intelligente e affettuosa.', image:'./dog3.jpg', online:false, verified:true },
+  { id:4, name:'Max',   age:4, breed:'Golden Retriever',  distance:5.9,
+    sex:'M', size:'Grande', coat:'Lungo', energy:'Alta', pedigree:'No', area:'Roma – Tuscolana',
+    desc:'Socievole con tutti, ama correre.', image:'./dog4.jpg', online:true,  verified:false },
+];
 
-(function () {
-  // ---------- DATASET DEMO ----------
-  const DOGS = [
-    {
-      id: "1",
-      name: "Rocky",
-      age: 3,
-      breed: "Labrador",
-      sex: "M",
-      size: "Grande",
-      coat: "Corto",
-      energy: "Media",
-      pedigree: "No",
-      distanceKm: 1.6,
-      zone: "Roma Trastevere",
-      about: "Dolcissimo e bravo con i bambini.",
-      photo: "./dog2.jpg", // (mantengo i tuoi file)
-      verified: true,
-    },
-    {
-      id: "2",
-      name: "Luna",
-      age: 1,
-      breed: "Jack Russell",
-      sex: "F",
-      size: "Piccola",
-      coat: "Pelo Corto",
-      energy: "Alta",
-      pedigree: "No",
-      distanceKm: 2.2,
-      zone: "Roma Monteverde",
-      about: "Curiosa e molto giocherellona.",
-      photo: "./dog1.jpg",
-      verified: true,
-    },
-    {
-      id: "3",
-      name: "Milo",
-      age: 1,
-      breed: "Labrador",
-      sex: "M",
-      size: "Grande",
-      coat: "Corto",
-      energy: "Alta",
-      pedigree: "No",
-      distanceKm: 4.1,
-      zone: "Roma Ostiense",
-      about: "Ama l’acqua e correre al parco.",
-      photo: "./dog1.jpg",
-      verified: false,
-    },
-    {
-      id: "4",
-      name: "Max",
-      age: 4,
-      breed: "Golden Retriever",
-      sex: "M",
-      size: "Grande",
-      coat: "Medio",
-      energy: "Media",
-      pedigree: "Sì",
-      distanceKm: 5.9,
-      zone: "Roma Appia",
-      about: "Calmo e affettuoso con tutti.",
-      photo: "./dog4.jpg",
-      verified: false,
-    },
-  ];
+let matches = new Set(JSON.parse(localStorage.getItem('plutoo_matches')||'[]'));
+let currentView = 'near'; // near | browse | match
+let likeCounter = Number(localStorage.getItem('plutoo_likes_count')||0);
 
-  // ---------- RIFERIMENTI DOM ----------
-  const home = document.getElementById("home");
-  const list = document.getElementById("list");
-  const cards = document.getElementById("cards");
-  const countLabel = document.getElementById("countLabel");
-  const tabs = document.querySelectorAll(".tab");
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
 
-  // creeremo #detail quando serve (pagina intera)
-  let detail = null;
+const els = {
+  cards: $('#cards'),
+  count: $('#countLabel'),
+  tabs: $$('.tab'),
+  filterToggle: $('#filterToggle'),
+  filterPanel: $('#filterPanel'),
+  filterForm:  $('#filterForm'),
+  chips: $('#activeChips'),
 
-  // stato
-  const state = {
-    view: "near", // near | browse | match
-    dogs: DOGS.slice(),
-    likeIds: new Set(),
-    browseIndex: 0, // per Scorri
-  };
+  // dettaglio
+  detail: $('#detail'),
+  dPhoto: $('#dPhoto'),
+  dTitle: $('#dTitle'),
+  dMeta: $('#dMeta'),
+  dEnergy: $('#dEnergy'),
+  dPedigree: $('#dPedigree'),
+  dArea: $('#dArea'),
+  dDesc: $('#dDesc'),
+  closeDetail: $('#closeDetail'),
+};
 
-  // ---------- UTILI ----------
-  const paw = "🐾";
-  const km = (n) => `${n.toFixed(1)} km`;
-  const sexTxt = (s) => (s === "M" ? "Maschio" : "Femmina");
+/* ===== Ads (banner sticky + “vignette” via auto-ads) ===== */
+const Ads = (function(){
+  function onEnterListView(){
+    try{
+      const main = document.getElementById('list');
+      const sticky = document.getElementById('adSticky');
+      if (main && sticky){
+        main.classList.add('has-ad');
+        sticky.style.display='block';
+        try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
+      }
+    }catch(e){}
+  }
+  function onLeaveListView(){
+    try{
+      const main = document.getElementById('list');
+      const sticky = document.getElementById('adSticky');
+      if (main && sticky){
+        main.classList.remove('has-ad');
+        sticky.style.display='none';
+      }
+    }catch(e){}
+  }
+  // “Interstitial” finto (placeholder). Le vignette reali arrivano da AdSense auto-ads.
+  function showInterstitial(reason){
+    const ov = document.createElement('div');
+    ov.style = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;color:#fff;font:600 18px system-ui';
+    ov.innerHTML = `<div style="background:#111;border-radius:12px;padding:18px 22px;max-width:320px;text-align:center;">
+      <div style="margin-bottom:8px">Annuncio video</div>
+      <div style="opacity:.8;font-weight:400">(${reason}) Sto caricando…</div>
+    </div>`;
+    document.body.appendChild(ov);
+    setTimeout(()=>{ document.body.removeChild(ov); }, 3000);
+  }
+  // Sponsor: mostra “interstitial” finto prima di aprire (opzionale)
+  (function wireSponsor(){
+    const a = document.getElementById('sponsorLink');
+    if (!a) return;
+    a.addEventListener('click',(ev)=>{
+      ev.preventDefault();
+      showInterstitial('sponsor');
+      setTimeout(()=> window.open(a.href,'_blank'), 3200);
+    });
+  })();
 
-  function setCount(n) {
-    if (countLabel) countLabel.textContent = `Mostro ${n} cani`;
+  return { onEnterListView, onLeaveListView, showInterstitial };
+})();
+
+/* ===== Helpers ===== */
+function filteredList(){
+  const data = new FormData(els.filterForm || new HTMLFormElement());
+  let list = [...dogs];
+
+  const breed = data.get('breed')||'';
+  const age   = data.get('age')||'';
+  const sex   = data.get('sex')||'';
+  const size  = data.get('size')||'';
+  const coat  = data.get('coat')||'';
+  const dist  = parseFloat(data.get('distance')||'0');
+  const verifiedOnly = data.get('verifiedOnly') === 'on';
+
+  if (currentView==='near'){
+    list = list.filter(d => d.online).sort((a,b)=>a.distance-b.distance);
+  } else if (currentView==='match'){
+    list = list.filter(d => matches.has(d.id));
   }
 
-  // ---------- RENDER ----------
-  function renderNear() {
-    cards.className = "grid";
-    setCount(state.dogs.length);
-    cards.innerHTML = state.dogs
-      .map((d) => cardHTML(d))
-      .join("");
-    attachCardEvents();
+  if (breed) list = list.filter(d => d.breed===breed);
+  if (sex)   list = list.filter(d => d.sex===sex);
+  if (size)  list = list.filter(d => d.size===size);
+  if (coat)  list = list.filter(d => d.coat===coat);
+  if (!isNaN(dist) && dist>0) list = list.filter(d => d.distance<=dist);
+  if (verifiedOnly) list = list.filter(d => d.verified === true);
+
+  if (age){
+    if (age==='0-1') list=list.filter(d=>d.age<=1);
+    if (age==='2-4') list=list.filter(d=>d.age>=2 && d.age<=4);
+    if (age==='5-7') list=list.filter(d=>d.age>=5 && d.age<=7);
+    if (age==='8+')  list=list.filter(d=>d.age>=8);
+  }
+  return list;
+}
+
+function render(){
+  const list = filteredList();
+  els.cards.innerHTML = '';
+  els.count.textContent = `Mostro ${list.length} profili`;
+
+  if (currentView==='browse'){
+    renderBrowse(list);
+    return;
   }
 
-  function renderBrowse() {
-    // una sola card alla volta
-    cards.className = "deck";
-    setCount( state.dogs.length ? 1 : 0 );
-    const d = state.dogs[state.browseIndex] || null;
-    cards.innerHTML = d ? bigCardHTML(d) : `<p style="padding:16px">Nessun cane disponibile.</p>`;
-    attachBrowseEvents();
-  }
-
-  function renderMatch() {
-    cards.className = "grid";
-    const liked = state.dogs.filter(d => state.likeIds.has(d.id));
-    setCount(liked.length);
-    cards.innerHTML = liked.length
-      ? liked.map((d) => cardHTML(d)).join("")
-      : `<p style="padding:16px">Nessun risultato qui.</p>`;
-    attachCardEvents();
-  }
-
-  function render() {
-    if (state.view === "near") renderNear();
-    if (state.view === "browse") renderBrowse();
-    if (state.view === "match") renderMatch();
-  }
-
-  // ---------- CARD TEMPLATES ----------
-  function cardHTML(d) {
-    return `
-      <article class="card" data-id="${d.id}">
-        <div class="pic">
-          <img src="${d.photo}" alt="${d.name}" />
-          <span class="badge">${km(d.distanceKm)}</span>
-          <span class="dot"></span>
-        </div>
-        <div class="body">
-          <div class="name">${d.name}, ${d.age} ${d.verified ? `<span title="Profilo verificato">${paw}</span>` : ""}</div>
-          <div class="breed">${d.breed}</div>
-          <div class="actions">
-            <button class="btn-round btn-no" data-act="no"><span class="emoji">🙂‍↔️</span></button>
-            <button class="btn-round btn-yes" data-act="yes"><span class="emoji">❤️</span></button>
-          </div>
-        </div>
-      </article>`;
-  }
-
-  function bigCardHTML(d) {
-    return `
-      <article class="card card-big" data-id="${d.id}">
-        <div class="pic">
-          <img src="${d.photo}" alt="${d.name}" />
-          <span class="badge">${km(d.distanceKm)}</span>
-          <span class="dot"></span>
-        </div>
-        <div class="body">
-          <div class="name">${d.name}, ${d.age} ${d.verified ? `<span title="Profilo verificato">${paw}</span>` : ""}</div>
-          <div class="breed">${d.breed}</div>
-          <div class="swipe-actions">
-            <button class="btn-round btn-no" data-act="no"><span class="emoji">🙂‍↔️</span></button>
-            <button class="btn-round btn-yes" data-act="yes"><span class="emoji">❤️</span></button>
-          </div>
-        </div>
-      </article>`;
-  }
-
-  // ---------- DETTAGLIO A PAGINA INTERA ----------
-  function ensureDetail() {
-    if (detail) return;
-    detail = document.createElement("section");
-    detail.id = "detail";
-    detail.className = "detail";
-    detail.style.display = "none"; // controllata da JS
-    document.body.appendChild(detail);
-  }
-
-  function showDetail(dogId) {
-    const d = state.dogs.find(x => x.id === dogId);
-    if (!d) return;
-
-    ensureDetail();
-
-    // riempiamo pagina intera
-    detail.innerHTML = `
-      <div class="dogsheet">
-        <img class="dphoto" src="${d.photo}" alt="${d.name}">
-        <div class="dinfo">
-          <h2 class="name">${d.name}, ${d.age} ${d.verified ? `<span title="Profilo verificato">${paw}</span>` : ""}</h2>
-          <div class="dmeta">
-            ${d.breed} · ${sexTxt(d.sex)} · ${d.size} · ${d.coat} · ${km(d.distanceKm)}
-          </div>
-          <div class="drow"><strong>Energia:</strong> ${d.energy}</div>
-          <div class="drow"><strong>Pedigree:</strong> ${d.pedigree}</div>
-          <div class="drow"><strong>Zona:</strong> ${d.zone}</div>
-          <p class="drow">${d.about}</p>
-          <div class="profile-actions">
-            <button class="chip" id="backToList">Indietro</button>
-            <button class="chip chip-primary" id="likeFromDetail">❤️ Mi piace</button>
-          </div>
+  list.forEach(d => {
+    const badge = d.verified ? `<span class="verify-badge" title="Verificato 🐾">🐾</span>` : ``;
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.setAttribute('data-id', d.id);
+    card.innerHTML = `
+      <div class="pic">
+        <img src="${d.image}" alt="Foto di ${d.name}">
+        <span class="badge">${d.distance.toFixed(1)} km</span>
+        ${d.online ? '<span class="dot"></span>' : ''}
+      </div>
+      <div class="body">
+        <div class="name">${d.name}, ${d.age} ${badge}</div>
+        <div class="breed">${d.breed}</div>
+        <div class="actions">
+          <button class="btn-round btn-no"  data-act="no"  data-id="${d.id}"><span class="emoji">🥲</span></button>
+          <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}"><span class="emoji">❤️</span></button>
         </div>
       </div>
     `;
+    els.cards.appendChild(card);
+  });
+}
 
-    // mostra detail, nascondi home/list
-    if (home) home.style.display = "none";
-    if (list) list.style.display = "none";
-    detail.style.display = "block";
-
-    document.getElementById("backToList")?.addEventListener("click", hideDetail);
-    document.getElementById("likeFromDetail")?.addEventListener("click", () => {
-      state.likeIds.add(d.id);
-      // piccolo feedback
-      const btn = document.getElementById("likeFromDetail");
-      btn.style.transform = "scale(1.08)";
-      btn.style.transition = "transform 160ms ease";
-      setTimeout(() => (btn.style.transform = "scale(1)"), 160);
-    });
+function renderBrowse(list){
+  els.cards.innerHTML = '';
+  if (list.length===0){
+    els.cards.innerHTML = `<p style="color:#6b7280;padding:10px 0">Nessun profilo da mostrare.</p>`;
+    return;
   }
+  const d = list[0];
+  const badge = d.verified ? `<span class="verify-badge" title="Verificato 🐾">🐾</span>` : ``;
+  const card = document.createElement('article');
+  card.className = 'card card-big';
+  card.setAttribute('data-id', d.id);
+  card.innerHTML = `
+    <div class="pic">
+      <img src="${d.image}" alt="Foto di ${d.name}">
+      <span class="badge">${d.distance.toFixed(1)} km</span>
+      ${d.online ? '<span class="dot"></span>' : ''}
+    </div>
+    <div class="body" style="text-align:center">
+      <div class="name">${d.name}, ${d.age} ${badge}</div>
+      <div class="breed">${d.breed}</div>
+      <div class="swipe-actions">
+        <button class="btn-round btn-no"  data-act="no"  data-id="${d.id}"><span class="emoji">🥲</span></button>
+        <button class="btn-round btn-yes" data-act="yes" data-id="${d.id}"><span class="emoji">❤️</span></button>
+      </div>
+    </div>
+  `;
+  els.cards.appendChild(card);
+}
 
-  function hideDetail() {
-    if (detail) detail.style.display = "none";
-    if (list) list.style.display = "block";
-    if (home) home.style.display = ""; // resta nascosta se siamo già nella lista
-  }
+/* ===== Eventi ===== */
+els.tabs.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    els.tabs.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = btn.dataset.view;
+    render();
+    if (location.hash === '#list') Ads.onEnterListView();
+  });
+});
 
-  // ---------- EVENTI LISTA (griglia) ----------
-  function attachCardEvents() {
-    // click immagine → pagina intera dettaglio
-    cards.querySelectorAll(".card .pic").forEach(pic => {
-      pic.addEventListener("click", (e) => {
-        const id = pic.closest(".card")?.getAttribute("data-id");
-        if (id) showDetail(id);
-      });
-    });
+// like/dislike + dettaglio
+els.cards.addEventListener('click',(e)=>{
+  const btn = e.target.closest('button[data-act]');
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const id = Number(card.getAttribute('data-id'));
+  const dog = dogs.find(x=>x.id===id);
+  if (!dog) return;
 
-    // like/dislike (nessuna animazione forte in griglia: solo feedback)
-    cards.querySelectorAll(".card .btn-round").forEach(btn => {
-      btn.addEventListener("click", () => {
-        btn.style.transform = "scale(0.96)";
-        btn.style.transition = "transform 120ms ease";
-        setTimeout(() => (btn.style.transform = "scale(1)"), 120);
-        const id = btn.closest(".card")?.getAttribute("data-id");
-        if (btn.dataset.act === "yes" && id) state.likeIds.add(id);
-      });
-    });
-  }
-
-  // ---------- EVENTI SCORRI (deck) ----------
-  function attachBrowseEvents() {
-    const card = cards.querySelector(".card-big");
-    if (!card) return;
-
-    // click immagine → pagina intera
-    card.querySelector(".pic")?.addEventListener("click", () => {
-      const id = card.getAttribute("data-id");
-      if (id) showDetail(id);
-    });
-
-    // pulsanti animati
-    card.querySelectorAll(".btn-round").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = card.getAttribute("data-id");
-        if (btn.dataset.act === "yes" && id) state.likeIds.add(id);
-
-        // animazione swipe
-        const dir = btn.dataset.act === "yes" ? 1 : -1;
-        card.style.transition = "transform 260ms ease, opacity 260ms ease";
-        card.style.transform = `translateX(${dir * 80}px) rotate(${dir * 4}deg)`;
-        card.style.opacity = "0.2";
-
-        setTimeout(() => {
-          // passa al prossimo
-          state.browseIndex = (state.browseIndex + 1) % state.dogs.length;
-          renderBrowse();
-        }, 260);
-      });
-    });
-  }
-
-  // ---------- TAB SWITCH ----------
-  tabs.forEach((t) => {
-    t.addEventListener("click", () => {
-      tabs.forEach(x => x.classList.remove("active"));
-      t.classList.add("active");
-      const v = t.getAttribute("data-view");
-      state.view = v;
-
-      if (v === "browse") state.browseIndex = 0;
-
+  if (btn){
+    if (btn.dataset.act==='yes'){
+      matches.add(id);
+      localStorage.setItem('plutoo_matches', JSON.stringify([...matches]));
+      likeCounter++; localStorage.setItem('plutoo_likes_count', String(likeCounter));
+      // animazione cuore
+      btn.animate([{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],{duration:180});
+      // ogni 10 like → “interstitial” finto; le vignette vere le fa AdSense auto-ads
+      if (likeCounter>=10){
+        likeCounter=0; localStorage.setItem('plutoo_likes_count','0');
+        Ads.showInterstitial('10-like');
+      }
+      if (currentView==='browse'){
+        const idx = dogs.findIndex(d=>d.id===id);
+        if (idx>=0) dogs.push(...dogs.splice(idx,1));
+      }
       render();
-      // assicura che siamo nella pagina lista
-      if (home) home.style.display = "none";
-      if (list) list.style.display = "block";
-      if (detail) detail.style.display = "none";
-    });
-  });
-
-  // ---------- AVVIO ----------
-  // Vista iniziale: Near
-  renderNear();
-
-  // se si entra con #list dall’home, non blocchiamo
-  window.addEventListener("hashchange", () => {
-    if (location.hash === "#list") {
-      if (home) home.style.display = "none";
-      if (list) list.style.display = "block";
-      if (detail) detail.style.display = "none";
+      return;
+    } else if (btn.dataset.act==='no'){
+      const idx = dogs.findIndex(d=>d.id===id);
+      if (idx>=0) dogs.push(...dogs.splice(idx,1));
+      render();
+      return;
     }
-  });
-})();
-/* ===== PATCH: toggle pannello "Ricerca personalizzata" (tendina) ===== */
+  }
+
+  // click card → dettaglio
+  openDetail(dog);
+});
+
+function openDetail(d){
+  els.dPhoto.src = d.image;
+  els.dTitle.textContent = `${d.name}, ${d.age} ${d.verified ? '🐾' : ''}`;
+  els.dMeta.textContent  = `${d.breed} · ${d.sex==='M'?'Maschio':'Femmina'} · ${d.size} · ${d.coat} · ${d.distance.toFixed(1)} km`;
+  els.dEnergy.textContent = d.energy;
+  els.dPedigree.textContent = d.pedigree;
+  els.dArea.textContent = d.area;
+  els.dDesc.textContent = d.desc;
+  els.detail.hidden = false;
+}
+els.closeDetail.addEventListener('click',()=> els.detail.hidden = true);
+document.addEventListener('keydown',e=>{ if (e.key==='Escape') els.detail.hidden=true; });
+
+// Filtro tendina
+$('#filterToggle').addEventListener('click', ()=> els.filterPanel.hidden = !els.filterPanel.hidden);
+$('#filtersReset').addEventListener('click', ()=>{ els.filterForm.reset(); render(); });
+els.filterForm.addEventListener('submit', (e)=>{ e.preventDefault(); render(); });
+
+// Geolocalizzazione (demo)
+$('#locOn').addEventListener('click', ()=> alert('Posizione attivata (demo).'));
+$('#locLater').addEventListener('click', ()=> alert('Ok, più tardi.'));
+
+// Hash → attiva/disattiva banner sticky
+window.addEventListener('hashchange', ()=>{
+  if (location.hash==='#list') Ads.onEnterListView();
+  else Ads.onLeaveListView();
+});
+if (location.hash==='#list') Ads.onEnterListView();
+
+/* ===== Cookie banner ===== */
 (function(){
-  var btn   = document.getElementById('filterToggle');
-  var panel = document.getElementById('filterPanel');
-  var form  = document.getElementById('filterForm');
-  var reset = document.getElementById('filtersReset');
-  if (!btn || !panel) return;
-
-  // stile inline per l'animazione (senza toccare il CSS)
-  panel.style.overflow = 'hidden';
-  panel.style.transition = 'max-height 220ms ease';
-  // stato iniziale: chiuso
-  panel.hidden = true;
-  panel.style.maxHeight = '0px';
-
-  function openPanel(){
-    panel.hidden = false;
-    // calcola l'altezza reale e la anima
-    requestAnimationFrame(function(){
-      panel.style.maxHeight = panel.scrollHeight + 'px';
-    });
-  }
-  function closePanel(){
-    panel.style.maxHeight = '0px';
-    // nasconde a fine animazione
-    setTimeout(function(){ panel.hidden = true; }, 220);
-  }
-
-  var isOpen = false;
-  btn.addEventListener('click', function(){
-    if (isOpen) closePanel(); else openPanel();
-    isOpen = !isOpen;
-  });
-
-  // Chiudi quando applichi o resetti i filtri
-  if (form) form.addEventListener('submit', function(e){
-    // il tuo handler principale farà già e.preventDefault(); qui solo chiudiamo
-    closePanel(); isOpen = false;
-  });
-  if (reset) reset.addEventListener('click', function(){
-    closePanel(); isOpen = false;
+  const KEY='plutoo_cookies_v2';
+  const el = document.getElementById('cookie-banner');
+  const btn = document.getElementById('acceptCookies');
+  try {
+    const ok = localStorage.getItem(KEY)==='true';
+    if (!ok) el.style.display='flex';
+  } catch(e) { el.style.display='flex'; }
+  btn?.addEventListener('click',()=>{
+    try{ localStorage.setItem(KEY,'true'); }catch(e){}
+    el.style.display='none';
   });
 })();
+
+/* ===== Avvio ===== */
+render();
