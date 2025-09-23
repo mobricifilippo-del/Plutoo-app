@@ -1,86 +1,156 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo-32.jpg" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <div id="home" class="screen active">
-    <header>
-      <img src="plutoo-icon-512.png" alt="Plutoo" class="brand">
+
+  <!-- Topbar minimale -->
+  <header class="topbar">
+    <div id="topBrandSlot" class="brand-slot">
+      <img src="logo-32.jpg" alt="Plutoo" class="brand" onerror="this.style.display='none'">
+      <span class="title">Plutoo</span>
+    </div>
+    <nav class="auth">
+      <a id="btnLogin" href="javascript:void(0)">Accedi</a>
+      <a id="btnRegister" href="javascript:void(0)">Registrati</a>
+    </nav>
+  </header>
+
+  <!-- HOME -->
+  <main id="landing" class="screen active">
+    <section class="hero">
+      <div class="hero-img-wrap">
+        <img src="dog1.jpg" alt="Plutoo" class="hero-img" onerror="this.style.display='none'">
+      </div>
       <h1>Benvenuto su Plutoo</h1>
-    </header>
-    <main>
-      <button id="ctaEnter" class="btn primary">Entra</button>
-      <p class="muted">Cerca amici intorno a te.</p>
-      <div class="links">
-        <a href="privacy.html">Privacy</a> ·
-        <a href="termini.html">Termini</a>
-      </div>
+      <p class="sub">Cerca amici intorno a te.</p>
+
+      <a id="ctaEnter" class="btn primary" onclick="goHome()">Entra</a>
+
+      <p class="links"><a href="./privacy.html" target="_blank">Privacy</a> · <a href="./termini.html" target="_blank">Termini</a></p>
+
       <div class="sponsor">
-        <p>Sponsor ufficiale</p>
-        <img src="sponsor.png" alt="Sponsor">
+        <div class="sponsor-label">Sponsor ufficiale</div>
+        <a id="sponsorLink" href="https://example.com" target="_blank" rel="noopener">
+          <img src="sponsor-logo.png" alt="Sponsor" class="sponsor-img" onerror="this.style.display='none'">
+        </a>
       </div>
-    </main>
-  </div>
-
-  <div id="app" class="screen">
-    <header class="topbar">
-      <div id="topBrandSlot"></div>
-      <nav class="tabs">
-        <button class="tab active" data-tab="near">Vicino</button>
-        <button class="tab" data-tab="swipe">Scorri</button>
-        <button class="tab" data-tab="matches">Match</button>
-      </nav>
-    </header>
-
-    <section id="geoBar" class="geobar hidden">
-      <p>Vuoi attivare la posizione per risultati migliori?</p>
-      <button id="enableGeo" class="btn small primary">Attiva</button>
-      <button id="dismissGeo" class="btn small">No grazie</button>
     </section>
+  </main>
 
-    <section id="near" class="tabpane active">
+  <!-- APP -->
+  <section id="home" class="screen">
+    <!-- barra richiesta geolocalizzazione -->
+    <div id="geoBar" class="geobar hidden">
+      <span>Attiva la posizione per vedere gli amici vicino a te</span>
+      <div class="g-actions">
+        <button id="enableGeo" class="btn xs primary">Attiva</button>
+        <button id="dismissGeo" class="btn xs light">Più tardi</button>
+      </div>
+    </div>
+
+    <!-- tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="near">Vicino</button>
+      <button class="tab" data-tab="swipe">Scorri</button>
+      <button class="tab" data-tab="matches">Match</button>
+    </div>
+
+    <!-- VICINO -->
+    <div id="near" class="tabpane active">
+      <div id="counter" class="counter"></div>
       <div id="grid" class="grid"></div>
-      <p id="emptyNear" class="muted">Nessun cane vicino a te.</p>
-    </section>
+      <div id="emptyNear" class="empty hidden">Nessun profilo.</div>
+    </div>
 
-    <section id="swipe" class="tabpane">
-      <article class="card-big">
-        <img id="swipeImg" src="" alt="">
-        <div class="card-body">
-          <h2 id="swipeTitle"></h2>
-          <div id="swipeMeta" class="muted"></div>
-          <p id="swipeBio"></p>
-          <div class="row">
-            <button id="noBtn" class="btn-round btn-no"><span>😢</span></button>
-            <button id="yesBtn" class="btn-round btn-yes"><span>❤️</span></button>
+    <!-- SCORRI -->
+    <div id="swipe" class="tabpane">
+      <div class="deck">
+        <article class="card big">
+          <img id="swipeImg" src="dog1.jpg" alt="Dog">
+          <div class="card-info">
+            <div class="title">
+              <div id="swipeTitle" class="name">—</div>
+              <div id="swipeMeta" class="dist">—</div>
+            </div>
+            <p id="swipeBio" class="bio">—</p>
+            <div class="actions">
+              <button id="noBtn" class="circle no">🥲</button>
+              <button id="yesBtn" class="circle like">❤️</button>
+            </div>
           </div>
-        </div>
-      </article>
-    </section>
+        </article>
+      </div>
+    </div>
 
-    <section id="matches" class="tabpane">
-      <div id="matchList"></div>
-      <p id="emptyMatch" class="muted">Nessun match ancora.</p>
-    </section>
+    <!-- MATCH -->
+    <div id="matches" class="tabpane">
+      <div id="matchList" class="list"></div>
+      <div id="emptyMatch" class="empty">Nessun match ancora.</div>
+    </div>
+  </section>
+
+  <!-- MODAL DOG -->
+  <dialog id="dogModal" class="modal">
+    <div id="modalBody"></div>
+    <button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button>
+  </dialog>
+
+  <!-- SHEET LOGIN / REGISTER (dummy) -->
+  <div id="sheetLogin" class="sheet">
+    <div class="sheet-box">
+      <div class="sheet-head">
+        <strong>Accedi</strong>
+        <button class="close" data-close="sheetLogin">×</button>
+      </div>
+      <div class="sheet-body">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
+        <button id="loginSubmit" class="btn primary full">Continua</button>
+      </div>
+    </div>
   </div>
 
+  <div id="sheetRegister" class="sheet">
+    <div class="sheet-box">
+      <div class="sheet-head">
+        <strong>Registrati</strong>
+        <button class="close" data-close="sheetRegister">×</button>
+      </div>
+      <div class="sheet-body">
+        <input class="inp" placeholder="Nome">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
+        <button id="registerSubmit" class="btn primary full">Crea account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
   <div id="chat" class="sheet">
-    <header class="sheet-header">
-      <img id="chatAvatar" src="" alt="">
-      <h3 id="chatName"></h3>
-      <button class="close" data-close="chat">×</button>
-    </header>
-    <div id="thread" class="thread"></div>
-    <footer class="sheet-footer">
-      <input id="chatInput" type="text" placeholder="Scrivi...">
-      <button id="sendBtn" class="btn primary">Invia</button>
-    </footer>
+    <div class="sheet-box">
+      <div class="sheet-head">
+        <div class="chat-head">
+          <img id="chatAvatar" class="avatar" src="dog1.jpg" alt="">
+          <div id="chatName" class="chat-name">Chat</div>
+        </div>
+        <button class="close" data-close="chat">×</button>
+      </div>
+      <div class="sheet-body chat-body">
+        <div id="thread" class="thread"></div>
+        <div class="chat-send">
+          <input id="chatInput" class="inp" placeholder="Scrivi…">
+          <button id="sendBtn" class="btn primary">Invia</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
