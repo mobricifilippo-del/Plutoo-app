@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo</title>
   <link rel="icon" href="plutoo-icon-512.png" />
-  <link rel="stylesheet" href="style.css" />
+  <!-- cache-busting -->
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
-  <!-- TOPBAR (sempre visibile) -->
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand-slot">
-      <!-- mini brand solo come decor, la Home sotto ha il logo grande -->
       <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'"/>
       <span class="brand-name">Plutoo</span>
     </div>
@@ -22,13 +22,17 @@
     </nav>
   </header>
 
-  <!-- ============= HOME (ELEGANTE) ============= -->
+  <!-- HOME -->
   <main id="landing" class="screen active">
     <section class="hero">
+      <!-- LOGO APP GRANDE -->
       <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
-      <a id="ctaEnter" class="btn primary">Entra</a>
+
+      <!-- CTA con fallback onclick -->
+      <a id="ctaEnter" class="btn primary" href="javascript:void(0)" onclick="goHome()">Entra</a>
       <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
 
+      <!-- SPONSOR PICCOLO -->
       <div class="sponsor-block">
         <div class="sponsor-label">Sponsor ufficiale</div>
         <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
@@ -44,9 +48,9 @@
     </section>
   </main>
 
-  <!-- ============= APP (3 TAB) ============= -->
+  <!-- APP -->
   <section id="app" class="screen">
-    <!-- barra geolocalizzazione -->
+    <!-- geobar -->
     <div id="geoBar" class="geobar hidden">
       <span>Attiva la posizione per vedere gli amici vicino a te</span>
       <div class="g-actions">
@@ -55,7 +59,7 @@
       </div>
     </div>
 
-    <!-- toggle filtri -->
+    <!-- header tabs + filtri -->
     <div class="filters-header">
       <div class="tabs">
         <button class="tab active" data-tab="near">Vicino</button>
@@ -73,84 +77,38 @@
             <span>Razza</span>
             <select name="breed">
               <option value="">Tutte</option>
-              <option>Jack Russell</option>
-              <option>Labrador</option>
-              <option>Shiba Inu</option>
-              <option>Golden Retriever</option>
-              <option>Beagle</option>
-              <option>Bulldog Francese</option>
-              <option>Barboncino</option>
-              <option>Border Collie</option>
-              <option>Pastore Tedesco</option>
+              <option>Jack Russell</option><option>Labrador</option><option>Shiba Inu</option>
+              <option>Golden Retriever</option><option>Beagle</option><option>Bulldog Francese</option>
+              <option>Barboncino</option><option>Border Collie</option><option>Pastore Tedesco</option>
               <option>Meticcio</option>
             </select>
           </label>
-
-          <label class="f-item">
-            <span>Età</span>
+          <label class="f-item"><span>Età</span>
             <select name="ageBand">
               <option value="">Tutte</option>
-              <option value="0-1">0–1</option>
-              <option value="2-4">2–4</option>
-              <option value="5-7">5–7</option>
-              <option value="8+">8+</option>
+              <option value="0–1">0–1</option><option value="2–4">2–4</option>
+              <option value="5–7">5–7</option><option value="8+">8+</option>
             </select>
           </label>
-
-          <label class="f-item">
-            <span>Sesso</span>
-            <select name="sex">
-              <option value="">Qualsiasi</option>
-              <option value="M">Maschio</option>
-              <option value="F">Femmina</option>
-            </select>
+          <label class="f-item"><span>Sesso</span>
+            <select name="sex"><option value="">Qualsiasi</option><option value="M">Maschio</option><option value="F">Femmina</option></select>
           </label>
-
-          <label class="f-item">
-            <span>Taglia</span>
-            <select name="size">
-              <option value="">Tutte</option>
-              <option>Piccola</option>
-              <option>Media</option>
-              <option>Grande</option>
-            </select>
+          <label class="f-item"><span>Taglia</span>
+            <select name="size"><option value="">Tutte</option><option>Piccola</option><option>Media</option><option>Grande</option></select>
           </label>
-
-          <label class="f-item">
-            <span>Pelo</span>
-            <select name="coat">
-              <option value="">Qualsiasi</option>
-              <option>Corto</option>
-              <option>Medio</option>
-              <option>Lungo</option>
-            </select>
+          <label class="f-item"><span>Pelo</span>
+            <select name="coat"><option value="">Qualsiasi</option><option>Corto</option><option>Medio</option><option>Lungo</option></select>
           </label>
-
-          <label class="f-item">
-            <span>Energia</span>
-            <select name="energy">
-              <option value="">Qualsiasi</option>
-              <option>Bassa</option>
-              <option>Media</option>
-              <option>Alta</option>
-            </select>
+          <label class="f-item"><span>Energia</span>
+            <select name="energy"><option value="">Qualsiasi</option><option>Bassa</option><option>Media</option><option>Alta</option></select>
           </label>
-
-          <label class="f-item">
-            <span>Pedigree</span>
-            <select name="pedigree">
-              <option value="">Indifferente</option>
-              <option value="Sì">Sì</option>
-              <option value="No">No</option>
-            </select>
+          <label class="f-item"><span>Pedigree</span>
+            <select name="pedigree"><option value="">Indifferente</option><option value="Sì">Sì</option><option value="No">No</option></select>
           </label>
-
-          <label class="f-item">
-            <span>Distanza max (km)</span>
+          <label class="f-item"><span>Distanza max (km)</span>
             <input type="number" name="distance" min="1" step="0.1" placeholder="es. 5" />
           </label>
         </div>
-
         <div class="f-actions">
           <button type="button" id="filtersReset" class="btn light">Reset</button>
           <button type="submit" class="btn primary">Applica</button>
@@ -170,7 +128,7 @@
     <section id="swipe" class="tabpane">
       <div class="deck">
         <article class="card big">
-          <img id="swipeImg" src="dog1.jpg" alt="">
+          <img id="swipeImg" class="card-img" src="" alt="">
           <div class="card-info">
             <div class="title">
               <div id="swipeTitle" class="name">—</div>
@@ -192,7 +150,7 @@
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
 
-    <!-- SPONSOR in fondo a tutte le viste APP -->
+    <!-- Sponsor in fondo all’app -->
     <div class="sponsor-app">
       <div class="sponsor-label">Sponsor ufficiale</div>
       <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
@@ -200,19 +158,19 @@
       </a>
     </div>
 
-    <!-- Banner pubblicitario (placeholder web, sticky) -->
+    <!-- Banner adv placeholder -->
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- MODAL PROFILO CANE -->
+  <!-- MODAL PROFILO -->
   <dialog id="dogModal" class="modal">
     <div id="modalBody"></div>
     <button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button>
   </dialog>
 
-  <!-- MODAL VERIFICA (upload documenti) -->
+  <!-- MODAL VERIFICA -->
   <dialog id="verifyModal" class="modal">
-    <div class="verify-body">
+    <div class="verify-body pad">
       <h3>Richiedi badge di verifica</h3>
       <p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p>
       <label class="upload">Documento proprietario<input type="file" /></label>
@@ -225,7 +183,7 @@
     </div>
   </dialog>
 
-  <!-- SHEETS LOGIN / REGISTER / CHAT -->
+  <!-- SHEETS -->
   <div id="sheetLogin" class="sheet">
     <div class="sheet-box">
       <div class="sheet-head">
@@ -259,7 +217,7 @@
     <div class="sheet-box">
       <div class="sheet-head">
         <div class="chat-head">
-          <img id="chatAvatar" class="avatar" src="dog1.jpg" alt="">
+          <img id="chatAvatar" class="avatar" src="" alt="">
           <div id="chatName" class="chat-name">Chat</div>
         </div>
         <button class="close" data-close="chat">×</button>
@@ -274,32 +232,16 @@
     </div>
   </div>
 
-  <!-- MODAL INTERSTITIAL (placeholder dopo 10 like) -->
+  <!-- INTERSTITIAL -->
   <dialog id="interstitial" class="modal inter">
-    <div class="inter-body">
+    <div class="pad">
       <h3>Annuncio video (placeholder)</h3>
-      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
+      <p class="muted">Interstiziale dimostrativo. Chiudi per continuare.</p>
       <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
     </div>
   </dialog>
 
-  <!-- MODALI PRIVACY/TERMINI (contenuto base) -->
-  <dialog id="privacyDlg" class="modal legal">
-    <div class="pad">
-      <h3>Privacy</h3>
-      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
-      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
-      <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
-    </div>
-  </dialog>
-  <dialog id="termsDlg" class="modal legal">
-    <div class="pad">
-      <h3>Termini</h3>
-      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
-      <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
-    </div>
-  </dialog>
-
-  <script src="app.js"></script>
+  <!-- cache-busting -->
+  <script src="app.js?v=3"></script>
 </body>
 </html>
