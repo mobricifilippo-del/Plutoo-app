@@ -4,48 +4,49 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo</title>
-  <link rel="icon" href="logo-32.jpg" />
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" href="plutoo-icon-512.png" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Topbar minimale -->
+  <!-- TOPBAR (sempre visibile) -->
   <header class="topbar">
-    <div id="topBrandSlot" class="brand-slot">
-      <img src="logo-32.jpg" alt="Plutoo" class="brand" onerror="this.style.display='none'">
-      <span class="title">Plutoo</span>
+    <div class="brand-slot">
+      <!-- mini brand solo come decor, la Home sotto ha il logo grande -->
+      <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'"/>
+      <span class="brand-name">Plutoo</span>
     </div>
     <nav class="auth">
-      <a id="btnLogin" href="javascript:void(0)">Accedi</a>
-      <a id="btnRegister" href="javascript:void(0)">Registrati</a>
+      <a id="btnLoginTop" href="javascript:void(0)">Login</a>
+      <a id="btnRegisterTop" class="primary" href="javascript:void(0)">Registrati</a>
     </nav>
   </header>
 
-  <!-- HOME -->
+  <!-- ============= HOME (ELEGANTE) ============= -->
   <main id="landing" class="screen active">
     <section class="hero">
-      <div class="hero-img-wrap">
-        <img src="dog1.jpg" alt="Plutoo" class="hero-img" onerror="this.style.display='none'">
-      </div>
-      <h1>Benvenuto su Plutoo</h1>
-      <p class="sub">Cerca amici intorno a te.</p>
+      <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
+      <a id="ctaEnter" class="btn primary">Entra</a>
+      <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
 
-      <a id="ctaEnter" class="btn primary" onclick="goHome()">Entra</a>
-
-      <p class="links"><a href="./privacy.html" target="_blank">Privacy</a> · <a href="./termini.html" target="_blank">Termini</a></p>
-
-      <div class="sponsor">
+      <div class="sponsor-block">
         <div class="sponsor-label">Sponsor ufficiale</div>
-        <a id="sponsorLink" href="https://example.com" target="_blank" rel="noopener">
-          <img src="sponsor-logo.png" alt="Sponsor" class="sponsor-img" onerror="this.style.display='none'">
+        <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
+          <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
         </a>
       </div>
+
+      <footer class="home-footer">
+        <button class="link-inline" id="openPrivacy">Privacy</button>
+        <span class="dot">·</span>
+        <button class="link-inline" id="openTerms">Termini</button>
+      </footer>
     </section>
   </main>
 
-  <!-- APP -->
-  <section id="home" class="screen">
-    <!-- barra richiesta geolocalizzazione -->
+  <!-- ============= APP (3 TAB) ============= -->
+  <section id="app" class="screen">
+    <!-- barra geolocalizzazione -->
     <div id="geoBar" class="geobar hidden">
       <span>Attiva la posizione per vedere gli amici vicino a te</span>
       <div class="g-actions">
@@ -54,25 +55,122 @@
       </div>
     </div>
 
-    <!-- tabs -->
-    <div class="tabs">
-      <button class="tab active" data-tab="near">Vicino</button>
-      <button class="tab" data-tab="swipe">Scorri</button>
-      <button class="tab" data-tab="matches">Match</button>
+    <!-- toggle filtri -->
+    <div class="filters-header">
+      <div class="tabs">
+        <button class="tab active" data-tab="near">Vicino</button>
+        <button class="tab" data-tab="swipe">Scorri</button>
+        <button class="tab" data-tab="matches">Match</button>
+      </div>
+      <button id="filterToggle" class="btn ghost">Ricerca personalizzata ▾</button>
     </div>
 
+    <!-- pannello filtri -->
+    <section id="filterPanel" class="filter-panel" hidden>
+      <form id="filterForm">
+        <div class="f-grid">
+          <label class="f-item">
+            <span>Razza</span>
+            <select name="breed">
+              <option value="">Tutte</option>
+              <option>Jack Russell</option>
+              <option>Labrador</option>
+              <option>Shiba Inu</option>
+              <option>Golden Retriever</option>
+              <option>Beagle</option>
+              <option>Bulldog Francese</option>
+              <option>Barboncino</option>
+              <option>Border Collie</option>
+              <option>Pastore Tedesco</option>
+              <option>Meticcio</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Età</span>
+            <select name="ageBand">
+              <option value="">Tutte</option>
+              <option value="0-1">0–1</option>
+              <option value="2-4">2–4</option>
+              <option value="5-7">5–7</option>
+              <option value="8+">8+</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Sesso</span>
+            <select name="sex">
+              <option value="">Qualsiasi</option>
+              <option value="M">Maschio</option>
+              <option value="F">Femmina</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Taglia</span>
+            <select name="size">
+              <option value="">Tutte</option>
+              <option>Piccola</option>
+              <option>Media</option>
+              <option>Grande</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Pelo</span>
+            <select name="coat">
+              <option value="">Qualsiasi</option>
+              <option>Corto</option>
+              <option>Medio</option>
+              <option>Lungo</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Energia</span>
+            <select name="energy">
+              <option value="">Qualsiasi</option>
+              <option>Bassa</option>
+              <option>Media</option>
+              <option>Alta</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Pedigree</span>
+            <select name="pedigree">
+              <option value="">Indifferente</option>
+              <option value="Sì">Sì</option>
+              <option value="No">No</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Distanza max (km)</span>
+            <input type="number" name="distance" min="1" step="0.1" placeholder="es. 5" />
+          </label>
+        </div>
+
+        <div class="f-actions">
+          <button type="button" id="filtersReset" class="btn light">Reset</button>
+          <button type="submit" class="btn primary">Applica</button>
+        </div>
+      </form>
+      <div id="activeChips" class="chips"></div>
+    </section>
+
     <!-- VICINO -->
-    <div id="near" class="tabpane active">
+    <section id="near" class="tabpane active">
       <div id="counter" class="counter"></div>
       <div id="grid" class="grid"></div>
       <div id="emptyNear" class="empty hidden">Nessun profilo.</div>
-    </div>
+    </section>
 
     <!-- SCORRI -->
-    <div id="swipe" class="tabpane">
+    <section id="swipe" class="tabpane">
       <div class="deck">
         <article class="card big">
-          <img id="swipeImg" src="dog1.jpg" alt="Dog">
+          <img id="swipeImg" src="dog1.jpg" alt="">
           <div class="card-info">
             <div class="title">
               <div id="swipeTitle" class="name">—</div>
@@ -86,26 +184,52 @@
           </div>
         </article>
       </div>
-    </div>
+    </section>
 
     <!-- MATCH -->
-    <div id="matches" class="tabpane">
+    <section id="matches" class="tabpane">
       <div id="matchList" class="list"></div>
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
+    </section>
+
+    <!-- SPONSOR in fondo a tutte le viste APP -->
+    <div class="sponsor-app">
+      <div class="sponsor-label">Sponsor ufficiale</div>
+      <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
+        <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
+      </a>
     </div>
+
+    <!-- Banner pubblicitario (placeholder web, sticky) -->
+    <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- MODAL DOG -->
+  <!-- MODAL PROFILO CANE -->
   <dialog id="dogModal" class="modal">
     <div id="modalBody"></div>
     <button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button>
   </dialog>
 
-  <!-- SHEET LOGIN / REGISTER (dummy) -->
+  <!-- MODAL VERIFICA (upload documenti) -->
+  <dialog id="verifyModal" class="modal">
+    <div class="verify-body">
+      <h3>Richiedi badge di verifica</h3>
+      <p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p>
+      <label class="upload">Documento proprietario<input type="file" /></label>
+      <label class="upload">Documento del cane<input type="file" /></label>
+      <div class="row-cta">
+        <button class="btn light" onclick="document.getElementById('verifyModal').close()">Annulla</button>
+        <button class="btn primary" id="sendVerify">Invia</button>
+      </div>
+      <p id="verifyMsg" class="ok-msg" hidden>Richiesta inviata, in revisione ✅</p>
+    </div>
+  </dialog>
+
+  <!-- SHEETS LOGIN / REGISTER / CHAT -->
   <div id="sheetLogin" class="sheet">
     <div class="sheet-box">
       <div class="sheet-head">
-        <strong>Accedi</strong>
+        <strong>Login</strong>
         <button class="close" data-close="sheetLogin">×</button>
       </div>
       <div class="sheet-body">
@@ -131,7 +255,6 @@
     </div>
   </div>
 
-  <!-- CHAT -->
   <div id="chat" class="sheet">
     <div class="sheet-box">
       <div class="sheet-head">
@@ -151,6 +274,32 @@
     </div>
   </div>
 
-  <script src="./app.js"></script>
+  <!-- MODAL INTERSTITIAL (placeholder dopo 10 like) -->
+  <dialog id="interstitial" class="modal inter">
+    <div class="inter-body">
+      <h3>Annuncio video (placeholder)</h3>
+      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
+      <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
+    </div>
+  </dialog>
+
+  <!-- MODALI PRIVACY/TERMINI (contenuto base) -->
+  <dialog id="privacyDlg" class="modal legal">
+    <div class="pad">
+      <h3>Privacy</h3>
+      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
+      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
+      <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
+    </div>
+  </dialog>
+  <dialog id="termsDlg" class="modal legal">
+    <div class="pad">
+      <h3>Termini</h3>
+      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
+      <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
 </body>
 </html>
