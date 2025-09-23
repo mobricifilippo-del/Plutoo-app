@@ -1,136 +1,60 @@
 /* =========================================================
-   Plutoo – app.js (completo)
-   - Mobile-first, no framework
+   Plutoo – app.js (allineato a index.html)
+   - Home: logo centrale, CTA "Entra"
    - Tabs: Vicino / Scorri / Match
-   - Filtri a tendina + chips
-   - Scheda profilo (modal) con badge verifica + upload finto
+   - Filtri a tendina con chips + toggle
+   - Modal profilo stile “pagina”
+   - Swipe con animazione (pulse) e micro-feedback
    - Match + chat (localStorage)
-   - Monetizzazione: banner + interstitial (placeholder web)
-   - Emoji: 🥲 (NO)  ❤️ (SÌ)
-   - AdMob IDs (commento) per porting Android (Capacitor/Cordova)
+   - Monetizzazione: banner + interstitial (placeholder)
+   - AdMob IDs (commento per porting Android)
      App ID:         ca-app-pub-5458345293928736~5749790476
      Banner Unit ID: ca-app-pub-5458345293928736/8955087050
      Interstitial:   INSERISCI_INTERSTITIAL_UNIT_ID
    ========================================================= */
 
-/* ===================== DATI DEMO ===================== */
+/* -------------------- Dati demo -------------------- */
 const dogs = [
-  {
-    id:1, name:'Luna', age:1, breed:'Jack Russell', sex:'F', size:'Piccola', coat:'Corto',
-    energy:'Alta', pedigree:'No', area:'Roma – Monteverde',
-    desc:'Curiosa, vivace, ama correre al parco.',
-    image:'dog1.jpg', online:true, verified:true,
-    coords:{lat:41.898, lon:12.498},
-  },
-  {
-    id:2, name:'Rocky', age:3, breed:'Labrador', sex:'M', size:'Media', coat:'Corto',
-    energy:'Media', pedigree:'No', area:'Roma – Eur',
-    desc:'Affettuoso e fedele, ottimo con i bambini.',
-    image:'dog2.jpg', online:true, verified:false,
-    coords:{lat:41.901, lon:12.476},
-  },
-  {
-    id:3, name:'Bella', age:2, breed:'Shiba Inu', sex:'F', size:'Piccola', coat:'Medio',
-    energy:'Media', pedigree:'Sì', area:'Roma – Prati',
-    desc:'Elegante, intelligente, molto curiosa.',
-    image:'dog3.jpg', online:true, verified:true,
-    coords:{lat:41.914, lon:12.495},
-  },
-  {
-    id:4, name:'Max', age:4, breed:'Golden Retriever', sex:'M', size:'Grande', coat:'Lungo',
-    energy:'Alta', pedigree:'No', area:'Roma – Tuscolana',
-    desc:'Socievole con tutti, ama l’acqua.',
-    image:'dog4.jpg', online:true, verified:false,
-    coords:{lat:41.887, lon:12.512},
-  },
-  {
-    id:5, name:'Daisy', age:2, breed:'Beagle', sex:'F', size:'Piccola', coat:'Corto',
-    energy:'Alta', pedigree:'No', area:'Roma – Garbatella',
-    desc:'Instancabile esploratrice dal naso finissimo.',
-    image:'dog1.jpg', online:true, verified:false,
-    coords:{lat:41.905, lon:12.450},
-  },
-  {
-    id:6, name:'Nero', age:5, breed:'Meticcio', sex:'M', size:'Media', coat:'Medio',
-    energy:'Media', pedigree:'No', area:'Roma – Nomentana',
-    desc:'Tranquillo, dolcissimo con tutti.',
-    image:'dog2.jpg', online:true, verified:false,
-    coords:{lat:41.930, lon:12.500},
-  },
+  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      sex:'F', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'No', area:'Roma – Monteverde', desc:'Curiosa e molto giocherellona.', image:'dog1.jpg', online:true,  verified:true,  coords:{lat:41.898, lon:12.498} },
+  { id:2, name:'Rocky', age:3, breed:'Labrador',          sex:'M', size:'Media',   coat:'Corto', energy:'Media', pedigree:'No', area:'Roma – Eur',        desc:'Affettuoso e fedele.',            image:'dog2.jpg', online:true,  verified:false, coords:{lat:41.901, lon:12.476} },
+  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         sex:'F', size:'Piccola', coat:'Medio', energy:'Media', pedigree:'Sì', area:'Roma – Prati',      desc:'Elegante, intelligente e curiosa.', image:'dog3.jpg', online:true,  verified:true,  coords:{lat:41.914, lon:12.495} },
+  { id:4, name:'Max',   age:4, breed:'Golden Retriever',  sex:'M', size:'Grande',  coat:'Lungo', energy:'Alta',  pedigree:'No', area:'Roma – Tuscolana',  desc:'Socievole, ama l’acqua.',         image:'dog4.jpg', online:true,  verified:false, coords:{lat:41.887, lon:12.512} },
+  { id:5, name:'Daisy', age:2, breed:'Beagle',           sex:'F', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'No', area:'Roma – Garbatella', desc:'Instancabile esploratrice.',      image:'dog1.jpg', online:true,  verified:false, coords:{lat:41.905, lon:12.450} },
+  { id:6, name:'Nero',  age:5, breed:'Meticcio',          sex:'M', size:'Media',   coat:'Medio', energy:'Media', pedigree:'No', area:'Roma – Nomentana',  desc:'Tranquillo e dolcissimo.',        image:'dog2.jpg', online:true,  verified:false, coords:{lat:41.930, lon:12.500} },
 ];
 
-/* ===================== STATO ===================== */
-let currentView = 'near'; // near | swipe | matches
+/* -------------------- Stato -------------------- */
+let currentView = 'near';
 let userPos = null;
-let likeCount = +(localStorage.getItem('pl_like_count')||'0');
-
-let filters = {
-  breed:'', age:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:''
-};
-
+let likeCount = +(localStorage.getItem('pl_like_count') || '0');
 let matches = JSON.parse(localStorage.getItem('pl_matches') || '[]');
 let swipeIndex = 0;
 
-/* ===================== UTILS ===================== */
-const $  = (s)=>document.querySelector(s);
-const $$ = (s)=>document.querySelectorAll(s);
+let filters = { breed:'', ageBand:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:'' };
+
+/* -------------------- Utils -------------------- */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
 
 function km(a,b){
-  if(!a || !b) return null;
-  const R=6371;
-  const dLat=(b.lat-a.lat)*Math.PI/180;
-  const dLon=(b.lon-a.lon)*Math.PI/180;
+  if(!a||!b) return null;
+  const R=6371, dLat=(b.lat-a.lat)*Math.PI/180, dLon=(b.lon-a.lon)*Math.PI/180;
   const la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180;
   const x=Math.sin(dLat/2)**2 + Math.sin(dLon/2)**2*Math.cos(la1)*Math.cos(la2);
   return +(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))).toFixed(1);
 }
 const randKm = ()=> +(Math.random()*7+0.5).toFixed(1);
+const band = age => age<=1?'0–1':age<=4?'2–4':age<=7?'5–7':'8+';
+function el(tag, attrs={}, html=''){ const n=document.createElement(tag); Object.entries(attrs).forEach(([k,v])=>{ if(k in n) n[k]=v; else n.setAttribute(k,v);}); if(html) n.innerHTML=html; return n; }
+function verifiedName(d){ return `${d.name}, ${d.age} • ${d.breed}${d.verified ? ' <span class="paw">🐾</span>':''}`; }
 
-function textAgeBand(a){
-  if(a<=1) return '0–1';
-  if(a<=4) return '2–4';
-  if(a<=7) return '5–7';
-  return '8+';
-}
-
-function el(tag, attrs={}, html=''){
-  const n = document.createElement(tag);
-  Object.entries(attrs).forEach(([k,v])=>{
-    if(k in n) n[k]=v; else n.setAttribute(k,v);
-  });
-  if(html) n.innerHTML = html;
-  return n;
-}
-
-/* ===================== NAV/APP ===================== */
-function goHome(){
-  // Top mini-logo (safe)
-  const slot = $('#topBrandSlot');
-  if(slot && !slot.querySelector('.brand-small')){
-    const img = el('img',{src:'plutoo-icon-512.png', alt:'Plutoo', className:'brand-small'});
-    img.style.width='44px'; img.style.height='44px'; img.style.borderRadius='12px';
-    img.style.boxShadow='0 12px 28px rgba(122,79,247,.18)';
-    slot.prepend(img);
-  }
-  // Mostra app
-  show('#home');
-  askGeo();
-  renderNear();
-  renderSwipe();
-  renderMatches();
-  ensureSponsorFooter();
-  ensureAdBanner();
-}
-window.goHome = goHome;
-
-function show(sel){
+/* -------------------- Navigazione -------------------- */
+function show(viewSel){
   $$('.screen').forEach(s=>s.classList.remove('active'));
-  const node = (typeof sel==='string') ? $(sel) : sel;
-  node && node.classList.add('active');
+  (typeof viewSel==='string'?$(viewSel):viewSel)?.classList.add('active');
 }
-
 function switchTab(tab){
-  currentView = tab;
+  currentView=tab;
   $$('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
   $$('.tabpane').forEach(p=>p.classList.remove('active'));
   $('#'+tab)?.classList.add('active');
@@ -138,45 +62,28 @@ function switchTab(tab){
   if(tab==='swipe') renderSwipe();
   if(tab==='matches') renderMatches();
 }
+function goHome(){ show('#app'); $('#geoBar')?.classList.remove('hidden'); renderNear(); renderSwipe(); renderMatches(); }
+window.goHome = goHome;
 
-/* ===================== GEO ===================== */
-function askGeo(){
-  $('#geoBar')?.classList.remove('hidden');
-}
+/* -------------------- Geolocalizzazione (finta/opzionale) -------------------- */
 $('#enableGeo')?.addEventListener('click', ()=>{
   navigator.geolocation.getCurrentPosition(
     pos => { userPos={lat:pos.coords.latitude, lon:pos.coords.longitude}; $('#geoBar')?.classList.add('hidden'); renderNear(); renderSwipe(); },
-    _   => { $('#geoBar')?.classList.add('hidden'); renderNear(); renderSwipe(); },
+    _   => { $('#geoBar')?.classList.add('hidden'); },
     { enableHighAccuracy:true, timeout:8000 }
   );
 });
 $('#dismissGeo')?.addEventListener('click', ()=> $('#geoBar')?.classList.add('hidden'));
 
-/* ===================== FILTRI ===================== */
-function toggleSearch(){
-  const p = $('#filterPanel');
-  if(!p) return;
-  p.hidden = !p.hidden;
-}
-window.toggleSearch = toggleSearch;
-
-function clearFilters(){
-  filters = { breed:'', age:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:'' };
-  const f = $('#filterForm');
-  if(f) f.reset();
-  renderActiveChips();
-  if(currentView==='near') renderNear();
-  if(currentView==='swipe') renderSwipe();
-  if(currentView==='matches') renderMatches();
-}
-window.clearFilters = clearFilters;
-
-function apply(e){
-  if(e) e.preventDefault?.();
-  const f = $('#filterForm');
-  if(!f) return;
+/* -------------------- Filtri -------------------- */
+$('#filterToggle')?.addEventListener('click', ()=>{
+  const p = $('#filterPanel'); if(!p) return; p.hidden = !p.hidden;
+});
+$('#filterForm')?.addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = e.currentTarget;
   filters.breed    = f.breed?.value || '';
-  filters.age      = f.age?.value || '';
+  filters.ageBand  = f.ageBand?.value || '';
   filters.sex      = f.sex?.value || '';
   filters.size     = f.size?.value || '';
   filters.coat     = f.coat?.value || '';
@@ -185,231 +92,150 @@ function apply(e){
   filters.distance = f.distance?.value || '';
   $('#filterPanel').hidden = true;
   renderActiveChips();
-  if(currentView==='near') renderNear(); else if(currentView==='swipe') renderSwipe(); else renderMatches();
-}
-window.apply = apply;
+  if(currentView==='near') renderNear(); else renderSwipe();
+});
+$('#filtersReset')?.addEventListener('click', ()=>{
+  const f = $('#filterForm'); f?.reset();
+  filters = { breed:'', ageBand:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:'' };
+  renderActiveChips(); if(currentView==='near') renderNear(); else renderSwipe();
+});
 
 function renderActiveChips(){
-  const c = $('#activeChips');
-  if(!c) return;
-  c.innerHTML = '';
-  const map = {
-    breed:'Razza', age:'Età', sex:'Sesso', size:'Taglia', coat:'Pelo', energy:'Energia', pedigree:'Pedigree', distance:'Distanza'
-  };
+  const c = $('#activeChips'); if(!c) return; c.innerHTML='';
+  const map={breed:'Razza', ageBand:'Età', sex:'Sesso', size:'Taglia', coat:'Pelo', energy:'Energia', pedigree:'Pedigree', distance:'Distanza'};
   Object.entries(filters).forEach(([k,v])=>{
-    if(v){
-      const chip = el('span',{className:'chip'}, `${map[k]}: ${v}`);
-      const x = el('button',{className:'chip-x', title:'Rimuovi', onclick:()=>{
-        filters[k]=''; renderActiveChips();
-        if(currentView==='near') renderNear();
-        else if(currentView==='swipe') renderSwipe();
-        else renderMatches();
-      }}, '×');
-      const wrap = el('span',{className:'chip-wrap'});
-      wrap.append(chip,x);
-      c.appendChild(wrap);
-    }
+    if(!v) return;
+    const wrap=el('span',{className:'chip-wrap'});
+    wrap.append(el('span',{className:'chip'}, `${map[k]}: ${v}`));
+    wrap.append(el('button',{className:'chip-x',onclick:()=>{filters[k]=''; renderActiveChips(); (currentView==='near'?renderNear:renderSwipe)();}}, '×'));
+    c.append(wrap);
   });
 }
 
-/* ===================== LISTE & RENDER ===================== */
 function passesFilters(d, distanceKm){
   if(filters.breed && !d.breed.toLowerCase().includes(filters.breed.toLowerCase())) return false;
-  if(filters.age){
-    if(textAgeBand(d.age)!==filters.age) return false;
-  }
+  if(filters.ageBand && band(d.age)!==filters.ageBand) return false;
   if(filters.sex && d.sex!==filters.sex) return false;
   if(filters.size && d.size!==filters.size) return false;
   if(filters.coat && d.coat!==filters.coat) return false;
   if(filters.energy && d.energy!==filters.energy) return false;
   if(filters.pedigree && d.pedigree!==filters.pedigree) return false;
   if(filters.distance){
-    const maxd = parseFloat(filters.distance);
+    const maxd=parseFloat(filters.distance);
     if(!isNaN(maxd) && distanceKm!=null && distanceKm>maxd) return false;
   }
   return true;
 }
 
+/* -------------------- Render Vicino -------------------- */
 function renderNear(){
-  const wrap = $('#grid'); if(!wrap) return;
-  wrap.innerHTML = '';
-
-  const list = dogs.slice().sort((a,b)=>{
-    const da = userPos ? km(userPos,a.coords) : randKm();
-    const db = userPos ? km(userPos,b.coords) : randKm();
-    return (da??9) - (db??9);
+  const wrap = $('#grid'); if(!wrap) return; wrap.innerHTML='';
+  const ordered = dogs.slice().sort((a,b)=>{
+    const da = userPos?km(userPos,a.coords):randKm();
+    const db = userPos?km(userPos,b.coords):randKm();
+    return (da??99)-(db??99);
+  });
+  const rows=[];
+  ordered.forEach(d=>{
+    const dist = userPos?km(userPos,d.coords):randKm();
+    if(!passesFilters(d, dist)) return;
+    rows.push({d,dist});
   });
 
-  const filtered = [];
-  list.forEach(d=>{
-    const distance = userPos ? km(userPos,d.coords) : randKm();
-    if(!passesFilters(d, distance)) return;
-    filtered.push({d, distance});
-  });
-
-  filtered.forEach(({d, distance})=>{
+  rows.forEach(({d,dist})=>{
     const card = el('article',{className:'card'});
-    card.innerHTML = `
-      ${d.online ? '<span class="online"></span>' : ''}
+    card.innerHTML=`
+      ${d.online?'<span class="online"></span>':''}
       <img src="${d.image}" alt="${d.name}" onerror="this.style.display='none'">
       <div class="card-info">
         <div class="title">
           <div class="name">${verifiedName(d)}</div>
-          <div class="dist">${(distance??'-')} km</div>
+          <div class="dist">${dist??'-'} km</div>
         </div>
         <div class="actions">
           <button class="circle no">🥲</button>
           <button class="circle like">❤️</button>
         </div>
-      </div>
-    `;
-    // bottoni
-    card.querySelector('.no').onclick   = ()=> card.remove();
-    card.querySelector('.like').onclick = ()=> { addMatch(d); incLikesMaybeAd(); };
-
-    // click su card -> profilo
-    card.addEventListener('click', (ev)=>{
-      if(ev.target.closest('.circle')) return; // non aprire se ho cliccato i bottoni
-      openProfileModal(d, distance);
-    });
-
-    wrap.appendChild(card);
+      </div>`;
+    // like/dislike
+    card.querySelector('.no').onclick  = e=>{ e.stopPropagation(); card.remove(); };
+    card.querySelector('.like').onclick= e=>{ e.stopPropagation(); addMatch(d); bump(e.currentTarget); incLikesMaybeAd(); };
+    // open modal profilo
+    card.addEventListener('click', (ev)=>{ if(ev.target.closest('.circle')) return; openProfileModal(d, dist); });
+    wrap.append(card);
   });
-
-  $('#countLabel')?.textContent = `Mostro ${filtered.length} profili`;
-  $('#emptyNear')?.classList.toggle('hidden', filtered.length>0);
+  $('#counter')?.textContent = `Mostro ${rows.length} profili`;
+  $('#emptyNear')?.classList.toggle('hidden', rows.length>0);
 }
 
-function renderSwipe(){
-  const root = $('#deckCard') || $('#swipe'); // compatibilità
-  if(!root) return;
-  // scegli la lista filtrata per coerenza con near
-  const list = dogs.filter(d=>{
-    const dist = userPos ? km(userPos,d.coords) : randKm();
-    return passesFilters(d, dist);
+/* -------------------- Render Scorri -------------------- */
+function currentSwipeList(){
+  return dogs.filter(d=>{
+    const dist = userPos?km(userPos,d.coords):randKm();
+    return passesFilters(d,dist);
   });
-  if(!list.length){
-    const target = root.querySelector('.card-big') || root;
-    target.innerHTML = `<div class="empty">Nessun profilo per questi filtri.</div>`;
-    return;
-  }
-  const d = list[swipeIndex % list.length];
-  const distance = userPos ? km(userPos,d.coords) : randKm();
+}
+function renderSwipe(){
+  const list = currentSwipeList();
+  const img = $('#swipeImg'), title = $('#swipeTitle'), meta = $('#swipeMeta'), bio = $('#swipeBio');
+  if(!img||!title||!meta||!bio) return;
 
-  const container = root.querySelector('.card-big') || root;
-  container.innerHTML = `
-    <article class="card big">
-      <img class="card-img" src="${d.image}" alt="${d.name}" onerror="this.style.display='none'">
-      <div class="card-info">
-        <div class="title">
-          <div class="name">${verifiedName(d)}</div>
-          <div class="dist">${distance} km</div>
-        </div>
-        <p class="bio">${d.desc}</p>
-        <div class="actions">
-          <button id="swNo" class="circle no">🥲</button>
-          <button id="swYes" class="circle like">❤️</button>
-        </div>
-      </div>
-    </article>
-  `;
-  const card = container.querySelector('.card');
+  if(!list.length){ img.src=''; title.textContent=''; meta.textContent=''; bio.textContent=''; $('#swipe .deck').innerHTML='<div class="empty">Nessun profilo per questi filtri.</div>'; return; }
+
+  const d = list[swipeIndex % list.length];
+  const dist = userPos?km(userPos,d.coords):randKm();
+
+  img.src = d.image; img.alt=d.name; img.onerror = function(){ this.style.display='none'; };
+  title.innerHTML = verifiedName(d);
+  meta.textContent = `${dist} km da te`;
+  bio.textContent = d.desc;
+
   // animazione ingresso
-  card.classList.remove('pulse'); void card.offsetWidth; card.classList.add('pulse');
+  const card = $('#swipe .card'); card?.classList.remove('pulse'); void card?.offsetWidth; card?.classList.add('pulse');
 
   // azioni
-  container.querySelector('#swNo').onclick  = ()=>{ swipe('no'); };
-  container.querySelector('#swYes').onclick = ()=>{ swipe('yes'); };
+  $('#noBtn').onclick  = ()=>{ bump('#noBtn'); swipe('no', d); };
+  $('#yesBtn').onclick = ()=>{ bump('#yesBtn'); swipe('yes', d); };
+
   // click su card -> profilo
-  card.addEventListener('click',(ev)=>{
-    if(ev.target.closest('.circle')) return;
-    openProfileModal(d, distance);
-  });
+  card?.addEventListener('click', (ev)=>{ if(ev.target.closest('.circle')) return; openProfileModal(d, dist); }, {once:true});
+}
+function bump(btn){
+  const el = typeof btn==='string'?$(btn):btn; if(!el) return;
+  el.style.transform='scale(.93)'; setTimeout(()=> el.style.transform='', 110);
+}
+function swipe(type, d){
+  if(type==='yes'){ addMatch(d); incLikesMaybeAd(); }
+  swipeIndex++; renderSwipe();
 }
 
-function swipe(type){
-  if(type==='yes'){
-    const d = dogs[swipeIndex % dogs.length];
-    addMatch(d);
-    incLikesMaybeAd();
-  }
-  swipeIndex++;
-  renderSwipe();
-}
-
-/* ===================== PROFILO / MODAL ===================== */
-function verifiedName(d){
-  const paw = d.verified ? ' <span class="paw" title="Profilo verificato">🐾</span>' : '';
-  return `${d.name}, ${d.age} • ${d.breed}${paw}`;
-}
-
+/* -------------------- Modal profilo -------------------- */
 function openProfileModal(d, distance){
-  ensureProfileModal();
-  const dlg = $('#dogModal');
-  const body = $('#modalBody');
-  if(!dlg || !body) return;
-
+  const body = $('#modalBody'), dlg = $('#dogModal'); if(!body||!dlg) return;
   body.innerHTML = `
     <img class="cover" src="${d.image}" alt="${d.name}" onerror="this.style.display='none'">
     <div class="pad">
-      <h2 class="modal-name">${d.name}, ${d.age} ${d.verified ? '<span class="paw">🐾</span>' : ''}</h2>
+      <h2 class="modal-name">${d.name}, ${d.age} ${d.verified?'<span class="paw">🐾</span>':''}</h2>
       <div class="meta">${d.breed} · ${d.sex==='F'?'Femmina':'Maschio'} · ${d.size} · ${d.coat}</div>
       <div class="meta"><b>Energia:</b> ${d.energy} · <b>Pedigree:</b> ${d.pedigree} · <b>Zona:</b> ${d.area}</div>
-      <div class="meta"><b>Distanza:</b> ${(distance??'-')} km</div>
+      <div class="meta"><b>Distanza:</b> ${distance??'-'} km</div>
       <p class="desc">${d.desc}</p>
-      ${!d.verified ? `<div class="verify-wrap">
-          <button id="askVerify" class="btn light">Carica documenti per badge</button>
-        </div>` : ''}
+      ${!d.verified ? `<div class="verify-wrap"><button id="askVerify" class="btn light">Carica documenti per badge</button></div>` : ''}
       <div class="actions">
         <button id="mdNo" class="circle no">🥲</button>
         <button id="mdYes" class="circle like">❤️</button>
       </div>
-    </div>
-  `;
+    </div>`;
   dlg.showModal();
-
   $('#mdNo').onclick = ()=> dlg.close();
-  $('#mdYes').onclick = ()=>{
-    addMatch(d); incLikesMaybeAd(); dlg.close();
-  };
-  if($('#askVerify')){
-    $('#askVerify').onclick = ()=> openVerifyModal(d);
-  }
+  $('#mdYes').onclick = ()=>{ addMatch(d); incLikesMaybeAd(); dlg.close(); };
+  $('#askVerify')?.addEventListener('click', ()=>{
+    const v = $('#verifyModal'); v.showModal();
+    $('#sendVerify').onclick = ()=>{ $('#verifyMsg').hidden=false; setTimeout(()=> v.close(), 1200); };
+  });
 }
 
-function ensureProfileModal(){
-  if($('#dogModal')) return;
-  const dlg = el('dialog',{id:'dogModal', className:'modal'});
-  dlg.innerHTML = `<div id="modalBody"></div><button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button>`;
-  document.body.appendChild(dlg);
-}
-
-function openVerifyModal(d){
-  ensureVerifyModal();
-  const dlg = $('#verifyModal');
-  const body = $('#verifyBody');
-  if(!dlg || !body) return;
-  body.innerHTML = `
-    <h3>Richiesta badge per ${d.name}</h3>
-    <p>Carica i documenti richiesti. La verifica è manuale (demo).</p>
-    <label class="upl">Documento proprietario <input type="file" /></label>
-    <label class="upl">Documento del cane <input type="file" /></label>
-    <button id="sendVerify" class="btn primary full">Invia</button>
-  `;
-  dlg.showModal();
-  $('#sendVerify').onclick = ()=>{
-    body.innerHTML = `<p>✅ Richiesta inviata. Riceverai un aggiornamento dopo la revisione.</p>`;
-    setTimeout(()=> dlg.close(), 1400);
-  };
-}
-function ensureVerifyModal(){
-  if($('#verifyModal')) return;
-  const dlg = el('dialog',{id:'verifyModal', className:'modal'});
-  dlg.innerHTML = `<div id="verifyBody" class="pad"></div><button class="close-modal" onclick="document.getElementById('verifyModal').close()">Chiudi</button>`;
-  document.body.appendChild(dlg);
-}
-
-/* ===================== MATCH & CHAT ===================== */
+/* -------------------- Match & Chat -------------------- */
 function addMatch(d){
   if(!matches.find(m=>m.id===d.id)){
     matches.push({id:d.id, name:d.name, img:d.image});
@@ -417,143 +243,54 @@ function addMatch(d){
   }
   renderMatches();
 }
-
 function renderMatches(){
-  const box = $('#matchList'); if(!box) return;
-  box.innerHTML = '';
+  const box = $('#matchList'); if(!box) return; box.innerHTML='';
   matches.forEach(m=>{
     const row = el('div',{className:'item'});
     row.innerHTML = `
       <img src="${m.img}" alt="${m.name}">
-      <div>
-        <div><strong>${m.name}</strong></div>
-        <div class="muted small">Match</div>
-      </div>
-      <button class="btn primary pill go">Chat</button>
-    `;
+      <div><div><strong>${m.name}</strong></div><div class="muted small">Match</div></div>
+      <button class="btn primary pill go">Chat</button>`;
     row.querySelector('.go').onclick = ()=> openChat(m);
-    box.appendChild(row);
+    box.append(row);
   });
-  const empty = $('#emptyMatch');
-  if(empty) empty.style.display = matches.length ? 'none' : 'block';
+  $('#emptyMatch').style.display = matches.length ? 'none' : 'block';
 }
-
 function openChat(m){
-  ensureChatSheet();
-  $('#chatAvatar').src = m.img;
-  $('#chatName').textContent = m.name;
+  $('#chatAvatar').src = m.img; $('#chatName').textContent = m.name;
   $('#thread').innerHTML = '<div class="bubble">Ciao! 🐾 Siamo un match!</div>';
   $('#chat').classList.add('show');
 }
+$('#sendBtn')?.addEventListener('click', ()=>{
+  const t = ($('#chatInput').value||'').trim(); if(!t) return;
+  const b = el('div',{className:'bubble me'}, t);
+  $('#thread').appendChild(b); $('#chatInput').value=''; $('#thread').scrollTop = $('#thread').scrollHeight;
+});
+$$('.close').forEach(b=> b.addEventListener('click', ()=> $('#'+b.dataset.close)?.classList.remove('show')));
 
-/* crea chat sheet se manca (compatibilità) */
-function ensureChatSheet(){
-  if($('#chat')) return;
-  const sheet = el('div',{id:'chat', className:'sheet show'});
-  sheet.innerHTML = `
-    <div class="sheet-box">
-      <div class="sheet-head">
-        <div class="chat-head">
-          <img id="chatAvatar" class="avatar" src="" alt="">
-          <div id="chatName" class="chat-name">Chat</div>
-        </div>
-        <button class="close" data-close="chat">×</button>
-      </div>
-      <div class="sheet-body chat-body">
-        <div id="thread" class="thread"></div>
-        <div class="chat-send">
-          <input id="chatInput" class="inp" placeholder="Scrivi…">
-          <button id="sendBtn" class="btn primary">Invia</button>
-        </div>
-      </div>
-    </div>`;
-  document.body.appendChild(sheet);
-  sheet.querySelector('.close').onclick = ()=> sheet.classList.remove('show');
-  sheet.querySelector('#sendBtn').onclick = ()=>{
-    const t = (sheet.querySelector('#chatInput').value||'').trim();
-    if(!t) return;
-    const b = el('div',{className:'bubble me'}, t);
-    sheet.querySelector('#thread').appendChild(b);
-    sheet.querySelector('#chatInput').value='';
-    sheet.querySelector('#thread').scrollTop = sheet.querySelector('#thread').scrollHeight;
-  };
-}
+/* -------------------- Monetizzazione (placeholder) -------------------- */
+function showInterstitial(){ $('#interstitial').showModal(); }
+function incLikesMaybeAd(){ likeCount++; localStorage.setItem('pl_like_count', String(likeCount)); if(likeCount % 10 === 0) showInterstitial(); }
 
-/* ===================== MONETIZZAZIONE (PLACEHOLDER WEB) ===================== */
-function ensureAdBanner(){
-  // Inserisci un banner sticky in basso (solo se manca e solo fuori dalla Home)
-  if($('#adBanner')) return;
-  const b = el('div',{id:'adBanner', className:'ad-banner'}, 'Banner pubblicitario (placeholder)');
-  document.body.appendChild(b);
-}
-
-function showInterstitial(){
-  ensureInterstitial();
-  $('#adModal').showModal();
-}
-function ensureInterstitial(){
-  if($('#adModal')) return;
-  const dlg = el('dialog',{id:'adModal', className:'modal'});
-  dlg.innerHTML = `
-    <div class="pad">
-      <h3>Annuncio video (placeholder)</h3>
-      <p>Qui comparirà l’interstitial/video quando integrerai AdMob nell’app Android.</p>
-      <button class="btn primary" onclick="document.getElementById('adModal').close()">Chiudi</button>
-    </div>`;
-  document.body.appendChild(dlg);
-}
-
-function incLikesMaybeAd(){
-  likeCount++;
-  localStorage.setItem('pl_like_count', String(likeCount));
-  if(likeCount % 10 === 0){
-    showInterstitial();
-  }
-}
-
-/* ===================== SPONSOR FOOTER ===================== */
-function ensureSponsorFooter(){
-  // crea sponsor centrato in fondo all’app (se non presente)
-  if($('#sponsorFooter')) return;
-  const foot = el('div',{id:'sponsorFooter', className:'sponsor-foot'});
-  foot.innerHTML = `
-    <div class="sponsor-label">Sponsor ufficiale</div>
-    <a href="https://www.gelatofido.it/" target="_blank" rel="noopener">
-      <img src="sponsor-logo.png" alt="Sponsor Fido" class="sponsor-img" onerror="this.style.display='none'">
-    </a>`;
-  // append in fondo alla sezione app (#home) se esiste, altrimenti in body
-  const host = $('#home') || document.body;
-  host.appendChild(foot);
-}
-
-/* ===================== EVENTI GLOBALI ===================== */
+/* -------------------- Avvio & wiring -------------------- */
 document.addEventListener('DOMContentLoaded', ()=>{
-  // CTA Entra (oltre all’onclick inline, per sicurezza)
-  $('#ctaEnter')?.addEventListener('click', goHome);
+  // CTA della Home
+  $('#ctaEnter')?.addEventListener('click', ()=>{ show('#app'); renderNear(); renderSwipe(); });
+
+  // Login/Register (top + sotto)
+  $('#btnLoginTop')?.addEventListener('click', ()=> $('#sheetLogin').classList.add('show'));
+  $('#btnLoginUnder')?.addEventListener('click', ()=> $('#sheetLogin').classList.add('show'));
+  $('#btnRegisterTop')?.addEventListener('click', ()=> $('#sheetRegister').classList.add('show'));
+  $('#loginSubmit')?.addEventListener('click', ()=> $('#sheetLogin').classList.remove('show'));
+  $('#registerSubmit')?.addEventListener('click', ()=> $('#sheetRegister').classList.remove('show'));
 
   // Tabs
-  $$('.tab').forEach(t=>{
-    t.addEventListener('click', ()=> switchTab(t.dataset.tab));
-  });
+  $$('.tab').forEach(t=> t.addEventListener('click', ()=> switchTab(t.dataset.tab)));
 
-  // Filtri
-  $('#filterForm')?.addEventListener('submit', apply);
-  $('#filtersReset')?.addEventListener('click', clearFilters);
+  // Privacy/Termini (modali)
+  $('#openPrivacy')?.addEventListener('click', ()=> $('#privacyDlg').showModal());
+  $('#openTerms')?.addEventListener('click', ()=> $('#termsDlg').showModal());
 
-  // Sheets login/register (dummy)
-  $('#btnLogin')?.addEventListener('click',()=> $('#sheetLogin')?.classList.add('show'));
-  $('#btnRegister')?.addEventListener('click',()=> $('#sheetRegister')?.classList.add('show'));
-  $('#loginSubmit')?.addEventListener('click',()=> $('#sheetLogin')?.classList.remove('show'));
-  $('#registerSubmit')?.addEventListener('click',()=> $('#sheetRegister')?.classList.remove('show'));
-  $$('.close').forEach(b=> b.addEventListener('click', ()=> $('#'+b.dataset.close)?.classList.remove('show')));
-
-  // Sponsor link home (se presente)
-  const sponsorHome = $('#sponsorLinkHome');
-  if(sponsorHome) sponsorHome.href = 'https://www.gelatofido.it/';
-
-  // Avvio: resta in Home finché non si preme Entra
-  // (Se vuoi avviare direttamente l’app, chiama goHome() qui)
+  // Sponsor link (già in HTML)
+  renderActiveChips();
 });
-
-/* ===================== FINE app.js ===================== */
-```0
