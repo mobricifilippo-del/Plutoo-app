@@ -1,131 +1,82 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="style.css?v=71" />
+  <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
+  <!-- HOME -->
+  <section id="landing" class="screen active">
+    <div class="center">
+      <img src="plutoo-icon-512.png" alt="Plutoo" class="logo-big">
+      <h1>Benvenuto su Plutoo</h1>
+      <button id="ctaEnter" class="btn primary">Entra</button>
+    </div>
+  </section>
 
-  <!-- ===== HOME ===== -->
-  <section id="home">
+  <!-- APP -->
+  <main id="home" class="screen">
     <header class="topbar">
-      <div></div>
-      <nav class="auth">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+      <div id="topBrandSlot"></div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="near">Vicino</button>
+        <button class="tab" data-tab="swipe">Scorri</button>
+        <button class="tab" data-tab="matches">Match</button>
       </nav>
     </header>
 
-    <div class="hero">
-      <div class="heart">
-        <img src="dog1.jpg" alt="" class="hero-dogs" />
-        <h1 class="logo">Plutoo</h1>
-      </div>
-
-      <button class="btn gradient" onclick="App.enter()">Entra</button>
-      <p class="sub">Cerca amici intorno a te.</p>
-
-      <div class="policy">
-        <a href="privacy.html" target="_blank">Privacy</a>
-        <span>·</span>
-        <a href="termini.html" target="_blank">Termini</a>
-      </div>
+    <!-- GEO -->
+    <div id="geoBar" class="bar hidden">
+      <span>Attiva posizione</span>
+      <button id="enableGeo" class="btn small">Ok</button>
+      <button id="dismissGeo" class="btn small">Dopo</button>
     </div>
 
-    <footer class="sponsor">
-      <div class="sponsor-title">Sponsor ufficiale</div>
-      <a href="http://www.gelatofido.it/" target="_blank" rel="noopener">
-        <img src="sponsor-logo.png" class="sponsor-logo" alt="Sponsor Fido" />
-      </a>
+    <!-- VICINO -->
+    <section id="near" class="tabpane active">
+      <div id="grid" class="grid"></div>
+      <p id="emptyNear" class="muted hidden">Nessun cane vicino</p>
+    </section>
+
+    <!-- SCORRI -->
+    <section id="swipe" class="tabpane">
+      <div class="swipe-card">
+        <img id="swipeImg" src="" alt="">
+        <div class="info">
+          <h2 id="swipeTitle"></h2>
+          <div id="swipeMeta" class="muted"></div>
+          <p id="swipeBio"></p>
+        </div>
+        <div class="actions">
+          <button id="noBtn" class="circle">🥲</button>
+          <button id="yesBtn" class="circle">❤</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MATCH -->
+    <section id="matches" class="tabpane">
+      <div id="matchList"></div>
+      <p id="emptyMatch">Nessun match ancora.</p>
+    </section>
+  </main>
+
+  <!-- CHAT -->
+  <section id="chat" class="sheet">
+    <header>
+      <img id="chatAvatar" src="" alt="">
+      <strong id="chatName"></strong>
+      <button class="close" data-close="chat">×</button>
+    </header>
+    <div id="thread" class="thread"></div>
+    <footer>
+      <input id="chatInput" placeholder="Scrivi...">
+      <button id="sendBtn">Invia</button>
     </footer>
   </section>
 
-  <!-- ===== APP ===== -->
-  <main id="app" hidden>
-    <!-- topbar interna -->
-    <header class="topbar">
-      <button class="back" onclick="history.back()">← Indietro</button>
-      <div class="brand">Plutoo</div>
-      <nav class="auth">
-        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
-      </nav>
-    </header>
-
-    <!-- geoloc (demo) -->
-    <div class="cta">
-      <div class="cta-icon">🎯</div>
-      <div class="cta-text">Attiva la posizione per vedere gli amici vicino a te</div>
-      <div class="cta-actions">
-        <button class="chip gradient-sm">Attiva</button>
-        <button class="chip">Più tardi</button>
-      </div>
-    </div>
-
-    <!-- tabs + ricerca personalizzata -->
-    <div class="tabs">
-      <button class="tab active" data-tab="near" onclick="App.show('near')">Vicino a te</button>
-      <button class="tab" data-tab="browse" onclick="App.show('browse')">Scorri</button>
-      <button class="tab" data-tab="match" onclick="App.show('match')">Match</button>
-
-      <div class="search-dd">
-        <button class="dd-btn" onclick="App.toggleSearch()">Ricerca personalizzata ▾</button>
-        <div id="searchPanel" class="dd-panel" hidden>
-          <label><span>Razza</span><input id="fBreed" placeholder="es. Labrador" /></label>
-          <label><span>Zona</span><input id="fArea" placeholder="es. Roma" /></label>
-          <label><span>Pedigree</span>
-            <select id="fPed"><option value="">Qualsiasi</option><option>Sì</option><option>No</option></select>
-          </label>
-          <div class="dd-actions">
-            <button class="btn" onclick="App.clearFilters()">Pulisci</button>
-            <button class="btn gradient" onclick="App.apply()">Applica</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- counter -->
-    <p class="count"><span id="counter">Mostro 0 profili</span></p>
-
-    <!-- VISTA: Vicino a te (griglia) -->
-    <section id="near" class="grid" aria-live="polite"></section>
-
-    <!-- VISTA: Scorri (card singola) -->
-    <section id="browse" class="deck" hidden>
-      <div id="deckCard" class="card-big card-enter"></div>
-    </section>
-
-    <!-- VISTA: Match -->
-    <section id="match" class="empty" hidden>
-      <p>Nessun match… ancora 🐾</p>
-    </section>
-
-    <!-- sponsor in fondo app -->
-    <footer class="sponsor">
-      <div class="sponsor-title">Sponsor ufficiale</div>
-      <a href="http://www.gelatofido.it/" target="_blank" rel="noopener">
-        <img src="sponsor-logo.png" class="sponsor-logo" alt="Sponsor Fido" />
-      </a>
-    </footer>
-
-    <!-- spazio banner sticky (placeholder visuale) -->
-    <div class="ad-sticky" role="complementary" aria-label="annuncio">
-      <div class="ad-sticky-inner">Spazio banner</div>
-    </div>
-  </main>
-
-  <!-- ===== MODAL DETTAGLIO CANE ===== -->
-  <dialog id="dogModal" class="modal">
-    <button class="modal-x" onclick="App.closeModal()">✕</button>
-    <div id="modalBody"></div>
-  </dialog>
-
-  <script src="app.js?v=71"></script>
-
-  <script>
-    // Forza HOME visibile all’avvio, APP nascosta (evita doppia schermata per cache)
-    document.getElementById('home').hidden = false;
-    document.getElementById('app').hidden  = true;
-  </script>
+  <script src="app.js?v=21"></script>
 </body>
 </html>
