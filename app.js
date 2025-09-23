@@ -52,7 +52,6 @@ const App = (() => {
           </div>
         </div>`;
       el.addEventListener('click', (e)=>{
-        // evita che i bottoni like/nochiudano la card
         if (e.target.closest('.btn-round')) return;
         openModal(d);
       });
@@ -108,7 +107,6 @@ const App = (() => {
   // ------- FILTRI -------
   function filtered(){
     let out = dogs.slice();
-    // per “Vicino a te” NON filtriamo online: li ordiniamo solo per distanza
     if (currentView==='near') out = out.sort((a,b)=>a.distance-b.distance);
     if (filters.breed) out = out.filter(d=> d.breed.toLowerCase().includes(filters.breed.toLowerCase()));
     if (filters.area) out = out.filter(d=> d.area.toLowerCase().includes(filters.area.toLowerCase()));
@@ -160,8 +158,7 @@ const App = (() => {
     show('near');
   }
 
-  // ------- EXPOSE -------
   return { enter, show, swipe, yes, no, toggleSearch, clearFilters, apply, closeModal };
 })();
 
-// avvio: se apri direttamente /index.html mostra home, poi Entra → app
+// avvio iniziale (gestito da index con hidden true/false)
