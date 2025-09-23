@@ -3,30 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plutoo</title>
-  <link rel="stylesheet" href="style.css?v=70" />
+  <title>Plutoo 🐾</title>
+  <link rel="stylesheet" href="style.css?v=71" />
 </head>
 <body>
-  <!-- NAV SEMPLICE -->
-  <header class="topbar">
-    <button class="back" onclick="history.back()">← Indietro</button>
-    <div class="brand">Plutoo</div>
-    <nav class="auth">
-      <a href="#" class="link">Accedi</a>
-      <a href="#" class="link">Registrati</a>
-    </nav>
-  </header>
 
-  <!-- LANDING (visibile solo se data-view='home') -->
-  <section id="home" data-view="home">
+  <!-- ===== HOME ===== -->
+  <section id="home">
+    <header class="topbar">
+      <div></div>
+      <nav class="auth">
+        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+      </nav>
+    </header>
+
     <div class="hero">
-      <img src="logo-32.jpg" alt="" class="ghost" />
       <div class="heart">
         <img src="dog1.jpg" alt="" class="hero-dogs" />
         <h1 class="logo">Plutoo</h1>
       </div>
+
       <button class="btn gradient" onclick="App.enter()">Entra</button>
       <p class="sub">Cerca amici intorno a te.</p>
+
       <div class="policy">
         <a href="privacy.html" target="_blank">Privacy</a>
         <span>·</span>
@@ -42,8 +41,18 @@
     </footer>
   </section>
 
-  <!-- APP -->
-  <main id="app" data-view="app" hidden>
+  <!-- ===== APP ===== -->
+  <main id="app" hidden>
+    <!-- topbar interna -->
+    <header class="topbar">
+      <button class="back" onclick="history.back()">← Indietro</button>
+      <div class="brand">Plutoo</div>
+      <nav class="auth">
+        <a href="#" class="link">Accedi</a><span class="dot">·</span><a href="#" class="link">Registrati</a>
+      </nav>
+    </header>
+
+    <!-- geoloc (demo) -->
     <div class="cta">
       <div class="cta-icon">🎯</div>
       <div class="cta-text">Attiva la posizione per vedere gli amici vicino a te</div>
@@ -53,8 +62,9 @@
       </div>
     </div>
 
+    <!-- tabs + ricerca personalizzata -->
     <div class="tabs">
-      <button class="tab" data-tab="near" onclick="App.show('near')">Vicino a te</button>
+      <button class="tab active" data-tab="near" onclick="App.show('near')">Vicino a te</button>
       <button class="tab" data-tab="browse" onclick="App.show('browse')">Scorri</button>
       <button class="tab" data-tab="match" onclick="App.show('match')">Match</button>
 
@@ -74,23 +84,23 @@
       </div>
     </div>
 
-    <!-- COUNTER -->
+    <!-- counter -->
     <p class="count"><span id="counter">Mostro 0 profili</span></p>
 
-    <!-- VISTA: VICINO A TE (griglia) -->
+    <!-- VISTA: Vicino a te (griglia) -->
     <section id="near" class="grid" aria-live="polite"></section>
 
-    <!-- VISTA: SCORRI (card singola centrata) -->
+    <!-- VISTA: Scorri (card singola) -->
     <section id="browse" class="deck" hidden>
       <div id="deckCard" class="card-big card-enter"></div>
     </section>
 
-    <!-- VISTA: MATCH (placeholder) -->
+    <!-- VISTA: Match -->
     <section id="match" class="empty" hidden>
       <p>Nessun match… ancora 🐾</p>
     </section>
 
-    <!-- SPONSOR FOOTER -->
+    <!-- sponsor in fondo app -->
     <footer class="sponsor">
       <div class="sponsor-title">Sponsor ufficiale</div>
       <a href="http://www.gelatofido.it/" target="_blank" rel="noopener">
@@ -98,18 +108,24 @@
       </a>
     </footer>
 
-    <!-- BANNER STICKY (slot visivo; puoi integrare AdMob webView o AdSense in futuro) -->
+    <!-- spazio banner sticky (placeholder visuale) -->
     <div class="ad-sticky" role="complementary" aria-label="annuncio">
       <div class="ad-sticky-inner">Spazio banner</div>
     </div>
   </main>
 
-  <!-- MODAL DETTAGLIO CANE -->
+  <!-- ===== MODAL DETTAGLIO CANE ===== -->
   <dialog id="dogModal" class="modal">
     <button class="modal-x" onclick="App.closeModal()">✕</button>
     <div id="modalBody"></div>
   </dialog>
 
-  <script src="app.js?v=70"></script>
+  <script src="app.js?v=71"></script>
+
+  <script>
+    // Forza HOME visibile all’avvio, APP nascosta (evita doppia schermata per cache)
+    document.getElementById('home').hidden = false;
+    document.getElementById('app').hidden  = true;
+  </script>
 </body>
 </html>
