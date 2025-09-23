@@ -3,32 +3,29 @@
   --card:#ffffff;
   --text:#1f2937;
   --muted:#6b7280;
-  --pill:#111827;
   --accent:#7c3aed;
   --accent2:#fb37b5;
-  --ring:#e5e7eb;
-  --ok:#10b981;
   --no:#ef4444;
 }
 
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--text); background:linear-gradient(180deg,#ffe8ef,#efe3ff 55%,#f6f3ff)}
+html,body{margin:0;height:100%;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);background:linear-gradient(180deg,#ffe8ef,#efe3ff 55%,#f6f3ff)}
 img{max-width:100%;display:block}
 
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 14px;background:rgba(255,255,255,.5);backdrop-filter:blur(8px);
-  position:sticky;top:0;z-index:40;border-bottom:1px solid #f1e9ff
-}
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,.5);backdrop-filter:blur(8px);position:sticky;top:0;z-index:40;border-bottom:1px solid #f1e9ff}
 .topbar .brand{font-weight:800}
 .topbar .back{border:0;background:transparent;font-size:16px;opacity:.8}
 .topbar .auth .link{margin-left:14px;text-decoration:none;color:#6d28d9}
+.dot{opacity:.6}
 
+/* BOTTONI */
 .btn{border:0;padding:12px 16px;border-radius:14px;background:#eee}
 .gradient{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
 .gradient-sm{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:0;padding:8px 12px;border-radius:999px}
 .chip{border:1px solid #e8e3ff;background:#fff;color:#4b5563}
 
+/* HOME */
 #home .hero{max-width:960px;margin:18px auto 0;padding:16px;text-align:center}
 .heart{background:#efe7ff;border-radius:28px;padding:26px}
 .hero-dogs{width:100%;max-width:520px;margin:0 auto;border-radius:18px}
@@ -37,14 +34,17 @@ img{max-width:100%;display:block}
 .policy{margin-top:10px;color:#6b7280}
 .policy a{color:#6b28d9;text-decoration:none}
 
+/* SPONSOR */
 .sponsor{ text-align:center; margin:22px 0 90px }
 .sponsor-title{ color:var(--muted); margin-bottom:8px }
 .sponsor-logo{ height:36px; display:block; margin:0 auto; opacity:.95 }
 
+/* CTA GEO */
 .cta{max-width:980px;margin:12px auto;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.65);display:flex;align-items:center;gap:12px}
 .cta-icon{font-size:20px}
 .cta-actions{margin-left:auto;display:flex;gap:8px}
 
+/* TABS + RICERCA */
 .tabs{max-width:980px;margin:8px auto 0;padding:0 10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .tab{border:0;background:#ede9fe;color:#1f1b2e;padding:10px 14px;border-radius:18px}
 .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
@@ -55,17 +55,18 @@ img{max-width:100%;display:block}
 .dd-panel input,.dd-panel select{flex:1;border:1px solid #e6e1ff;border-radius:10px;padding:8px}
 .dd-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
 
+/* COUNTER */
 .count{max-width:980px;margin:6px auto 0;padding:0 12px;color:#6b7280}
 
+/* GRIGLIA LISTA (Vicino a te) */
 .grid{
   padding:8px 12px 120px;
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:18px;
   max-width:980px;
-  margin:0 auto;           /* centra la griglia */
+  margin:0 auto;
 }
-
 .card{
   background:var(--card);border-radius:22px;overflow:hidden;
   box-shadow:0 10px 30px rgba(22,22,44,.12);
@@ -74,14 +75,16 @@ img{max-width:100%;display:block}
 .card:hover{transform:translateY(-2px)}
 .card-img{aspect-ratio: 16/12; object-fit:cover;width:100%}
 .card-body{padding:14px}
-.badges{display:flex;gap:8px;margin:10px 0 0}
-.pill{background:#111827;color:#fff;border-radius:999px;font-size:12px;padding:4px 8px;opacity:.85}
+.muted{color:#6b7280}
 .row{display:flex;gap:10px;align-items:center;margin-top:10px}
+
+/* BOTTONI ROUND */
 .btn-round{width:60px;height:60px;border-radius:999px;border:6px solid #e9f8ef;background:#fff;display:grid;place-items:center;font-size:26px}
 .btn-no{border-color:#fde3e3}
 .btn-yes{border-color:#e3f9ef}
 .icon-no{color:var(--no)} .icon-yes{color:#ff3344}
 
+/* SCORRI (card centrata) */
 .deck{
   padding:10px 16px 120px;
   max-width:520px;
@@ -89,12 +92,9 @@ img{max-width:100%;display:block}
   display:flex;
   justify-content:center;
 }
-.card-big{
-  max-width:420px;
-  width:100%;
-  margin:0 auto;
-}
+.card-big{ max-width:420px; width:100%; margin:0 auto; }
 
+/* MODAL */
 .modal{border:0;border-radius:22px;padding:0;max-width:720px;width:96%}
 .modal::backdrop{background:rgba(0,0,0,.35)}
 .modal-x{position:absolute;right:10px;top:10px;border:0;background:#fff;width:40px;height:40px;border-radius:999px;font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
@@ -102,17 +102,18 @@ img{max-width:100%;display:block}
 .modal .pad{padding:18px}
 .meta{color:#4b5563;margin:8px 0 12px}
 
+/* BANNER STICKY (placeholder) */
 .ad-sticky{
   position:sticky;bottom:0;left:0;right:0;background:rgba(255,255,255,.78);backdrop-filter:blur(8px);
   border-top:1px solid #efeaff; padding:8px 0; z-index:50;
 }
 .ad-sticky-inner{ max-width:980px; margin:0 auto; height:54px; display:grid; place-items:center; color:#6b7280 }
 
-/* animazioni */
+/* ANIMAZIONI */
 @keyframes cardIn{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 .card-enter{ animation:cardIn .25s ease both }
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
 .pulse{ animation:pulse .18s ease }
 
-/* util */
+/* UTILI */
 .hidden{display:none!important}
