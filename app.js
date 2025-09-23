@@ -31,13 +31,14 @@ function goHome(){
     img.style.boxShadow='0 14px 40px rgba(122,79,247,.18)'; img.style.background='#000';
     document.getElementById('topBrandSlot').appendChild(img);
   }
-  show('#home');
+  show('#app');
   askGeo(); renderNear(); renderSwipe(); renderMatches();
 }
 window.__enter = goHome;
 
 document.addEventListener('DOMContentLoaded', ()=>{
   $('#ctaEnter')?.addEventListener('click', goHome);
+
   $$('.tab').forEach(t=>{
     t.addEventListener('click',()=>{
       $$('.tab').forEach(x=>x.classList.remove('active'));
@@ -49,8 +50,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(t.dataset.tab==='matches') renderMatches();
     });
   });
+
   $('#yesBtn')?.addEventListener('click', ()=>{ addMatch(dogs[swipeIndex%dogs.length]); swipeIndex++; renderSwipe(); });
-  $('#noBtn')?.addEventListener('click', ()=>{ swipeIndex++; renderSwipe(); });
+  $('#noBtn')?.addEventListener('click',  ()=>{ swipeIndex++; renderSwipe(); });
 });
 
 /* ======= GEO ======= */
@@ -64,7 +66,7 @@ $('#enableGeo')?.addEventListener('click',()=>{
 });
 $('#dismissGeo')?.addEventListener('click',()=> $('#geoBar')?.classList.add('hidden'));
 
-/* ======= VICINO ======= */
+/* ======= VICINO A TE ======= */
 function renderNear(){
   const wrap = $('#grid'); if(!wrap) return; wrap.innerHTML='';
   const list = dogs.slice().sort((a,b)=>{
@@ -96,7 +98,7 @@ function renderNear(){
   $('#emptyNear')?.classList.toggle('hidden', wrap.children.length>0);
 }
 
-/* ======= SCORRI ======= */
+/* ======= SWIPE ======= */
 function renderSwipe(){
   const d = dogs[swipeIndex % dogs.length];
   const distance = userPos ? km(userPos,d.coords) : randKm();
@@ -104,8 +106,6 @@ function renderSwipe(){
   $('#swipeTitle').textContent = `${d.name}, ${d.age} • ${d.breed}`;
   $('#swipeMeta').textContent  = `${distance} km da te`;
   $('#swipeBio').textContent   = d.bio;
-  $('#noBtn').textContent  = "🥲";
-  $('#yesBtn').textContent = "❤";
 }
 
 /* ======= MATCH ======= */
