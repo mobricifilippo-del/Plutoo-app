@@ -1,23 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Plutoo 🐾</title>
-  <link rel="stylesheet" href="style.css?v=21">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plutoo</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- HOME -->
-  <section id="landing" class="screen active">
-    <div class="center">
-      <img src="plutoo-icon-512.png" alt="Plutoo" class="logo-big">
+  <div id="home" class="screen active">
+    <header>
+      <img src="plutoo-icon-512.png" alt="Plutoo" class="brand">
       <h1>Benvenuto su Plutoo</h1>
+    </header>
+    <main>
       <button id="ctaEnter" class="btn primary">Entra</button>
-    </div>
-  </section>
+      <p class="muted">Cerca amici intorno a te.</p>
+      <div class="links">
+        <a href="privacy.html">Privacy</a> ·
+        <a href="termini.html">Termini</a>
+      </div>
+      <div class="sponsor">
+        <p>Sponsor ufficiale</p>
+        <img src="sponsor.png" alt="Sponsor">
+      </div>
+    </main>
+  </div>
 
-  <!-- APP -->
-  <main id="home" class="screen">
+  <div id="app" class="screen">
     <header class="topbar">
       <div id="topBrandSlot"></div>
       <nav class="tabs">
@@ -27,56 +36,51 @@
       </nav>
     </header>
 
-    <!-- GEO -->
-    <div id="geoBar" class="bar hidden">
-      <span>Attiva posizione</span>
-      <button id="enableGeo" class="btn small">Ok</button>
-      <button id="dismissGeo" class="btn small">Dopo</button>
-    </div>
-
-    <!-- VICINO -->
-    <section id="near" class="tabpane active">
-      <div id="grid" class="grid"></div>
-      <p id="emptyNear" class="muted hidden">Nessun cane vicino</p>
+    <section id="geoBar" class="geobar hidden">
+      <p>Vuoi attivare la posizione per risultati migliori?</p>
+      <button id="enableGeo" class="btn small primary">Attiva</button>
+      <button id="dismissGeo" class="btn small">No grazie</button>
     </section>
 
-    <!-- SCORRI -->
+    <section id="near" class="tabpane active">
+      <div id="grid" class="grid"></div>
+      <p id="emptyNear" class="muted">Nessun cane vicino a te.</p>
+    </section>
+
     <section id="swipe" class="tabpane">
-      <div class="swipe-card">
+      <article class="card-big">
         <img id="swipeImg" src="" alt="">
-        <div class="info">
+        <div class="card-body">
           <h2 id="swipeTitle"></h2>
           <div id="swipeMeta" class="muted"></div>
           <p id="swipeBio"></p>
+          <div class="row">
+            <button id="noBtn" class="btn-round btn-no"><span>😢</span></button>
+            <button id="yesBtn" class="btn-round btn-yes"><span>❤️</span></button>
+          </div>
         </div>
-        <div class="actions">
-          <button id="noBtn" class="circle">🥲</button>
-          <button id="yesBtn" class="circle">❤</button>
-        </div>
-      </div>
+      </article>
     </section>
 
-    <!-- MATCH -->
     <section id="matches" class="tabpane">
       <div id="matchList"></div>
-      <p id="emptyMatch">Nessun match ancora.</p>
+      <p id="emptyMatch" class="muted">Nessun match ancora.</p>
     </section>
-  </main>
+  </div>
 
-  <!-- CHAT -->
-  <section id="chat" class="sheet">
-    <header>
+  <div id="chat" class="sheet">
+    <header class="sheet-header">
       <img id="chatAvatar" src="" alt="">
-      <strong id="chatName"></strong>
+      <h3 id="chatName"></h3>
       <button class="close" data-close="chat">×</button>
     </header>
     <div id="thread" class="thread"></div>
-    <footer>
-      <input id="chatInput" placeholder="Scrivi...">
-      <button id="sendBtn">Invia</button>
+    <footer class="sheet-footer">
+      <input id="chatInput" type="text" placeholder="Scrivi...">
+      <button id="sendBtn" class="btn primary">Invia</button>
     </footer>
-  </section>
+  </div>
 
-  <script src="app.js?v=21"></script>
+  <script src="app.js"></script>
 </body>
 </html>
