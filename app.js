@@ -1,164 +1,147 @@
-const App = (() => {
+/* ======= DATI DEMO ======= */
+const dogs = [
+  { id:1, name:"Luna",  age:1, breed:"Jack Russell",    img1:"dog1.jpg", coords:{lat:41.898, lon:12.498}, bio:"Vivace e curiosa!", online:true },
+  { id:2, name:"Rocky", age:4, breed:"Meticcio",        img1:"dog2.jpg", coords:{lat:41.901, lon:12.476}, bio:"Fedelissimo e coccolone.", online:true },
+  { id:3, name:"Maya",  age:3, breed:"Shiba Inu",       img1:"dog3.jpg", coords:{lat:41.914, lon:12.495}, bio:"Passeggiate ogni giorno.", online:false },
+  { id:4, name:"Sofia", age:5, breed:"Levriero Afgano", img1:"dog4.jpg", coords:{lat:41.887, lon:12.512}, bio:"Elegante e dolce.", online:true }
+];
 
-  // ------- DATI DEMO (6 profili) -------
-  const dogs = [
-    { id:1, name:'Luna',  age:1, breed:'Jack Russell',     distance:2.2,
-      sex:'F', size:'Piccola', coat:'Corto', energy:'Alta', pedigree:'No', area:'Roma – Monteverde',
-      desc:'Curiosa e molto giocherellona.', image:'dog1.jpg', online:true, verified:true },
-    { id:2, name:'Rocky', age:3, breed:'Labrador',         distance:1.6,
-      sex:'M', size:'Media',  coat:'Corto', energy:'Media', pedigree:'No', area:'Roma – Eur',
-      desc:'Affettuoso e molto fedele.', image:'dog2.jpg', online:true, verified:false },
-    { id:3, name:'Bella', age:2, breed:'Shiba Inu',        distance:3.2,
-      sex:'F', size:'Piccola', coat:'Medio', energy:'Media', pedigree:'Sì', area:'Roma – Prati',
-      desc:'Elegante, intelligente e affettuosa.', image:'dog3.jpg', online:true, verified:true },
-    { id:4, name:'Max',   age:4, breed:'Golden Retriever', distance:5.9,
-      sex:'M', size:'Grande', coat:'Lungo', energy:'Alta', pedigree:'No', area:'Roma – Tuscolana',
-      desc:'Socievole con tutti, ama correre.', image:'dog4.jpg', online:true, verified:false },
-    { id:5, name:'Daisy', age:2, breed:'Beagle',           distance:2.7,
-      sex:'F', size:'Piccola', coat:'Corto', energy:'Alta', pedigree:'No', area:'Roma – Garbatella',
-      desc:'Adora esplorare e annusare tutto.', image:'dog1.jpg', online:true, verified:false },
-    { id:6, name:'Nero',  age:5, breed:'Meticcio',         distance:4.1,
-      sex:'M', size:'Media',  coat:'Medio', energy:'Media', pedigree:'No', area:'Roma – Nomentana',
-      desc:'Tranquillo e molto dolce.', image:'dog2.jpg', online:true, verified:false },
-  ];
+let userPos = null;
+let matches = JSON.parse(localStorage.getItem("plutoo_matches") || "[]");
+let swipeIndex = 0;
 
-  // ------- STATO -------
-  let currentView = 'near';
-  let filters = { breed:'', area:'', pedigree:'' };
-  let deckIndex = 0;
+/* ======= UTILS ======= */
+const $  = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const show = id => { $$('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); };
+const km = (a,b)=>{ if(!a||!b) return null;
+  const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLon=(b.lon-a.lon)*Math.PI/180;
+  const la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180;
+  const x=Math.sin(dLat/2)**2 + Math.sin(dLon/2)**2*Math.cos(la1)*Math.cos(la2);
+  return +(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))).toFixed(1);
+};
+const randKm = ()=> +(Math.random()*7+0.5).toFixed(1);
 
-  // ------- UTILS -------
-  const $ = (sel)=>document.querySelector(sel);
-  const setCount = n => $("#counter").textContent = `Mostro ${n} profili`;
-
-  const badge = d => d.verified ? `<span title="verificato" style="margin-left:6px; font-size:18px">🐾</span>` : '';
-
-  // ------- RENDER VICINO A TE -------
-  function renderNear(list){
-    const root = $("#near");
-    root.innerHTML = '';
-    list.forEach(d=>{
-      const el = document.createElement('article');
-      el.className = 'card card-enter';
-      el.innerHTML = `
-        <img class="card-img" src="${d.image}" alt="${d.name}" />
-        <div class="card-body">
-          <div class="pill" style="position:absolute;margin-top:-54px;margin-left:12px;background:#111827cc">${d.distance.toFixed(1)} km</div>
-          <h3 style="margin:6px 0 2px;font-size:22px;font-weight:800">${d.name}, ${d.age} ${badge(d)}</h3>
-          <div class="muted">${d.breed}</div>
-          <div class="row">
-            <button class="btn-round btn-no" onclick="App.no(${d.id})"><span class="icon-no">😢</span></button>
-            <button class="btn-round btn-yes" onclick="App.yes(${d.id})"><span class="icon-yes">❤️</span></button>
-          </div>
-        </div>`;
-      el.addEventListener('click', (e)=>{
-        if (e.target.closest('.btn-round')) return;
-        openModal(d);
-      });
-      root.appendChild(el);
-    });
-    setCount(list.length);
+/* ======= ENTRA ======= */
+function goHome(){
+  if(!document.querySelector('.brand-small')){
+    const img=document.createElement('img');
+    img.src='plutoo-icon-512.png'; img.alt='Plutoo'; img.className='brand-small';
+    img.style.width='64px'; img.style.height='64px'; img.style.borderRadius='20px';
+    img.style.boxShadow='0 14px 40px rgba(122,79,247,.18)'; img.style.background='#000';
+    document.getElementById('topBrandSlot').appendChild(img);
   }
+  show('#home');
+  askGeo(); renderNear(); renderSwipe(); renderMatches();
+}
+window.__enter = goHome;
 
-  // ------- RENDER SCORRI -------
-  function renderDeck(list){
-    const root = $("#deckCard");
-    if (!list.length){ root.innerHTML = `<div class="card-big"><div class="card-body">Nessun profilo</div></div>`; return; }
-    const d = list[deckIndex % list.length];
-    root.innerHTML = `
-      <article class="card card-big card-enter">
-        <img class="card-img" src="${d.image}" alt="${d.name}" />
-        <div class="card-body">
-          <h3 style="margin:6px 0 2px;font-size:22px;font-weight:800">${d.name}, ${d.age} ${badge(d)}</h3>
-          <div class="muted">${d.breed}</div>
-          <div class="row">
-            <button class="btn-round btn-no" onclick="App.swipe('no')"><span class="icon-no">😢</span></button>
-            <button class="btn-round btn-yes" onclick="App.swipe('yes')"><span class="icon-yes">❤️</span></button>
-          </div>
+document.addEventListener('DOMContentLoaded', ()=>{
+  $('#ctaEnter')?.addEventListener('click', goHome);
+  $$('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      $$('.tab').forEach(x=>x.classList.remove('active'));
+      $$('.tabpane').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.tab).classList.add('active');
+      if(t.dataset.tab==='swipe') renderSwipe();
+      if(t.dataset.tab==='near') renderNear();
+      if(t.dataset.tab==='matches') renderMatches();
+    });
+  });
+  $('#yesBtn')?.addEventListener('click', ()=>{ addMatch(dogs[swipeIndex%dogs.length]); swipeIndex++; renderSwipe(); });
+  $('#noBtn')?.addEventListener('click', ()=>{ swipeIndex++; renderSwipe(); });
+});
+
+/* ======= GEO ======= */
+function askGeo(){ $('#geoBar')?.classList.remove('hidden'); }
+$('#enableGeo')?.addEventListener('click',()=>{
+  navigator.geolocation.getCurrentPosition(
+    pos => { userPos={lat:pos.coords.latitude, lon:pos.coords.longitude}; $('#geoBar')?.classList.add('hidden'); renderNear(); renderSwipe(); },
+    _   => { $('#geoBar')?.classList.add('hidden'); renderNear(); renderSwipe(); },
+    { enableHighAccuracy:true, timeout:8000 }
+  );
+});
+$('#dismissGeo')?.addEventListener('click',()=> $('#geoBar')?.classList.add('hidden'));
+
+/* ======= VICINO ======= */
+function renderNear(){
+  const wrap = $('#grid'); if(!wrap) return; wrap.innerHTML='';
+  const list = dogs.slice().sort((a,b)=>{
+    const da = userPos ? km(userPos,a.coords) : randKm();
+    const db = userPos ? km(userPos,b.coords) : randKm();
+    return da-db;
+  });
+  list.forEach(d=>{
+    const distance = userPos ? km(userPos,d.coords) : randKm();
+    const card = document.createElement('article');
+    card.className='card';
+    card.innerHTML = `
+      ${d.online ? '<span class="online"></span>' : ''}
+      <img src="${d.img1}" alt="${d.name}">
+      <div class="card-info">
+        <div class="title">
+          <div class="name">${d.name}, ${d.age} • ${d.breed}</div>
+          <div class="dist">${distance} km</div>
         </div>
-      </article>
-    `;
-    root.querySelector('.card').addEventListener('click', (e)=>{
-      if (e.target.closest('.btn-round')) return;
-      openModal(d);
-    });
-    setTimeout(()=> root.querySelector('.card').classList.add('pulse'), 120);
-  }
-
-  // ------- MODAL -------
-  function openModal(d){
-    const dlg = $("#dogModal");
-    $("#modalBody").innerHTML = `
-      <img class="cover" src="${d.image}" alt="${d.name}" />
-      <div class="pad">
-        <h2 style="font-size:28px;margin:0 0 6px">${d.name}, ${d.age} ${badge(d)}</h2>
-        <div class="meta">${d.breed} · ${d.sex==='F'?'Femmina':'Maschio'} · ${d.size} · ${d.coat} · ${d.distance.toFixed(1)} km</div>
-        <div class="meta"><b>Energia:</b> ${d.energy} · <b>Pedigree:</b> ${d.pedigree}<br/><b>Zona:</b> ${d.area}</div>
-        <p>${d.desc}</p>
-        <div class="row">
-          <button class="btn-round btn-no" onclick="App.no(${d.id})"><span class="icon-no">😢</span></button>
-          <button class="btn-round btn-yes" onclick="App.yes(${d.id})"><span class="icon-yes">❤️</span></button>
+        <div class="actions">
+          <button class="circle no">🥲</button>
+          <button class="circle like">❤</button>
         </div>
       </div>`;
-    dlg.showModal();
-  }
-  function closeModal(){ $("#dogModal").close(); }
+    card.querySelector('.no').onclick   = ()=> card.remove();
+    card.querySelector('.like').onclick = ()=> addMatch(d);
+    wrap.appendChild(card);
+  });
+  $('#emptyNear')?.classList.toggle('hidden', wrap.children.length>0);
+}
 
-  // ------- FILTRI -------
-  function filtered(){
-    let out = dogs.slice();
-    if (currentView==='near') out = out.sort((a,b)=>a.distance-b.distance);
-    if (filters.breed) out = out.filter(d=> d.breed.toLowerCase().includes(filters.breed.toLowerCase()));
-    if (filters.area) out = out.filter(d=> d.area.toLowerCase().includes(filters.area.toLowerCase()));
-    if (filters.pedigree) out = out.filter(d=> d.pedigree===filters.pedigree);
-    return out;
-  }
+/* ======= SCORRI ======= */
+function renderSwipe(){
+  const d = dogs[swipeIndex % dogs.length];
+  const distance = userPos ? km(userPos,d.coords) : randKm();
+  $('#swipeImg').src   = d.img1;
+  $('#swipeTitle').textContent = `${d.name}, ${d.age} • ${d.breed}`;
+  $('#swipeMeta').textContent  = `${distance} km da te`;
+  $('#swipeBio').textContent   = d.bio;
+  $('#noBtn').textContent  = "🥲";
+  $('#yesBtn').textContent = "❤";
+}
 
-  // ------- API UI -------
-  function show(view){
-    currentView = view;
-    document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===view));
-    ['near','browse','match'].forEach(id=> $(`#${id}`).hidden = (id!==view));
-    deckIndex = 0;
-    const list = filtered();
-    if (view==='near') renderNear(list);
-    if (view==='browse') renderDeck(list);
-    if (view==='match'){ setCount(0); }
+/* ======= MATCH ======= */
+function addMatch(d){
+  if (!matches.find(m=>m.id===d.id)) {
+    matches.push({id:d.id, name:d.name, img:d.img1});
+    localStorage.setItem("plutoo_matches", JSON.stringify(matches));
   }
-
-  function swipe(type){
-    deckIndex++;
-    renderDeck(filtered());
-  }
-  function yes(id){ pulseBtn('.btn-yes'); }
-  function no(id){ pulseBtn('.btn-no'); }
-  function pulseBtn(sel){
-    const el = document.querySelector(sel);
-    if(!el) return;
-    el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
-  }
-
-  function toggleSearch(){ const p = $("#searchPanel"); p.hidden = !p.hidden; }
-  function clearFilters(){
-    $("#fBreed").value = $("#fArea").value = ''; $("#fPed").value = '';
-  }
-  function apply(){
-    filters = {
-      breed: $("#fBreed").value.trim(),
-      area: $("#fArea").value.trim(),
-      pedigree: $("#fPed").value
-    };
-    show(currentView);
-    toggleSearch();
-  }
-
-  function enter(){
-    $("#home").hidden = true;
-    $("#app").hidden = false;
-    show('near');
-  }
-
-  return { enter, show, swipe, yes, no, toggleSearch, clearFilters, apply, closeModal };
-})();
-
-// avvio iniziale (gestito da index con hidden true/false)
+  renderMatches();
+}
+function renderMatches(){
+  const box = $('#matchList'); if(!box) return; box.innerHTML = '';
+  matches.forEach(m=>{
+    const row = document.createElement('div'); row.className='item';
+    row.innerHTML = `
+      <img src="${m.img}" alt="${m.name}">
+      <div>
+        <div><strong>${m.name}</strong></div>
+        <div class="muted small">Match</div>
+      </div>
+      <button class="btn go primary pill">Chat</button>`;
+    row.querySelector('.go').onclick = ()=>openChat(m);
+    box.appendChild(row);
+  });
+  $('#emptyMatch').style.display = matches.length ? 'none' : 'block';
+}
+function openChat(m){
+  $('#chatAvatar').src = m.img;
+  $('#chatName').textContent = m.name;
+  $('#thread').innerHTML = '<div class="bubble">Ciao! 🐾 Siamo un match!</div>';
+  $('#chat').classList.add('show');
+}
+$('#sendBtn')?.addEventListener('click', ()=>{
+  const txt = ($('#chatInput').value||'').trim();
+  if(!txt) return;
+  const b = document.createElement('div'); b.className='bubble me'; b.textContent = txt;
+  $('#thread').appendChild(b);
+  $('#chatInput').value=''; $('#thread').scrollTop = $('#thread').scrollHeight;
+});
