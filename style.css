@@ -123,3 +123,23 @@ body{
 
 /* misc */
 .empty{color:var(--muted);text-align:center;padding:24px}
+/* Logo principale in home: bello grande e centrato */
+.hero-logo{
+  display:block;
+  width: 200px;           /* ↑ più grande */
+  height: 200px;          /* ↑ più grande */
+  object-fit: contain;
+  margin: 44px auto 22px; /* centrato */
+  border-radius: 36px;
+  filter: drop-shadow(0 10px 26px rgba(0,0,0,.45));
+}
+
+/* Sponsor molto più discreto */
+.sponsor-block{ margin-top: 26px; text-align:center; }
+.sponsor-label{ color:#9aa4c7; font-size:.95rem; margin-bottom:6px; }
+.sponsor-img{
+  width: 64px;            /* ↓ più piccolo */
+  height: auto;
+  opacity: .9;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,.35));
+}
