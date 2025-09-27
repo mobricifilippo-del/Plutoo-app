@@ -154,3 +154,26 @@ body{
   .card.big .card-img{height:420px}
   .grid{gap:16px}
 }
+/* === Fix gesture: abilita pan verticale e swipe orizzontale sulla card === */
+#swipe .deck .card { touch-action: pan-y; }
+
+/* === Profilo: galleria, post, verifica === */
+.pp-gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+.pp-thumb { width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:10px; border:1px solid rgba(255,255,255,.1); }
+.pp-uploader { display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+.pp-uploader input[type="file"] { display:none; }
+.pp-uploader .btn.small { padding:8px 10px; font-size:.9rem; border-radius:10px; }
+
+.pp-post-new { display:flex; flex-direction:column; gap:8px; }
+.pp-textarea {
+  width:100%; min-height:80px; resize:vertical;
+  background:#1b243b; color:#e8ecff; border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:10px;
+}
+.pp-posts { display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+.pp-post { background:#0f1729; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px; }
+.pp-post .ts { color:var(--muted); font-size:.85rem; margin-top:4px; }
+
+.pp-verify-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.badge-state { margin-top:8px; font-weight:700; }
+.badge-ok { color:#2bd67b; }
+.badge-ko { color:#ff7f96; }
