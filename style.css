@@ -138,3 +138,21 @@ button{cursor:pointer;border:none;font:inherit}
 
 /* ===== ACCESSIBILITÀ TOUCH ===== */
 #swipe .deck .card{touch-action:pan-y}
+/* --- OVERRIDE HOME LOGO (solo dimensione/centratura) --- */
+:root { --plutoo-logo-size: 260px; }         /* base */
+@media (min-width: 380px){ :root{ --plutoo-logo-size: 280px; } }
+@media (min-width: 480px){ :root{ --plutoo-logo-size: 300px; } }
+
+.hero { 
+  padding-top: 56px;              /* respiro sotto la topbar */
+  text-align: center;
+}
+
+.hero-logo{
+  width: var(--plutoo-logo-size);
+  height: var(--plutoo-logo-size);
+  display: block;
+  margin: 0 auto 26px;            /* centrato perfetto */
+  border-radius: 28px;
+  box-shadow: 0 18px 50px rgba(122,79,247,.35);
+}
