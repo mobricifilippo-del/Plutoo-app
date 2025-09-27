@@ -1,212 +1,312 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Plutoo</title>
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="icon" href="plutoo-icon-512.png" />
+  <!-- cache-busting per Android WebView -->
+  <link rel="stylesheet" href="style.css?v=7" />
 </head>
 <body>
 
-  <!-- =================== TOPBAR =================== -->
+  <!-- ============== TOPBAR ============== -->
   <header class="topbar">
-    <div class="brand" id="topBrandSlot">
-      <img src="plutoo-icon-512.png" alt="Plutoo" class="brand-logo">
+    <div class="brand-slot">
+      <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'"/>
       <span class="brand-name">Plutoo</span>
     </div>
-    <nav class="topnav">
-      <a href="javascript:void(0)" id="btnLogin"
+    <nav class="auth">
+      <a id="btnLoginTop" href="javascript:void(0)"
          onclick="document.getElementById('sheetLogin').classList.add('show')">Login</a>
-      <a href="javascript:void(0)" id="btnRegister"
-         class="btn-reg"
+      <a id="btnRegisterTop" class="primary" href="javascript:void(0)"
          onclick="document.getElementById('sheetRegister').classList.add('show')">Registrati</a>
     </nav>
   </header>
 
-  <!-- =================== HOME =================== -->
-  <main id="home" class="screen active">
-    <div class="hero">
-      <img src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo">
-      <a id="ctaEnter" class="btn primary"
-         href="javascript:void(0)" onclick="goHome()">Entra</a>
-      <a id="btnLoginUnder" class="link-under"
-         href="javascript:void(0)"
+  <!-- ============== HOME (logo grande, sponsor piccolo) ============== -->
+  <main id="landing" class="screen active">
+    <section class="hero">
+      <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
+      <a id="ctaEnter" class="btn primary" href="javascript:void(0)" onclick="goHome()">Entra</a>
+      <a id="btnLoginUnder" class="link-under" href="javascript:void(0)"
          onclick="document.getElementById('sheetLogin').classList.add('show')">Accedi</a>
-    </div>
 
-    <div class="sponsor-block">
-      <div class="sponsor-label">Sponsor ufficiale</div>
-      <a href="https://www.gelatofido.it/" target="_blank" rel="noopener">
-        <img src="sponsor-logo.png" alt="Sponsor Fido" class="sponsor-img"
-             onerror="this.style.display='none'">
-      </a>
-    </div>
+      <div class="sponsor-block">
+        <div class="sponsor-label">Sponsor ufficiale</div>
+        <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
+          <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
+        </a>
+      </div>
 
-    <footer class="footer-links">
-      <button class="link-inline" id="openPrivacy"
-              onclick="document.getElementById('privacyDlg').showModal()">Privacy</button>
-      <span class="dot">·</span>
-      <button class="link-inline" id="openTerms"
-              onclick="document.getElementById('termsDlg').showModal()">Termini</button>
-    </footer>
+      <footer class="home-footer">
+        <button class="link-inline" onclick="_openDlg('privacyDlg')">Privacy</button>
+        <span class="dot">·</span>
+        <button class="link-inline" onclick="_openDlg('termsDlg')">Termini</button>
+      </footer>
+    </section>
   </main>
 
-  <!-- =================== APP =================== -->
-  <main id="app" class="screen">
+  <!-- ============== APP (3 tab) ============== -->
+  <section id="app" class="screen">
 
-    <!-- Barra geolocalizzazione -->
-    <div id="geoBar" class="geo-bar hidden">
+    <!-- geolocalizzazione finta -->
+    <div id="geoBar" class="geobar hidden">
       <span>Attiva la posizione per vedere gli amici vicino a te</span>
-      <button id="enableGeo" class="btn small primary">Attiva</button>
-      <button id="dismissGeo" class="btn small">Più tardi</button>
+      <div class="g-actions">
+        <button id="enableGeo" class="btn xs primary">Attiva</button>
+        <button id="dismissGeo" class="btn xs light">Più tardi</button>
+      </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab active" data-tab="near">Vicino</button>
-      <button class="tab" data-tab="swipe">Scorri</button>
-      <button class="tab" data-tab="matches">Match</button>
+    <!-- tabs + filtri -->
+    <div class="filters-header">
+      <div class="tabs">
+        <button class="tab active" data-tab="near">Vicino</button>
+        <button class="tab" data-tab="swipe">Scorri</button>
+        <button class="tab" data-tab="matches">Match</button>
+      </div>
+      <button id="filterToggle" class="btn ghost">Ricerca personalizzata ▾</button>
     </div>
 
-    <!-- Ricerca personalizzata -->
-    <div class="search-toggle">
-      <button onclick="toggleSearch()">Ricerca personalizzata ▾</button>
-    </div>
-    <div id="filterPanel" class="filter-panel" hidden>
+    <!-- pannello filtri -->
+    <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
-        <label>Razza:
-          <select name="breed">
-            <option value="">Tutte</option>
-            <option>Labrador</option>
-            <option>Jack Russell</option>
-            <option>Shiba Inu</option>
-            <option>Golden Retriever</option>
-            <option>Beagle</option>
-            <option>Meticcio</option>
-          </select>
-        </label>
-        <label>Età:
-          <select name="age">
-            <option value="">Tutte</option>
-            <option>0–1</option>
-            <option>2–4</option>
-            <option>5–7</option>
-            <option>8+</option>
-          </select>
-        </label>
-        <label>Sesso:
-          <select name="sex">
-            <option value="">Qualsiasi</option>
-            <option value="M">M</option>
-            <option value="F">F</option>
-          </select>
-        </label>
-        <label>Taglia:
-          <select name="size">
-            <option value="">Tutte</option>
-            <option>Piccola</option>
-            <option>Media</option>
-            <option>Grande</option>
-          </select>
-        </label>
-        <label>Pelo:
-          <select name="coat">
-            <option value="">Tutti</option>
-            <option>Corto</option>
-            <option>Medio</option>
-            <option>Lungo</option>
-          </select>
-        </label>
-        <label>Energia:
-          <select name="energy">
-            <option value="">Tutte</option>
-            <option>Bassa</option>
-            <option>Media</option>
-            <option>Alta</option>
-          </select>
-        </label>
-        <label>Pedigree:
-          <select name="pedigree">
-            <option value="">Indifferente</option>
-            <option>Sì</option>
-            <option>No</option>
-          </select>
-        </label>
-        <label>Distanza max (km):
-          <input type="number" name="distance" min="1" max="50">
-        </label>
-        <div class="filter-actions">
-          <button type="button" id="filtersReset">Reset</button>
+        <div class="f-grid">
+          <label class="f-item">
+            <span>Razza</span>
+            <select name="breed">
+              <option value="">Tutte</option>
+              <option>Jack Russell</option>
+              <option>Labrador</option>
+              <option>Shiba Inu</option>
+              <option>Golden Retriever</option>
+              <option>Beagle</option>
+              <option>Bulldog Francese</option>
+              <option>Barboncino</option>
+              <option>Border Collie</option>
+              <option>Pastore Tedesco</option>
+              <option>Meticcio</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Età</span>
+            <select name="ageBand">
+              <option value="">Tutte</option>
+              <option value="0–1">0–1</option>
+              <option value="2–4">2–4</option>
+              <option value="5–7">5–7</option>
+              <option value="8+">8+</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Sesso</span>
+            <select name="sex">
+              <option value="">Qualsiasi</option>
+              <option value="M">Maschio</option>
+              <option value="F">Femmina</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Taglia</span>
+            <select name="size">
+              <option value="">Tutte</option>
+              <option>Piccola</option>
+              <option>Media</option>
+              <option>Grande</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Pelo</span>
+            <select name="coat">
+              <option value="">Qualsiasi</option>
+              <option>Corto</option>
+              <option>Medio</option>
+              <option>Lungo</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Energia</span>
+            <select name="energy">
+              <option value="">Qualsiasi</option>
+              <option>Bassa</option>
+              <option>Media</option>
+              <option>Alta</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Pedigree</span>
+            <select name="pedigree">
+              <option value="">Indifferente</option>
+              <option value="Sì">Sì</option>
+              <option value="No">No</option>
+            </select>
+          </label>
+
+          <label class="f-item">
+            <span>Distanza max (km)</span>
+            <input type="number" name="distance" min="1" step="0.1" placeholder="es. 5" />
+          </label>
+        </div>
+
+        <div class="f-actions">
+          <button type="button" id="filtersReset" class="btn light">Reset</button>
           <button type="submit" class="btn primary">Applica</button>
         </div>
       </form>
       <div id="activeChips" class="chips"></div>
-    </div>
+    </section>
 
-    <!-- Tab Vicino -->
+    <!-- VICINO -->
     <section id="near" class="tabpane active">
-      <div id="countLabel" class="count"></div>
+      <div id="counter" class="counter"></div>
       <div id="grid" class="grid"></div>
-      <div id="emptyNear" class="empty hidden">Nessun profilo trovato.</div>
+      <div id="emptyNear" class="empty hidden">Nessun profilo.</div>
     </section>
 
-    <!-- Tab Scorri -->
+    <!-- SCORRI -->
     <section id="swipe" class="tabpane">
-      <div id="deckCard" class="deck"></div>
+      <div class="deck">
+        <article class="card big">
+          <img id="swipeImg" class="card-img" src="" alt="">
+          <div class="card-info">
+            <div class="title">
+              <div id="swipeTitle" class="name">—</div>
+              <div id="swipeMeta" class="dist">—</div>
+            </div>
+            <p id="swipeBio" class="bio">—</p>
+            <div class="actions">
+              <button id="noBtn" class="circle no">🥲</button>
+              <button id="yesBtn" class="circle like">❤️</button>
+            </div>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <!-- Tab Match -->
+    <!-- MATCH -->
     <section id="matches" class="tabpane">
-      <div id="matchList" class="match-list"></div>
+      <div id="matchList" class="list"></div>
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
-  </main>
 
-  <!-- =================== MODALI =================== -->
-  <dialog id="privacyDlg" class="modal">
-    <h2>Privacy</h2>
-    <p>Dati raccolti: profilo, posizione approssimata.<br>
-    Finalità: match e chat.<br>
-    Cookie: usati solo per funzionamento.<br>
-    Annunci: placeholder, in futuro AdMob.<br>
-    Diritti utente: accesso, cancellazione.<br>
-    Contatti: supporto@example.com</p>
-    <button onclick="this.closest('dialog').close()">Chiudi</button>
+    <!-- SPONSOR in fondo alle viste APP -->
+    <div class="sponsor-app">
+      <div class="sponsor-label">Sponsor ufficiale</div>
+      <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
+        <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
+      </a>
+    </div>
+
+    <!-- Banner pubblicitario (placeholder web, sticky) -->
+    <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
+  </section>
+
+  <!-- ============== MODALI ============== -->
+
+  <!-- PROFILO CANE -->
+  <dialog id="dogModal" class="modal">
+    <div id="modalBody"></div>
+    <button class="close-modal" onclick="_closeDlg('dogModal')">Chiudi</button>
   </dialog>
 
-  <dialog id="termsDlg" class="modal">
-    <h2>Termini</h2>
-    <p>Uso consentito solo a maggiorenni.<br>
-    Non condividere contenuti illeciti.<br>
-    Plutoo non è responsabile di usi impropri.<br>
-    Puoi richiedere cancellazione dati in ogni momento.</p>
-    <button onclick="this.closest('dialog').close()">Chiudi</button>
+  <!-- VERIFICA (upload finto) -->
+  <dialog id="verifyModal" class="modal">
+    <div class="pad">
+      <h3>Richiedi badge di verifica</h3>
+      <p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p>
+      <label class="upload">Documento proprietario<input type="file" /></label>
+      <label class="upload">Documento del cane<input type="file" /></label>
+      <div class="row-cta">
+        <button class="btn light" onclick="_closeDlg('verifyModal')">Annulla</button>
+        <button class="btn primary" id="sendVerify">Invia</button>
+      </div>
+      <p id="verifyMsg" class="ok-msg" hidden>Richiesta inviata, in revisione ✅</p>
+    </div>
   </dialog>
 
-  <!-- Sheet Login -->
+  <!-- SHEETS LOGIN / REGISTER / CHAT -->
   <div id="sheetLogin" class="sheet">
     <div class="sheet-box">
-      <h3>Login</h3>
-      <input type="email" placeholder="Email">
-      <input type="password" placeholder="Password">
-      <button id="loginSubmit" class="btn primary">Entra</button>
-      <button class="close" data-close="sheetLogin">Chiudi</button>
+      <div class="sheet-head">
+        <strong>Login</strong>
+        <button class="close" data-close="sheetLogin">×</button>
+      </div>
+      <div class="sheet-body">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
+        <button id="loginSubmit" class="btn primary full">Continua</button>
+      </div>
     </div>
   </div>
 
-  <!-- Sheet Register -->
   <div id="sheetRegister" class="sheet">
     <div class="sheet-box">
-      <h3>Registrati</h3>
-      <input type="text" placeholder="Nome">
-      <input type="email" placeholder="Email">
-      <input type="password" placeholder="Password">
-      <button id="registerSubmit" class="btn primary">Crea account</button>
-      <button class="close" data-close="sheetRegister">Chiudi</button>
+      <div class="sheet-head">
+        <strong>Registrati</strong>
+        <button class="close" data-close="sheetRegister">×</button>
+      </div>
+      <div class="sheet-body">
+        <input class="inp" placeholder="Nome">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
+        <button id="registerSubmit" class="btn primary full">Crea account</button>
+      </div>
     </div>
   </div>
 
-  <!-- JS -->
-  <script src="app.js?v=4"></script>
+  <div id="chat" class="sheet">
+    <div class="sheet-box">
+      <div class="sheet-head">
+        <div class="chat-head">
+          <img id="chatAvatar" class="avatar" src="" alt="">
+          <div id="chatName" class="chat-name">Chat</div>
+        </div>
+        <button class="close" data-close="chat">×</button>
+      </div>
+      <div class="sheet-body chat-body">
+        <div id="thread" class="thread"></div>
+        <div class="chat-send">
+          <input id="chatInput" class="inp" placeholder="Scrivi…">
+          <button id="sendBtn" class="btn primary">Invia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERSTITIAL (placeholder dopo 10 like) -->
+  <dialog id="interstitial" class="modal inter">
+    <div class="pad">
+      <h3>Annuncio video (placeholder)</h3>
+      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
+      <button class="btn primary" onclick="_closeDlg('interstitial')">Chiudi</button>
+    </div>
+  </dialog>
+
+  <!-- PRIVACY & TERMINI (GDPR light) -->
+  <dialog id="privacyDlg" class="modal legal">
+    <div class="pad">
+      <h3>Privacy</h3>
+      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat.</p>
+      <p>Cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
+      <button class="btn primary" onclick="_closeDlg('privacyDlg')">OK</button>
+    </div>
+  </dialog>
+  <dialog id="termsDlg" class="modal legal">
+    <div class="pad">
+      <h3>Termini</h3>
+      <p>Plutoo è una piattaforma per connettere proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative.</p>
+      <button class="btn primary" onclick="_closeDlg('termsDlg')">OK</button>
+    </div>
+  </dialog>
+
+  <!-- ============== JS ============== -->
+  <script src="app.js?v=7"></script>
 </body>
 </html>
