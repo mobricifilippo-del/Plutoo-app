@@ -267,3 +267,164 @@ document.addEventListener('DOMContentLoaded', ()=>{
   $('#openTerms')?.addEventListener('click',()=>openDialogSafe($('#termsDlg')));
   renderActiveChips();
 });
+/* ===================== PATCH: INTENTI & AZIONI (ADD-ONLY) ===================== */
+/* 1) Assegna un intento “di default” ai cani demo (se manca) */
+(function ensureDogIntents(){
+  if(!window.dogs || !Array.isArray(dogs)) return;
+  dogs.forEach(d=>{
+    if(!d.intent){
+      // distribuzione semplice e visibile (puoi personalizzare quando vuoi)
+      d.intent = (d.id % 3 === 0) ? '❤️ Accoppiamoci' : (d.id % 2 ? '🐕 Camminiamo' : '🎾 Giochiamo');
+    }
+  });
+})();
+
+/* 2) Helpers per etichetta/pill/icone – non toccano nulla del resto */
+function _intentKey(text){
+  if(!text) return '';
+  if(text.includes('Accop')) return 'mate';
+  if(text.includes('Cammin')) return 'walk';
+  if(text.includes('Gioca')) return 'play';
+  return '';
+}
+function _intentClassFromText(text){
+  const k=_intentKey(text);
+  return k==='mate'?'intent-mate':k==='walk'?'intent-walk':k==='play'?'intent-play':'';
+}
+function _intentIconFromKey(k){
+  return k==='mate'?'❤️':k==='walk'?'🐕':k==='play'?'🎾':'';
+}
+function _intentLabelFromKey(k){
+  return k==='mate'?'Accoppiamoci':k==='walk'?'Camminiamo':k==='play'?'Giochiamo':'';
+}
+function _makeBlip(host, icon){
+  try{
+    const h=(typeof host==='string')?document.querySelector(host):host;
+    if(!h) return;
+    const b=document.createElement('div');
+    b.className='blip'; b.textContent=icon;
+    // posizionamento “furbo”: se c’è .actions usiamo quello
+    const box=h.closest('.actions')||h;
+    box.appendChild(b);
+    setTimeout(()=>b.remove(), 450);
+  }catch(_){}
+}
+
+/* 3) Potenzia le CARD in “Vicino” senza toccare il render originale */
+function enhanceNearCards(){
+  const grid=document.getElementById('grid'); if(!grid) return;
+  grid.querySelectorAll('.card').forEach(card=>{
+    const img=card.querySelector('img[alt]'); if(!img) return;
+    const dog=dogs.find(d=>d.name===img.alt); if(!dog) return;
+
+    // Pill “Disponibile per …” (se non presente)
+    if(!card.querySelector('.intent-pill')){
+      const pill=document.createElement('span');
+      pill.className='intent-pill '+_intentClassFromText(dog.intent);
+      pill.textContent='Disponibile per: '+dog.intent;
+      const info=card.querySelector('.card-info');
+      const title=card.querySelector('.card-info .title');
+      if(info){
+        if(title && title.nextSibling) info.insertBefore(pill, title.nextSibling);
+        else info.prepend(pill);
+      }
+    }
+
+    // Bottoni extra 🐕 🎾 (se mancanti) accanto a 🥲 e ❤️
+    const actions=card.querySelector('.actions'); if(!actions) return;
+    const hasWalk=actions.querySelector('.walk'); const hasPlay=actions.querySelector('.play');
+    if(!hasWalk){
+      const w=document.createElement('button'); w.className='circle walk'; w.textContent='🐕';
+      w.onclick=(e)=>{ e.stopPropagation(); _makeBlip(actions,'🐕'); /* qui puoi agganciare la tua logica */ };
+      actions.appendChild(w);
+    }
+    if(!hasPlay){
+      const p=document.createElement('button'); p.className='circle play'; p.textContent='🎾';
+      p.onclick=(e)=>{ e.stopPropagation(); _makeBlip(actions,'🎾'); /* qui puoi agganciare la tua logica */ };
+      actions.appendChild(p);
+    }
+  });
+}
+
+/* 4) Potenzia la card grande in “Scorri” (aggiunge 🐕/🎾 e pill) */
+function enhanceSwipeCard(){
+  const deck=document.querySelector('#swipe .deck'); if(!deck) return;
+  const card=deck.querySelector('.card'); if(!card) return;
+  const title=card.querySelector('#swipeTitle'); if(!title) return;
+
+  // trova cane corrente dal titolo (prima della virgola)
+  const name=(title.textContent||'').split(',')[0].trim();
+  const dog=dogs.find(d=>d.name===name); if(!dog) return;
+
+  // pill sotto la bio
+  const info=card.querySelector('.card-info'); const bio=card.querySelector('.bio');
+  if(info && bio && !info.querySelector('.intent-pill')){
+    const pill=document.createElement('span');
+    pill.className='intent-pill '+_intentClassFromText(dog.intent);
+    pill.textContent=dog.intent;
+    bio.insertAdjacentElement('afterend', pill);
+  }
+
+  // bottoni extra 🐕/🎾 in azioni (se mancanti)
+  const actions=card.querySelector('.actions'); if(actions){
+    if(!actions.querySelector('.walk')){
+      const w=document.createElement('button'); w.className='circle walk'; w.textContent='🐕';
+      w.id='walkBtnPatch';
+      w.onclick=()=>{ _makeBlip(actions,'🐕'); /* logica custom se serve */ };
+      actions.insertBefore(w, actions.lastElementChild); // prima del like se vuoi
+    }
+    if(!actions.querySelector('.play')){
+      const p=document.createElement('button'); p.className='circle play'; p.textContent='🎾';
+      p.id='playBtnPatch';
+      p.onclick=()=>{ _makeBlip(actions,'🎾'); /* logica custom se serve */ };
+      actions.appendChild(p);
+    }
+  }
+}
+
+/* 5) Mostra l’intento dentro al PROFILO a pagina aperta (osserva modifiche) */
+(function observeProfilePage(){
+  const page=document.getElementById('profilePage'); if(!page) return;
+  const body=document.getElementById('ppBody'); if(!body) return;
+
+  const obs=new MutationObserver(()=> {
+    // quando cambia il profilo, inseriamo la sezione (una volta sola)
+    if(body.dataset._intentInjected==='1') return;
+    const title=document.getElementById('ppTitle'); if(!title) return;
+    const raw=(title.textContent||'').replace('🐾','').trim();
+    const name=raw.split(' ')[0]; // prima parola è il nome (coerente con tua base)
+    const dog=dogs.find(d=>raw.startsWith(d.name)); if(!dog) return;
+
+    // crea blocco “Disponibile per”
+    const sec=document.createElement('div');
+    sec.className='pp-availability';
+    const k=_intentKey(dog.intent);
+    sec.innerHTML = `
+      <span class="label">Disponibile per:</span>
+      <span class="intent-pill ${_intentClassFromText(dog.intent)}">${_intentIconFromKey(k)} ${_intentLabelFromKey(k)}</span>
+    `;
+    body.insertBefore(sec, body.firstChild.nextSibling); // subito sotto la cover
+    body.dataset._intentInjected='1';
+  });
+  obs.observe(body, {childList:true, subtree:true});
+})();
+
+/* 6) Richiama i potenziamenti dopo i render esistenti (senza toccarli) */
+(function hookRenders(){
+  // subito all’avvio, e poi ogni volta che navighi tra tab
+  try{
+    enhanceNearCards();
+    enhanceSwipeCard();
+  }catch(_){}
+
+  // hook semplice: quando clicchi tab ricalcoliamo
+  document.addEventListener('click', (e)=>{
+    const t=e.target.closest('.tab'); if(!t) return;
+    setTimeout(()=>{ enhanceNearCards(); enhanceSwipeCard(); }, 10);
+  });
+
+  // anche dopo  renderSwipe/renderNear se vengono richiamati
+  // (best-effort: timer corto che si “aggancia” ai cambi)
+  let _last=0;
+  setInterval(()=>{ const now=Date.now(); if(now-_last>250){ enhanceNearCards(); enhanceSwipeCard(); _last=now; }}, 400);
+})();
