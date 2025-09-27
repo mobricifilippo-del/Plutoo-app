@@ -59,13 +59,22 @@ window._closeDlg=id=>closeDialogSafe(document.getElementById(id));
 
 /* ===================== NAV/APP ===================== */
 function show(sel){ $$('.screen').forEach(s=>s.classList.remove('active')); (typeof sel==='string'?$(sel):sel)?.classList.add('active'); }
-function switchTab(tab){ currentView=tab; $$('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab)); $$('.tabpane').forEach(p=>p.classList.remove('active')); $('#'+tab)?.classList.add('active'); if(tab==='near') renderNear(); if(tab==='swipe') renderSwipe(); if(tab==='matches') renderMatches(); }
-function goHome(){ show('#app'); $('#geoBar')?.classList.remove('hidden'); renderNear(); renderSwipe(); renderMatches(); }
+function switchTab(tab){
+  currentView=tab;
+  $$('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  $$('.tabpane').forEach(p=>p.classList.remove('active'));
+  $('#'+tab)?.classList.add('active');
+  if(tab==='near') renderNear();
+  if(tab==='swipe') renderSwipe();
+  if(tab==='matches') renderMatches();
+  if(tab==='play') renderPlay();
+}
+function goHome(){ show('#app'); $('#geoBar')?.classList.remove('hidden'); renderNear(); renderSwipe(); renderMatches(); renderPlay(); }
 window.goHome=goHome;
 
 /* ===================== GEO ===================== */
 $('#enableGeo')?.addEventListener('click', ()=>{ navigator.geolocation.getCurrentPosition(
-  pos=>{userPos={lat:pos.coords.latitude,lon:pos.coords.longitude};$('#geoBar')?.classList.add('hidden');renderNear();renderSwipe();},
+  pos=>{userPos={lat:pos.coords.latitude,lon:pos.coords.longitude};$('#geoBar')?.classList.add('hidden');renderNear();renderSwipe();renderPlay();},
   _=>{$('#geoBar')?.classList.add('hidden');},{enableHighAccuracy:true,timeout:8000});});
 $('#dismissGeo')?.addEventListener('click', ()=> $('#geoBar')?.classList.add('hidden'));
 
@@ -76,11 +85,12 @@ $('#filterForm')?.addEventListener('submit', e=>{
   filters.breed=f.breed.value||''; filters.ageBand=f.ageBand.value||''; filters.sex=f.sex.value||'';
   filters.size=f.size.value||''; filters.coat=f.coat.value||''; filters.energy=f.energy.value||'';
   filters.pedigree=f.pedigree.value||''; filters.distance=f.distance.value||'';
-  $('#filterPanel').hidden=true; renderActiveChips(); currentView==='near'?renderNear():renderSwipe();
+  $('#filterPanel').hidden=true; renderActiveChips();
+  if(currentView==='near') renderNear(); else if(currentView==='swipe') renderSwipe(); else if(currentView==='play') renderPlay(); else renderMatches();
 });
-$('#filtersReset')?.addEventListener('click', ()=>{ $('#filterForm')?.reset(); filters={breed:'',ageBand:'',sex:'',size:'',coat:'',energy:'',pedigree:'',distance:''}; renderActiveChips(); currentView==='near'?renderNear():renderSwipe(); });
+$('#filtersReset')?.addEventListener('click', ()=>{ $('#filterForm')?.reset(); filters={breed:'',ageBand:'',sex:'',size:'',coat:'',energy:'',pedigree:'',distance:''}; renderActiveChips(); if(currentView==='near') renderNear(); else if(currentView==='swipe') renderSwipe(); else if(currentView==='play') renderPlay(); else renderMatches(); });
 
-function renderActiveChips(){ const c=$('#activeChips'); if(!c) return; c.innerHTML=''; const map={breed:'Razza',ageBand:'Età',sex:'Sesso',size:'Taglia',coat:'Pelo',energy:'Energia',pedigree:'Pedigree',distance:'Distanza'}; Object.entries(filters).forEach(([k,v])=>{ if(!v) return; const w=el('span',{className:'chip-wrap'}); w.append(el('span',{className:'chip'},`${map[k]}: ${v}`)); w.append(el('button',{className:'chip-x',onclick:()=>{filters[k]='';renderActiveChips();currentView==='near'?renderNear():renderSwipe();}},'×')); c.append(w); }); }
+function renderActiveChips(){ const c=$('#activeChips'); if(!c) return; c.innerHTML=''; const map={breed:'Razza',ageBand:'Età',sex:'Sesso',size:'Taglia',coat:'Pelo',energy:'Energia',pedigree:'Pedigree',distance:'Distanza'}; Object.entries(filters).forEach(([k,v])=>{ if(!v) return; const w=el('span',{className:'chip-wrap'}); w.append(el('span',{className:'chip'},`${map[k]}: ${v}`)); w.append(el('button',{className:'chip-x',onclick:()=>{filters[k]='';renderActiveChips(); if(currentView==='near') renderNear(); else if(currentView==='swipe') renderSwipe(); else if(currentView==='play') renderPlay(); else renderMatches(); }},'×')); c.append(w); }); }
 function passesFilters(d,dist){ if(filters.breed&&!d.breed.toLowerCase().includes(filters.breed.toLowerCase()))return false; if(filters.ageBand&&band(d.age)!==filters.ageBand)return false; if(filters.sex&&d.sex!==filters.sex)return false; if(filters.size&&d.size!==filters.size)return false; if(filters.coat&&d.coat!==filters.coat)return false; if(filters.energy&&d.energy!==filters.energy)return false; if(filters.pedigree&&d.pedigree!==filters.pedigree)return false; if(filters.distance){const m=parseFloat(filters.distance); if(!isNaN(m)&&dist!=null&&dist>m)return false;} return true;}
 
 /* ===================== VICINO ===================== */
@@ -112,6 +122,35 @@ function renderNear(){
   $('#emptyNear')?.classList.toggle('hidden', rows.length>0);
 }
 
+/* ===================== GIOCHIAMO (nuova tab) ===================== */
+function renderPlay(){
+  const grid=$('#playGrid'); if(!grid) return; grid.innerHTML='';
+  const ordered=dogs.slice().map(d=>({d,dist:userPos?km(userPos,d.coords):randKm()})).sort((a,b)=>(a.dist??99)-(b.dist??99));
+  const rows=ordered.filter(r=>passesFilters(r.d,r.dist));
+  rows.forEach(({d,dist})=>{
+    const card=el('article',{className:'card'});
+    card.innerHTML=`
+      ${d.online?'<span class="online"></span>':''}
+      <img src="${d.image}" alt="${d.name}" onerror="this.style.display='none'">
+      <div class="card-info">
+        <div class="title">
+          <div class="name">${verifiedName(d)}</div>
+          <div class="dist">${dist??'-'} km</div>
+        </div>
+        <div class="actions">
+          <button class="circle no">🥲</button>
+          <button class="circle like" title="Invita a giocare">❤️</button>
+        </div>
+      </div>`;
+    card.querySelector('.no').onclick=e=>{e.stopPropagation();card.remove();};
+    card.querySelector('.like').onclick=e=>{e.stopPropagation();addMatch(d);incLikesMaybeAd();};
+    card.addEventListener('click',ev=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); });
+    grid.append(card);
+  });
+  $('#playCounter').textContent=`Disponibili per giocare: ${rows.length}`;
+  $('#emptyPlay')?.classList.toggle('hidden', rows.length>0);
+}
+
 /* ===================== SCORRI ===================== */
 function filtered(){ return dogs.filter(d=>{ const dist=userPos?km(userPos,d.coords):randKm(); return passesFilters(d,dist); }); }
 function renderSwipe(){
@@ -135,6 +174,7 @@ function renderSwipe(){
 function tinyBump(sel){ const e=typeof sel==='string'?$(sel):sel; if(!e) return; e.classList.remove('button-bump'); void e.offsetWidth; e.classList.add('button-bump'); }
 function swipe(type,d){ if(type==='yes'){ addMatch(d); incLikesMaybeAd(); } swipeIndex++; renderSwipe(); }
 
+/* ---- Swipe gesture helpers ---- */
 function attachSwipeGestures(cardEl, dogObj){
   if(!cardEl || cardEl._swipeBound) return;
   cardEl._swipeBound = true;
@@ -197,7 +237,7 @@ function openProfilePage(d, distance){
     let tmpOwner=null,tmpDog=null;
     document.getElementById('ppOwnerDoc').onchange=e=>{tmpOwner=(e.target.files||[])[0]||null};
     document.getElementById('ppDogDoc').onchange=e=>{tmpDog=(e.target.files||[])[0]||null};
-    document.getElementById('ppSendVerify').onclick=()=>{ if(tmpOwner) store.owner=true; if(tmpDog) store.dog=true; setProfileStore(d.id,store); render(); renderNear(); renderSwipe(); };
+    document.getElementById('ppSendVerify').onclick=()=>{ if(tmpOwner) store.owner=true; if(tmpDog) store.dog=true; setProfileStore(d.id,store); render(); renderNear(); renderSwipe(); renderPlay(); };
   }
   render();
   page.classList.add('show');
