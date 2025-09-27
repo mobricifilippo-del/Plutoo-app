@@ -1,6 +1,16 @@
 /* =========================================================
-   Plutoo – app.js (v8 Android/WebView friendly)
+   Plutoo – app.js (v9 Android/WebView friendly)
+   - Swipe col dito in “Scorri”
+   - Pagina profilo full-screen (no <dialog> piccolo)
+   - Resto invariato: filtri, chips, match/chat, adv placeholder
    ========================================================= */
+
+/* AdMob IDs per futuro porting Android (Capacitor/Cordova)
+   App ID:         ca-app-pub-5458345293928736~5749790476
+   Banner Unit ID: ca-app-pub-5458345293928736/8955087050
+   Interstitial:   INSERISCI_INTERSTITIAL_UNIT_ID
+*/
+
 const dogs = [
   { id:1, name:'Luna',  age:1, breed:'Jack Russell',      sex:'F', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'No', area:'Roma – Monteverde', desc:'Curiosa e molto giocherellona.', image:'dog1.jpg', online:true,  verified:true,  coords:{lat:41.898, lon:12.498} },
   { id:2, name:'Rocky', age:3, breed:'Labrador',          sex:'M', size:'Media',   coat:'Corto', energy:'Media', pedigree:'No', area:'Roma – Eur',        desc:'Affettuoso e fedele.',            image:'dog2.jpg', online:true,  verified:false, coords:{lat:41.901, lon:12.476} },
@@ -17,16 +27,18 @@ let filters = { breed:'', ageBand:'', sex:'', size:'', coat:'', energy:'', pedig
 
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
 const el=(t,a={},h='')=>{const n=document.createElement(t);Object.entries(a).forEach(([k,v])=>{k in n?n[k]=v:n.setAttribute(k,v)});if(h)n.innerHTML=h;return n};
-const km=(a,b)=>{ if(!a||!b) return null; const R=6371,dLa=(b.lat-a.lat)*Math.PI/180,dLo=(b.lon-a.lon)*Math.PI/180,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180,x=Math.sin(dLa/2)**2+Math.sin(dLo/2)**2*Math.cos(la1)*Math.cos(la2); return +(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))).toFixed(1); };
+const km=(a,b)=>{ if(!a||!b) return null; const R=6371,dLa=(b.lat-a.lat)*Math.PI/180,dLo=(b.lon-a.lon)*Math.PI/180,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180,x=Math.sin(dLa/2)**2*Math.cos(la1)*Math.cos(la2)+Math.sin(dLo/2)**2; return +(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))).toFixed(1); };
 const randKm=()=>+(Math.random()*7+0.5).toFixed(1);
 const band=a=>a<=1?'0–1':a<=4?'2–4':a<=7?'5–7':'8+';
 const verifiedName=d=>`${d.name}, ${d.age} • ${d.breed}${d.verified?' <span class="paw">🐾</span>':''}`;
 
+/* Dialog fallback helpers (per gli altri modali) */
 function openDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.showModal==='function'){try{dlg.showModal();return;}catch(_){}} dlg.setAttribute('open',''); dlg.classList.add('fallback'); document.body.style.overflow='hidden'; }
 function closeDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.close==='function'){try{dlg.close();}catch(_){}} dlg.classList.remove('fallback'); dlg.removeAttribute('open'); document.body.style.overflow=''; }
 window._openDlg=id=>openDialogSafe(document.getElementById(id));
 window._closeDlg=id=>closeDialogSafe(document.getElementById(id));
 
+/* Navigazione */
 function show(sel){ $$('.screen').forEach(s=>s.classList.remove('active')); (typeof sel==='string'?$(sel):sel)?.classList.add('active'); }
 function switchTab(tab){ currentView=tab; $$('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab)); $$('.tabpane').forEach(p=>p.classList.remove('active')); $('#'+tab)?.classList.add('active'); if(tab==='near') renderNear(); if(tab==='swipe') renderSwipe(); if(tab==='matches') renderMatches(); }
 function goHome(){ show('#app'); $('#geoBar')?.classList.remove('hidden'); renderNear(); renderSwipe(); renderMatches(); }
@@ -92,17 +104,77 @@ function renderSwipe(){
 
   const cardEl=document.querySelector('#swipe .deck .card')||document.querySelector('#swipe .card.big');
   if(cardEl){
+    // anim di ingresso
     cardEl.classList.remove('pulse'); void cardEl.offsetWidth; cardEl.classList.add('pulse');
+
+    // tap apre profilo (se non tocchi i bottoni)
     cardEl.addEventListener('click',(ev)=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); },{once:true});
+
+    // gesture swipe col dito
+    attachSwipeGestures(cardEl, d);
   }
 
+  // bottoni con micro-anim + swipe breve
   $('#noBtn').onclick=()=>{ tinyBump('#noBtn'); if(cardEl){ cardEl.classList.add('swipe-left'); setTimeout(()=>swipe('no',d),220); } else swipe('no',d); };
   $('#yesBtn').onclick=()=>{ tinyBump('#yesBtn'); if(cardEl){ cardEl.classList.add('swipe-right'); setTimeout(()=>swipe('yes',d),220); } else swipe('yes',d); };
 }
 function tinyBump(sel){ const e=typeof sel==='string'?$(sel):sel; if(!e) return; e.classList.remove('button-bump'); void e.offsetWidth; e.classList.add('button-bump'); }
 function swipe(type,d){ if(type==='yes'){ addMatch(d); incLikesMaybeAd(); } swipeIndex++; renderSwipe(); }
 
-/* PAGINA PROFILO FULLSCREEN (stile Facebook) */
+/* Swipe gesture helpers */
+function attachSwipeGestures(cardEl, dogObj){
+  if(!cardEl) return;
+  let startX=0, startY=0, currentX=0, currentY=0, dragging=false, hasMoved=false;
+
+  const onTouchStart = (e)=>{
+    const t = e.touches ? e.touches[0] : e;
+    startX = currentX = t.clientX;
+    startY = currentY = t.clientY;
+    dragging = true;
+    hasMoved = false;
+    cardEl.style.transition = 'none';
+  };
+  const onTouchMove = (e)=>{
+    if(!dragging) return;
+    const t = e.touches ? e.touches[0] : e;
+    currentX = t.clientX; currentY = t.clientY;
+    const dx = currentX - startX, dy = currentY - startY;
+
+    if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) return;
+
+    hasMoved = Math.abs(dx) > 6;
+    const rot = Math.max(-10, Math.min(10, dx/12));
+    cardEl.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
+    cardEl.style.opacity = String(Math.max(0.35, 1 - Math.abs(dx)/600));
+  };
+  const onTouchEnd = ()=>{
+    if(!dragging) return; dragging = false;
+    const dx = currentX - startX; const threshold = 80;
+    cardEl.style.transition = 'transform .18s ease-out, opacity .18s ease-out';
+
+    if(dx > threshold){
+      cardEl.style.transform = 'translateX(40%) rotate(6deg)'; cardEl.style.opacity = '0';
+      setTimeout(()=> swipe('yes', dogObj), 180);
+    } else if(dx < -threshold){
+      cardEl.style.transform = 'translateX(-40%) rotate(-6deg)'; cardEl.style.opacity = '0';
+      setTimeout(()=> swipe('no', dogObj), 180);
+    } else {
+      cardEl.style.transform = ''; cardEl.style.opacity = '';
+      if(!hasMoved){
+        const dist = userPos ? km(userPos, dogObj.coords) : randKm();
+        openProfilePage(dogObj, dist);
+      }
+    }
+  };
+
+  cardEl.addEventListener('touchstart', onTouchStart, {passive:true});
+  cardEl.addEventListener('touchmove',  onTouchMove,  {passive:true});
+  cardEl.addEventListener('touchend',   onTouchEnd,   {passive:true});
+  // supporto mouse (dev/test)
+  cardEl.addEventListener('mousedown',  (e)=>{ onTouchStart(e); const mm=(ev)=>onTouchMove(ev), mu=()=>{ onTouchEnd(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); }; document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu,{once:true}); });
+}
+
+/* PAGINA PROFILO FULLSCREEN */
 function openProfilePage(d, distance){
   const page=document.getElementById('profilePage'), body=document.getElementById('ppBody'), title=document.getElementById('ppTitle');
   if(!page||!body) return;
@@ -122,9 +194,9 @@ function openProfilePage(d, distance){
     </div>`;
   $('#ppNo').onclick=()=>closeProfilePage();
   $('#ppYes').onclick=()=>{ addMatch(d); incLikesMaybeAd(); closeProfilePage(); };
-  page.hidden=false; page.classList.add('show');
+  page.classList.add('show');
 }
-function closeProfilePage(){ const page=document.getElementById('profilePage'); if(!page) return; page.classList.remove('show'); page.hidden=true; }
+function closeProfilePage(){ const page=document.getElementById('profilePage'); if(!page) return; page.classList.remove('show'); }
 window.closeProfilePage=closeProfilePage;
 
 /* MATCH & CHAT */
