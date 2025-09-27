@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Plutoo</title>
   <link rel="icon" href="plutoo-icon-512.png" />
-  <!-- cache-busting per Android WebView -->
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body>
 
@@ -208,15 +207,17 @@
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- ============== MODALI ============== -->
+  <!-- ============== PAGINA PROFILO FULLSCREEN (stile Facebook) ============== -->
+  <div id="profilePage" class="page" hidden>
+    <div class="page-head">
+      <button class="back" onclick="closeProfilePage()">←</button>
+      <div id="ppTitle" class="title">Profilo</div>
+    </div>
+    <div id="ppBody" class="page-body"></div>
+  </div>
 
-  <!-- PROFILO CANE -->
-  <dialog id="dogModal" class="modal">
-    <div id="modalBody"></div>
-    <button class="close-modal" onclick="_closeDlg('dogModal')">Chiudi</button>
-  </dialog>
+  <!-- ============== MODALI (verifica, sheets, privacy/termini, interstitial) ============== -->
 
-  <!-- VERIFICA (upload finto) -->
   <dialog id="verifyModal" class="modal">
     <div class="pad">
       <h3>Richiedi badge di verifica</h3>
@@ -231,7 +232,6 @@
     </div>
   </dialog>
 
-  <!-- SHEETS LOGIN / REGISTER / CHAT -->
   <div id="sheetLogin" class="sheet">
     <div class="sheet-box">
       <div class="sheet-head">
@@ -280,7 +280,6 @@
     </div>
   </div>
 
-  <!-- INTERSTITIAL (placeholder dopo 10 like) -->
   <dialog id="interstitial" class="modal inter">
     <div class="pad">
       <h3>Annuncio video (placeholder)</h3>
@@ -289,7 +288,6 @@
     </div>
   </dialog>
 
-  <!-- PRIVACY & TERMINI (GDPR light) -->
   <dialog id="privacyDlg" class="modal legal">
     <div class="pad">
       <h3>Privacy</h3>
@@ -306,7 +304,6 @@
     </div>
   </dialog>
 
-  <!-- ============== JS ============== -->
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
