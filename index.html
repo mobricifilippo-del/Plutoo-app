@@ -2,35 +2,32 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo</title>
   <link rel="icon" href="plutoo-icon-512.png" />
-  <!-- cache-busting per Android/WebView -->
-  <link rel="stylesheet" href="style.css?v=9" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ============== TOPBAR ============== -->
+  <!-- TOPBAR (sempre visibile) -->
   <header class="topbar">
     <div class="brand-slot">
+      <!-- mini brand solo come decor, la Home sotto ha il logo grande -->
       <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'"/>
       <span class="brand-name">Plutoo</span>
     </div>
     <nav class="auth">
-      <a id="btnLoginTop" href="javascript:void(0)"
-         onclick="document.getElementById('sheetLogin').classList.add('show')">Login</a>
-      <a id="btnRegisterTop" class="primary" href="javascript:void(0)"
-         onclick="document.getElementById('sheetRegister').classList.add('show')">Registrati</a>
+      <a id="btnLoginTop" href="javascript:void(0)">Login</a>
+      <a id="btnRegisterTop" class="primary" href="javascript:void(0)">Registrati</a>
     </nav>
   </header>
 
-  <!-- ============== HOME (logo grande, sponsor piccolo) ============== -->
+  <!-- ============= HOME (ELEGANTE) ============= -->
   <main id="landing" class="screen active">
     <section class="hero">
       <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
-      <a id="ctaEnter" class="btn primary" href="javascript:void(0)" onclick="goHome()">Entra</a>
-      <a id="btnLoginUnder" class="link-under" href="javascript:void(0)"
-         onclick="document.getElementById('sheetLogin').classList.add('show')">Accedi</a>
+      <a id="ctaEnter" class="btn primary">Entra</a>
+      <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
 
       <div class="sponsor-block">
         <div class="sponsor-label">Sponsor ufficiale</div>
@@ -40,17 +37,16 @@
       </div>
 
       <footer class="home-footer">
-        <button class="link-inline" onclick="_openDlg('privacyDlg')">Privacy</button>
+        <button class="link-inline" id="openPrivacy">Privacy</button>
         <span class="dot">·</span>
-        <button class="link-inline" onclick="_openDlg('termsDlg')">Termini</button>
+        <button class="link-inline" id="openTerms">Termini</button>
       </footer>
     </section>
   </main>
 
-  <!-- ============== APP (3 tab) ============== -->
+  <!-- ============= APP (3 TAB) ============= -->
   <section id="app" class="screen">
-
-    <!-- geolocalizzazione finta -->
+    <!-- barra geolocalizzazione -->
     <div id="geoBar" class="geobar hidden">
       <span>Attiva la posizione per vedere gli amici vicino a te</span>
       <div class="g-actions">
@@ -59,7 +55,7 @@
       </div>
     </div>
 
-    <!-- tabs + filtri -->
+    <!-- toggle filtri -->
     <div class="filters-header">
       <div class="tabs">
         <button class="tab active" data-tab="near">Vicino</button>
@@ -174,7 +170,7 @@
     <section id="swipe" class="tabpane">
       <div class="deck">
         <article class="card big">
-          <img id="swipeImg" class="card-img" src="" alt="">
+          <img id="swipeImg" src="dog1.jpg" alt="">
           <div class="card-info">
             <div class="title">
               <div id="swipeTitle" class="name">—</div>
@@ -196,7 +192,7 @@
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
 
-    <!-- SPONSOR in fondo alle viste APP -->
+    <!-- SPONSOR in fondo a tutte le viste APP -->
     <div class="sponsor-app">
       <div class="sponsor-label">Sponsor ufficiale</div>
       <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
@@ -208,31 +204,37 @@
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- ============== PAGINA PROFILO FULLSCREEN (stile Facebook) ============== -->
-  <div id="profilePage" class="page">
-    <div class="page-head">
-      <button class="back" onclick="closeProfilePage()">←</button>
-      <div id="ppTitle" class="title">Profilo</div>
+  <!-- PROFILO FULL-SCREEN (per app.js openProfilePage) -->
+  <section id="profilePage" class="profile-page">
+    <div class="pp-head">
+      <strong id="ppTitle">Profilo</strong>
+      <button class="btn light small" onclick="closeProfilePage()">Chiudi</button>
     </div>
-    <div id="ppBody" class="page-body"></div>
-  </div>
+    <div id="ppBody" class="pp-body"></div>
+  </section>
 
-  <!-- ============== MODALI (verifica, sheets, privacy/termini, interstitial) ============== -->
+  <!-- MODAL PROFILO CANE (legacy, usato da versioni precedenti) -->
+  <dialog id="dogModal" class="modal">
+    <div id="modalBody"></div>
+    <button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button>
+  </dialog>
 
+  <!-- MODAL VERIFICA (upload documenti) -->
   <dialog id="verifyModal" class="modal">
-    <div class="pad">
+    <div class="verify-body">
       <h3>Richiedi badge di verifica</h3>
       <p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p>
       <label class="upload">Documento proprietario<input type="file" /></label>
       <label class="upload">Documento del cane<input type="file" /></label>
       <div class="row-cta">
-        <button class="btn light" onclick="_closeDlg('verifyModal')">Annulla</button>
+        <button class="btn light" onclick="document.getElementById('verifyModal').close()">Annulla</button>
         <button class="btn primary" id="sendVerify">Invia</button>
       </div>
       <p id="verifyMsg" class="ok-msg" hidden>Richiesta inviata, in revisione ✅</p>
     </div>
   </dialog>
 
+  <!-- SHEETS LOGIN / REGISTER / CHAT -->
   <div id="sheetLogin" class="sheet">
     <div class="sheet-box">
       <div class="sheet-head">
@@ -266,7 +268,7 @@
     <div class="sheet-box">
       <div class="sheet-head">
         <div class="chat-head">
-          <img id="chatAvatar" class="avatar" src="" alt="">
+          <img id="chatAvatar" class="avatar" src="dog1.jpg" alt="">
           <div id="chatName" class="chat-name">Chat</div>
         </div>
         <button class="close" data-close="chat">×</button>
@@ -281,31 +283,32 @@
     </div>
   </div>
 
+  <!-- MODAL INTERSTITIAL (placeholder dopo 10 like) -->
   <dialog id="interstitial" class="modal inter">
-    <div class="pad">
+    <div class="inter-body">
       <h3>Annuncio video (placeholder)</h3>
       <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
-      <button class="btn primary" onclick="_closeDlg('interstitial')">Chiudi</button>
+      <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
     </div>
   </dialog>
 
+  <!-- MODALI PRIVACY/TERMINI (contenuto base) -->
   <dialog id="privacyDlg" class="modal legal">
     <div class="pad">
       <h3>Privacy</h3>
-      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat.</p>
-      <p>Cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
-      <button class="btn primary" onclick="_closeDlg('privacyDlg')">OK</button>
+      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
+      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
+      <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
     </div>
   </dialog>
   <dialog id="termsDlg" class="modal legal">
     <div class="pad">
       <h3>Termini</h3>
-      <p>Plutoo è una piattaforma per connettere proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative.</p>
-      <button class="btn primary" onclick="_closeDlg('termsDlg')">OK</button>
+      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
+      <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
     </div>
   </dialog>
 
-  <!-- ============== JS ============== -->
-  <script src="app.js?v=9"></script>
+  <script src="app.js"></script>
 </body>
 </html>
