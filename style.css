@@ -17,12 +17,12 @@ button{cursor:pointer;border:none;font:inherit}
 .auth .primary{background:#7d5dfc;color:#fff;padding:6px 12px;border-radius:6px}
 
 /* ===== HOME ===== */
-:root { --plutoo-logo-size: 280px; }
-@media (min-width:380px){ :root{ --plutoo-logo-size: 300px; } }
-@media (min-width:480px){ :root{ --plutoo-logo-size: 320px; } }
+:root { --plutoo-logo-size: 320px; }
+@media (min-width:380px){ :root{ --plutoo-logo-size: 340px; } }
+@media (min-width:480px){ :root{ --plutoo-logo-size: 360px; } }
 
 .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 20px 40px;text-align:center}
-.hero-logo{width:var(--plutoo-logo-size);height:var(--plutoo-logo-size);border-radius:28px;box-shadow:0 18px 50px rgba(122,79,247,.35);margin-bottom:26px}
+.hero-logo{width:var(--plutoo-logo-size);height:var(--plutoo-logo-size);border-radius:28px;box-shadow:0 18px 50px rgba(122,79,247,.35);margin-bottom:26px;object-fit:contain;background:#0f0f1f}
 .btn{display:inline-block;padding:10px 18px;border-radius:10px;font-weight:700}
 .btn.primary{background:#7d5dfc;color:#fff}
 .btn.light{background:#222;color:#ccc}
@@ -61,7 +61,7 @@ button{cursor:pointer;border:none;font:inherit}
 .tabpane{display:none;padding:12px}
 .tabpane.active{display:block}
 
-/* ===== VICINO / GIOCHIAMO: griglia 2 colonne ===== */
+/* ===== VICINO ===== */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .counter{padding:4px 2px 10px;color:#aab2df;font-size:13px}
 .card{background:#1c1c2c;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(0,0,0,.35)}
@@ -72,12 +72,14 @@ button{cursor:pointer;border:none;font:inherit}
 .name{font-weight:700;font-size:14px;color:#f1f4ff}
 .dist{font-size:12px;color:#aab2df}
 .actions{display:flex;justify-content:center;gap:10px;margin-top:8px}
-.circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none}
+.circle{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none}
 .circle.no{background:#262b52;color:#e2e8ff}
 .circle.like{background:#7a4ff7;color:#fff}
+.circle.dog{background:#2a6a3c;color:#eafff3}
 .empty{padding:28px;text-align:center;color:#9aa3cf}
+.intent-pill{display:inline-block;margin:8px 12px 0;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#222;color:#cfd5ff;letter-spacing:.2px}
 
-/* ===== SCORRI ===== */
+/* ===== CARTE GRANDI (AMORE / SOCIAL) ===== */
 .deck{padding:16px;text-align:center}
 .card.big{max-width:380px;margin:0 auto;border-radius:16px;background:#1c1c2c;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .card.big img{width:100%;height:260px;object-fit:cover;display:block}
@@ -88,6 +90,7 @@ button{cursor:pointer;border:none;font:inherit}
 .swipe-right{transform:translateX(60%) rotate(8deg)!important;opacity:0!important;transition:all .2s ease}
 .button-bump{animation:bump .2s ease}
 @keyframes bump{0%{transform:scale(1)}50%{transform:scale(.92)}100%{transform:scale(1)}}
+#love .actions,#social .actions{position:relative}
 
 /* ===== PROFILO FULLSCREEN ===== */
 .profile-page{position:fixed;inset:0;background:#0b0b16;z-index:1000;overflow-y:auto;display:none}
@@ -128,7 +131,7 @@ button{cursor:pointer;border:none;font:inherit}
 /* ===== BADGE 🐾 ===== */
 .paw{display:inline-block;width:18px;height:18px;margin-left:4px;vertical-align:middle;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%237d5dfc" viewBox="0 0 512 512"><path d="M256 320c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zM128 192c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm256 0c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm-160-96c-26.5 0-48 28.7-48 64s21.5 64 48 64 48-28.7 48-64-21.5-64-48-64zm96 0c-26.5 0-48 28.7-48 64s21.5 64 48 64 48-28.7 48-64-21.5-64-48-64z"/></svg>') no-repeat center;background-size:contain}
 
-/* ===== SPONSOR FOOTER (in app) ===== */
+/* ===== SPONSOR FOOTER ===== */
 .sponsor-app{text-align:center;padding:18px 10px}
 .sponsor-app .sponsor-label{font-size:13px;color:#9aa3cf;line-height:1.3;margin-bottom:8px}
 .sponsor-app .sponsor-img{max-height:28px;opacity:.95}
@@ -143,26 +146,10 @@ button{cursor:pointer;border:none;font:inherit}
 .close-modal{margin:12px auto 18px;display:block;padding:10px 16px;border-radius:12px;background:#7a4ff7;color:#fff}
 
 /* ===== ACCESSIBILITÀ TOUCH ===== */
-#swipe .deck .card{touch-action:pan-y}
-/* === INTENT: pill e chip ============================================== */
-.intent-pill{
-  display:inline-block; margin:8px 12px 0; padding:4px 10px;
-  border-radius:999px; font-size:12px; font-weight:700;
-  background:#222; color:#cfd5ff; letter-spacing:.2px;
-}
-.intent-play{ background:#15361f; color:#84ffb7; }   /* 🎾 Giocare   */
-.intent-walk{ background:#142a3d; color:#95c9ff; }   /* 🐕 Camminare */
-.intent-mate{ background:#3a1530; color:#ff95c5; }   /* ❤️ Accoppiarsi */
+#love .deck .card, #social .deck .card{touch-action:pan-y}
 
-/* === Bottoni aggiuntivi (Walk/Play) — colori coerenti ================== */
-.circle.walk{ background:#265f40; color:#e7fff4; }
-.circle.play{ background:#224b7c; color:#e8f3ff; }
-
-/* === Micro feedback (blip) ============================================= */
-@keyframes blip{0%{transform:scale(.4);opacity:.0}60%{opacity:1}100%{transform:scale(1.4);opacity:0}}
-.blip{position:absolute; pointer-events:none; font-size:18px; animation:blip .45s ease-out forwards;}
-#swipe .actions{ position:relative; } /* per posizionare il blip nella card grande */
-
-/* === Profilo: sezione disponibilità ==================================== */
-.pp-availability{ margin-top:8px; }
-.pp-availability .label{ font-size:13px; color:#aab2df; margin-right:6px; }
+/* ===== MATCH: lista compatta ===== */
+#matches .list{display:flex;flex-direction:column;gap:12px;padding:12px 0}
+#matches .item{display:flex;align-items:center;gap:12px;background:#1c1c2c;border-radius:12px;padding:10px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#matches .item img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:0 0 56px}
+#matches .item .btn.pill{margin-left:auto;border-radius:999px;padding:8px 14px}
