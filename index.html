@@ -29,7 +29,9 @@
       <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
 
       <div class="sponsor-block">
-        <div class="sponsor-label">Sponsor ufficiale</div>
+        <div class="sponsor-label">
+          Sponsor ufficiale – Fido, il gelato per i tuoi amici a quattro zampe
+        </div>
         <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
           <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
         </a>
@@ -43,7 +45,7 @@
     </section>
   </main>
 
-  <!-- ============= APP (3 TAB) ============= -->
+  <!-- ============= APP (4 TAB) ============= -->
   <section id="app" class="screen">
     <!-- barra geolocalizzazione -->
     <div id="geoBar" class="geobar hidden">
@@ -54,12 +56,13 @@
       </div>
     </div>
 
-    <!-- toggle filtri -->
+    <!-- header tabs + toggle filtri -->
     <div class="filters-header">
       <div class="tabs">
         <button class="tab active" data-tab="near">Vicino</button>
         <button class="tab" data-tab="swipe">Scorri</button>
         <button class="tab" data-tab="matches">Match</button>
+        <button class="tab" data-tab="play">Giochiamo</button>
       </div>
       <button id="filterToggle" class="btn ghost">Ricerca personalizzata ▾</button>
     </div>
@@ -191,9 +194,18 @@
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
 
+    <!-- GIOCHIAMO INSIEME -->
+    <section id="play" class="tabpane">
+      <div id="playCounter" class="counter"></div>
+      <div id="playGrid" class="grid"></div>
+      <div id="emptyPlay" class="empty hidden">Nessuno disponibile per giocare.</div>
+    </section>
+
     <!-- SPONSOR in fondo a tutte le viste APP -->
     <div class="sponsor-app">
-      <div class="sponsor-label">Sponsor ufficiale</div>
+      <div class="sponsor-label">
+        Sponsor ufficiale – Fido, il gelato per i tuoi amici a quattro zampe
+      </div>
       <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
         <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
       </a>
@@ -212,7 +224,7 @@
     <div id="ppBody" class="pp-body"></div>
   </section>
 
-  <!-- MODALI/FOGLI LEGACY (restano per compatibilità) -->
+  <!-- MODALI/FOGLI LEGACY (compatibilità, non usati per il profilo pagina) -->
   <dialog id="dogModal" class="modal"><div id="modalBody"></div><button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button></dialog>
   <dialog id="verifyModal" class="modal"><div class="verify-body"><h3>Richiedi badge di verifica</h3><p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p><label class="upload">Documento proprietario<input type="file" /></label><label class="upload">Documento del cane<input type="file" /></label><div class="row-cta"><button class="btn light" onclick="document.getElementById('verifyModal').close()">Annulla</button><button class="btn primary" id="sendVerify">Invia</button></div><p id="verifyMsg" class="ok-msg" hidden>Richiesta inviata, in revisione ✅</p></div></dialog>
 
