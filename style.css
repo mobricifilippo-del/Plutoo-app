@@ -144,3 +144,25 @@ button{cursor:pointer;border:none;font:inherit}
 
 /* ===== ACCESSIBILITÀ TOUCH ===== */
 #swipe .deck .card{touch-action:pan-y}
+/* === INTENT: pill e chip ============================================== */
+.intent-pill{
+  display:inline-block; margin:8px 12px 0; padding:4px 10px;
+  border-radius:999px; font-size:12px; font-weight:700;
+  background:#222; color:#cfd5ff; letter-spacing:.2px;
+}
+.intent-play{ background:#15361f; color:#84ffb7; }   /* 🎾 Giocare   */
+.intent-walk{ background:#142a3d; color:#95c9ff; }   /* 🐕 Camminare */
+.intent-mate{ background:#3a1530; color:#ff95c5; }   /* ❤️ Accoppiarsi */
+
+/* === Bottoni aggiuntivi (Walk/Play) — colori coerenti ================== */
+.circle.walk{ background:#265f40; color:#e7fff4; }
+.circle.play{ background:#224b7c; color:#e8f3ff; }
+
+/* === Micro feedback (blip) ============================================= */
+@keyframes blip{0%{transform:scale(.4);opacity:.0}60%{opacity:1}100%{transform:scale(1.4);opacity:0}}
+.blip{position:absolute; pointer-events:none; font-size:18px; animation:blip .45s ease-out forwards;}
+#swipe .actions{ position:relative; } /* per posizionare il blip nella card grande */
+
+/* === Profilo: sezione disponibilità ==================================== */
+.pp-availability{ margin-top:8px; }
+.pp-availability .label{ font-size:13px; color:#aab2df; margin-right:6px; }
