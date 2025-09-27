@@ -44,23 +44,14 @@ const randKm=()=>+(Math.random()*7+0.5).toFixed(1);
 const band=a=>a<=1?'0–1':a<=4?'2–4':a<=7?'5–7':'8+';
 
 /* ===================== STORAGE VERIFICA/PROFILO ===================== */
-// struttura per ogni cane: { owner:boolean, dog:boolean, gallery:string[], posts:{text,ts}[] }
 function _veriMap(){ try{return JSON.parse(localStorage.getItem('pl_verify')||'{}')}catch(_){return {}} }
 function _saveVeri(map){ localStorage.setItem('pl_verify', JSON.stringify(map)); }
-function getProfileStore(id){
-  const m=_veriMap(); if(!m[id]) m[id]={ owner:false, dog:false, gallery:[], posts:[] };
-  return m[id];
-}
-function setProfileStore(id, data){
-  const m=_veriMap(); m[id]=data; _saveVeri(m);
-}
-function isVerified(d){
-  const st=getProfileStore(d.id);
-  return d.verified || (st.owner && st.dog);
-}
+function getProfileStore(id){ const m=_veriMap(); if(!m[id]) m[id]={ owner:false, dog:false, gallery:[], posts:[] }; return m[id]; }
+function setProfileStore(id, data){ const m=_veriMap(); m[id]=data; _saveVeri(m); }
+function isVerified(d){ const st=getProfileStore(d.id); return d.verified || (st.owner && st.dog); }
 const verifiedName=d=>`${d.name}, ${d.age} • ${d.breed}${isVerified(d)?' <span class="paw">🐾</span>':''}`;
 
-/* ===================== DIALOG SAFE (per privacy/termini/interstitial) ===================== */
+/* ===================== DIALOG SAFE ===================== */
 function openDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.showModal==='function'){try{dlg.showModal();return;}catch(_){}} dlg.setAttribute('open',''); dlg.classList.add('fallback'); document.body.style.overflow='hidden'; }
 function closeDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.close==='function'){try{dlg.close();}catch(_){}} dlg.classList.remove('fallback'); dlg.removeAttribute('open'); document.body.style.overflow=''; }
 window._openDlg=id=>openDialogSafe(document.getElementById(id));
@@ -132,225 +123,88 @@ function renderSwipe(){
 
   const cardEl=document.querySelector('#swipe .deck .card')||document.querySelector('#swipe .card.big');
   if(cardEl){
-    // reset stato visuale
     cardEl.style.transform=''; cardEl.style.opacity='';
-    // anim di ingresso
     cardEl.classList.remove('pulse'); void cardEl.offsetWidth; cardEl.classList.add('pulse');
-
-    // tap apre profilo (se non tocchi i bottoni)
     cardEl.addEventListener('click',(ev)=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); },{once:true});
-
-    // gesture swipe col dito
     attachSwipeGestures(cardEl, d);
   }
 
-  // bottoni con micro-anim + swipe breve
   $('#noBtn').onclick=()=>{ tinyBump('#noBtn'); if(cardEl){ cardEl.classList.add('swipe-left'); setTimeout(()=>swipe('no',d),220); } else swipe('no',d); };
   $('#yesBtn').onclick=()=>{ tinyBump('#yesBtn'); if(cardEl){ cardEl.classList.add('swipe-right'); setTimeout(()=>swipe('yes',d),220); } else swipe('yes',d); };
 }
 function tinyBump(sel){ const e=typeof sel==='string'?$(sel):sel; if(!e) return; e.classList.remove('button-bump'); void e.offsetWidth; e.classList.add('button-bump'); }
 function swipe(type,d){ if(type==='yes'){ addMatch(d); incLikesMaybeAd(); } swipeIndex++; renderSwipe(); }
 
-/* ---- Swipe gesture helpers (Android/WebView friendly) ---- */
 function attachSwipeGestures(cardEl, dogObj){
   if(!cardEl || cardEl._swipeBound) return;
   cardEl._swipeBound = true;
-
-  let startX=0, startY=0, currentX=0, currentY=0, dragging=false, hasMoved=false;
-
-  const onTouchStart = (e)=>{
-    const t = e.touches ? e.touches[0] : e;
-    startX = currentX = t.clientX;
-    startY = currentY = t.clientY;
-    dragging = true;
-    hasMoved = false;
-    cardEl.style.transition = 'none';
-  };
-  const onTouchMove = (e)=>{
-    if(!dragging) return;
-    const t = e.touches ? e.touches[0] : e;
-    currentX = t.clientX; currentY = t.clientY;
-    const dx = currentX - startX, dy = currentY - startY;
-
-    // scroll verticale prioritario
-    if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) return;
-
-    hasMoved = Math.abs(dx) > 6;
-    const rot = Math.max(-10, Math.min(10, dx/12));
-    cardEl.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
-    cardEl.style.opacity = String(Math.max(0.35, 1 - Math.abs(dx)/600));
-  };
-  const onTouchEnd = ()=>{
-    if(!dragging) return; dragging = false;
-    const dx = currentX - startX; const threshold = 80;
-    cardEl.style.transition = 'transform .18s ease-out, opacity .18s ease-out';
-
-    if(dx > threshold){
-      cardEl.style.transform = 'translateX(40%) rotate(6deg)'; cardEl.style.opacity = '0';
-      setTimeout(()=> swipe('yes', dogObj), 180);
-    } else if(dx < -threshold){
-      cardEl.style.transform = 'translateX(-40%) rotate(-6deg)'; cardEl.style.opacity = '0';
-      setTimeout(()=> swipe('no', dogObj), 180);
-    } else {
-      // torna al centro
-      cardEl.style.transform = ''; cardEl.style.opacity = '';
-      if(!hasMoved){
-        const dist = userPos ? km(userPos, dogObj.coords) : randKm();
-        openProfilePage(dogObj, dist);
-      }
-    }
-  };
-
-  cardEl.addEventListener('touchstart', onTouchStart, {passive:true});
-  cardEl.addEventListener('touchmove',  onTouchMove,  {passive:true});
-  cardEl.addEventListener('touchend',   onTouchEnd,   {passive:true});
-
-  // supporto mouse (sviluppo su desktop)
-  cardEl.addEventListener('mousedown',  (e)=>{
-    onTouchStart(e);
-    const mm=(ev)=>onTouchMove(ev);
-    const mu=()=>{ onTouchEnd(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); };
-    document.addEventListener('mousemove',mm);
-    document.addEventListener('mouseup',mu,{once:true});
-  });
+  let startX=0,startY=0,currentX=0,currentY=0,dragging=false,hasMoved=false;
+  const onTouchStart = (e)=>{ const t=e.touches?e.touches[0]:e; startX=currentX=t.clientX; startY=currentY=t.clientY; dragging=true; hasMoved=false; cardEl.style.transition='none'; };
+  const onTouchMove  = (e)=>{ if(!dragging) return; const t=e.touches?e.touches[0]:e; currentX=t.clientX; currentY=t.clientY; const dx=currentX-startX, dy=currentY-startY; if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>12) return; hasMoved=Math.abs(dx)>6; const rot=Math.max(-10,Math.min(10,dx/12)); cardEl.style.transform=`translateX(${dx}px) rotate(${rot}deg)`; cardEl.style.opacity=String(Math.max(.35,1-Math.abs(dx)/600)); };
+  const onTouchEnd   = ()=>{ if(!dragging) return; dragging=false; const dx=currentX-startX; cardEl.style.transition='transform .18s ease-out, opacity .18s ease-out'; if(dx>80){ cardEl.style.transform='translateX(40%) rotate(6deg)'; cardEl.style.opacity='0'; setTimeout(()=>swipe('yes',dogObj),180);} else if(dx<-80){ cardEl.style.transform='translateX(-40%) rotate(-6deg)'; cardEl.style.opacity='0'; setTimeout(()=>swipe('no',dogObj),180);} else { cardEl.style.transform=''; cardEl.style.opacity=''; if(!hasMoved){ const dist=userPos?km(userPos,dogObj.coords):randKm(); openProfilePage(dogObj,dist);} } };
+  cardEl.addEventListener('touchstart', onTouchStart,{passive:true});
+  cardEl.addEventListener('touchmove',  onTouchMove, {passive:true});
+  cardEl.addEventListener('touchend',   onTouchEnd,  {passive:true});
+  cardEl.addEventListener('mousedown',(e)=>{ onTouchStart(e); const mm=(ev)=>onTouchMove(ev); const mu=()=>{ onTouchEnd(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); }; document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu,{once:true}); });
 }
 
 /* ===================== PAGINA PROFILO FULLSCREEN ===================== */
 function openProfilePage(d, distance){
-  const page = document.getElementById('profilePage');
-  const body = document.getElementById('ppBody');
-  const title = document.getElementById('ppTitle');
-  if(!page || !body) return;
-
-  const store = getProfileStore(d.id);
-
+  const page=document.getElementById('profilePage');
+  const body=document.getElementById('ppBody');
+  const title=document.getElementById('ppTitle');
+  if(!page||!body) return;
+  const store=getProfileStore(d.id);
   function render(){
-    title.innerHTML = `${d.name} ${isVerified(d)?'<span class="paw">🐾</span>':''}`;
-
-    const galleryHTML = (store.gallery||[]).map(src => `<img class="pp-thumb" src="${src}" alt="">`).join('') || '<div class="muted small">Nessuna foto aggiunta.</div>';
-    const postsHTML = (store.posts||[]).slice().reverse().map(p=>`
-      <div class="pp-post">
-        <div>${p.text}</div>
-        <div class="ts">${new Date(p.ts).toLocaleString()}</div>
-      </div>
-    `).join('') || '<div class="muted small">Nessun post ancora.</div>';
-
-    body.innerHTML = `
+    title.innerHTML=`${d.name} ${isVerified(d)?'<span class="paw">🐾</span>':''}`;
+    const galleryHTML=(store.gallery||[]).map(src=>`<img class="pp-thumb" src="${src}" alt="">`).join('')||'<div class="muted small">Nessuna foto aggiunta.</div>';
+    const postsHTML=(store.posts||[]).slice().reverse().map(p=>`<div class="pp-post"><div>${p.text}</div><div class="ts">${new Date(p.ts).toLocaleString()}</div></div>`).join('')||'<div class="muted small">Nessun post ancora.</div>';
+    body.innerHTML=`
       <img class="pp-cover" src="${d.image}" alt="${d.name}" onerror="this.style.display='none'">
-
       <div class="pp-section">
         <h3>${d.name}, ${d.age} ${isVerified(d)?'<span class="paw">🐾</span>':''}</h3>
         <div class="meta">${d.breed} · ${d.sex==='F'?'Femmina':'Maschio'} · ${d.size} · ${d.coat}</div>
         <div class="meta"><b>Energia:</b> ${d.energy} · <b>Pedigree:</b> ${d.pedigree} · <b>Zona:</b> ${d.area} · <b>Distanza:</b> ${distance ?? '-'} km</div>
-        <div class="badge-state ${isVerified(d)?'badge-ok':'badge-ko'}">
-          ${isVerified(d) ? 'Badge attivo ✅' : 'Badge non attivo'}
-        </div>
-        <div class="pp-actions">
-          <button class="circle no" id="ppNo">🥲</button>
-          <button class="circle like" id="ppYes">❤️</button>
-        </div>
+        <div class="badge-state ${isVerified(d)?'badge-ok':'badge-ko'}">${isVerified(d)?'Badge attivo ✅':'Badge non attivo'}</div>
+        <div class="pp-actions"><button class="circle no" id="ppNo">🥲</button><button class="circle like" id="ppYes">❤️</button></div>
       </div>
-
       <div class="pp-section">
         <h4>Galleria foto</h4>
         <div class="pp-gallery" id="ppGallery">${galleryHTML}</div>
-        <div class="pp-uploader">
-          <label class="btn light small">
-            Aggiungi foto
-            <input id="ppAddPhotos" type="file" accept="image/*" multiple>
-          </label>
-        </div>
+        <div class="pp-uploader"><label class="btn light small">Aggiungi foto<input id="ppAddPhotos" type="file" accept="image/*" multiple></label></div>
       </div>
-
       <div class="pp-section">
         <h4>Stato</h4>
         <div class="pp-post-new">
           <textarea id="ppStatus" class="pp-textarea" placeholder="Scrivi un aggiornamento…"></textarea>
-          <div style="display:flex;gap:8px;justify-content:flex-end">
-            <button id="ppPostBtn" class="btn primary">Pubblica</button>
-          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end"><button id="ppPostBtn" class="btn primary">Pubblica</button></div>
         </div>
         <div class="pp-posts" id="ppPosts">${postsHTML}</div>
       </div>
-
       <div class="pp-section">
         <h4>Verifica documenti</h4>
         <div class="pp-verify-row">
-          <label class="btn light small" style="text-align:center">
-            Documento proprietario ${store.owner?'✔️':''}
-            <input id="ppOwnerDoc" type="file" accept="image/*,application/pdf">
-          </label>
-          <label class="btn light small" style="text-align:center">
-            Documento del cane ${store.dog?'✔️':''}
-            <input id="ppDogDoc" type="file" accept="image/*,application/pdf">
-          </label>
+          <label class="btn light small" style="text-align:center">Documento proprietario ${store.owner?'✔️':''}<input id="ppOwnerDoc" type="file" accept="image/*,application/pdf"></label>
+          <label class="btn light small" style="text-align:center">Documento del cane ${store.dog?'✔️':''}<input id="ppDogDoc" type="file" accept="image/*,application/pdf"></label>
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
-          <button id="ppSendVerify" class="btn primary">Invia per verifica</button>
-        </div>
-        <div class="muted small" style="margin-top:6px">
-          Il badge si attiva solo quando entrambi i documenti risultano caricati.
-        </div>
-      </div>
-    `;
-
-    // azioni base
-    document.getElementById('ppNo').onclick  = ()=> closeProfilePage();
-    document.getElementById('ppYes').onclick = ()=>{ addMatch(d); incLikesMaybeAd(); closeProfilePage(); };
-
-    // upload foto → salva come dataURL (demo, localStorage)
-    document.getElementById('ppAddPhotos').onchange = async (e)=>{
-      const files = Array.from(e.target.files||[]);
-      for(const f of files){
-        const url = await fileToDataURL(f);
-        store.gallery.push(url);
-      }
-      setProfileStore(d.id, store);
-      render(); // aggiorna galleria
-    };
-
-    // post stato
-    document.getElementById('ppPostBtn').onclick = ()=>{
-      const ta = document.getElementById('ppStatus');
-      const t = (ta.value||'').trim();
-      if(!t) return;
-      store.posts.push({text:t, ts:Date.now()});
-      setProfileStore(d.id, store);
-      ta.value='';
-      render(); // aggiorna lista post
-    };
-
-    // documenti
-    let tmpOwner = null, tmpDog = null;
-    document.getElementById('ppOwnerDoc').onchange = e=>{ tmpOwner = (e.target.files||[])[0] || null; };
-    document.getElementById('ppDogDoc').onchange   = e=>{ tmpDog   = (e.target.files||[])[0] || null; };
-    document.getElementById('ppSendVerify').onclick = ()=>{
-      if(tmpOwner) store.owner = true;
-      if(tmpDog)   store.dog   = true;
-      setProfileStore(d.id, store);
-      // se entrambi ok → mostra badge anche nelle liste
-      render();
-      renderNear(); renderSwipe();
-    };
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button id="ppSendVerify" class="btn primary">Invia per verifica</button></div>
+        <div class="muted small" style="margin-top:6px">Il badge si attiva solo quando entrambi i documenti risultano caricati.</div>
+      </div>`;
+    document.getElementById('ppNo').onclick=()=>closeProfilePage();
+    document.getElementById('ppYes').onclick=()=>{addMatch(d);incLikesMaybeAd();closeProfilePage();};
+    document.getElementById('ppAddPhotos').onchange=async (e)=>{ const files=Array.from(e.target.files||[]); for(const f of files){ const url=await fileToDataURL(f); store.gallery.push(url);} setProfileStore(d.id,store); render(); };
+    document.getElementById('ppPostBtn').onclick=()=>{ const ta=document.getElementById('ppStatus'); const t=(ta.value||'').trim(); if(!t) return; store.posts.push({text:t,ts:Date.now()}); setProfileStore(d.id,store); ta.value=''; render(); };
+    let tmpOwner=null,tmpDog=null;
+    document.getElementById('ppOwnerDoc').onchange=e=>{tmpOwner=(e.target.files||[])[0]||null};
+    document.getElementById('ppDogDoc').onchange=e=>{tmpDog=(e.target.files||[])[0]||null};
+    document.getElementById('ppSendVerify').onclick=()=>{ if(tmpOwner) store.owner=true; if(tmpDog) store.dog=true; setProfileStore(d.id,store); render(); renderNear(); renderSwipe(); };
   }
-
   render();
   page.classList.add('show');
 }
-function fileToDataURL(file){
-  return new Promise((res,rej)=>{
-    const r = new FileReader();
-    r.onload = ()=> res(r.result);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-function closeProfilePage(){
-  const page = document.getElementById('profilePage');
-  if(!page) return;
-  page.classList.remove('show');
-}
-window.closeProfilePage = closeProfilePage;
+function fileToDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
+function closeProfilePage(){ const page=document.getElementById('profilePage'); if(!page) return; page.classList.remove('show'); }
+window.closeProfilePage=closeProfilePage;
 
 /* ===================== MATCH & CHAT ===================== */
 function addMatch(d){ if(!matches.find(m=>m.id===d.id)){ matches.push({id:d.id,name:d.name,img:d.image}); localStorage.setItem('pl_matches',JSON.stringify(matches)); } renderMatches(); }
