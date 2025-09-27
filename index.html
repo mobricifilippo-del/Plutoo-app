@@ -12,7 +12,6 @@
   <!-- TOPBAR (sempre visibile) -->
   <header class="topbar">
     <div class="brand-slot">
-      <!-- mini brand solo come decor, la Home sotto ha il logo grande -->
       <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'"/>
       <span class="brand-name">Plutoo</span>
     </div>
@@ -204,7 +203,7 @@
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- PROFILO FULL-SCREEN (per app.js openProfilePage) -->
+  <!-- PROFILO FULL-SCREEN (usato da app.js) -->
   <section id="profilePage" class="profile-page">
     <div class="pp-head">
       <strong id="ppTitle">Profilo</strong>
@@ -213,101 +212,19 @@
     <div id="ppBody" class="pp-body"></div>
   </section>
 
-  <!-- MODAL PROFILO CANE (legacy, usato da versioni precedenti) -->
-  <dialog id="dogModal" class="modal">
-    <div id="modalBody"></div>
-    <button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button>
-  </dialog>
+  <!-- MODALI/FOGLI LEGACY (restano per compatibilità) -->
+  <dialog id="dogModal" class="modal"><div id="modalBody"></div><button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button></dialog>
+  <dialog id="verifyModal" class="modal"><div class="verify-body"><h3>Richiedi badge di verifica</h3><p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p><label class="upload">Documento proprietario<input type="file" /></label><label class="upload">Documento del cane<input type="file" /></label><div class="row-cta"><button class="btn light" onclick="document.getElementById('verifyModal').close()">Annulla</button><button class="btn primary" id="sendVerify">Invia</button></div><p id="verifyMsg" class="ok-msg" hidden>Richiesta inviata, in revisione ✅</p></div></dialog>
 
-  <!-- MODAL VERIFICA (upload documenti) -->
-  <dialog id="verifyModal" class="modal">
-    <div class="verify-body">
-      <h3>Richiedi badge di verifica</h3>
-      <p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p>
-      <label class="upload">Documento proprietario<input type="file" /></label>
-      <label class="upload">Documento del cane<input type="file" /></label>
-      <div class="row-cta">
-        <button class="btn light" onclick="document.getElementById('verifyModal').close()">Annulla</button>
-        <button class="btn primary" id="sendVerify">Invia</button>
-      </div>
-      <p id="verifyMsg" class="ok-msg" hidden>Richiesta inviata, in revisione ✅</p>
-    </div>
-  </dialog>
+  <div id="sheetLogin" class="sheet"><div class="sheet-box"><div class="sheet-head"><strong>Login</strong><button class="close" data-close="sheetLogin">×</button></div><div class="sheet-body"><input class="inp" placeholder="Email"><input class="inp" placeholder="Password" type="password"><button id="loginSubmit" class="btn primary full">Continua</button></div></div></div>
+  <div id="sheetRegister" class="sheet"><div class="sheet-box"><div class="sheet-head"><strong>Registrati</strong><button class="close" data-close="sheetRegister">×</button></div><div class="sheet-body"><input class="inp" placeholder="Nome"><input class="inp" placeholder="Email"><input class="inp" placeholder="Password" type="password"><button id="registerSubmit" class="btn primary full">Crea account</button></div></div></div>
 
-  <!-- SHEETS LOGIN / REGISTER / CHAT -->
-  <div id="sheetLogin" class="sheet">
-    <div class="sheet-box">
-      <div class="sheet-head">
-        <strong>Login</strong>
-        <button class="close" data-close="sheetLogin">×</button>
-      </div>
-      <div class="sheet-body">
-        <input class="inp" placeholder="Email">
-        <input class="inp" placeholder="Password" type="password">
-        <button id="loginSubmit" class="btn primary full">Continua</button>
-      </div>
-    </div>
-  </div>
+  <div id="chat" class="sheet"><div class="sheet-box"><div class="sheet-head"><div class="chat-head"><img id="chatAvatar" class="avatar" src="dog1.jpg" alt=""><div id="chatName" class="chat-name">Chat</div></div><button class="close" data-close="chat">×</button></div><div class="sheet-body chat-body"><div id="thread" class="thread"></div><div class="chat-send"><input id="chatInput" class="inp" placeholder="Scrivi…"><button id="sendBtn" class="btn primary">Invia</button></div></div></div></div>
 
-  <div id="sheetRegister" class="sheet">
-    <div class="sheet-box">
-      <div class="sheet-head">
-        <strong>Registrati</strong>
-        <button class="close" data-close="sheetRegister">×</button>
-      </div>
-      <div class="sheet-body">
-        <input class="inp" placeholder="Nome">
-        <input class="inp" placeholder="Email">
-        <input class="inp" placeholder="Password" type="password">
-        <button id="registerSubmit" class="btn primary full">Crea account</button>
-      </div>
-    </div>
-  </div>
+  <dialog id="interstitial" class="modal inter"><div class="inter-body"><h3>Annuncio video (placeholder)</h3><p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p><button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button></div></dialog>
 
-  <div id="chat" class="sheet">
-    <div class="sheet-box">
-      <div class="sheet-head">
-        <div class="chat-head">
-          <img id="chatAvatar" class="avatar" src="dog1.jpg" alt="">
-          <div id="chatName" class="chat-name">Chat</div>
-        </div>
-        <button class="close" data-close="chat">×</button>
-      </div>
-      <div class="sheet-body chat-body">
-        <div id="thread" class="thread"></div>
-        <div class="chat-send">
-          <input id="chatInput" class="inp" placeholder="Scrivi…">
-          <button id="sendBtn" class="btn primary">Invia</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL INTERSTITIAL (placeholder dopo 10 like) -->
-  <dialog id="interstitial" class="modal inter">
-    <div class="inter-body">
-      <h3>Annuncio video (placeholder)</h3>
-      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
-      <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
-    </div>
-  </dialog>
-
-  <!-- MODALI PRIVACY/TERMINI (contenuto base) -->
-  <dialog id="privacyDlg" class="modal legal">
-    <div class="pad">
-      <h3>Privacy</h3>
-      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
-      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
-      <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
-    </div>
-  </dialog>
-  <dialog id="termsDlg" class="modal legal">
-    <div class="pad">
-      <h3>Termini</h3>
-      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
-      <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
-    </div>
-  </dialog>
+  <dialog id="privacyDlg" class="modal legal"><div class="pad"><h3>Privacy</h3><p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p><p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p><button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button></div></dialog>
+  <dialog id="termsDlg" class="modal legal"><div class="pad"><h3>Termini</h3><p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p><button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button></div></dialog>
 
   <script src="app.js"></script>
 </body>
