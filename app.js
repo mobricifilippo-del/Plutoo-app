@@ -70,6 +70,7 @@ $('#enableGeo')?.addEventListener('click', ()=>{ navigator.geolocation.getCurren
   pos=>{userPos={lat:pos.coords.latitude,lon:pos.coords.longitude};$('#geoBar')?.classList.add('hidden');renderNear();renderSwipe();},
   _=>{$('#geoBar')?.classList.add('hidden');},{enableHighAccuracy:true,timeout:8000});});
 $('#dismissGeo')?.addEventListener('click', ()=> $('#geoBar')?.classList.add('hidden'));
+
 /* ===================== FILTRI ===================== */
 function toggleSearch(){ const p=$('#filterPanel'); if(p) p.hidden=!p.hidden; }
 window.toggleSearch=toggleSearch;
