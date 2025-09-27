@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <!-- TOPBAR (sempre visibile) -->
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand-slot">
       <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'"/>
@@ -21,7 +21,7 @@
     </nav>
   </header>
 
-  <!-- ============= HOME (ELEGANTE) ============= -->
+  <!-- HOME -->
   <main id="landing" class="screen active">
     <section class="hero">
       <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
@@ -30,7 +30,7 @@
 
       <div class="sponsor-block">
         <div class="sponsor-label">
-          Sponsor ufficiale – Fido, il gelato per i tuoi amici a quattro zampe
+          Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe
         </div>
         <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
           <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
@@ -45,9 +45,9 @@
     </section>
   </main>
 
-  <!-- ============= APP (4 TAB) ============= -->
+  <!-- APP -->
   <section id="app" class="screen">
-    <!-- barra geolocalizzazione -->
+    <!-- geolocalizzazione -->
     <div id="geoBar" class="geobar hidden">
       <span>Attiva la posizione per vedere gli amici vicino a te</span>
       <div class="g-actions">
@@ -56,13 +56,13 @@
       </div>
     </div>
 
-    <!-- header tabs + toggle filtri -->
+    <!-- tabs + filtri -->
     <div class="filters-header">
       <div class="tabs">
-        <button class="tab active" data-tab="near">Vicino</button>
-        <button class="tab" data-tab="swipe">Scorri</button>
+        <button class="tab active" data-tab="near">Vicino a te</button>
+        <button class="tab" data-tab="love">Amore</button>
+        <button class="tab" data-tab="social">Giocare/Camminare</button>
         <button class="tab" data-tab="matches">Match</button>
-        <button class="tab" data-tab="play">Giochiamo</button>
       </div>
       <button id="filterToggle" class="btn ghost">Ricerca personalizzata ▾</button>
     </div>
@@ -109,7 +109,7 @@
           </label>
 
           <label class="f-item">
-            <span>Taglia</span>
+        <span>Taglia</span>
             <select name="size">
               <option value="">Tutte</option>
               <option>Piccola</option>
@@ -168,20 +168,40 @@
       <div id="emptyNear" class="empty hidden">Nessun profilo.</div>
     </section>
 
-    <!-- SCORRI -->
-    <section id="swipe" class="tabpane">
+    <!-- AMORE (🥲 / ❤️) -->
+    <section id="love" class="tabpane">
       <div class="deck">
         <article class="card big">
-          <img id="swipeImg" src="dog1.jpg" alt="">
+          <img id="loveImg" src="dog1.jpg" alt="">
           <div class="card-info">
             <div class="title">
-              <div id="swipeTitle" class="name">—</div>
-              <div id="swipeMeta" class="dist">—</div>
+              <div id="loveTitle" class="name">—</div>
+              <div id="loveMeta" class="dist">—</div>
             </div>
-            <p id="swipeBio" class="bio">—</p>
+            <p id="loveBio" class="bio">—</p>
             <div class="actions">
-              <button id="noBtn" class="circle no">🥲</button>
-              <button id="yesBtn" class="circle like">❤️</button>
+              <button id="loveNo" class="circle no">🥲</button>
+              <button id="loveYes" class="circle like">❤️</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- GIOCARE/CAMMINARE (🥲 / 🐕) -->
+    <section id="social" class="tabpane">
+      <div class="deck">
+        <article class="card big">
+          <img id="socImg" src="dog1.jpg" alt="">
+          <div class="card-info">
+            <div class="title">
+              <div id="socTitle" class="name">—</div>
+              <div id="socMeta" class="dist">—</div>
+            </div>
+            <p id="socBio" class="bio">—</p>
+            <div class="actions">
+              <button id="socNo" class="circle no">🥲</button>
+              <button id="socYes" class="circle dog">🐕</button>
             </div>
           </div>
         </article>
@@ -194,28 +214,21 @@
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
 
-    <!-- GIOCHIAMO INSIEME -->
-    <section id="play" class="tabpane">
-      <div id="playCounter" class="counter"></div>
-      <div id="playGrid" class="grid"></div>
-      <div id="emptyPlay" class="empty hidden">Nessuno disponibile per giocare.</div>
-    </section>
-
-    <!-- SPONSOR in fondo a tutte le viste APP -->
+    <!-- SPONSOR footer -->
     <div class="sponsor-app">
       <div class="sponsor-label">
-        Sponsor ufficiale – Fido, il gelato per i tuoi amici a quattro zampe
+        Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe
       </div>
       <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
         <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
       </a>
     </div>
 
-    <!-- Banner pubblicitario (placeholder web, sticky) -->
+    <!-- Banner pubblicitario (placeholder) -->
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- PROFILO FULL-SCREEN (usato da app.js) -->
+  <!-- PAGINA PROFILO FULLSCREEN -->
   <section id="profilePage" class="profile-page">
     <div class="pp-head">
       <strong id="ppTitle">Profilo</strong>
@@ -224,16 +237,13 @@
     <div id="ppBody" class="pp-body"></div>
   </section>
 
-  <!-- MODALI/FOGLI LEGACY (compatibilità, non usati per il profilo pagina) -->
-  <dialog id="dogModal" class="modal"><div id="modalBody"></div><button class="close-modal" onclick="document.getElementById('dogModal').close()">Chiudi</button></dialog>
-  <dialog id="verifyModal" class="modal"><div class="verify-body"><h3>Richiedi badge di verifica</h3><p class="muted small">Carica i documenti richiesti. La richiesta sarà valutata (demo).</p><label class="upload">Documento proprietario<input type="file" /></label><label class="upload">Documento del cane<input type="file" /></label><div class="row-cta"><button class="btn light" onclick="document.getElementById('verifyModal').close()">Annulla</button><button class="btn primary" id="sendVerify">Invia</button></div><p id="verifyMsg" class="ok-msg" hidden>Richiesta inviata, in revisione ✅</p></div></dialog>
+  <!-- DIALOG / SHEETS / CHAT / LEGAL -->
+  <dialog id="interstitial" class="modal inter"><div class="inter-body"><h3>Annuncio video (placeholder)</h3><p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p><button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button></div></dialog>
 
   <div id="sheetLogin" class="sheet"><div class="sheet-box"><div class="sheet-head"><strong>Login</strong><button class="close" data-close="sheetLogin">×</button></div><div class="sheet-body"><input class="inp" placeholder="Email"><input class="inp" placeholder="Password" type="password"><button id="loginSubmit" class="btn primary full">Continua</button></div></div></div>
   <div id="sheetRegister" class="sheet"><div class="sheet-box"><div class="sheet-head"><strong>Registrati</strong><button class="close" data-close="sheetRegister">×</button></div><div class="sheet-body"><input class="inp" placeholder="Nome"><input class="inp" placeholder="Email"><input class="inp" placeholder="Password" type="password"><button id="registerSubmit" class="btn primary full">Crea account</button></div></div></div>
 
   <div id="chat" class="sheet"><div class="sheet-box"><div class="sheet-head"><div class="chat-head"><img id="chatAvatar" class="avatar" src="dog1.jpg" alt=""><div id="chatName" class="chat-name">Chat</div></div><button class="close" data-close="chat">×</button></div><div class="sheet-body chat-body"><div id="thread" class="thread"></div><div class="chat-send"><input id="chatInput" class="inp" placeholder="Scrivi…"><button id="sendBtn" class="btn primary">Invia</button></div></div></div></div>
-
-  <dialog id="interstitial" class="modal inter"><div class="inter-body"><h3>Annuncio video (placeholder)</h3><p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p><button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button></div></dialog>
 
   <dialog id="privacyDlg" class="modal legal"><div class="pad"><h3>Privacy</h3><p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p><p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p><button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button></div></dialog>
   <dialog id="termsDlg" class="modal legal"><div class="pad"><h3>Termini</h3><p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p><button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button></div></dialog>
