@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Plutoo</title>
   <link rel="icon" href="plutoo-icon-512.png" />
-  <link rel="stylesheet" href="style.css?v=8" />
+  <!-- cache-busting per Android/WebView -->
+  <link rel="stylesheet" href="style.css?v=9" />
 </head>
 <body>
 
@@ -208,7 +209,7 @@
   </section>
 
   <!-- ============== PAGINA PROFILO FULLSCREEN (stile Facebook) ============== -->
-  <div id="profilePage" class="page" hidden>
+  <div id="profilePage" class="page">
     <div class="page-head">
       <button class="back" onclick="closeProfilePage()">←</button>
       <div id="ppTitle" class="title">Profilo</div>
@@ -304,6 +305,7 @@
     </div>
   </dialog>
 
-  <script src="app.js?v=8"></script>
+  <!-- ============== JS ============== -->
+  <script src="app.js?v=9"></script>
 </body>
 </html>
