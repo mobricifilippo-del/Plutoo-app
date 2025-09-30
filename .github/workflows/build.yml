@@ -25,6 +25,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      # ⚠️ Qui forziamo le risposte ai prompt di Bubblewrap:
+      # 1) "Vuoi che Bubblewrap installi il JDK?"  -> rispondiamo "n"
+      # 2) "Path to your existing JDK 17:"         -> passiamo $JAVA_HOME
       - name: Init Android project from PWA (no prompts)
         env:
           MANIFEST_URL: https://mobricifilippo-del.github.io/Plutoo-app/manifest.json
@@ -32,11 +35,11 @@ jobs:
         run: |
           set -e
           rm -rf android
-          bubblewrap init \
+          # risposte automatiche: no + percorso JDK
+          printf "n\n$JAVA_HOME\n" | bubblewrap init \
             --manifest "$MANIFEST_URL" \
             --directory android \
-            --skip-prompt \
-            --jdk-path "$JAVA_HOME"
+            --skip-prompt
 
       - name: Build APK (debug)
         working-directory: android
