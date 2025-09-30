@@ -1,7 +1,53 @@
 name: Android Build
-on: { workflow_dispatch: {} }
+
+on:
+  workflow_dispatch:
+
+env:
+  # URL pubblico della tua PWA già online su GitHub Pages
+  SITE_URL: https://mobricifilippo-del.github.io/Plutoo-app/
+
 jobs:
-  noop:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo Android-Build-ok
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Bubblewrap CLI
+        run: npm i -g @bubblewrap/cli
+
+      - name: Create Android project from Web Manifest
+        # --skipPwaValidation: evitiamo blocchi se la pagina non è
+        # perfettamente raggiungibile al primo colpo.
+        # Usiamo un trucco per auto-accettare i default e saltare la firma.
+        shell: bash
+        run: |
+          mkdir -p twa
+          # Inizializza il progetto partendo dal tuo manifest online
+          yes "" | bubblewrap init \
+            --manifest="${SITE_URL}manifest.json" \
+            --directory="twa" \
+            --skipPwaValidation || true
+
+          cd twa
+          # Compila APK di debug (niente keystore necessario)
+          ./gradlew assembleDebug
+
+      - name: Upload APK (debug)
+        uses: actions/upload-artifact@v4
+        with:
+          name: plutoo-debug-apk
+          path: twa/app/build/outputs/apk/debug/app-debug.apk
