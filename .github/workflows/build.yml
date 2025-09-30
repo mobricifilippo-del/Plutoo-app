@@ -11,32 +11,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup Node
+      - name: Setup Node 18
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 18
 
-      - name: Install Bubblewrap
-        run: npm i -g @bubblewrap/cli
+      - name: Setup JDK 17 (Temurin)
+        id: java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      # ⛔️ QUI SI BLOCCAVA: forziamo NO prompt + JDK esplicito
       - name: Init Android project from PWA
+        env:
+          MANIFEST_URL: "https://mobricifilippo-del.github.io/Plutoo-app/manifest.json"
+          JAVA_HOME: ${{ steps.java.outputs.java-home }}
         run: |
-          MANIFEST_URL="https://mobricifilippo-del.github.io/Plutoo-app/manifest.json"
-          bubblewrap init --manifest="$MANIFEST_URL" --directory android --skip-prompt --jdkPath "$JAVA_HOME"
+          set -e
+          echo "Using JAVA_HOME=$JAVA_HOME"
+          npx bubblewrap init \
+            --manifest="$MANIFEST_URL" \
+            --directory android \
+            --skip-prompt \
+            --jdkPath "$JAVA_HOME"
 
       - name: Build APK (debug)
         run: |
           cd android
-          ./gradlew assembleDebug
+          ./gradlew --no-daemon assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug.apk
+          name: Plutoo-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
