@@ -14,46 +14,48 @@ jobs:
       - name: Setup Node 18
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Bubblewrap CLI
+        run: |
+          npm i -g @bubblewrap/cli
 
       - name: Setup JDK 17 (Temurin)
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      # 🔧 Ricavo il path del JDK reale e lo salvo in $JDK_PATH
       - name: Resolve JDK path
+        id: jdk
         run: |
-          set -e
-          JDK_PATH="$(dirname "$(dirname "$(readlink -f "$(which javac)")")")"
-          echo "JDK_PATH=$JDK_PATH" >> $GITHUB_ENV
-          echo "Using JDK_PATH=$JDK_PATH"
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "jdk_path=$JAVA_HOME" >> "$GITHUB_OUTPUT"
 
       - name: Init Android project from PWA (no prompts)
         env:
-          MANIFEST_URL: "https://mobricifilippo-del.github.io/Plutoo-app/manifest.json"
+          MANIFEST_URL: https://mobricifilippo-del.github.io/Plutoo-app/manifest.json
+          JDK_PATH: ${{ steps.jdk.outputs.jdk_path }}
         run: |
           set -e
-          npx bubblewrap init \
+          rm -rf android
+          # Risposte automatiche ai prompt Bubblewrap:
+          #  1) "Install JDK?" -> n
+          #  2) "Path to your existing JDK 17:" -> $JDK_PATH
+          printf 'n\n%s\n' "$JDK_PATH" | bubblewrap init \
             --manifest "$MANIFEST_URL" \
             --directory android \
-            --skip-prompt \
-            --jdkPath "$JDK_PATH"
+            --skip-prompt
 
       - name: Build APK (debug)
+        working-directory: android
         run: |
-          cd android
-          ./gradlew --no-daemon assembleDebug
+          bubblewrap build --skip-prompt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Plutoo-debug-apk
+          name: plutoo-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
