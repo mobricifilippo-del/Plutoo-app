@@ -17,10 +17,9 @@ jobs:
           node-version: 18
 
       - name: Setup JDK 17 (Temurin)
-        id: java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
 
       - name: Setup Android SDK
@@ -29,19 +28,24 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      # ⛔️ QUI SI BLOCCAVA: forziamo NO prompt + JDK esplicito
-      - name: Init Android project from PWA
-        env:
-          MANIFEST_URL: "https://mobricifilippo-del.github.io/Plutoo-app/manifest.json"
-          JAVA_HOME: ${{ steps.java.outputs.java-home }}
+      # 🔧 Ricavo il path del JDK reale e lo salvo in $JDK_PATH
+      - name: Resolve JDK path
         run: |
           set -e
-          echo "Using JAVA_HOME=$JAVA_HOME"
+          JDK_PATH="$(dirname "$(dirname "$(readlink -f "$(which javac)")")")"
+          echo "JDK_PATH=$JDK_PATH" >> $GITHUB_ENV
+          echo "Using JDK_PATH=$JDK_PATH"
+
+      - name: Init Android project from PWA (no prompts)
+        env:
+          MANIFEST_URL: "https://mobricifilippo-del.github.io/Plutoo-app/manifest.json"
+        run: |
+          set -e
           npx bubblewrap init \
-            --manifest="$MANIFEST_URL" \
+            --manifest "$MANIFEST_URL" \
             --directory android \
             --skip-prompt \
-            --jdkPath "$JAVA_HOME"
+            --jdkPath "$JDK_PATH"
 
       - name: Build APK (debug)
         run: |
