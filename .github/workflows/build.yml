@@ -15,11 +15,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Install Bubblewrap CLI
-        run: |
-          npm i -g @bubblewrap/cli
+        run: npm i -g @bubblewrap/cli
 
       - name: Setup JDK 17 (Temurin)
         uses: actions/setup-java@v4
@@ -40,9 +38,6 @@ jobs:
         run: |
           set -e
           rm -rf android
-          # Risposte automatiche ai prompt Bubblewrap:
-          #  1) "Install JDK?" -> n
-          #  2) "Path to your existing JDK 17:" -> $JDK_PATH
           printf 'n\n%s\n' "$JDK_PATH" | bubblewrap init \
             --manifest "$MANIFEST_URL" \
             --directory android \
@@ -50,8 +45,7 @@ jobs:
 
       - name: Build APK (debug)
         working-directory: android
-        run: |
-          bubblewrap build --skip-prompt
+        run: bubblewrap build --skip-prompt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
