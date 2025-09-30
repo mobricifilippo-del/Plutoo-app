@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo</title>
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b0b3a">
-<link rel="apple-touch-icon" href="plutoo-icon-512.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0b0b3a">
+  <link rel="apple-touch-icon" href="plutoo-icon-512.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="icon" href="plutoo-icon-512.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -253,5 +253,12 @@
   <dialog id="termsDlg" class="modal legal"><div class="pad"><h3>Termini</h3><p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p><button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button></div></dialog>
 
   <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js")
+        .then(() => console.log("Service Worker registrato"))
+        .catch(err => console.error("Errore Service Worker:", err));
+    }
+  </script>
 </body>
 </html>
