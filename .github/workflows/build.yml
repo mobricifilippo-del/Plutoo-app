@@ -3,51 +3,38 @@ name: Android Build
 on:
   workflow_dispatch:
 
-env:
-  # URL pubblico della tua PWA già online su GitHub Pages
-  SITE_URL: https://mobricifilippo-del.github.io/Plutoo-app/
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup Node 20
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
 
-      - name: Install Bubblewrap CLI
-        run: npm i -g @bubblewrap/cli
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Create Android project from Web Manifest
-        # --skipPwaValidation: evitiamo blocchi se la pagina non è
-        # perfettamente raggiungibile al primo colpo.
-        # Usiamo un trucco per auto-accettare i default e saltare la firma.
-        shell: bash
+      - name: Install Bubblewrap
+        run: npm install -g @bubblewrap/cli
+
+      - name: Init Android project from PWA
         run: |
-          mkdir -p twa
-          # Inizializza il progetto partendo dal tuo manifest online
-          yes "" | bubblewrap init \
-            --manifest="${SITE_URL}manifest.json" \
-            --directory="twa" \
-            --skipPwaValidation || true
+          bubblewrap init --manifest=https://mobricifilippo-del.github.io/Plutoo-app/manifest.json --directory android --skip-prompt
 
-          cd twa
-          # Compila APK di debug (niente keystore necessario)
-          ./gradlew assembleDebug
+      - name: Build APK (debug)
+        working-directory: android
+        run: ./gradlew assembleDebug
 
-      - name: Upload APK (debug)
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: plutoo-debug-apk
-          path: twa/app/build/outputs/apk/debug/app-debug.apk
+          name: Plutoo-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
