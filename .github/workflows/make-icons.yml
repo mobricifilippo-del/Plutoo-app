@@ -2,34 +2,26 @@ name: Make PWA Icons
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - plutoo-icon-512.png
 
 jobs:
-  build-icons:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install ImageMagick
         run: sudo apt-get update && sudo apt-get install -y imagemagick
 
-      - name: Create icons folder
-        run: mkdir -p icons
-
-      - name: Generate 512x512
+      - name: Generate icons
         run: |
+          mkdir -p icons
+          convert plutoo-icon-512.png -resize 192x192 icons/icon-192.png
           convert plutoo-icon-512.png -resize 512x512 icons/icon-512.png
-          # maskable = stessa immagine ma dichiarata come maskable
-          cp icons/icon-512.png icons/icon-512-maskable.png
+          convert plutoo-icon-512.png -resize 512x512 icons/icon-512-maskable.png
 
-      - name: Generate 192x192
-        run: convert plutoo-icon-512.png -resize 192x192 icons/icon-192.png
-
-      - name: Commit icons
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Upload icons
+        uses: actions/upload-artifact@v4
         with:
-          commit_message: "chore: add generated PWA icons (192/512)"
-          file_pattern: icons/icon-192.png icons/icon-512.png icons/icon-512-maskable.png
+          name: pwa-icons
+          path: icons/
