@@ -1,11 +1,7 @@
 name: Android Build
-
-on:
-  workflow_dispatch:
-
+on: { workflow_dispatch: {} }
 jobs:
   noop:
     runs-on: ubuntu-latest
     steps:
-      - name: Placeholder
-        run: echo "Android Build disattivato: parte solo manualmente"
+      - run: echo Android-Build-ok
