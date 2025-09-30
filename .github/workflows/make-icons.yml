@@ -1,10 +1,14 @@
 name: Make PWA Icons
+
 on:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,8 +22,13 @@ jobs:
           convert plutoo-icon-512.png -resize 192x192 icons/icon-192.png
           convert plutoo-icon-512.png -resize 512x512 icons/icon-512.png
 
-      - name: Upload icons
-        uses: actions/upload-artifact@v4
+      - name: Move icons to repo root
+        run: |
+          mv -f icons/icon-192.png icon-192.png
+          mv -f icons/icon-512.png icon-512.png
+
+      - name: Commit icons
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          name: pwa-icons
-          path: icons/
+          commit_message: "Add PWA icons"
+          file_pattern: "icon-192.png icon-512.png"
