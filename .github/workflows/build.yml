@@ -27,14 +27,15 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # Forza tutte le risposte ai prompt (invio vuoto) così NON resta bloccato
-      - name: Init Android project from PWA (no prompts)
+      - name: Init Android project from PWA (auto answers)
         env:
           MANIFEST_URL: https://berchell.github.io/Plutoo-app/manifest.json
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
         run: |
           set -e
           rm -rf android
-          yes "" | bubblewrap init \
+          # Rispondiamo "n" alla domanda sul JDK e passiamo il path corretto
+          printf "n\n$JAVA_HOME\n" | bubblewrap init \
             --manifest "$MANIFEST_URL" \
             --directory android \
             --skip-prompt
