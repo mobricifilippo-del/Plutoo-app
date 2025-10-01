@@ -25,8 +25,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # Inizializza il progetto Android SENZA prompt
-      - name: Init Android project from PWA (no prompts)
+      - name: Init Android project from PWA (force no prompts)
         env:
           MANIFEST_URL: https://mobricifilippo-del.github.io/Plutoo-app/manifest.json
           JAVA_HOME: ${{ env.JAVA_HOME }}
@@ -35,18 +34,18 @@ jobs:
           bubblewrap init \
             --manifest "$MANIFEST_URL" \
             --directory android \
-            --skip-prompt \
             --jdkPath "$JAVA_HOME" \
+            --skipPwaValidation \
+            --skipPrompt \
             --packageId com.plutoo.app \
             --name "Plutoo" \
             --appVersionName 1.0.0 \
             --appVersionCode 1 \
-            --host plutoo-app \
-            --signingKeyPath /dev/null
+            --host plutoo-app
 
       - name: Build APK (debug)
         working-directory: android
-        run: bubblewrap build --skip-prompt
+        run: bubblewrap build --skipPrompt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
