@@ -25,9 +25,6 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm i -g @bubblewrap/cli
 
-      - name: Install expect (for interactive answers)
-        run: sudo apt-get update && sudo apt-get install -y expect
-
       - name: Install Android SDK
         shell: bash
         run: |
@@ -48,40 +45,26 @@ jobs:
             echo "cmdline-tools/latest già presente, salto il move"
           else
             mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
-            # trova la cartella interna che contiene 'bin' (di solito .../temp/cmdline-tools)
             INNER=$(find "$ANDROID_SDK_ROOT/cmdline-tools/temp" -maxdepth 2 -type d -name bin | sed 's#/bin##')
             mv "$INNER"/* "$ANDROID_SDK_ROOT/cmdline-tools/latest/"
           fi
           rm -rf "$ANDROID_SDK_ROOT/cmdline-tools/temp"
 
-          # Accetta licenze e installa i pacchetti minimi per la build
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+          # Accetta licenze (ignora 'broken pipe' di yes se sdkmanager chiude prima)
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses || true
+
+          # Installa i pacchetti minimi per la build
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" \
             "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-          # Export per gli step successivi (compatibilità ANDROID_HOME)
+          # Export per gli step successivi
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
           echo "$ANDROID_SDK_ROOT/build-tools/34.0.0" >> $GITHUB_PATH
 
       - name: Init Android project from PWA (no prompts)
-        env:
-          MANIFEST_URL: https://plutoo.vercel.app/manifest.json
-          JAVA_HOME: ${{ env.JAVA_HOME }}
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-        shell: bash
-        run: |
-          set -e
-          rm -rf android
-          expect <<'EOF'
-          set timeout -1
-          spawn bubblewrap init --manifest $env(MANIFEST_URL) --directory android --skip-prompt
-          expect "Do you want Bubblewrap to install the JDK" { send "n\r" }
-          expect "Path to your existing JDK 17" { send "$env(JAVA_HOME)\r" }
-          expect "Path to your existing Android SDK" { send "$env(ANDROID_SDK_ROOT)\r" }
-          expect eof
-          EOF
+        run: bubblewrap init --manifest=https://plutoo.vercel.app/manifest.json --directory android --skip-prompt
 
       - name: Build APK (debug)
         working-directory: android
