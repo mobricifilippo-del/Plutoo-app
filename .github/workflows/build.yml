@@ -28,16 +28,14 @@ jobs:
       - name: Init Android project from PWA (no prompts)
         env:
           MANIFEST_URL: https://mobricifilippo-del.github.io/Plutoo-app/manifest.json
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
         run: |
-          set -e
           rm -rf android
           bubblewrap init \
-            --manifest "$MANIFEST_URL" \
+            --manifest $MANIFEST_URL \
             --directory android \
-            --skip-prompt
-
-      - name: Check android dir
-        run: ls -R .
+            --skip-prompt \
+            --jdkPath $JAVA_HOME
 
       - name: Build APK (debug)
         working-directory: android
