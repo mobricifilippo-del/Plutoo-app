@@ -3,14 +3,15 @@ name: Android Build
 on:
   workflow_dispatch:
 
+concurrency:
+  group: android-build
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up job
-        run: echo "Starting Android build..."
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -19,29 +20,46 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
       - name: Setup JDK 17 (Temurin)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Prepare android dir
-        run: mkdir -p android
+      - name: Install Bubblewrap CLI
+        run: npm i -g @bubblewrap/cli
+
+      - name: Install expect (for interactive answers)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y expect
 
       - name: Init Android project from PWA (no prompts)
+        env:
+          MANIFEST_URL: https://plutoo.vercel.app/manifest.json
         run: |
-          bubblewrap init --manifest=https://plutoo.vercel.app/manifest.json --directory android --skip-prompt
+          set -e
+          rm -rf android
+          # Risposte automatiche a tutti i prompt di bubblewrap
+          expect <<'EOF'
+            set timeout 1200
+            spawn bubblewrap init --manifest $env(MANIFEST_URL) --directory android
+            expect {
+              -re {Do you want Bubblewrap to install the JDK.*\?}               { send "n\r"; exp_continue }
+              -re {Path to your existing JDK 17.*:}                               { send "$env(JAVA_HOME)\r"; exp_continue }
+              -re {Do you want Bubblewrap to install the Android SDK.*\?}         { send "y\r"; exp_continue }
+              -re {Directory .*android does not exist.*create it now\?.*}         { send "y\r"; exp_continue }
+              eof
+            }
+          EOF
 
       - name: Build APK (debug)
-        run: |
-          cd android
-          bubblewrap build --skip-prompt
+        working-directory: android
+        run: bubblewrap build --skip-prompt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: plutoo-apk
+          name: plutoo-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
