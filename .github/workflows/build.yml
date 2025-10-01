@@ -25,17 +25,41 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Init Android project from PWA (no prompts)
+      # Installiamo "expect" e rispondiamo ai prompt di Bubblewrap in modo affidabile
+      - name: Init Android project from PWA (no prompts, with expect)
         env:
           MANIFEST_URL: https://mobricifilippo-del.github.io/Plutoo-app/manifest.json
         run: |
           set -e
+          sudo apt-get update
+          sudo apt-get install -y expect
           rm -rf android
-          # risposte automatiche: "n" (non installare JDK) + percorso JDK già presente in $JAVA_HOME
-          printf "n\n$JAVA_HOME\n" | bubblewrap init \
-            --manifest "$MANIFEST_URL" \
-            --directory android \
-            --skip-prompt
+
+          cat > do_init.exp <<'EOF'
+          #!/usr/bin/expect -f
+          set timeout -1
+          set jdk $env(JAVA_HOME)
+          set manifest $env(MANIFEST_URL)
+
+          # Avvia bubblewrap init
+          spawn bubblewrap init --manifest $manifest --directory android --skip-prompt
+
+          # 1) "Do you want Bubblewrap to install the JDK (recommended)?"
+          expect {
+            -re {Do you want Bubblewrap to install the JDK} { send "n\r" }
+          }
+
+          # 2) "Path to your existing JDK 17:"
+          expect {
+            -re {Path to your existing JDK 17} { send "$jdk\r" }
+          }
+
+          # Attendi fine esecuzione
+          expect eof
+          EOF
+
+          chmod +x do_init.exp
+          ./do_init.exp
 
       - name: Build APK (debug)
         working-directory: android
