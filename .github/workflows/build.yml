@@ -1,41 +1,4 @@
-name: Android Build
-
-on:
-  workflow_dispatch:
-
-concurrency:
-  group: android-build
-  cancel-in-progress: true
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node 18
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Setup JDK 17 (Temurin)
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Install Bubblewrap CLI
-        run: npm i -g @bubblewrap/cli
-
-      - name: Install expect (for interactive answers)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y expect
-
-      # ✅ Installa Android SDK nel runner e accetta le licenze
-      - name: Install Android SDK
+- name: Install Android SDK
         shell: bash
         run: |
           set -e
@@ -43,63 +6,30 @@ jobs:
           sudo mkdir -p "$ANDROID_SDK_ROOT"
           sudo chown $USER:$USER "$ANDROID_SDK_ROOT"
 
-          # Scarica i commandline-tools
-          curl -sSL -o cmdtools.zip \
-            https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          unzip -q cmdtools.zip -d "$ANDROID_SDK_ROOT"
+          # Scarica i commandline-tools in una cartella temporanea
+          curl -sSL -o cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          rm -rf "$ANDROID_SDK_ROOT/cmdline-tools/temp"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/temp"
+          unzip -q cmdtools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools/temp"
           rm -f cmdtools.zip
 
-          # Sposta in .../cmdline-tools/latest (layout richiesto da sdkmanager)
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
-          # se si è creata una cartella "cmdline-tools" con dentro "bin", spostala sotto latest
-          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/bin" ]; then
-            mv "$ANDROID_SDK_ROOT/cmdline-tools"/* "$ANDROID_SDK_ROOT/cmdline-tools/latest/"
+          # Normalizza il layout: crea .../cmdline-tools/latest solo se NON esiste già
+          if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" ]; then
+            echo "cmdline-tools/latest già presente, salto il move"
+          else
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            # trova la cartella che contiene 'bin' (di solito .../temp/cmdline-tools)
+            INNER=$(find "$ANDROID_SDK_ROOT/cmdline-tools/temp" -maxdepth 2 -type d -name bin | sed 's#/bin##')
+            mv "$INNER"/* "$ANDROID_SDK_ROOT/cmdline-tools/latest/"
           fi
+          rm -rf "$ANDROID_SDK_ROOT/cmdline-tools/temp"
 
-          # Accetta licenze e installa pacchetti minimi per build
+          # Accetta licenze e installa i pacchetti minimi per la build
           yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
             "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-          # Esporta variabili per gli step successivi
+          # Export per gli step successivi
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
           echo "$ANDROID_SDK_ROOT/build-tools/34.0.0" >> $GITHUB_PATH
-
-      # ✅ Inizializza il progetto Android da PWA rispondendo ai prompt
-      - name: Init Android project from PWA (no prompts)
-        env:
-          MANIFEST_URL: https://plutoo.vercel.app/manifest.json
-        run: |
-          set -e
-          rm -rf android
-          expect <<'EOF'
-            set timeout 1200
-            # Avvia bubblewrap init
-            spawn bubblewrap init --manifest $env(MANIFEST_URL) --directory android
-
-            expect {
-              -re {Do you want Bubblewrap to install the JDK.*\?}               { send "n\r"; exp_continue }
-              -re {Path to your existing JDK 17.*:}                               { send "$env(JAVA_HOME)\r"; exp_continue }
-
-              # Chiede il path dell'Android SDK: passiamo quello che abbiamo appena installato
-              -re {Path to your existing Android SDK.*:}                          { send "$env(ANDROID_SDK_ROOT)\r"; exp_continue }
-              -re {The provided androidSdk isn't correct.*Path to your existing Android SDK.*:} { send "$env(ANDROID_SDK_ROOT)\r"; exp_continue }
-
-              # Se chiede di creare la cartella 'android' del progetto:
-              -re {Directory .*android does not exist.*create it now.*\?}         { send "y\r"; exp_continue }
-
-              eof
-            }
-          EOF
-
-      - name: Build APK (debug)
-        working-directory: android
-        run: bubblewrap build --skip-prompt
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: plutoo-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
