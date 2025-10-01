@@ -22,20 +22,27 @@ jobs:
       - name: Setup JDK 17 (Temurin)
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
 
+      # Inizializza il progetto Android SENZA prompt
       - name: Init Android project from PWA (no prompts)
         env:
           MANIFEST_URL: https://mobricifilippo-del.github.io/Plutoo-app/manifest.json
-          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+          JAVA_HOME: ${{ env.JAVA_HOME }}
         run: |
           rm -rf android
           bubblewrap init \
-            --manifest $MANIFEST_URL \
+            --manifest "$MANIFEST_URL" \
             --directory android \
             --skip-prompt \
-            --jdkPath $JAVA_HOME
+            --jdkPath "$JAVA_HOME" \
+            --packageId com.plutoo.app \
+            --name "Plutoo" \
+            --appVersionName 1.0.0 \
+            --appVersionCode 1 \
+            --host plutoo-app \
+            --signingKeyPath /dev/null
 
       - name: Build APK (debug)
         working-directory: android
