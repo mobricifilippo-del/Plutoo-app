@@ -33,14 +33,14 @@ jobs:
           sudo mkdir -p "$ANDROID_SDK_ROOT"
           sudo chown -R "$USER:$USER" "$ANDROID_SDK_ROOT"
 
-          # Scarica i commandline-tools in una cartella temporanea
+          # scarica commandline-tools in temp
           curl -sSL -o cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           rm -rf "$ANDROID_SDK_ROOT/cmdline-tools/temp"
           mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/temp"
           unzip -q cmdtools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools/temp"
           rm -f cmdtools.zip
 
-          # Crea .../cmdline-tools/latest solo se NON esiste già
+          # normalizza in .../cmdline-tools/latest (solo se non esiste)
           if [ -d "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" ]; then
             echo "cmdline-tools/latest già presente, salto il move"
           else
@@ -50,21 +50,30 @@ jobs:
           fi
           rm -rf "$ANDROID_SDK_ROOT/cmdline-tools/temp"
 
-          # Accetta licenze (ignora 'broken pipe' di yes se sdkmanager chiude prima)
+          # accetta licenze (ignora broken pipe se sdkmanager chiude prima)
           yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" --licenses || true
 
-          # Installa i pacchetti minimi per la build
+          # pacchetti minimi
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_SDK_ROOT" \
             "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-          # Export per gli step successivi
+          # export per gli step successivi
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
           echo "$ANDROID_SDK_ROOT/build-tools/34.0.0" >> $GITHUB_PATH
 
-      - name: Init Android project from PWA (no prompts)
-        run: bubblewrap init --manifest=https://plutoo.vercel.app/manifest.json --directory android --skip-prompt
+      - name: Init Android project from PWA (auto answers)
+        run: |
+          set -e
+          rm -rf android
+          # 1) "Install JDK?" -> n
+          # 2) "Path to your existing JDK 17:" -> $JAVA_HOME
+          # 3) "Path to your existing Android SDK:" -> $ANDROID_SDK_ROOT
+          printf "n\n$JAVA_HOME\n$ANDROID_SDK_ROOT\n" | bubblewrap init \
+            --manifest=https://plutoo.vercel.app/manifest.json \
+            --directory android \
+            --skip-prompt
 
       - name: Build APK (debug)
         working-directory: android
