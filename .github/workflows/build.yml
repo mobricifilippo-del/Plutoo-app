@@ -21,24 +21,42 @@ jobs:
         run: npm i -g @bubblewrap/cli
 
       - name: Setup JDK 17 (Temurin)
-        id: setup-java
+        id: jdk
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Init Android project from PWA (auto answers)
+      - name: Install expect
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y expect
+
+      - name: Init Android project from PWA (risposte forzate)
         env:
           MANIFEST_URL: https://berchell.github.io/Plutoo-app/manifest.json
-          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+          JAVA_HOME: ${{ steps.jdk.outputs.path }}
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
           set -e
           rm -rf android
-          # Rispondiamo "n" alla domanda sul JDK e passiamo il path corretto
-          printf "n\n$JAVA_HOME\n" | bubblewrap init \
-            --manifest "$MANIFEST_URL" \
-            --directory android \
-            --skip-prompt
+          cat > run_init.exp <<'EOF'
+          #!/usr/bin/expect -f
+          set timeout 120
+          set JAVA_HOME $env(JAVA_HOME)
+          set MANIFEST $env(MANIFEST_URL)
+
+          spawn bubblewrap init --manifest $MANIFEST --directory android
+          expect {
+            -re {Do you want Bubblewrap to install the JDK} { send "n\r"; exp_continue }
+            -re {Path to your existing JDK 17}            { send "$JAVA_HOME\r"; exp_continue }
+            -re {Path to your existing Android SDK}       { send "$env(ANDROID_SDK_ROOT)\r"; exp_continue }
+            -re {does not exist\. Do you want to create it now\?} { send "y\r"; exp_continue }
+            eof
+          }
+          EOF
+          chmod +x run_init.exp
+          ./run_init.exp
           test -d android && echo "Android dir OK"
 
       - name: Build APK (debug)
