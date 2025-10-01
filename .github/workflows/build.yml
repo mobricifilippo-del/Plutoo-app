@@ -1,11 +1,11 @@
 name: Android Build
+
 on:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 25  # evita run infiniti
 
     steps:
       - name: Checkout
@@ -25,57 +25,19 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Debug JDK
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME"
-          $JAVA_HOME/bin/java -version
-          which java || true
-          java -version || true
-
-      # Use "expect" con pattern più ampi e timeout, per rispondere ai prompt
-      - name: Init Android project from PWA (no prompts, with expect)
+      - name: Init Android project from PWA (no prompts)
         env:
           MANIFEST_URL: https://mobricifilippo-del.github.io/Plutoo-app/manifest.json
         run: |
           set -e
-          sudo apt-get update
-          sudo apt-get install -y expect
           rm -rf android
+          bubblewrap init \
+            --manifest "$MANIFEST_URL" \
+            --directory android \
+            --skip-prompt
 
-          cat > do_init.exp <<'EOF'
-          #!/usr/bin/expect -f
-          set timeout 120
-          log_user 1
-          set jdk $env(JAVA_HOME)
-          set manifest $env(MANIFEST_URL)
-
-          # Avvia init
-          spawn bubblewrap init --manifest $manifest --directory android --skip-prompt
-
-          # 1) domanda JDK (testo può variare, usiamo regex ampia)
-          expect {
-            -re {install.*JDK.*\?} { send "n\r" }
-            timeout {
-              send_user "\n[ERR] Prompt JDK non visto entro 120s\n"
-              exit 2
-            }
-          }
-
-          # 2) richiesta percorso JDK (regex ampia)
-          expect {
-            -re {Path.*existing.*JDK.*:} { send "$jdk\r" }
-            timeout {
-              send_user "\n[ERR] Prompt percorso JDK non visto entro 120s\n"
-              exit 3
-            }
-          }
-
-          # Fine
-          expect eof
-          EOF
-
-          chmod +x do_init.exp
-          ./do_init.exp
+      - name: Check android dir
+        run: ls -R .
 
       - name: Build APK (debug)
         working-directory: android
