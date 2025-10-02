@@ -1,32 +1,28 @@
 /* =========================================================
    Plutoo – app.js (Android/WebView friendly)
-   Like gating:
-   - 10 like gratis/giorno
-   - +5 extra una sola volta/giorno dopo "video" (placeholder web)
-   - ❤️ consuma like; 🐕 no
+   - Tabs: Vicino | Amore (🥲/❤️) | Giocare/Camminare (🥲/🐕) | Match
+   - Swipe cards
+   - Pagina profilo full-screen (galleria + stato + verifica badge)
+   - Filtri, chips, match/chat, adv placeholder
+   - Persistenza locale con localStorage
+   - Monetizzazione base: 10 like gratis + sblocco extra con adv
+   - Animazione match: logo che pulsa con cuori/bacetti
    ========================================================= */
 
 /* ===================== DATI DEMO ===================== */
 const dogs = [
-  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      sex:'F', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'No', area:'Roma – Monteverde',  desc:'Curiosa e giocherellona, ama la pallina.', image:'dog1.jpg', online:true,  verified:true,  intents:['play'], coords:{lat:41.898, lon:12.498} },
-  { id:2, name:'Rocky', age:3, breed:'Labrador',          sex:'M', size:'Media',   coat:'Corto', energy:'Media', pedigree:'No', area:'Roma – Eur',         desc:'Affettuoso e fedele, perfetto per passeggiate.', image:'dog2.jpg', online:true,  verified:false, intents:['walk'], coords:{lat:41.901, lon:12.476} },
-  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         sex:'F', size:'Piccola', coat:'Medio', energy:'Media', pedigree:'Sì', area:'Roma – Prati',       desc:'Elegante e curiosa, cerca partner per accoppiamento.', image:'dog3.jpg', online:true,  verified:true,  intents:['mate'], coords:{lat:41.914, lon:12.495} },
-  { id:4, name:'Max',   age:4, breed:'Golden Retriever',  sex:'M', size:'Grande',  coat:'Lungo', energy:'Alta',  pedigree:'No', area:'Roma – Tuscolana',   desc:'Socievole, adora l’acqua e giocare in gruppo.', image:'dog4.jpg', online:true,  verified:false, intents:['play','walk'], coords:{lat:41.887, lon:12.512} },
-  { id:5, name:'Daisy', age:2, breed:'Beagle',            sex:'F', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'No', area:'Roma – Garbatella',  desc:'Instancabile esploratrice, ama correre.', image:'dog1.jpg', online:true,  verified:false, intents:['play'], coords:{lat:41.905, lon:12.450} },
-  { id:6, name:'Nero',  age:5, breed:'Meticcio',          sex:'M', size:'Media',   coat:'Medio', energy:'Media', pedigree:'No', area:'Roma – Nomentana',   desc:'Tranquillo e dolce, passeggiate in città.', image:'dog2.jpg', online:true,  verified:false, intents:['walk','mate'], coords:{lat:41.930, lon:12.500} },
+  { id:1, name:'Luna',  age:1, breed:'Jack Russell', sex:'F', size:'Piccola', coat:'Corto', energy:'Alta', pedigree:'No', area:'Roma – Monteverde', desc:'Curiosa e giocherellona, ama la pallina.', image:'dog1.jpg', online:true, verified:true, intents:['play'], coords:{lat:41.898, lon:12.498} },
+  { id:2, name:'Rocky', age:3, breed:'Labrador', sex:'M', size:'Media', coat:'Corto', energy:'Media', pedigree:'No', area:'Roma – Eur', desc:'Affettuoso e fedele, perfetto per passeggiate.', image:'dog2.jpg', online:true, verified:false, intents:['walk'], coords:{lat:41.901, lon:12.476} },
+  { id:3, name:'Bella', age:2, breed:'Shiba Inu', sex:'F', size:'Piccola', coat:'Medio', energy:'Media', pedigree:'Sì', area:'Roma – Prati', desc:'Elegante e curiosa, cerca nuovi amici.', image:'dog3.jpg', online:true, verified:true, intents:['mate'], coords:{lat:41.914, lon:12.495} },
+  { id:4, name:'Max', age:4, breed:'Golden Retriever', sex:'M', size:'Grande', coat:'Lungo', energy:'Alta', pedigree:'No', area:'Roma – Tuscolana', desc:'Socievole, adora l’acqua e giocare in gruppo.', image:'dog4.jpg', online:true, verified:false, intents:['play','walk'], coords:{lat:41.887, lon:12.512} },
+  { id:5, name:'Daisy', age:2, breed:'Beagle', sex:'F', size:'Piccola', coat:'Corto', energy:'Alta', pedigree:'No', area:'Roma – Garbatella', desc:'Instancabile esploratrice, ama correre.', image:'dog1.jpg', online:true, verified:false, intents:['play'], coords:{lat:41.905, lon:12.450} },
+  { id:6, name:'Nero', age:5, breed:'Meticcio', sex:'M', size:'Media', coat:'Medio', energy:'Media', pedigree:'No', area:'Roma – Nomentana', desc:'Tranquillo e dolce, passeggiate in città.', image:'dog2.jpg', online:true, verified:false, intents:['walk','mate'], coords:{lat:41.930, lon:12.500} },
 ];
-
-/* ===================== COSTANTI LIKE ===================== */
-const DAILY_FREE_LIKES = 10;
-const BONUS_LIKES = 5;          // dopo "video", max 1 volta/giorno
-const LS_DAY_KEY = 'pl_like_day';
-const LS_LEFT_KEY = 'pl_likes_left';
-const LS_BONUS_KEY = 'pl_bonus_used';
-const LS_MATCHES = 'pl_matches';
 
 /* ===================== STATO ===================== */
 let currentView='near', userPos=null;
-let matches = JSON.parse(localStorage.getItem(LS_MATCHES)||'[]');
+let likeCount=+(localStorage.getItem('pl_like_count')||'0');
+let matches = JSON.parse(localStorage.getItem('pl_matches')||'[]');
 let swipeLoveIdx=0, swipeSocIdx=0;
 let filters = { breed:'', ageBand:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:'' };
 
@@ -39,7 +35,6 @@ const band=a=>a<=1?'0–1':a<=4?'2–4':a<=7?'5–7':'8+';
 function openDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.showModal==='function'){try{dlg.showModal();return;}catch(_){}} dlg.setAttribute('open',''); dlg.classList.add('fallback'); document.body.style.overflow='hidden'; }
 function closeDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.close==='function'){try{dlg.close();}catch(_){}} dlg.classList.remove('fallback'); dlg.removeAttribute('open'); document.body.style.overflow=''; }
 const verifiedName=d=>`${d.name}, ${d.age} • ${d.breed}${isVerified(d)?' <span class="paw">🐾</span>':''}`;
-const todayStr=()=>new Date().toISOString().slice(0,10);
 
 /* === verifica doc / badge (persistenza) === */
 function _veriMap(){ try{return JSON.parse(localStorage.getItem('pl_verify')||'{}')}catch(_){return {}} }
@@ -47,81 +42,6 @@ function _saveVeri(map){ localStorage.setItem('pl_verify', JSON.stringify(map));
 function getProfileStore(id){ const m=_veriMap(); if(!m[id]) m[id]={ owner:false, dog:false, gallery:[], posts:[] }; return m[id]; }
 function setProfileStore(id, data){ const m=_veriMap(); m[id]=data; _saveVeri(m); }
 function isVerified(d){ const st=getProfileStore(d.id); return d.verified || (st.owner && st.dog); }
-
-/* ===================== LIKE: PERSISTENZA E REGOLE ===================== */
-function ensureLikeBucket(){
-  const day = localStorage.getItem(LS_DAY_KEY);
-  if(day !== todayStr()){
-    localStorage.setItem(LS_DAY_KEY, todayStr());
-    localStorage.setItem(LS_LEFT_KEY, String(DAILY_FREE_LIKES));
-    localStorage.setItem(LS_BONUS_KEY, '0'); // non usato oggi
-  }
-}
-function likesLeft(){ ensureLikeBucket(); return +(localStorage.getItem(LS_LEFT_KEY)||'0'); }
-function bonusUsed(){ ensureLikeBucket(); return localStorage.getItem(LS_BONUS_KEY)==='1'; }
-function addLikes(n){
-  const left = likesLeft();
-  localStorage.setItem(LS_LEFT_KEY, String(left + n));
-  renderLikesBar();
-}
-function tryConsumeLike(){
-  const left = likesLeft();
-  if(left>0){
-    localStorage.setItem(LS_LEFT_KEY, String(left-1));
-    renderLikesBar();
-    return true;
-  }
-  // finiti: proponi rewarded
-  promptRewarded();
-  return false;
-}
-
-/* ===================== BARRA LIKE + REWARDED (placeholder web) ===================== */
-function injectLikesBar(){
-  if($('#likesBar')) return;
-  const hdr = document.querySelector('.filters-header');
-  const bar = el('div',{id:'likesBar',style:'display:flex;align-items:center;gap:8px;margin-left:auto'});
-  const pill = el('div',{id:'likesPill',style:'background:#222;padding:6px 10px;border-radius:999px;font-size:13px;color:#cfd5ff'});
-  const btn = el('button',{id:'btnReward',className:'btn light small',style:'white-space:nowrap'},'Sblocca +5');
-  btn.onclick = ()=> promptRewarded();
-  bar.append(pill, btn);
-  if(hdr) hdr.append(bar);
-  renderLikesBar();
-}
-function renderLikesBar(){
-  const pill = $('#likesPill'), btn=$('#btnReward');
-  if(pill){ pill.textContent = `Like rimasti: ${likesLeft()}`; }
-  if(btn){ btn.disabled = bonusUsed(); btn.textContent = bonusUsed() ? 'Bonus usato' : 'Sblocca +5'; }
-}
-function promptRewarded(){
-  // su web usiamo il dialog esistente #interstitial, lo personalizziamo al volo
-  const dlg = $('#interstitial');
-  if(!dlg) { alert('Video (demo) non disponibile'); return; }
-
-  dlg.innerHTML = `
-    <div class="inter-body" style="padding:16px">
-      <h3>Guarda un video per +5 like</h3>
-      <p class="muted">Demo web: premi “Guarda video”. Nella versione Android useremo AdMob Rewarded.</p>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
-        <button id="rwCancel" class="btn light">Annulla</button>
-        <button id="rwWatch" class="btn primary">Guarda video</button>
-      </div>
-    </div>`;
-  openDialogSafe(dlg);
-  $('#rwCancel').onclick = ()=> closeDialogSafe(dlg);
-  $('#rwWatch').onclick = ()=>{
-    // simuliamo il completamento del video dopo 1.2s
-    $('#rwWatch').disabled = true;
-    setTimeout(()=>{
-      closeDialogSafe(dlg);
-      if(!bonusUsed()){
-        addLikes(BONUS_LIKES);
-        localStorage.setItem(LS_BONUS_KEY,'1');
-        renderLikesBar();
-      }
-    }, 1200);
-  };
-}
 
 /* ===================== NAV/APP ===================== */
 function show(sel){ $$('.screen').forEach(s=>s.classList.remove('active')); (typeof sel==='string'?$(sel):sel)?.classList.add('active'); }
@@ -205,12 +125,8 @@ function renderNear(){
       </div>`;
     // azioni
     card.querySelector('.no').onclick=e=>{e.stopPropagation();card.remove();};
-    card.querySelector('.like').onclick=e=>{
-      e.stopPropagation();
-      if(!tryConsumeLike()) return;
-      addMatch(d);
-    };
-    card.querySelector('.dog').onclick=e=>{e.stopPropagation();addMatch(d);}; // 🐕 non consuma like
+    card.querySelector('.like').onclick=e=>{e.stopPropagation();addMatch(d);incLikesMaybeAd();};
+    card.querySelector('.dog').onclick=e=>{e.stopPropagation();addMatch(d);}; 
     // click profilo
     card.addEventListener('click',ev=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); });
     grid.append(card);
@@ -227,7 +143,7 @@ function renderIntentText(d){
   return 'Disponibile';
 }
 
-/* ===================== AMORE (card singola, 🥲 / ❤️) ===================== */
+/* ===================== AMORE (card singola) ===================== */
 function loveList(){ return dogs.filter(d=> (d.intents||[]).includes('mate') && passesFilters(d, userPos?km(userPos,d.coords):randKm())); }
 function renderLove(){
   const list=loveList(), img=$('#loveImg'), title=$('#loveTitle'), meta=$('#loveMeta'), bio=$('#loveBio');
@@ -238,12 +154,12 @@ function renderLove(){
   const cardEl=$('#love .card.big');
   if(cardEl){ cardEl.classList.remove('pulse'); void cardEl.offsetWidth; cardEl.classList.add('pulse'); attachSwipeGestures(cardEl, d, 'love'); }
   $('#loveNo').onclick=()=>{ tinyBump('#loveNo'); if(cardEl){ cardEl.classList.add('swipe-left'); setTimeout(()=>{ swipeLove('no',d) },220);} else swipeLove('no',d); };
-  $('#loveYes').onclick=()=>{ tinyBump('#loveYes'); if(!tryConsumeLike()) return; if(cardEl){ cardEl.classList.add('swipe-right'); setTimeout(()=>{ swipeLove('yes',d) },220);} else swipeLove('yes',d); };
+  $('#loveYes').onclick=()=>{ tinyBump('#loveYes'); if(cardEl){ cardEl.classList.add('swipe-right'); setTimeout(()=>{ swipeLove('yes',d) },220);} else swipeLove('yes',d); };
   cardEl.addEventListener('click',(ev)=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); },{once:true});
 }
-function swipeLove(type,d){ if(type==='yes'){ addMatch(d); } swipeLoveIdx++; renderLove(); }
+function swipeLove(type,d){ if(type==='yes'){ addMatch(d); incLikesMaybeAd(); } swipeLoveIdx++; renderLove(); }
 
-/* ===================== SOCIAL (card singola, 🥲 / 🐕) ===================== */
+/* ===================== SOCIAL (card singola) ===================== */
 function socialList(){ return dogs.filter(d=> ((d.intents||[]).includes('play') || (d.intents||[]).includes('walk')) && passesFilters(d, userPos?km(userPos,d.coords):randKm())); }
 function renderSocial(){
   const list=socialList(), img=$('#socImg'), title=$('#socTitle'), meta=$('#socMeta'), bio=$('#socBio');
@@ -254,7 +170,6 @@ function renderSocial(){
   const cardEl=$('#social .card.big');
   if(cardEl){ cardEl.classList.remove('pulse'); void cardEl.offsetWidth; cardEl.classList.add('pulse'); attachSwipeGestures(cardEl, d, 'social'); }
   $('#socNo').onclick=()=>{ tinyBump('#socNo'); if(cardEl){ cardEl.classList.add('swipe-left'); setTimeout(()=>{ swipeSoc('no',d) },220);} else swipeSoc('no',d); };
-  // 🐕 non consuma like
   $('#socYes').onclick=()=>{ tinyBump('#socYes'); if(cardEl){ cardEl.classList.add('swipe-right'); setTimeout(()=>{ swipeSoc('yes',d) },220);} else swipeSoc('yes',d); };
   cardEl.addEventListener('click',(ev)=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); },{once:true});
 }
@@ -268,176 +183,4 @@ function attachSwipeGestures(cardEl, dogObj, mode){
   const onTouchStart = (e)=>{ const t=e.touches?e.touches[0]:e; startX=currentX=t.clientX; startY=currentY=t.clientY; dragging=true; hasMoved=false; cardEl.style.transition='none'; };
   const onTouchMove  = (e)=>{ if(!dragging) return; const t=e.touches?e.touches[0]:e; currentX=t.clientX; currentY=t.clientY; const dx=currentX-startX, dy=currentY-startY; if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>12) return; hasMoved=Math.abs(dx)>6; const rot=Math.max(-10,Math.min(10,dx/12)); cardEl.style.transform=`translateX(${dx}px) rotate(${rot}deg)`; cardEl.style.opacity=String(Math.max(.35,1-Math.abs(dx)/600)); };
   const onTouchEnd   = ()=>{ if(!dragging) return; dragging=false; const dx=currentX-startX; cardEl.style.transition='transform .18s ease-out, opacity .18s ease-out';
-    if(dx>80){ cardEl.style.transform='translateX(40%) rotate(6deg)'; cardEl.style.opacity='0'; setTimeout(()=> (mode==='love'?(tryConsumeLike()&&swipeLove('yes',dogObj)):swipeSoc('yes',dogObj)),180);}
-    else if(dx<-80){ cardEl.style.transform='translateX(-40%) rotate(-6deg)'; cardEl.style.opacity='0'; setTimeout(()=> (mode==='love'?swipeLove('no',dogObj):swipeSoc('no',dogObj)),180);}
-    else { cardEl.style.transform=''; cardEl.style.opacity=''; if(!hasMoved){ const dist=userPos?km(userPos,dogObj.coords):randKm(); openProfilePage(dogObj,dist);} }
-  };
-  cardEl.addEventListener('touchstart', onTouchStart,{passive:true});
-  cardEl.addEventListener('touchmove',  onTouchMove, {passive:true});
-  cardEl.addEventListener('touchend',   onTouchEnd,  {passive:true});
-  cardEl.addEventListener('mousedown',(e)=>{ onTouchStart(e); const mm=(ev)=>onTouchMove(ev); const mu=()=>{ onTouchEnd(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); }; document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu,{once:true}); });
-}
-
-/* ===================== PROFILO FULLSCREEN ===================== */
-function openProfilePage(d, distance){
-  const page = document.getElementById('profilePage');
-  const body = document.getElementById('ppBody');
-  const title = document.getElementById('ppTitle');
-  if(!page || !body) return;
-
-  const store = getProfileStore(d.id);
-  function render(){
-    title.innerHTML = `${d.name} ${isVerified(d)?'<span class="paw">🐾</span>':''}`;
-
-    const galleryHTML = (store.gallery||[]).map(src => `<img class="pp-thumb" src="${src}" alt="">`).join('') || '<div class="muted small">Nessuna foto aggiunta.</div>';
-    const postsHTML = (store.posts||[]).slice().reverse().map(p=>`
-      <div class="pp-post">
-        <div>${p.text}</div>
-        <div class="ts">${new Date(p.ts).toLocaleString()}</div>
-      </div>
-    `).join('') || '<div class="muted small">Nessun post ancora.</div>';
-
-    const intentText = renderIntentText(d);
-
-    body.innerHTML = `
-      <img class="pp-cover" src="${d.image}" alt="${d.name}" onerror="this.style.display='none'">
-
-      <div class="pp-section">
-        <h3>${d.name}, ${d.age} ${isVerified(d)?'<span class="paw">🐾</span>':''}</h3>
-        <div class="meta">${d.breed} · ${d.sex==='F'?'Femmina':'Maschio'} · ${d.size} · ${d.coat}</div>
-        <div class="meta"><b>Energia:</b> ${d.energy} · <b>Pedigree:</b> ${d.pedigree} · <b>Zona:</b> ${d.area} · <b>Distanza:</b> ${distance ?? '-'} km</div>
-        <div class="badge-state ${isVerified(d)?'badge-ok':'badge-ko'}">
-          ${isVerified(d) ? 'Badge attivo ✅' : 'Badge non attivo'}
-        </div>
-        <div class="intent-pill" style="margin-top:10px">${intentText}</div>
-        <div class="pp-actions">
-          <button class="circle no" id="ppNo">🥲</button>
-          <button class="circle like" id="ppYes">❤️</button>
-        </div>
-      </div>
-
-      <div class="pp-section">
-        <h4>Galleria foto</h4>
-        <div class="pp-gallery" id="ppGallery">${galleryHTML}</div>
-        <div class="pp-uploader">
-          <label class="btn light small">
-            Aggiungi foto
-            <input id="ppAddPhotos" type="file" accept="image/*" multiple>
-          </label>
-        </div>
-      </div>
-
-      <div class="pp-section">
-        <h4>Stato</h4>
-        <div class="pp-post-new">
-          <textarea id="ppStatus" class="pp-textarea" placeholder="Scrivi un aggiornamento…"></textarea>
-          <div style="display:flex;gap:8px;justify-content:flex-end">
-            <button id="ppPostBtn" class="btn primary">Pubblica</button>
-          </div>
-        </div>
-        <div class="pp-posts" id="ppPosts">${postsHTML}</div>
-      </div>
-
-      <div class="pp-section">
-        <h4>Verifica documenti</h4>
-        <div class="pp-verify-row">
-          <label class="btn light small" style="text-align:center">Documento proprietario ${store.owner?'✔️':''}
-            <input id="ppOwnerDoc" type="file" accept="image/*,application/pdf">
-          </label>
-          <label class="btn light small" style="text-align:center">Documento del cane ${store.dog?'✔️':''}
-            <input id="ppDogDoc" type="file" accept="image/*,application/pdf">
-          </label>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
-          <button id="ppSendVerify" class="btn primary">Invia per verifica</button>
-        </div>
-        <div class="muted small" style="margin-top:6px">Il badge si attiva solo quando entrambi i documenti risultano caricati.</div>
-      </div>
-    `;
-
-    $('#ppNo').onclick  = ()=> closeProfilePage();
-    $('#ppYes').onclick = ()=>{
-      if(!tryConsumeLike()) return;
-      addMatch(d); closeProfilePage();
-    };
-
-    $('#ppAddPhotos').onchange = async (e)=>{
-      const files = Array.from(e.target.files||[]);
-      for(const f of files){
-        const url = await fileToDataURL(f);
-        store.gallery.push(url);
-      }
-      setProfileStore(d.id, store);
-      render();
-    };
-
-    $('#ppPostBtn').onclick = ()=>{
-      const ta = $('#ppStatus');
-      const t = (ta.value||'').trim();
-      if(!t) return;
-      store.posts.push({text:t, ts:Date.now()});
-      setProfileStore(d.id, store);
-      ta.value='';
-      render();
-    };
-
-    let tmpOwner = null, tmpDog = null;
-    $('#ppOwnerDoc').onchange = e=>{ tmpOwner = (e.target.files||[])[0] || null; };
-    $('#ppDogDoc').onchange   = e=>{ tmpDog   = (e.target.files||[])[0] || null; };
-    $('#ppSendVerify').onclick = ()=>{
-      if(tmpOwner) store.owner = true;
-      if(tmpDog)   store.dog   = true;
-      setProfileStore(d.id, store);
-      render();
-      renderNear(); renderLove(); renderSocial();
-    };
-  }
-
-  render();
-  page.classList.add('show');
-}
-function fileToDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
-function closeProfilePage(){ $('#profilePage')?.classList.remove('show'); }
-window.closeProfilePage = closeProfilePage;
-
-/* ===================== MATCH & CHAT ===================== */
-function addMatch(d){ if(!matches.find(m=>m.id===d.id)){ matches.push({id:d.id, name:d.name, img:d.image}); localStorage.setItem(LS_MATCHES, JSON.stringify(matches)); } renderMatches(); }
-function renderMatches(){
-  const box=$('#matchList'); if(!box) return; box.innerHTML='';
-  matches.forEach(m=>{
-    const row=el('div',{className:'item'});
-    row.innerHTML = `
-      <img src="${m.img}" alt="${m.name}">
-      <div>
-        <div><strong>${m.name}</strong></div>
-        <div class="muted small">Match</div>
-      </div>
-      <button class="btn primary pill go">Chat</button>
-    `;
-    row.querySelector('.go').onclick = ()=> openChat(m);
-    box.append(row);
-  });
-  $('#emptyMatch').style.display = matches.length ? 'none' : 'block';
-}
-function openChat(m){ $('#chatAvatar').src=m.img; $('#chatName').textContent=m.name; $('#thread').innerHTML='<div class="bubble">Ciao! 🐾 Siamo un match!</div>'; $('#chat').classList.add('show'); }
-$('#sendBtn')?.addEventListener('click',()=>{ const t=($('#chatInput').value||'').trim(); if(!t) return; const b=el('div',{className:'bubble me'},t); $('#thread').append(b); $('#chatInput').value=''; $('#thread').scrollTop=$('#thread').scrollHeight; });
-$$('.close').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close)?.classList.remove('show')));
-
-/* ===================== AVVIO ===================== */
-document.addEventListener('DOMContentLoaded', ()=>{
-  ensureLikeBucket();
-  injectLikesBar();
-
-  $('#ctaEnter')?.addEventListener('click', e=>{ e.preventDefault(); goHome(); });
-  $$('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
-  $('#loginSubmit')?.addEventListener('click',()=>$('#sheetLogin')?.classList.remove('show'));
-  $('#registerSubmit')?.addEventListener('click',()=>$('#sheetRegister')?.classList.remove('show'));
-  $('#openPrivacy')?.addEventListener('click',()=>openDialogSafe($('#privacyDlg')));
-  $('#openTerms')?.addEventListener('click',()=>openDialogSafe($('#termsDlg')));
-
-  document.querySelectorAll('.sponsor-label')
-    .forEach(el => el.textContent = 'Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe');
-
-  renderActiveChips();
-  renderNear(); renderLove(); renderSocial(); renderMatches();
-});
+    if(dx>80){ cardEl.style.transform='translateX(40%) rotate(6deg)'; cardEl.style.opacity='0'; setTimeout(()=> (mode==='love'?
