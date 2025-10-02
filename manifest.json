@@ -1,10 +1,11 @@
 {
   "name": "Plutoo",
   "short_name": "Plutoo",
-  "start_url": ".",
+  "start_url": "https://plutoo.vercel.app/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0b0b3a",
-  "theme_color": "#0b0b3a",
+  "background_color": "#000000",
+  "theme_color": "#00ff00",
   "orientation": "portrait",
   "icons": [
     {
@@ -17,5 +18,8 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "id": "app.plutoo",
+  "description": "Plutoo, il social degli amici a quattro zampe",
+  "lang": "it"
 }
