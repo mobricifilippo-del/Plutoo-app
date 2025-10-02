@@ -4,11 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo</title>
+
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0b3a">
-  <link rel="apple-touch-icon" href="plutoo-icon-512.png">
+
+  <!-- Icone -->
+  <link rel="icon" type="image/png" sizes="192x192" href="plutoo-icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="plutoo-icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="plutoo-icon-512.png">
+
+  <!-- iOS web app look -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="icon" href="plutoo-icon-512.png" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -113,7 +122,7 @@
           </label>
 
           <label class="f-item">
-        <span>Taglia</span>
+            <span>Taglia</span>
             <select name="size">
               <option value="">Tutte</option>
               <option>Piccola</option>
@@ -172,7 +181,7 @@
       <div id="emptyNear" class="empty hidden">Nessun profilo.</div>
     </section>
 
-    <!-- AMORE (🥲 / ❤️) -->
+    <!-- AMORE -->
     <section id="love" class="tabpane">
       <div class="deck">
         <article class="card big">
@@ -192,7 +201,7 @@
       </div>
     </section>
 
-    <!-- GIOCARE/CAMMINARE (🥲 / 🐕) -->
+    <!-- GIOCARE/CAMMINARE -->
     <section id="social" class="tabpane">
       <div class="deck">
         <article class="card big">
@@ -232,7 +241,7 @@
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- PAGINA PROFILO FULLSCREEN -->
+  <!-- PAGINA PROFILO -->
   <section id="profilePage" class="profile-page">
     <div class="pp-head">
       <strong id="ppTitle">Profilo</strong>
@@ -254,8 +263,9 @@
 
   <script src="app.js"></script>
   <script>
+    // SW: uso percorso relativo per funzionare ovunque
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js")
+      navigator.serviceWorker.register("sw.js")
         .then(() => console.log("Service Worker registrato"))
         .catch(err => console.error("Errore Service Worker:", err));
     }
