@@ -38,7 +38,9 @@
   <main id="landing" class="screen active">
     <section class="hero">
       <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
-      <a id="ctaEnter" class="btn primary">Entra</a>
+      <!-- PATCH: href + onclick fallback -->
+      <a id="ctaEnter" class="btn primary" href="#app"
+         onclick="if(window.goHome){ goHome(); } return false;">Entra</a>
       <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
 
       <div class="sponsor-block">
@@ -251,24 +253,111 @@
   </section>
 
   <!-- DIALOG / SHEETS / CHAT / LEGAL -->
-  <dialog id="interstitial" class="modal inter"><div class="inter-body"><h3>Annuncio video (placeholder)</h3><p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p><button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button></div></dialog>
+  <dialog id="interstitial" class="modal inter">
+    <div class="inter-body">
+      <h3>Annuncio video (placeholder)</h3>
+      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
+      <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
+    </div>
+  </dialog>
 
-  <div id="sheetLogin" class="sheet"><div class="sheet-box"><div class="sheet-head"><strong>Login</strong><button class="close" data-close="sheetLogin">×</button></div><div class="sheet-body"><input class="inp" placeholder="Email"><input class="inp" placeholder="Password" type="password"><button id="loginSubmit" class="btn primary full">Continua</button></div></div></div>
-  <div id="sheetRegister" class="sheet"><div class="sheet-box"><div class="sheet-head"><strong>Registrati</strong><button class="close" data-close="sheetRegister">×</button></div><div class="sheet-body"><input class="inp" placeholder="Nome"><input class="inp" placeholder="Email"><input class="inp" placeholder="Password" type="password"><button id="registerSubmit" class="btn primary full">Crea account</button></div></div></div>
+  <div id="sheetLogin" class="sheet">
+    <div class="sheet-box">
+      <div class="sheet-head"><strong>Login</strong><button class="close" data-close="sheetLogin">×</button></div>
+      <div class="sheet-body">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
+        <button id="loginSubmit" class="btn primary full">Continua</button>
+      </div>
+    </div>
+  </div>
 
-  <div id="chat" class="sheet"><div class="sheet-box"><div class="sheet-head"><div class="chat-head"><img id="chatAvatar" class="avatar" src="dog1.jpg" alt=""><div id="chatName" class="chat-name">Chat</div></div><button class="close" data-close="chat">×</button></div><div class="sheet-body chat-body"><div id="thread" class="thread"></div><div class="chat-send"><input id="chatInput" class="inp" placeholder="Scrivi…"><button id="sendBtn" class="btn primary">Invia</button></div></div></div></div>
+  <div id="sheetRegister" class="sheet">
+    <div class="sheet-box">
+      <div class="sheet-head"><strong>Registrati</strong><button class="close" data-close="sheetRegister">×</button></div>
+      <div class="sheet-body">
+        <input class="inp" placeholder="Nome">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
+        <button id="registerSubmit" class="btn primary full">Crea account</button>
+      </div>
+    </div>
+  </div>
 
-  <dialog id="privacyDlg" class="modal legal"><div class="pad"><h3>Privacy</h3><p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p><p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p><button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button></div></dialog>
-  <dialog id="termsDlg" class="modal legal"><div class="pad"><h3>Termini</h3><p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p><button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button></div></dialog>
+  <div id="chat" class="sheet">
+    <div class="sheet-box">
+      <div class="sheet-head">
+        <div class="chat-head">
+          <img id="chatAvatar" class="avatar" src="dog1.jpg" alt="">
+          <div id="chatName" class="chat-name">Chat</div>
+        </div>
+        <button class="close" data-close="chat">×</button>
+      </div>
+      <div class="sheet-body chat-body">
+        <div id="thread" class="thread"></div>
+        <div class="chat-send">
+          <input id="chatInput" class="inp" placeholder="Scrivi…">
+          <button id="sendBtn" class="btn primary">Invia</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <script src="app.js"></script>
+  <dialog id="privacyDlg" class="modal legal">
+    <div class="pad">
+      <h3>Privacy</h3>
+      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
+      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
+      <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
+    </div>
+  </dialog>
+
+  <dialog id="termsDlg" class="modal legal">
+    <div class="pad">
+      <h3>Termini</h3>
+      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
+      <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
+    </div>
+  </dialog>
+
+  <!-- SCRIPT principali -->
+  <script src="app.js?v=8"></script>
   <script>
-    // SW: uso percorso relativo per funzionare ovunque
+    // Registrazione SW (come nel tuo originale)
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js")
         .then(() => console.log("Service Worker registrato"))
         .catch(err => console.error("Errore Service Worker:", err));
     }
+
+    // Fallback: consente di entrare anche se per qualche motivo goHome non è disponibile
+    function _forceApp() {
+      var l = document.getElementById('landing');
+      var a = document.getElementById('app');
+      if (!l || !a) return;
+      l.classList.remove('active');
+      a.classList.add('active');
+    }
+    // Se si apre con #app o quando cambia hash
+    if (location.hash === '#app') {
+      try { goHome(); } catch(_) { _forceApp(); }
+    }
+    window.addEventListener('hashchange', function () {
+      if (location.hash === '#app') {
+        try { goHome(); } catch(_) { _forceApp(); }
+      }
+    });
+
+    // Click diretto sul bottone (doppia sicurezza)
+    document.addEventListener('DOMContentLoaded', function () {
+      var cta = document.getElementById('ctaEnter');
+      if (cta) {
+        cta.addEventListener('click', function (e) {
+          e.preventDefault();
+          try { goHome(); } catch(_) { _forceApp(); }
+        });
+      }
+    });
   </script>
 </body>
 </html>
