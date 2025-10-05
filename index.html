@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="512x512" href="plutoo-icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="plutoo-icon-512.png">
 
-  <!-- iOS web app look -->
+  <!-- iOS look -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -85,10 +85,11 @@
     <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
         <div class="f-grid">
-          <!-- CAMBIO: input + datalist per “Razza” -->
+          <!-- RAZZA: input con autocompletamento da breeds.json -->
           <label class="f-item">
             <span>Razza</span>
-            <input name="breed" id="breedInput" list="breedList" placeholder="Scrivi la razza…">
+            <input id="breedInput" name="breed" placeholder="Inizia a digitare…"
+                   list="breedList" autocomplete="off" />
             <datalist id="breedList"></datalist>
           </label>
 
@@ -167,7 +168,6 @@
 
     <!-- VICINO -->
     <section id="near" class="tabpane active">
-      <!-- NB: tolto il testo sui like -->
       <div id="counter" class="counter"></div>
       <div id="grid" class="grid"></div>
       <div id="emptyNear" class="empty hidden">Nessun profilo.</div>
@@ -245,8 +245,8 @@
   <!-- DIALOG / SHEETS / CHAT / LEGAL -->
   <dialog id="interstitial" class="modal inter">
     <div class="inter-body">
-      <h3>Annuncio</h3>
-      <p class="muted">Contenuto sponsorizzato</p>
+      <h3>Annuncio video (placeholder)</h3>
+      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
       <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
     </div>
   </dialog>
@@ -297,6 +297,8 @@
     <div class="pad">
       <h3>Privacy</h3>
       <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
+      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
+      <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
     </div>
   </dialog>
 
@@ -304,24 +306,23 @@
     <div class="pad">
       <h3>Termini</h3>
       <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
+      <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
     </div>
   </dialog>
 
-  <!-- SCRIPT principali -->
-  <script src="app.js?v=9"></script>
+  <!-- SCRIPT -->
+  <script src="app.js?v=breeds"></script>
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("Service Worker registrato"))
-        .catch(err => console.error("Errore Service Worker:", err));
+      navigator.serviceWorker.register("sw.js").catch(()=>{});
     }
-    // Fallback #app
-    function _forceApp(){var l=document.getElementById('landing');var a=document.getElementById('app');if(!l||!a)return;l.classList.remove('active');a.classList.add('active');}
-    if (location.hash==='#app'){try{goHome();}catch(_){_forceApp();}}
-    window.addEventListener('hashchange',function(){if(location.hash==='#app'){try{goHome();}catch(_){_forceApp();}}});
-    document.addEventListener('DOMContentLoaded',function(){
-      var cta=document.getElementById('ctaEnter');
-      if(cta){cta.addEventListener('click',function(e){e.preventDefault();try{goHome();}catch(_){_forceApp();}});}
+    // fallback hash
+    function _forceApp(){var l=document.getElementById('landing'),a=document.getElementById('app');if(l&&a){l.classList.remove('active');a.classList.add('active');}}
+    if (location.hash === '#app') { try{ goHome(); }catch(_){ _forceApp(); } }
+    window.addEventListener('hashchange', ()=>{ if(location.hash==='#app'){ try{goHome();}catch(_){_forceApp();} }});
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const cta=document.getElementById('ctaEnter');
+      if(cta){ cta.addEventListener('click', e=>{ e.preventDefault(); try{goHome();}catch(_){_forceApp();} }); }
     });
   </script>
 </body>
