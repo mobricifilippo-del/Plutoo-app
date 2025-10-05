@@ -38,7 +38,6 @@
   <main id="landing" class="screen active">
     <section class="hero">
       <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
-      <!-- PATCH: href + onclick fallback -->
       <a id="ctaEnter" class="btn primary" href="#app"
          onclick="if(window.goHome){ goHome(); } return false;">Entra</a>
       <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
@@ -86,21 +85,11 @@
     <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
         <div class="f-grid">
+          <!-- CAMBIO: input + datalist per “Razza” -->
           <label class="f-item">
             <span>Razza</span>
-            <select name="breed">
-              <option value="">Tutte</option>
-              <option>Jack Russell</option>
-              <option>Labrador</option>
-              <option>Shiba Inu</option>
-              <option>Golden Retriever</option>
-              <option>Beagle</option>
-              <option>Bulldog Francese</option>
-              <option>Barboncino</option>
-              <option>Border Collie</option>
-              <option>Pastore Tedesco</option>
-              <option>Meticcio</option>
-            </select>
+            <input name="breed" id="breedInput" list="breedList" placeholder="Scrivi la razza…">
+            <datalist id="breedList"></datalist>
           </label>
 
           <label class="f-item">
@@ -178,6 +167,7 @@
 
     <!-- VICINO -->
     <section id="near" class="tabpane active">
+      <!-- NB: tolto il testo sui like -->
       <div id="counter" class="counter"></div>
       <div id="grid" class="grid"></div>
       <div id="emptyNear" class="empty hidden">Nessun profilo.</div>
@@ -255,8 +245,8 @@
   <!-- DIALOG / SHEETS / CHAT / LEGAL -->
   <dialog id="interstitial" class="modal inter">
     <div class="inter-body">
-      <h3>Annuncio video (placeholder)</h3>
-      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
+      <h3>Annuncio</h3>
+      <p class="muted">Contenuto sponsorizzato</p>
       <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
     </div>
   </dialog>
@@ -307,8 +297,6 @@
     <div class="pad">
       <h3>Privacy</h3>
       <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
-      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
-      <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
     </div>
   </dialog>
 
@@ -316,47 +304,24 @@
     <div class="pad">
       <h3>Termini</h3>
       <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
-      <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
     </div>
   </dialog>
 
   <!-- SCRIPT principali -->
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
   <script>
-    // Registrazione SW (come nel tuo originale)
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js")
         .then(() => console.log("Service Worker registrato"))
         .catch(err => console.error("Errore Service Worker:", err));
     }
-
-    // Fallback: consente di entrare anche se per qualche motivo goHome non è disponibile
-    function _forceApp() {
-      var l = document.getElementById('landing');
-      var a = document.getElementById('app');
-      if (!l || !a) return;
-      l.classList.remove('active');
-      a.classList.add('active');
-    }
-    // Se si apre con #app o quando cambia hash
-    if (location.hash === '#app') {
-      try { goHome(); } catch(_) { _forceApp(); }
-    }
-    window.addEventListener('hashchange', function () {
-      if (location.hash === '#app') {
-        try { goHome(); } catch(_) { _forceApp(); }
-      }
-    });
-
-    // Click diretto sul bottone (doppia sicurezza)
-    document.addEventListener('DOMContentLoaded', function () {
-      var cta = document.getElementById('ctaEnter');
-      if (cta) {
-        cta.addEventListener('click', function (e) {
-          e.preventDefault();
-          try { goHome(); } catch(_) { _forceApp(); }
-        });
-      }
+    // Fallback #app
+    function _forceApp(){var l=document.getElementById('landing');var a=document.getElementById('app');if(!l||!a)return;l.classList.remove('active');a.classList.add('active');}
+    if (location.hash==='#app'){try{goHome();}catch(_){_forceApp();}}
+    window.addEventListener('hashchange',function(){if(location.hash==='#app'){try{goHome();}catch(_){_forceApp();}}});
+    document.addEventListener('DOMContentLoaded',function(){
+      var cta=document.getElementById('ctaEnter');
+      if(cta){cta.addEventListener('click',function(e){e.preventDefault();try{goHome();}catch(_){_forceApp();}});}
     });
   </script>
 </body>
