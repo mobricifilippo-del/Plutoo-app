@@ -1,8 +1,3 @@
-/* =========================================================
-   Plutoo – style.css (tema scuro, mobile-first)
-   Coerente con il tuo index.html e app.js attuali
-   ========================================================= */
-
 /* ===== RESET ===== */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Segoe UI', Roboto, Arial, sans-serif;background:#0b0b16;color:#e9ecff}
@@ -47,10 +42,6 @@ img{max-width:100%;display:block}
 .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 20px 40px;text-align:center;gap:10px}
 .hero-logo{width:var(--plutoo-logo-size);height:var(--plutoo-logo-size);border-radius:28px;box-shadow:0 18px 50px rgba(122,79,247,.35);margin-bottom:10px;object-fit:contain;background:#0f0f1f}
 
-/* Footer home (privacy/termini) */
-.home-footer{margin-top:14px;color:#aab2ff}
-.home-footer .dot{opacity:.5;padding:0 6px}
-
 /* ===== GEO BAR ===== */
 .geobar{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#121735;border-bottom:1px solid rgba(255,255,255,.06);gap:8px}
 .g-actions{display:flex;gap:8px}
@@ -66,9 +57,6 @@ img{max-width:100%;display:block}
 .f-item select,.f-item input{width:100%;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#161c3b;color:#e9ecff}
 .f-actions{margin-top:12px;display:flex;justify-content:space-between}
 .chips{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
-.chip-wrap{background:#202751;border:1px solid rgba(255,255,255,.06);border-radius:999px;padding:4px 8px;display:flex;align-items:center}
-.chip{font-size:12px;margin-right:4px}
-.chip-x{background:none;color:#aeb6e8;font-size:12px}
 
 /* ===== TABS PANE ===== */
 .tabpane{display:none;padding:12px}
@@ -85,7 +73,6 @@ img{max-width:100%;display:block}
 .title{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .name{font-weight:800;font-size:14px;color:#f1f4ff}
 .dist{font-size:12px;color:#aab2df}
-.intent-pill{display:inline-block;margin:8px 12px 0;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#1d234d;color:#cfd5ff;letter-spacing:.2px}
 .actions{display:flex;justify-content:center;gap:10px;margin-top:8px}
 .circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none}
 .circle.no{background:#262b52;color:#e2e8ff}
@@ -97,24 +84,14 @@ img{max-width:100%;display:block}
 .card.big{max-width:420px;margin:0 auto;border-radius:16px;background:#161b3a;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .card.big img{width:100%;height:280px;object-fit:cover;background:#11152b}
 .card.big .bio{font-size:14px;color:#aab2df;padding:8px 12px;margin:0}
-.pulse{animation:pulse .36s ease}
-@keyframes pulse{0%{transform:scale(.96);opacity:.75}100%{transform:scale(1);opacity:1}}
-.swipe-left{transform:translateX(-60%) rotate(-8deg)!important;opacity:0!important;transition:all .2s ease}
-.swipe-right{transform:translateX(60%) rotate(8deg)!important;opacity:0!important;transition:all .2s ease}
 
 /* ===== PROFILO FULLSCREEN ===== */
 .profile-page{position:fixed;inset:0;background:#0b0b16;z-index:1000;overflow-y:auto;display:none}
 .profile-page.show{display:block}
 .pp-head{position:sticky;top:0;background:#0f1431;padding:12px;display:flex;justify-content:space-between;align-items:center;z-index:10;border-bottom:1px solid rgba(255,255,255,.06)}
 .pp-body{padding:12px}
-.pp-cover{width:100%;border-radius:12px;margin-bottom:12px}
-.pp-section{margin-bottom:22px}
-.pp-section h3,.pp-section h4{margin-bottom:8px}
-.pp-actions{display:flex;justify-content:center;gap:18px;margin-top:12px}
-.pp-gallery{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
-.pp-thumb{width:76px;height:76px;border-radius:10px;object-fit:cover;background:#11152b}
 
-/* ===== CHAT ===== */
+/* ===== CHAT (sheet) ===== */
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none}
 .sheet.show{display:flex;align-items:flex-end}
 .sheet-box{background:#161b3a;border-radius:16px 16px 0 0;width:100%;max-height:90%;overflow:auto}
@@ -130,25 +107,11 @@ img{max-width:100%;display:block}
 .chat-send{display:flex;gap:8px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px}
 .inp{flex:1;background:#0b1233;color:#e9ecff;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
 
-/* ===== SPONSOR FOOTER ===== */
-.sponsor-app{text-align:center;padding:22px 10px}
-.sponsor-app .sponsor-label{font-size:13px;color:#9aa3cf;line-height:1.3;margin-bottom:8px}
-.sponsor-app .sponsor-img{max-height:28px;opacity:.95;margin:auto}
-.sponsor-app .sponsor-tagline{margin-top:6px;font-size:13px;color:#aeb6e8}
+/* ===== SPONSOR FOOTER (piccolo, elegante) ===== */
+.sponsor-footer{padding:18px 10px;text-align:center;background:transparent}
+.sponsor-footer .sf-title{font-weight:800;color:#dfe3ff;letter-spacing:.2px;font-size:14px;margin-bottom:6px}
+.sponsor-footer .sf-logo img{height:44px;width:auto;display:inline-block;border-radius:12px;filter:drop-shadow(0 6px 16px rgba(0,0,0,.35))}
+.sponsor-footer .sf-payoff{margin-top:8px;color:#aab2ff;font-size:13.5px;line-height:1.35}
 
-/* ===== MATCH LIST ===== */
-#matches .list{display:flex;flex-direction:column;gap:12px;padding:12px 0}
-#matches .item{display:flex;align-items:center;gap:12px;background:#161b3a;border-radius:12px;padding:10px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-#matches .item img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:0 0 56px;background:#11152b}
-#matches .item .btn.pill{margin-left:auto;border-radius:999px;padding:8px 14px}
-
-/* ===== MATCH TOAST ===== */
-.match-toast{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1200;pointer-events:none}
-.match-bubble{background:rgba(22,27,58,.96);border:1px solid rgba(255,255,255,.08);padding:16px 18px;border-radius:16px;display:flex;gap:10px;align-items:center;box-shadow:0 18px 60px rgba(0,0,0,.45);transform:scale(.88);opacity:0;animation:matchIn .28s ease forwards}
-.match-logo{width:36px;height:36px;border-radius:8px;object-fit:cover;background:#11152b}
-@keyframes matchIn{to{transform:scale(1);opacity:1}}
-
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-thumb{background:#1d234d;border-radius:10px}
-::-webkit-scrollbar-track{background:#0b0b16}
+/* ===== ADV BANNER (placeholder) ===== */
+.ad-banner{position:sticky;bottom:0;background:#1a1f43;text-align:center;padding:10px;font-size:13px;color:#c9ceff;border-top:1px solid rgba(255,255,255,.08)}
