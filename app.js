@@ -1,36 +1,34 @@
 /* =========================================================
-   Plutoo – app.js (mobile-first, robusto)
-   - Popola datalist razze da razze.json
-   - Pannello "Ricerca personalizzata" funzionante
-   - Tabs: Vicino / Amore / Giocare-Camminare / Match
-   - Griglia "Vicino a te" con card e apertura profilo
-   - Deck swipe per Amore e Social (like/skip + match list)
-   - Chat fittizia
-   - Geolocalizzazione (best effort) e distanza fittizia
-   - Sponsor footer: testo/struttura forzata al centro
-   - Tutto difensivo: se un nodo manca, l’app non si rompe
+   Plutoo – app.js
+   Build mobile-first (Android), robusto e senza sorprese
+   - Usa dog1.jpg..dog4.jpg (non cane*.jpg)
+   - Tabs: Vicino / Amore / Giocare / Match
+   - Ricerca personalizzata con filtri & chips
+   - Swipe deck (Amore/Giocare) con emoji 🥲 / ❤️
+   - Griglia “Vicino” con card compatte
+   - Lista match
+   - Sponsor footer coerente (fallback testo se manca)
+   - Difensivo: nessun errore blocca l’app
    ========================================================= */
 
 (() => {
-  // ------------------------- helpers -------------------------
-  const $ = (sel, root = document) => root.querySelector(sel);
+  // ---------- helpers ----------
+  const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-  const on = (el, ev, fn, opt) => el && el.addEventListener(ev, fn, opt);
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-  const fallbackImg = (e) => { e.target.src = 'sponsor-logo.png'; e.target.onerror = null; };
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
-  // ------------------------- stato ---------------------------
+  // ---------- stato ----------
   const state = {
-    // posizione approssimata utente
-    userLoc: null,      // {lat, lon}
-    // profili mock locali
-    allProfiles: [],
-    // deck per amore/social
-    loveIdx: 0,
-    socIdx : 0,
+    allProfiles: [],         // dataset completo
+    queueLove: [],           // coda per deck "Amore"
+    queueSoc:  [],           // coda per deck "Giocare"
+    idxLove: 0,
+    idxSoc:  0,
     likedIds: new Set(),
+    rejectedIds: new Set(),
     matches: [],
-    // filtri
+
     filters: {
       breed: '',
       ageBand: '',
@@ -39,508 +37,531 @@
       coat: '',
       energy: '',
       pedigree: '',
-      distance: ''   // km
+      distance: ''
     },
+
     breeds: []
   };
 
-  // =============== bootstrap ===============
+  // ============== bootstrap ==============
   document.addEventListener('DOMContentLoaded', init);
 
   async function init(){
-    wireBasicNav();           // ENTRA, login, register, legal, sponsor
-    wireFilterPanel();        // toggle + submit/reset + chips
-    wireTabs();               // tab switching
-    wireGeoBar();             // posizione
+    wireBasicNav();                 // ENTRA, login/registrazione/chiudi sheet
+    wireSheetsAndDialogs();         // privacy/termini/chat
+    wireFilterPanel();              // form + chips + toggle
+    await loadBreeds();             // razze.json o breeds.json → datalist
+    prepareLocalProfiles();         // crea profili mock con dog*.jpg
+    wireTabs();                     // tab switching
+    wireDecks();                    // like/skip swipe
+    fixSponsorBlocks();             // testo → logo → claim
 
-    await loadBreeds();       // razze.json -> datalist
-
-    prepareLocalProfiles();   // crea profili (cane1..4)
-    renderNearGrid();         // vista iniziale
-    wireDecks();              // Amore/Social
-    rebuildMatches();         // lista match
+    renderNearGrid();               // prima vista
+    buildDecks();                   // popola le due code
+    renderLoveCard();
+    renderSocCard();
+    renderMatches();
   }
 
-  // =============== NAV / HOME ===============
+  // ============== NAV / HOME ==============
   function wireBasicNav(){
-    // ENTRA (dalla landing) — goHome() è usata anche dall’HTML
-    window.goHome = () => {
-      const landing = $('#landing');
-      const app = $('#app');
-      landing && landing.classList.remove('active');
-      app && app.classList.add('active');
-      // alla prima apertura: assicurati che la tab "near" sia attiva
-      selectTab('near');
-    };
+    // ENTRA
+    const cta = $('#ctaEnter');
+    cta && cta.addEventListener('click', (e)=>{
+      e.preventDefault();
+      goHome();
+    });
 
-    // bottoni header
-    on($('#btnLoginTop'), 'click', () => openSheet('#sheetLogin'));
-    on($('#btnLoginUnder'), 'click', () => openSheet('#sheetLogin'));
-    on($('#btnRegisterTop'), 'click', () => openSheet('#sheetRegister'));
+    // link “Accedi/Registrati” (aprono sheet fittizi)
+    const btnLoginTop = $('#btnLoginTop');
+    const btnLoginUnder = $('#btnLoginUnder');
+    const btnRegisterTop = $('#btnRegisterTop');
 
-    // chiusura sheet/dialog generica (x)
-    $$('.close').forEach(btn => {
-      on(btn, 'click', () => {
+    const openSheet = id => { const n = $('#'+id); if(n){ n.classList.add('show'); } };
+
+    btnLoginTop    && btnLoginTop.addEventListener('click', ()=>openSheet('sheetLogin'));
+    btnLoginUnder  && btnLoginUnder.addEventListener('click', ()=>openSheet('sheetLogin'));
+    btnRegisterTop && btnRegisterTop.addEventListener('click', ()=>openSheet('sheetRegister'));
+  }
+
+  // “Entra” dalla landing: mostra #app, nasconde #landing
+  window.goHome = function goHome(){
+    const l = $('#landing'); const a = $('#app');
+    if (l && a) { l.classList.remove('active'); a.classList.add('active'); }
+    location.hash = '#app';
+  };
+
+  // ============== Sheets / Dialogs ==============
+  function wireSheetsAndDialogs(){
+    // chiusura generica
+    $$('[data-close]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
         const id = btn.getAttribute('data-close');
-        if (id) closeSheet('#' + id);
+        const sheet = $('#'+id);
+        if (sheet) sheet.classList.remove('show');
       });
     });
 
-    // privacy / termini
-    on($('#openPrivacy'), 'click', () => $('#privacyDlg')?.showModal());
-    on($('#openTerms'), 'click', () => $('#termsDlg')?.showModal());
+    // Apri privacy/termini
+    $('#openPrivacy') && $('#openPrivacy').addEventListener('click', ()=>{
+      $('#privacyDlg')?.showModal?.();
+    });
+    $('#openTerms') && $('#openTerms').addEventListener('click', ()=>{
+      $('#termsDlg')?.showModal?.();
+    });
 
-    // sponsor footer (forza struttura/centro)
-    fixSponsorFooter();
-  }
-
-  function openSheet(sel){ const n = $(sel); if (n) n.classList.add('show'); }
-  function closeSheet(sel){ const n = $(sel); if (n) n.classList.remove('show'); }
-
-  // =============== GEO ======================
-  function wireGeoBar(){
-    const bar = $('#geoBar');
-    on($('#dismissGeo'), 'click', () => bar?.classList.add('hidden'));
-    on($('#enableGeo'), 'click', async () => {
-      try{
-        const perm = await navigator.permissions?.query?.({name:'geolocation'}).catch(()=>null);
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            state.userLoc = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-            bar?.classList.add('hidden');
-            renderNearGrid(); // aggiorna distance
-          },
-          () => { bar?.classList.add('hidden'); }
-        );
-      }catch{ bar?.classList.add('hidden'); }
+    // invio fittizio login/registrazione
+    $('#loginSubmit') && $('#loginSubmit').addEventListener('click', ()=>{
+      toast('Login fittizio completato');
+      $('#sheetLogin')?.classList.remove('show');
+    });
+    $('#registerSubmit') && $('#registerSubmit').addEventListener('click', ()=>{
+      toast('Registrazione fittizia completata');
+      $('#sheetRegister')?.classList.remove('show');
     });
   }
 
-  // =============== RAZZE ====================
+  // ============== Filtri / Ricerca personalizzata ==============
+  function wireFilterPanel(){
+    const panel = $('#filterPanel');
+    const toggle = $('#filterToggle');
+    const form = $('#filterForm');
+    const resetBtn = $('#filtersReset');
+
+    // toggle
+    toggle && toggle.addEventListener('click', ()=>{
+      const hidden = panel?.hasAttribute('hidden');
+      if (!panel) return;
+      if (hidden) { panel.removeAttribute('hidden'); toggle.textContent = 'Ricerca personalizzata ▲'; }
+      else { panel.setAttribute('hidden', ''); toggle.textContent = 'Ricerca personalizzata ▾'; }
+    });
+
+    // submit → applica
+    form && form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const fd = new FormData(form);
+      for (const k of Object.keys(state.filters)) {
+        state.filters[k] = (fd.get(k) || '').toString().trim();
+      }
+      renderActiveChips();
+      renderNearGrid();
+      buildDecks();
+      renderLoveCard();
+      renderSocCard();
+      toast('Filtri applicati');
+    });
+
+    // reset rapido
+    resetBtn && resetBtn.addEventListener('click', ()=>{
+      form?.reset();
+      for (const k of Object.keys(state.filters)) state.filters[k] = '';
+      renderActiveChips();
+      renderNearGrid();
+      buildDecks();
+      renderLoveCard();
+      renderSocCard();
+      toast('Filtri rimossi');
+    });
+  }
+
+  function renderActiveChips(){
+    const host = $('#activeChips');
+    if(!host) return;
+    host.innerHTML = '';
+    const entries = Object.entries(state.filters).filter(([,v])=>v);
+    if (!entries.length){ host.textContent = ''; return; }
+    entries.forEach(([k,v])=>{
+      const w = document.createElement('div');
+      w.className = 'chip-wrap';
+      const c = document.createElement('div');
+      c.className = 'chip';
+      c.textContent = `${labelOf(k)}: ${v}`;
+      const x = document.createElement('button');
+      x.className = 'chip-x';
+      x.textContent = '×';
+      x.addEventListener('click', ()=>{
+        state.filters[k] = '';
+        // aggiorna form se presente
+        const el = $(`[name="${k}"]`);
+        if (el) el.value = '';
+        renderActiveChips();
+        renderNearGrid();
+        buildDecks();
+        renderLoveCard();
+        renderSocCard();
+      });
+      w.appendChild(c); w.appendChild(x);
+      host.appendChild(w);
+    });
+
+    function labelOf(key){
+      return {
+        breed: 'Razza',
+        ageBand: 'Età',
+        sex: 'Sesso',
+        size: 'Taglia',
+        coat: 'Pelo',
+        energy: 'Energia',
+        pedigree: 'Pedigree',
+        distance: 'Distanza'
+      }[key] || key;
+    }
+  }
+
+  // ============== Caricamento razze (datalist) ==============
   async function loadBreeds(){
+    // Prova razze.json, poi breeds.json (per compatibilità con repo)
+    const tryFetch = async (url) => {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      return res.json();
+    };
     try{
-      const res = await fetch('razze.json', {cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data = await res.json();
-      state.breeds = Array.isArray(data) ? data.map(String) : [];
+      let list;
+      try { list = await tryFetch('razze.json'); }
+      catch { list = await tryFetch('breeds.json'); }
+      if (Array.isArray(list)) state.breeds = list.map(String);
+
+      // datalist (index.html usa id="breedList" e input id="breedInput")
       const dl = $('#breedList');
       if (dl){
         dl.innerHTML = '';
-        state.breeds.forEach(b => {
-          const o = document.createElement('option');
-          o.value = b;
-          dl.appendChild(o);
+        state.breeds.forEach(b=>{
+          const opt = document.createElement('option');
+          opt.value = b;
+          dl.appendChild(opt);
         });
       }
-    }catch(_){ /* se manca, l’input rimane libero */ }
-  }
 
-  // =============== FILTRI ===================
-  function wireFilterPanel(){
-    const panel = $('#filterPanel');
-    on($('#filterToggle'), 'click', () => {
-      if (!panel) return;
-      panel.hidden = !panel.hidden;
-      $('#filterToggle').textContent = panel.hidden ? 'Ricerca personalizzata ▾' : 'Ricerca personalizzata ▴';
-    });
-
-    // leggi form su submit
-    const form = $('#filterForm');
-    on(form, 'submit', e => {
-      e.preventDefault();
-      const fd = new FormData(form);
-      state.filters.breed    = (fd.get('breed')||'').trim();
-      state.filters.ageBand  = fd.get('ageBand')||'';
-      state.filters.sex      = fd.get('sex')||'';
-      state.filters.size     = fd.get('size')||'';
-      state.filters.coat     = fd.get('coat')||'';
-      state.filters.energy   = fd.get('energy')||'';
-      state.filters.pedigree = fd.get('pedigree')||'';
-      state.filters.distance = fd.get('distance')||'';
-      renderChips();
-      renderNearGrid();
-      rebuildDeckSources();
-    });
-
-    // reset
-    on($('#filtersReset'), 'click', () => {
-      form?.reset();
-      Object.keys(state.filters).forEach(k => state.filters[k]='');
-      renderChips();
-      renderNearGrid();
-      rebuildDeckSources();
-    });
-
-    // autoupdate breed typing
-    const breedInput = $('#breedInput');
-    on(breedInput, 'input', () => {
-      state.filters.breed = (breedInput.value||'').trim();
-    });
-  }
-
-  function renderChips(){
-    const host = $('#activeChips');
-    if (!host) return;
-    host.innerHTML = '';
-    const map = {
-      breed:'Razza', ageBand:'Età', sex:'Sesso', size:'Taglia',
-      coat:'Pelo', energy:'Energia', pedigree:'Pedigree', distance:'Distanza'
-    };
-    Object.entries(map).forEach(([k, label])=>{
-      const v = (state.filters[k]||'').toString().trim();
-      if(!v) return;
-      const wrap = document.createElement('div');
-      wrap.className = 'chip-wrap';
-      wrap.innerHTML = `<span class="chip">${label}: ${v}</span><button class="chip-x">×</button>`;
-      on($('.chip-x', wrap), 'click', () => {
-        state.filters[k]='';
-        // sincronizza form
-        const el = $(`[name="${k}"]`);
-        if (el) el.value = '';
-        renderChips();
-        renderNearGrid();
-        rebuildDeckSources();
+      // binding input
+      const input = $('#breedInput');
+      input && input.addEventListener('input', ()=>{
+        state.filters.breed = input.value.trim();
       });
-      host.appendChild(wrap);
-    });
+    }catch(err){
+      // se manca, pazienza: l'input rimane libero
+      console.warn('Breeds load fallback:', err);
+    }
   }
 
-  // =============== DATI / PROFILI ===========
+  // ============== Dataset locale ==============
   function prepareLocalProfiles(){
-    const imgs = ['cane1.jpg','cane2.jpg','cane3.jpg','cane4.jpg'];
+    const imgs = ['dog1.jpg','dog2.jpg','dog3.jpg','dog4.jpg'];
     const names = ['Luna','Fido','Bruno','Maya','Kira','Rocky','Zoe','Leo'];
-    let id=1;
-    const base = imgs.map((src,i)=>({
+    let id = 1;
+    state.allProfiles = imgs.map((src,i)=>({
       id: id++,
       name: names[i%names.length],
-      age : 1 + (i%10),
-      sex : (i%2 ? 'F' : 'M'),
+      sex: (i%2===0?'F':'M'),
+      age: 1 + (i%8),
+      ageBand: bandOf(1 + (i%8)),
       size: ['Piccola','Media','Grande'][i%3],
       coat: ['Corto','Medio','Lungo'][i%3],
       energy: ['Bassa','Media','Alta'][i%3],
-      pedigree: (i%2 ? 'Sì' : 'No'),
-      breed: guessBreed(names[i%names.length]),
+      pedigree: (i%2===0?'Sì':'No'),
+      breed: ['Barboncino','Bulldog Francese','Shiba Inu','Pastore Tedesco'][i%4],
+      distanceKm: 0.8 + i*1.2,
       img: src,
-      km: 1 + i*1.2
+      bio: `${names[i%names.length]} ha ${1 + (i%8)} anni, ${i%2===0?'femmina':'maschio'}, taglia ${['piccola','media','grande'][i%3]}, pelo ${['corto','medio','lungo'][i%3]}, energia ${['bassa','media','alta'][i%3]}.`
     }));
-    // duplica per avere più card
-    state.allProfiles = [...base, ...base.map(p=>({...p,id:id++})), ...base.map(p=>({...p,id:id++}))];
 
-    // precarica immagini
-    state.allProfiles.forEach(p => { const im=new Image(); im.src=p.img; });
-  }
-  function guessBreed(name){
-    const list = ['Labrador','Beagle','Shiba Inu','Golden Retriever','Barboncino','Pastore Tedesco','Bulldog Francese','Meticcio'];
-    return list[name.charCodeAt(0)%list.length];
-  }
+    // precarica
+    state.allProfiles.forEach(p=>{ const im=new Image(); im.src=p.img; });
 
-  // filtro comune
-  function passesFilters(p){
-    const F = state.filters;
-    if (F.breed && !p.breed.toLowerCase().includes(F.breed.toLowerCase())) return false;
-    if (F.sex && p.sex !== F.sex) return false;
-    if (F.size && p.size !== F.size) return false;
-    if (F.coat && p.coat !== F.coat) return false;
-    if (F.energy && p.energy !== F.energy) return false;
-    if (F.pedigree && p.pedigree !== F.pedigree) return false;
-    if (F.ageBand){
-      const [a,b] = F.ageBand.split('–');
-      const min = parseInt(a||'0',10);
-      const max = b?.includes('+') ? 99 : parseInt(b||'99',10);
-      if (p.age < min || p.age > max) return false;
+    function bandOf(n){
+      if (n<=1) return '0–1';
+      if (n<=4) return '2–4';
+      if (n<=7) return '5–7';
+      return '8+';
     }
-    if (F.distance){
-      const maxKm = parseFloat(F.distance)||0;
-      if (maxKm && p.km > maxKm) return false;
+  }
+
+  // ============== Filtri applicati a un profilo ==============
+  function passFilters(p){
+    const f = state.filters;
+    if (f.breed   && !p.breed.toLowerCase().includes(f.breed.toLowerCase())) return false;
+    if (f.ageBand && p.ageBand !== f.ageBand) return false;
+    if (f.sex     && p.sex !== f.sex) return false;
+    if (f.size    && p.size !== f.size) return false;
+    if (f.coat    && p.coat !== f.coat) return false;
+    if (f.energy  && p.energy !== f.energy) return false;
+    if (f.pedigree&& p.pedigree !== f.pedigree) return false;
+    if (f.distance){
+      const lim = parseFloat(f.distance);
+      if (!isNaN(lim) && p.distanceKm > lim) return false;
     }
     return true;
   }
 
-  // =============== VICINO (griglia) =========
+  // ============== VICINO A TE (griglia) ==============
   function renderNearGrid(){
     const grid = $('#grid');
     const counter = $('#counter');
     const empty = $('#emptyNear');
-    if (!grid || !counter || !empty) return;
+    if (!grid || !counter) return;
 
-    const list = state.allProfiles.filter(passesFilters);
-    counter.textContent = `${list.length} profili trovati`;
-
+    const data = state.allProfiles.filter(passFilters);
     grid.innerHTML = '';
-    if (!list.length){
-      empty.classList.remove('hidden');
+    if (!data.length){
+      empty?.classList.remove('hidden');
+      counter.textContent = '0 profili trovati';
       return;
     }
-    empty.classList.add('hidden');
+    empty?.classList.add('hidden');
+    counter.textContent = `${data.length} profili trovati`;
 
-    list.forEach(p => {
+    data.forEach(p=>{
       const card = document.createElement('article');
       card.className = 'card';
       card.innerHTML = `
-        <span class="online"></span>
-        <img src="${p.img}" alt="${p.name}" onerror="this.src='sponsor-logo.png'">
+        <div class="online" title="online"></div>
+        <img src="${p.img}" alt="${p.name}"
+             onerror="this.src='sponsor-logo.png'">
         <div class="card-info">
           <div class="title">
             <div class="name">${p.name}</div>
-            <div class="dist">${p.km.toFixed(1)} km</div>
+            <div class="dist">${p.distanceKm.toFixed(1)} km</div>
           </div>
-          <span class="intent-pill">${p.breed}</span>
+          <div class="intent-pill">${p.breed}</div>
           <div class="actions">
-            <button class="circle no" aria-label="Salta">🥲</button>
-            <button class="circle like" aria-label="Mi piace">❤️</button>
+            <button class="circle no" title="No">🥲</button>
+            <button class="circle like" title="Mi piace">❤️</button>
           </div>
         </div>
       `;
-      on($('.circle.no', card), 'click', (e)=>{ e.stopPropagation(); /* niente */ });
-      on($('.circle.like', card), 'click', (e)=>{ e.stopPropagation(); likeProfile(p); });
-      on(card, 'click', ()=> openProfilePage(p));
+      // like/no qui aggiornano anche il deck "match"
+      const no = card.querySelector('.no');
+      const like = card.querySelector('.like');
+      no && no.addEventListener('click', ()=> rejectProfile(p));
+      like && like.addEventListener('click', ()=> likeProfile(p));
       grid.appendChild(card);
     });
   }
 
-  // =============== TABS =====================
+  // ============== TABS ==============
   function wireTabs(){
-    $$('.tab').forEach(btn=>{
-      on(btn,'click', ()=>{
-        $$('.tab').forEach(b=>b.classList.remove('active'));
+    const tabs = $$('.tabs .tab');
+    tabs.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        tabs.forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
+
         const target = btn.getAttribute('data-tab');
-        selectTab(target);
+        // mostra il pane corrispondente
+        $$('.tabpane').forEach(p=>p.classList.remove('active'));
+        $('#'+target)?.classList.add('active');
+
+        // quando entro in Amore/Social, aggiorno card corrente
+        if (target==='love') renderLoveCard();
+        if (target==='social') renderSocCard();
+        if (target==='matches') renderMatches();
       });
     });
   }
 
-  function selectTab(key){
-    // tabpane: #near, #love, #social, #matches
-    ['near','love','social','matches'].forEach(id=>{
-      const n = $('#'+id);
-      if(n) n.classList.toggle('active', id===key);
-    });
-    if (key==='love' || key==='social') ensureDeckRendered(key);
-    if (key==='matches') rebuildMatches();
+  // ============== Deck (Amore / Giocare) ==============
+  function buildDecks(){
+    const base = state.allProfiles.filter(passFilters);
+    state.queueLove = shuffle(base.slice());
+    state.queueSoc  = shuffle(base.slice());
+    state.idxLove = 0;
+    state.idxSoc  = 0;
   }
 
-  // =============== DECK (Amore/Social) =====
   function wireDecks(){
-    // bottoni love
-    on($('#loveYes'), 'click', ()=> deckLike('love'));
-    on($('#loveNo' ), 'click', ()=> deckSkip('love'));
-    // bottoni social
-    on($('#socYes'),  'click', ()=> deckLike('social'));
-    on($('#socNo' ),  'click', ()=> deckSkip('social'));
+    // Amore
+    $('#loveNo')  && $('#loveNo').addEventListener('click', ()=>{
+      const p = state.queueLove[state.idxLove]; if (!p) return;
+      rejectProfile(p); animateCard('#loveImg',-1); nextLove();
+    });
+    $('#loveYes') && $('#loveYes').addEventListener('click', ()=>{
+      const p = state.queueLove[state.idxLove]; if (!p) return;
+      likeProfile(p);  animateCard('#loveImg',+1,true); nextLove();
+    });
 
-    // swipe touch
-    makeSwipe($('#love .card.big'), ()=>deckLike('love'), ()=>deckSkip('love'));
-    makeSwipe($('#social .card.big'), ()=>deckLike('social'), ()=>deckSkip('social'));
+    // Social
+    $('#socNo')  && $('#socNo').addEventListener('click', ()=>{
+      const p = state.queueSoc[state.idxSoc]; if (!p) return;
+      rejectProfile(p); animateCard('#socImg',-1); nextSoc();
+    });
+    $('#socYes') && $('#socYes').addEventListener('click', ()=>{
+      const p = state.queueSoc[state.idxSoc]; if (!p) return;
+      likeProfile(p);  animateCard('#socImg',+1,true); nextSoc();
+    });
 
-    // prima render
-    ensureDeckRendered('love');
-    ensureDeckRendered('social');
+    // swipe gesture basilare (touch)
+    const attachSwipe = (imgSel, nextFn, likeFn, rejectFn) => {
+      const img = $(imgSel);
+      if (!img) return;
+      let sx=0;
+      img.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; }, {passive:true});
+      img.addEventListener('touchend', e=>{
+        const dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx)<40) return; // tap
+        if (dx>0){ likeFn(); animateCard(imgSel,+1,true); }
+        else { rejectFn(); animateCard(imgSel,-1); }
+        nextFn();
+      }, {passive:true});
+    };
+
+    attachSwipe('#loveImg', nextLove,
+      ()=>{ const p=state.queueLove[state.idxLove]; p && likeProfile(p); },
+      ()=>{ const p=state.queueLove[state.idxLove]; p && rejectProfile(p); }
+    );
+    attachSwipe('#socImg', nextSoc,
+      ()=>{ const p=state.queueSoc[state.idxSoc]; p && likeProfile(p); },
+      ()=>{ const p=state.queueSoc[state.idxSoc]; p && rejectProfile(p); }
+    );
   }
 
-  function rebuildDeckSources(){
-    state.loveIdx = 0;
-    state.socIdx  = 0;
-    ensureDeckRendered('love');
-    ensureDeckRendered('social');
+  function renderLoveCard(){
+    const p = state.queueLove[state.idxLove];
+    renderDeckCard(p, {img:'#loveImg', title:'#loveTitle', meta:'#loveMeta', bio:'#loveBio'});
+  }
+  function renderSocCard(){
+    const p = state.queueSoc[state.idxSoc];
+    renderDeckCard(p, {img:'#socImg', title:'#socTitle', meta:'#socMeta', bio:'#socBio'});
   }
 
-  function ensureDeckRendered(which){
-    const src = state.allProfiles.filter(passesFilters);
-    if (!src.length){
-      if (which==='love') fillDeckUI('love', null);
-      if (which==='social') fillDeckUI('social', null);
+  function renderDeckCard(p, map){
+    const img = $(map.img), t=$(map.title), m=$(map.meta), b=$(map.bio);
+    if (!img||!t||!m||!b) return;
+
+    if (!p){
+      img.src = 'sponsor-logo.png';
+      t.textContent = '—';
+      m.textContent = 'Nessun profilo';
+      b.textContent = 'Hai visto tutto! Tocca “Ricerca personalizzata” o torna su “Vicino a te”.';
       return;
     }
-    if (which==='love'){
-      const p = src[state.loveIdx % src.length];
-      fillDeckUI('love', p);
-    } else {
-      const p = src[state.socIdx % src.length];
-      fillDeckUI('social', p);
-    }
+    img.src = p.img;
+    img.alt = p.name;
+    img.onerror = ()=>{ img.src='sponsor-logo.png'; };
+    t.textContent = p.name;
+    m.textContent = `${p.breed} · ${p.distanceKm.toFixed(1)} km`;
+    b.textContent = p.bio || '';
   }
 
-  function fillDeckUI(which, p){
-    if (which==='love'){
-      $('#loveImg').src = p ? p.img : 'sponsor-logo.png';
-      $('#loveImg').onerror = fallbackImg;
-      $('#loveTitle').textContent = p ? p.name : '—';
-      $('#loveMeta').textContent  = p ? `${p.breed} · ${p.km.toFixed(1)} km` : '—';
-      $('#loveBio').textContent   = p ? descr(p) : 'Nessun profilo disponibile.';
-    } else {
-      $('#socImg').src = p ? p.img : 'sponsor-logo.png';
-      $('#socImg').onerror = fallbackImg;
-      $('#socTitle').textContent = p ? p.name : '—';
-      $('#socMeta').textContent  = p ? `${p.breed} · ${p.km.toFixed(1)} km` : '—';
-      $('#socBio').textContent   = p ? descr(p) : 'Nessun profilo disponibile.';
-    }
+  function nextLove(){
+    state.idxLove = clamp(state.idxLove+1, 0, state.queueLove.length);
+    renderLoveCard();
   }
-
-  function deckLike(which){
-    const src = state.allProfiles.filter(passesFilters);
-    if (!src.length) return;
-    if (which==='love'){
-      const p = src[state.loveIdx % src.length];
-      likeProfile(p); state.loveIdx++; ensureDeckRendered('love');
-    } else {
-      const p = src[state.socIdx % src.length];
-      likeProfile(p); state.socIdx++; ensureDeckRendered('social');
-    }
-  }
-  function deckSkip(which){
-    const src = state.allProfiles.filter(passesFilters);
-    if (!src.length) return;
-    if (which==='love'){ state.loveIdx++; ensureDeckRendered('love'); }
-    else { state.socIdx++; ensureDeckRendered('social'); }
+  function nextSoc(){
+    state.idxSoc = clamp(state.idxSoc+1, 0, state.queueSoc.length);
+    renderSocCard();
   }
 
   function likeProfile(p){
     if (!p) return;
-    if (!state.likedIds.has(p.id)){
-      state.likedIds.add(p.id);
-      state.matches.unshift(p);
-      rebuildMatches();
-      heartToast(p.img);
-    }
+    state.likedIds.add(p.id);
+    if (!state.matches.find(m=>m.id===p.id)) state.matches.push(p);
+    renderMatches();
+    toast('Match aggiunto ❤️');
+  }
+  function rejectProfile(p){
+    if (!p) return;
+    state.rejectedIds.add(p.id);
   }
 
-  function makeSwipe(el, onRight, onLeft){
-    if (!el) return;
-    let x0 = null;
-    on(el, 'touchstart', e => { x0 = e.touches[0].clientX; }, {passive:true});
-    on(el, 'touchend',   e => {
-      if (x0==null) return;
-      const dx = e.changedTouches[0].clientX - x0;
-      x0 = null;
-      if (Math.abs(dx) < 40) return;
-      dx > 0 ? onRight?.() : onLeft?.();
-    }, {passive:true});
-  }
-
-  function descr(p){
-    return `${p.name} ha ${p.age} anni, ${p.sex==='M'?'maschio':'femmina'}, taglia ${p.size.toLowerCase()}, pelo ${p.coat.toLowerCase()}, energia ${p.energy.toLowerCase()}.`;
-  }
-
-  // =============== MATCH LIST ==============
-  function rebuildMatches(){
+  function renderMatches(){
     const host = $('#matchList');
     const empty = $('#emptyMatch');
-    if (!host || !empty) return;
+    if (!host) return;
     host.innerHTML = '';
     if (!state.matches.length){
-      empty.classList.remove('hidden');
+      empty?.classList.remove('hidden');
       return;
     }
-    empty.classList.add('hidden');
-
+    empty?.classList.add('hidden');
     state.matches.forEach(p=>{
       const row = document.createElement('div');
       row.className = 'item';
       row.innerHTML = `
         <img src="${p.img}" alt="${p.name}" onerror="this.src='sponsor-logo.png'">
         <div>
-          <div class="name">${p.name}</div>
-          <div class="dist small muted">${p.breed} · ${p.km.toFixed(1)} km</div>
+          <strong>${p.name}</strong><br>
+          <span class="muted">${p.breed} · ${p.distanceKm.toFixed(1)} km</span>
         </div>
-        <button class="btn pill primary">Chatta</button>
+        <button class="btn pill primary">Apri chat</button>
       `;
-      on($('.btn', row), 'click', ()=> openChat(p));
+      // chat fittizia
+      row.querySelector('.btn')?.addEventListener('click', ()=>{
+        const s = $('#chat'); if (s) {
+          $('#chatName').textContent = p.name;
+          $('#chatAvatar').src = p.img;
+          $('#thread').innerHTML = `
+            <div class="bubble">Ciao! 🐾</div>
+            <div class="bubble me">Ciao ${p.name}! Facciamo una passeggiata?</div>
+          `;
+          s.classList.add('show');
+        }
+      });
       host.appendChild(row);
     });
   }
 
-  // =============== PROFILO FULLSCREEN ======
-  function openProfilePage(p){
-    const page = $('#profilePage'); const body = $('#ppBody'); const title = $('#ppTitle');
-    if (!page || !body || !title) return;
-    title.textContent = p.name;
-    body.innerHTML = `
-      <img class="pp-cover" src="${p.img}" alt="${p.name}" onerror="this.src='sponsor-logo.png'">
-      <div class="pp-section">
-        <h3>${p.name} • ${p.age}</h3>
-        <p class="muted">${p.breed} — ${p.size}, pelo ${p.coat}, energia ${p.energy}, ${p.pedigree==='Sì'?'con pedigree':'senza pedigree'}.</p>
-      </div>
-      <div class="pp-section">
-        <h4>Galleria</h4>
-        <div class="pp-gallery">
-          <img class="pp-thumb" src="${p.img}" alt="" onerror="this.src='sponsor-logo.png'">
-          <img class="pp-thumb" src="cane2.jpg" alt="" onerror="this.src='sponsor-logo.png'">
-          <img class="pp-thumb" src="cane3.jpg" alt="" onerror="this.src='sponsor-logo.png'">
-        </div>
-      </div>
-      <div class="pp-actions">
-        <button class="btn primary" id="ppLike">Mi piace</button>
-        <button class="btn light" id="ppChat">Chatta</button>
-      </div>
-    `;
-    on($('#ppLike', body), 'click', ()=>{ likeProfile(p); });
-    on($('#ppChat', body), 'click', ()=> openChat(p));
-    page.classList.add('show');
-  }
-  window.closeProfilePage = function(){ $('#profilePage')?.classList.remove('show'); };
-
-  // =============== CHAT ====================
-  function openChat(p){
-    $('#chatName').textContent = p.name;
-    const av = $('#chatAvatar'); if (av){ av.src = p.img; av.onerror = fallbackImg; }
-    const thread = $('#thread'); thread.innerHTML = '';
-    openSheet('#chat');
-  }
-  // invio messaggio
-  on($('#sendBtn'), 'click', sendMsg);
-  on($('#chatInput'), 'keydown', e => { if(e.key==='Enter'){ e.preventDefault(); sendMsg(); }});
-  function sendMsg(){
-    const input = $('#chatInput'); const thread = $('#thread');
-    const txt = (input?.value||'').trim(); if(!txt) return;
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble me';
-    bubble.textContent = txt;
-    thread.appendChild(bubble);
-    input.value = '';
-    thread.scrollTop = thread.scrollHeight;
-  }
-
-  // =============== SPONSOR FOOTER ==========
-  function fixSponsorFooter(){
-    // Nell’HTML c’è <div class="sponsor-app">…</div>.
-    // Qui garantiamo l’ordine richiesto: testo sopra, logo al centro, tagline sotto.
-    const host = $('.sponsor-app'); if (!host) return;
-    const hasLabel = $('.sponsor-label', host);
-    const hasImg   = $('.sponsor-img', host);
-    if (!hasLabel){
-      const l = document.createElement('div');
-      l.className = 'sponsor-label';
-      l.textContent = 'Sponsor ufficiale';
-      host.insertAdjacentElement('afterbegin', l);
-    } else {
-      hasLabel.textContent = 'Sponsor ufficiale';
+  // ============== Sponsor footer fix (fallback) ==============
+  function fixSponsorBlocks(){
+    // blocco in home
+    const blockHome = $('.sponsor-block');
+    if (blockHome){
+      const label = $('.sponsor-label', blockHome);
+      if (label) label.textContent = 'Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe';
     }
-    if (hasImg){ hasImg.alt = 'Fido'; hasImg.onerror = fallbackImg; }
-    // aggiungi tagline sotto il logo
-    if (!$('.sponsor-tagline', host)){
-      const t = document.createElement('div');
-      t.className = 'sponsor-label sponsor-tagline';
-      t.textContent = '“Fido”, il gelato per i tuoi amici a quattro zampe';
-      host.appendChild(t);
+    // blocco in-app
+    const appFoot = $('.sponsor-app');
+    if (appFoot){
+      const label = $('.sponsor-label', appFoot);
+      if (label) label.textContent = 'Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe';
     }
   }
 
-  // =============== MATCH TOAST ============
-  function heartToast(imgSrc){
-    // micro notifica visuale, non invasiva
-    let wrap = $('#matchToast');
-    if (!wrap){
-      wrap = document.createElement('div');
-      wrap.id = 'matchToast';
-      wrap.className = 'match-toast';
-      document.body.appendChild(wrap);
+  // ============== Animazioni piccole ==============
+  function animateCard(imgSel, dir = +1, heart = false){
+    const img = (typeof imgSel==='string') ? $(imgSel) : imgSel;
+    if (!img) return;
+    img.classList.add('pulse');
+    const dx = dir>0 ? 60 : -60;
+    img.animate([
+      { transform: 'translateX(0)',    opacity: 1 },
+      { transform: `translateX(${dx}px) rotate(${dir>0?6:-6}deg)`, opacity: 0 }
+    ], { duration: 220, easing: 'ease-in' }).finished.then(()=>{
+      img.style.opacity = '';
+      img.style.transform = '';
+    }).catch(()=>{});
+    if (heart){
+      const span = document.createElement('span');
+      span.className = 'heart-pop';
+      span.textContent = '❤️';
+      span.style.left = 'calc(50% - 14px)';
+      span.style.top = '45%';
+      img.parentElement?.appendChild(span);
+      setTimeout(()=>span.remove(), 800);
     }
-    const b = document.createElement('div');
-    b.className = 'match-bubble';
-    b.innerHTML = `<img class="match-logo" src="${imgSrc}" onerror="this.src='sponsor-logo.png'"><strong>Match!</strong>`;
-    wrap.appendChild(b);
-    setTimeout(()=>{ b.remove(); }, 1800);
+    setTimeout(()=>img.classList.remove('pulse'), 320);
+  }
+
+  // ============== util varie ==============
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+  // piccolo toast
+  let tmr;
+  function toast(msg=''){
+    let t = $('#toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id='toast';
+      t.style.cssText = `
+        position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+        background:rgba(19,22,45,.96);color:#fff;padding:10px 14px;border-radius:12px;
+        font-size:14px;z-index:2000;opacity:0;transition:opacity .18s ease`;
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity='1';
+    clearTimeout(tmr);
+    tmr = setTimeout(()=> t.style.opacity='0', 1600);
   }
 
 })();
+```0
