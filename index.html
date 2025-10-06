@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plutoo</title>
 
-  <!-- PWA -->
+  <!-- PWA base (già presenti nel tuo repo) -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0b3a">
 
@@ -42,14 +42,13 @@
          onclick="if(window.goHome){ goHome(); } return false;">Entra</a>
       <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
 
-      <!-- (Solo in home, sponsor leggero) -->
+      <!-- Sponsor HOME (compatto e centrato) -->
       <div class="sponsor-block">
-        <div class="sponsor-label">
-          Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe
-        </div>
+        <div class="sponsor-title">Sponsor ufficiale</div>
         <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
-          <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
+          <img class="sponsor-logo" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
         </a>
+        <div class="sponsor-sub">“Fido”, il gelato per i tuoi amici a quattro zampe</div>
       </div>
 
       <footer class="home-footer">
@@ -64,7 +63,7 @@
   <section id="app" class="screen">
     <!-- geolocalizzazione -->
     <div id="geoBar" class="geobar hidden">
-      <span>Attiva la posizione per vedere i dog vicino a te</span>
+      <span>Attiva la posizione per vedere gli amici vicino a te</span>
       <div class="g-actions">
         <button id="enableGeo" class="btn xs primary">Attiva</button>
         <button id="dismissGeo" class="btn xs light">Più tardi</button>
@@ -86,7 +85,6 @@
     <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
         <div class="f-grid">
-          <!-- RAZZA: input + datalist (da razze.json) -->
           <label class="f-item">
             <span>Razza</span>
             <input id="breedInput" name="breed" placeholder="Inizia a digitare…"
@@ -177,7 +175,7 @@
     <!-- AMORE -->
     <section id="love" class="tabpane">
       <div class="deck">
-        <article class="card big">
+        <article class="card big" id="loveCard">
           <img id="loveImg" src="dog1.jpg" alt="">
           <div class="card-info">
             <div class="title">
@@ -186,8 +184,8 @@
             </div>
             <p id="loveBio" class="bio">—</p>
             <div class="actions">
-              <button id="loveNo" class="circle no" title="No">🥲</button>
-              <button id="loveYes" class="circle like" title="Mi piace">❤️</button>
+              <button id="loveNo" class="circle no">🥲</button>
+              <button id="loveYes" class="circle like">❤️</button>
             </div>
           </div>
         </article>
@@ -197,7 +195,7 @@
     <!-- GIOCARE/CAMMINARE -->
     <section id="social" class="tabpane">
       <div class="deck">
-        <article class="card big">
+        <article class="card big" id="socCard">
           <img id="socImg" src="dog1.jpg" alt="">
           <div class="card-info">
             <div class="title">
@@ -206,8 +204,8 @@
             </div>
             <p id="socBio" class="bio">—</p>
             <div class="actions">
-              <button id="socNo" class="circle no" title="No">🥲</button>
-              <button id="socYes" class="circle dog" title="Social">🐕</button>
+              <button id="socNo" class="circle no">🥲</button>
+              <button id="socYes" class="circle dog">🐕</button>
             </div>
           </div>
         </article>
@@ -220,11 +218,11 @@
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
 
-    <!-- SPONSOR FOOTER (fisso in fondo alla pagina App) -->
-    <footer id="sponsorFooter" class="sponsor-footer">
+    <!-- SPONSOR FOOTER (centrato, piccolo, ordinato) -->
+    <footer class="sponsor-app">
       <div class="sponsor-title">Sponsor ufficiale</div>
-      <a class="sponsor-logo-wrap" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
-        <img class="sponsor-logo" src="sponsor-logo.png" alt="Fido — sponsor">
+      <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
+        <img class="sponsor-logo" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
       </a>
       <div class="sponsor-sub">“Fido”, il gelato per i tuoi amici a quattro zampe</div>
     </footer>
@@ -243,11 +241,14 @@
   </section>
 
   <!-- DIALOG / SHEETS / CHAT / LEGAL -->
-  <dialog id="interstitial" class="modal inter">
+  <dialog id="adReward" class="modal inter">
     <div class="inter-body">
-      <h3>Annuncio video</h3>
-      <p class="muted" id="interMsg">Questo è un interstitial fittizio per il web.</p>
-      <button id="interStart" class="btn primary">Guarda</button>
+      <h3>Guarda un breve video per sbloccare il selfie</h3>
+      <p class="muted">Placeholder reward video per la demo web.</p>
+      <div class="row gap">
+        <button class="btn light" onclick="document.getElementById('adReward').close()">Annulla</button>
+        <button class="btn primary" id="rewardPlay">Guarda video</button>
+      </div>
     </div>
   </dialog>
 
@@ -305,18 +306,17 @@
   <dialog id="termsDlg" class="modal legal">
     <div class="pad">
       <h3>Termini</h3>
-      <p>Plutoo è una piattaforma per far incontrare proprietari di dog. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
+      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
       <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
     </div>
   </dialog>
 
   <!-- SCRIPT -->
-  <script src="app.js?v=final"></script>
+  <script src="app.js"></script>
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(()=>{});
     }
-    // fallback hash
     function _forceApp(){var l=document.getElementById('landing'),a=document.getElementById('app');if(l&&a){l.classList.remove('active');a.classList.add('active');}}
     if (location.hash === '#app') { try{ goHome(); }catch(_){ _forceApp(); } }
     window.addEventListener('hashchange', ()=>{ if(location.hash==='#app'){ try{goHome();}catch(_){_forceApp();} }});
