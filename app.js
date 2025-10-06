@@ -1,413 +1,419 @@
-/* Plutoo – app.js
-   Versione “stabile mobile” – niente limiti finti, niente pop-up “hai solo 10 like”.
-   – Ricerca razze: legge razze.json e fa autocompletamento
-   – Swipe deck: mai schermo nero; a fine lista ricicla i profili o mostra messaggio + bottone “Ricarica”
-   – Match animation più lunga e visibile (Web Animations API ~1.8s)
-   – Footer sponsor: testo forzato (fallback) se manca in HTML
-   – Tutto difensivo: se un nodo non esiste, lo saltiamo senza rompere l’app
-*/
+/* =========================================================
+   Plutoo – app.js (Android/WebView friendly, con razze.json)
+   ---------------------------------------------------------
+   - Tabs: Vicino | Amore | Giocare/Camminare | Match
+   - Swipe fluido (mai schermo nero: riciclo/empty con bottone)
+   - Datalist razze: carica razze.json -> #breedList per #breedInput
+   - Niente banner “10 like / guarda video”
+   - Match animation più lunga (~2.2s) e visibile
+   - Fallback immagini robusto (mai blocchi neri)
+   - Tutto difensivo: se un nodo manca, si salta senza crash
+   ========================================================= */
 
-(() => {
-  // -------------------------------
-  // Utilities
-  // -------------------------------
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+/* ===================== DATI DEMO ===================== */
+const dogs = [
+  { id:1, name:'Luna',  age:1, breed:'Jack Russell',      sex:'F', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'No', area:'Roma – Monteverde', desc:'Curiosa e giocherellona, ama la pallina.', image:'dog1.jpg', online:true,  verified:true,  intents:['play','mate'], coords:{lat:41.898, lon:12.498} },
+  { id:2, name:'Rocky', age:3, breed:'Labrador',          sex:'M', size:'Media',   coat:'Corto', energy:'Media', pedigree:'No', area:'Roma – Eur',        desc:'Affettuoso e fedele, perfetto per passeggiate.', image:'dog2.jpg', online:true,  verified:false, intents:['walk'], coords:{lat:41.901, lon:12.476} },
+  { id:3, name:'Bella', age:2, breed:'Shiba Inu',         sex:'F', size:'Piccola', coat:'Medio', energy:'Media', pedigree:'Sì', area:'Roma – Prati',      desc:'Elegante e curiosa, cerca partner per accoppiamento.', image:'dog3.jpg', online:true,  verified:true,  intents:['mate'], coords:{lat:41.914, lon:12.495} },
+  { id:4, name:'Max',   age:4, breed:'Golden Retriever',  sex:'M', size:'Grande',  coat:'Lungo', energy:'Alta',  pedigree:'No', area:'Roma – Tuscolana',  desc:'Socievole, adora l’acqua e giocare in gruppo.', image:'dog4.jpg', online:true,  verified:false, intents:['play','walk'], coords:{lat:41.887, lon:12.512} },
+  { id:5, name:'Daisy', age:2, breed:'Beagle',            sex:'F', size:'Piccola', coat:'Corto', energy:'Alta',  pedigree:'No', area:'Roma – Garbatella', desc:'Instancabile esploratrice, ama correre.', image:'dog1.jpg', online:true,  verified:false, intents:['play'], coords:{lat:41.905, lon:12.450} },
+  { id:6, name:'Nero',  age:5, breed:'Meticcio',          sex:'M', size:'Media',   coat:'Medio', energy:'Media', pedigree:'No', area:'Roma – Nomentana',  desc:'Tranquillo e dolce, passeggiate in città.', image:'dog2.jpg', online:true,  verified:false, intents:['walk','mate'], coords:{lat:41.930, lon:12.500} },
+];
 
-  // Log silenzioso (disattivabile)
-  const LOG = (...args) => { /* console.log('[Plutoo]', ...args); */ };
+/* ===================== STATO ===================== */
+let currentView='near', userPos=null;
+let matches = readLS('pl_matches', []);
+let swipeLoveIdx=0, swipeSocIdx=0;
+let filters = { breed:'', ageBand:'', sex:'', size:'', coat:'', energy:'', pedigree:'', distance:'' };
 
-  // -------------------------------
-  // Stato applicazione
-  // -------------------------------
-  const state = {
-    profiles: [],        // profili caricati (mock locale con foto cane1.jpg…)
-    queue: [],           // coda corrente per lo swipe
-    currentIndex: 0,     // indice nel deck
-    liked: new Set(),    // id piaciuti
-    rejected: new Set(), // id skippati
-    filters: {
-      purpose: 'amore',  // vicino, amore, gioco, match (placeholder)
-      breed: null,       // razza selezionata
-    },
-    breeds: [],          // elenco razze da razze.json
+/* ===================== UTILS ===================== */
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const el=(t,a={},h='')=>{const n=document.createElement(t);Object.entries(a).forEach(([k,v])=>{try{(k in n)?n[k]=v:n.setAttribute(k,v);}catch{}});if(h)n.innerHTML=h;return n};
+function km(a,b){ if(!a||!b) return null; const R=6371; const dLat=(b.lat-a.lat)*Math.PI/180; const dLon=(b.lon-a.lon)*Math.PI/180; const la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180; const x=Math.sin(dLat/2)**2 + Math.sin(dLon/2)**2*Math.cos(la1)*Math.cos(la2); return +(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))).toFixed(1); }
+const randKm=()=>+(Math.random()*7+0.5).toFixed(1);
+const band=a=>a<=1?'0–1':a<=4?'2–4':a<=7?'5–7':'8+';
+function readLS(k, fallback){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):fallback}catch(_){return fallback} }
+function writeLS(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} }
+function openDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.showModal==='function'){try{dlg.showModal();return;}catch{}} dlg.setAttribute('open',''); dlg.classList.add('fallback'); document.body.style.overflow='hidden'; }
+function closeDialogSafe(dlg){ if(!dlg) return; if(typeof dlg.close==='function'){try{dlg.close();}catch{}} dlg.classList.remove('fallback'); dlg.removeAttribute('open'); document.body.style.overflow=''; }
+const verifiedName=d=>`${d.name}, ${d.age} • ${d.breed}${isVerified(d)?' <span class="paw">🐾</span>':''}`;
+
+/* === verifica doc / badge (persistenza) minimal === */
+function _veriMap(){ return readLS('pl_verify', {}) }
+function _saveVeri(map){ writeLS('pl_verify', map); }
+function getProfileStore(id){
+  const m=_veriMap();
+  if(!m[id]) m[id]={ owner:false, dog:false, gallery:[], selfies:[], posts:[] };
+  return m[id];
+}
+function setProfileStore(id, data){ const m=_veriMap(); m[id]=data; _saveVeri(m); }
+function isVerified(d){ const st=getProfileStore(d.id); return d.verified || (st.owner && st.dog); }
+
+/* ===================== NAV/APP ===================== */
+function show(sel){ $$('.screen').forEach(s=>s.classList.remove('active')); (typeof sel==='string'?$(sel):sel)?.classList.add('active'); }
+function switchTab(tab){
+  currentView=tab;
+  $$('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  $$('.tabpane').forEach(p=>p.classList.remove('active'));
+  $('#'+tab)?.classList.add('active');
+  if(tab==='near') renderNear();
+  if(tab==='love') renderLove();
+  if(tab==='social') renderSocial();
+  if(tab==='matches') renderMatches();
+}
+function goHome(){ show('#app'); $('#geoBar')?.classList.remove('hidden'); renderAll(); }
+window.goHome=goHome;
+function renderAll(){ renderActiveChips(); renderNear(); renderLove(); renderSocial(); renderMatches(); }
+
+/* ===================== GEO ===================== */
+$('#enableGeo')?.addEventListener('click', ()=>{ navigator.geolocation.getCurrentPosition(
+  pos=>{userPos={lat:pos.coords.latitude,lon:pos.coords.longitude};$('#geoBar')?.classList.add('hidden');renderAll();},
+  _=>{$('#geoBar')?.classList.add('hidden');renderAll();},{enableHighAccuracy:true,timeout:8000});});
+$('#dismissGeo')?.addEventListener('click', ()=> $('#geoBar')?.classList.add('hidden'));
+
+/* ===================== RAZZE (autocompletamento da razze.json) ===================== */
+async function loadBreedsDatalist(){
+  try{
+    const res = await fetch('razze.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('http '+res.status);
+    const arr = await res.json();
+    const dl = $('#breedList');
+    if(dl && Array.isArray(arr)){
+      dl.innerHTML='';
+      arr.forEach(name=>{
+        const opt = document.createElement('option');
+        opt.value = String(name);
+        dl.appendChild(opt);
+      });
+    }
+  }catch(_){ /* non blocca l'app se manca */ }
+}
+
+/* ===================== FILTRI ===================== */
+$('#filterToggle')?.addEventListener('click', ()=>{ const p=$('#filterPanel'); if(p) p.hidden=!p.hidden; });
+$('#filterForm')?.addEventListener('submit', e=>{
+  e.preventDefault(); const f=e.currentTarget;
+  // NB: l’HTML ha <input id="breedInput" name="breed" list="breedList">
+  filters.breed=f.breed?.value||'';
+  filters.ageBand=f.ageBand?.value||'';
+  filters.sex=f.sex?.value||'';
+  filters.size=f.size?.value||'';
+  filters.coat=f.coat?.value||'';
+  filters.energy=f.energy?.value||'';
+  filters.pedigree=f.pedigree?.value||'';
+  filters.distance=f.distance?.value||'';
+  const panel=$('#filterPanel'); if(panel) panel.hidden=true;
+  renderActiveChips(); renderAll();
+});
+$('#filtersReset')?.addEventListener('click', ()=>{
+  $('#filterForm')?.reset();
+  filters={breed:'',ageBand:'',sex:'',size:'',coat:'',energy:'',pedigree:'',distance:''};
+  renderActiveChips(); renderAll();
+});
+
+function renderActiveChips(){
+  const c=$('#activeChips'); if(!c) return; c.innerHTML='';
+  const map={breed:'Razza',ageBand:'Età',sex:'Sesso',size:'Taglia',coat:'Pelo',energy:'Energia',pedigree:'Pedigree',distance:'Distanza'};
+  Object.entries(filters).forEach(([k,v])=>{
+    if(!v) return; const w=el('span',{className:'chip-wrap'});
+    w.append(el('span',{className:'chip'},`${map[k]}: ${v}`));
+    w.append(el('button',{className:'chip-x',onclick:()=>{filters[k]='';renderActiveChips(); renderAll(); }},'×'));
+    c.append(w);
+  });
+}
+function passesFilters(d,dist){
+  if(filters.breed && !d.breed.toLowerCase().includes(filters.breed.toLowerCase())) return false;
+  if(filters.ageBand && band(d.age)!==filters.ageBand) return false;
+  if(filters.sex && d.sex!==filters.sex) return false;
+  if(filters.size && d.size!==filters.size) return false;
+  if(filters.coat && d.coat!==filters.coat) return false;
+  if(filters.energy && d.energy!==filters.energy) return false;
+  if(filters.pedigree && d.pedigree!==filters.pedigree) return false;
+  if(filters.distance){ const m=parseFloat(filters.distance); if(!isNaN(m) && dist!=null && dist>m) return false; }
+  return true;
+}
+
+/* ===================== VICINO (griglia) ===================== */
+function renderNear(){
+  const grid=$('#grid'); if(!grid) return; grid.innerHTML='';
+  const ordered=dogs.slice().map(d=>({d,dist:userPos?km(userPos,d.coords):randKm()})).sort((a,b)=>(a.dist??99)-(b.dist??99));
+  const rows=ordered.filter(r=>passesFilters(r.d,r.dist));
+  rows.forEach(({d,dist})=>{
+    const card=el('article',{className:'card'});
+    card.innerHTML=`
+      ${d.online?'<span class="online"></span>':''}
+      <img src="${d.image}" alt="${d.name}" onerror="this.src='sponsor-logo.png'; this.style.objectFit='contain';">
+      <div class="card-info">
+        <div class="title">
+          <div class="name">${verifiedName(d)}</div>
+          <div class="dist">${dist??'-'} km</div>
+        </div>
+        <div class="intent-pill">${renderIntentText(d)}</div>
+        <div class="actions">
+          <button class="circle no" title="No">🥲</button>
+          <button class="circle like" title="Mi piace">❤️</button>
+          <button class="circle dog" title="Social">🐕</button>
+        </div>
+      </div>`;
+    // azioni
+    card.querySelector('.no')?.addEventListener('click',e=>{e.stopPropagation();card.remove();});
+    card.querySelector('.like')?.addEventListener('click',e=>{e.stopPropagation(); addMatch(d); showMatchAnim(d); });
+    card.querySelector('.dog')?.addEventListener('click',e=>{e.stopPropagation(); addMatch(d); showMatchAnim(d); });
+    // click profilo
+    card.addEventListener('click',ev=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); });
+    grid.append(card);
+  });
+  const cnt=$('#counter'); if(cnt) cnt.textContent=`Mostro ${rows.length} profili`;
+  $('#emptyNear')?.classList.toggle('hidden', rows.length>0);
+}
+function renderIntentText(d){
+  const set = d.intents||[];
+  if(set.includes('mate')) return '❤️ Amore';
+  if(set.includes('play') && set.includes('walk')) return '🐕 Giochiamo / Camminiamo';
+  if(set.includes('play')) return '🎾 Giochiamo';
+  if(set.includes('walk')) return '🐕 Camminiamo';
+  return 'Disponibile';
+}
+
+/* ===================== AMORE (card singola) ===================== */
+function loveList(){ return dogs.filter(d=> (d.intents||[]).includes('mate') && passesFilters(d, userPos?km(userPos,d.coords):randKm())); }
+function renderLove(){
+  const list=loveList(), img=$('#loveImg'), title=$('#loveTitle'), meta=$('#loveMeta'), bio=$('#loveBio');
+  const cardEl=$('#love .card.big');
+  if(!list.length){ if(img) img.src=''; if(title) title.textContent=''; if(meta) meta.textContent=''; if(bio) bio.textContent='Nessun profilo in Amore.'; return; }
+  const d=list[swipeLoveIdx%list.length], dist=userPos?km(userPos,d.coords):randKm();
+  if(img){ img.src=d.image; img.alt=d.name; img.onerror=()=>{ img.src='sponsor-logo.png'; img.style.objectFit='contain'; }; }
+  if(title) title.innerHTML=verifiedName(d);
+  if(meta) meta.textContent=`${dist} km`;
+  if(bio) bio.textContent=d.desc;
+
+  if(cardEl){ cardEl.classList.remove('pulse'); void cardEl.offsetWidth; cardEl.classList.add('pulse'); attachSwipeGestures(cardEl, d, 'love'); }
+  $('#loveNo')?.addEventListener('click',()=>swipeLove('no',d),{once:true});
+  $('#loveYes')?.addEventListener('click',()=>swipeLove('yes',d),{once:true});
+  cardEl?.addEventListener('click',(ev)=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); },{once:true});
+}
+function swipeLove(type,d){
+  if(type==='yes'){ addMatch(d); showMatchAnim(d); }
+  swipeLoveIdx++; renderLove();
+}
+
+/* ===================== SOCIAL (card singola) ===================== */
+function socialList(){ return dogs.filter(d=> ((d.intents||[]).includes('play') || (d.intents||[]).includes('walk')) && passesFilters(d, userPos?km(userPos,d.coords):randKm())); }
+function renderSocial(){
+  const list=socialList(), img=$('#socImg'), title=$('#socTitle'), meta=$('#socMeta'), bio=$('#socBio');
+  const cardEl=$('#social .card.big');
+  if(!list.length){ if(img) img.src=''; if(title) title.textContent=''; if(meta) meta.textContent=''; if(bio) bio.textContent='Nessun profilo in Giocare/Camminare.'; return; }
+  const d=list[swipeSocIdx%list.length], dist=userPos?km(userPos,d.coords):randKm();
+  if(img){ img.src=d.image; img.alt=d.name; img.onerror=()=>{ img.src='sponsor-logo.png'; img.style.objectFit='contain'; }; }
+  if(title) title.innerHTML=verifiedName(d);
+  if(meta) meta.textContent=`${dist} km`;
+  if(bio) bio.textContent=d.desc;
+
+  if(cardEl){ cardEl.classList.remove('pulse'); void cardEl.offsetWidth; cardEl.classList.add('pulse'); attachSwipeGestures(cardEl, d, 'social'); }
+  $('#socNo')?.addEventListener('click',()=>swipeSoc('no',d),{once:true});
+  $('#socYes')?.addEventListener('click',()=>swipeSoc('yes',d),{once:true});
+  cardEl?.addEventListener('click',(ev)=>{ if(ev.target.closest('.circle')) return; openProfilePage(d,dist); },{once:true});
+}
+function swipeSoc(type,d){
+  if(type==='yes'){ addMatch(d); showMatchAnim(d); }
+  swipeSocIdx++; renderSocial();
+}
+
+/* ---- Swipe gesture helpers ---- */
+function attachSwipeGestures(cardEl, dogObj, mode){
+  if(!cardEl || cardEl._swipeBound) return; cardEl._swipeBound = true;
+  let startX=0,startY=0,currentX=0,currentY=0,dragging=false,hasMoved=false;
+  const onTouchStart = (e)=>{ const t=e.touches?e.touches[0]:e; startX=currentX=t.clientX; startY=currentY=t.clientY; dragging=true; hasMoved=false; cardEl.style.transition='none'; };
+  const onTouchMove  = (e)=>{ if(!dragging) return; const t=e.touches?e.touches[0]:e; currentX=t.clientX; currentY=t.clientY; const dx=currentX-startX, dy=currentY-startY; if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>12) return; hasMoved=Math.abs(dx)>6; const rot=Math.max(-10,Math.min(10,dx/12)); cardEl.style.transform=`translateX(${dx}px) rotate(${rot}deg)`; cardEl.style.opacity=String(Math.max(.35,1-Math.abs(dx)/600)); };
+  const onTouchEnd   = ()=>{ if(!dragging) return; dragging=false; const dx=currentX-startX; cardEl.style.transition='transform .18s ease-out, opacity .18s ease-out';
+    if(dx>80){ cardEl.style.transform='translateX(40%) rotate(6deg)'; cardEl.style.opacity='0'; setTimeout(()=> (mode==='love'?swipeLove('yes',dogObj):swipeSoc('yes',dogObj)),200);}
+    else if(dx<-80){ cardEl.style.transform='translateX(-40%) rotate(-6deg)'; cardEl.style.opacity='0'; setTimeout(()=> (mode==='love'?swipeLove('no',dogObj):swipeSoc('no',dogObj)),200);}
+    else { cardEl.style.transform=''; cardEl.style.opacity=''; if(!hasMoved){ const dist=userPos?km(userPos,dogObj.coords):randKm(); openProfilePage(dogObj,dist);} }
   };
+  cardEl.addEventListener('touchstart', onTouchStart,{passive:true});
+  cardEl.addEventListener('touchmove',  onTouchMove, {passive:true});
+  cardEl.addEventListener('touchend',   onTouchEnd,  {passive:true});
+  // mouse support
+  cardEl.addEventListener('mousedown',(e)=>{ onTouchStart(e); const mm=(ev)=>onTouchMove(ev); const mu=()=>{ onTouchEnd(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); }; document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu,{once:true}); });
+}
 
-  // -------------------------------
-  // Inizializzazione
-  // -------------------------------
-  document.addEventListener('DOMContentLoaded', init);
-
-  async function init() {
-    LOG('Init start');
-
-    // 1) Carica razze per auto-complete
-    await loadBreeds();
-
-    // 2) Prepara profili (mock locale: cane1.jpg…)
-    prepareLocalProfiles();
-
-    // 3) Costruisce/aggiorna UI (difensivo)
-    wireSearch();
-    wireTabs();
-    wireSwipe();
-    wireFooterSponsor();
-
-    // 4) Carica deck iniziale
-    buildDeck();
-
-    LOG('Init done');
-  }
-
-  // -------------------------------
-  // Razze (autocompletamento)
-  // -------------------------------
-  async function loadBreeds() {
-    try {
-      const res = await fetch('razze.json', { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const list = await res.json();
-      if (Array.isArray(list)) {
-        state.breeds = list.map(String);
-      }
-      // Popola eventuale <datalist id="breed-list"> o <select id="breed-select">
-      const dl = $('#breed-list');
-      const sel = $('#breed-select');
-      if (dl) {
-        dl.innerHTML = '';
-        state.breeds.forEach(b => {
-          const opt = document.createElement('option');
-          opt.value = b;
-          dl.appendChild(opt);
-        });
-      }
-      if (sel) {
-        sel.innerHTML = '';
-        const optAll = document.createElement('option');
-        optAll.value = '';
-        optAll.textContent = 'Tutte';
-        sel.appendChild(optAll);
-        state.breeds.forEach(b => {
-          const opt = document.createElement('option');
-          opt.value = b;
-          opt.textContent = b;
-          sel.appendChild(opt);
-        });
-      }
-    } catch (err) {
-      LOG('Errore caricamento razze.json', err);
-      // Non blocchiamo l’app se razze.json manca: l’input rimane libero
-    }
-  }
-
-  function wireSearch() {
-    // Input testo con datalist (preferito su mobile)
-    const input = $('#breed-input');        // <input id="breed-input" list="breed-list">
-    const select = $('#breed-select');      // alternativa <select id="breed-select">
-    const applyBtn = $('#btn-apply-breed'); // bottone “Applica” nella Ricerca personalizzata
-    const clearBtn = $('#btn-clear-breed');
-
-    if (input) {
-      input.addEventListener('input', () => {
-        const v = input.value?.trim() || '';
-        state.filters.breed = v || null;
-      });
-    }
-    if (select) {
-      select.addEventListener('change', () => {
-        state.filters.breed = select.value || null;
-      });
-    }
-    if (applyBtn) {
-      applyBtn.addEventListener('click', () => {
-        // Refiltra il deck
-        buildDeck();
-        toast('Filtro razza applicato');
-      });
-    }
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        state.filters.breed = null;
-        if (input) input.value = '';
-        if (select) select.value = '';
-        buildDeck();
-        toast('Filtro razza rimosso');
-      });
-    }
-  }
-
-  // -------------------------------
-  // Tabs (Vicino / Amore / Giocare / Match)
-  // -------------------------------
-  function wireTabs() {
-    const map = {
-      near: ['[data-tab="near"]', 'Vicino a te'],
-      love: ['[data-tab="love"]', 'Amore'],
-      play: ['[data-tab="play"]', 'Giocare/Camminare'],
-      match: ['[data-tab="match"]', 'Match']
-    };
-    Object.entries(map).forEach(([key, [sel]]) => {
-      const btn = $(sel);
-      if (btn) {
-        btn.addEventListener('click', () => {
-          state.filters.purpose = key;
-          // evidenziazione semplice
-          $$('.tab-active').forEach(n => n.classList.remove('tab-active'));
-          btn.classList.add('tab-active');
-          buildDeck();
-        });
-      }
-    });
-  }
-
-  // -------------------------------
-  // Profili locali (mock)
-  // -------------------------------
-  function prepareLocalProfiles() {
-    // Se hai più immagini aggiungile qui (o caricale da JSON remoto in futuro)
-    const imgs = ['cane1.jpg', 'cane2.jpg', 'cane3.jpg', 'cane4.jpg'];
-    const fallback = 'sponsor-logo.png'; // in caso manchi un file
-    const names = ['Luna', 'Fido', 'Bruno', 'Maya', 'Kira', 'Rocky', 'Zoe', 'Leo'];
-
-    let id = 1;
-    state.profiles = imgs.map((src, i) => ({
-      id: id++,
-      name: names[i % names.length],
-      age: 2 + (i % 7),
-      breed: guessBreedFromName(names[i % names.length]),
-      img: src,
-      distanceKm: 1 + i, // placeholder
-    }));
-
-    // Precarica immagini per evitare flash nero
-    state.profiles.forEach(p => {
-      const img = new Image();
-      img.src = p.img;
-    });
-
-    function guessBreedFromName(n) {
-      // puro placeholder simpatico
-      const list = ['Labrador', 'Jack Russell', 'Shiba Inu', 'Golden Retriever', 'Beagle', 'Bulldog Francese', 'Barboncino', 'Pastore Tedesco', 'Meticcio'];
-      return list[n.charCodeAt(0) % list.length];
-    }
-  }
-
-  // -------------------------------
-  // Costruzione Deck + Rendering
-  // -------------------------------
-  function buildDeck() {
-    const deck = $('#deck'); // contenitore delle card
-    if (!deck) return;
-
-    // Filtri
-    const byBreed = (p) => {
-      if (!state.filters.breed) return true;
-      const bsel = (state.filters.breed || '').toLowerCase();
-      return (p.breed || '').toLowerCase().includes(bsel);
-    };
-
-    // (Per ora) il filtro purpose non incide nei mock, ma lo lasciamo per future sorgenti dati
-    const filtered = state.profiles.filter(byBreed);
-
-    // Mescola per varietà
-    const shuffled = filtered.sort(() => Math.random() - 0.5);
-
-    state.queue = shuffled;
-    state.currentIndex = 0;
-
-    renderCurrentCard();
-  }
-
-  function renderCurrentCard() {
-    const deck = $('#deck');
-    if (!deck) return;
-
-    deck.innerHTML = ''; // pulisci
-
-    const p = state.queue[state.currentIndex];
-
-    if (!p) {
-      deck.appendChild(emptyDeckNode());
-      return;
-    }
-
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    card.innerHTML = `
-      <div class="card-img-wrap">
-        <img src="${p.img}" alt="${p.name}" onerror="this.src='sponsor-logo.png'; this.closest('.card-img-wrap')?.classList.add('img-fallback');">
+/* ===================== MATCH & CHAT ===================== */
+function addMatch(d){ if(!matches.find(m=>m.id===d.id)){ matches.push({id:d.id, name:d.name, img:d.image}); writeLS('pl_matches', matches); } renderMatches(); }
+function renderMatches(){
+  const box=$('#matchList'); if(!box) return; box.innerHTML='';
+  matches.forEach(m=>{
+    const row=el('div',{className:'item'});
+    row.innerHTML = `
+      <img src="${m.img}" alt="${m.name}" onerror="this.src='sponsor-logo.png'; this.style.objectFit='contain';">
+      <div>
+        <div><strong>${m.name}</strong></div>
+        <div class="muted small">Match</div>
       </div>
-      <div class="card-body">
-        <div class="card-title">${p.name} • ${p.age}</div>
-        <div class="card-sub">${p.breed} · ~${p.distanceKm} km</div>
-        <div class="card-actions">
-          <button id="btn-skip" class="btn btn-outline" aria-label="Salta">Salta</button>
-          <button id="btn-like" class="btn btn-primary" aria-label="Mi piace">Mi piace</button>
+      <button class="btn primary pill go">Chat</button>
+    `;
+    row.querySelector('.go')?.addEventListener('click',()=> openChat(m));
+    box.append(row);
+  });
+  const empty=$('#emptyMatch'); if(empty) empty.style.display = matches.length ? 'none' : 'block';
+}
+function openChat(m){
+  const a=$('#chatAvatar'), n=$('#chatName');
+  if(a) a.src=m.img;
+  if(n) n.textContent=m.name;
+  const thread=$('#thread'); if(thread) thread.innerHTML='<div class="bubble">Ciao! 🐾 Siamo un match!</div>';
+  $('#chat')?.classList.add('show');
+}
+$('#sendBtn')?.addEventListener('click',()=>{
+  const inp=$('#chatInput'); if(!inp) return;
+  const t=(inp.value||'').trim(); if(!t) return;
+  const b=el('div',{className:'bubble me'},t);
+  const thr=$('#thread'); if(thr){ thr.append(b); thr.scrollTop=thr.scrollHeight; }
+  inp.value='';
+});
+$$('.close').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close)?.classList.remove('show')));
+
+/* ===================== MATCH ANIMATION (più lunga) ===================== */
+function showMatchAnim(d){
+  const wrap = el('div',{className:'match-toast',style:'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:2000'});
+  wrap.innerHTML = `
+    <div class="match-bubble" style="position:relative">
+      <img class="match-logo" src="${d.image}" alt="" onerror="this.src='sponsor-logo.png'">
+      <div><strong>È un match con ${d.name}!</strong></div>
+      <div class="heart-pop" style="right:-8px;top:-8px">❤️</div>
+    </div>`;
+  document.body.append(wrap);
+  // piccola animazione extra sulla bolla
+  const b = wrap.querySelector('.match-bubble');
+  if(b && b.animate){
+    b.animate([{transform:'scale(.9)',opacity:0},{transform:'scale(1)',opacity:1}],{duration:280,easing:'ease-out',fill:'forwards'});
+  }
+  setTimeout(()=>{ try{wrap.remove();}catch{} }, 2200); // ~2.2s
+}
+
+/* ===================== PROFILO FULLSCREEN (essenziale) ===================== */
+function openProfilePage(d, distance){
+  const page = document.getElementById('profilePage');
+  const body = document.getElementById('ppBody');
+  const title = document.getElementById('ppTitle');
+  if(!page || !body) return;
+
+  const store = getProfileStore(d.id);
+  function render(){
+    if(title) title.innerHTML = `${d.name} ${isVerified(d)?'<span class="paw">🐾</span>':''}`;
+
+    const galleryHTML = (store.gallery||[]).map(src => `<img class="pp-thumb" src="${src}" alt="">`).join('') || '<div class="muted small">Nessuna foto aggiunta.</div>';
+    const postsHTML = (store.posts||[]).slice().reverse().map(p=>`
+      <div class="pp-post">
+        <div>${p.text}</div>
+        <div class="ts">${new Date(p.ts).toLocaleString()}</div>
+      </div>
+    `).join('') || '<div class="muted small">Nessun post ancora.</div>';
+
+    body.innerHTML = `
+      <img class="pp-cover" src="${d.image}" alt="${d.name}" onerror="this.src='sponsor-logo.png';this.style.objectFit='contain'">
+
+      <div class="pp-section">
+        <h3>${d.name}, ${d.age} ${isVerified(d)?'<span class="paw">🐾</span>':''}</h3>
+        <div class="meta">${d.breed} · ${d.sex==='F'?'Femmina':'Maschio'} · ${d.size} · ${d.coat}</div>
+        <div class="meta"><b>Energia:</b> ${d.energy} · <b>Pedigree:</b> ${d.pedigree} · <b>Zona:</b> ${d.area} · <b>Distanza:</b> ${distance ?? '-'} km</div>
+        <div class="badge-state ${isVerified(d)?'badge-ok':'badge-ko'}">
+          ${isVerified(d) ? 'Badge attivo ✅' : 'Badge non attivo'}
+        </div>
+        <div class="pp-actions">
+          <button class="circle no" id="ppNo" title="No">🥲</button>
+          <button class="circle like" id="ppYes" title="Mi piace">❤️</button>
         </div>
       </div>
-    `;
 
-    deck.appendChild(card);
+      <div class="pp-section">
+        <h4>Galleria foto</h4>
+        <div class="pp-gallery" id="ppGallery">${galleryHTML}</div>
+        <div class="pp-uploader">
+          <label class="btn light small">Aggiungi foto
+            <input id="ppAddPhotos" type="file" accept="image/*" multiple>
+          </label>
+        </div>
+      </div>
 
-    // Binder
-    const like = $('#btn-like', card);
-    const skip = $('#btn-skip', card);
-    like && like.addEventListener('click', () => onLike(p, card));
-    skip && skip.addEventListener('click', () => onSkip(p, card));
-  }
+      <div class="pp-section">
+        <h4>Stato</h4>
+        <div class="pp-post-new">
+          <textarea id="ppStatus" class="pp-textarea" placeholder="Scrivi un aggiornamento…"></textarea>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button id="ppPostBtn" class="btn primary">Pubblica</button>
+          </div>
+        </div>
+        <div class="pp-posts" id="ppPosts">${postsHTML}</div>
+      </div>
 
-  function emptyDeckNode() {
-    const wrap = document.createElement('div');
-    wrap.className = 'empty-deck';
-
-    wrap.innerHTML = `
-      <p>Hai visto tutti i profili disponibili.</p>
-      <div class="empty-actions">
-        <button id="btn-reload" class="btn btn-primary">Ricarica</button>
-        <button id="btn-clear-filters" class="btn btn-outline">Rimuovi filtri</button>
+      <div class="pp-section">
+        <h4>Verifica documenti</h4>
+        <div class="pp-verify-row">
+          <label class="btn light small" style="text-align:center">Documento proprietario ${store.owner?'✔️':''}
+            <input id="ppOwnerDoc" type="file" accept="image/*,application/pdf">
+          </label>
+          <label class="btn light small" style="text-align:center">Documento del tuo amico ${store.dog?'✔️':''}
+            <input id="ppDogDoc" type="file" accept="image/*,application/pdf">
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+          <button id="ppSendVerify" class="btn primary">Invia per verifica</button>
+        </div>
+        <div class="muted small" style="margin-top:6px">Il badge si attiva solo quando entrambi i documenti risultano caricati.</div>
       </div>
     `;
 
-    $('#btn-reload', wrap)?.addEventListener('click', () => {
-      // Ricrea una nuova coda casuale dalle stesse fonti
-      buildDeck();
+    // azioni
+    $('#ppNo')?.addEventListener('click',()=>closeProfilePage(),{once:true});
+    $('#ppYes')?.addEventListener('click',()=>{ addMatch(d); showMatchAnim(d); closeProfilePage(); },{once:true});
+
+    // upload foto
+    $('#ppAddPhotos')?.addEventListener('change', async (e)=>{
+      const files = Array.from(e.target.files||[]);
+      for(const f of files){ const url=await fileToDataURL(f); store.gallery.push(url); }
+      setProfileStore(d.id, store); render();
     });
 
-    $('#btn-clear-filters', wrap)?.addEventListener('click', () => {
-      state.filters.breed = null;
-      const input = $('#breed-input'); if (input) input.value = '';
-      const select = $('#breed-select'); if (select) select.value = '';
-      buildDeck();
+    // post stato
+    $('#ppPostBtn')?.addEventListener('click', ()=>{
+      const ta=$('#ppStatus'); const t=(ta?.value||'').trim(); if(!t) return;
+      store.posts.push({text:t, ts:Date.now()}); setProfileStore(d.id, store); if(ta) ta.value=''; render();
     });
 
-    return wrap;
-  }
-
-  // -------------------------------
-  // Swipe / Like / Skip
-  // -------------------------------
-  function wireSwipe() {
-    const deck = $('#deck');
-    if (!deck) return;
-
-    // Supporto gesture basilare (drag orizzontale)
-    let startX = 0;
-    deck.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-    }, { passive: true });
-
-    deck.addEventListener('touchend', (e) => {
-      const endX = e.changedTouches[0].clientX;
-      const delta = endX - startX;
-      if (Math.abs(delta) < 40) return; // ignora tap
-      const p = state.queue[state.currentIndex];
-      const card = $('.card', deck);
-      if (!p || !card) return;
-      if (delta > 0) onLike(p, card);   // swipe a destra -> like
-      else onSkip(p, card);             // swipe a sinistra -> skip
+    // documenti
+    let tmpOwner=null, tmpDog=null;
+    $('#ppOwnerDoc')?.addEventListener('change', e=>{ tmpOwner=(e.target.files||[])[0]||null; });
+    $('#ppDogDoc')?.addEventListener('change',   e=>{ tmpDog=(e.target.files||[])[0]||null; });
+    $('#ppSendVerify')?.addEventListener('click', ()=>{
+      if(tmpOwner) store.owner=true;
+      if(tmpDog)   store.dog=true;
+      setProfileStore(d.id, store); render(); renderAll();
     });
   }
 
-  async function onLike(profile, cardEl) {
-    state.liked.add(profile.id);
-    await animateMatch(cardEl); // animazione “match” più lunga
-    nextCard();
-  }
+  render();
+  page.classList.add('show');
+}
+function fileToDataURL(file){ return new Promise((res,rej)=>{ try{const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file);}catch(e){rej(e)} }); }
+function closeProfilePage(){ $('#profilePage')?.classList.remove('show'); }
+window.closeProfilePage = closeProfilePage;
 
-  function onSkip(profile, cardEl) {
-    state.rejected.add(profile.id);
-    animateDismiss(cardEl).then(nextCard);
-  }
+/* ===================== AVVIO ===================== */
+document.addEventListener('DOMContentLoaded', async ()=>{
+  // CTA “Entra” affidabile
+  const enter = document.getElementById('ctaEnter');
+  if(enter) enter.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); goHome(); }, {passive:false});
 
-  function nextCard() {
-    state.currentIndex += 1;
-    if (state.currentIndex >= state.queue.length) {
-      // Niente schermo nero: o ricicliamo subito, o mostriamo il messaggio
-      renderCurrentCard(); // mostriamo l'empty-deck con bottone “Ricarica”
-      return;
-    }
-    renderCurrentCard();
-  }
+  // tabs
+  $$('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
 
-  // -------------------------------
-  // Animazioni
-  // -------------------------------
-  async function animateMatch(cardEl) {
-    // Evidente e fluida (~1800ms)
-    if (!cardEl || !cardEl.animate) return;
-    const keyframes = [
-      { transform: 'scale(1)', opacity: 1, filter: 'drop-shadow(0 0 0 rgba(0,0,0,0))' },
-      { transform: 'scale(1.04)', filter: 'drop-shadow(0 8px 22px rgba(0,0,0,.35))', offset: 0.25 },
-      { transform: 'scale(1)',   filter: 'drop-shadow(0 6px 18px rgba(0,0,0,.25))', offset: 0.55 },
-      { transform: 'translateX(120%) rotate(6deg)', opacity: 0 }
-    ];
-    const opts = { duration: 1800, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' };
-    cardEl.animate(keyframes, opts);
-    await sleep(opts.duration * 0.95);
-  }
+  // legal
+  $('#openPrivacy')?.addEventListener('click',()=>openDialogSafe($('#privacyDlg')));
+  $('#openTerms')?.addEventListener('click',()=>openDialogSafe($('#termsDlg')));
 
-  function animateDismiss(cardEl) {
-    if (!cardEl || !cardEl.animate) return Promise.resolve();
-    const anim = cardEl.animate(
-      [
-        { transform: 'translateX(0)', opacity: 1 },
-        { transform: 'translateX(-110%) rotate(-4deg)', opacity: 0 }
-      ],
-      { duration: 500, easing: 'ease-in', fill: 'forwards' }
-    );
-    return anim.finished.catch(() => {});
-  }
+  // datalist razze
+  await loadBreedsDatalist();
 
-  // -------------------------------
-  // Sponsor footer (fallback testo)
-  // -------------------------------
-  function wireFooterSponsor() {
-    // Se l’HTML non lo gestisce già, forziamo noi il testo richiesto.
-    // Struttura attesa:
-    // <div id="sponsor-footer"><div class="sponsor-title">Sponsor ufficiale</div><img ...><div class="sponsor-sub">Fido, il gelato…</div></div>
-    const host = $('#sponsor-footer');
-    if (!host) return;
-
-    const title = $('.sponsor-title', host) || document.createElement('div');
-    title.className = 'sponsor-title';
-    title.textContent = 'Sponsor ufficiale';
-
-    const logo = $('img', host) || document.createElement('img');
-    if (!logo.src) logo.src = 'sponsor-logo.png';
-    logo.alt = 'Fido — sponsor';
-
-    const sub = $('.sponsor-sub', host) || document.createElement('div');
-    sub.className = 'sponsor-sub';
-    sub.textContent = '“Fido”, il gelato per i tuoi amici a quattro zampe';
-
-    host.innerHTML = '';
-    host.appendChild(title);
-    host.appendChild(logo);
-    host.appendChild(sub);
-  }
-
-  // -------------------------------
-  // Piccolo toast testuale (non intrusivo)
-  // -------------------------------
-  let toastTimer;
-  function toast(msg = '') {
-    let t = $('#toast');
-    if (!t) {
-      t = document.createElement('div');
-      t.id = 'toast';
-      t.style.cssText = `
-        position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
-        background: rgba(32,32,40,.95); color: #fff; padding: 10px 14px; border-radius: 10px;
-        font-size: 14px; z-index: 9999; opacity: 0; transition: opacity .18s ease;
-      `;
-      document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    t.style.opacity = '1';
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => (t.style.opacity = '0'), 1600);
-  }
-
-})();
+  // primo render
+  renderAll();
+});
