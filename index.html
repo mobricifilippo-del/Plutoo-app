@@ -25,7 +25,7 @@
   <!-- TOPBAR -->
   <header class="topbar">
     <div class="brand-slot">
-      <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'"/>
+      <img class="brand" src="plutoo-icon-512.png" alt="Plutoo" onerror="this.style.display='none'">
       <span class="brand-name">Plutoo</span>
     </div>
     <nav class="auth">
@@ -34,20 +34,18 @@
     </nav>
   </header>
 
-  <!-- HOME -->
+  <!-- HOME / LANDING -->
   <main id="landing" class="screen active">
     <section class="hero">
-      <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
-      <a id="ctaEnter" class="btn primary" href="#app"
-         onclick="if(window.goHome){ goHome(); } return false;">Entra</a>
+      <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo">
+      <a id="ctaEnter" class="btn primary" href="#app">Entra</a>
       <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
 
+      <!-- Sponsor in home (testo → logo → payoff) -->
       <div class="sponsor-block">
-        <div class="sponsor-label">
-          Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe
-        </div>
+        <div class="sponsor-label">Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe</div>
         <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
-          <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
+          <img class="sponsor-img" src="sponsor-logo.png" alt="Fido">
         </a>
       </div>
 
@@ -61,8 +59,9 @@
 
   <!-- APP -->
   <section id="app" class="screen">
-    <!-- geolocalizzazione -->
-    <div id="geoBar" class="geobar hidden">
+
+    <!-- geolocalizzazione (placeholder) -->
+    <div id="geoBar" class="geobar">
       <span>Attiva la posizione per vedere gli amici vicino a te</span>
       <div class="g-actions">
         <button id="enableGeo" class="btn xs primary">Attiva</button>
@@ -70,7 +69,7 @@
       </div>
     </div>
 
-    <!-- tabs + filtri -->
+    <!-- tabs + toggle filtri -->
     <div class="filters-header">
       <div class="tabs">
         <button class="tab active" data-tab="near">Vicino a te</button>
@@ -85,11 +84,9 @@
     <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
         <div class="f-grid">
-          <!-- RAZZA: input con autocompletamento da breeds.json -->
           <label class="f-item">
             <span>Razza</span>
-            <input id="breedInput" name="breed" placeholder="Inizia a digitare…"
-                   list="breedList" autocomplete="off" />
+            <input id="breedInput" name="breed" placeholder="Inizia a digitare…" list="breedList" autocomplete="off">
             <datalist id="breedList"></datalist>
           </label>
 
@@ -154,7 +151,7 @@
 
           <label class="f-item">
             <span>Distanza max (km)</span>
-            <input type="number" name="distance" min="1" step="0.1" placeholder="es. 5" />
+            <input type="number" name="distance" min="1" step="0.1" placeholder="es. 5">
           </label>
         </div>
 
@@ -185,8 +182,8 @@
             </div>
             <p id="loveBio" class="bio">—</p>
             <div class="actions">
-              <button id="loveNo" class="circle no">🥲</button>
-              <button id="loveYes" class="circle like">❤️</button>
+              <button id="loveNo" class="circle no" title="No">🥲</button>
+              <button id="loveYes" class="circle like" title="Mi piace">❤️</button>
             </div>
           </div>
         </article>
@@ -205,8 +202,8 @@
             </div>
             <p id="socBio" class="bio">—</p>
             <div class="actions">
-              <button id="socNo" class="circle no">🥲</button>
-              <button id="socYes" class="circle dog">🐕</button>
+              <button id="socNo" class="circle no" title="No">🥲</button>
+              <button id="socYes" class="circle dog" title="Invita a giocare">🐕</button>
             </div>
           </div>
         </article>
@@ -219,13 +216,11 @@
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
 
-    <!-- SPONSOR footer -->
+    <!-- SPONSOR footer centrato (testo → logo → payoff) -->
     <div class="sponsor-app">
-      <div class="sponsor-label">
-        Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe
-      </div>
+      <div class="sponsor-label">Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe</div>
       <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
-        <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
+        <img class="sponsor-img" src="sponsor-logo.png" alt="Fido">
       </a>
     </div>
 
@@ -233,11 +228,11 @@
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
-  <!-- PAGINA PROFILO -->
+  <!-- PAGINA PROFILO (fullscreen) -->
   <section id="profilePage" class="profile-page">
     <div class="pp-head">
       <strong id="ppTitle">Profilo</strong>
-      <button class="btn light small" onclick="closeProfilePage()">Chiudi</button>
+      <button class="btn light small" onclick="document.getElementById('profilePage').classList.remove('show')">Chiudi</button>
     </div>
     <div id="ppBody" class="pp-body"></div>
   </section>
@@ -311,19 +306,19 @@
   </dialog>
 
   <!-- SCRIPT -->
-  <script src="app.js?v=breeds"></script>
+  <script src="app.js"></script>
   <script>
+    // SW
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(()=>{});
     }
-    // fallback hash
-    function _forceApp(){var l=document.getElementById('landing'),a=document.getElementById('app');if(l&&a){l.classList.remove('active');a.classList.add('active');}}
-    if (location.hash === '#app') { try{ goHome(); }catch(_){ _forceApp(); } }
-    window.addEventListener('hashchange', ()=>{ if(location.hash==='#app'){ try{goHome();}catch(_){_forceApp();} }});
-    document.addEventListener('DOMContentLoaded', ()=>{
-      const cta=document.getElementById('ctaEnter');
-      if(cta){ cta.addEventListener('click', e=>{ e.preventDefault(); try{goHome();}catch(_){_forceApp();} }); }
-    });
+    // Fallback hash per #app
+    function _forceApp(){
+      const l=document.getElementById('landing'), a=document.getElementById('app');
+      if(l&&a){ l.classList.remove('active'); a.classList.add('active'); }
+    }
+    if (location.hash === '#app') _forceApp();
+    window.addEventListener('hashchange', ()=>{ if(location.hash==='#app') _forceApp(); });
   </script>
 </body>
 </html>
