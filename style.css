@@ -47,12 +47,6 @@ img{max-width:100%;display:block}
 .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 20px 40px;text-align:center;gap:10px}
 .hero-logo{width:var(--plutoo-logo-size);height:var(--plutoo-logo-size);border-radius:28px;box-shadow:0 18px 50px rgba(122,79,247,.35);margin-bottom:10px;object-fit:contain;background:#0f0f1f}
 
-/* Sponsor in HOME */
-.sponsor-block{margin:22px 0 8px;text-align:center}
-.sponsor-label{font-size:13px;color:#aeb6e8;margin-bottom:8px;line-height:1.3}
-.sponsor-link{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:10px;background:#151a32;border:1px solid rgba(255,255,255,.06)}
-.sponsor-img{max-height:30px;opacity:.98}
-
 /* Footer home (privacy/termini) */
 .home-footer{margin-top:14px;color:#aab2ff}
 .home-footer .dot{opacity:.5;padding:0 6px}
@@ -107,8 +101,6 @@ img{max-width:100%;display:block}
 @keyframes pulse{0%{transform:scale(.96);opacity:.75}100%{transform:scale(1);opacity:1}}
 .swipe-left{transform:translateX(-60%) rotate(-8deg)!important;opacity:0!important;transition:all .2s ease}
 .swipe-right{transform:translateX(60%) rotate(8deg)!important;opacity:0!important;transition:all .2s ease}
-.button-bump{animation:bump .18s ease}
-@keyframes bump{0%{transform:scale(1)}50%{transform:scale(.92)}100%{transform:scale(1)}}
 
 /* ===== PROFILO FULLSCREEN ===== */
 .profile-page{position:fixed;inset:0;background:#0b0b16;z-index:1000;overflow-y:auto;display:none}
@@ -119,26 +111,10 @@ img{max-width:100%;display:block}
 .pp-section{margin-bottom:22px}
 .pp-section h3,.pp-section h4{margin-bottom:8px}
 .pp-actions{display:flex;justify-content:center;gap:18px;margin-top:12px}
-
-/* Galleria */
 .pp-gallery{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
 .pp-thumb{width:76px;height:76px;border-radius:10px;object-fit:cover;background:#11152b}
 
-/* Uploader + campi */
-.pp-uploader input[type=file]{display:none}
-.pp-textarea{width:100%;min-height:64px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#12183a;color:#fff}
-.pp-post{background:#1a1f43;padding:10px;border-radius:10px;margin-top:8px;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-.pp-post .ts{font-size:11px;color:#9aa3cf;margin-top:4px}
-
-/* Verifica documenti */
-.pp-verify-row{display:flex;gap:8px;flex-wrap:wrap}
-.pp-verify-row label{position:relative;overflow:hidden}
-.pp-verify-row input[type=file]{display:none}
-.badge-state{font-size:13px;margin-top:6px}
-.badge-ok{color:#28e07c}
-.badge-ko{color:#f66}
-
-/* ===== CHAT (sheet) ===== */
+/* ===== CHAT ===== */
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none}
 .sheet.show{display:flex;align-items:flex-end}
 .sheet-box{background:#161b3a;border-radius:16px 16px 0 0;width:100%;max-height:90%;overflow:auto}
@@ -154,46 +130,11 @@ img{max-width:100%;display:block}
 .chat-send{display:flex;gap:8px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px}
 .inp{flex:1;background:#0b1233;color:#e9ecff;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px}
 
-/* ===== BADGE 🐾 ===== */
-.paw{display:inline-block;width:18px;height:18px;margin-left:4px;vertical-align:middle;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%237d5dfc" viewBox="0 0 512 512"><path d="M256 320c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zM128 192c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm256 0c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm-160-96c-26.5 0-48 28.7-48 64s21.5 64 48 64 48-28.7 48-64-21.5-64-48-64zm96 0c-26.5 0-48 28.7-48 64s21.5 64 48 64 48-28.7 48-64-21.5-64-48-64z"/></svg>') no-repeat center;background-size:contain}
-
 /* ===== SPONSOR FOOTER ===== */
-.sponsor-app{text-align:center;padding:18px 10px}
+.sponsor-app{text-align:center;padding:22px 10px}
 .sponsor-app .sponsor-label{font-size:13px;color:#9aa3cf;line-height:1.3;margin-bottom:8px}
-.sponsor-app .sponsor-img{max-height:28px;opacity:.95}
-
-/* ===== ADV BANNER (placeholder) ===== */
-.ad-banner{position:sticky;bottom:0;background:#1a1f43;text-align:center;padding:10px;font-size:13px;color:#c9ceff;border-top:1px solid rgba(255,255,255,.08)}
-
-/* ===== LEGAL/MODAL ===== */
-.modal{border:none;border-radius:16px;padding:0;background:#0f1535;color:#e9ecff;box-shadow:0 24px 80px rgba(0,0,0,.6);max-width:640px;width:94%}
-.modal .pad{padding:16px}
-.modal.legal .pad{padding:20px}
-.modal .cover{width:100%;height:220px;object-fit:cover;display:block;background:#11152b}
-.modal.fallback{position:fixed;inset:0;margin:auto}
-.close{background:none;color:#c9ceff;font-size:22px}
-
-/* ===== PAGINE LEGALI (privacy/termini standalone) ===== */
-main.legal{max-width:760px;margin:22px auto;padding:0 16px}
-main.legal h1{margin-bottom:12px}
-main.legal h2{margin:14px 0 8px}
-main.legal p{margin:8px 0;color:#cfd5ff}
-
-/* ===== TOAST MATCH / ANIMAZIONE ===== */
-.match-toast{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1200;pointer-events:none}
-.match-bubble{background:rgba(22,27,58,.96);border:1px solid rgba(255,255,255,.08);padding:16px 18px;border-radius:16px;display:flex;gap:10px;align-items:center;box-shadow:0 18px 60px rgba(0,0,0,.45);transform:scale(.88);opacity:0;animation:matchIn .28s ease forwards}
-.match-logo{width:36px;height:36px;border-radius:8px;object-fit:cover;background:#11152b}
-@keyframes matchIn{to{transform:scale(1);opacity:1}}
-.heart-pop{position:absolute;font-size:28px;animation:heartPop .8s ease-out forwards}
-@keyframes heartPop{0%{transform:scale(.6) translateY(0);opacity:0}50%{opacity:1}100%{transform:scale(1.2) translateY(-24px);opacity:0}}
-
-/* ===== SELFIE LOCK / BLUR ===== */
-.blurred{filter:blur(12px);transform:scale(1.02)}
-.lock-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,22,.0),rgba(11,11,22,.55) 55%,rgba(11,11,22,.75));display:flex;align-items:flex-end;justify-content:center;padding:10px}
-.lock-pill{pointer-events:auto;background:#111a3c;border:1px solid rgba(255,255,255,.08);color:#e9ecff;border-radius:999px;padding:8px 12px;font-weight:700}
-
-/* ===== ACCESSIBILITÀ TOUCH ===== */
-#love .deck .card, #social .deck .card{touch-action:pan-y}
+.sponsor-app .sponsor-img{max-height:28px;opacity:.95;margin:auto}
+.sponsor-app .sponsor-tagline{margin-top:6px;font-size:13px;color:#aeb6e8}
 
 /* ===== MATCH LIST ===== */
 #matches .list{display:flex;flex-direction:column;gap:12px;padding:12px 0}
@@ -201,7 +142,13 @@ main.legal p{margin:8px 0;color:#cfd5ff}
 #matches .item img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:0 0 56px;background:#11152b}
 #matches .item .btn.pill{margin-left:auto;border-radius:999px;padding:8px 14px}
 
-/* ===== SCROLLBAR (soft) ===== */
+/* ===== MATCH TOAST ===== */
+.match-toast{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1200;pointer-events:none}
+.match-bubble{background:rgba(22,27,58,.96);border:1px solid rgba(255,255,255,.08);padding:16px 18px;border-radius:16px;display:flex;gap:10px;align-items:center;box-shadow:0 18px 60px rgba(0,0,0,.45);transform:scale(.88);opacity:0;animation:matchIn .28s ease forwards}
+.match-logo{width:36px;height:36px;border-radius:8px;object-fit:cover;background:#11152b}
+@keyframes matchIn{to{transform:scale(1);opacity:1}}
+
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:#1d234d;border-radius:10px}
 ::-webkit-scrollbar-track{background:#0b0b16}
