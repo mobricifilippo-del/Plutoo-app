@@ -38,8 +38,25 @@
   <main id="landing" class="screen active">
     <section class="hero">
       <img class="hero-logo" src="plutoo-icon-512.png" alt="Plutoo" />
-      <a id="ctaEnter" class="btn primary" href="#app">Entra</a>
+      <a id="ctaEnter" class="btn primary" href="#app"
+         onclick="if(window.goHome){ goHome(); } return false;">Entra</a>
       <a id="btnLoginUnder" class="link-under" href="javascript:void(0)">Accedi</a>
+
+      <!-- (Solo in home, sponsor leggero) -->
+      <div class="sponsor-block">
+        <div class="sponsor-label">
+          Sponsor ufficiale — “Fido” il gelato per i tuoi amici a quattro zampe
+        </div>
+        <a class="sponsor-link" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
+          <img class="sponsor-img" src="sponsor-logo.png" alt="Fido" onerror="this.style.display='none'"/>
+        </a>
+      </div>
+
+      <footer class="home-footer">
+        <button class="link-inline" id="openPrivacy">Privacy</button>
+        <span class="dot">·</span>
+        <button class="link-inline" id="openTerms">Termini</button>
+      </footer>
     </section>
   </main>
 
@@ -47,7 +64,7 @@
   <section id="app" class="screen">
     <!-- geolocalizzazione -->
     <div id="geoBar" class="geobar hidden">
-      <span>Attiva la posizione per vedere gli amici vicino a te</span>
+      <span>Attiva la posizione per vedere i dog vicino a te</span>
       <div class="g-actions">
         <button id="enableGeo" class="btn xs primary">Attiva</button>
         <button id="dismissGeo" class="btn xs light">Più tardi</button>
@@ -69,6 +86,7 @@
     <section id="filterPanel" class="filter-panel" hidden>
       <form id="filterForm">
         <div class="f-grid">
+          <!-- RAZZA: input + datalist (da razze.json) -->
           <label class="f-item">
             <span>Razza</span>
             <input id="breedInput" name="breed" placeholder="Inizia a digitare…"
@@ -168,8 +186,8 @@
             </div>
             <p id="loveBio" class="bio">—</p>
             <div class="actions">
-              <button id="loveNo" class="circle no">🥲</button>
-              <button id="loveYes" class="circle like">❤️</button>
+              <button id="loveNo" class="circle no" title="No">🥲</button>
+              <button id="loveYes" class="circle like" title="Mi piace">❤️</button>
             </div>
           </div>
         </article>
@@ -188,8 +206,8 @@
             </div>
             <p id="socBio" class="bio">—</p>
             <div class="actions">
-              <button id="socNo" class="circle no">🥲</button>
-              <button id="socYes" class="circle dog">🐕</button>
+              <button id="socNo" class="circle no" title="No">🥲</button>
+              <button id="socYes" class="circle dog" title="Social">🐕</button>
             </div>
           </div>
         </article>
@@ -201,6 +219,15 @@
       <div id="matchList" class="list"></div>
       <div id="emptyMatch" class="empty">Nessun match ancora.</div>
     </section>
+
+    <!-- SPONSOR FOOTER (fisso in fondo alla pagina App) -->
+    <footer id="sponsorFooter" class="sponsor-footer">
+      <div class="sponsor-title">Sponsor ufficiale</div>
+      <a class="sponsor-logo-wrap" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
+        <img class="sponsor-logo" src="sponsor-logo.png" alt="Fido — sponsor">
+      </a>
+      <div class="sponsor-sub">“Fido”, il gelato per i tuoi amici a quattro zampe</div>
+    </footer>
 
     <!-- Banner pubblicitario (placeholder) -->
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
@@ -218,9 +245,9 @@
   <!-- DIALOG / SHEETS / CHAT / LEGAL -->
   <dialog id="interstitial" class="modal inter">
     <div class="inter-body">
-      <h3>Annuncio video (placeholder)</h3>
-      <p class="muted">Questo è un interstitial fittizio per il web. Chiudi per continuare.</p>
-      <button class="btn primary" onclick="document.getElementById('interstitial').close()">Chiudi</button>
+      <h3>Annuncio video</h3>
+      <p class="muted" id="interMsg">Questo è un interstitial fittizio per il web.</p>
+      <button id="interStart" class="btn primary">Guarda</button>
     </div>
   </dialog>
 
@@ -278,26 +305,25 @@
   <dialog id="termsDlg" class="modal legal">
     <div class="pad">
       <h3>Termini</h3>
-      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
+      <p>Plutoo è una piattaforma per far incontrare proprietari di dog. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
       <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
     </div>
   </dialog>
 
-  <!-- SPONSOR FOOTER (unico) -->
-  <footer id="sponsorFooter" class="sponsor-footer">
-    <div class="sf-title">Sponsor ufficiale</div>
-    <a class="sf-logo" href="https://www.gelatofido.it/" target="_blank" rel="noopener">
-      <img src="sponsor-logo.png" alt="Fido – sito ufficiale">
-    </a>
-    <div class="sf-payoff">“Fido”, il gelato per i tuoi amici a quattro zampe</div>
-  </footer>
-
   <!-- SCRIPT -->
-  <script src="app.js"></script>
+  <script src="app.js?v=final"></script>
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(()=>{});
     }
+    // fallback hash
+    function _forceApp(){var l=document.getElementById('landing'),a=document.getElementById('app');if(l&&a){l.classList.remove('active');a.classList.add('active');}}
+    if (location.hash === '#app') { try{ goHome(); }catch(_){ _forceApp(); } }
+    window.addEventListener('hashchange', ()=>{ if(location.hash==='#app'){ try{goHome();}catch(_){_forceApp();} }});
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const cta=document.getElementById('ctaEnter');
+      if(cta){ cta.addEventListener('click', e=>{ e.preventDefault(); try{goHome();}catch(_){_forceApp();} }); }
+    });
   </script>
 </body>
 </html>
