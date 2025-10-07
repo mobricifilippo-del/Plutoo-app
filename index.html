@@ -8,28 +8,19 @@
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0b3a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Icone -->
   <link rel="icon" type="image/png" sizes="192x192" href="plutoo-icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="plutoo-icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="plutoo-icon-512.png">
 
-  <!-- AdSense: Annunci automatici -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5458345293928736" crossorigin="anonymous"></script>
+  <!-- iOS look -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- BANNER EMAIL VERIFICATION (soft) -->
-  <div id="emailBanner" class="email-banner hidden" role="region" aria-live="polite">
-    <div class="email-banner__content">
-      <span class="email-banner__text">Verifica la tua email per chat e selfie 💌</span>
-      <button id="resendEmailBtn" class="btn ghost small">Reinvia</button>
-    </div>
-  </div>
 
   <!-- TOPBAR -->
   <header class="topbar">
@@ -61,9 +52,9 @@
       </div>
 
       <footer class="home-footer">
-        <a class="link-inline" href="privacy.html">Privacy</a>
+        <button class="link-inline" id="openPrivacy">Privacy</button>
         <span class="dot">·</span>
-        <a class="link-inline" href="termini.html">Termini</a>
+        <button class="link-inline" id="openTerms">Termini</button>
       </footer>
     </section>
   </main>
@@ -97,8 +88,8 @@
           <label class="f-item">
             <span>Razza</span>
             <input id="breedInput" name="breed" placeholder="Inizia a digitare…"
-                   list="breedList" autocomplete="off" />
-            <datalist id="breedList"></datalist>
+                   autocomplete="off" />
+            <!-- la tendina di suggerimenti viene creata via JS -->
           </label>
 
           <label class="f-item">
@@ -194,7 +185,6 @@
             <p id="loveBio" class="bio">—</p>
             <div class="actions">
               <button id="loveNo" class="circle no">🥲</button>
-              <!-- ❤️ rimane per lo swipe/like nei deck -->
               <button id="loveYes" class="circle like">❤️</button>
             </div>
           </div>
@@ -237,7 +227,7 @@
       <div class="sponsor-sub">“Fido”, il gelato per i tuoi amici a quattro zampe</div>
     </footer>
 
-    <!-- Banner pubblicitario (placeholder visivo) -->
+    <!-- Banner pubblicitario (placeholder) -->
     <div id="adBanner" class="ad-banner">Banner pubblicitario (placeholder)</div>
   </section>
 
@@ -250,30 +240,19 @@
     <div id="ppBody" class="pp-body"></div>
   </section>
 
-  <!-- VIEWER FOTO con POLLICE BLU CENTRATO -->
-  <section id="photoViewer" class="viewer-page">
-    <div class="viewer-head">
-      <button id="viewerBack" class="btn light small">Indietro</button>
-      <strong id="viewerTitle">Foto</strong>
-      <span class="spacer"></span>
-    </div>
-    <div class="viewer-body">
-      <img id="viewerImg" alt="Foto DOG">
-    </div>
-    <div class="viewer-actions">
-      <!-- POLLICE BLU al centro -->
-      <button id="viewerLike" class="thumb-like" aria-label="Metti Mi piace">👍</button>
-    </div>
-  </section>
-
-  <!-- MATCH OVERLAY (bacio) -->
-  <div id="matchOverlay" class="match-overlay hidden" aria-live="assertive">
-    <div class="match-card">
-      <div class="kiss">💋</div>
-      <div class="match-text">È un match!</div>
-      <div class="row gap centered">
-        <button id="acceptMatch" class="btn primary small">Accetta</button>
-        <button id="closeMatch" class="btn light small">Chiudi</button>
+  <!-- OVERLAY MATCH (semplice) -->
+  <div id="matchOverlay" class="sheet hidden">
+    <div class="sheet-box" style="max-width:420px; margin: auto; border-radius:16px;">
+      <div class="sheet-head">
+        <strong>È un match!</strong>
+        <button id="closeMatch" class="close" data-close="matchOverlay">×</button>
+      </div>
+      <div class="sheet-body" style="text-align:center">
+        <div style="font-size:56px;margin:6px 0">💋</div>
+        <p class="muted">Vi siete piaciuti!</p>
+        <div class="row gap" style="justify-content:center;margin-top:10px">
+          <button id="acceptMatch" class="btn primary">Ok</button>
+        </div>
       </div>
     </div>
   </div>
@@ -294,8 +273,8 @@
     <div class="sheet-box">
       <div class="sheet-head"><strong>Login</strong><button class="close" data-close="sheetLogin">×</button></div>
       <div class="sheet-body">
-        <input id="loginEmail" class="inp" placeholder="Email" autocomplete="email">
-        <input id="loginPass" class="inp" placeholder="Password" type="password" autocomplete="current-password">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
         <button id="loginSubmit" class="btn primary full">Continua</button>
       </div>
     </div>
@@ -305,9 +284,9 @@
     <div class="sheet-box">
       <div class="sheet-head"><strong>Registrati</strong><button class="close" data-close="sheetRegister">×</button></div>
       <div class="sheet-body">
-        <input id="regName" class="inp" placeholder="Nome">
-        <input id="regEmail" class="inp" placeholder="Email" autocomplete="email">
-        <input id="regPass" class="inp" placeholder="Password" type="password" autocomplete="new-password">
+        <input class="inp" placeholder="Nome">
+        <input class="inp" placeholder="Email">
+        <input class="inp" placeholder="Password" type="password">
         <button id="registerSubmit" class="btn primary full">Crea account</button>
       </div>
     </div>
@@ -335,7 +314,8 @@
   <dialog id="privacyDlg" class="modal legal">
     <div class="pad">
       <h3>Privacy</h3>
-      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Su web mostriamo solo segnaposto.</p>
+      <p>Raccogliamo dati profilo forniti dall’utente e posizione approssimata (se attivata) per mostrare profili nelle vicinanze e gestire match/chat. Usiamo cookie tecnici e, in futuro, pubblicitari (AdMob in app nativa). Puoi richiedere esportazione o cancellazione dati scrivendo a supporto@plutoo.app.</p>
+      <p>Per gli annunci: in questa versione web mostriamo solo segnaposto. Nella versione Android verranno applicate le policy AdMob.</p>
       <button class="btn primary" onclick="document.getElementById('privacyDlg').close()">OK</button>
     </div>
   </dialog>
@@ -343,14 +323,15 @@
   <dialog id="termsDlg" class="modal legal">
     <div class="pad">
       <h3>Termini</h3>
-      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. È vietato pubblicare foto di sole persone o contenuti non attinenti. Le funzioni di verifica hanno carattere dimostrativo.</p>
+      <p>Plutoo è una piattaforma per far incontrare proprietari di cani. Sei responsabile dei contenuti che pubblichi e delle interazioni. Le funzioni di verifica documenti sono dimostrative. È vietato pubblicare foto di persone o contenuti non attinenti.</p>
       <button class="btn primary" onclick="document.getElementById('termsDlg').close()">OK</button>
     </div>
   </dialog>
 
   <!-- SCRIPT -->
-  <script src="app.js"></script>
+  <script src="app.js?v=27"></script>
   <script>
+    // registra SW (se presente) e gestisci ancora #app
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(()=>{});
     }
