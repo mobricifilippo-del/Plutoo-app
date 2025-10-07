@@ -134,7 +134,7 @@
     $$('.tabs .tab').forEach(btn=>{
       btn.addEventListener('click',()=>{
         const tab=btn.getAttribute('data-tab'); if(!tab) return;
-        state.tab=tab; $$('.tabs .tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+        state.tab=tab; $$('.tabs .tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active);
         $$('.tabpane').forEach(p=>p.classList.remove('active')); $('#'+tab)?.classList.add('active');
         if(tab==='near') renderNearGrid();
         if(tab==='love') renderLove();
@@ -210,7 +210,7 @@
     $('#emptyNear').classList.toggle('hidden',list.length>0);
   }
 
-  // DECKS + animazione
+  // DECKS + animazione (conteggia gli swipe/like)
   function wireDecks(){
     bindSwipe($('#loveCard'), d=> d>0?likeDeck('love'):skipDeck('love'));
     bindSwipe($('#socCard'),  d=> d>0?likeDeck('social'):skipDeck('social'));
@@ -227,8 +227,17 @@
   function renderLove(){ renderCardInto(currentCard('love'),'love'); }
   function renderSocial(){ renderCardInto(currentCard('social'),'soc'); }
   function renderCardInto(p,pre){ $('#'+pre+'Img').src=p.img; $('#'+pre+'Title').textContent=p.name; $('#'+pre+'Meta').textContent=`${p.breed} · ${p.distanceKm} km`; $('#'+pre+'Bio').textContent=`${p.name} ha ${p.age} anni, ${p.sex==='M'?'maschio':'femmina'}, taglia ${p.size.toLowerCase()}, pelo ${p.coat.toLowerCase()}, energia ${p.energy.toLowerCase()}.`; }
-  async function likeDeck(kind){ await animateAndAdvance(kind, +1, async()=>{ await like(currentCard(kind)); }); }
-  async function skipDeck(kind){ await animateAndAdvance(kind, -1); }
+
+  // ✅ FIX: ogni like/skip del deck incrementa il contatore e può aprire il video
+  async function likeDeck(kind){
+    swipeOccurred();
+    await animateAndAdvance(kind, +1, async()=>{ await like(currentCard(kind)); });
+  }
+  async function skipDeck(kind){
+    swipeOccurred();
+    await animateAndAdvance(kind, -1);
+  }
+
   async function animateAndAdvance(kind, dir, after){
     const card = kind==='love' ? $('#loveCard') : $('#socCard');
     if(!card){ if(after) await after(); advance(kind); return; }
@@ -242,11 +251,11 @@
   }
   function advance(kind){ if(kind==='love') state.deckIdxLove++; else state.deckIdxSoc++; }
 
-  // SWIPE milestones
+  // SWIPE milestones (10, poi ogni +5)
   function swipeOccurred(){
     state.swipeCount++;
     if(state.swipeCount===10 || (state.swipeCount>10 && (state.swipeCount-10)%5===0)){
-      openRewardDialog('Guarda il video per altri like', ()=>{ /* unlock */ });
+      openRewardDialog('Guarda il video per altri like', ()=>{ /* unlock placeholder */ });
     }
   }
   async function likeFromSwipe(p){ swipeOccurred(); await like(p); }
@@ -300,7 +309,6 @@
 
   // ====== PROFILO + DOCUMENTI STRUTTURATI ======
   function openProfilePage(p){
-    // Topbar rifatta con logo + titolo + chiudi
     const head=$('.pp-head');
     if(head){
       head.innerHTML = `
@@ -335,11 +343,9 @@
   function renderProfile(p){
     const body=$('#ppBody'); const unlocked=isSelfieUnlocked(p)||isMatched(p);
 
-    // load structured docs
     const owner = readJSON(ownerKey(p), {type:'carta_identita', front:'', back:''});
     const dog   = readJSON(dogKey(p),   {microchip:'', vaccines:[], attachments:[]});
 
-    // criteria
     const verified = (owner.front && owner.back && dog.microchip && dog.vaccines.length>0) || readVerified(p.id);
     if (verified){ p.verified=true; writeVerified(p.id,true); }
 
@@ -370,7 +376,6 @@
 
         <div class="pp-docs">
 
-          <!-- Proprietario -->
           <div class="doc-item">
             <h5>Documento proprietario</h5>
             <div class="doc-form">
@@ -396,7 +401,6 @@
             <div class="doc-previews" id="ownerPrev"></div>
           </div>
 
-          <!-- Cane -->
           <div class="doc-item">
             <h5>Documenti cane</h5>
 
@@ -446,11 +450,9 @@
       </div>
     `;
 
-    // --- Viewer per cover/thumbs ---
     $('.pp-cover',body)?.addEventListener('click',()=>openPhotoViewer(p,p.img));
     $$('.pp-thumb',body).forEach(t=>t.addEventListener('click',()=>openPhotoViewer(p,t.getAttribute('src'))));
 
-    // --- Selfie ---
     const selfieEl=$('#selfieImg');
     if(selfieEl){ selfieEl.addEventListener('click',()=>{
       if(unlocked){ openPhotoViewer(p,selfieEl.getAttribute('src')); }
@@ -458,7 +460,6 @@
     });}
     $('#unlockBtn')?.addEventListener('click',()=>{ openRewardDialog('Guarda il video per vedere il selfie',()=>{ setSelfieUnlocked(p); renderProfile(p); }); });
 
-    // --- Proprietario: init + handlers ---
     $('#ownerType').value = owner.type || 'carta_identita';
     $('#ownerType').addEventListener('change', e=>{
       owner.type = e.target.value; writeJSON(ownerKey(p), owner);
@@ -472,13 +473,11 @@
       owner.back = await fileToDataUrl(f); writeJSON(ownerKey(p), owner); renderProfile(p);
     });
 
-    // Proprietario: anteprime
     const ownerPrev=$('#ownerPrev');
     ownerPrev.innerHTML='';
     if(owner.front){ const im=document.createElement('img'); im.className='doc-thumb'; im.src=owner.front; im.title='Fronte'; im.addEventListener('click',()=>openPhotoViewer(p,owner.front)); ownerPrev.appendChild(im); }
     if(owner.back){ const im=document.createElement('img'); im.className='doc-thumb'; im.src=owner.back; im.title='Retro';  im.addEventListener('click',()=>openPhotoViewer(p,owner.back)); ownerPrev.appendChild(im); }
 
-    // --- Cane: microchip ---
     const chipEl=$('#dogChip');
     chipEl.value = dog.microchip || '';
     chipEl.addEventListener('input', e=>{
@@ -487,7 +486,6 @@
       checkAndVerify(p);
     });
 
-    // --- Cane: vaccini ---
     const vacName=$('#vacName'), vacDate=$('#vacDate'), vacOther=$('#vacOther'), vacAdd=$('#vacAdd'), vacList=$('#vacList');
     const repaintVaccines=()=>{
       vacList.innerHTML='';
@@ -520,7 +518,6 @@
       repaintVaccines(); checkAndVerify(p);
     });
 
-    // --- Cane: allegati ---
     $('#dogAttach').addEventListener('change', async e=>{
       const files=[...e.target.files];
       for(const f of files){
@@ -531,7 +528,6 @@
       renderProfile(p);
     });
 
-    // allegati anteprime
     const dogPrev=$('#dogPrev');
     dogPrev.innerHTML='';
     dog.attachments.forEach((src)=>{
@@ -541,11 +537,9 @@
       dogPrev.appendChild(im);
     });
 
-    // Azioni chat/invito
     $('[data-chat]',body)?.addEventListener('click',()=>openChat(p));
     $('[data-invite]',body)?.addEventListener('click',()=>alert('Invito inviato!'));
 
-    // verifica iniziale post-render
     checkAndVerify(p);
   }
 
