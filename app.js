@@ -1,8 +1,11 @@
-/* Plutoo – app.js
-   Aggiornamenti:
-   - Animazione swipe carte (deck) fluida
-   - Documenti strutturati per badge: Proprietario (tipo + fronte/retro), Cane (microchip, vaccini con data, allegati)
-   - Autocomplete “Razza” (startsWith), viewer foto con 👍 blu, video placeholders
+/* Plutoo – app.js (completo)
+   - Swipe deck con animazione
+   - Autocomplete razze (startsWith)
+   - Like/Match + video auto (demo)
+   - Viewer foto con 👍 blu
+   - Profilo cane: topbar con logo + titolo, info, selfie sblocco, Galleria,
+     Documenti strutturati (owner: tipo+fronte+retro; dog: microchip+vaccini+allegati)
+   - Badge verificato quando requisiti ok (persistenza in localStorage)
 */
 
 (() => {
@@ -111,7 +114,14 @@
 
       function renderSuggest(box,items,onPick){
         if(!items.length){ closeSuggest(); return; }
-        box.innerHTML=''; items.forEach(t=>{ const d=document.createElement('div'); d.className='suggest-item'; d.textContent=t; d.addEventListener('click',()=>onPick(t)); box.appendChild(d); });
+        box.innerHTML='';
+        items.forEach(t=>{
+          const d=document.createElement('div');
+          d.className='suggest-item';
+          d.textContent=t;
+          d.addEventListener('click',()=>onPick(t));
+          box.appendChild(d);
+        });
         box.classList.remove('hidden');
       }
       function closeSuggest(){ box.classList.add('hidden'); }
@@ -289,7 +299,23 @@
   }
 
   // ====== PROFILO + DOCUMENTI STRUTTURATI ======
-  function openProfilePage(p){ $('#ppTitle').textContent=p.name; renderProfile(p); $('#profilePage').classList.add('show'); }
+  function openProfilePage(p){
+    // Topbar rifatta con logo + titolo + chiudi
+    const head=$('.pp-head');
+    if(head){
+      head.innerHTML = `
+        <div class="row gap">
+          <img src="plutoo-icon-192.png" alt="Plutoo" class="brand" style="width:28px;height:28px;border-radius:6px">
+          <strong id="ppTitle">${p.name}</strong>
+        </div>
+        <button id="ppClose" class="btn light small">Chiudi</button>
+      `;
+      $('#ppClose').addEventListener('click', ()=>$('#profilePage').classList.remove('show'));
+    }
+    $('#ppTitle').textContent=p.name;
+    renderProfile(p);
+    $('#profilePage').classList.add('show');
+  }
   window.closeProfilePage=()=>$('#profilePage').classList.remove('show');
 
   function selfieKey(p){return`selfie-unlock-${p.id}`;}
@@ -304,7 +330,6 @@
   function writeJSON(key,obj){ localStorage.setItem(key, JSON.stringify(obj||{})); }
   function readVerified(id){ return localStorage.getItem(`verified-${id}`)==='1'; }
   function writeVerified(id,val){ localStorage.setItem(`verified-${id}`, val?'1':'0'); }
-
   async function fileToDataUrl(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
 
   function renderProfile(p){
@@ -314,7 +339,7 @@
     const owner = readJSON(ownerKey(p), {type:'carta_identita', front:'', back:''});
     const dog   = readJSON(dogKey(p),   {microchip:'', vaccines:[], attachments:[]});
 
-    // criteria: owner.front && owner.back && dog.microchip && dog.vaccines.length>0
+    // criteria
     const verified = (owner.front && owner.back && dog.microchip && dog.vaccines.length>0) || readVerified(p.id);
     if (verified){ p.verified=true; writeVerified(p.id,true); }
 
@@ -322,7 +347,7 @@
       <img class="pp-cover" src="${p.img}" alt="${p.name}">
       <div class="pp-section">
         <h3>${p.name} ${p.verified?'<span class="badge"><i>✅</i> verificato</span>':''}</h3>
-        <p class="muted">${p.breed} · ${p.age} anni · ${p.sex==='M'?'maschio':'femmina'} · taglia ${p.size.toLowerCase()}</p>
+        <p class="muted">${p.breed} · ${p.age} anni · ${p.sex==='M'?'maschio':'femmina'} · taglia ${p.size.toLowerCase()} · pelo ${p.coat.toLowerCase()} · energia ${p.energy.toLowerCase()}</p>
       </div>
 
       <div class="pp-section selfie-wrap">
@@ -341,7 +366,7 @@
 
       <div class="pp-section">
         <h4>📄 Documenti per il badge</h4>
-        <p class="small muted">Per ottenere il badge: carica <strong>fronte e retro</strong> del documento del proprietario, inserisci <strong>microchip</strong> e almeno un <strong>vaccino</strong> del cane.</p>
+        <p class="small muted">Requisiti: <strong>fronte+retro</strong> documento proprietario, <strong>microchip</strong>, almeno <strong>1 vaccino</strong> con data.</p>
 
         <div class="pp-docs">
 
@@ -509,7 +534,7 @@
     // allegati anteprime
     const dogPrev=$('#dogPrev');
     dogPrev.innerHTML='';
-    dog.attachments.forEach((src,idx)=>{
+    dog.attachments.forEach((src)=>{
       const im=document.createElement('img');
       im.className='doc-thumb'; im.src=src; im.title='Allegato';
       im.addEventListener('click',()=>openPhotoViewer(p,src));
