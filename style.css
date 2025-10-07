@@ -167,3 +167,40 @@ img{max-width:100%;display:block}
 
 /* ===== ADV BANNER (placeholder) ===== */
 .ad-banner{position:sticky;bottom:0;background:#1a1f43;text-align:center;padding:10px;font-size:13px;color:#c9ceff;border-top:1px solid rgba(255,255,255,.08)}
+/* ===== PROFILO: HEADER CON LOGO ===== */
+.pp-head{position:sticky;top:0;background:#0f1431;padding:12px;display:flex;justify-content:space-between;align-items:center;z-index:10;border-bottom:1px solid rgba(255,255,255,.06)}
+.pp-head-left{display:flex;align-items:center;gap:10px}
+.brand-mini{width:28px;height:28px;border-radius:8px;object-fit:cover;box-shadow:0 0 10px rgba(0,0,0,.35)}
+
+/* ===== PROFILO: BODY ===== */
+.pp-body{padding:12px 12px 24px}
+.pp-cover{width:100%;border-radius:16px;margin-bottom:12px;box-shadow:0 10px 28px rgba(0,0,0,.35)}
+
+.pp-section{margin-bottom:22px}
+.pp-section h3,.pp-section h4{margin-bottom:8px}
+
+.info-chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#1a2148;color:#cfe2ff;border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:6px 10px;font-size:12px}
+
+/* Selfie */
+.selfie-wrap{position:relative}
+.selfie-blur{filter:blur(14px);transform:scale(1.02)}
+.unlock-pill{position:absolute;inset:auto 10px 10px 10px;background:rgba(15,20,49,.92);border:1px solid rgba(255,255,255,.08);color:#e9ecff;border-radius:999px;padding:10px 12px;font-weight:700}
+
+/* Galleria */
+.pp-gallery{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.pp-thumb{width:86px;height:86px;border-radius:12px;object-fit:cover;background:#11152b}
+
+/* Documenti strutturati */
+.pp-docs{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:560px){.pp-docs{grid-template-columns:1fr 1fr}}
+.doc-item{background:#151a35;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px}
+.doc-item h5{margin-bottom:6px}
+.doc-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.doc-form .full{grid-column:1/-1}
+.doc-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#cfe2ff}
+.doc-form input,.doc-form select{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#0f1431;color:#e9ecff}
+.doc-previews{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px}
+.doc-thumb{width:86px;height:86px;border-radius:10px;object-fit:cover;background:#11152b}
+.tag{display:inline-flex;align-items:center;gap:6px;background:#1a2148;border:1px solid rgba(255,255,255,.08);color:#cfe2ff;border-radius:999px;padding:6px 10px;font-size:12px;margin:4px 6px 0 0}
+.tag .x{cursor:pointer;opacity:.6}
