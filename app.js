@@ -1,15 +1,27 @@
-/* Plutoo – app.js (autocomplete razze + flussi definitivi) */
+/* Plutoo – app.js (fix: viewer auto-creato + autocomplete Razza + video/like)
+   - Like con ❤️ nei deck/griglia
+   - 👍 blu SOLO nel viewer foto (che viene creato dal JS)
+   - Autocomplete “Razza” con tendina (startsWith, A→Z) + fallback locale
+   - Milestone swipe: “Guarda il video per altri like” a 10,15,20…
+   - Match: video automatico (3s) poi animazione “È un match!”
+   - Primo messaggio: video automatico (3s) prima dell’invio
+   - Selfie bloccato: prompt “Guarda il video per vedere il selfie”, sblocco 24h
+*/
 
 (() => {
+  // ------------------ Utils ------------------
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
   const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
   const now = ()=>Date.now();
   const H24 = 24*60*60*1000;
 
-  // fallback completo (tutte le razze che mi avevi fornito)
-  const FALLBACK_BREEDS = [ "Affenpinscher","Afghan Hound","Airedale Terrier","Akita","Alaskan Klee Kai","Alaskan Malamute","American Bulldog","American English Coonhound","American Eskimo Dog","American Foxhound","American Hairless Terrier","American Leopard Hound","American Staffordshire Terrier","American Water Spaniel","Anatolian Shepherd Dog","Appenzeller Sennenhund","Australian Cattle Dog","Australian Kelpie","Australian Shepherd","Australian Stumpy Tail Cattle Dog","Australian Terrier","Azawakh","Barbado da Terceira","Barbet","Basenji","Basset Fauve de Bretagne","Basset Hound","Bavarian Mountain Scent Hound","Beagle","Bearded Collie","Beauceron","Bedlington Terrier","Belgian Laekenois","Belgian Malinois","Belgian Sheepdog","Belgian Tervuren","Bergamasco Sheepdog","Berger Picard","Bernese Mountain Dog","Bichon Frise","Biewer Terrier","Black and Tan Coonhound","Black Russian Terrier","Bloodhound","Blue Picardy Spaniel","Bluetick Coonhound","Boerboel","Bohemian Shepherd","Bolognese","Border Collie","Border Terrier","Borzoi","Boston Terrier","Bouvier des Ardennes","Bouvier des Flandres","Boxer","Boykin Spaniel","Bracco Italiano","Braque du Bourbonnais","Braque Francais Pyrenean","Braque Saint-Germain","Brazilian Terrier","Briard","Brittany","Broholmer","Brussels Griffon","Bull Terrier","Bulldog","Bullmastiff","Cairn Terrier","Calupoh","Canaan Dog","Canadian Eskimo Dog","Cane Corso","Cardigan Welsh Corgi","Carolina Dog","Catahoula Leopard Dog","Caucasian Shepherd Dog","Cavalier King Charles Spaniel","Central Asian Shepherd Dog","Cesky Terrier","Chesapeake Bay Retriever","Chihuahua","Chinese Crested","Chinese Shar-Pei","Chinook","Chow Chow","Cirneco dell’Etna","Clumber Spaniel","Cocker Spaniel","Collie","Coton de Tulear","Croatian Sheepdog","Curly-Coated Retriever","Czechoslovakian Vlciak","Dachshund","Dalmatian","Dandie Dinmont Terrier","Danish-Swedish Farmdog","Deutscher Wachtelhund","Doberman Pinscher","Dogo Argentino","Dogue de Bordeaux","Drentsche Patrijshond","Drever","Dutch Shepherd","English Cocker Spaniel","English Foxhound","English Setter","English Springer Spaniel","English Toy Spaniel","Entlebucher Mountain Dog","Estrela Mountain Dog","Eurasier","Field Spaniel","Finnish Lapphund","Finnish Spitz","Flat-Coated Retriever","French Bulldog","French Spaniel","German Longhaired Pointer","German Pinscher","German Shepherd Dog","German Shorthaired Pointer","German Spitz","German Wirehaired Pointer","Giant Schnauzer","Glen of Imaal Terrier","Golden Retriever","Gordon Setter","Grand Basset Griffon Vendéen","Great Dane","Great Pyrenees","Greater Swiss Mountain Dog","Greyhound","Hamiltonstovare","Hanoverian Scenthound","Harrier","Havanese","Hokkaido","Hovawart","Ibizan Hound","Icelandic Sheepdog","Irish Red and White Setter","Irish Setter","Irish Terrier","Irish Water Spaniel","Irish Wolfhound","Italian Greyhound","Jagdterrier","Japanese Akitainu","Japanese Chin","Japanese Spitz","Japanese Terrier","Kai Ken","Karelian Bear Dog","Keeshond","Kerry Blue Terrier","Kishu Ken","Komondor","Korean Jindo Dog","Kromfohrlander","Kuvasz","Labrador Retriever","Lagotto Romagnolo","Lakeland Terrier","Lancashire Heeler","Lapponian Herder","Large Munsterlander","Leonberger","Lhasa Apso","Löwchen","Maltese","Manchester Terrier (Standard)","Manchester Terrier (Toy)","Mastiff","Miniature American Shepherd","Miniature Bull Terrier","Miniature Pinscher","Miniature Schnauzer","Mountain Cur","Mudi","Neapolitan Mastiff","Nederlandse Kooikerhondje","Newfoundland","Norfolk Terrier","Norrbottenspets","Norwegian Buhund","Norwegian Elkhound","Norwegian Lundehund","Norwich Terrier","Nova Scotia Duck Tolling Retriever","Old English Sheepdog","Otterhound","Papillon","Parson Russell Terrier","Pekingese","Pembroke Welsh Corgi","Peruvian Inca Orchid","Petit Basset Griffon Vendéen","Pharaoh Hound","Plott Hound","Pointer","Polish Lowland Sheepdog","Pomeranian","Pont-Audemer Spaniel","Poodle (Miniature)","Poodle (Standard)","Poodle (Toy)","Porcelaine","Portuguese Podengo","Portuguese Podengo Pequeno","Portuguese Pointer","Portuguese Sheepdog","Portuguese Water Dog","Presa Canario","Pudelpointer","Pug","Puli","Pumi","Pyrenean Mastiff","Pyrenean Shepherd","Rafeiro do Alentejo","Rat Terrier","Redbone Coonhound","Rhodesian Ridgeback","Romanian Carpathian Shepherd","Romanian Mioritic Shepherd Dog","Rottweiler","Russell Terrier","Russian Toy","Russian Tsvetnaya Bolonka","Saint Bernard","Saluki","Samoyed","Schapendoes","Schipperke","Scottish Deerhound","Scottish Terrier","Sealyham Terrier","Segugio Italiano","Shetland Sheepdog","Shiba Inu","Shih Tzu","Shikoku","Siberian Husky","Silky Terrier","Skye Terrier","Sloughi","Slovakian Wirehaired Pointer","Slovensky Cuvac","Slovensky Kopov","Small Munsterlander","Smooth Fox Terrier","Soft Coated Wheaten Terrier","Spanish Mastiff","Spanish Water Dog","Spinone Italiano","Stabyhoun","Staffordshire Bull Terrier","Standard Schnauzer","Sussex Spaniel","Swedish Lapphund","Swedish Vallhund","Taiwan Dog","Teddy Roosevelt Terrier","Thai Bangkaew","Thai Ridgeback","Tibetan Mastiff","Tibetan Spaniel","Tibetan Terrier","Tornjak","Tosa","Toy Fox Terrier","Transylvanian Hound","Treeing Tennessee Brindle","Treeing Walker Coonhound","Vizsla","Volpino Italiano","Weimaraner","Welsh Springer Spaniel","Welsh Terrier","West Highland White Terrier","Wetterhoun","Whippet","Wire Fox Terrier","Wirehaired Pointing Griffon","Wirehaired Vizsla","Working Kelpie","Xoloitzcuintli","Yakutian Laika","Yorkshire Terrier" ];
+  // ------------------ Fallback razze ------------------
+  const FALLBACK_BREEDS = [
+"Affenpinscher","Afghan Hound","Airedale Terrier","Akita","Alaskan Klee Kai","Alaskan Malamute","American Bulldog","American English Coonhound","American Eskimo Dog","American Foxhound","American Hairless Terrier","American Leopard Hound","American Staffordshire Terrier","American Water Spaniel","Anatolian Shepherd Dog","Appenzeller Sennenhund","Australian Cattle Dog","Australian Kelpie","Australian Shepherd","Australian Stumpy Tail Cattle Dog","Australian Terrier","Azawakh","Barbado da Terceira","Barbet","Basenji","Basset Fauve de Bretagne","Basset Hound","Bavarian Mountain Scent Hound","Beagle","Bearded Collie","Beauceron","Bedlington Terrier","Belgian Laekenois","Belgian Malinois","Belgian Sheepdog","Belgian Tervuren","Bergamasco Sheepdog","Berger Picard","Bernese Mountain Dog","Bichon Frise","Biewer Terrier","Black and Tan Coonhound","Black Russian Terrier","Bloodhound","Blue Picardy Spaniel","Bluetick Coonhound","Boerboel","Bohemian Shepherd","Bolognese","Border Collie","Border Terrier","Borzoi","Boston Terrier","Bouvier des Ardennes","Bouvier des Flandres","Boxer","Boykin Spaniel","Bracco Italiano","Braque du Bourbonnais","Braque Francais Pyrenean","Braque Saint-Germain","Brazilian Terrier","Briard","Brittany","Broholmer","Brussels Griffon","Bull Terrier","Bulldog","Bullmastiff","Cairn Terrier","Calupoh","Canaan Dog","Canadian Eskimo Dog","Cane Corso","Cardigan Welsh Corgi","Carolina Dog","Catahoula Leopard Dog","Caucasian Shepherd Dog","Cavalier King Charles Spaniel","Central Asian Shepherd Dog","Cesky Terrier","Chesapeake Bay Retriever","Chihuahua","Chinese Crested","Chinese Shar-Pei","Chinook","Chow Chow","Cirneco dell’Etna","Clumber Spaniel","Cocker Spaniel","Collie","Coton de Tulear","Croatian Sheepdog","Curly-Coated Retriever","Czechoslovakian Vlciak","Dachshund","Dalmatian","Dandie Dinmont Terrier","Danish-Swedish Farmdog","Deutscher Wachtelhund","Doberman Pinscher","Dogo Argentino","Dogue de Bordeaux","Drentsche Patrijshond","Drever","Dutch Shepherd","English Cocker Spaniel","English Foxhound","English Setter","English Springer Spaniel","English Toy Spaniel","Entlebucher Mountain Dog","Estrela Mountain Dog","Eurasier","Field Spaniel","Finnish Lapphund","Finnish Spitz","Flat-Coated Retriever","French Bulldog","French Spaniel","German Longhaired Pointer","German Pinscher","German Shepherd Dog","German Shorthaired Pointer","German Spitz","German Wirehaired Pointer","Giant Schnauzer","Glen of Imaal Terrier","Golden Retriever","Gordon Setter","Grand Basset Griffon Vendéen","Great Dane","Great Pyrenees","Greater Swiss Mountain Dog","Greyhound","Hamiltonstovare","Hanoverian Scenthound","Harrier","Havanese","Hokkaido","Hovawart","Ibizan Hound","Icelandic Sheepdog","Irish Red and White Setter","Irish Setter","Irish Terrier","Irish Water Spaniel","Irish Wolfhound","Italian Greyhound","Jagdterrier","Japanese Akitainu","Japanese Chin","Japanese Spitz","Japanese Terrier","Kai Ken","Karelian Bear Dog","Keeshond","Kerry Blue Terrier","Kishu Ken","Komondor","Korean Jindo Dog","Kromfohrlander","Kuvasz","Labrador Retriever","Lagotto Romagnolo","Lakeland Terrier","Lancashire Heeler","Lapponian Herder","Large Munsterlander","Leonberger","Lhasa Apso","Löwchen","Maltese","Manchester Terrier (Standard)","Manchester Terrier (Toy)","Mastiff","Miniature American Shepherd","Miniature Bull Terrier","Miniature Pinscher","Miniature Schnauzer","Mountain Cur","Mudi","Neapolitan Mastiff","Nederlandse Kooikerhondje","Newfoundland","Norfolk Terrier","Norrbottenspets","Norwegian Buhund","Norwegian Elkhound","Norwegian Lundehund","Norwich Terrier","Nova Scotia Duck Tolling Retriever","Old English Sheepdog","Otterhound","Papillon","Parson Russell Terrier","Pekingese","Pembroke Welsh Corgi","Peruvian Inca Orchid","Petit Basset Griffon Vendéen","Pharaoh Hound","Plott Hound","Pointer","Polish Lowland Sheepdog","Pomeranian","Pont-Audemer Spaniel","Poodle (Miniature)","Poodle (Standard)","Poodle (Toy)","Porcelaine","Portuguese Podengo","Portuguese Podengo Pequeno","Portuguese Pointer","Portuguese Sheepdog","Portuguese Water Dog","Presa Canario","Pudelpointer","Pug","Puli","Pumi","Pyrenean Mastiff","Pyrenean Shepherd","Rafeiro do Alentejo","Rat Terrier","Redbone Coonhound","Rhodesian Ridgeback","Romanian Carpathian Shepherd","Romanian Mioritic Shepherd Dog","Rottweiler","Russell Terrier","Russian Toy","Russian Tsvetnaya Bolonka","Saint Bernard","Saluki","Samoyed","Schapendoes","Schipperke","Scottish Deerhound","Scottish Terrier","Sealyham Terrier","Segugio Italiano","Shetland Sheepdog","Shiba Inu","Shih Tzu","Shikoku","Siberian Husky","Silky Terrier","Skye Terrier","Sloughi","Slovakian Wirehaired Pointer","Slovensky Cuvac","Slovensky Kopov","Small Munsterlander","Smooth Fox Terrier","Soft Coated Wheaten Terrier","Spanish Mastiff","Spanish Water Dog","Spinone Italiano","Stabyhoun","Staffordshire Bull Terrier","Standard Schnauzer","Sussex Spaniel","Swedish Lapphund","Swedish Vallhund","Taiwan Dog","Teddy Roosevelt Terrier","Thai Bangkaew","Thai Ridgeback","Tibetan Mastiff","Tibetan Spaniel","Tibetan Terrier","Tornjak","Tosa","Toy Fox Terrier","Transylvanian Hound","Treeing Tennessee Brindle","Treeing Walker Coonhound","Vizsla","Volpino Italiano","Weimaraner","Welsh Springer Spaniel","Welsh Terrier","West Highland White Terrier","Wetterhoun","Whippet","Wire Fox Terrier","Wirehaired Pointing Griffon","Wirehaired Vizsla","Working Kelpie","Xoloitzcuintli","Yakutian Laika","Yorkshire Terrier"
+];
 
+  // ------------------ Stato ------------------
   const state = {
     tab:'near',
     filters:{breed:'',ageBand:'',sex:'',size:'',coat:'',energy:'',pedigree:'',distance:''},
@@ -20,7 +32,7 @@
     swipeCount:0,
     viewerProfile:null,
     firstMessageSentTo:new Set(),
-    breeds:[] // popolata da loadBreeds()
+    breeds:[]
   };
 
   document.addEventListener('DOMContentLoaded', init);
@@ -28,26 +40,26 @@
   async function init(){
     wireBasicNav();
     wireSheetsAndDialogs();
-    wireFilterPanel();             // crea anche la tendina custom
-    await loadBreeds();            // riempie state.breeds
+    wireFilterPanel();     // crea anche la tendina custom su "Razza"
+    await loadBreeds();
     prepareLocalProfiles();
     renderNearGrid();
     wireTabs();
     wireDecks();
     wireGeoBar();
-    wirePhotoViewer();
+    setupPhotoViewer();    // <-- CREA il viewer nel DOM (fix)
     wireMatchOverlay();
     wireChat();
   }
 
-  // NAV
+  // -------------------- NAV --------------------
   function wireBasicNav(){
     $('#openPrivacy')?.addEventListener('click', ()=> $('#privacyDlg')?.showModal());
     $('#openTerms')?.addEventListener('click', ()=> $('#termsDlg')?.showModal());
   }
   window.goHome=()=>{$('#landing')?.classList.remove('active');$('#app')?.classList.add('active');};
 
-  // SHEETS / Reward dialog
+  // -------------------- SHEETS / REWARD --------------------
   let pendingRewardHook=null;
   function wireSheetsAndDialogs(){
     $('#btnLoginTop')?.addEventListener('click',()=>$('#sheetLogin')?.classList.add('show'));
@@ -57,10 +69,10 @@
 
     $('#rewardPlay')?.addEventListener('click', async ()=>{
       const btn=$('#rewardPlay'); btn.disabled=true; btn.textContent='Video…';
-      await sleep(3000); // simulazione video senza UI
+      await sleep(3000); // simulazione video (silenziosa)
       btn.disabled=false; btn.textContent='Guarda video';
       $('#adReward')?.close();
-      if(pendingRewardHook){const f=pendingRewardHook; pendingRewardHook=null; f();}
+      if(pendingRewardHook){ const f=pendingRewardHook; pendingRewardHook=null; f(); }
     });
   }
   function openRewardDialog(message,after){
@@ -69,7 +81,7 @@
     pendingRewardHook=after||null; dlg.showModal();
   }
 
-  // FILTRI + AUTOCOMPLETE
+  // -------------------- FILTRI + AUTOCOMPLETE --------------------
   function wireFilterPanel(){
     const toggle=$('#filterToggle'); const panel=$('#filterPanel');
     toggle?.addEventListener('click',()=>{
@@ -91,59 +103,50 @@
       renderNearGrid();
     });
 
-    // --- autocomplete custom per Razza ---
+    // Autocomplete custom (tendina) per Razza
     const inp = $('#breedInput');
     if (inp){
-      // disabilita datalist nativo per evitare doppie liste
       inp.setAttribute('autocomplete','off');
       inp.removeAttribute('list');
-
-      // contenitore lista
       const box=document.createElement('div');
       box.className='suggest hidden';
       inp.parentElement.appendChild(box);
 
-      // eventi
       inp.addEventListener('input', ()=>{
         const q=(inp.value||'').trim().toLowerCase();
         state.filters.breed=inp.value.trim();
         if(!q){ closeSuggest(); return; }
         const list=(state.breeds||[]).filter(b=>b.toLowerCase().startsWith(q))
           .sort((a,b)=>a.localeCompare(b,'it'));
-        renderSuggest(box,list.slice(0,50), val=>{
+        renderSuggest(box,list.slice(0,60), val=>{
           inp.value=val; state.filters.breed=val; closeSuggest();
         });
-      });
-      inp.addEventListener('focus', ()=>{
-        const q=(inp.value||'').trim().toLowerCase();
-        if(!q){ openAllPfx(box,''); } // se vuoto, non apriamo (comportamento richiesto: scrivi P → apri)
       });
 
       document.addEventListener('click', (e)=>{
         if(!box.contains(e.target) && e.target!==inp) closeSuggest();
       });
-    }
 
-    function renderSuggest(box,items,onPick){
-      if(!items.length){ closeSuggest(); return; }
-      box.innerHTML='';
-      items.forEach(txt=>{
-        const it=document.createElement('div');
-        it.className='suggest-item';
-        it.textContent=txt;
-        it.addEventListener('click',()=>onPick(txt));
-        box.appendChild(it);
-      });
-      box.classList.remove('hidden');
+      function renderSuggest(box,items,onPick){
+        if(!items.length){ closeSuggest(); return; }
+        box.innerHTML='';
+        items.forEach(txt=>{
+          const it=document.createElement('div');
+          it.className='suggest-item';
+          it.textContent=txt;
+          it.addEventListener('click',()=>onPick(txt));
+          box.appendChild(it);
+        });
+        box.classList.remove('hidden');
+      }
+      function closeSuggest(){ box.classList.add('hidden'); }
+      function closeSuggestGlobal(){ closeSuggest(); }
+      // esponi per reset
+      window.__closeSuggest = closeSuggestGlobal;
     }
-    function closeSuggest(){
-      const box=$('.suggest', $('#breedInput')?.parentElement || document);
-      box?.classList.add('hidden');
-    }
-    function openAllPfx(box,_pfx){ /* lasciata per estensioni future */ }
   }
 
-  // TABS
+  // -------------------- TABS --------------------
   function wireTabs(){
     $$('.tabs .tab').forEach(btn=>{
       btn.addEventListener('click',()=>{
@@ -158,7 +161,7 @@
     });
   }
 
-  // BREEDS (carica + fallback, salva in state.breeds)
+  // -------------------- BREEDS --------------------
   async function loadBreeds(){
     try{
       const r=await fetch('breeds.json',{cache:'no-store'});
@@ -170,7 +173,7 @@
     }
   }
 
-  // PROFILES (mock)
+  // -------------------- PROFILES (mock) --------------------
   function prepareLocalProfiles(){
     const imgs=['dog1.jpg','dog2.jpg','dog3.jpg','dog4.jpg'];
     const names=['Luna','Fido','Bruno','Maya','Kira','Rocky','Zoe','Leo'];
@@ -185,7 +188,7 @@
     }));
   }
 
-  // VICINO
+  // -------------------- VICINO --------------------
   function renderNearGrid(){
     const grid=$('#grid'); if(!grid) return;
     const f=state.filters;
@@ -227,7 +230,7 @@
     $('#emptyNear').classList.toggle('hidden',list.length>0);
   }
 
-  // DECKS
+  // -------------------- DECKS --------------------
   function wireDecks(){
     bindSwipe($('#loveCard'), d=> d>0?likeDeck('love'):skipDeck('love'));
     bindSwipe($('#socCard'),  d=> d>0?likeDeck('social'):skipDeck('social'));
@@ -247,7 +250,7 @@
   async function likeDeck(kind){ await likeFromSwipe(currentCard(kind)); if(kind==='love'){state.deckIdxLove++;renderLove();} else {state.deckIdxSoc++;renderSocial();} }
   function skipDeck(kind){ swipeOccurred(); if(kind==='love'){state.deckIdxLove++;renderLove();} else {state.deckIdxSoc++;renderSocial();} }
 
-  // SWIPE / MILESTONE
+  // -------------------- SWIPE / MILESTONE --------------------
   function swipeOccurred(){
     state.swipeCount++;
     if(state.swipeCount===10 || (state.swipeCount>10 && (state.swipeCount-10)%5===0)){
@@ -256,14 +259,14 @@
   }
   async function likeFromSwipe(p){ swipeOccurred(); await like(p); }
 
-  // MATCH
+  // -------------------- MATCH --------------------
   function maybeTheyLikedToo(){ return Math.random()<0.35; }
   async function like(p){
     const first=!state.likedIds.has(p.id);
     state.likedIds.add(p.id);
     if(first && maybeTheyLikedToo()){
       state.matchedIds.add(p.id);
-      await simulateAutoVideo(); // video automatico (3s)
+      await simulateAutoVideo(); // 3s
       showMatchToast(p);
       renderMatches();
     } else { renderMatches(); }
@@ -285,9 +288,18 @@
     $('#closeMatch')?.addEventListener('click',()=>$('#matchOverlay')?.classList.add('hidden'));
     $('#acceptMatch')?.addEventListener('click',()=>$('#matchOverlay')?.classList.add('hidden'));
   }
-  function showMatchToast(_p){ const ov=$('#matchOverlay'); if(ov){ ov.classList.remove('hidden'); return; } }
+  function showMatchToast(_p){
+    const ov=$('#matchOverlay');
+    if(ov){ ov.classList.remove('hidden'); return; }
+    // fallback semplice se l’overlay non esiste
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:1200;color:#fff;';
+    overlay.innerHTML=`<div style="background:#121735;padding:16px 18px;border-radius:16px;text-align:center;"><div style="font-size:52px">💋</div><div style="font-weight:800;margin-top:8px">È un match!</div></div>`;
+    document.body.appendChild(overlay);
+    setTimeout(()=> overlay.remove(), 1600);
+  }
 
-  // GEO
+  // -------------------- GEO --------------------
   function wireGeoBar(){
     const bar=$('#geoBar'); const enable=$('#enableGeo'); const dismiss=$('#dismissGeo');
     bar?.classList.remove('hidden');
@@ -295,7 +307,7 @@
     dismiss?.addEventListener('click',()=>bar.classList.add('hidden'));
   }
 
-  // PROFILO
+  // -------------------- PROFILO --------------------
   let unlockPending=null;
   function openProfilePage(p){ $('#ppTitle').textContent=p.name; renderProfile(p); $('#profilePage').classList.add('show'); }
   window.closeProfilePage=()=>$('#profilePage').classList.remove('show');
@@ -319,27 +331,53 @@
         <img class="pp-thumb" src="${p.img}" alt=""><img class="pp-thumb" src="${p.selfie||'plutoo-icon-512.png'}" alt="">
       </div></div>
       <div class="pp-actions"><button class="btn light" data-chat>Messaggio</button><button class="btn primary" data-invite>Invita al parco</button></div>`;
+
+    // Tap cover/thumbs → VIEWER con 👍
     $('.pp-cover',body)?.addEventListener('click',()=>openPhotoViewer(p,p.img));
     $$('.pp-thumb',body).forEach(t=>t.addEventListener('click',()=>openPhotoViewer(p,t.getAttribute('src'))));
+
+    // Selfie: sblocca con video o apri viewer se già sbloccato/match
     const selfieEl=$('#selfieImg');
     if(selfieEl){ selfieEl.addEventListener('click',()=>{
       if(isSelfieUnlocked(p)||isMatched(p)){ openPhotoViewer(p,selfieEl.getAttribute('src')); }
       else{ unlockPending=p; openRewardDialog('Guarda il video per vedere il selfie',()=>{ setSelfieUnlocked(unlockPending); renderProfile(unlockPending); unlockPending=null; }); }
     });}
     $('#unlockBtn')?.addEventListener('click',()=>{ unlockPending=p; openRewardDialog('Guarda il video per vedere il selfie',()=>{ setSelfieUnlocked(unlockPending); renderProfile(unlockPending); unlockPending=null; }); });
+
     $('[data-chat]',body)?.addEventListener('click',()=>openChat(p));
     $('[data-invite]',body)?.addEventListener('click',()=>alert('Invito inviato!'));
   }
 
-  // VIEWER (pollice blu solo qui)
-  function wirePhotoViewer(){
-    $('#viewerBack')?.addEventListener('click',closePhotoViewer);
-    $('#viewerLike')?.addEventListener('click',()=>{ if(state.viewerProfile) like(state.viewerProfile); });
-  }
-  function openPhotoViewer(p,src){ state.viewerProfile=p; const vp=$('#photoViewer'); const img=$('#viewerImg'); if(!vp||!img) return; img.src=src||p.img; $('#viewerTitle')?.textContent=p.name; vp.classList.add('show'); }
-  function closePhotoViewer(){ $('#photoViewer')?.classList.remove('show'); state.viewerProfile=null; }
+  // -------------------- VIEWER (CREATO DAL JS) --------------------
+  function setupPhotoViewer(){
+    if ($('#photoViewer')) return; // evita duplicati
+    const viewer=document.createElement('div');
+    viewer.id='photoViewer';
+    viewer.className='photo-viewer';
+    viewer.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:1400;';
+    viewer.innerHTML=`
+      <div class="pv-box" style="max-width:92vw;max-height:86vh;position:relative;">
+        <img id="viewerImg" src="" alt="" style="max-width:100%;max-height:100%;display:block;border-radius:12px">
+        <button id="viewerLike" class="circle big" style="position:absolute;left:50%;bottom:-52px;transform:translateX(-50%);width:64px;height:64px;border-radius:50%;background:#1977f3;color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;">👍</button>
+        <button id="viewerBack" style="position:absolute;top:-52px;left:0;background:#0000;border:none;color:#e9ecff;font-size:28px">×</button>
+      </div>`;
+    viewer.addEventListener('click',e=>{ if(e.target===viewer) closePhotoViewer(); });
+    document.body.appendChild(viewer);
 
-  // CHAT (video auto al primo messaggio)
+    $('#viewerBack').addEventListener('click', closePhotoViewer);
+    $('#viewerLike').addEventListener('click', ()=>{ if(state.viewerProfile) like(state.viewerProfile); });
+  }
+  function openPhotoViewer(p,src){
+    state.viewerProfile=p;
+    $('#viewerImg').src=src||p.img;
+    const v=$('#photoViewer'); if(v) v.style.display='flex';
+  }
+  function closePhotoViewer(){
+    const v=$('#photoViewer'); if(v) v.style.display='none';
+    state.viewerProfile=null;
+  }
+
+  // -------------------- CHAT --------------------
   let currentChatProfile=null;
   function wireChat(){
     $('#sendBtn')?.addEventListener('click', async ()=>{
@@ -353,7 +391,6 @@
   function openChat(p){ currentChatProfile=p; $('#chatName').textContent=p.name; $('#chatAvatar').src=p.img; $('#thread').innerHTML=''; addBubble('Ciao! 🐾',false); $('#chat').classList.add('show'); }
   function addBubble(t,me){ const b=document.createElement('div'); b.className='bubble'+(me?' me':''); b.textContent=t; $('#thread').appendChild(b); $('#thread').scrollTop=1e6; }
 
-  // VIDEO auto
+  // -------------------- VIDEO AUTO --------------------
   async function simulateAutoVideo(){ await sleep(3000); } // nessuna UI
-
 })();
