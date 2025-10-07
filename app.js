@@ -1,6 +1,6 @@
 /* Plutoo – app.js (mobile-first)
    - Swipe deck: gesto touch + bottoni ❤️ / 🥲 (immutati)
-   - Viewer foto: pagina dedicata, pollice blu centrato per Like
+   - Viewer foto: SOLO dentro il profilo; pollice blu centrato per Like
    - Match animation (bacio) + video al consenso
    - Selfie blur con sblocco tramite video (24h) o match
    - Ads (demo web): ogni 10 swipe poi cooldown 5; primo messaggio; post-accetto match
@@ -70,7 +70,7 @@
     wireDecks();                         // Amore/Giocare
     wireGeoBar();                        // geolocalizzazione mock
 
-    wirePhotoViewer();                   // viewer con pollice blu
+    wirePhotoViewer();                   // viewer (aperto SOLO dal profilo)
     wireMatchOverlay();                  // overlay match
     wireChat();                          // invio messaggi (video al primo)
   }
@@ -258,20 +258,20 @@
           </div>
         </div>
       `;
-      // fallback immagini + apri viewer foto al tap
+      // fallback immagini + APRI PROFILO al tap (NON il viewer)
       const imgEl = $('img', card);
       imgEl.onerror = ()=>{ imgEl.src='plutoo-icon-512.png'; };
-      imgEl.addEventListener('click', ()=> openPhotoViewer(p));
+      imgEl.addEventListener('click', (e)=> {
+        e.stopPropagation();
+        openProfilePage(p);
+      });
 
       // like/skip
       $('.heart-btn',card)?.addEventListener('click', e=>{ e.stopPropagation(); like(p); });
       $('.no',card)?.addEventListener('click', e=>{ e.stopPropagation(); skip(p); });
 
-      // profilo clic (oltre alla foto, tocco altrove apre profilo)
-      card.addEventListener('click', (ev)=>{
-        if (ev.target.tagName.toLowerCase() === 'img') return; // gestito sopra
-        openProfilePage(p);
-      });
+      // click altrove nella card → profilo
+      card.addEventListener('click', ()=> openProfilePage(p));
 
       grid.appendChild(card);
     });
@@ -289,12 +289,12 @@
     $('#socYes') ?.addEventListener('click', ()=> likeDeck('social', $('#socCard')));
     $('#socNo')  ?.addEventListener('click', ()=> skipDeck('social', $('#socCard')));
 
-    // apri viewer foto cliccando l’immagine
+    // NEL DECK: il tap sull’immagine apre il PROFILO (NON il viewer)
     $('#loveImg')?.addEventListener('click', ()=> {
-      const p = currentCardProfile('love'); openPhotoViewer(p);
+      const p = currentCardProfile('love'); openProfilePage(p);
     });
     $('#socImg')?.addEventListener('click', ()=> {
-      const p = currentCardProfile('social'); openPhotoViewer(p);
+      const p = currentCardProfile('social'); openProfilePage(p);
     });
 
     renderLove(); renderSocial();
@@ -348,7 +348,7 @@
     onSwipeOccurred();
   }
 
-  // ========== VIEWER FOTO (pollice blu) ==========
+  // ========== VIEWER FOTO (solo dal profilo) ==========
   function wirePhotoViewer(){
     $('#viewerBack')?.addEventListener('click', closePhotoViewer);
     $('#viewerLike')?.addEventListener('click', ()=>{
@@ -356,11 +356,13 @@
       like(state.viewerProfile);
     });
   }
-  function openPhotoViewer(p){
+  function openPhotoViewer(p, srcOverride){
     state.viewerProfile = p;
     const vp = $('#photoViewer');
     const img = $('#viewerImg');
-    img.src = p.img; img.onerror = ()=>{ img.src='plutoo-icon-512.png'; };
+    const src = srcOverride || p.img;
+    img.src = src;
+    img.onerror = ()=>{ img.src='plutoo-icon-512.png'; };
     $('#viewerTitle').textContent = p.name;
     vp.classList.add('show');
   }
@@ -414,11 +416,11 @@
       $('#matchOverlay')?.classList.add('hidden');
       // dopo l'accetto match → video
       requestRewardVideo(()=> {
-        // post-video: nulla, solo UX
+        // post-video: no-op
       });
     });
   }
-  function showMatchOverlay(p){
+  function showMatchOverlay(_p){
     $('#matchOverlay')?.classList.remove('hidden');
   }
 
@@ -490,12 +492,36 @@
       </div>
     `;
 
-    // Tap su foto di copertina: apre viewer con pollice blu
-    $('.pp-cover', body)?.addEventListener('click', ()=> openPhotoViewer(p));
-    // Tap su galleria → viewer
-    $$('.pp-thumb', body).forEach(img => img.addEventListener('click', ()=> openPhotoViewer(p)));
+    // Tap su foto di copertina: APRE VIEWER con pollice blu
+    $('.pp-cover', body)?.addEventListener('click', ()=> openPhotoViewer(p, p.img));
+    // Tap sulle miniature galleria → viewer (usa la src della thumb)
+    $$('.pp-thumb', body).forEach(thumb => {
+      thumb.addEventListener('click', ()=> openPhotoViewer(p, thumb.getAttribute('src')));
+    });
 
-    // Sblocco selfie: richiede email verificata
+    // Selfie: se sbloccato/match → viewer; altrimenti chiede video
+    const selfieEl = $('#selfieImg');
+    if (selfieEl) {
+      selfieEl.addEventListener('click', ()=>{
+        const unlockedNow = isSelfieUnlocked(p) || isMatched(p);
+        if (unlockedNow) {
+          openPhotoViewer(p, selfieEl.getAttribute('src'));
+        } else {
+          if (!isEmailVerified()) {
+            alert('Verifica la tua email per sbloccare il selfie. Tocca “Reinvia” nel banner in alto.');
+            return;
+          }
+          unlockPending = p;
+          requestRewardVideo(()=> {
+            setSelfieUnlocked(unlockPending);
+            renderProfile(unlockPending);
+            unlockPending = null;
+          });
+        }
+      });
+    }
+
+    // Sblocco selfie da pulsante
     $('#unlockBtn')?.addEventListener('click', ()=>{
       if (!isEmailVerified()) {
         alert('Verifica la tua email per sbloccare il selfie. Tocca “Reinvia” nel banner in alto.');
