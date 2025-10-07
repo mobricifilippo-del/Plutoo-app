@@ -1,12 +1,11 @@
-/* Plutoo – app.js (mobile-first)
-   - Swipe deck: gesto touch + bottoni ❤️ / 🥲 (immutati)
-   - Viewer foto: SOLO dentro il profilo; pollice blu centrato per Like
-   - Match animation (bacio) + video al consenso
-   - Selfie blur con sblocco tramite video (24h) o match
-   - Ads (demo web): ogni 10 swipe poi cooldown 5; primo messaggio; post-accetto match
-   - Email verification (soft): ora robusta (se il banner manca, non blocca nulla)
-   - Fallback immagini ovunque
-   - Fallback locale razze se breeds.json non carica
+/* Plutoo – app.js (demo finale)
+   - Cuore per i like nello swipe (deck/griglia) – INVARIATO
+   - Pollice blu solo nel viewer foto (aperto dal profilo)
+   - Milestone swipe: prompt “Guarda il video per altri like” a 10,15,20...
+   - Match: video AUTOMATICO (3s) poi animazione “È un match!”
+   - Primo messaggio: video AUTOMATICO (3s) prima dell’invio
+   - Selfie bloccato: prompt “Guarda il video per vedere il selfie”, sblocco 24h
+   - Ricerca razze: datalist da breeds.json, con fallback completo
 */
 
 (() => {
@@ -17,18 +16,10 @@
   const now = () => Date.now();
   const H24 = 24 * 60 * 60 * 1000;
 
-  // ------------------ Fallback razze ------------------
+  // ------------------ Fallback razze (completo) ------------------
   const FALLBACK_BREEDS = [
 "Affenpinscher","Afghan Hound","Airedale Terrier","Akita","Alaskan Klee Kai","Alaskan Malamute","American Bulldog","American English Coonhound","American Eskimo Dog","American Foxhound","American Hairless Terrier","American Leopard Hound","American Staffordshire Terrier","American Water Spaniel","Anatolian Shepherd Dog","Appenzeller Sennenhund","Australian Cattle Dog","Australian Kelpie","Australian Shepherd","Australian Stumpy Tail Cattle Dog","Australian Terrier","Azawakh","Barbado da Terceira","Barbet","Basenji","Basset Fauve de Bretagne","Basset Hound","Bavarian Mountain Scent Hound","Beagle","Bearded Collie","Beauceron","Bedlington Terrier","Belgian Laekenois","Belgian Malinois","Belgian Sheepdog","Belgian Tervuren","Bergamasco Sheepdog","Berger Picard","Bernese Mountain Dog","Bichon Frise","Biewer Terrier","Black and Tan Coonhound","Black Russian Terrier","Bloodhound","Blue Picardy Spaniel","Bluetick Coonhound","Boerboel","Bohemian Shepherd","Bolognese","Border Collie","Border Terrier","Borzoi","Boston Terrier","Bouvier des Ardennes","Bouvier des Flandres","Boxer","Boykin Spaniel","Bracco Italiano","Braque du Bourbonnais","Braque Francais Pyrenean","Braque Saint-Germain","Brazilian Terrier","Briard","Brittany","Broholmer","Brussels Griffon","Bull Terrier","Bulldog","Bullmastiff","Cairn Terrier","Calupoh","Canaan Dog","Canadian Eskimo Dog","Cane Corso","Cardigan Welsh Corgi","Carolina Dog","Catahoula Leopard Dog","Caucasian Shepherd Dog","Cavalier King Charles Spaniel","Central Asian Shepherd Dog","Cesky Terrier","Chesapeake Bay Retriever","Chihuahua","Chinese Crested","Chinese Shar-Pei","Chinook","Chow Chow","Cirneco dell’Etna","Clumber Spaniel","Cocker Spaniel","Collie","Coton de Tulear","Croatian Sheepdog","Curly-Coated Retriever","Czechoslovakian Vlciak","Dachshund","Dalmatian","Dandie Dinmont Terrier","Danish-Swedish Farmdog","Deutscher Wachtelhund","Doberman Pinscher","Dogo Argentino","Dogue de Bordeaux","Drentsche Patrijshond","Drever","Dutch Shepherd","English Cocker Spaniel","English Foxhound","English Setter","English Springer Spaniel","English Toy Spaniel","Entlebucher Mountain Dog","Estrela Mountain Dog","Eurasier","Field Spaniel","Finnish Lapphund","Finnish Spitz","Flat-Coated Retriever","French Bulldog","French Spaniel","German Longhaired Pointer","German Pinscher","German Shepherd Dog","German Shorthaired Pointer","German Spitz","German Wirehaired Pointer","Giant Schnauzer","Glen of Imaal Terrier","Golden Retriever","Gordon Setter","Grand Basset Griffon Vendéen","Great Dane","Great Pyrenees","Greater Swiss Mountain Dog","Greyhound","Hamiltonstovare","Hanoverian Scenthound","Harrier","Havanese","Hokkaido","Hovawart","Ibizan Hound","Icelandic Sheepdog","Irish Red and White Setter","Irish Setter","Irish Terrier","Irish Water Spaniel","Irish Wolfhound","Italian Greyhound","Jagdterrier","Japanese Akitainu","Japanese Chin","Japanese Spitz","Japanese Terrier","Kai Ken","Karelian Bear Dog","Keeshond","Kerry Blue Terrier","Kishu Ken","Komondor","Korean Jindo Dog","Kromfohrlander","Kuvasz","Labrador Retriever","Lagotto Romagnolo","Lakeland Terrier","Lancashire Heeler","Lapponian Herder","Large Munsterlander","Leonberger","Lhasa Apso","Löwchen","Maltese","Manchester Terrier (Standard)","Manchester Terrier (Toy)","Mastiff","Miniature American Shepherd","Miniature Bull Terrier","Miniature Pinscher","Miniature Schnauzer","Mountain Cur","Mudi","Neapolitan Mastiff","Nederlandse Kooikerhondje","Newfoundland","Norfolk Terrier","Norrbottenspets","Norwegian Buhund","Norwegian Elkhound","Norwegian Lundehund","Norwich Terrier","Nova Scotia Duck Tolling Retriever","Old English Sheepdog","Otterhound","Papillon","Parson Russell Terrier","Pekingese","Pembroke Welsh Corgi","Peruvian Inca Orchid","Petit Basset Griffon Vendéen","Pharaoh Hound","Plott Hound","Pointer","Polish Lowland Sheepdog","Pomeranian","Pont-Audemer Spaniel","Poodle (Miniature)","Poodle (Standard)","Poodle (Toy)","Porcelaine","Portuguese Podengo","Portuguese Podengo Pequeno","Portuguese Pointer","Portuguese Sheepdog","Portuguese Water Dog","Presa Canario","Pudelpointer","Pug","Puli","Pumi","Pyrenean Mastiff","Pyrenean Shepherd","Rafeiro do Alentejo","Rat Terrier","Redbone Coonhound","Rhodesian Ridgeback","Romanian Carpathian Shepherd","Romanian Mioritic Shepherd Dog","Rottweiler","Russell Terrier","Russian Toy","Russian Tsvetnaya Bolonka","Saint Bernard","Saluki","Samoyed","Schapendoes","Schipperke","Scottish Deerhound","Scottish Terrier","Sealyham Terrier","Segugio Italiano","Shetland Sheepdog","Shiba Inu","Shih Tzu","Shikoku","Siberian Husky","Silky Terrier","Skye Terrier","Sloughi","Slovakian Wirehaired Pointer","Slovensky Cuvac","Slovensky Kopov","Small Munsterlander","Smooth Fox Terrier","Soft Coated Wheaten Terrier","Spanish Mastiff","Spanish Water Dog","Spinone Italiano","Stabyhoun","Staffordshire Bull Terrier","Standard Schnauzer","Sussex Spaniel","Swedish Lapphund","Swedish Vallhund","Taiwan Dog","Teddy Roosevelt Terrier","Thai Bangkaew","Thai Ridgeback","Tibetan Mastiff","Tibetan Spaniel","Tibetan Terrier","Tornjak","Tosa","Toy Fox Terrier","Transylvanian Hound","Treeing Tennessee Brindle","Treeing Walker Coonhound","Vizsla","Volpino Italiano","Weimaraner","Welsh Springer Spaniel","Welsh Terrier","West Highland White Terrier","Wetterhoun","Whippet","Wire Fox Terrier","Wirehaired Pointing Griffon","Wirehaired Vizsla","Working Kelpie","Xoloitzcuintli","Yakutian Laika","Yorkshire Terrier"
 ];
-
-  // ------------------ Flags / Storage ------------------
-  const LS = {
-    emailVerified: 'pl_email_verified',
-    selfieUnlockPrefix: 'pl_selfie_unlock_', // + id
-  };
-  const isEmailVerified = () => localStorage.getItem(LS.emailVerified) === '1';
-  const setEmailVerified = (v) => localStorage.setItem(LS.emailVerified, v ? '1' : '0');
 
   // ------------------ Stato ------------------
   const state = {
@@ -49,45 +40,34 @@
     // deck
     deckIdxLove: 0,
     deckIdxSoc : 0,
-    // ads
+    // swipe milestones
     swipeCount: 0,
-    lastAdSwipe: 0,
-    firstMessageSentTo: new Set(),
     // viewer
     viewerProfile: null,
+    // chat
+    firstMessageSentTo: new Set(),
   };
 
   // ------------------ bootstrap ----------------
   document.addEventListener('DOMContentLoaded', init);
 
   async function init(){
-    // default email verified flag (soft)
-    if (localStorage.getItem(LS.emailVerified) == null) setEmailVerified(false);
-
     wireBasicNav();
-    wireSheetsAndDialogs();
+    wireSheetsAndDialogs();       // include reward dialog handler
     wireFilterPanel();
-    wireEmailBanner();            // ora safe: non blocca se banner assente
-
-    await loadBreeds();           // popola datalist breedList (con fallback)
-    prepareLocalProfiles();       // crea profili mock + preload
+    await loadBreeds();           // datalist + fallback
+    prepareLocalProfiles();       // mock + preload
     renderNearGrid();             // prima vista
-    wireTabs();                   // attiva tab switching
-    wireDecks();                  // Amore/Giocare
-    wireGeoBar();                 // geolocalizzazione mock
-
-    wirePhotoViewer();            // viewer (aperto SOLO dal profilo)
-    wireMatchOverlay();           // overlay match
-    wireChat();                   // invio messaggi (video al primo)
+    wireTabs();                   // tab switching
+    wireDecks();                  // swipe deck
+    wireGeoBar();                 // geobar mock
+    wirePhotoViewer();            // viewer (solo dal profilo)
+    wireMatchOverlay();           // overlay match (no video qui)
+    wireChat();                   // chat (video auto al primo messaggio)
   }
 
   // ========== NAV / HOME ==========
   function wireBasicNav(){
-    const enter = $('#ctaEnter');
-    if (enter) enter.addEventListener('click', e=>{
-      e.preventDefault(); goHome();
-    });
-
     $('#openPrivacy')?.addEventListener('click', ()=> $('#privacyDlg')?.showModal());
     $('#openTerms')?.addEventListener('click', ()=> $('#termsDlg')?.showModal());
   }
@@ -96,25 +76,8 @@
     $('#app')?.classList.add('active');
   };
 
-  // ========== EMAIL BANNER (soft, safe) ==========
-  function wireEmailBanner(){
-    const banner = $('#emailBanner');
-    const btn = $('#resendEmailBtn');
-    if (!banner) return; // SE NON ESISTE NELL'HTML, NON BLOCCA L'APP
-    const render = ()=> banner.classList.toggle('hidden', isEmailVerified());
-    render();
-    btn?.addEventListener('click', async ()=>{
-      btn.disabled = true; btn.textContent = 'Invio…';
-      await sleep(1200);
-      alert('Email di verifica inviata! Apri il link per confermare.');
-      await sleep(1200);
-      setEmailVerified(true);
-      render();
-      btn.disabled = false; btn.textContent = 'Reinvia';
-    });
-  }
-
-  // ========== SHEETS / DIALOGS ==========
+  // ========== SHEETS / REWARD DIALOG ==========
+  let pendingRewardHook = null;
   function wireSheetsAndDialogs(){
     const openLogin = ()=>$('#sheetLogin')?.classList.add('show');
     const openReg   = ()=>$('#sheetRegister')?.classList.add('show');
@@ -128,16 +91,26 @@
       });
     });
 
-    // reward dialog (video demo)
+    // Pulsante "Guarda video" del reward dialog (manuale)
     $('#rewardPlay')?.addEventListener('click', async ()=>{
       const btn = $('#rewardPlay');
-      btn.disabled = true; btn.textContent = 'Video in riproduzione…';
+      btn.disabled = true; btn.textContent = 'Video…';
+      // simulazione video (3s) – nessuna UI extra
       await sleep(3000);
       btn.disabled = false; btn.textContent = 'Guarda video';
       $('#adReward')?.close();
-      // post-video hook (eseguito da chi l'ha richiesto)
       if (pendingRewardHook) { const f = pendingRewardHook; pendingRewardHook = null; f(); }
     });
+  }
+
+  function openRewardDialog(message, after){
+    // Cambia il titolo del dialog con il messaggio richiesto
+    const dlg = $('#adReward');
+    if (!dlg) return after?.(); // se manca, prosegui direttamente
+    const h3 = dlg.querySelector('h3');
+    if (h3) h3.textContent = message || 'Guarda un breve video per continuare';
+    pendingRewardHook = after || null;
+    dlg.showModal();
   }
 
   // ========== FILTRI ==========
@@ -165,9 +138,7 @@
       renderNearGrid();
     });
 
-    // aggiorna filtro razza mentre si digita
-    const breedInp = $('#breedInput');
-    breedInp?.addEventListener('input', (e)=>{
+    $('#breedInput')?.addEventListener('input', (e)=>{
       state.filters.breed = e.target.value.trim();
     });
   }
@@ -193,14 +164,12 @@
     });
   }
 
-  // ========== BREEDS (con fallback) ==========
+  // ========== BREEDS (con fallback completo) ==========
   async function loadBreeds(){
     const dl = $('#breedList');
     if (!dl) return;
-
-    // funzione di render unica
-    const renderOptions = (arr) => {
-      dl.innerHTML = '';
+    const render = (arr)=> {
+      dl.innerHTML='';
       arr.forEach(b=>{
         const o=document.createElement('option'); o.value=b; dl.appendChild(o);
       });
@@ -210,15 +179,10 @@
       const r = await fetch('breeds.json', {cache:'no-store'});
       if(!r.ok) throw new Error('HTTP '+r.status);
       const list = await r.json();
-      if (Array.isArray(list) && list.length) {
-        renderOptions(list);
-        return;
-      }
-      // se il JSON non è un array, usa fallback
-      renderOptions(FALLBACK_BREEDS);
-    }catch(e){
-      // file mancante, CORS o apertura via file:// → usa fallback locale
-      renderOptions(FALLBACK_BREEDS);
+      if (Array.isArray(list) && list.length) { render(list); return; }
+      render(FALLBACK_BREEDS);
+    }catch(_){
+      render(FALLBACK_BREEDS);
     }
   }
 
@@ -238,10 +202,10 @@
       img: imgs[i%imgs.length],
       distanceKm: ((i+1)*1.1).toFixed(1),
       verified: i%3===0,
-      selfie: imgs[(i+1)%imgs.length] // demo: usa un’altra immagine come selfie
+      selfie: imgs[(i+1)%imgs.length]
     }));
     // Precarico immagini
-    state.profiles.forEach(p=>{ const im=new Image(); im.src=p.img; im.onerror = ()=>{ im.src='plutoo-icon-512.png'; }; });
+    state.profiles.forEach(p=>{ const im=new Image(); im.src=p.img; });
   }
 
   // ========== VICINO ==========
@@ -268,7 +232,7 @@
       card.className = 'card';
       card.innerHTML = `
         <span class="online"></span>
-        <img data-id="${p.id}" src="${p.img}" alt="${p.name}">
+        <img src="${p.img}" alt="${p.name}">
         <div class="card-info">
           <div class="title">
             <div class="name">${p.name} ${p.verified?'<span class="badge"><i>✅</i> verificato</span>':''}</div>
@@ -277,25 +241,16 @@
           <div class="intent-pill">${p.breed}</div>
           <div class="actions">
             <button class="circle no">🥲</button>
-            <!-- ❤️ resta nelle card -->
-            <button class="circle like heart-btn">❤️</button>
+            <button class="circle like">❤️</button>
           </div>
         </div>
       `;
+      // like/skip nei box della griglia
+      $('.like',card)?.addEventListener('click', e=>{ e.stopPropagation(); likeFromSwipe(p); });
+      $('.no',card)?.addEventListener('click', e=>{ e.stopPropagation(); swipeOccurred(); });
 
-      // Immagine → PROFILO (NON viewer)
-      const imgEl = $('img', card);
-      imgEl.onerror = ()=>{ imgEl.src='plutoo-icon-512.png'; };
-      imgEl.addEventListener('click', (e)=> {
-        e.stopPropagation();
-        openProfilePage(p);
-      });
-
-      // like/skip
-      $('.heart-btn',card)?.addEventListener('click', e=>{ e.stopPropagation(); like(p); });
-      $('.no',card)?.addEventListener('click', e=>{ e.stopPropagation(); skip(p); });
-
-      // click altrove nella card → profilo
+      // Tap su immagine o card → PROFILO (mai viewer)
+      $('img',card).addEventListener('click', e=>{ e.stopPropagation(); openProfilePage(p); });
       card.addEventListener('click', ()=> openProfilePage(p));
 
       grid.appendChild(card);
@@ -306,15 +261,15 @@
 
   // ========== DECKS (Amore / Social) ==========
   function wireDecks(){
-    bindSwipe($('#loveCard'), (dir, el)=> dir>0? likeDeck('love', el) : skipDeck('love', el));
-    bindSwipe($('#socCard'),  (dir, el)=> dir>0? likeDeck('social', el): skipDeck('social', el));
+    bindSwipe($('#loveCard'), (dir)=> dir>0? likeDeck('love') : skipDeck('love'));
+    bindSwipe($('#socCard'),  (dir)=> dir>0? likeDeck('social'): skipDeck('social'));
 
-    $('#loveYes')?.addEventListener('click', ()=> likeDeck('love', $('#loveCard')));
-    $('#loveNo') ?.addEventListener('click', ()=> skipDeck('love', $('#loveCard')));
-    $('#socYes') ?.addEventListener('click', ()=> likeDeck('social', $('#socCard')));
-    $('#socNo')  ?.addEventListener('click', ()=> skipDeck('social', $('#socCard')));
+    $('#loveYes')?.addEventListener('click', ()=> likeDeck('love'));
+    $('#loveNo') ?.addEventListener('click', ()=> skipDeck('love'));
+    $('#socYes') ?.addEventListener('click', ()=> likeDeck('social'));
+    $('#socNo')  ?.addEventListener('click', ()=> skipDeck('social'));
 
-    // NEL DECK: il tap sull’immagine apre il PROFILO (NON viewer)
+    // Tap immagine nel deck → PROFILO
     $('#loveImg')?.addEventListener('click', ()=> {
       const p = currentCardProfile('love'); openProfilePage(p);
     });
@@ -324,10 +279,6 @@
 
     renderLove(); renderSocial();
   }
-  function currentCardProfile(kind){
-    const idx = kind==='love'? state.deckIdxLove : state.deckIdxSoc;
-    return state.profiles[idx % state.profiles.length];
-  }
 
   function bindSwipe(card, handler){
     if (!card) return;
@@ -336,83 +287,76 @@
     card.addEventListener('touchend', e=>{
       endX=e.changedTouches[0].clientX;
       const delta=endX-startX;
-      if (Math.abs(delta)>40) {
-        // animazione visibile
-        card.classList.add(delta>0 ? 'swipe-right' : 'swipe-left');
-        setTimeout(()=> card.classList.remove('swipe-right','swipe-left'), 220);
-        handler(delta, card);
-      }
+      if (Math.abs(delta)>40) handler(delta);
     });
+  }
+
+  function currentCardProfile(kind){
+    const idx = kind==='love'? state.deckIdxLove : state.deckIdxSoc;
+    return state.profiles[idx % state.profiles.length];
   }
 
   function renderLove(){
     const p = currentCardProfile('love');
-    setCardInto(p, 'love');
+    renderCardInto(p, 'love');
   }
   function renderSocial(){
     const p = currentCardProfile('social');
-    setCardInto(p, 'soc');
+    renderCardInto(p, 'soc');
   }
-
-  function setCardInto(p, prefix){
-    const img = $('#'+prefix+'Img'); img.src = p.img; img.onerror = ()=>{ img.src='plutoo-icon-512.png'; };
+  function renderCardInto(p, prefix){
+    $('#'+prefix+'Img').src = p.img;
     $('#'+prefix+'Title').textContent = p.name;
     $('#'+prefix+'Meta').textContent = `${p.breed} · ${p.distanceKm} km`;
     $('#'+prefix+'Bio').textContent = `${p.name} ha ${p.age} anni, ${p.sex==='M'?'maschio':'femmina'}, taglia ${p.size.toLowerCase()}, pelo ${p.coat.toLowerCase()}, energia ${p.energy.toLowerCase()}.`;
   }
 
-  function likeDeck(kind){
-    const p = currentCardProfile(kind==='love'?'love':'social');
-    like(p, {fromSwipe:true});
+  async function likeDeck(kind){
+    const p = currentCardProfile(kind);
+    await likeFromSwipe(p); // like da swipe
+    // passa card successiva
     if (kind==='love'){ state.deckIdxLove++; renderLove(); }
     else { state.deckIdxSoc++; renderSocial(); }
   }
   function skipDeck(kind){
+    swipeOccurred(); // conteggia swipe per milestone
     if (kind==='love'){ state.deckIdxLove++; renderLove(); }
     else { state.deckIdxSoc++; renderSocial(); }
-    onSwipeOccurred();
   }
 
-  // ========== VIEWER FOTO (solo dal profilo) ==========
-  function wirePhotoViewer(){
-    $('#viewerBack')?.addEventListener('click', closePhotoViewer);
-    $('#viewerLike')?.addEventListener('click', ()=>{
-      if (!state.viewerProfile) return;
-      like(state.viewerProfile);
-    });
-  }
-  function openPhotoViewer(p, srcOverride){
-    state.viewerProfile = p;
-    const vp = $('#photoViewer');
-    if (!vp) return; // se la pagina viewer non esiste, ignora
-    const img = $('#viewerImg');
-    const src = srcOverride || p.img;
-    img.src = src;
-    img.onerror = ()=>{ img.src='plutoo-icon-512.png'; };
-    $('#viewerTitle').textContent = p.name;
-    vp.classList.add('show');
-  }
-  function closePhotoViewer(){
-    $('#photoViewer')?.classList.remove('show');
-    state.viewerProfile = null;
+  // ========== SWIPE MILESTONE / LIKE LOGIC ==========
+  function swipeOccurred(){
+    state.swipeCount++;
+    // milestone: 10, 15, 20, ...
+    if (state.swipeCount === 10 || (state.swipeCount > 10 && (state.swipeCount - 10) % 5 === 0)) {
+      openRewardDialog('Guarda il video per altri like', ()=>{ /* niente, solo sblocco */ });
+    }
   }
 
-  // ========== MATCH ==========
-  function maybeTheyLikedToo(p){
-    // simulazione: 35% che anche l'altro abbia messo like
+  async function likeFromSwipe(p){
+    swipeOccurred(); // il like avviene a seguito di uno swipe
+    await like(p);
+  }
+
+  function maybeTheyLikedToo(){
+    // simulazione match 35%
     return Math.random() < 0.35;
   }
 
-  function like(p, opts={}){
+  async function like(p){
+    const firstTimeLike = !state.likedIds.has(p.id);
     state.likedIds.add(p.id);
-    if (maybeTheyLikedToo(p)) {
+
+    // Se scatta il match → VIDEO AUTOMATICO (3s), poi animazione match
+    if (firstTimeLike && maybeTheyLikedToo()) {
       state.matchedIds.add(p.id);
-      showMatchOverlay(p);
+      await simulateAutoVideo();       // nessuna UI, solo attesa
+      showMatchToast(p);               // animazione "È un match!"
+      renderMatches();
+    } else {
+      renderMatches();
     }
-    renderMatches();
-    if (opts.fromSwipe) onSwipeOccurred();
   }
-  function skip(_p){ /* futuro: segnala meno */ }
 
   function renderMatches(){
     const host = $('#matchList'); if (!host) return;
@@ -422,7 +366,7 @@
       const item=document.createElement('div');
       item.className='item';
       item.innerHTML=`
-        <img src="${p.img}" alt="${p.name}" onerror="this.src='plutoo-icon-512.png'">
+        <img src="${p.img}" alt="${p.name}">
         <div>
           <div><strong>${p.name}</strong> · ${p.breed}</div>
           <div class="small muted">${p.distanceKm} km</div>
@@ -435,19 +379,26 @@
     $('#emptyMatch').style.display = list.length? 'none':'block';
   }
 
-  // Overlay "bacio"
+  // ========== MATCH UI ==========
   function wireMatchOverlay(){
+    // Nel tuo index c’è #matchOverlay con due bottoni; qui li faccio SOLO chiudere
     $('#closeMatch')?.addEventListener('click', ()=> $('#matchOverlay')?.classList.add('hidden'));
-    $('#acceptMatch')?.addEventListener('click', ()=>{
-      $('#matchOverlay')?.classList.add('hidden');
-      // dopo l'accetto match → video
-      requestRewardVideo(()=> {
-        // post-video: no-op
-      });
-    });
+    $('#acceptMatch')?.addEventListener('click', ()=> $('#matchOverlay')?.classList.add('hidden'));
   }
-  function showMatchOverlay(_p){
-    $('#matchOverlay')?.classList.remove('hidden');
+  function showMatchToast(p){
+    // Usa l’overlay già presente (mostralo senza far ripartire il video)
+    const ov = $('#matchOverlay');
+    if (ov) { ov.classList.remove('hidden'); return; }
+
+    // fallback leggerissimo (nel caso l’overlay non esista)
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:1200;color:#fff;';
+    overlay.innerHTML=`<div style="background:#121735;padding:16px 18px;border-radius:16px;text-align:center;">
+      <div style="font-size:52px">💋</div>
+      <div style="font-weight:800;margin-top:8px">È un match!</div>
+    </div>`;
+    document.body.appendChild(overlay);
+    setTimeout(()=> overlay.remove(), 1600);
   }
 
   // ========== GEO ==========
@@ -455,20 +406,18 @@
     const bar = $('#geoBar');
     const enable = $('#enableGeo');
     const dismiss = $('#dismissGeo');
-    // Mostra la bar al primo avvio
     bar?.classList.remove('hidden');
     enable?.addEventListener('click', ()=>{
       if (!navigator.geolocation) { bar.classList.add('hidden'); return; }
       navigator.geolocation.getCurrentPosition(()=>{
         bar.classList.add('hidden');
-        // demo: potremmo riordinare per distanza; i dati mock hanno già distanceKm
       }, ()=>{ bar.classList.add('hidden'); });
     });
     dismiss?.addEventListener('click', ()=> bar.classList.add('hidden'));
   }
 
   // ========== PROFILO ==========
-  let unlockPending = null; // profilo richiesto per sblocco selfie
+  let unlockPending = null;
 
   function openProfilePage(p){
     $('#ppTitle').textContent = p.name;
@@ -477,7 +426,7 @@
   }
   window.closeProfilePage = ()=> $('#profilePage').classList.remove('show');
 
-  function selfieKey(p){ return LS.selfieUnlockPrefix + p.id; }
+  function selfieKey(p){ return `selfie-unlock-${p.id}`; }
   function isSelfieUnlocked(p){
     const ts = Number(localStorage.getItem(selfieKey(p))||0);
     return ts && (now()-ts)<H24;
@@ -491,24 +440,24 @@
     const unlocked = isSelfieUnlocked(p) || isMatched(p);
 
     body.innerHTML = `
-      <img class="pp-cover" src="${p.img}" alt="${p.name}" onerror="this.src='plutoo-icon-512.png'">
+      <img class="pp-cover" src="${p.img}" alt="${p.name}">
       <div class="pp-section">
         <h3>${p.name} ${p.verified?'<span class="badge"><i>✅</i> verificato</span>':''}</h3>
         <p class="muted">${p.breed} · ${p.age} anni · ${p.sex==='M'?'maschio':'femmina'} · taglia ${p.size.toLowerCase()}</p>
       </div>
 
       <div class="pp-section selfie-wrap">
-        <h4>🤳🏽 Selfie con il DOG</h4>
+        <h4>🤳🏽 Selfie</h4>
         <img id="selfieImg" class="${unlocked?'':'selfie-blur'}" 
-             src="${p.selfie || 'plutoo-icon-512.png'}" alt="Selfie" onerror="this.src='plutoo-icon-512.png'">
-        ${unlocked?'':'<button id="unlockBtn" class="unlock-pill">Guarda un video per sbloccare (24h)</button>'}
+             src="${p.selfie || 'plutoo-icon-512.png'}" alt="Selfie">
+        ${unlocked?'':'<button id="unlockBtn" class="unlock-pill">Guarda il video per vedere il selfie</button>'}
       </div>
 
       <div class="pp-section">
         <h4>Galleria</h4>
         <div class="pp-gallery">
-          <img class="pp-thumb" src="${p.img}" alt="" onerror="this.src='plutoo-icon-512.png'">
-          <img class="pp-thumb" src="${p.selfie || 'plutoo-icon-512.png'}" alt="" onerror="this.src='plutoo-icon-512.png'">
+          <img class="pp-thumb" src="${p.img}" alt="">
+          <img class="pp-thumb" src="${p.selfie || 'plutoo-icon-512.png'}" alt="">
         </div>
       </div>
 
@@ -518,27 +467,21 @@
       </div>
     `;
 
-    // Tap su foto di copertina: APRE VIEWER con pollice blu
+    // Tap copertina / thumbs → VIEWER con pollice
     $('.pp-cover', body)?.addEventListener('click', ()=> openPhotoViewer(p, p.img));
-    // Tap sulle miniature galleria → viewer (usa la src della thumb)
     $$('.pp-thumb', body).forEach(thumb => {
       thumb.addEventListener('click', ()=> openPhotoViewer(p, thumb.getAttribute('src')));
     });
 
-    // Selfie: se sbloccato/match → viewer; altrimenti chiede video
+    // Selfie: se sbloccato/match → viewer; se bloccato → prompt video
     const selfieEl = $('#selfieImg');
     if (selfieEl) {
       selfieEl.addEventListener('click', ()=>{
-        const unlockedNow = isSelfieUnlocked(p) || isMatched(p);
-        if (unlockedNow) {
+        if (isSelfieUnlocked(p) || isMatched(p)) {
           openPhotoViewer(p, selfieEl.getAttribute('src'));
         } else {
-          if (!isEmailVerified()) {
-            alert('Verifica la tua email per sbloccare il selfie. Tocca “Reinvia” nel banner in alto.');
-            return;
-          }
           unlockPending = p;
-          requestRewardVideo(()=> {
+          openRewardDialog('Guarda il video per vedere il selfie', ()=>{
             setSelfieUnlocked(unlockPending);
             renderProfile(unlockPending);
             unlockPending = null;
@@ -547,58 +490,66 @@
       });
     }
 
-    // Sblocco selfie da pulsante
+    // Pulsante sblocco selfie (stesso flusso del click immagine)
     $('#unlockBtn')?.addEventListener('click', ()=>{
-      if (!isEmailVerified()) {
-        alert('Verifica la tua email per sbloccare il selfie. Tocca “Reinvia” nel banner in alto.');
-        return;
-      }
       unlockPending = p;
-      requestRewardVideo(()=> {
+      openRewardDialog('Guarda il video per vedere il selfie', ()=>{
         setSelfieUnlocked(unlockPending);
         renderProfile(unlockPending);
         unlockPending = null;
       });
     });
 
-    // Chat / invite
+    // Chat / Invite
     $('[data-chat]', body)?.addEventListener('click', ()=> openChat(p));
     $('[data-invite]', body)?.addEventListener('click', ()=> alert('Invito inviato!'));
   }
 
+  // ========== VIEWER FOTO (pollice blu SOLO qui) ==========
+  function wirePhotoViewer(){
+    $('#viewerBack')?.addEventListener('click', closePhotoViewer);
+    $('#viewerLike')?.addEventListener('click', ()=>{
+      if (!state.viewerProfile) return;
+      like(state.viewerProfile); // il pollice blu mette like al profilo
+    });
+  }
+  function openPhotoViewer(p, srcOverride){
+    state.viewerProfile = p;
+    const vp = $('#photoViewer');
+    const img = $('#viewerImg');
+    if (!vp || !img) return;
+    img.src = srcOverride || p.img;
+    $('#viewerTitle')?.textContent = p.name;
+    vp.classList.add('show');
+  }
+  function closePhotoViewer(){
+    $('#photoViewer')?.classList.remove('show');
+    state.viewerProfile = null;
+  }
+
   // ========== CHAT ==========
+  let currentChatProfile = null;
   function wireChat(){
-    $('#sendBtn')?.addEventListener('click', ()=>{
+    $('#sendBtn')?.addEventListener('click', async ()=>{
       const p = currentChatProfile;
       if (!p) return;
-      if (!isEmailVerified()) {
-        alert('Verifica la tua email per inviare messaggi. Tocca “Reinvia” nel banner.');
-        return;
-      }
       const input = $('#chatInput');
       const txt = (input.value||'').trim();
       if (!txt) return;
 
       const firstTime = !state.firstMessageSentTo.has(p.id);
-      const send = ()=>{
-        addBubble(txt, true);
-        input.value = '';
-        if (!state.firstMessageSentTo.has(p.id)) state.firstMessageSentTo.add(p.id);
-      };
-
-      if (firstTime) {
-        requestRewardVideo(send);
-      } else {
-        send();
+      if (firstTime){
+        await simulateAutoVideo();                  // video auto (3s)
+        state.firstMessageSentTo.add(p.id);
       }
+      addBubble(txt, true);
+      input.value = '';
     });
   }
-
-  let currentChatProfile = null;
   function openChat(p){
     currentChatProfile = p;
     $('#chatName').textContent = p.name;
-    const av = $('#chatAvatar'); av.src = p.img; av.onerror = ()=>{ av.src='plutoo-icon-512.png'; };
+    $('#chatAvatar').src = p.img;
     $('#thread').innerHTML = '';
     addBubble('Ciao! 🐾', false);
     $('#chat').classList.add('show');
@@ -611,23 +562,7 @@
     $('#thread').scrollTop = 1e6;
   }
 
-  // ========== ADS (demo web) ==========
-  let pendingRewardHook = null;
-  function requestRewardVideo(after){
-    pendingRewardHook = after;
-    $('#adReward')?.showModal();
-  }
-
-  function onSwipeOccurred(){
-    state.swipeCount++;
-    // primo trigger al 10°, poi ogni +6 (cooldown 5 swipe ⇒ 10,16,22,…)
-    if (state.swipeCount === 10 || (state.swipeCount - state.lastAdSwipe) >= 6 && state.lastAdSwipe >= 10){
-      requestRewardVideo(()=>{ /* no-op */ });
-      state.lastAdSwipe = state.swipeCount;
-    }
-  }
-
-  // ========== HELPERS ==========
-  function openProfileOnTap(p){ openProfilePage(p); }
+  // ========== VIDEO (auto) ==========
+  async function simulateAutoVideo(){ await sleep(3000); } // nessuna UI
 
 })();
