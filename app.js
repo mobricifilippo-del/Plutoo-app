@@ -4,8 +4,9 @@
    - Match animation (bacio) + video al consenso
    - Selfie blur con sblocco tramite video (24h) o match
    - Ads (demo web): ogni 10 swipe poi cooldown 5; primo messaggio; post-accetto match
-   - Email verification (soft) con banner & Reinvia (placeholder)
+   - Email verification (soft): ora robusta (se il banner manca, non blocca nulla)
    - Fallback immagini ovunque
+   - Fallback locale razze se breeds.json non carica
 */
 
 (() => {
@@ -15,6 +16,11 @@
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   const now = () => Date.now();
   const H24 = 24 * 60 * 60 * 1000;
+
+  // ------------------ Fallback razze ------------------
+  const FALLBACK_BREEDS = [
+"Affenpinscher","Afghan Hound","Airedale Terrier","Akita","Alaskan Klee Kai","Alaskan Malamute","American Bulldog","American English Coonhound","American Eskimo Dog","American Foxhound","American Hairless Terrier","American Leopard Hound","American Staffordshire Terrier","American Water Spaniel","Anatolian Shepherd Dog","Appenzeller Sennenhund","Australian Cattle Dog","Australian Kelpie","Australian Shepherd","Australian Stumpy Tail Cattle Dog","Australian Terrier","Azawakh","Barbado da Terceira","Barbet","Basenji","Basset Fauve de Bretagne","Basset Hound","Bavarian Mountain Scent Hound","Beagle","Bearded Collie","Beauceron","Bedlington Terrier","Belgian Laekenois","Belgian Malinois","Belgian Sheepdog","Belgian Tervuren","Bergamasco Sheepdog","Berger Picard","Bernese Mountain Dog","Bichon Frise","Biewer Terrier","Black and Tan Coonhound","Black Russian Terrier","Bloodhound","Blue Picardy Spaniel","Bluetick Coonhound","Boerboel","Bohemian Shepherd","Bolognese","Border Collie","Border Terrier","Borzoi","Boston Terrier","Bouvier des Ardennes","Bouvier des Flandres","Boxer","Boykin Spaniel","Bracco Italiano","Braque du Bourbonnais","Braque Francais Pyrenean","Braque Saint-Germain","Brazilian Terrier","Briard","Brittany","Broholmer","Brussels Griffon","Bull Terrier","Bulldog","Bullmastiff","Cairn Terrier","Calupoh","Canaan Dog","Canadian Eskimo Dog","Cane Corso","Cardigan Welsh Corgi","Carolina Dog","Catahoula Leopard Dog","Caucasian Shepherd Dog","Cavalier King Charles Spaniel","Central Asian Shepherd Dog","Cesky Terrier","Chesapeake Bay Retriever","Chihuahua","Chinese Crested","Chinese Shar-Pei","Chinook","Chow Chow","Cirneco dell’Etna","Clumber Spaniel","Cocker Spaniel","Collie","Coton de Tulear","Croatian Sheepdog","Curly-Coated Retriever","Czechoslovakian Vlciak","Dachshund","Dalmatian","Dandie Dinmont Terrier","Danish-Swedish Farmdog","Deutscher Wachtelhund","Doberman Pinscher","Dogo Argentino","Dogue de Bordeaux","Drentsche Patrijshond","Drever","Dutch Shepherd","English Cocker Spaniel","English Foxhound","English Setter","English Springer Spaniel","English Toy Spaniel","Entlebucher Mountain Dog","Estrela Mountain Dog","Eurasier","Field Spaniel","Finnish Lapphund","Finnish Spitz","Flat-Coated Retriever","French Bulldog","French Spaniel","German Longhaired Pointer","German Pinscher","German Shepherd Dog","German Shorthaired Pointer","German Spitz","German Wirehaired Pointer","Giant Schnauzer","Glen of Imaal Terrier","Golden Retriever","Gordon Setter","Grand Basset Griffon Vendéen","Great Dane","Great Pyrenees","Greater Swiss Mountain Dog","Greyhound","Hamiltonstovare","Hanoverian Scenthound","Harrier","Havanese","Hokkaido","Hovawart","Ibizan Hound","Icelandic Sheepdog","Irish Red and White Setter","Irish Setter","Irish Terrier","Irish Water Spaniel","Irish Wolfhound","Italian Greyhound","Jagdterrier","Japanese Akitainu","Japanese Chin","Japanese Spitz","Japanese Terrier","Kai Ken","Karelian Bear Dog","Keeshond","Kerry Blue Terrier","Kishu Ken","Komondor","Korean Jindo Dog","Kromfohrlander","Kuvasz","Labrador Retriever","Lagotto Romagnolo","Lakeland Terrier","Lancashire Heeler","Lapponian Herder","Large Munsterlander","Leonberger","Lhasa Apso","Löwchen","Maltese","Manchester Terrier (Standard)","Manchester Terrier (Toy)","Mastiff","Miniature American Shepherd","Miniature Bull Terrier","Miniature Pinscher","Miniature Schnauzer","Mountain Cur","Mudi","Neapolitan Mastiff","Nederlandse Kooikerhondje","Newfoundland","Norfolk Terrier","Norrbottenspets","Norwegian Buhund","Norwegian Elkhound","Norwegian Lundehund","Norwich Terrier","Nova Scotia Duck Tolling Retriever","Old English Sheepdog","Otterhound","Papillon","Parson Russell Terrier","Pekingese","Pembroke Welsh Corgi","Peruvian Inca Orchid","Petit Basset Griffon Vendéen","Pharaoh Hound","Plott Hound","Pointer","Polish Lowland Sheepdog","Pomeranian","Pont-Audemer Spaniel","Poodle (Miniature)","Poodle (Standard)","Poodle (Toy)","Porcelaine","Portuguese Podengo","Portuguese Podengo Pequeno","Portuguese Pointer","Portuguese Sheepdog","Portuguese Water Dog","Presa Canario","Pudelpointer","Pug","Puli","Pumi","Pyrenean Mastiff","Pyrenean Shepherd","Rafeiro do Alentejo","Rat Terrier","Redbone Coonhound","Rhodesian Ridgeback","Romanian Carpathian Shepherd","Romanian Mioritic Shepherd Dog","Rottweiler","Russell Terrier","Russian Toy","Russian Tsvetnaya Bolonka","Saint Bernard","Saluki","Samoyed","Schapendoes","Schipperke","Scottish Deerhound","Scottish Terrier","Sealyham Terrier","Segugio Italiano","Shetland Sheepdog","Shiba Inu","Shih Tzu","Shikoku","Siberian Husky","Silky Terrier","Skye Terrier","Sloughi","Slovakian Wirehaired Pointer","Slovensky Cuvac","Slovensky Kopov","Small Munsterlander","Smooth Fox Terrier","Soft Coated Wheaten Terrier","Spanish Mastiff","Spanish Water Dog","Spinone Italiano","Stabyhoun","Staffordshire Bull Terrier","Standard Schnauzer","Sussex Spaniel","Swedish Lapphund","Swedish Vallhund","Taiwan Dog","Teddy Roosevelt Terrier","Thai Bangkaew","Thai Ridgeback","Tibetan Mastiff","Tibetan Spaniel","Tibetan Terrier","Tornjak","Tosa","Toy Fox Terrier","Transylvanian Hound","Treeing Tennessee Brindle","Treeing Walker Coonhound","Vizsla","Volpino Italiano","Weimaraner","Welsh Springer Spaniel","Welsh Terrier","West Highland White Terrier","Wetterhoun","Whippet","Wire Fox Terrier","Wirehaired Pointing Griffon","Wirehaired Vizsla","Working Kelpie","Xoloitzcuintli","Yakutian Laika","Yorkshire Terrier"
+];
 
   // ------------------ Flags / Storage ------------------
   const LS = {
@@ -61,18 +67,18 @@
     wireBasicNav();
     wireSheetsAndDialogs();
     wireFilterPanel();
-    wireEmailBanner();
+    wireEmailBanner();            // ora safe: non blocca se banner assente
 
-    await loadBreeds();                  // popola datalist breedList
-    prepareLocalProfiles();              // crea profili mock + preload
-    renderNearGrid();                    // prima vista
-    wireTabs();                          // attiva tab switching
-    wireDecks();                         // Amore/Giocare
-    wireGeoBar();                        // geolocalizzazione mock
+    await loadBreeds();           // popola datalist breedList (con fallback)
+    prepareLocalProfiles();       // crea profili mock + preload
+    renderNearGrid();             // prima vista
+    wireTabs();                   // attiva tab switching
+    wireDecks();                  // Amore/Giocare
+    wireGeoBar();                 // geolocalizzazione mock
 
-    wirePhotoViewer();                   // viewer (aperto SOLO dal profilo)
-    wireMatchOverlay();                  // overlay match
-    wireChat();                          // invio messaggi (video al primo)
+    wirePhotoViewer();            // viewer (aperto SOLO dal profilo)
+    wireMatchOverlay();           // overlay match
+    wireChat();                   // invio messaggi (video al primo)
   }
 
   // ========== NAV / HOME ==========
@@ -90,10 +96,11 @@
     $('#app')?.classList.add('active');
   };
 
-  // ========== EMAIL BANNER (soft) ==========
+  // ========== EMAIL BANNER (soft, safe) ==========
   function wireEmailBanner(){
     const banner = $('#emailBanner');
     const btn = $('#resendEmailBtn');
+    if (!banner) return; // SE NON ESISTE NELL'HTML, NON BLOCCA L'APP
     const render = ()=> banner.classList.toggle('hidden', isEmailVerified());
     render();
     btn?.addEventListener('click', async ()=>{
@@ -158,7 +165,9 @@
       renderNearGrid();
     });
 
-    $('#breedInput')?.addEventListener('input', (e)=>{
+    // aggiorna filtro razza mentre si digita
+    const breedInp = $('#breedInput');
+    breedInp?.addEventListener('input', (e)=>{
       state.filters.breed = e.target.value.trim();
     });
   }
@@ -184,18 +193,33 @@
     });
   }
 
-  // ========== BREEDS ==========
+  // ========== BREEDS (con fallback) ==========
   async function loadBreeds(){
+    const dl = $('#breedList');
+    if (!dl) return;
+
+    // funzione di render unica
+    const renderOptions = (arr) => {
+      dl.innerHTML = '';
+      arr.forEach(b=>{
+        const o=document.createElement('option'); o.value=b; dl.appendChild(o);
+      });
+    };
+
     try{
       const r = await fetch('breeds.json', {cache:'no-store'});
       if(!r.ok) throw new Error('HTTP '+r.status);
       const list = await r.json();
-      const dl = $('#breedList'); if (!dl) return;
-      dl.innerHTML='';
-      list.forEach(b=>{
-        const o=document.createElement('option'); o.value=b; dl.appendChild(o);
-      });
-    }catch(e){ /* non bloccare l’app */ }
+      if (Array.isArray(list) && list.length) {
+        renderOptions(list);
+        return;
+      }
+      // se il JSON non è un array, usa fallback
+      renderOptions(FALLBACK_BREEDS);
+    }catch(e){
+      // file mancante, CORS o apertura via file:// → usa fallback locale
+      renderOptions(FALLBACK_BREEDS);
+    }
   }
 
   // ========== PROFILES (mock) ==========
@@ -258,7 +282,8 @@
           </div>
         </div>
       `;
-      // fallback immagini + APRI PROFILO al tap (NON il viewer)
+
+      // Immagine → PROFILO (NON viewer)
       const imgEl = $('img', card);
       imgEl.onerror = ()=>{ imgEl.src='plutoo-icon-512.png'; };
       imgEl.addEventListener('click', (e)=> {
@@ -289,7 +314,7 @@
     $('#socYes') ?.addEventListener('click', ()=> likeDeck('social', $('#socCard')));
     $('#socNo')  ?.addEventListener('click', ()=> skipDeck('social', $('#socCard')));
 
-    // NEL DECK: il tap sull’immagine apre il PROFILO (NON il viewer)
+    // NEL DECK: il tap sull’immagine apre il PROFILO (NON viewer)
     $('#loveImg')?.addEventListener('click', ()=> {
       const p = currentCardProfile('love'); openProfilePage(p);
     });
@@ -359,6 +384,7 @@
   function openPhotoViewer(p, srcOverride){
     state.viewerProfile = p;
     const vp = $('#photoViewer');
+    if (!vp) return; // se la pagina viewer non esiste, ignora
     const img = $('#viewerImg');
     const src = srcOverride || p.img;
     img.src = src;
