@@ -1,4 +1,4 @@
-/* Plutoo – app.js (completo)
+/* Plutoo – app.js (completo con guard-rails)
    - Swipe deck con animazione
    - Autocomplete razze (startsWith)
    - Like/Match + video auto (demo)
@@ -6,8 +6,51 @@
    - Profilo cane: topbar con logo + titolo, info, selfie sblocco, Galleria,
      Documenti strutturati (owner: tipo+fronte+retro; dog: microchip+vaccini+allegati)
    - Badge verificato quando requisiti ok (persistenza in localStorage)
+   - Patch: Crash Overlay + Avvio protetto
 */
-alert("app.js caricato");
+
+/* --- GUARD RAILS: error overlay per Android/PWA --- */
+(function setupCrashOverlay(){
+  function showCrashOverlay(msg, file, line, col){
+    try {
+      const id = '__plutoo_crash';
+      if (document.getElementById(id)) return;
+      const box = document.createElement('div');
+      box.id = id;
+      box.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);color:#fff;display:flex;align-items:center;justify-content:center;padding:18px';
+      box.innerHTML = `
+        <div style="max-width:680px;font-family:system-ui,Arial,sans-serif">
+          <div style="font-weight:800;font-size:18px;margin-bottom:8px">⚠️ Errore JavaScript</div>
+          <div style="white-space:pre-wrap;font-size:14px;line-height:1.35;background:#1a1f43;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.2)">
+            ${String(msg || 'Unknown error')}
+            ${file ? `\n@ ${file}${line?':'+line:''}${col?':'+col:''}` : ''}
+          </div>
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+            <button id="crashReload" style="background:#7d5dfc;color:#fff;padding:8px 12px;border-radius:10px">Ricarica</button>
+            <button id="crashCopy" style="background:#22283d;color:#e9ecff;padding:8px 12px;border-radius:10px">Copia errore</button>
+          </div>
+        </div>`;
+      document.body.appendChild(box);
+      document.getElementById('crashReload').onclick = ()=> location.reload();
+      document.getElementById('crashCopy').onclick = async ()=>{
+        try {
+          await navigator.clipboard.writeText(box.innerText.trim());
+          alert('Errore copiato.');
+        } catch { alert('Copia non disponibile.'); }
+      };
+    } catch(_) {}
+  }
+  window.addEventListener('error', (e)=>{
+    showCrashOverlay(e.error?.message || e.message, e.filename, e.lineno, e.colno);
+  });
+  window.addEventListener('unhandledrejection', (e)=>{
+    const r = e.reason;
+    const msg = (r && (r.message || r.toString())) || 'Unhandled rejection';
+    showCrashOverlay(msg);
+  });
+})();
+
+/* --- CODICE APP --- */
 (() => {
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
@@ -32,7 +75,14 @@ alert("app.js caricato");
     breeds:[]
   };
 
-  document.addEventListener('DOMContentLoaded', init);
+  // Avvio protetto
+  document.addEventListener('DOMContentLoaded', () => {
+    try { init(); }
+    catch (err) {
+      const ev = new ErrorEvent('error', { message: err?.message || String(err) });
+      window.dispatchEvent(ev);
+    }
+  });
 
   async function init(){
     wireBasicNav();
@@ -95,7 +145,8 @@ alert("app.js caricato");
     $('#filtersReset')?.addEventListener('click',()=>{
       Object.keys(state.filters).forEach(k=>state.filters[k]='');
       $('#filterForm')?.reset();
-      closeSuggest(); renderNearGrid();
+      window.__closeSuggest?.(); // evita ReferenceError
+      renderNearGrid();
     });
 
     // Autocomplete custom “Razza”
@@ -134,8 +185,11 @@ alert("app.js caricato");
     $$('.tabs .tab').forEach(btn=>{
       btn.addEventListener('click',()=>{
         const tab=btn.getAttribute('data-tab'); if(!tab) return;
-        state.tab=tab; $$('.tabs .tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active);
-        $$('.tabpane').forEach(p=>p.classList.remove('active')); $('#'+tab)?.classList.add('active');
+        state.tab=tab;
+        $$('.tabs .tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active'); // FIX: apice corretto
+        $$('.tabpane').forEach(p=>p.classList.remove('active'));
+        $('#'+tab)?.classList.add('active');
         if(tab==='near') renderNearGrid();
         if(tab==='love') renderLove();
         if(tab==='social') renderSocial();
@@ -222,13 +276,26 @@ alert("app.js caricato");
     $('#socImg') ?.addEventListener('click',()=>openProfilePage(currentCard('social')));
     renderLove(); renderSocial();
   }
-  function bindSwipe(card,h){ if(!card) return; let s=0; card.addEventListener('touchstart',e=>{s=e.touches[0].clientX},{passive:true}); card.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-s; if(Math.abs(d)>40) h(d);}); }
+  function bindSwipe(card,h){
+    if(!card) return;
+    let s=0;
+    card.addEventListener('touchstart', e => { s = e.touches[0].clientX; }, { passive:true });
+    card.addEventListener('touchend',   e => {
+      const d = e.changedTouches[0].clientX - s;
+      if (Math.abs(d) > 40) h(d);
+    });
+  }
   function currentCard(kind){ const i=kind==='love'?state.deckIdxLove:state.deckIdxSoc; return state.profiles[i%state.profiles.length]; }
   function renderLove(){ renderCardInto(currentCard('love'),'love'); }
   function renderSocial(){ renderCardInto(currentCard('social'),'soc'); }
-  function renderCardInto(p,pre){ $('#'+pre+'Img').src=p.img; $('#'+pre+'Title').textContent=p.name; $('#'+pre+'Meta').textContent=`${p.breed} · ${p.distanceKm} km`; $('#'+pre+'Bio').textContent=`${p.name} ha ${p.age} anni, ${p.sex==='M'?'maschio':'femmina'}, taglia ${p.size.toLowerCase()}, pelo ${p.coat.toLowerCase()}, energia ${p.energy.toLowerCase()}.`; }
+  function renderCardInto(p,pre){
+    $('#'+pre+'Img').src=p.img;
+    $('#'+pre+'Title').textContent=p.name;
+    $('#'+pre+'Meta').textContent=`${p.breed} · ${p.distanceKm} km`;
+    $('#'+pre+'Bio').textContent=`${p.name} ha ${p.age} anni, ${p.sex==='M'?'maschio':'femmina'}, taglia ${p.size.toLowerCase()}, pelo ${p.coat.toLowerCase()}, energia ${p.energy.toLowerCase()}.`;
+  }
 
-  // ✅ FIX: ogni like/skip del deck incrementa il contatore e può aprire il video
+  // ogni like/skip del deck incrementa il contatore (video a 10 e poi +5)
   async function likeDeck(kind){
     swipeOccurred();
     await animateAndAdvance(kind, +1, async()=>{ await like(currentCard(kind)); });
