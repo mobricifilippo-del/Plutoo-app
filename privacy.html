@@ -3,153 +3,155 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Privacy Policy - Plutoo</title>
+  <title>Privacy Policy • Plutoo</title>
 
-  <!-- Stile dark compatto, indipendente da style.css -->
+  <!-- Usa i tuoi font/stili globali se presenti -->
+  <link rel="icon" href="/plutoo-icon-192.png">
+  <link rel="apple-touch-icon" href="/plutoo-icon-192.png">
+
   <style>
-    :root{color-scheme:dark light}
+    :root{
+      --bg:#0b0b10;           /* sfondo app */
+      --card:#141420;         /* pannelli */
+      --muted:#aeb2c3;        /* testo secondario */
+      --text:#e9ecf5;         /* testo principale */
+      --brand:#8b5cf6;        /* viola pulsanti/link */
+      --radius:16px;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --max:880px;
+    }
     *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
     body{
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
-      background:#0b0b10; color:#e9e9ee; line-height:1.6;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 60% -10%, rgba(139,92,246,.08), transparent) , var(--bg);
+      color:var(--text);
+      line-height:1.6;
     }
-    header{
-      max-width:980px; margin:32px auto 0; padding:0 16px 8px;
-      display:flex; align-items:center; justify-content:space-between;
-      border-bottom:1px solid #242436;
+
+    /* header */
+    .wrap{max-width:var(--max); margin:0 auto; padding:28px 18px 42px}
+    .topbar{display:flex; align-items:center; gap:14px; margin:8px 0 22px}
+    .logo{width:36px; height:36px; border-radius:12px; box-shadow:var(--shadow)}
+    .brand{font-weight:700; letter-spacing:.3px; opacity:.9}
+
+    .h1{
+      font-size:clamp(28px, 4.2vw, 44px);
+      font-weight:800; letter-spacing:.2px; margin:10px 0 6px;
     }
-    header a{color:#9bbcff; text-decoration:none}
-    main{
-      max-width:980px; margin:0 auto; padding:24px 16px 64px;
+    .sub{color:var(--muted); margin-bottom:22px}
+
+    .back{
+      display:inline-flex; align-items:center; gap:8px;
+      color:var(--text); text-decoration:none; font-weight:600;
+      padding:8px 12px; border-radius:12px; background:#0f0f18; border:1px solid #1e1e2e;
     }
-    .card{
-      background:#11121a; border:1px solid #202233; border-radius:14px;
-      padding:22px; margin:16px 0; box-shadow:0 6px 22px rgba(0,0,0,.30);
+    .back:hover{background:#121225}
+
+    /* cards */
+    .section{
+      background:var(--card); border:1px solid #1d1d2a; border-radius:var(--radius);
+      box-shadow:var(--shadow); padding:22px; margin:16px 0;
     }
-    h1{font-size:28px; margin:0 0 6px}
-    h2{font-size:20px; margin:18px 0 8px}
+    h2{font-size:clamp(18px,2.8vw,22px); margin:0 0 10px}
     p{margin:10px 0}
     ul{margin:10px 0 0 18px}
-    code, .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:90%}
-    .muted{color:#a8adbd}
-    .pill{display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#1b1e2b; border:1px solid #2a2d41; color:#c6ccff}
-    a{color:#9bbcff}
-    footer{max-width:980px; margin:24px auto 32px; padding:0 16px; color:#a8adbd; font-size:14px}
+    a{color:#c3b5ff; text-underline-offset:3px}
+    code{background:#0f0f18; border:1px solid #1d1d2a; padding:2px 6px; border-radius:8px}
+
+    /* footer */
+    .foot{color:var(--muted); font-size:14px; text-align:center; margin-top:28px}
   </style>
 </head>
-
 <body>
-  <header>
-    <div>
-      <div class="pill">Plutoo</div>
-      <h1>Privacy Policy</h1>
-      <div class="muted">Ultimo aggiornamento: settembre 2025</div>
+  <div class="wrap">
+    <!-- header -->
+    <div class="topbar">
+      <img src="/plutoo-icon-192.png" alt="Plutoo" class="logo">
+      <div class="brand">Plutoo</div>
     </div>
-    <div><a href="/">← Torna all’app</a></div>
-  </header>
 
-  <main>
-    <div class="card">
+    <a class="back" href="/">&larr; Torna all’app</a>
+
+    <h1 class="h1">Privacy Policy</h1>
+    <div class="sub">Ultimo aggiornamento: settembre 2025</div>
+
+    <!-- Intro -->
+    <section class="section">
       <p>Questa informativa descrive come <strong>Plutoo</strong> tratta i dati personali
         sull’app Android e sul sito
-        <a href="https://plutoo-official.vercel.app" rel="noopener">plutoo-official.vercel.app</a>
+        <a href="https://plutoo-official.vercel.app">plutoo-official.vercel.app</a>
         (di seguito, “Servizi”).</p>
-      <p>Titolare del trattamento: <strong>Plutoo</strong>. Contatti: <a href="mailto:supporto@plutoo.app">supporto@plutoo.app</a>.</p>
-    </div>
+      <p><strong>Titolare del trattamento:</strong> Plutoo &nbsp;•&nbsp;
+        <strong>Contatti:</strong> <a href="mailto:plutooteam@gmail.com">plutooteam@gmail.com</a></p>
+    </section>
 
-    <div class="card">
+    <!-- Dati -->
+    <section class="section">
       <h2>Dati che trattiamo</h2>
       <ul>
         <li><strong>Dati account</strong>: email, nickname, foto profilo, descrizione, preferenze.</li>
-        <li><strong>Dati di utilizzo</strong>: log tecnici, evento di login/logout, interazioni con match/chat.</li>
+        <li><strong>Dati di utilizzo</strong>: log tecnici, eventi di login/logout, interazioni con match/chat.</li>
         <li><strong>Posizione approssimata</strong> (solo se concessa): per mostrare profili nelle vicinanze.</li>
-        <li><strong>Cookie/local storage</strong>: tecnici per sessione e funzionalità; no cookie pubblicitari sul web.</li>
+        <li><strong>Cookie / local storage</strong>: tecnici per sessione e funzionalità;
+          nessun cookie pubblicitario sul web.</li>
       </ul>
-    </div>
+    </section>
 
-    <div class="card">
-      <h2>Finalità e basi giuridiche</h2>
+    <!-- Finalità -->
+    <section class="section">
+      <h2>Finalità</h2>
       <ul>
-        <li><strong>Fornire il servizio</strong> (match, chat, profili) – base: contratto/servizi richiesti.</li>
-        <li><strong>Sicurezza e prevenzione abusi</strong> – base: legittimo interesse.</li>
-        <li><strong>Ads in-app (Android)</strong> – base: consenso quando richiesto (vedi AdMob).</li>
-        <li><strong>Comunicazioni di servizio</strong> – base: legittimo interesse/contratto.</li>
+        <li>Fornire funzionalità di matchmaking, messaggistica e gestione profili.</li>
+        <li>Migliorare sicurezza, prevenire abusi e garantire il funzionamento tecnico.</li>
+        <li>Mostrare annunci <strong>solo su Android</strong> tramite Google AdMob.</li>
       </ul>
-    </div>
+    </section>
 
-    <div class="card">
-      <h2>AdMob (solo app Android)</h2>
-      <p>Nell’app Android possiamo mostrare annunci tramite <strong>Google AdMob</strong>.
-        AdMob può trattare identificatori del dispositivo, informazioni sul
-        comportamento in-app e approssimazione della posizione per finalità pubblicitarie e di
-        misurazione. Le modalità sono descritte qui:
-        <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">Privacy &amp; Termini di Google</a>.</p>
+    <!-- Ads -->
+    <section class="section">
+      <h2>Pubblicità (solo app Android)</h2>
+      <p>L’app Android integra <strong>Google AdMob</strong> per banner/interstitial. Su web non vengono mostrati
+        annunci pubblicitari. Il file di verifica ads.txt è pubblicato su
+        <code>/.well-known/app-ads.txt</code>.</p>
+    </section>
 
-      <p>Utilizziamo un <strong>Consent Management</strong> conforme agli standard Google.
-        Dove richiesto, gli annunci saranno <em>non personalizzati</em> finché non fornisci consenso.
-        Puoi modificare in qualsiasi momento le preferenze sull’app (Impostazioni &gt; Privacy/Annunci).</p>
+    <!-- Condivisione -->
+    <section class="section">
+      <h2>Condivisione dei dati</h2>
+      <p>Condividiamo dati solo con fornitori che ci aiutano a erogare i Servizi
+         (es. hosting, analisi aggregate, AdMob), vincolati da accordi di riservatezza.</p>
+    </section>
 
-      <p class="muted">Trasparenza fornitori: l’elenco dei fornitori AdTech di Google è disponibile
-        <a href="https://ads.google.com/intl/it_it/home/certification/partners/" target="_blank" rel="noopener">qui</a>.
-      </p>
-    </div>
-
-    <div class="card">
-      <h2>app-ads.txt</h2>
-      <p>Per prevenire frodi sugli annunci dichiariamo i rivenditori autorizzati nel file
-        <span class="mono">/.well-known/app-ads.txt</span> raggiungibile su:
-        <a href="https://plutoo-official.vercel.app/.well-known/app-ads.txt" target="_blank" rel="noopener">
-          plutoo-official.vercel.app/.well-known/app-ads.txt
-        </a>.
-      </p>
-    </div>
-
-    <div class="card">
+    <!-- Conservazione -->
+    <section class="section">
       <h2>Conservazione</h2>
-      <p>I dati dell’account sono conservati finché l’account resta attivo. Puoi richiederne
-        l’eliminazione in qualsiasi momento (vedi diritti). I log tecnici essenziali sono
-        conservati per tempi limitati e proporzionati alle finalità di sicurezza.</p>
-    </div>
+      <p>I dati sono conservati per il tempo necessario a fornire i Servizi o finché l’account resta attivo.
+        Puoi chiedere cancellazione/esportazione in qualsiasi momento.</p>
+    </section>
 
-    <div class="card">
-      <h2>Condivisioni</h2>
-      <p>Condividiamo dati con fornitori che erogano servizi strettamente necessari
-        (es. hosting, analytics strettamente necessari, invio notifiche push). Quando
-        usiamo AdMob, Google opera come fornitore pubblicitario.</p>
-    </div>
-
-    <div class="card">
-      <h2>Trasferimenti extra-UE</h2>
-      <p>Alcuni fornitori possono avere server fuori dallo SEE.
-        In questi casi adottiamo garanzie adeguate (es. clausole contrattuali standard).</p>
-    </div>
-
-    <div class="card">
+    <!-- Diritti -->
+    <section class="section">
       <h2>Diritti dell’utente</h2>
-      <ul>
-        <li>Accesso, rettifica, cancellazione, limitazione, portabilità, opposizione.</li>
-        <li>Revoca del consenso (quando la base è il consenso) senza pregiudicare la liceità precedente.</li>
-        <li>Reclamo all’Autorità Garante.</li>
-      </ul>
-      <p>Per richieste: <a href="mailto:supporto@plutoo.app">supporto@plutoo.app</a>.
-         Dall’app puoi anche usare <em>Impostazioni &gt; Privacy</em> per esportazione o cancellazione.</p>
-    </div>
+      <p>Puoi esercitare i diritti di accesso, rettifica, cancellazione, limitazione e portabilità scrivendo a
+        <a href="mailto:plutooteam@gmail.com">plutooteam@gmail.com</a>.</p>
+    </section>
 
-    <div class="card">
+    <!-- Sicurezza -->
+    <section class="section">
       <h2>Sicurezza</h2>
-      <p>Adottiamo misure tecniche e organizzative proporzionate per proteggere i dati,
-        ma nessun sistema può garantire sicurezza assoluta.</p>
-    </div>
+      <p>Applichiamo misure tecniche e organizzative adeguate per proteggere i dati. Nessuna misura è però
+        infallibile: segnala incidenti a <a href="mailto:plutooteam@gmail.com">plutooteam@gmail.com</a>.</p>
+    </section>
 
-    <div class="card">
-      <h2>Modifiche</h2>
-      <p>Potremmo aggiornare questa informativa. La versione corrente è sempre disponibile su
-        questa pagina e riporta la data di ultimo aggiornamento.</p>
-    </div>
-  </main>
+    <!-- Modifiche -->
+    <section class="section">
+      <h2>Modifiche a questa informativa</h2>
+      <p>Eventuali aggiornamenti saranno pubblicati su questa pagina; se significativi, potremmo mostrare un
+        avviso in-app.</p>
+    </section>
 
-  <footer>
-    © Plutoo — Contatti: <a href="mailto:supporto@plutoo.app">supporto@plutoo.app</a>
-  </footer>
+    <div class="foot">© Plutoo — Privacy Policy</div>
+  </div>
 </body>
 </html>
