@@ -1,4 +1,4 @@
-name: Build Android (from PWA zip)
+name: Android Build
 
 on:
   workflow_dispatch:
@@ -11,44 +11,44 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Set up Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Set up JDK 17 (Temurin)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: 17
 
-      - name: Install Android SDK (cli)
+      - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
-      # Cambia il nome qui se il file zip ha un altro nome/posizione
-      - name: Unzip Android project from PWA Builder
-        run: |
-          set -e
-          ZIP="Plutoo.zip"
-          mkdir -p android_src
-          unzip -q "$ZIP" -d android_src
-          # Trova il gradlew ovunque sia finito
-          GRADLEW_PATH=$(find android_src -type f -name "gradlew" | head -n 1)
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "gradlew non trovato nello zip"
-            echo "Contenuto scompattato:"
-            find android_src -maxdepth 3 -type d -print
-            exit 1
-          fi
-          APPDIR=$(dirname "$GRADLEW_PATH")
-          echo "APPDIR=$APPDIR" >> $GITHUB_ENV
-          echo "Trovato gradlew in: $GRADLEW_PATH"
+      - name: Install bubblewrap
+        run: npm install -g @bubblewrap/cli
 
-      - name: Build debug APK
-        working-directory: ${{ env.APPDIR }}
+      # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      # FIX: auto-risposte "Yes" a Bubblewrap così installa il JDK da solo
+      # e non chiede il path interattivo (che blocca il job).
+      # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      - name: Init Android project from PWA (auto)
+        env:
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
-          chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug
+          # due "yes": uno per la domanda JDK e uno per confermare
+          yes | yes | npx bubblewrap init \
+            --manifest=https://plutoo-official.vercel.app/manifest.json \
+            --directory androidapp \
+            --skipPwaValidation
+      # --------------------------------------------------------------------
+
+      - name: Build APK (debug)
+        working-directory: androidapp
+        run: ./gradlew assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: plutoo-debug-apk
-          path: |
-            ${{ env.APPDIR }}/app/build/outputs/apk/debug/*.apk
-            ${{ env.APPDIR }}/app/build/outputs/bundle/debug/*.aab
+          name: Plutoo-debug-apk
+          path: androidapp/app/build/outputs/apk/debug/*.apk
