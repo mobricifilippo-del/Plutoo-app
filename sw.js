@@ -11,3 +11,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   // In futuro qui si può aggiungere il caching delle risorse
 });
+
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate',  (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch', () => {}); // nessun caching
