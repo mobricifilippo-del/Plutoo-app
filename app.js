@@ -7,7 +7,7 @@
      Documenti strutturati (owner: tipo+fronte+retro; dog: microchip+vaccini+allegati)
    - Badge verificato quando requisiti ok (persistenza in localStorage)
 */
-
+alert("app.js caricato");
 (() => {
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
