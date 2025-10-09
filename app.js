@@ -1,20 +1,23 @@
 /* =========================================================================
-   PLUTOO – app.js (build: MVP-FIX-2)
-   - Safety Kit anti-crash + overlay errori
-   - Swipe deck con animazioni stile Tinder (drag, inertia, soglie)
-   - Match overlay centrato con fade-in / scale
-   - Chat con gating rewarded (prima volta) e Plus bypass
-   - Selfie blur → rewarded per sblocco
-   - Reward milestones (10 poi ogni 5) + punti monetizzazione extra
-   - Geolocalizzazione con permessi e fallback
-   - Paywall Plutoo Plus (mock) + gating ads
-   - FALLBACK_BREEDS integrato (lista base completa)
+   PLUTOO – app.js (MVP-FIX)
+   - Safety Kit + overlay errori
+   - Swipe in stile Tinder (drag fluido, rotazione, soglie, inertia)
+   - Match overlay centrato (fade + scale)
+   - Chat con reward alla prima (poi invio libero)
+   - Selfie blur → reward → sblocco persistente
+   - Geolocalizzazione: barra “Attiva posizione” + richiesta permessi
+   - Trigger ads mock: selfie / primo messaggio / milestones swipe / click veterinari
+   - Plutoo Plus (mock) con localStorage e gating data-ads / data-plus-only
+   - FALLBACK_BREEDS integrato
    ======================================================================= */
 
-/* ---------- SAFETY KIT & UTIL ---------- */
+
+/* ========================================================================
+   0) SAFETY KIT & UTIL
+   ======================================================================== */
 (function(){
   if (typeof window.$ !== 'function') {
-    window.$ = (sel, root=document)=> root.querySelector(sel);
+    window.$  = (sel, root=document)=> root.querySelector(sel);
     window.$$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
   }
   if (typeof window.onReady !== 'function') {
@@ -26,14 +29,14 @@
   if (typeof window.sleep !== 'function') {
     window.sleep = (ms)=> new Promise(r=>setTimeout(r, ms));
   }
-  // Lightweight event hub
+  // mini-bus eventi
   window.bus = {
     on(ev, fn){ (this._ = this._||{})[ev] = (this._[ev]||[]).concat(fn); },
     emit(ev, data){ (this._?.[ev]||[]).forEach(f=>{ try{ f(data) }catch(e){} }); }
   };
 })();
 
-/* ---------- OVERLAY ERRORI JS (dev) ---------- */
+/* Overlay errori (dev) – non blocca l'app */
 (function(){
   const SHOW = true;
   if(!SHOW) return;
@@ -43,8 +46,12 @@
       if(!pane){
         pane = document.createElement('div');
         pane.id = 'errorOverlay';
-        pane.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;max-width:min(520px,90vw);'+
-          'background:#260b0b;color:#ffdede;border:1px solid #ff8b8b;border-radius:10px;padding:10px;font:12px/1.4 system-ui;white-space:pre-wrap';
+        pane.style.cssText = [
+          'position:fixed','left:8px','bottom:8px','z-index:99999',
+          'max-width:min(520px,90vw)','background:#260b0b','color:#ffdede',
+          'border:1px solid #ff8b8b','border-radius:10px','padding:10px',
+          'font:12px/1.4 system-ui','white-space:pre-wrap'
+        ].join(';');
         document.body.appendChild(pane);
       }
       const msg = (e.error?.stack || e.message || 'Errore').toString();
@@ -53,7 +60,9 @@
   });
 })();
 
-/* ---------- THEME CSS (injected) ---------- */
+/* ========================================================================
+   1) CSS INJECTION (se mancano classi base)
+   ======================================================================== */
 (function injectCSS(){
   const css = `
     .hidden{display:none!important}
@@ -74,7 +83,9 @@
   document.head.appendChild(style);
 })();
 
-/* ---------- PLUS (mock) & ADS GATING ---------- */
+/* ========================================================================
+   2) PLUTO0 PLUS (mock) & GATING ADS
+   ======================================================================== */
 (function(){
   const KEY = 'plutoo.plus.active';
   function isPlus(){ try{ return localStorage.getItem(KEY)==='1'; }catch(e){ return false; } }
@@ -84,14 +95,17 @@
     $$('[data-ads]').forEach(n=> n.classList.toggle('hidden', isPlus()));
   }
   window.PlutooPlus = { isPlus, setPlus, refresh };
+
+  // Dialog mock per attivare/disattivare Plus
   window.openPlusDialog = function(){
     const dlg=document.createElement('dialog');
-    dlg.innerHTML = `<h3>Plutoo Plus</h3>
-    <p>Rimuovi pubblicità e limiti. (Mock)</p>
-    <label style="display:flex;gap:8px;align-items:center"><input id="ppToggle" type="checkbox"> Attiva</label>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
-      <button id="ppClose" class="btn">Chiudi</button>
-    </div>`;
+    dlg.innerHTML = `
+      <h3>Plutoo Plus</h3>
+      <p>Rimuovi pubblicità e limiti. (Mock)</p>
+      <label style="display:flex;gap:8px;align-items:center"><input id="ppToggle" type="checkbox"> Attiva</label>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+        <button id="ppClose" class="btn">Chiudi</button>
+      </div>`;
     document.body.appendChild(dlg);
     $('#ppToggle', dlg).checked = isPlus();
     $('#ppToggle', dlg).addEventListener('change', e=> setPlus(e.target.checked));
@@ -99,21 +113,53 @@
     dlg.addEventListener('close', ()=> dlg.remove());
     dlg.showModal();
   };
-  onReady(refresh);
+
+  // Sponsor bar (scompare con Plus)
+  onReady(()=>{
+    if(!document.getElementById('sponsorBar')){
+      const bar=document.createElement('div');
+      bar.id='sponsorBar'; bar.setAttribute('data-ads','');
+      bar.textContent='👑 Sponsor ufficiale · La Cuccia Felice';
+      document.body.appendChild(bar);
+    }
+    refresh();
+  });
 })();
 
-/* ---------- SHIM openRewardDialog se assente ---------- */
+/* ========================================================================
+   3) openRewardDialog (globale, shim se manca) + closeProfilePage (globale)
+   ======================================================================== */
 if (typeof window.openRewardDialog !== 'function') {
   window.openRewardDialog = function(message, after){
     try{
       if (PlutooPlus.isPlus()) { after?.(); return; }
-      const ok = confirm((message||'Guarda il video per continuare') + '\n\n[Modalità demo]');
-      if (ok) setTimeout(()=>after?.(), 350);
+      const ok = confirm((message||'Guarda il video per continuare')+'\n\n[Modalità demo]');
+      if (ok) setTimeout(()=> after?.(), 350);
     }catch(_){ after?.(); }
   };
 }
 
-/* ---------- MATCH OVERLAY ---------- */
+// Apertura/chiusura pagina profilo (per index.html onclick)
+function openProfilePage(){
+  const el = document.getElementById('profilePage');
+  if(!el) return;
+  el.classList.remove('hidden');
+  document.body.classList.add('no-scroll');
+}
+function closeProfilePage(){
+  try{
+    const sheet = document.getElementById('profilePage');
+    if (sheet) {
+      sheet.classList.add('hidden');
+      document.body.classList.remove('no-scroll');
+    }
+  }catch(e){}
+}
+window.closeProfilePage = closeProfilePage;
+
+/* ========================================================================
+   4) MATCH OVERLAY (centrato con fade+scale)
+   ======================================================================== */
 (function(){
   function ensureMatchOverlay(){
     let ov = $('#matchOverlay');
@@ -121,27 +167,31 @@ if (typeof window.openRewardDialog !== 'function') {
       ov = document.createElement('div');
       ov.id = 'matchOverlay';
       ov.className = 'hidden';
-      ov.innerHTML = `<div id="matchBox" class="fade-in scale-in">
-        <h2 style="margin:0 0 6px 0">È un Match! 🐾</h2>
-        <p style="opacity:.85;margin:0 0 12px 0">Vi siete piaciuti a vicenda.</p>
-        <div style="display:flex;justify-content:flex-end;gap:8px">
-          <button id="matchClose" class="btn">Ok</button>
-        </div>
-      </div>`;
+      ov.innerHTML = `
+        <div id="matchBox" class="fade-in scale-in">
+          <h2 style="margin:0 0 6px 0">È un Match! 🐾</h2>
+          <p style="opacity:.85;margin:0 0 12px 0">Vi siete piaciuti a vicenda.</p>
+          <div style="display:flex;justify-content:flex-end;gap:8px">
+            <button id="matchClose" class="btn">Ok</button>
+          </div>
+        </div>`;
       document.body.appendChild(ov);
       ov.addEventListener('click', (e)=>{ if(e.target.id==='matchOverlay' || e.target.id==='matchClose') hide(); });
     }
-    function show(){ ov.classList.remove('hidden'); $('#matchBox').classList.add('fade-in','scale-in'); }
+    function show(){ ov.classList.remove('hidden'); $('#matchBox')?.classList.add('fade-in','scale-in'); }
     function hide(){ ov.classList.add('hidden'); }
     return { show, hide, el: ov };
   }
   window.MatchOverlay = ensureMatchOverlay();
 })();
 
-/* ---------- REWARD SYSTEM ---------- */
+/* ========================================================================
+   5) REWARDS (milestones + gate generico)
+   ======================================================================== */
 const Rewards = (function(){
   let swipeCount = 0;
-  let nextMilestone = 10; // first 10, then +5
+  let nextMilestone = 10; // prima a 10, poi +5
+
   function incSwipe(){
     swipeCount++;
     if (PlutooPlus.isPlus()) return;
@@ -151,22 +201,26 @@ const Rewards = (function(){
       openRewardDialog(`Hai raggiunto ${n} swipe. Guarda il video per continuare.`, ()=>{});
     }
   }
+
   function gate(action, after){
     if (PlutooPlus.isPlus()) { after?.(); return; }
     let msg = 'Guarda il video per continuare';
-    if (action==='selfie') msg = 'Guarda il video per vedere il selfie';
+    if (action==='selfie')  msg = 'Guarda il video per vedere il selfie';
     if (action==='message') msg = 'Guarda il video per inviare il messaggio';
-    if (action==='vet') msg = 'Sponsor: apri l’attività';
+    if (action==='vet')     msg = 'Sponsor: apri l’attività';
     openRewardDialog(msg, after);
   }
+
   return { incSwipe, gate };
 })();
 
-/* ---------- GEOLOCALIZZAZIONE ---------- */
+/* ========================================================================
+   6) GEOLOCALIZZAZIONE (barra + permessi)
+   ======================================================================== */
 const Geo = (function(){
   let coords = null;
   function request(){
-    try {
+    try{
       if(!('geolocation' in navigator)) return;
       const bar = ensureBar();
       navigator.geolocation.getCurrentPosition(pos=>{
@@ -184,11 +238,12 @@ const Geo = (function(){
     if(!bar){
       bar = document.createElement('div');
       bar.id = 'geoBar';
-      bar.innerHTML = `<span>Attiva la posizione per risultati vicini</span>
-      <div style="display:flex;gap:8px">
-        <button id="geoLater" class="btn light small">Dopo</button>
-        <button id="geoEnable" class="btn primary small">Attiva</button>
-      </div>`;
+      bar.innerHTML = `
+        <span>Attiva la posizione per risultati vicini</span>
+        <div style="display:flex;gap:8px">
+          <button id="geoLater" class="btn light small">Dopo</button>
+          <button id="geoEnable" class="btn primary small">Attiva</button>
+        </div>`;
       document.body.appendChild(bar);
       $('#geoLater', bar).onclick = ()=> bar.remove();
       $('#geoEnable', bar).onclick = ()=> request();
@@ -199,7 +254,9 @@ const Geo = (function(){
   return { request, get:()=>coords };
 })();
 
-/* ---------- DATI DI BASE (FALLBACK) ---------- */
+/* ========================================================================
+   7) FALLBACK_BREEDS (lista ampia)
+   ======================================================================== */
 const FALLBACK_BREEDS = [
   "Labrador Retriever","Golden Retriever","German Shepherd","French Bulldog","Bulldog","Poodle","Beagle","Rottweiler",
   "Yorkshire Terrier","Dachshund","Boxer","Siberian Husky","Shih Tzu","Dobermann","Great Dane","Chihuahua",
@@ -213,25 +270,29 @@ const FALLBACK_BREEDS = [
   "Barboncino Toy","Barboncino Nano","Barboncino Medio","Pit Bull Terrier","American Bully","Catahoula Leopard Dog",
   "Pumi","Puli","Komondor","Kuvasz","Tosa Inu","Thai Ridgeback","Rhodesian Ridgeback","Pharaoh Hound","Saluki","Borzoi",
   "Irish Wolfhound","Scottish Deerhound","Norwegian Elkhound","Finnish Spitz","Karelian Bear Dog","Japanese Spitz",
-  "American Eskimo Dog","Great Pyrenees","Anatolian Shepherd","Kuvasz","Tibetan Mastiff","Shar Pei","Chow Chow",
+  "American Eskimo Dog","Great Pyrenees","Anatolian Shepherd","Tibetan Mastiff","Shar Pei","Chow Chow",
   "Chinese Crested","Xoloitzcuintli","Bedlington Terrier","Norfolk Terrier","Norwich Terrier","Cairn Terrier",
   "West Highland White Terrier","Skye Terrier","Dandie Dinmont Terrier","Sealyham Terrier","Wheaten Terrier",
   "Soft Coated Wheaten Terrier","Kerry Blue Terrier","Irish Terrier","Welsh Terrier","Lakeland Terrier",
   "Border Terrier","Affenpinscher","Brussels Griffon","Pekingese","Japanese Chin","Tibetan Spaniel","Tibetan Terrier"
 ];
 
-/* ---------- PROFILI DI PROVA (finché non c’è backend) ---------- */
+/* ========================================================================
+   8) DEMO DATA (finché non c’è backend)
+   ======================================================================== */
 const Demo = (function(){
   const dogs = [
-    { id:1, name:'Milo', age:3, breed:'Labrador Retriever', dist:'1.2 km', bio:'Ama l’acqua e i bastoni.', selfie:'selfie1.jpg', photo:'dog1.jpg', verified:true },
-    { id:2, name:'Luna', age:2, breed:'Cane Corso', dist:'0.8 km', bio:'Dolcissima ma protettiva.', selfie:'selfie2.jpg', photo:'dog2.jpg', verified:true },
-    { id:3, name:'Rocky', age:4, breed:'Beagle', dist:'2.5 km', bio:'Naso infallibile, goloso.', selfie:'selfie3.jpg', photo:'dog3.jpg', verified:false },
+    { id:1, name:'Milo',  age:3, breed:'Labrador Retriever', dist:'1.2 km', bio:'Ama l’acqua e i bastoni.', selfie:'selfie1.jpg', photo:'dog1.jpg', verified:true },
+    { id:2, name:'Luna',  age:2, breed:'Cane Corso',         dist:'0.8 km', bio:'Dolcissima ma protettiva.', selfie:'selfie2.jpg', photo:'dog2.jpg', verified:true },
+    { id:3, name:'Rocky', age:4, breed:'Beagle',             dist:'2.5 km', bio:'Naso infallibile, goloso.', selfie:'selfie3.jpg', photo:'dog3.jpg', verified:false },
   ];
   function get(){ return dogs.slice(); }
   return { get };
 })();
 
-/* ---------- UI BINDER ---------- */
+/* ========================================================================
+   9) UI BINDER (render, swipe, chat, selfie, ads vet)
+   ======================================================================== */
 const UI = (function(){
   let idx = 0;
   let current = null;
@@ -276,7 +337,7 @@ const UI = (function(){
     render(list[idx]);
   }
 
-  /* ---- CHAT ---- */
+  /* Chat */
   function openChat(){
     const E = el();
     E.chatPane?.classList.remove('hidden');
@@ -293,7 +354,7 @@ const UI = (function(){
       const li = document.createElement('li');
       li.textContent = txt;
       E.chatList?.appendChild(li);
-      if(E.chatInput) E.chatInput.value='';
+      if (E.chatInput) E.chatInput.value='';
       firstMessageSent = true;
     };
     if (!PlutooPlus.isPlus() && !firstMessageSent){
@@ -303,7 +364,7 @@ const UI = (function(){
     }
   }
 
-  /* ---- SELFIE ---- */
+  /* Selfie blur */
   function isSelfieUnlocked(p){
     try{ return localStorage.getItem('selfie:'+p.id)==='1'; }catch(_){ return false; }
   }
@@ -312,27 +373,28 @@ const UI = (function(){
   }
   function clickSelfie(){
     if(!current) return;
-    if (isSelfieUnlocked(current)) return; // già sbloccato
+    if (isSelfieUnlocked(current)) return;
     Rewards.gate('selfie', ()=>{
       setSelfieUnlocked(current);
-      if ($('#selfieImg')) $('#selfieImg').style.filter='none';
+      if($('#selfieImg')) $('#selfieImg').style.filter='none';
     });
   }
 
-  /* ---- SWIPE ---- */
+  /* Swipe stile Tinder */
   function bindSwipe(){
     const card = $('#socCard');
     if(!card) return;
     card.classList.add('swipe-card');
+
     let sx=0, sy=0, dx=0, dy=0, dragging=false;
 
     const start = (e)=>{
       dragging = true; card.classList.add('grabbing');
-      const p = getPoint(e); sx = p.x; sy = p.y; dx=0; dy=0;
+      const p = pt(e); sx=p.x; sy=p.y; dx=0; dy=0;
     };
     const move = (e)=>{
       if(!dragging) return;
-      const p = getPoint(e); dx = p.x - sx; dy = p.y - sy;
+      const p = pt(e); dx = p.x - sx; dy = p.y - sy;
       const rot = Math.max(-12, Math.min(12, dx/12));
       card.style.transform = `translate(${dx}px, ${dy*0.25}px) rotate(${rot}deg)`;
     };
@@ -357,42 +419,43 @@ const UI = (function(){
     window.addEventListener('touchmove', move, {passive:true});
     window.addEventListener('touchend', end);
 
-    // buttons fallback
+    // Bottoni fallback
     $('#socYes')?.addEventListener('click', ()=> fling(1));
-    $('#socNo')?.addEventListener('click', ()=> fling(-1));
+    $('#socNo') ?.addEventListener('click', ()=> fling(-1));
 
     function fling(dir){
-      // animate off-screen
+      // uscita fluida
       card.style.transition = 'transform .22s cubic-bezier(.22,.61,.36,1)';
-      const off = (window.innerWidth||320) * 1.2 * dir;
+      const off = (window.innerWidth||320)*1.2*dir;
       card.style.transform = `translate(${off}px,-24px) rotate(${dir*20}deg)`;
       setTimeout(()=>{
-        // reset & load next
+        // reset e next
         card.style.transition = 'transform .18s ease-out';
         card.style.transform = 'translate(0,0) rotate(0)';
         Rewards.incSwipe();
-        // demo: random match
-        if (Math.random()<0.25) MatchOverlay.show();
+        // demo: 25% chance di match
+        if (Math.random() < 0.25) MatchOverlay.show();
         next();
       }, 220);
     }
 
-    function getPoint(e){ return { x: (e.touches?.[0]?.clientX ?? e.clientX), y: (e.touches?.[0]?.clientY ?? e.clientY) }; }
+    function pt(e){ return { x:(e.touches?.[0]?.clientX ?? e.clientX), y:(e.touches?.[0]?.clientY ?? e.clientY) }; }
   }
 
-  /* ---- EVENT WIRING ---- */
+  /* Wiring eventi */
   function wire(){
-    $('#openChat')?.addEventListener('click', openChat);
+    $('#openChat') ?.addEventListener('click', openChat);
     $('#closeChat')?.addEventListener('click', closeChat);
-    $('#chatSend')?.addEventListener('click', sendMessage);
+    $('#chatSend') ?.addEventListener('click', sendMessage);
     $('#chatInput')?.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
-    $('#unlockBtn')?.addEventListener('click', clickSelfie);
-    $('#selfieImg')?.addEventListener('click', clickSelfie);
 
-    // Reward extra: click veterinari/toelettature (data-vet)
+    $('#unlockBtn') ?.addEventListener('click', clickSelfie);
+    $('#selfieImg') ?.addEventListener('click', clickSelfie);
+
+    // Click veterinari/toelettature con data-vet → reward/interstitial mock
     $$('[data-vet]').forEach(n=>{
       n.addEventListener('click', (e)=>{
-        if (PlutooPlus.isPlus()) return;
+        if (PlutooPlus.isPlus()) return; // niente ads
         e.preventDefault();
         const href = n.getAttribute('href') || '#';
         Rewards.gate('vet', ()=> window.location.href = href);
@@ -412,30 +475,14 @@ const UI = (function(){
   return { boot, render, next, openChat, sendMessage };
 })();
 
-/* ---------- PROFILO PAGE OPEN/CLOSE ---------- */
-function openProfilePage(){
-  const el = document.getElementById('profilePage');
-  if(!el) return;
-  el.classList.remove('hidden');
-  document.body.classList.add('no-scroll');
-}
-function closeProfilePage(){
-  try{
-    const sheet = document.getElementById('profilePage');
-    if (sheet) {
-      sheet.classList.add('hidden');
-      document.body.classList.remove('no-scroll');
-    }
-  }catch(e){ /* no-op */ }
-}
-window.closeProfilePage = closeProfilePage;
+/* ========================================================================
+   10) AVVIO
+   ======================================================================== */
+onReady(()=>{ UI.boot(); });
 
-/* ---------- AVVIO ---------- */
-onReady(()=>{
-  UI.boot();
-});
-
-/* ---------- HELPER TEXT/HTML (safe) ---------- */
+/* ========================================================================
+   11) Helper text/html (safe)
+   ======================================================================== */
 function setText(sel, text, root=document){
   try{ const el=root.querySelector(sel); if(el) el.textContent = (text ?? ''); }catch(e){}
 }
