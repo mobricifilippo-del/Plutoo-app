@@ -1,25 +1,61 @@
 {
+  "id": "plutoo",
   "name": "Plutoo",
   "short_name": "Plutoo",
-  "start_url": ".",
-  "scope": ".",
+  "description": "Plutoo — social per cani: swipe, match, chat, selfie, geolocalizzazione e servizi vicini.",
+  "lang": "it-IT",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0b0b3a",
   "theme_color": "#0b0b3a",
-  "orientation": "portrait",
+  "categories": ["social", "lifestyle", "pets"],
+  "prefer_related_applications": false,
+
   "icons": [
     {
-      "src": "plutoo-icon-192.png",
+      "src": "/plutoo-icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "plutoo-icon-512.png",
+      "src": "/plutoo-icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "id": "app.plutoo",
-  "description": "Plutoo, il social degli amici a quattro zampe",
-  "lang": "it"
+
+  "shortcuts": [
+    {
+      "name": "Apri Chat",
+      "short_name": "Chat",
+      "url": "/?open=chat",
+      "icons": [
+        { "src": "/plutoo-icon-192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Vicino a te",
+      "short_name": "Vicino",
+      "url": "/?section=nearby",
+      "icons": [
+        { "src": "/plutoo-icon-192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    }
+  ],
+
+  "protocol_handlers": [
+    {
+      "protocol": "web+plutoo",
+      "url": "/?q=%s"
+    }
+  ],
+
+  "edge_side_panel": {
+    "preferred_width": 480
+  }
 }
