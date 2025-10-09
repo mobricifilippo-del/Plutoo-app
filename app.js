@@ -1,19 +1,14 @@
 /* =========================================================================
-   PLUTOO – app.js (MVP-FIX)
-   - Safety Kit + overlay errori
-   - Swipe in stile Tinder (drag fluido, rotazione, soglie, inertia)
-   - Match overlay centrato (fade + scale)
-   - Chat con reward alla prima (poi invio libero)
-   - Selfie blur → reward → sblocco persistente
-   - Geolocalizzazione: barra “Attiva posizione” + richiesta permessi
-   - Trigger ads mock: selfie / primo messaggio / milestones swipe / click veterinari
-   - Plutoo Plus (mock) con localStorage e gating data-ads / data-plus-only
-   - FALLBACK_BREEDS integrato
+   PLUTOO – app.js (TOTAL BUILD)
+   Tutto incluso: swipe, match, chat, selfie blur, reward video (mock),
+   profilo completo (documenti, badge, galleria), griglia “Vicino a te”,
+   filtri/razze, deck Amore/Social, geolocalizzazione, Plus (mock),
+   ads gating, helper e protezione errori.
    ======================================================================= */
 
 
 /* ========================================================================
-   0) SAFETY KIT & UTIL
+   0) SAFETY KIT / UTIL / CSS INJECTION
    ======================================================================== */
 (function(){
   if (typeof window.$ !== 'function') {
@@ -29,14 +24,14 @@
   if (typeof window.sleep !== 'function') {
     window.sleep = (ms)=> new Promise(r=>setTimeout(r, ms));
   }
-  // mini-bus eventi
+  // mini event bus
   window.bus = {
     on(ev, fn){ (this._ = this._||{})[ev] = (this._[ev]||[]).concat(fn); },
     emit(ev, data){ (this._?.[ev]||[]).forEach(f=>{ try{ f(data) }catch(e){} }); }
   };
 })();
 
-/* Overlay errori (dev) – non blocca l'app */
+/* Overlay errori (dev friendly) */
 (function(){
   const SHOW = true;
   if(!SHOW) return;
@@ -60,9 +55,7 @@
   });
 })();
 
-/* ========================================================================
-   1) CSS INJECTION (se mancano classi base)
-   ======================================================================== */
+/* CSS base iniezione (se mancano) */
 (function injectCSS(){
   const css = `
     .hidden{display:none!important}
@@ -77,14 +70,27 @@
     #matchBox{background:#121735;color:#e9ecff;border-radius:18px;padding:20px;max-width:90vw;box-shadow:0 20px 50px rgba(0,0,0,.35)}
     #geoBar{position:fixed;left:10px;right:10px;bottom:10px;background:#0b0b3a;color:#e9ecff;border-radius:12px;padding:10px;z-index:9997;display:flex;justify-content:space-between;align-items:center;gap:10px}
     #sponsorBar{position:sticky;bottom:0;display:flex;justify-content:center;align-items:center;height:48px;background:#0b0b3a;color:#e9ecff;opacity:.95;font:500 14px system-ui}
+    .badge-verified{display:inline-flex;gap:6px;align-items:center;background:#133b12;color:#c7f9bf;border-radius:999px;padding:4px 8px;font:600 12px system-ui}
+    .doc-item{display:flex;justify-content:space-between;gap:8px;padding:8px;border-radius:10px;background:#0d1130;color:#e9ecff}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .gallery img{width:100%;height:92px;object-fit:cover;border-radius:10px}
+    .grid-near{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .card-near{background:#0d1130;color:#e9ecff;border-radius:12px;padding:10px}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    .pill{appearance:none;border:1px solid #2a2f59;border-radius:999px;background:#0b0b3a;color:#e9ecff;padding:6px 10px}
   `;
   const style = document.createElement('style');
   style.textContent = css;
   document.head.appendChild(style);
 })();
 
+/* Helper text/html (safe) */
+function setText(sel, text, root=document){ try{ const el=root.querySelector(sel); if(el) el.textContent = (text ?? ''); }catch(e){} }
+function setHTML(sel, html, root=document){ try{ const el=root.querySelector(sel); if(el) el.innerHTML = (html ?? ''); }catch(e){} }
+
+
 /* ========================================================================
-   2) PLUTO0 PLUS (mock) & GATING ADS
+   1) PLUTOO PLUS (mock) & ADS GATING
    ======================================================================== */
 (function(){
   const KEY = 'plutoo.plus.active';
@@ -114,8 +120,8 @@
     dlg.showModal();
   };
 
-  // Sponsor bar (scompare con Plus)
   onReady(()=>{
+    // Sponsor bar (scompare con Plus)
     if(!document.getElementById('sponsorBar')){
       const bar=document.createElement('div');
       bar.id='sponsorBar'; bar.setAttribute('data-ads','');
@@ -126,9 +132,11 @@
   });
 })();
 
+
 /* ========================================================================
-   3) openRewardDialog (globale, shim se manca) + closeProfilePage (globale)
+   2) openRewardDialog (globale) + profilo (open/close)
    ======================================================================== */
+// Shim rewarded dialog (mock) – bypass con Plus
 if (typeof window.openRewardDialog !== 'function') {
   window.openRewardDialog = function(message, after){
     try{
@@ -139,7 +147,6 @@ if (typeof window.openRewardDialog !== 'function') {
   };
 }
 
-// Apertura/chiusura pagina profilo (per index.html onclick)
 function openProfilePage(){
   const el = document.getElementById('profilePage');
   if(!el) return;
@@ -157,8 +164,9 @@ function closeProfilePage(){
 }
 window.closeProfilePage = closeProfilePage;
 
+
 /* ========================================================================
-   4) MATCH OVERLAY (centrato con fade+scale)
+   3) MATCH OVERLAY
    ======================================================================== */
 (function(){
   function ensureMatchOverlay(){
@@ -185,12 +193,13 @@ window.closeProfilePage = closeProfilePage;
   window.MatchOverlay = ensureMatchOverlay();
 })();
 
+
 /* ========================================================================
-   5) REWARDS (milestones + gate generico)
+   4) REWARDS (milestones + gate generico)
    ======================================================================== */
 const Rewards = (function(){
   let swipeCount = 0;
-  let nextMilestone = 10; // prima a 10, poi +5
+  let nextMilestone = 10; // 10 poi ogni 5
 
   function incSwipe(){
     swipeCount++;
@@ -214,8 +223,9 @@ const Rewards = (function(){
   return { incSwipe, gate };
 })();
 
+
 /* ========================================================================
-   6) GEOLOCALIZZAZIONE (barra + permessi)
+   5) GEOLOCALIZZAZIONE (barra + permessi + eventi)
    ======================================================================== */
 const Geo = (function(){
   let coords = null;
@@ -254,8 +264,9 @@ const Geo = (function(){
   return { request, get:()=>coords };
 })();
 
+
 /* ========================================================================
-   7) FALLBACK_BREEDS (lista ampia)
+   6) DATI / BREEDS / DEMO
    ======================================================================== */
 const FALLBACK_BREEDS = [
   "Labrador Retriever","Golden Retriever","German Shepherd","French Bulldog","Bulldog","Poodle","Beagle","Rottweiler",
@@ -277,29 +288,104 @@ const FALLBACK_BREEDS = [
   "Border Terrier","Affenpinscher","Brussels Griffon","Pekingese","Japanese Chin","Tibetan Spaniel","Tibetan Terrier"
 ];
 
-/* ========================================================================
-   8) DEMO DATA (finché non c’è backend)
-   ======================================================================== */
 const Demo = (function(){
+  // profili demo completi (con docs/galleria/badge)
   const dogs = [
-    { id:1, name:'Milo',  age:3, breed:'Labrador Retriever', dist:'1.2 km', bio:'Ama l’acqua e i bastoni.', selfie:'selfie1.jpg', photo:'dog1.jpg', verified:true },
-    { id:2, name:'Luna',  age:2, breed:'Cane Corso',         dist:'0.8 km', bio:'Dolcissima ma protettiva.', selfie:'selfie2.jpg', photo:'dog2.jpg', verified:true },
-    { id:3, name:'Rocky', age:4, breed:'Beagle',             dist:'2.5 km', bio:'Naso infallibile, goloso.', selfie:'selfie3.jpg', photo:'dog3.jpg', verified:false },
+    {
+      id:1, name:'Milo', age:3, breed:'Labrador Retriever', dist:'1.2 km',
+      bio:'Ama l’acqua e i bastoni.', selfie:'selfie1.jpg', photo:'dog1.jpg', verified:true,
+      docs:[{name:'Vaccinazioni',status:'OK'},{name:'Microchip',status:'OK'}],
+      gallery:['dog1.jpg','dog1b.jpg','dog1c.jpg']
+    },
+    {
+      id:2, name:'Luna', age:2, breed:'Cane Corso', dist:'0.8 km',
+      bio:'Dolcissima ma protettiva.', selfie:'selfie2.jpg', photo:'dog2.jpg', verified:true,
+      docs:[{name:'Vaccinazioni',status:'OK'},{name:'Passaporto',status:'OK'}],
+      gallery:['dog2.jpg','dog2b.jpg','dog2c.jpg']
+    },
+    {
+      id:3, name:'Rocky', age:4, breed:'Beagle', dist:'2.5 km',
+      bio:'Naso infallibile, goloso.', selfie:'selfie3.jpg', photo:'dog3.jpg', verified:false,
+      docs:[{name:'Vaccinazioni',status:'OK'}],
+      gallery:['dog3.jpg','dog3b.jpg','dog3c.jpg']
+    }
   ];
-  function get(){ return dogs.slice(); }
-  return { get };
+
+  // “Vicino a te” demo (veterinari/toelettature/parchi)
+  const nearby = [
+    { id:'v1', type:'vet', name:'Vet Amici Animali', dist:'0.6 km', url:'#', rating:4.7 },
+    { id:'g1', type:'groom', name:'Toelettatura Bau', dist:'0.9 km', url:'#', rating:4.5 },
+    { id:'p1', type:'park', name:'Parco Canile Nord', dist:'1.3 km', url:'#', rating:4.2 },
+    { id:'v2', type:'vet', name:'Clinica San Fido', dist:'2.1 km', url:'#', rating:4.8 },
+  ];
+
+  function getDogs(){ return dogs.slice(); }
+  function getNearby(){ return nearby.slice(); }
+
+  return { getDogs, getNearby };
 })();
 
+
 /* ========================================================================
-   9) UI BINDER (render, swipe, chat, selfie, ads vet)
+   7) FILTRI (razze / distanza / deck)
+   ======================================================================== */
+const Filters = (function(){
+  let state = {
+    deck: 'love',      // 'love' | 'social'
+    breed: '',         // filtro razza
+    distKm: 25         // raggio (UI opzionale)
+  };
+
+  function setDeck(v){ state.deck = v; bus.emit('filters', {...state}); }
+  function setBreed(v){ state.breed = v; bus.emit('filters', {...state}); }
+  function setDist(km){ state.distKm = km; bus.emit('filters', {...state}); }
+  function get(){ return {...state}; }
+
+  function bindUI(){
+    // Tabs Amore/Social
+    $('#tabLove')?.addEventListener('click', ()=> setDeck('love'));
+    $('#tabSocial')?.addEventListener('click', ()=> setDeck('social'));
+
+    // Input razza (datalist/autocomplete)
+    const breedInput = $('#breedInput');
+    if (breedInput) {
+      // populate datalist if exists
+      const dl = $('#breedsList');
+      if (dl && !dl.children.length){
+        FALLBACK_BREEDS.forEach(b=>{
+          const o=document.createElement('option'); o.value=b; dl.appendChild(o);
+        });
+      }
+      breedInput.addEventListener('input', ()=> setBreed(breedInput.value||''));
+    }
+
+    // Slider distanza
+    const dist = $('#distRange');
+    if (dist) {
+      dist.addEventListener('input', ()=>{
+        setDist(parseInt(dist.value || '25', 10));
+        setText('#distLabel', `${dist.value} km`);
+      });
+    }
+  }
+
+  onReady(bindUI);
+  return { setDeck, setBreed, setDist, get };
+})();
+
+
+/* ========================================================================
+   8) UI: SWIPE/PROFILE/CHAT/SELFIE/NEARBY/DECKS
    ======================================================================== */
 const UI = (function(){
-  let idx = 0;
-  let current = null;
+  let idx = 0;           // index corrente nel deck
+  let current = null;    // dog attivo
   let firstMessageSent = false;
 
+  /* ---- ELEMENTI RIFERIMENTO ---- */
   function el(){
     return {
+      // swipe card
       card: $('#socCard'),
       img: $('#socImg'),
       title: $('#socTitle'),
@@ -307,23 +393,42 @@ const UI = (function(){
       bio: $('#socBio'),
       btnNo: $('#socNo'),
       btnYes: $('#socYes'),
+
+      // deck selectors
+      tabLove: $('#tabLove'),
+      tabSocial: $('#tabSocial'),
+
+      // selfie/profile
       selfieImg: $('#selfieImg'),
       blurBtn: $('#unlockBtn'),
+
+      // profilo page
+      ppTitle: $('#ppTitle'),
+      ppBody: $('#ppBody'),
+
+      // chat
       chatOpen: $('#openChat'),
       chatPane: $('#chatPane'),
       chatList: $('#chatList'),
       chatInput: $('#chatInput'),
-      chatSend: $('#chatSend')
+      chatSend: $('#chatSend'),
+
+      // nearby grid
+      nearGrid: $('#nearGrid'),
+
+      // filters
+      breedInput: $('#breedInput'),
+      distRange: $('#distRange')
     };
   }
 
-  function render(p){
+  /* ---- RENDER PROFILO MINI (sulla card) ---- */
+  function renderCard(p){
     const E = el();
-    if(!E.card) return;
     current = p;
     setText('#socTitle', `${p.name} · ${p.age}`);
-    setText('#socMeta', `${p.breed} · ${p.dist}`);
-    setText('#socBio', p.bio || '');
+    setText('#socMeta',  `${p.breed} · ${p.dist}`);
+    setText('#socBio',   p.bio || '');
     if (E.img) E.img.src = p.photo || 'dog1.jpg';
     if (E.selfieImg){
       E.selfieImg.src = p.selfie || p.photo || 'dog1.jpg';
@@ -331,21 +436,80 @@ const UI = (function(){
     }
   }
 
-  function next(){
-    const list = Demo.get();
-    idx = (idx + 1) % list.length;
-    render(list[idx]);
+  /* ---- RENDER PROFILO COMPLETO (pagina) ---- */
+  function renderProfile(p){
+    const E = el();
+    setText('#ppTitle', p?.name || 'Profilo');
+    if (!E.ppBody) return;
+
+    const badge = p?.verified
+      ? `<span class="badge-verified">✔︎ Verificato</span>`
+      : `<span style="opacity:.7">Non verificato</span>`;
+
+    const docs = (p?.docs||[]).map(d=>`
+      <div class="doc-item"><span>${d.name}</span><strong>${d.status}</strong></div>
+    `).join('');
+
+    const gallery = (p?.gallery||[]).map(src=>`
+      <img src="${src}" alt="">
+    `).join('');
+
+    E.ppBody.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin:6px 0">
+        <img src="${p?.photo||'dog1.jpg'}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:14px">
+        <div>
+          <div style="font:700 16px system-ui">${p?.name||'-'} · ${p?.age||'--'}</div>
+          <div style="opacity:.75">${p?.breed||'-'} · ${p?.dist||'-'}</div>
+        </div>
+        <div style="margin-left:auto">${badge}</div>
+      </div>
+
+      <p style="margin:8px 0 12px 0">${p?.bio||''}</p>
+
+      <h4>Documenti</h4>
+      <div style="display:grid;gap:8px">${docs||'<div class="doc-item"><em>Nessun documento</em></div>'}</div>
+
+      <h4 style="margin-top:14px">Galleria</h4>
+      <div class="gallery">${gallery||'<div style="opacity:.7">Nessuna foto</div>'}</div>
+
+      <h4 style="margin-top:14px">Selfie</h4>
+      <div>
+        <img id="selfieImgPP" src="${p?.selfie||p?.photo||'dog1.jpg'}" alt="" style="width:100%;max-width:440px;border-radius:14px;${isSelfieUnlocked(p)?'':'filter:blur(14px)'}">
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="unlockBtnPP" class="btn primary">Sblocca selfie</button>
+          <button class="btn light" onclick="closeProfilePage()">Chiudi</button>
+        </div>
+      </div>
+    `;
+
+    // bind sblocco selfie anche qui
+    $('#unlockBtnPP')?.addEventListener('click', ()=> clickSelfie(true));
+    $('#selfieImgPP')?.addEventListener('click', ()=> clickSelfie(true));
   }
 
-  /* Chat */
+  /* ---- CONTROLLO SELFIE ---- */
+  function isSelfieUnlocked(p){
+    try{ return localStorage.getItem('selfie:'+p.id)==='1'; }catch(_){ return false; }
+  }
+  function setSelfieUnlocked(p){
+    try{ localStorage.setItem('selfie:'+p.id,'1'); }catch(_){}
+  }
+  function clickSelfie(alsoProfilePage=false){
+    if(!current) return;
+    if (isSelfieUnlocked(current)) return;
+    Rewards.gate('selfie', ()=>{
+      setSelfieUnlocked(current);
+      if($('#selfieImg')) $('#selfieImg').style.filter='none';
+      if(alsoProfilePage && $('#selfieImgPP')) $('#selfieImgPP').style.filter='none';
+    });
+  }
+
+  /* ---- CHAT ---- */
   function openChat(){
-    const E = el();
-    E.chatPane?.classList.remove('hidden');
-    E.chatInput?.focus();
+    el().chatPane?.classList.remove('hidden');
+    el().chatInput?.focus();
   }
-  function closeChat(){
-    el().chatPane?.classList.add('hidden');
-  }
+  function closeChat(){ el().chatPane?.classList.add('hidden'); }
   function sendMessage(){
     const E = el();
     const txt = (E.chatInput?.value || '').trim();
@@ -354,7 +518,7 @@ const UI = (function(){
       const li = document.createElement('li');
       li.textContent = txt;
       E.chatList?.appendChild(li);
-      if (E.chatInput) E.chatInput.value='';
+      if(E.chatInput) E.chatInput.value='';
       firstMessageSent = true;
     };
     if (!PlutooPlus.isPlus() && !firstMessageSent){
@@ -364,25 +528,9 @@ const UI = (function(){
     }
   }
 
-  /* Selfie blur */
-  function isSelfieUnlocked(p){
-    try{ return localStorage.getItem('selfie:'+p.id)==='1'; }catch(_){ return false; }
-  }
-  function setSelfieUnlocked(p){
-    try{ localStorage.setItem('selfie:'+p.id,'1'); }catch(_){}
-  }
-  function clickSelfie(){
-    if(!current) return;
-    if (isSelfieUnlocked(current)) return;
-    Rewards.gate('selfie', ()=>{
-      setSelfieUnlocked(current);
-      if($('#selfieImg')) $('#selfieImg').style.filter='none';
-    });
-  }
-
-  /* Swipe stile Tinder */
+  /* ---- SWIPE stile Tinder ---- */
   function bindSwipe(){
-    const card = $('#socCard');
+    const card = el().card;
     if(!card) return;
     card.classList.add('swipe-card');
 
@@ -420,21 +568,18 @@ const UI = (function(){
     window.addEventListener('touchend', end);
 
     // Bottoni fallback
-    $('#socYes')?.addEventListener('click', ()=> fling(1));
-    $('#socNo') ?.addEventListener('click', ()=> fling(-1));
+    el().btnYes?.addEventListener('click', ()=> fling(1));
+    el().btnNo ?.addEventListener('click', ()=> fling(-1));
 
     function fling(dir){
-      // uscita fluida
       card.style.transition = 'transform .22s cubic-bezier(.22,.61,.36,1)';
-      const off = (window.innerWidth||320)*1.2*dir;
+      const off = (window.innerWidth||320) * 1.2 * dir;
       card.style.transform = `translate(${off}px,-24px) rotate(${dir*20}deg)`;
       setTimeout(()=>{
-        // reset e next
         card.style.transition = 'transform .18s ease-out';
         card.style.transform = 'translate(0,0) rotate(0)';
         Rewards.incSwipe();
-        // demo: 25% chance di match
-        if (Math.random() < 0.25) MatchOverlay.show();
+        if (Math.random() < 0.25) MatchOverlay.show(); // demo match
         next();
       }, 220);
     }
@@ -442,50 +587,90 @@ const UI = (function(){
     function pt(e){ return { x:(e.touches?.[0]?.clientX ?? e.clientX), y:(e.touches?.[0]?.clientY ?? e.clientY) }; }
   }
 
-  /* Wiring eventi */
-  function wire(){
-    $('#openChat') ?.addEventListener('click', openChat);
-    $('#closeChat')?.addEventListener('click', closeChat);
-    $('#chatSend') ?.addEventListener('click', sendMessage);
-    $('#chatInput')?.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
+  /* ---- NEARBY (griglia) + monetizzazione sui vet ---- */
+  function renderNearby(list){
+    const wrap = el().nearGrid;
+    if(!wrap) return;
+    if(!list?.length){ wrap.innerHTML = '<div style="opacity:.7">Nessuna attività trovata</div>'; return; }
+    wrap.innerHTML = list.map(it=>`
+      <a class="card-near" href="${it.url}" ${it.type==='vet'?'data-vet':''}>
+        <div style="font:600 14px system-ui">${it.name}</div>
+        <div style="opacity:.75">${it.type==='vet'?'Veterinario':it.type==='groom'?'Toelettatura':'Parco'} · ${it.dist}</div>
+        <div style="margin-top:6px">★ ${it.rating?.toFixed ? it.rating.toFixed(1) : it.rating}</div>
+      </a>
+    `).join('');
 
-    $('#unlockBtn') ?.addEventListener('click', clickSelfie);
-    $('#selfieImg') ?.addEventListener('click', clickSelfie);
-
-    // Click veterinari/toelettature con data-vet → reward/interstitial mock
-    $$('[data-vet]').forEach(n=>{
+    // bind ads mock su click
+    $$('[data-vet]', wrap).forEach(n=>{
       n.addEventListener('click', (e)=>{
-        if (PlutooPlus.isPlus()) return; // niente ads
+        if (PlutooPlus.isPlus()) return;
         e.preventDefault();
         const href = n.getAttribute('href') || '#';
         Rewards.gate('vet', ()=> window.location.href = href);
       });
     });
+  }
 
-    bindSwipe();
+  /* ---- FILTRO LISTA E DECK ---- */
+  function getDeck(){
+    const { deck, breed } = Filters.get();
+    let dogs = Demo.getDogs();
+
+    if (breed) {
+      const b = breed.toLowerCase();
+      dogs = dogs.filter(d=> (d.breed||'').toLowerCase().includes(b));
+    }
+    // demo: deck “social” non filtra contenuti diversi, ma permette UI diversa in futuro
+    return dogs;
+  }
+
+  function next(){
+    const list = getDeck();
+    if (!list.length) return;
+    idx = (idx + 1) % list.length;
+    renderCard(list[idx]);
   }
 
   function boot(){
-    const list = Demo.get();
+    // bind eventi globali UI
+    $('#openChat') ?.addEventListener('click', openChat);
+    $('#closeChat')?.addEventListener('click', closeChat);
+    $('#chatSend') ?.addEventListener('click', sendMessage);
+    $('#chatInput')?.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
+
+    $('#unlockBtn') ?.addEventListener('click', ()=> clickSelfie(false));
+    $('#selfieImg') ?.addEventListener('click', ()=> clickSelfie(false));
+
+    // Apri profilo completo (se c'è il trigger)
+    $('#openProfile')?.addEventListener('click', ()=>{
+      openProfilePage();
+      renderProfile(current);
+    });
+
+    // deck init
+    const list = getDeck();
     idx = 0;
-    render(list[idx]);
-    wire();
+    if (list.length) renderCard(list[idx]);
+
+    // swipe
+    bindSwipe();
+
+    // nearby
+    renderNearby(Demo.getNearby());
+
+    // reagire ai filtri
+    bus.on('filters', ()=>{
+      const list2 = getDeck();
+      idx = 0;
+      if (list2.length) renderCard(list2[idx]);
+    });
   }
 
-  return { boot, render, next, openChat, sendMessage };
+  return { boot, renderCard, renderProfile, next, openChat, sendMessage };
 })();
 
-/* ========================================================================
-   10) AVVIO
-   ======================================================================== */
-onReady(()=>{ UI.boot(); });
 
 /* ========================================================================
-   11) Helper text/html (safe)
+   9) AVVIO
    ======================================================================== */
-function setText(sel, text, root=document){
-  try{ const el=root.querySelector(sel); if(el) el.textContent = (text ?? ''); }catch(e){}
-}
-function setHTML(sel, html, root=document){
-  try{ const el=root.querySelector(sel); if(el) el.innerHTML = (html ?? ''); }catch(e){}
-}
+onReady(()=>{ UI.boot(); });
