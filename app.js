@@ -1,65 +1,42 @@
-  /* === SAFETY KIT (anti-crash) ===
-   - setText(sel, text)  -> scrive il testo SOLO se l'elemento esiste (se non esiste, non si blocca la pagina)
-   - setHTML(sel, html)  -> scrive l'HTML SOLO se l'elemento esiste (se non esiste, non si blocca la pagina)
-   - onReady(fn)         -> esegue fn quando la pagina è pronta (significa: aspetta che gli elementi siano caricati)
-   - storage             -> versione sicura di localStorage (se non disponibile, non si blocca)
+/* === SAFETY KIT (anti-crash) ===
+   - setText(sel, text)  -> scrive il testo SOLO se l'elemento esiste
+   - setHTML(sel, html)  -> scrive l'HTML SOLO se l'elemento esiste
+   - onReady(fn)         -> esegue fn quando la pagina è pronta
+   - storage             -> versione sicura di localStorage
 */
 (function(){
-  // Evito di ridefinire se già presenti (significa: se li avevi già, non li tocco)
   if (typeof window.setText !== 'function') {
     window.setText = function setText(sel, text, root = document) {
       try {
         const el = root.querySelector(sel);
         if (!el) { console.warn('[UI] setText: elemento non trovato ->', sel); return; }
         el.textContent = (text ?? '');
-      } catch (e) {
-        console.warn('[UI] setText warn:', e);
-      }
+      } catch (e) { console.warn('[UI] setText warn:', e); }
     };
   }
-
   if (typeof window.setHTML !== 'function') {
     window.setHTML = function setHTML(sel, html, root = document) {
       try {
         const el = root.querySelector(sel);
         if (!el) { console.warn('[UI] setHTML: elemento non trovato ->', sel); return; }
         el.innerHTML = (html ?? '');
-      } catch (e) {
-        console.warn('[UI] setHTML warn:', e);
-      }
+      } catch (e) { console.warn('[UI] setHTML warn:', e); }
     };
   }
-
   if (typeof window.onReady !== 'function') {
     window.onReady = function onReady(fn) {
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', fn, { once: true }); // significa: aspetta che la pagina sia pronta
-      } else {
-        fn(); // significa: la pagina è già pronta, esegui subito
-      }
+        document.addEventListener('DOMContentLoaded', fn, { once: true });
+      } else { fn(); }
     };
   }
-
   if (typeof window.storage === 'undefined') {
     try {
-      // Test rapido (significa: provo a usare localStorage, se va male uso un finto storage che non rompe)
-      window.localStorage.setItem('__t', '1');
-      window.localStorage.removeItem('__t');
+      window.localStorage.setItem('__t', '1'); window.localStorage.removeItem('__t');
       window.storage = window.localStorage;
-    } catch {
-      window.storage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
-    }
+    } catch { window.storage = { getItem:()=>null, setItem:()=>{}, removeItem:()=>{} }; }
   }
-})();/* Plutoo – app.js (completo con guard-rails)
-   - Swipe deck con animazione
-   - Autocomplete razze (startsWith)
-   - Like/Match + video auto (demo)
-   - Viewer foto con 👍 blu
-   - Profilo cane: topbar con logo + titolo, info, selfie sblocco, Galleria,
-     Documenti strutturati (owner: tipo+fronte+retro; dog: microchip+vaccini+allegati)
-   - Badge verificato quando requisiti ok (persistenza in localStorage)
-   - Patch: Crash Overlay + Avvio protetto
-*/
+})();
 
 /* --- GUARD RAILS: error overlay per Android/PWA --- */
 (function setupCrashOverlay(){
@@ -85,10 +62,8 @@
       document.body.appendChild(box);
       document.getElementById('crashReload').onclick = ()=> location.reload();
       document.getElementById('crashCopy').onclick = async ()=>{
-        try {
-          await navigator.clipboard.writeText(box.innerText.trim());
-          alert('Errore copiato.');
-        } catch { alert('Copia non disponibile.'); }
+        try { await navigator.clipboard.writeText(box.innerText.trim()); alert('Errore copiato.'); }
+        catch { alert('Copia non disponibile.'); }
       };
     } catch(_) {}
   }
@@ -127,7 +102,6 @@
     breeds:[]
   };
 
-  // Avvio protetto
   document.addEventListener('DOMContentLoaded', () => {
     try { init(); }
     catch (err) {
@@ -144,11 +118,11 @@
     prepareLocalProfiles();
     renderNearGrid();
     wireTabs();
-    wireDecks();
+    wireDecks();        // <— swipe sistemato
     wireGeoBar();
     setupPhotoViewer();
     wireMatchOverlay();
-    wireChat();
+    wireChat();         // <— chat sicura
   }
 
   // NAV
@@ -197,7 +171,7 @@
     $('#filtersReset')?.addEventListener('click',()=>{
       Object.keys(state.filters).forEach(k=>state.filters[k]='');
       $('#filterForm')?.reset();
-      window.__closeSuggest?.(); // evita ReferenceError
+      window.__closeSuggest?.();
       renderNearGrid();
     });
 
@@ -239,7 +213,7 @@
         const tab=btn.getAttribute('data-tab'); if(!tab) return;
         state.tab=tab;
         $$('.tabs .tab').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active'); // FIX: apice corretto
+        btn.classList.add('active');
         $$('.tabpane').forEach(p=>p.classList.remove('active'));
         $('#'+tab)?.classList.add('active');
         if(tab==='near') renderNearGrid();
@@ -289,7 +263,7 @@
       return true;
     };
     const list=state.profiles.filter(fits);
-    $('#counter').textContent=`${list.length} profili trovati`;
+    setText('#counter', `${list.length} profili trovati`);
     grid.innerHTML='';
     list.forEach(p=>{
       const card=document.createElement('article'); card.className='card';
@@ -309,14 +283,14 @@
         </div>`;
       $('.like',card)?.addEventListener('click',e=>{e.stopPropagation(); likeFromSwipe(p);});
       $('.no',card)?.addEventListener('click',e=>{e.stopPropagation(); swipeOccurred();});
-      $('img',card).addEventListener('click',e=>{e.stopPropagation(); openProfilePage(p);});
+      $('img',card)?.addEventListener('click',e=>{e.stopPropagation(); openProfilePage(p);});
       card.addEventListener('click',()=>openProfilePage(p));
       grid.appendChild(card);
     });
-    $('#emptyNear').classList.toggle('hidden',list.length>0);
+    $('#emptyNear')?.classList.toggle('hidden',list.length>0);
   }
 
-  // DECKS + animazione (conteggia gli swipe/like)
+  // ===== SWIPE DECK =====
   function wireDecks(){
     bindSwipe($('#loveCard'), d=> d>0?likeDeck('love'):skipDeck('love'));
     bindSwipe($('#socCard'),  d=> d>0?likeDeck('social'):skipDeck('social'));
@@ -328,26 +302,45 @@
     $('#socImg') ?.addEventListener('click',()=>openProfilePage(currentCard('social')));
     renderLove(); renderSocial();
   }
+
+  // Swipe orizzontale “puro”: niente movimento verticale, niente scroll
   function bindSwipe(card,h){
     if(!card) return;
-    let s=0;
-    card.addEventListener('touchstart', e => { s = e.touches[0].clientX; }, { passive:true });
+    let sx=0, sy=0, active=false;
+
+    card.addEventListener('touchstart', e => {
+      const t=e.touches[0]; sx=t.clientX; sy=t.clientY; active=true;
+    }, { passive:true });
+
+    card.addEventListener('touchmove', e => {
+      if(!active) return;
+      const t=e.touches[0];
+      const dx=t.clientX - sx;
+      const dy=t.clientY - sy;
+      // se prevale l’orizzontale, blocco lo scroll della pagina
+      if (Math.abs(dx) > Math.abs(dy)) {
+        e.preventDefault();                 // <-- blocca scroll
+      }
+    }, { passive:false });
+
     card.addEventListener('touchend',   e => {
-      const d = e.changedTouches[0].clientX - s;
+      if(!active) return;
+      active=false;
+      const d = e.changedTouches[0].clientX - sx;
       if (Math.abs(d) > 40) h(d);
     });
   }
+
   function currentCard(kind){ const i=kind==='love'?state.deckIdxLove:state.deckIdxSoc; return state.profiles[i%state.profiles.length]; }
   function renderLove(){ renderCardInto(currentCard('love'),'love'); }
   function renderSocial(){ renderCardInto(currentCard('social'),'soc'); }
   function renderCardInto(p,pre){
-    $('#'+pre+'Img').src=p.img;
-    $('#'+pre+'Title').textContent=p.name;
-    $('#'+pre+'Meta').textContent=`${p.breed} · ${p.distanceKm} km`;
-    $('#'+pre+'Bio').textContent=`${p.name} ha ${p.age} anni, ${p.sex==='M'?'maschio':'femmina'}, taglia ${p.size.toLowerCase()}, pelo ${p.coat.toLowerCase()}, energia ${p.energy.toLowerCase()}.`;
+    const imgEl = $('#'+pre+'Img'); if(imgEl) imgEl.src=p.img;
+    setText('#'+pre+'Title', p.name);
+    setText('#'+pre+'Meta', `${p.breed} · ${p.distanceKm} km`);
+    setText('#'+pre+'Bio', `${p.name} ha ${p.age} anni, ${p.sex==='M'?'maschio':'femmina'}, taglia ${p.size.toLowerCase()}, pelo ${p.coat.toLowerCase()}, energia ${p.energy.toLowerCase()}.`);
   }
 
-  // ogni like/skip del deck incrementa il contatore (video a 10 e poi +5)
   async function likeDeck(kind){
     swipeOccurred();
     await animateAndAdvance(kind, +1, async()=>{ await like(currentCard(kind)); });
@@ -356,7 +349,6 @@
     swipeOccurred();
     await animateAndAdvance(kind, -1);
   }
-
   async function animateAndAdvance(kind, dir, after){
     const card = kind==='love' ? $('#loveCard') : $('#socCard');
     if(!card){ if(after) await after(); advance(kind); return; }
@@ -370,7 +362,7 @@
   }
   function advance(kind){ if(kind==='love') state.deckIdxLove++; else state.deckIdxSoc++; }
 
-  // SWIPE milestones (10, poi ogni +5)
+  // Milestones: 10 swipe, poi ogni +5
   function swipeOccurred(){
     state.swipeCount++;
     if(state.swipeCount===10 || (state.swipeCount>10 && (state.swipeCount-10)%5===0)){
@@ -399,10 +391,10 @@
       const item=document.createElement('div');
       item.className='item';
       item.innerHTML=`<img src="${p.img}" alt="${p.name}"><div><div><strong>${p.name}</strong> · ${p.breed}</div><div class="small muted">${p.distanceKm} km</div></div><button class="btn pill primary" style="margin-left:auto">Scrivi</button>`;
-      $('button',item).addEventListener('click',()=>openChat(p));
+      $('button',item)?.addEventListener('click',()=>openChat(p));
       host.appendChild(item);
     });
-    $('#emptyMatch').style.display=list.length?'none':'block';
+    if($('#emptyMatch')) $('#emptyMatch').style.display=list.length?'none':'block';
   }
   function wireMatchOverlay(){
     $('#closeMatch')?.addEventListener('click',()=>$('#matchOverlay')?.classList.add('hidden'));
@@ -437,22 +429,21 @@
         </div>
         <button id="ppClose" class="btn light small">Chiudi</button>
       `;
-      $('#ppClose').addEventListener('click', ()=>$('#profilePage').classList.remove('show'));
+      $('#ppClose')?.addEventListener('click', ()=>$('#profilePage')?.classList.remove('show'));
     }
-    $('#ppTitle').textContent=p.name;
+    setText('#ppTitle', p.name);
     renderProfile(p);
-    $('#profilePage').classList.add('show');
+    $('#profilePage')?.classList.add('show');
   }
-  window.closeProfilePage=()=>$('#profilePage').classList.remove('show');
+  window.closeProfilePage=()=>$('#profilePage')?.classList.remove('show');
 
   function selfieKey(p){return`selfie-unlock-${p.id}`;}
   function isSelfieUnlocked(p){const ts=Number(localStorage.getItem(selfieKey(p))||0);return ts&&(now()-ts)<H24;}
   function setSelfieUnlocked(p){localStorage.setItem(selfieKey(p),String(now()));}
   function isMatched(p){return state.matchedIds.has(p.id);}
 
-  // Storage structured docs
-  const ownerKey = (p)=>`docs-owner-struct-${p.id}`; // {type, front, back}
-  const dogKey   = (p)=>`docs-dog-struct-${p.id}`;   // {microchip, vaccines:[], attachments:[]}
+  const ownerKey = (p)=>`docs-owner-struct-${p.id}`;
+  const dogKey   = (p)=>`docs-dog-struct-${p.id}`;
   function readJSON(key, fallback){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback; } }
   function writeJSON(key,obj){ localStorage.setItem(key, JSON.stringify(obj||{})); }
   function readVerified(id){ return localStorage.getItem(`verified-${id}`)==='1'; }
@@ -461,6 +452,7 @@
 
   function renderProfile(p){
     const body=$('#ppBody'); const unlocked=isSelfieUnlocked(p)||isMatched(p);
+    if(!body) return;
 
     const owner = readJSON(ownerKey(p), {type:'carta_identita', front:'', back:''});
     const dog   = readJSON(dogKey(p),   {microchip:'', vaccines:[], attachments:[]});
@@ -579,40 +571,45 @@
     });}
     $('#unlockBtn')?.addEventListener('click',()=>{ openRewardDialog('Guarda il video per vedere il selfie',()=>{ setSelfieUnlocked(p); renderProfile(p); }); });
 
-    $('#ownerType').value = owner.type || 'carta_identita';
-    $('#ownerType').addEventListener('change', e=>{
+    $('#ownerType') && ($('#ownerType').value = owner.type || 'carta_identita');
+    $('#ownerType')?.addEventListener('change', e=>{
       owner.type = e.target.value; writeJSON(ownerKey(p), owner);
     });
-    $('#ownerFront').addEventListener('change', async e=>{
+    $('#ownerFront')?.addEventListener('change', async e=>{
       const f=e.target.files?.[0]; if(!f) return;
       owner.front = await fileToDataUrl(f); writeJSON(ownerKey(p), owner); renderProfile(p);
     });
-    $('#ownerBack').addEventListener('change', async e=>{
+    $('#ownerBack')?.addEventListener('change', async e=>{
       const f=e.target.files?.[0]; if(!f) return;
       owner.back = await fileToDataUrl(f); writeJSON(ownerKey(p), owner); renderProfile(p);
     });
 
     const ownerPrev=$('#ownerPrev');
-    ownerPrev.innerHTML='';
-    if(owner.front){ const im=document.createElement('img'); im.className='doc-thumb'; im.src=owner.front; im.title='Fronte'; im.addEventListener('click',()=>openPhotoViewer(p,owner.front)); ownerPrev.appendChild(im); }
-    if(owner.back){ const im=document.createElement('img'); im.className='doc-thumb'; im.src=owner.back; im.title='Retro';  im.addEventListener('click',()=>openPhotoViewer(p,owner.back)); ownerPrev.appendChild(im); }
+    if(ownerPrev){
+      ownerPrev.innerHTML='';
+      if(owner.front){ const im=document.createElement('img'); im.className='doc-thumb'; im.src=owner.front; im.title='Fronte'; im.addEventListener('click',()=>openPhotoViewer(p,owner.front)); ownerPrev.appendChild(im); }
+      if(owner.back){ const im=document.createElement('img'); im.className='doc-thumb'; im.src=owner.back; im.title='Retro';  im.addEventListener('click',()=>openPhotoViewer(p,owner.back)); ownerPrev.appendChild(im); }
+    }
 
     const chipEl=$('#dogChip');
-    chipEl.value = dog.microchip || '';
-    chipEl.addEventListener('input', e=>{
-      dog.microchip = e.target.value.trim();
-      writeJSON(dogKey(p), dog);
-      checkAndVerify(p);
-    });
+    if(chipEl){
+      chipEl.value = dog.microchip || '';
+      chipEl.addEventListener('input', e=>{
+        dog.microchip = e.target.value.trim();
+        writeJSON(dogKey(p), dog);
+        checkAndVerify(p);
+      });
+    }
 
     const vacName=$('#vacName'), vacDate=$('#vacDate'), vacOther=$('#vacOther'), vacAdd=$('#vacAdd'), vacList=$('#vacList');
     const repaintVaccines=()=>{
+      if(!vacList) return;
       vacList.innerHTML='';
       dog.vaccines.forEach((v,idx)=>{
         const tag=document.createElement('span');
         tag.className='tag';
         tag.innerHTML=`${v.name} · ${v.date}<span class="x" title="Rimuovi">✕</span>`;
-        tag.querySelector('.x').addEventListener('click', ()=>{
+        tag.querySelector('.x')?.addEventListener('click', ()=>{
           dog.vaccines.splice(idx,1);
           writeJSON(dogKey(p), dog);
           repaintVaccines(); checkAndVerify(p);
@@ -622,39 +619,39 @@
     };
     repaintVaccines();
 
-    vacAdd.addEventListener('click', e=>{
+    vacAdd?.addEventListener('click', e=>{
       e.preventDefault();
-      let name = vacName.value;
+      let name = vacName?.value;
       if(name==='Altro'){
-        const t=(vacOther.value||'').trim();
+        const t=(vacOther?.value||'').trim();
         if(!t) return; name = t;
       }
-      const date=(vacDate.value||'').trim();
+      const date=(vacDate?.value||'').trim();
       if(!name || !date) return;
       dog.vaccines.push({name, date});
       writeJSON(dogKey(p), dog);
-      vacOther.value=''; vacDate.value='';
+      if(vacOther) vacOther.value='';
+      if(vacDate)  vacDate.value='';
       repaintVaccines(); checkAndVerify(p);
     });
 
-    $('#dogAttach').addEventListener('change', async e=>{
+    $('#dogAttach')?.addEventListener('change', async e=>{
       const files=[...e.target.files];
-      for(const f of files){
-        const url=await fileToDataUrl(f);
-        dog.attachments.push(url);
-      }
+      for(const f of files){ dog.attachments.push(await fileToDataUrl(f)); }
       writeJSON(dogKey(p), dog);
       renderProfile(p);
     });
 
     const dogPrev=$('#dogPrev');
-    dogPrev.innerHTML='';
-    dog.attachments.forEach((src)=>{
-      const im=document.createElement('img');
-      im.className='doc-thumb'; im.src=src; im.title='Allegato';
-      im.addEventListener('click',()=>openPhotoViewer(p,src));
-      dogPrev.appendChild(im);
-    });
+    if(dogPrev){
+      dogPrev.innerHTML='';
+      dog.attachments.forEach((src)=>{
+        const im=document.createElement('img');
+        im.className='doc-thumb'; im.src=src; im.title='Allegato';
+        im.addEventListener('click',()=>openPhotoViewer(p,src));
+        dogPrev.appendChild(im);
+      });
+    }
 
     $('[data-chat]',body)?.addEventListener('click',()=>openChat(p));
     $('[data-invite]',body)?.addEventListener('click',()=>alert('Invito inviato!'));
@@ -674,7 +671,7 @@
     }
   }
 
-  // VIEWER (creato runtime)
+  // VIEWER
   function setupPhotoViewer(){
     if($('#photoViewer')) return;
     const viewer=document.createElement('div');
@@ -689,26 +686,50 @@
       </div>`;
     viewer.addEventListener('click',e=>{ if(e.target===viewer) closePhotoViewer(); });
     document.body.appendChild(viewer);
-    $('#viewerBack').addEventListener('click', closePhotoViewer);
-    $('#viewerLike').addEventListener('click', ()=>{ if(state.viewerProfile) like(state.viewerProfile); });
+    $('#viewerBack')?.addEventListener('click', closePhotoViewer);
+    $('#viewerLike')?.addEventListener('click', ()=>{ if(state.viewerProfile) like(state.viewerProfile); });
   }
-  function openPhotoViewer(p,src){ state.viewerProfile=p; $('#viewerImg').src=src||p.img; const v=$('#photoViewer'); if(v) v.style.display='flex'; }
+  function openPhotoViewer(p,src){ state.viewerProfile=p; const im=$('#viewerImg'); if(im) im.src=src||p.img; const v=$('#photoViewer'); if(v) v.style.display='flex'; }
   function closePhotoViewer(){ const v=$('#photoViewer'); if(v) v.style.display='none'; state.viewerProfile=null; }
 
-  // CHAT (video al primo messaggio)
-  let currentChatProfile=null;
+  // --- CHAT (sicura) ---
+  let currentChatProfile = null;
+
   function wireChat(){
-    $('#sendBtn')?.addEventListener('click', async ()=>{
-      const p=currentChatProfile; if(!p) return;
-      const input=$('#chatInput'); const txt=(input.value||'').trim(); if(!txt) return;
-      const first=!state.firstMessageSentTo.has(p.id);
-      if(first){ await simulateAutoVideo(); state.firstMessageSentTo.add(p.id); }
-      addBubble(txt,true); input.value='';
+    const sendBtn = document.querySelector('#sendBtn');
+    if (!sendBtn) return;
+    sendBtn.addEventListener('click', async () => {
+      const p = currentChatProfile; if (!p) return;
+      const input = document.querySelector('#chatInput'); if (!input) return;
+      const txt = (input.value || '').trim(); if (!txt) return;
+
+      const first = !state.firstMessageSentTo.has(p.id);
+      if (first) { await simulateAutoVideo(); state.firstMessageSentTo.add(p.id); }
+
+      addBubble(txt, true);
+      input.value = '';
     });
   }
-  function openChat(p){ currentChatProfile=p; $('#chatName').textContent=p.name; $('#chatAvatar').src=p.img; $('#thread').innerHTML=''; addBubble('Ciao! 🐾',false); $('#chat').classList.add('show'); }
-  function addBubble(t,me){ const b=document.createElement('div'); b.className='bubble'+(me?' me':''); b.textContent=t; $('#thread').appendChild(b); $('#thread').scrollTop=1e6; }
 
-  // Video automatici
+  function openChat(p){
+    currentChatProfile = p;
+    setText('#chatName', p.name);
+    const av = document.querySelector('#chatAvatar'); if (av) av.src = p.img;
+    const thread = document.querySelector('#thread');
+    if (thread) { thread.innerHTML = ''; addBubble('Ciao! 🐾', false); }
+    const pane = document.querySelector('#chat'); if (pane) pane.classList.add('show');
+  }
+
+  function addBubble(text, me){
+    const thread = document.querySelector('#thread');
+    if (!thread) return;
+    const b = document.createElement('div');
+    b.className = 'bubble' + (me ? ' me' : '');
+    b.textContent = text;
+    thread.appendChild(b);
+    thread.scrollTop = 1e6;
+  }
+
+  // Video automatici (mock)
   async function simulateAutoVideo(){ await sleep(3000); }
 })();
