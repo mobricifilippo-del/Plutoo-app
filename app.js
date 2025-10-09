@@ -1,4 +1,56 @@
-/* Plutoo – app.js (completo con guard-rails)
+  /* === SAFETY KIT (anti-crash) ===
+   - setText(sel, text)  -> scrive il testo SOLO se l'elemento esiste (se non esiste, non si blocca la pagina)
+   - setHTML(sel, html)  -> scrive l'HTML SOLO se l'elemento esiste (se non esiste, non si blocca la pagina)
+   - onReady(fn)         -> esegue fn quando la pagina è pronta (significa: aspetta che gli elementi siano caricati)
+   - storage             -> versione sicura di localStorage (se non disponibile, non si blocca)
+*/
+(function(){
+  // Evito di ridefinire se già presenti (significa: se li avevi già, non li tocco)
+  if (typeof window.setText !== 'function') {
+    window.setText = function setText(sel, text, root = document) {
+      try {
+        const el = root.querySelector(sel);
+        if (!el) { console.warn('[UI] setText: elemento non trovato ->', sel); return; }
+        el.textContent = (text ?? '');
+      } catch (e) {
+        console.warn('[UI] setText warn:', e);
+      }
+    };
+  }
+
+  if (typeof window.setHTML !== 'function') {
+    window.setHTML = function setHTML(sel, html, root = document) {
+      try {
+        const el = root.querySelector(sel);
+        if (!el) { console.warn('[UI] setHTML: elemento non trovato ->', sel); return; }
+        el.innerHTML = (html ?? '');
+      } catch (e) {
+        console.warn('[UI] setHTML warn:', e);
+      }
+    };
+  }
+
+  if (typeof window.onReady !== 'function') {
+    window.onReady = function onReady(fn) {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fn, { once: true }); // significa: aspetta che la pagina sia pronta
+      } else {
+        fn(); // significa: la pagina è già pronta, esegui subito
+      }
+    };
+  }
+
+  if (typeof window.storage === 'undefined') {
+    try {
+      // Test rapido (significa: provo a usare localStorage, se va male uso un finto storage che non rompe)
+      window.localStorage.setItem('__t', '1');
+      window.localStorage.removeItem('__t');
+      window.storage = window.localStorage;
+    } catch {
+      window.storage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+    }
+  }
+})();/* Plutoo – app.js (completo con guard-rails)
    - Swipe deck con animazione
    - Autocomplete razze (startsWith)
    - Like/Match + video auto (demo)
