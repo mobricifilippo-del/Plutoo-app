@@ -4,99 +4,174 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Plutoo</title>
-  <meta name="theme-color" content="#0b0b3a" />
-  <meta name="description" content="Plutoo — Connetti i proprietari e i loro amici a quattro zampe. Swipe, match, chat, selfie, servizi vicini e altro." />
-  <!-- percorsi RELATIVI (niente / iniziale) -->
+  <meta name="theme-color" content="#0b0f14" />
+  <meta name="description" content="Plutoo — social per cani: swipe, match, chat, selfie, servizi vicini e sponsor." />
+  <!-- PWA & assets (percorsi relativi) -->
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="favicon.ico" />
+  <link rel="icon" href="plutoo-icon-192.png" />
+  <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
+  <noscript>Attiva JavaScript per usare Plutoo.</noscript>
 </head>
 <body>
-  <!-- HEADER -->
-  <header>
-    <div class="logo">🐾 <span>Plutoo</span></div>
 
-    <nav class="tabs">
-      <button id="tabLove" class="active">❤️ Amore</button>
-      <button id="tabSocial">🐾 Social</button>
+  <!-- =================== HOME (pre-login) =================== -->
+  <section id="homeScreen" class="home">
+    <header class="home-top">
+      <div class="logo-row">
+        <img src="plutoo-icon-512.png" alt="Plutoo" class="logo-big pulse" />
+        <div class="home-brand">
+          <h1 class="brand">Plutoo</h1>
+          <div class="auth-links">
+            <a href="#" id="btnLogin">Login</a>
+            <span>·</span>
+            <a href="#" id="btnRegister">Registrati</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="home-hero">
+      <button id="btnEnter" class="btn primary xl" type="button">Entra</button>
+    </div>
+
+    <footer class="home-sponsor">
+      <div class="sponsor-title">Sponsor ufficiale</div>
+      <a id="sponsorLink" href="#" target="_blank" rel="noopener" class="sponsor-card">
+        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+        <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
+      </a>
+    </footer>
+  </section>
+
+  <!-- =================== APP (post-login) =================== -->
+  <section id="appScreen" class="app hidden" aria-hidden="true">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="left">
+        <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
+        <strong>Plutoo</strong>
+      </div>
+      <div class="grow"></div>
+      <div class="top-actions">
+        <button id="btnPlus" class="btn plus" type="button" onclick="openPlusDialog()">Plutoo Plus</button>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <nav class="tabs" role="tablist" aria-label="Modalità">
+      <button id="tabLove" class="tab active" type="button" role="tab" aria-selected="true">❤️ Amore</button>
+      <button id="tabSocial" class="tab" type="button" role="tab" aria-selected="false">🐕 Social</button>
+      <button id="tabPlus" class="tab" type="button" onclick="openPlusDialog()">✨ Plus</button>
     </nav>
 
-    <button id="btnPlus" class="btn" onclick="openPlusDialog()">Plutoo Plus</button>
-  </header>
-
-  <!-- CARD SWIPE -->
-  <main>
-    <article id="socCard" class="card">
-      <img id="socImg" src="dog1.jpg" alt="Foto cane" />
-      <div class="card-info">
-        <h2 id="socTitle">Pluto, 3 anni</h2>
-        <p id="socMeta">Labrador • 2.1 km • Passeggiata</p>
-        <p id="socBio">Sono super socievole, amo correre e giocare con la palla.</p>
-      </div>
-      <div class="actions">
-        <button id="socNo" class="btn ghost">🥲 No</button>
-        <button id="socYes" class="btn primary">❤️ Sì</button>
-      </div>
-    </article>
-
-    <!-- SELFIE BLUR -->
-    <section class="selfie">
-      <img id="selfieImg" src="dog2.jpg" alt="Selfie" class="blur" />
-      <button id="unlockBtn" class="btn outline">Sblocca selfie</button>
-    </section>
-
-    <!-- VICINO A TE -->
-    <section class="nearby">
-      <h3>Vicino a te</h3>
-
-      <div class="filters">
-        <div class="f">
-          <label for="breedInput">Razza</label>
-          <input id="breedInput" type="text" placeholder="Cerca razza…" autocomplete="off" />
-          <div id="breedsList" class="suggestions"></div>
+    <!-- Contenuto -->
+    <main class="content">
+      <!-- Card Swipe -->
+      <article id="socCard" class="card" aria-live="polite">
+        <img id="socImg" class="card-img" src="dog1.jpg" alt="Foto cane" />
+        <div class="card-info">
+          <h2 id="socTitle">Pluto, 3 anni</h2>
+          <p id="socMeta" class="meta">Labrador • 2.1 km • Passeggiata</p>
+          <p id="socBio" class="bio">Sono super socievole, amo correre e giocare con la palla.</p>
         </div>
 
-        <div class="f">
-          <label for="distRange">Distanza: <span id="distLabel">5 km</span></label>
-          <input id="distRange" type="range" min="1" max="50" value="5" />
+        <!-- Azioni Amore: 🥲 / ❤️ -->
+        <div class="card-actions" id="loveActions">
+          <button id="socNo"  class="btn no"  type="button" aria-label="No">🥲 No</button>
+          <button id="socYes" class="btn yes" type="button" aria-label="Sì">❤️ Sì</button>
         </div>
-      </div>
 
-      <div id="nearGrid" class="grid"></div>
-    </section>
-  </main>
+        <!-- Azioni Social: 🥲 / 🐕 (inizialmente nascoste) -->
+        <div class="card-actions hidden" id="socialActions">
+          <button id="socPlayNo"  class="btn no"  type="button" aria-label="No">🥲</button>
+          <button id="socPlayYes" class="btn yes" type="button" aria-label="Sì">🐕</button>
+        </div>
+      </article>
 
-  <!-- CHAT -->
-  <section id="chatPane" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="chatHeader">
-    <div class="sheet-inner">
-      <div class="sheet-head">
-        <h3 id="chatHeader" class="m-0">Chat</h3>
-        <button id="closeChat" class="btn small" aria-label="Chiudi">Chiudi</button>
+      <!-- Selfie -->
+      <section class="selfie">
+        <h3>Selfie</h3>
+        <img id="selfieImg" src="dog2.jpg" alt="Selfie offuscato" class="selfie-blur" />
+        <div class="selfie-actions">
+          <button id="unlockBtn" class="btn ghost" type="button">Sblocca selfie</button>
+          <button id="uploadSelfie" class="btn outline" type="button">Carica selfie</button>
+        </div>
+      </section>
+
+      <!-- Vicino a te (lista cani + filtri) -->
+      <section class="nearby">
+        <h3>Vicino a te</h3>
+
+        <div class="filters">
+          <div class="f">
+            <label for="breedInput">Razza</label>
+            <input id="breedInput" type="text" inputmode="search" placeholder="Cerca razza…" autocomplete="off" />
+            <div id="breedsList" class="suggestions" role="listbox" aria-label="Suggerimenti razza"></div>
+          </div>
+          <div class="f">
+            <label for="weightInput">Peso (kg)</label>
+            <input id="weightInput" type="number" min="1" max="100" placeholder="Es. 12" />
+          </div>
+          <div class="f">
+            <label for="heightInput">Altezza (cm)</label>
+            <input id="heightInput" type="number" min="10" max="120" placeholder="Es. 45" />
+          </div>
+          <div class="f">
+            <label for="distRange">Distanza: <span id="distLabel">5 km</span></label>
+            <input id="distRange" type="range" min="1" max="50" value="5" />
+          </div>
+        </div>
+
+        <!-- Lista cani in colonna -->
+        <div id="nearList" class="list" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <!-- Chat -->
+    <aside id="chatPane" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="chatHeader">
+      <div class="sheet-header">
+        <button id="closeChat" class="icon close" type="button" aria-label="Chiudi">✕</button>
+        <div id="chatHeader">Chat</div>
       </div>
-      <div id="chatList" class="chat-list"></div>
+      <div id="chatList" class="chat-list" aria-live="polite"></div>
       <form id="chatComposer" class="composer" autocomplete="off">
         <input id="chatInput" type="text" placeholder="Scrivi un messaggio…" />
         <button id="chatSend" type="submit" class="btn send">Invia</button>
       </form>
-    </div>
-  </section>
+    </aside>
 
-  <!-- PROFILO -->
-  <section id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
-    <div class="sheet-inner">
-      <div class="sheet-head">
-        <h3 id="ppTitle" class="m-0">Profilo</h3>
-        <button class="btn small" onclick="closeProfilePage()">Chiudi</button>
+    <!-- Profilo -->
+    <section id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+      <div class="sheet-header">
+        <button class="icon close" type="button" onclick="closeProfilePage()" aria-label="Chiudi">✕</button>
+        <div id="ppTitle">Profilo</div>
       </div>
-      <div id="ppBody"></div>
-    </div>
+      <div id="ppBody" class="sheet-body"><!-- popolato via app.js --></div>
+    </section>
+
+    <!-- Sponsor + Banner -->
+    <footer class="sponsor">
+      <div class="sponsor-wrap">
+        <div class="sponsor-title">Sponsor ufficiale</div>
+        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+        <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
+      </div>
+      <div id="adBanner" class="ad-banner" aria-hidden="true"></div>
+    </footer>
   </section>
 
-  <footer id="sponsorBar" data-ads>
-    <a href="#" id="sponsorFooter" target="_blank" rel="noopener">Sponsor ufficiale</a>
-  </footer>
+  <!-- Service Worker (se presente service-worker.js) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+      });
+    }
+  </script>
 
-  <!-- anche qui: percorso RELATIVO -->
+  <!-- App script -->
   <script src="app.js" defer></script>
 </body>
 </html>
