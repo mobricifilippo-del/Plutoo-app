@@ -1,107 +1,100 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0f14">
-  <title>Plutoo 🐾</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="plutoo-icon-192.png">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Plutoo</title>
+  <meta name="theme-color" content="#0b0b3a" />
+  <meta name="description" content="Plutoo — Connetti i propriet...o zampe. Swipe, match, chat, selfie, servizi vicini e altro." />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">🐾 <span>Plutoo</span></div>
 
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="left">
-      <img src="plutoo-icon-192.png" alt="logo" width="40" height="40" class="logo">
-      <strong>Plutoo</strong>
-    </div>
-    <div class="grow"></div>
-    <div class="top-actions">
-      <button class="btn plus" onclick="openPlusDialog()">Plutoo Plus</button>
-    </div>
+    <nav class="tabs">
+      <button id="tabLove" class="active">❤️ Amore</button>
+      <button id="tabSocial">🐾 Social</button>
+    </nav>
+
+    <button id="btnPlus" class="btn" onclick="openPlusDialog()">Plutoo Plus</button>
   </header>
 
-  <!-- Tabs -->
-  <nav class="tabs">
-    <button class="tab active">❤️ Amore</button>
-    <button class="tab">🎾 Social</button>
-  </nav>
-
-  <main class="content">
-
-    <!-- Card principale -->
-    <section class="card" id="socCard">
-      <img src="dog1.jpg" class="card-img" alt="dog">
+  <!-- CARD SWIPE -->
+  <main>
+    <article id="socCard" class="card">
+      <img id="socImg" src="dog1.jpg" alt="Foto cane" />
       <div class="card-info">
-        <h2>Pluto, 3 anni</h2>
-        <p class="meta">Labrador • 2.1 km • Passeggiata</p>
-        <p class="bio">Sono super socievole, amo correre e giocare con la palla.</p>
+        <h2 id="socTitle">Pluto, 3 anni</h2>
+        <p id="socMeta">Labrador • 2.1 km • Passeggiata</p>
+        <p id="socBio">Sono super socievole, amo correre e giocare con la palla.</p>
       </div>
-      <div class="card-actions">
-        <button class="btn no" id="socNo">🥲 No</button>
-        <button class="btn yes" id="socYes">❤️ Sì</button>
+      <div class="actions">
+        <button id="socNo" class="btn ghost">🥲 No</button>
+        <button id="socYes" class="btn primary">❤️ Sì</button>
       </div>
+    </article>
+
+    <!-- SELFIE BLUR -->
+    <section class="selfie">
+      <img id="selfieImg" src="dog2.jpg" alt="Selfie" class="blur" />
+      <button id="unlockBtn" class="btn outline">Sblocca selfie</button>
     </section>
 
-    <!-- Selfie blur -->
-    <div class="selfie">
-      <img src="dog2.jpg" id="selfieImg" class="selfie-blur" alt="selfie">
-      <button class="btn yes" id="unlockBtn">Sblocca selfie</button>
-    </div>
-
-    <!-- Sezione vicino a te -->
+    <!-- VICINO A TE -->
     <section class="nearby">
       <h3>Vicino a te</h3>
+
       <div class="filters">
         <div class="f">
           <label for="breedInput">Razza</label>
-          <input type="text" id="breedInput" placeholder="Cerca razza...">
+          <input id="breedInput" type="text" placeholder="Cerca razza…" autocomplete="off" />
           <div id="breedsList" class="suggestions"></div>
         </div>
+
         <div class="f">
           <label for="distRange">Distanza: <span id="distLabel">5 km</span></label>
-          <input type="range" id="distRange" min="1" max="20" value="5">
+          <input id="distRange" type="range" min="1" max="50" value="5" />
         </div>
       </div>
-      <div class="grid" id="nearGrid"></div>
-    </section>
 
+      <div id="nearGrid" class="grid"></div>
+    </section>
   </main>
 
-  <!-- Chat sheet -->
-  <section id="chatPane" class="sheet hidden">
-    <div class="sheet-header">
-      <button class="icon close" id="closeChat">×</button>
-      <strong>Chat</strong>
+  <!-- CHAT -->
+  <section id="chatPane" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="chatHeader">
+    <div class="sheet-inner">
+      <div class="sheet-head">
+        <h3 id="chatHeader" class="m-0">Chat</h3>
+        <button id="closeChat" class="btn small" aria-label="Chiudi">Chiudi</button>
+      </div>
+      <div id="chatList" class="chat-list"></div>
+      <form id="chatComposer" class="composer" autocomplete="off">
+        <input id="chatInput" type="text" placeholder="Scrivi un messaggio…" />
+        <button id="chatSend" type="submit" class="btn send">Invia</button>
+      </form>
     </div>
-    <div class="sheet-body chat-list" id="chatList"></div>
-    <form class="composer" id="chatComposer">
-      <input id="chatInput" type="text" placeholder="Scrivi un messaggio..." autocomplete="off">
-      <button type="submit" class="btn send">Invia</button>
-    </form>
   </section>
 
-  <!-- Profilo sheet -->
-  <section id="profileSheet" class="sheet hidden">
-    <div class="sheet-header">
-      <button class="icon close" onclick="closeProfilePage()">×</button>
-      <strong>Profilo</strong>
+  <!-- PROFILO -->
+  <section id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <div class="sheet-inner">
+      <div class="sheet-head">
+        <h3 id="ppTitle" class="m-0">Profilo</h3>
+        <button class="btn small" onclick="closeProfilePage()">Chiudi</button>
+      </div>
+      <div id="ppBody"></div>
     </div>
-    <div class="sheet-body" id="ppBody"></div>
   </section>
 
-  <!-- Sponsor -->
-  <footer class="sponsor">
-    <div class="sponsor-wrap">
-      <div class="sponsor-title">Sponsor ufficiale</div>
-      <img src="sponsor-logo.png" alt="Sponsor" class="sponsor-logo">
-      <p class="sponsor-copy">Fido, il gelato per i tuoi amici a quattro zampe</p>
-    </div>
-    <div class="ad-banner">Banner pubblicitario</div>
+  <footer id="sponsorBar" data-ads>
+    <a href="#" id="sponsorFooter" target="_blank" rel="noopener">Sponsor ufficiale</a>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="/app.js" defer></script>
 </body>
 </html>
