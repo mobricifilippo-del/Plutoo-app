@@ -1,225 +1,158 @@
-/* =========================================================
-   Plutoo — app.js (core)
-   ========================================================= */
+/* ======= DATI DEMO ======= */
+const cani = [
+  { id:1, name:"Luna", age:1, breed:"Jack Russell", img1:"dog1.jpg", coords:{lat:41.898, lon:12.498}, bio:"Vivace e curiosa!", online:true },
+  { id:2, nome:"Rocky", età:4, razza:"Meticcio", img1:"dog2.jpg", coordinate:{lat:41.901, lon:12.476}, bio:"Fedelissimo e coccolone.", online:true },
+  { id:3, nome:"Maya", età:3, razza:"Shiba Inu", img1:"dog3.jpg", coordinate:{lat:41.914, lon:12.495}, bio:"Passeggiate ogni giorno.", online:false },
+  { id:4, nome:"Sofia", età:5, razza:"Levriero Afgano", img1:"dog4.jpg", coordinate:{lat:41.887, lon:12.512}, bio:"Elegante e dolce.", online:true }
+];
 
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("🐾 Plutoo avviato");
+lascia userPos = null;
+lascia corrispondenze = JSON.parse(localStorage.getItem("plutoo_matches") || "[]");
+lascia che swipeIndex = 0;
 
-  /* ---------- Elementi principali ---------- */
-  const card = document.getElementById("socCard");
-  const yesBtn = document.getElementById("socYes");
-  const noBtn = document.getElementById("socNo");
-  const selfieImg = document.getElementById("selfieImg");
-  const unlockBtn = document.getElementById("unlockBtn");
-  const breedInput = document.getElementById("breedInput");
-  const breedsList = document.getElementById("breedsList");
-  const nearGrid = document.getElementById("nearGrid");
-  const distRange = document.getElementById("distRange");
-  const distLabel = document.getElementById("distLabel");
-  const chatPane = document.getElementById("chatPane");
-  const chatList = document.getElementById("chatList");
-  const chatComposer = document.getElementById("chatComposer");
-  const chatInput = document.getElementById("chatInput");
-  const profileSheet = document.getElementById("profileSheet");
+/* ======= UTILITA' ======= */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const show = id => { $$('.screen').forEach(s=>s.classList.remove('attivo')); $(id).classList.add('attivo'); };
+const km = (a,b)=>{ if(!a||!b) return null;
+  const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLon=(b.lon-a.lon)*Math.PI/180;
+  const la1=a.lat*Math.PI/180, la2=b.lat*Math.PI/180;
+  const x=Math.sin(dLat/2)**2 + Math.sin(dLon/2)**2*Math.cos(la1)*Math.cos(la2);
+  restituisci +(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))).toFixed(1);
+};
+const randKm = ()=> +(Math.random()*7+0.5).toFixed(1);
 
-  /* ---------- Stato base ---------- */
-  let swipeCount = 0;
-  let selfieUnlockedUntil = 0;
-  let plusActive = localStorage.getItem("plusActive") === "true";
-  let currentBreedData = [];
-
-  /* ---------- Helper ---------- */
-  const show = (el) => el && el.classList.remove("hidden");
-  const hide = (el) => el && el.classList.add("hidden");
-  const toggle = (el) => el && el.classList.toggle("hidden");
-  const safe = (cb) => { try { cb(); } catch (e) { console.warn(e); } };
-
-  const isSelfieUnlocked = () => Date.now() < selfieUnlockedUntil;
-  const lockSelfie = () => {
-    selfieImg.classList.add("selfie-blur");
-    unlockBtn.disabled = false;
-  };
-  const unlockSelfie = () => {
-    selfieUnlockedUntil = Date.now() + 24 * 60 * 60 * 1000; // 24h
-    selfieImg.classList.remove("selfie-blur");
-    unlockBtn.disabled = true;
-    localStorage.setItem("selfieUnlockedUntil", selfieUnlockedUntil);
-  };
-
-  /* ---------- Swipe / Match ---------- */
-  const swipeYes = () => {
-    swipeCount++;
-    if (!plusActive && swipeCount > 3 && swipeCount % 5 === 0) {
-      openRewardDialog("Video ricompensa per continuare a swippare");
-    } else {
-      showMatchPopup();
-    }
-  };
-
-  const swipeNo = () => {
-    swipeCount++;
-  };
-
-  const showMatchPopup = () => {
-    const popup = document.createElement("div");
-    popup.className = "match-popup";
-    popup.innerHTML = `
-      <div class="match-box">
-        <h2>💘 È un Match!</h2>
-        <p>Avete fatto amicizia!</p>
-        <button class="btn yes" onclick="this.parentElement.parentElement.remove()">Chiudi</button>
-      </div>`;
-    document.body.appendChild(popup);
-    setTimeout(() => popup.classList.add("show"), 50);
-  };
-
-  /* ---------- Reward mock ---------- */
-  window.openRewardDialog = (msg = "Guarda un breve video per continuare") => {
-    alert(msg + "\n(Mock video completato)");
-  };
-
-  /* ---------- Plus mock ---------- */
-  window.openPlusDialog = () => {
-    const goPlus = confirm("Vuoi attivare Plutoo Plus (rimuove pubblicità)?");
-    if (goPlus) {
-      plusActive = true;
-      localStorage.setItem("plusActive", "true");
-      alert("Plutoo Plus attivo ✅");
-    }
-  };
-
-  /* ---------- Chat ---------- */
-  const openChat = (dogName) => {
-    show(chatPane);
-    chatPane.classList.add("show");
-    chatList.innerHTML = `<div class="msg">Ciao ${dogName}! 🐶</div>`;
-  };
-  const closeChat = () => {
-    chatPane.classList.remove("show");
-    setTimeout(() => hide(chatPane), 250);
-  };
-  document.getElementById("closeChat").addEventListener("click", closeChat);
-
-  chatComposer.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text) return;
-    if (!plusActive && chatList.childElementCount === 1) {
-      openRewardDialog("Guarda un video per inviare il primo messaggio");
-    }
-    const msg = document.createElement("div");
-    msg.className = "msg me";
-    msg.textContent = text;
-    chatList.appendChild(msg);
-    chatInput.value = "";
-    chatList.scrollTop = chatList.scrollHeight;
-  });
-
-  /* ---------- Selfie Blur ---------- */
-  if (localStorage.getItem("selfieUnlockedUntil")) {
-    selfieUnlockedUntil = parseInt(localStorage.getItem("selfieUnlockedUntil"));
+/* ======= ENTRA (esposto anche globalmente come backup) ======= */
+funzione goHome(){
+  // Logo piccolo nella topbar dopo l'ingresso
+  if(!document.querySelector('.brand-small')){
+    const img=document.createElement('img');
+    img.src='plutoo-icon-512.png'; img.alt='Plutoo'; img.className='brand-small';
+    img.style.width='64px'; img.style.height='64px'; img.style.borderRadius='20px';
+    img.style.boxShadow='0 14px 40px rgba(122,79,247,.18)'; img.style.background='#000';
+    document.getElementById('topBrandSlot').appendChild(img);
   }
-  if (isSelfieUnlocked()) unlockSelfie(); else lockSelfie();
+  mostra('#casa');
+  askGeo(); renderNear(); renderSwipe(); renderMatches();
+}
+window.__enter = goHome;
 
-  unlockBtn.addEventListener("click", () => {
-    if (!plusActive) openRewardDialog("Guarda un video per sbloccare il selfie");
-    unlockSelfie();
-  });
+/* Aggancio agli ascoltatori dell'evento quando il DOM è pronto */
+document.addEventListener('DOMContentLoaded', ()=>{
+  $('#ctaEnter')?.addEventListener('clic', goHome);
 
-  /* ---------- Filtri & Razze ---------- */
-  fetch("breeds.json")
-    .then((r) => r.json())
-    .then((data) => { currentBreedData = data; })
-    .catch(() => console.warn("Impossibile caricare razze"));
-
-  breedInput.addEventListener("input", () => {
-    const val = breedInput.value.toLowerCase();
-    breedsList.innerHTML = "";
-    if (!val) { breedsList.classList.remove("show"); return; }
-    const matches = currentBreedData.filter((b) => b.toLowerCase().includes(val)).slice(0, 10);
-    if (matches.length) {
-      breedsList.classList.add("show");
-      breedsList.innerHTML = matches.map((b) => `<div class="item">${b}</div>`).join("");
-      breedsList.querySelectorAll(".item").forEach((el) =>
-        el.addEventListener("click", () => {
-          breedInput.value = el.textContent;
-          breedsList.classList.remove("show");
-        })
-      );
-    } else {
-      breedsList.classList.remove("show");
-    }
-  });
-
-  /* ---------- Distanza ---------- */
-  distRange.addEventListener("input", () => {
-    distLabel.textContent = distRange.value + " km";
-  });
-
-  /* ---------- Vicino a te ---------- */
-  function loadNearby() {
-    nearGrid.innerHTML = "";
-    const items = [
-      { name: "Luna", breed: "Golden Retriever", km: 1.2, img: "dog1.jpg" },
-      { name: "Rex", breed: "Pastore Tedesco", km: 3.4, img: "dog2.jpg" },
-      { name: "Maya", breed: "Bulldog Francese", km: 2.1, img: "dog3.jpg" },
-      { name: "Rocky", breed: "Beagle", km: 4.0, img: "dog4.jpg" },
-    ];
-    items.forEach((d) => {
-      const el = document.createElement("div");
-      el.className = "tile";
-      el.innerHTML = `
-        <img src="${d.img}" alt="${d.name}" class="thumb" />
-        <div class="tinfo">
-          <div class="tname">${d.name}</div>
-          <div class="tmeta">${d.breed} • ${d.km} km</div>
-        </div>`;
-      el.addEventListener("click", () => {
-        if (!plusActive) openRewardDialog("Video prima di aprire il profilo");
-        openProfile(d);
-      });
-      nearGrid.appendChild(el);
+  // Schede
+  $$('.tab').forEach(t=>{
+    t.addEventListener('clic',()=>{
+      $$('.tab').forEach(x=>x.classList.remove('attivo'));
+      $$('.tabpane').forEach(x=>x.classList.remove('attivo'));
+      t.classList.add('attivo');
+      document.getElementById(t.dataset.tab).classList.add('attivo');
+      if(t.dataset.tab==='swipe') renderSwipe();
+      if(t.dataset.tab==='vicino') renderNear();
+      if(t.dataset.tab==='corrisponde') renderMatches();
     });
+  });
+
+  // Fogli
+  $('#btnLogin')?.addEventListener('click',()=>$('#sheetLogin').classList.add('show'));
+  $('#btnRegister')?.addEventListener('click',()=>$('#sheetRegister').classList.add('show'));
+  $('#loginSubmit')?.addEventListener('click',()=>$('#sheetLogin').classList.remove('show'));
+  $('#registerSubmit')?.addEventListener('click',()=>$('#sheetRegister').classList.remove('show'));
+  $$('.close').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close).classList.remove('show')));
+
+  // Azioni di scorrimento
+  $('#yesBtn')?.addEventListener('clic', ()=>{ addMatch(cani[swipeIndex%cani.lunghezza]); swipeIndex++; renderSwipe(); });
+  $('#noBtn')?.addEventListener('clic', ()=>{ swipeIndex++; renderSwipe(); });
+});
+
+/* ======= GEO ======= */
+funzione askGeo(){ $('#geoBar')?.classList.remove('nascosto'); }
+$('#enableGeo')?.addEventListener('clic',()=>{
+  navigator.geolocation.getCurrentPosition(
+    pos => { userPos={lat:pos.coords.latitude, lon:pos.coords.longitude}; $('#geoBar')?.classList.add('hidden'); renderNear(); renderSwipe(); },
+    _ => { $('#geoBar')?.classList.add('hidden'); renderNear(); renderSwipe(); },
+    { enableHighAccuracy:true, timeout:8000 }
+  );
+});
+$('#dismissGeo')?.addEventListener('click',()=> $('#geoBar')?.classList.add('hidden'));
+
+/* ======= VICINO A TE (UNA FOTO) ======= */
+funzione renderNear(){
+  const wrap = $('#grid'); if(!wrap) return; wrap.innerHTML='';
+  elenco costante = dogs.slice().sort((a,b)=>{
+    const da = userPos ? km(userPos,a.coords) : randKm();
+    const db = userPos? km(userPos,b.coords): randKm();
+    restituisci da-db;
+  });
+  list.forEach(d=>{
+    distanza costante = userPos ? km(userPos,d.coords): randKm();
+    const card = document.createElement('articolo');
+    card.className='carta';
+    card.innerHTML = `
+      ${d.online ? '<span class="online"></span>' : ''}
+      <img src="${d.img1}" alt="${d.name}">
+      <div class="card-info">
+        <div class="titolo">
+          <div class="name">${d.name}, ${d.age} • ${d.breed}</div>
+          <div class="dist">${distanza} km</div>
+        </div>
+        <div class="azioni">
+          <button class="circle no">âœ–</button>
+          <button class="circle like">â ¤</button>
+        </div>
+      </div>`;
+    card.querySelector('.no').onclick = ()=> card.remove();
+    card.querySelector('.like').onclick = ()=> addMatch(d);
+    wrap.appendChild(card);
+  });
+  $('#emptyNear')?.classList.toggle('nascosto', wrap.children.length>0);
+}
+
+/* ======= SCORRI ======= */
+funzione renderSwipe(){
+  const d = dogs[swipeIndex % dogs.length];
+  distanza costante = userPos ? km(userPos,d.coords): randKm();
+  $('#swipeImg').src = d.img1;
+  $('#swipeTitle').textContent = `${d.name}, ${d.age} â€¢ ${d.breed}`;
+  $('#swipeMeta').textContent = `${distanza} km da te`;
+  $('#swipeBio').textContent = d.bio;
+}
+
+/* ======= PARTITA E CHATTA ======= */
+funzione addMatch(d){
+  se (!matches.find(m=>m.id===d.id)) {
+    corrispondenze.push({id:d.id, nome:d.name, img:d.img1});
+    localStorage.setItem("plutoo_matches", JSON.stringify(matches));
   }
-
-  loadNearby();
-
-  /* ---------- Profilo ---------- */
-  window.openProfile = (dog) => {
-    const body = document.getElementById("ppBody");
-    show(profileSheet);
-    profileSheet.classList.add("show");
-    body.innerHTML = `
-      <div class="center"><img src="${dog.img}" alt="${dog.name}" style="width:100%;border-radius:12px;max-height:300px;object-fit:cover;"></div>
-      <h2>${dog.name}</h2>
-      <p>${dog.breed} • ${dog.km} km</p>
-      <div class="badge">Profilo verificato</div>
-      <p style="margin-top:8px;">Mi piace giocare e fare passeggiate. 🐕</p>
-      <button class="btn yes" onclick="startChat('${dog.name}')">Apri chat</button>`;
-  };
-
-  window.closeProfilePage = () => {
-    profileSheet.classList.remove("show");
-    setTimeout(() => hide(profileSheet), 250);
-  };
-
-  /* ---------- Chat da profilo ---------- */
-  window.startChat = (name) => {
-    closeProfilePage();
-    setTimeout(() => openChat(name), 300);
-  };
-
-  /* ---------- Swipe eventi ---------- */
-  yesBtn.addEventListener("click", swipeYes);
-  noBtn.addEventListener("click", swipeNo);
-
-  /* ---------- Geolocalizzazione ---------- */
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => console.log("Posizione:", pos.coords.latitude, pos.coords.longitude),
-      (err) => console.warn("Geo non concessa:", err.message)
-    );
-  }
-
-  console.log("✅ Plutoo pronto");
+  renderMatches();
+}
+funzione renderMatches(){
+  const box = $('#matchList'); if(!box) return; box.innerHTML = '';
+  corrispondenze.perOgni(m=>{
+    const row = document.createElement('div'); row.className='item';
+    riga.HTML interno = `
+      <img src="${m.img}" alt="${m.name}">
+      <div>
+        <div><strong>${m.name}</strong></div>
+        <div class="muted small">Corrispondenza</div>
+      </div>
+      <button class="btn go primary pill">Chat</button>`;
+    row.querySelector('.go').onclick = ()=>openChat(m);
+    box.appendChild(riga);
+  });
+  $('#emptyMatch').style.display = matches.length ? 'none' : 'block';
+}
+funzione openChat(m){
+  $('#chatAvatar').src = m.img;
+  $('#chatName').textContent = m.name;
+  $('#thread').innerHTML = '<div class="bubble">Ciao! ðŸ ¾ Siamo un match!</div>';
+  $('#chat').classList.add('mostra');
+}
+$('#sendBtn')?.addEventListener('clic', ()=>{
+  const txt = ($('#chatInput').value||'').trim();
+  se(!txt) ritorno;
+  const b = document.createElement('div'); b.className='mettimi in bolla'; b.textContent = txt;
+  $('#thread').appendChild(b);
+  $('#chatInput').value=''; $('#thread').scrollTop = $('#thread').scrollHeight;
 });
