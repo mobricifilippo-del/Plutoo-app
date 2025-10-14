@@ -1,456 +1,251 @@
-/* =========================================================================
-   PLUTOO — style.css (complete)
-   - Dark theme, responsive
-   - Layout, header, tabs, filters
-   - Swipe card, match overlay, chat, profile sheet
-   - Nearby grid, pills, buttons
-   - Utilities, animations, accessibility
-   ======================================================================= */
+/* =========================================================
+   Plutoo — Style (Dark)
+   - Tema dark + accenti verde lime
+   - Compatibile Android/WebView, no font esterni
+   - Animazioni fluide, layout responsive
+   ========================================================= */
 
-/* ===========================
-   0) CSS RESET + BASE THEME
-   =========================== */
-*,
-*::before,
-*::after { box-sizing: border-box; }
-
-html, body {
-  height: 100%;
-}
-
-:root{
-  /* Palette */
-  --bg:            #0a0f2a;
-  --bg-elev-1:     #0b0f28;
-  --bg-elev-2:     #0d1130;
-  --line:          #1a1f4a;
-  --txt:           #e9ecff;
-  --txt-dim:       rgba(233,236,255,.78);
-  --primary:       #2c3be0;
-  --primary-700:   #2331c6;
-  --accent:        #121735;
-  --success-bg:    #133b12;
-  --success-fg:    #c7f9bf;
-  --danger:        #ff5b5b;
-  --shadow:        0 18px 50px rgba(0,0,0,.35);
-  --radius-s:      8px;
-  --radius:        12px;
-  --radius-l:      14px;
-  --radius-xl:     18px;
-
-  /* Sizes */
-  --header-h: 54px;
-  --container-w: 980px;
-
-  /* Transitions */
-  --t-fast:  .15s ease-out;
-  --t-base:  .2s ease-out;
-  --t-snap:  cubic-bezier(.22,.61,.36,1);
-}
-
-body{
+/* ---------- Reset & base ---------- */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+html { color-scheme: dark; }
+body {
   margin: 0;
-  background: var(--bg);
-  color: var(--txt);
-  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  background: #0b0f14;
+  color: #e7eef7;
 }
 
-/* ===========================
-   1) HEADER
-   =========================== */
-header{
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #0b0b3a;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: saturate(1.1) blur(8px);
+/* Focus visibile ma soft */
+:focus { outline: 2px solid #35f29a55; outline-offset: 2px; }
+
+/* ---------- CSS Vars ---------- */
+:root{
+  --bg: #0b0f14;
+  --bg-2: #0f141b;
+  --bg-3: #151c25;
+  --text: #e7eef7;
+  --muted: #9fb0c5;
+  --primary: #35f29a; /* lime/menta */
+  --primary-2: #25c57d;
+  --danger: #ff5a7a;
+  --warning: #ffbd4a;
+  --card: #0e141b;
+  --border: #1e2834;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --radius: 14px;
 }
 
-.logo{
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 800;
-  letter-spacing: .3px;
+/* ---------- Layout generali ---------- */
+.topbar{
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #0b0f14, #0b0f14f5 70%, #0b0f1400 100%);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+}
+.topbar .left{ display:flex; align-items:center; gap:10px; }
+.topbar .logo{ border-radius: 8px; box-shadow: var(--shadow); }
+.topbar strong{ font-weight: 700; letter-spacing: .3px; }
+.topbar .grow{ flex:1; }
+.topbar .top-actions{ display:flex; align-items:center; gap:10px; }
+
+.tabs{
+  position: sticky; top: 54px; z-index: 19;
+  display: flex; gap: 8px;
+  padding: 10px 14px 12px;
+  background: linear-gradient(180deg, #0b0f14 60%, #0b0f1400);
+  border-bottom: 1px solid var(--border);
 }
 
-.grow{ flex: 1; }
+.tab{
+  flex: 1; text-align: center;
+  background: var(--bg-3); color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 12px; border-radius: 999px;
+  font-weight: 600; letter-spacing: .2px;
+}
+.tab.active{ background: #142029; border-color: #274356; box-shadow: inset 0 0 0 2px #1f3140; }
 
-.top-actions{
-  display: flex;
-  gap: 8px;
-  align-items: center;
+.content{
+  padding: 14px; max-width: 980px; margin: 0 auto;
+  display: grid; gap: 16px;
 }
 
-/* ===========================
-   2) BUTTONS
-   =========================== */
-.btn{
-  appearance: none;
-  border: 1px solid #2a2f59;
-  background: #121735;
-  color: var(--txt);
-  border-radius: var(--radius);
-  padding: 8px 12px;
-  cursor: pointer;
-  user-select: none;
-  transition: transform var(--t-fast), background var(--t-fast), border-color var(--t-fast), opacity var(--t-fast);
-}
-.btn:hover{ transform: translateY(-1px); }
-.btn:active{ transform: translateY(0); }
-.btn:disabled{ opacity:.6; cursor:not-allowed; }
-
-.btn.small{ padding: 6px 10px; border-radius: var(--radius-s); font-size: 12px; }
-.btn.primary{ background: var(--primary); border-color: var(--primary); }
-.btn.primary:hover{ background: var(--primary-700); border-color: var(--primary-700); }
-.btn.light{ background: var(--bg-elev-2); }
-
-/* A11y focus */
-button:focus-visible,
-[role="button"]:focus-visible,
-input:focus-visible,
-select:focus-visible,
-a:focus-visible{
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
-
-/* ===========================
-   3) MAIN LAYOUT
-   =========================== */
-main{
-  max-width: var(--container-w);
-  margin: 16px auto;
-  padding: 0 12px;
-}
-
-.tabs{ display:flex; gap:8px; margin:10px 0 6px; }
-
-.filters{
-  display:flex; gap:10px; flex-wrap:wrap;
-  margin:6px 0 14px;
-}
-
-.filter-block{
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 8px 10px;
-  min-width: 220px;
-}
-
-.two-col{
-  display: grid; gap: 14px;
-  grid-template-columns: 1.2fr .8fr;
-}
-@media (max-width: 900px){
-  .two-col{ grid-template-columns: 1fr; }
-}
-
+/* ---------- Card Swipe ---------- */
 .card{
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-l);
-  padding: 12px;
-}
-
-.row{ display:flex; gap:10px; align-items:center; }
-.likebar{ display:flex; gap:10px; justify-content:center; margin-top:12px; }
-.likebar .btn{ width: 48%; font-weight: 700; }
-
-.section-title{
-  margin: 8px 0 6px 0;
-  font-weight: 800;
-  letter-spacing: .2px;
-}
-
-/* ===========================
-   4) SWIPE CARD
-   =========================== */
-#socImg{
-  width:100%;
-  height:360px;
-  object-fit:cover;
-  border-radius: 12px;
-}
-#selfieImg{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-  border-radius: 12px;
-  margin-top: 8px;
-}
-
-.swipe-card{
-  touch-action: pan-y;
-  will-change: transform;
-  transition: transform .18s ease-out;
-}
-.swipe-card.grabbing{
-  transition: none;
-  cursor: grabbing;
-}
-
-/* ===========================
-   5) CHAT PANE
-   =========================== */
-#chatPane{
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
-  width: min(420px, 92vw);
-  max-height: 60vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-l);
+  position: relative;
+  background: linear-gradient(180deg, #101822, #0f151d);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
   box-shadow: var(--shadow);
-  z-index: 50;
+}
+.card-img{
+  width: 100%; height: 340px; display:block; object-fit: cover;
+  background: #0d131a;
+}
+.card-info{ padding: 12px 14px 8px; }
+.card-info h2{ margin: 0 0 4px; font-size: 20px; }
+.meta{ margin: 0; color: var(--muted); font-size: 13px; }
+.bio{ margin: 8px 0 0; color: #cfe3f5; font-size: 14px; line-height: 1.35; }
+
+.card-actions{
+  display:flex; gap: 10px; justify-content: center; padding: 12px 14px 16px;
+  background: #0e141b;
+  border-top: 1px solid var(--border);
 }
 
-#chatHeader{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:10px 12px; border-bottom:1px solid var(--line);
+/* ---------- Buttons ---------- */
+.btn{
+  appearance: none; border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 14px; background: #131b24; color: var(--text);
+  font-weight: 700; letter-spacing: .2px;
+  box-shadow: none; transition: transform .06s ease, background .2s ease, border-color .2s ease;
+}
+.btn:active{ transform: translateY(1px) scale(.98); }
+.btn.yes{ background: linear-gradient(180deg, #1a3f2c, #153725); border-color: #1f6b45; }
+.btn.yes:hover{ background:#16492e; }
+.btn.no{ background: linear-gradient(180deg, #2b1a20, #24151a); border-color: #6b1f36; }
+.btn.no:hover{ background:#3a1e27; }
+.btn.plus{
+  background: linear-gradient(180deg, #103926, #0e321f);
+  border-color: #1f6b45;
+  color: var(--primary);
+}
+.btn.ghost{
+  background: #10161d; border-color: #2b3948; color:#cbeedd;
+}
+.btn.send{ background: linear-gradient(180deg, #163b2b, #0f2f22); border-color:#1f6b45; }
+
+/* ---------- Selfie blur ---------- */
+.selfie{
+  position: relative; overflow: hidden;
+  background: var(--card); border:1px solid var(--border); border-radius: var(--radius);
+}
+.selfie img{ width: 100%; height: 220px; object-fit: cover; display:block; }
+.selfie-blur{ filter: blur(10px) brightness(.9); transform: scale(1.02); }
+.selfie .btn{
+  position: absolute; inset: auto 12px 12px auto;
+  backdrop-filter: blur(4px);
 }
 
-#chatList{
-  list-style:none;
-  margin:0; padding:12px;
-  overflow:auto; flex:1;
+/* ---------- Filtri & suggerimenti ---------- */
+.nearby{
+  background: var(--card); border:1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 12px 14px; box-shadow: var(--shadow);
 }
-#chatList li{
-  background:#10163a;
-  border:1px solid #1e2554;
-  border-radius: 10px;
-  padding: 8px 10px;
-  margin-bottom: 8px;
-  max-width: 85%;
-}
+.nearby h3{ margin: 2px 4px 10px; font-size: 18px; }
+.filters{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px; }
+@media (max-width: 560px){ .filters{ grid-template-columns: 1fr; } }
 
-#chatComposer{
-  display:flex; gap:8px; padding:10px; border-top:1px solid var(--line);
+.f{ display:flex; flex-direction: column; gap: 6px; }
+.f label{ font-size: 12px; color: var(--muted); }
+.f input[type="text"]{
+  width: 100%; background:#0f141b; color: var(--text);
+  border:1px solid var(--border); border-radius: 10px; padding: 10px 12px;
 }
-#chatInput{
-  flex:1; min-width:0;
-  background: var(--bg-elev-1);
-  border:1px solid var(--line);
-  border-radius: 10px;
-  color: var(--txt);
-  padding:8px 10px;
-}
+.f input[type="range"]{ width: 100%; }
 
-/* ===========================
-   6) PROFILE OVERLAY
-   =========================== */
-#profilePage{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.45);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index: 60;
+.suggestions{
+  position: relative; margin-top: 6px;
+  background:#0e141b; border:1px solid var(--border); border-radius: 10px;
+  max-height: 220px; overflow:auto; display:none;
 }
-#profileSheet{
-  width: min(720px, 96vw);
-  max-height: 86vh;
-  overflow: auto;
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 14px;
+.suggestions.show{ display:block; }
+.suggestions .item{
+  padding: 10px 12px; border-bottom:1px solid #17202a; display:flex; align-items:center; gap:10px;
 }
-.sheet-head{
-  display:flex; gap:10px; align-items:center; justify-content:space-between;
-  border-bottom:1px solid var(--line);
-  padding-bottom:8px; margin-bottom:10px;
-}
+.suggestions .item:last-child{ border-bottom:0; }
+.suggestions .item:hover{ background:#121a23; }
 
-/* Verified badge + docs + gallery */
-.badge-verified{
-  display:inline-flex; gap:6px; align-items:center;
-  background: var(--success-bg);
-  color: var(--success-fg);
-  border-radius: 999px;
-  padding: 4px 8px;
-  font: 600 12px system-ui;
+/* ---------- Griglia “Vicino a te” ---------- */
+.grid{
+  margin-top: 12px; display:grid; gap: 10px;
+  grid-template-columns: repeat(2, minmax(0,1fr));
 }
+@media (min-width: 720px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.grid .tile{
+  background:#0e141b; border:1px solid var(--border); border-radius: 12px; overflow:hidden;
+  transition: transform .06s ease, background .2s ease;
+}
+.grid .tile:active{ transform: scale(.98); }
+.grid .thumb{ width:100%; height:120px; object-fit:cover; display:block; background:#0d131a; }
+.grid .tile .tinfo{ padding:8px 10px; }
+.grid .tinfo .tname{ margin:0 0 2px; font-weight:700; }
+.grid .tmeta{ margin:0; color:var(--muted); font-size:12px; }
 
-.doc-item{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  padding:8px;
-  border-radius:10px;
-  background: var(--bg-elev-2);
-  border: 1px solid var(--line);
-  color: var(--txt);
+/* ---------- Sheets (chat & profilo) ---------- */
+.sheet{
+  position: fixed; inset: auto 0 0 0; z-index: 30;
+  background: #0b0f14cc; backdrop-filter: blur(6px);
+  transform: translateY(100%); transition: transform .25s ease;
 }
+.sheet .sheet-header{
+  display:flex; align-items:center; gap:10px; padding: 10px 12px;
+  background:#0f151d; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+}
+.sheet .icon.close{ background: transparent; border: 1px solid var(--border); color:#cdeedc; border-radius:10px; padding: 6px 10px; }
+.sheet .sheet-body{ max-height: 55vh; overflow:auto; background:#0e141b; padding: 12px; }
 
-.gallery{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-.gallery img{
-  width: 100%;
-  height: 92px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-/* ===========================
-   7) NEARBY GRID
-   =========================== */
-.grid-near{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-@media (max-width: 480px){
-  .grid-near{ grid-template-columns: 1fr; }
-}
-
-.card-near{
-  background: var(--bg-elev-2);
-  color: var(--txt);
-  border-radius: 12px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  text-decoration: none;
-  transition: transform var(--t-fast), border-color var(--t-fast), background var(--t-fast);
-}
-.card-near:hover{ transform: translateY(-1px); }
-.card-near:active{ transform: translateY(0); }
-
-/* ===========================
-   8) MATCH OVERLAY
-   =========================== */
-#matchOverlay{
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.4);
-  z-index: 9998;
-}
-#matchBox{
-  background: var(--accent);
-  color: var(--txt);
-  border-radius: var(--radius-xl);
-  padding: 20px;
-  max-width: 90vw;
-  box-shadow: var(--shadow);
-  animation: fadeIn .18s ease-out both, scaleIn .18s ease-out both;
-}
-
-/* ===========================
-   9) GEO + SPONSOR BAR
-   =========================== */
-#geoBar{
-  position: fixed;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
-  background: #0b0b3a;
-  color: var(--txt);
-  border-radius: 12px;
-  padding: 10px;
-  z-index: 9997;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid var(--line);
-}
-
-#sponsorBar{
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 48px;
-  background: #0b0b3a;
-  color: var(--txt);
-  opacity: .95;
-  font: 500 14px system-ui;
-  border-top: 1px solid var(--line);
-}
-
-/* ===========================
-   10) FORM ELEMENTS / PILLS
-   =========================== */
-input[type="text"],
-input[type="email"],
-input[type="search"],
-input[list],
-select{
-  appearance: none;
-  background: var(--bg-elev-1);
-  color: var(--txt);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 8px 10px;
-}
-
-input[type="range"]{
-  accent-color: var(--primary);
-}
-
-.pill{
-  appearance:none;
-  border:1px solid #2a2f59;
-  border-radius:999px;
-  background:#0b0b3a;
-  color:var(--txt);
-  padding:6px 10px;
-}
-
-/* ===========================
-   11) UTILITIES
-   =========================== */
+.sheet.show{ transform: translateY(0); }
 .hidden{ display:none !important; }
-.no-scroll{ overflow: hidden; }
 
-.meta{ opacity: .8; }
-
-/* Animations */
-.fade-in{ animation: fadeIn .18s ease-out both; }
-.scale-in{ animation: scaleIn .18s ease-out both; }
-
-@keyframes fadeIn{
-  from{ opacity: 0; }
-  to{   opacity: 1; }
+/* Chat */
+#chatPane{ border-top-left-radius: 16px; border-top-right-radius: 16px; }
+.chat-list{ padding: 12px; display:flex; flex-direction: column; gap: 8px; }
+.msg{ background:#0f161f; border:1px solid var(--border); border-radius: 12px; padding: 8px 10px; max-width: 75%; }
+.msg.me{ background:#122929; border-color:#1f6b45; align-self: flex-end; }
+.composer{
+  display:flex; gap: 8px; padding: 10px; background:#0f151d; border-top:1px solid var(--border);
 }
-@keyframes scaleIn{
-  from{ transform: scale(.92); }
-  to{   transform: scale(1); }
+.composer input{
+  flex:1; background:#0f141b; color:var(--text); border:1px solid var(--border); border-radius: 10px; padding:10px 12px;
 }
 
-/* Subtle focus ring fallback for anchored cards */
-a:focus-visible .card-near{
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+/* ---------- Sponsor footer + Ads ---------- */
+.sponsor{
+  position: sticky; bottom: 0; z-index: 18;
+  margin-top: 14px;
+  background: #0b0f14;
+  border-top: 1px solid var(--border);
+}
+.sponsor-wrap{
+  text-align:center; padding: 12px 10px 6px;
+}
+.sponsor-title{ color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+.sponsor-logo{
+  display:block; margin: 0 auto 6px; width: 120px; height:auto; object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,.4));
+}
+.sponsor-copy{ margin: 0 0 8px; color:#cfe3f5; font-size: 13px; }
+
+/* Banner ads placeholder (mock, occupa spazio fisso) */
+.ad-banner{
+  height: 56px; background: #0e141b; border-top:1px dashed #274356;
+  display:flex; align-items:center; justify-content:center; color:#7fbda0; font-size:12px;
 }
 
-/* ===========================
-   12) PRINT (optional, safe)
-   =========================== */
-@media print{
-  header, #geoBar, #sponsorBar, #chatPane, #matchOverlay, #profilePage{ display:none !important; }
-  main{ max-width: none; }
-  body{ background: #fff; color:#000; }
-  .card, .card-near{ border-color:#ccc; background:#fff; color:#000; }
+/* ---------- Utility ---------- */
+.center{ display:flex; align-items:center; justify-content:center; }
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size: 11px; padding: 4px 8px; border-radius: 999px;
+  background:#10222a; color:#a7f3ce; border:1px solid #1f6b45;
 }
+.empty{ text-align:center; color: var(--muted); padding: 16px; }
+
+/* ---------- Animazioni leggere ---------- */
+@keyframes pulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.03); filter: brightness(1.06); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.pulse { animation: pulse 1.6s ease-in-out infinite; }
+
+/* ---------- Scrollbar (Android/Chromium) ---------- */
+::-webkit-scrollbar{ height:10px; width:10px; }
+::-webkit-scrollbar-track{ background:#0c1218; }
+::-webkit-scrollbar-thumb{ background:#1d2a36; border-radius:10px; border:2px solid #0c1218; }
+::-webkit-scrollbar-thumb:hover{ background:#223242; }
