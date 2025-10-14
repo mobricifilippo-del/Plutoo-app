@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Plutoo</title>
-  <meta name="theme-color" content="#0b0f14" />
+  <meta name="theme-color" content="#100a14" />
   <meta name="description" content="Plutoo — social per cani: swipe, match, chat, selfie, servizi vicini e sponsor." />
   <!-- PWA & assets (percorsi relativi) -->
   <link rel="manifest" href="manifest.json" />
@@ -20,7 +20,8 @@
   <section id="homeScreen" class="home">
     <header class="home-top">
       <div class="logo-row">
-        <img src="plutoo-icon-512.png" alt="Plutoo" class="logo-big pulse" />
+        <!-- LOGO HEADER: fisso, nessuna animazione -->
+        <img src="plutoo-icon-512.png" alt="Plutoo" class="logo-big" />
         <div class="home-brand">
           <h1 class="brand">Plutoo</h1>
           <div class="auth-links">
@@ -32,13 +33,17 @@
       </div>
     </header>
 
+    <!-- LOGO CENTRALE: visibile, fermo; batte solo dopo click Entra (gestito in app.js) -->
     <div class="home-hero">
-      <button id="btnEnter" class="btn primary xl" type="button">Entra</button>
+      <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
+      <button id="btnEnter" class="btn primary xl" type="button" aria-label="Entra">Entra</button>
     </div>
 
     <footer class="home-sponsor">
       <div class="sponsor-title">Sponsor ufficiale</div>
-      <a id="sponsorLink" href="#" target="_blank" rel="noopener" class="sponsor-card">
+      <!-- Link sponsor cliccabile: l’URL può essere aggiornato in futuro.
+           app.js mostrerà il reward e poi navigherà su questo href. -->
+      <a id="sponsorLink" href="https://esempio-fido.com" target="_blank" rel="noopener" class="sponsor-card">
         <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </a>
