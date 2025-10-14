@@ -4,105 +4,99 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Plutoo</title>
-
-  <!-- CSS ATTIVO (prima era commentato) -->
-  <link rel="stylesheet" href="style.css?v=5" />
-
-  <!-- PWA facoltativo: se hai questi file nel repo lasciali, altrimenti rimuovi queste due righe -->
-  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0b3a" />
+  <meta name="description" content="Plutoo — Connetti i proprietari e i loro amici a quattro zampe. Swipe, match, chat, selfie, servizi vicini e altro." />
+  <!-- percorsi RELATIVI (niente / iniziale) -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <!-- HEADER -->
   <header>
     <div class="logo">🐾 <span>Plutoo</span></div>
-    <div class="grow"></div>
-    <div class="top-actions">
-      <button class="btn small" id="tabLove">Amore</button>
-      <button class="btn small" id="tabSocial">Social</button>
-      <button class="btn small" onclick="openPlusDialog()">Plus</button>
-    </div>
+
+    <nav class="tabs">
+      <button id="tabLove" class="active">❤️ Amore</button>
+      <button id="tabSocial">🐾 Social</button>
+    </nav>
+
+    <button id="btnPlus" class="btn" onclick="openPlusDialog()">Plutoo Plus</button>
   </header>
 
+  <!-- CARD SWIPE -->
   <main>
-    <!-- FILTRI -->
-    <div class="filters">
-      <div class="filter-block">
-        <label for="breedInput" style="display:block;font-size:12px;opacity:.8;margin-bottom:4px">Razza</label>
-        <input id="breedInput" list="breedsList" class="btn" placeholder="Seleziona razza…" style="min-width:220px" />
-        <datalist id="breedsList"></datalist>
+    <article id="socCard" class="card">
+      <img id="socImg" src="dog1.jpg" alt="Foto cane" />
+      <div class="card-info">
+        <h2 id="socTitle">Pluto, 3 anni</h2>
+        <p id="socMeta">Labrador • 2.1 km • Passeggiata</p>
+        <p id="socBio">Sono super socievole, amo correre e giocare con la palla.</p>
       </div>
+      <div class="actions">
+        <button id="socNo" class="btn ghost">🥲 No</button>
+        <button id="socYes" class="btn primary">❤️ Sì</button>
+      </div>
+    </article>
 
-      <div class="filter-block">
-        <label for="distRange" style="display:block;font-size:12px;opacity:.8;margin-bottom:4px">Distanza</label>
-        <div class="row">
-          <input id="distRange" type="range" min="1" max="100" value="25" />
-          <span id="distLabel">25 km</span>
+    <!-- SELFIE BLUR -->
+    <section class="selfie">
+      <img id="selfieImg" src="dog2.jpg" alt="Selfie" class="blur" />
+      <button id="unlockBtn" class="btn outline">Sblocca selfie</button>
+    </section>
+
+    <!-- VICINO A TE -->
+    <section class="nearby">
+      <h3>Vicino a te</h3>
+
+      <div class="filters">
+        <div class="f">
+          <label for="breedInput">Razza</label>
+          <input id="breedInput" type="text" placeholder="Cerca razza…" autocomplete="off" />
+          <div id="breedsList" class="suggestions"></div>
+        </div>
+
+        <div class="f">
+          <label for="distRange">Distanza: <span id="distLabel">5 km</span></label>
+          <input id="distRange" type="range" min="1" max="50" value="5" />
         </div>
       </div>
-    </div>
 
-    <div class="two-col">
-      <!-- SINISTRA: CARD / CHAT / SELFIE -->
-      <section class="card">
-        <article id="socCard">
-          <img id="socImg" src="dog1.jpg" alt="Foto amico a 4 zampe" />
-          <h2 id="socTitle" style="margin:10px 0 2px 0">Nome · Età</h2>
-          <div id="socMeta" class="meta">Razza · Distanza</div>
-          <p id="socBio" style="margin:8px 0 10px 0">Bio…</p>
-
-          <div class="likebar">
-            <button id="socNo" class="btn light">No</button>
-            <button id="socYes" class="btn primary">Sì</button>
-          </div>
-
-          <div class="row" style="justify-content:flex-end;margin-top:10px;gap:8px">
-            <button id="openProfile" class="btn small">Apri profilo</button>
-            <button id="openChat" class="btn small">Apri chat</button>
-          </div>
-
-          <div class="section-title">Selfie</div>
-          <img id="selfieImg" src="dog1.jpg" alt="Selfie" style="filter:blur(14px)" />
-          <div class="row" style="justify-content:flex-end;margin-top:8px">
-            <button id="unlockBtn" class="btn primary">Sblocca selfie</button>
-          </div>
-        </article>
-      </section>
-
-      <!-- DESTRA: VICINO A TE -->
-      <aside class="card">
-        <h3 class="section-title">Vicino a te</h3>
-        <div id="nearGrid" class="grid-near"></div>
-      </aside>
-    </div>
+      <div id="nearGrid" class="grid"></div>
+    </section>
   </main>
 
   <!-- CHAT -->
-  <section id="chatPane" class="hidden" role="dialog" aria-modal="true" aria-label="Chat">
-    <div id="chatHeader">
-      <strong>Chat</strong>
-      <button id="closeChat" class="btn small">Chiudi</button>
+  <section id="chatPane" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="chatHeader">
+    <div class="sheet-inner">
+      <div class="sheet-head">
+        <h3 id="chatHeader" class="m-0">Chat</h3>
+        <button id="closeChat" class="btn small" aria-label="Chiudi">Chiudi</button>
+      </div>
+      <div id="chatList" class="chat-list"></div>
+      <form id="chatComposer" class="composer" autocomplete="off">
+        <input id="chatInput" type="text" placeholder="Scrivi un messaggio…" />
+        <button id="chatSend" type="submit" class="btn send">Invia</button>
+      </form>
     </div>
-    <ul id="chatList"></ul>
-    <form id="chatComposer">
-      <input id="chatInput" type="text" placeholder="Scrivi un messaggio…" />
-      <button class="btn primary">Invia</button>
-    </form>
   </section>
 
   <!-- PROFILO -->
-  <section id="profilePage" class="hidden" role="dialog" aria-modal="true" aria-label="Profilo">
-    <div id="profileSheet">
+  <section id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <div class="sheet-inner">
       <div class="sheet-head">
-        <h3 id="ppTitle" style="margin:0">Profilo</h3>
+        <h3 id="ppTitle" class="m-0">Profilo</h3>
         <button class="btn small" onclick="closeProfilePage()">Chiudi</button>
       </div>
       <div id="ppBody"></div>
     </div>
   </section>
 
-  <!-- JS ATTIVO (caricato in fondo e con versione per bypassare cache) -->
-  <script defer src="app.js?v=5"></script>
+  <footer id="sponsorBar" data-ads>
+    <a href="#" id="sponsorFooter" target="_blank" rel="noopener">Sponsor ufficiale</a>
+  </footer>
+
+  <!-- anche qui: percorso RELATIVO -->
+  <script src="app.js" defer></script>
 </body>
 </html>
