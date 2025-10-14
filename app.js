@@ -24,7 +24,6 @@
   if (typeof window.sleep !== 'function') {
     window.sleep = (ms)=> new Promise(r=>setTimeout(r, ms));
   }
-  // mini event bus
   window.bus = {
     on(ev, fn){ (this._ = this._||{})[ev] = (this._[ev]||[]).concat(fn); },
     emit(ev, data){ (this._?.[ev]||[]).forEach(f=>{ try{ f(data) }catch(e){} }); }
@@ -55,7 +54,7 @@
   });
 })();
 
-/* CSS base iniezione (se mancano) */
+/* CSS quick helpers (solo classi utility necessarie) */
 (function injectCSS(){
   const css = `
     .hidden{display:none!important}
@@ -68,23 +67,13 @@
     .swipe-card.grabbing{transition:none;cursor:grabbing}
     #matchOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);z-index:9998}
     #matchBox{background:#121735;color:#e9ecff;border-radius:18px;padding:20px;max-width:90vw;box-shadow:0 20px 50px rgba(0,0,0,.35)}
-    #geoBar{position:fixed;left:10px;right:10px;bottom:10px;background:#0b0b3a;color:#e9ecff;border-radius:12px;padding:10px;z-index:9997;display:flex;justify-content:space-between;align-items:center;gap:10px}
     #sponsorBar{position:sticky;bottom:0;display:flex;justify-content:center;align-items:center;height:48px;background:#0b0b3a;color:#e9ecff;opacity:.95;font:500 14px system-ui}
-    .badge-verified{display:inline-flex;gap:6px;align-items:center;background:#133b12;color:#c7f9bf;border-radius:999px;padding:4px 8px;font:600 12px system-ui}
-    .doc-item{display:flex;justify-content:space-between;gap:8px;padding:8px;border-radius:10px;background:#0d1130;color:#e9ecff}
-    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-    .gallery img{width:100%;height:92px;object-fit:cover;border-radius:10px}
-    .grid-near{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .card-near{background:#0d1130;color:#e9ecff;border-radius:12px;padding:10px}
-    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-    .pill{appearance:none;border:1px solid #2a2f59;border-radius:999px;background:#0b0b3a;color:#e9ecff;padding:6px 10px}
   `;
   const style = document.createElement('style');
   style.textContent = css;
   document.head.appendChild(style);
 })();
 
-/* Helper text/html (safe) */
 function setText(sel, text, root=document){ try{ const el=root.querySelector(sel); if(el) el.textContent = (text ?? ''); }catch(e){} }
 function setHTML(sel, html, root=document){ try{ const el=root.querySelector(sel); if(el) el.innerHTML = (html ?? ''); }catch(e){} }
 
@@ -102,7 +91,6 @@ function setHTML(sel, html, root=document){ try{ const el=root.querySelector(sel
   }
   window.PlutooPlus = { isPlus, setPlus, refresh };
 
-  // Dialog mock per attivare/disattivare Plus
   window.openPlusDialog = function(){
     const dlg=document.createElement('dialog');
     dlg.innerHTML = `
@@ -121,7 +109,6 @@ function setHTML(sel, html, root=document){ try{ const el=root.querySelector(sel
   };
 
   onReady(()=>{
-    // Sponsor bar (scompare con Plus)
     if(!document.getElementById('sponsorBar')){
       const bar=document.createElement('div');
       bar.id='sponsorBar'; bar.setAttribute('data-ads','');
@@ -136,7 +123,6 @@ function setHTML(sel, html, root=document){ try{ const el=root.querySelector(sel
 /* ========================================================================
    2) openRewardDialog (globale) + profilo (open/close)
    ======================================================================== */
-// Shim rewarded dialog (mock) – bypass con Plus
 if (typeof window.openRewardDialog !== 'function') {
   window.openRewardDialog = function(message, after){
     try{
@@ -199,7 +185,7 @@ window.closeProfilePage = closeProfilePage;
    ======================================================================== */
 const Rewards = (function(){
   let swipeCount = 0;
-  let nextMilestone = 10; // 10 poi ogni 5
+  let nextMilestone = 10;
 
   function incSwipe(){
     swipeCount++;
@@ -225,7 +211,7 @@ const Rewards = (function(){
 
 
 /* ========================================================================
-   5) GEOLOCALIZZAZIONE (barra + permessi + eventi)
+   5) GEOLOCALIZZAZIONE
    ======================================================================== */
 const Geo = (function(){
   let coords = null;
@@ -237,7 +223,7 @@ const Geo = (function(){
         coords = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy };
         bar?.remove();
         bus.emit('geo', coords);
-      }, err=>{
+      }, _=>{
         bar?.querySelector('span').textContent = 'Impossibile ottenere la posizione';
         setTimeout(()=> bar?.remove(), 2500);
       });
@@ -266,7 +252,7 @@ const Geo = (function(){
 
 
 /* ========================================================================
-   6) DATI / BREEDS / DEMO
+   6) DATI DEMO
    ======================================================================== */
 const FALLBACK_BREEDS = [
   "Labrador Retriever","Golden Retriever","German Shepherd","French Bulldog","Bulldog","Poodle","Beagle","Rottweiler",
@@ -289,29 +275,27 @@ const FALLBACK_BREEDS = [
 ];
 
 const Demo = (function(){
-  // profili demo completi (con docs/galleria/badge)
   const dogs = [
     {
       id:1, name:'Milo', age:3, breed:'Labrador Retriever', dist:'1.2 km',
-      bio:'Ama l’acqua e i bastoni.', selfie:'selfie1.jpg', photo:'dog1.jpg', verified:true,
+      bio:'Ama l’acqua e i bastoni.', selfie:'assets/selfie1.jpg', photo:'assets/dog1.jpg', verified:true,
       docs:[{name:'Vaccinazioni',status:'OK'},{name:'Microchip',status:'OK'}],
-      gallery:['dog1.jpg','dog1b.jpg','dog1c.jpg']
+      gallery:['assets/dog1.jpg','assets/dog1b.jpg','assets/dog1c.jpg']
     },
     {
       id:2, name:'Luna', age:2, breed:'Cane Corso', dist:'0.8 km',
-      bio:'Dolcissima ma protettiva.', selfie:'selfie2.jpg', photo:'dog2.jpg', verified:true,
+      bio:'Dolcissima ma protettiva.', selfie:'assets/selfie2.jpg', photo:'assets/dog2.jpg', verified:true,
       docs:[{name:'Vaccinazioni',status:'OK'},{name:'Passaporto',status:'OK'}],
-      gallery:['dog2.jpg','dog2b.jpg','dog2c.jpg']
+      gallery:['assets/dog2.jpg','assets/dog2b.jpg','assets/dog2c.jpg']
     },
     {
       id:3, name:'Rocky', age:4, breed:'Beagle', dist:'2.5 km',
-      bio:'Naso infallibile, goloso.', selfie:'selfie3.jpg', photo:'dog3.jpg', verified:false,
+      bio:'Naso infallibile, goloso.', selfie:'assets/selfie3.jpg', photo:'assets/dog3.jpg', verified:false,
       docs:[{name:'Vaccinazioni',status:'OK'}],
-      gallery:['dog3.jpg','dog3b.jpg','dog3c.jpg']
+      gallery:['assets/dog3.jpg','assets/dog3b.jpg','assets/dog3c.jpg']
     }
   ];
 
-  // “Vicino a te” demo (veterinari/toelettature/parchi)
   const nearby = [
     { id:'v1', type:'vet', name:'Vet Amici Animali', dist:'0.6 km', url:'#', rating:4.7 },
     { id:'g1', type:'groom', name:'Toelettatura Bau', dist:'0.9 km', url:'#', rating:4.5 },
@@ -327,29 +311,22 @@ const Demo = (function(){
 
 
 /* ========================================================================
-   7) FILTRI (razze / distanza / deck)
+   7) FILTRI
    ======================================================================== */
 const Filters = (function(){
-  let state = {
-    deck: 'love',      // 'love' | 'social'
-    breed: '',         // filtro razza
-    distKm: 25         // raggio (UI opzionale)
-  };
+  let state = { deck:'love', breed:'', distKm:25 };
 
-  function setDeck(v){ state.deck = v; bus.emit('filters', {...state}); }
-  function setBreed(v){ state.breed = v; bus.emit('filters', {...state}); }
-  function setDist(km){ state.distKm = km; bus.emit('filters', {...state}); }
+  function setDeck(v){ state.deck=v; bus.emit('filters', {...state}); }
+  function setBreed(v){ state.breed=v; bus.emit('filters', {...state}); }
+  function setDist(km){ state.distKm=km; bus.emit('filters', {...state}); }
   function get(){ return {...state}; }
 
   function bindUI(){
-    // Tabs Amore/Social
     $('#tabLove')?.addEventListener('click', ()=> setDeck('love'));
     $('#tabSocial')?.addEventListener('click', ()=> setDeck('social'));
 
-    // Input razza (datalist/autocomplete)
     const breedInput = $('#breedInput');
     if (breedInput) {
-      // populate datalist if exists
       const dl = $('#breedsList');
       if (dl && !dl.children.length){
         FALLBACK_BREEDS.forEach(b=>{
@@ -359,7 +336,6 @@ const Filters = (function(){
       breedInput.addEventListener('input', ()=> setBreed(breedInput.value||''));
     }
 
-    // Slider distanza
     const dist = $('#distRange');
     if (dist) {
       dist.addEventListener('input', ()=>{
@@ -375,17 +351,15 @@ const Filters = (function(){
 
 
 /* ========================================================================
-   8) UI: SWIPE/PROFILE/CHAT/SELFIE/NEARBY/DECKS
+   8) UI
    ======================================================================== */
 const UI = (function(){
-  let idx = 0;           // index corrente nel deck
-  let current = null;    // dog attivo
+  let idx = 0;
+  let current = null;
   let firstMessageSent = false;
 
-  /* ---- ELEMENTI RIFERIMENTO ---- */
   function el(){
     return {
-      // swipe card
       card: $('#socCard'),
       img: $('#socImg'),
       title: $('#socTitle'),
@@ -393,50 +367,32 @@ const UI = (function(){
       bio: $('#socBio'),
       btnNo: $('#socNo'),
       btnYes: $('#socYes'),
-
-      // deck selectors
-      tabLove: $('#tabLove'),
-      tabSocial: $('#tabSocial'),
-
-      // selfie/profile
       selfieImg: $('#selfieImg'),
       blurBtn: $('#unlockBtn'),
-
-      // profilo page
       ppTitle: $('#ppTitle'),
       ppBody: $('#ppBody'),
-
-      // chat
       chatOpen: $('#openChat'),
       chatPane: $('#chatPane'),
       chatList: $('#chatList'),
       chatInput: $('#chatInput'),
       chatSend: $('#chatSend'),
-
-      // nearby grid
-      nearGrid: $('#nearGrid'),
-
-      // filters
-      breedInput: $('#breedInput'),
-      distRange: $('#distRange')
+      nearGrid: $('#nearGrid')
     };
   }
 
-  /* ---- RENDER PROFILO MINI (sulla card) ---- */
   function renderCard(p){
     const E = el();
     current = p;
     setText('#socTitle', `${p.name} · ${p.age}`);
     setText('#socMeta',  `${p.breed} · ${p.dist}`);
     setText('#socBio',   p.bio || '');
-    if (E.img) E.img.src = p.photo || 'dog1.jpg';
+    if (E.img) E.img.src = p.photo || 'assets/dog1.jpg';
     if (E.selfieImg){
-      E.selfieImg.src = p.selfie || p.photo || 'dog1.jpg';
+      E.selfieImg.src = p.selfie || p.photo || 'assets/dog1.jpg';
       E.selfieImg.style.filter = isSelfieUnlocked(p) ? 'none' : 'blur(14px)';
     }
   }
 
-  /* ---- RENDER PROFILO COMPLETO (pagina) ---- */
   function renderProfile(p){
     const E = el();
     setText('#ppTitle', p?.name || 'Profilo');
@@ -456,7 +412,7 @@ const UI = (function(){
 
     E.ppBody.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;margin:6px 0">
-        <img src="${p?.photo||'dog1.jpg'}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:14px">
+        <img src="${p?.photo||'assets/dog1.jpg'}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:14px">
         <div>
           <div style="font:700 16px system-ui">${p?.name||'-'} · ${p?.age||'--'}</div>
           <div style="opacity:.75">${p?.breed||'-'} · ${p?.dist||'-'}</div>
@@ -474,7 +430,7 @@ const UI = (function(){
 
       <h4 style="margin-top:14px">Selfie</h4>
       <div>
-        <img id="selfieImgPP" src="${p?.selfie||p?.photo||'dog1.jpg'}" alt="" style="width:100%;max-width:440px;border-radius:14px;${isSelfieUnlocked(p)?'':'filter:blur(14px)'}">
+        <img id="selfieImgPP" src="${p?.selfie||p?.photo||'assets/dog1.jpg'}" alt="" style="width:100%;max-width:440px;border-radius:14px;${isSelfieUnlocked(p)?'':'filter:blur(14px)'}">
         <div style="margin-top:8px;display:flex;gap:8px">
           <button id="unlockBtnPP" class="btn primary">Sblocca selfie</button>
           <button class="btn light" onclick="closeProfilePage()">Chiudi</button>
@@ -482,12 +438,10 @@ const UI = (function(){
       </div>
     `;
 
-    // bind sblocco selfie anche qui
     $('#unlockBtnPP')?.addEventListener('click', ()=> clickSelfie(true));
     $('#selfieImgPP')?.addEventListener('click', ()=> clickSelfie(true));
   }
 
-  /* ---- CONTROLLO SELFIE ---- */
   function isSelfieUnlocked(p){
     try{ return localStorage.getItem('selfie:'+p.id)==='1'; }catch(_){ return false; }
   }
@@ -504,7 +458,6 @@ const UI = (function(){
     });
   }
 
-  /* ---- CHAT ---- */
   function openChat(){
     el().chatPane?.classList.remove('hidden');
     el().chatInput?.focus();
@@ -528,7 +481,6 @@ const UI = (function(){
     }
   }
 
-  /* ---- SWIPE stile Tinder ---- */
   function bindSwipe(){
     const card = el().card;
     if(!card) return;
@@ -567,7 +519,6 @@ const UI = (function(){
     window.addEventListener('touchmove', move, {passive:true});
     window.addEventListener('touchend', end);
 
-    // Bottoni fallback
     el().btnYes?.addEventListener('click', ()=> fling(1));
     el().btnNo ?.addEventListener('click', ()=> fling(-1));
 
@@ -579,7 +530,7 @@ const UI = (function(){
         card.style.transition = 'transform .18s ease-out';
         card.style.transform = 'translate(0,0) rotate(0)';
         Rewards.incSwipe();
-        if (Math.random() < 0.25) MatchOverlay.show(); // demo match
+        if (Math.random() < 0.25) MatchOverlay.show();
         next();
       }, 220);
     }
@@ -587,7 +538,6 @@ const UI = (function(){
     function pt(e){ return { x:(e.touches?.[0]?.clientX ?? e.clientX), y:(e.touches?.[0]?.clientY ?? e.clientY) }; }
   }
 
-  /* ---- NEARBY (griglia) + monetizzazione sui vet ---- */
   function renderNearby(list){
     const wrap = el().nearGrid;
     if(!wrap) return;
@@ -600,7 +550,6 @@ const UI = (function(){
       </a>
     `).join('');
 
-    // bind ads mock su click
     $$('[data-vet]', wrap).forEach(n=>{
       n.addEventListener('click', (e)=>{
         if (PlutooPlus.isPlus()) return;
@@ -611,16 +560,13 @@ const UI = (function(){
     });
   }
 
-  /* ---- FILTRO LISTA E DECK ---- */
   function getDeck(){
     const { deck, breed } = Filters.get();
     let dogs = Demo.getDogs();
-
     if (breed) {
       const b = breed.toLowerCase();
       dogs = dogs.filter(d=> (d.breed||'').toLowerCase().includes(b));
     }
-    // demo: deck “social” non filtra contenuti diversi, ma permette UI diversa in futuro
     return dogs;
   }
 
@@ -632,7 +578,6 @@ const UI = (function(){
   }
 
   function boot(){
-    // bind eventi globali UI
     $('#openChat') ?.addEventListener('click', openChat);
     $('#closeChat')?.addEventListener('click', closeChat);
     $('#chatSend') ?.addEventListener('click', sendMessage);
@@ -641,24 +586,18 @@ const UI = (function(){
     $('#unlockBtn') ?.addEventListener('click', ()=> clickSelfie(false));
     $('#selfieImg') ?.addEventListener('click', ()=> clickSelfie(false));
 
-    // Apri profilo completo (se c'è il trigger)
     $('#openProfile')?.addEventListener('click', ()=>{
       openProfilePage();
       renderProfile(current);
     });
 
-    // deck init
     const list = getDeck();
     idx = 0;
     if (list.length) renderCard(list[idx]);
 
-    // swipe
     bindSwipe();
-
-    // nearby
     renderNearby(Demo.getNearby());
 
-    // reagire ai filtri
     bus.on('filters', ()=>{
       const list2 = getDeck();
       idx = 0;
@@ -666,11 +605,7 @@ const UI = (function(){
     });
   }
 
-  return { boot, renderCard, renderProfile, next, openChat, sendMessage };
+  return { boot, next };
 })();
 
-
-/* ========================================================================
-   9) AVVIO
-   ======================================================================== */
 onReady(()=>{ UI.boot(); });
