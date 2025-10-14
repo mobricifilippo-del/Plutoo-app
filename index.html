@@ -7,56 +7,9 @@
   <title>Plutoo</title>
   <meta name="theme-color" content="#0b0b3a" />
   <meta name="description" content="Plutoo — Connetti i proprietari di cani. Swipe, match, chat, selfie, veterinari vicini e altro." />
-  <!-- PWA/Android quality-of-life (facoltativi) -->
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <!-- <link rel="manifest" href="manifest.json"> -->
 
-  <!-- opzionale: il tuo style.css; l'app funziona anche senza, grazie al CSS iniettato da app.js -->
-  <!-- <link rel="stylesheet" href="style.css" /> -->
-
-  <style>
-    /* IMPORTANTISSIMO: evita il “flash” dell’overlay Profilo/Chat prima che app.js inietti il CSS */
-    .hidden{display:none!important}
-
-    /* layout base non invasivo (puoi rimuoverlo se usi il tuo style.css) */
-    body{margin:0;background:#0a0f2a;color:#e9ecff;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-    header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;background:#0b0b3a;padding:10px 12px;border-bottom:1px solid #1a1f4a}
-    .logo{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.3px}
-    .grow{flex:1}
-    .btn{appearance:none;border:1px solid #2a2f59;background:#121735;color:#e9ecff;border-radius:10px;padding:8px 12px;cursor:pointer}
-    .btn.small{padding:6px 10px;border-radius:8px;font-size:12px}
-    .btn.primary{background:#2c3be0;border-color:#2c3be0}
-    .btn.light{background:#0d1130}
-    main{max-width:980px;margin:16px auto;padding:0 12px}
-    .tabs{display:flex;gap:8px;margin:10px 0 6px}
-    .filters{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
-    .filter-block{background:#0d1130;border:1px solid #1a1f4a;border-radius:12px;padding:8px 10px}
-    .two-col{display:grid;gap:14px;grid-template-columns:1.2fr .8fr}
-    @media (max-width: 900px){.two-col{grid-template-columns:1fr}}
-    .card{background:#0d1130;border:1px solid #1a1f4a;border-radius:14px;padding:12px}
-    .row{display:flex;gap:10px;align-items:center}
-    .top-actions{display:flex;gap:8px;align-items:center}
-    .likebar{display:flex;gap:10px;justify-content:center;margin-top:12px}
-    .likebar .btn{width:48%;font-weight:700}
-    .section-title{margin:8px 0 6px 0;font-weight:800;letter-spacing:.2px}
-    /* chat sheet */
-    #chatPane{position:fixed;right:10px;bottom:10px;width:min(420px,92vw);max-height:60vh;display:flex;flex-direction:column;background:#0d1130;border:1px solid #1a1f4a;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.35);z-index:50}
-    #chatHeader{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #1a1f4a}
-    #chatList{list-style:none;margin:0;padding:12px;overflow:auto;flex:1}
-    #chatComposer{display:flex;gap:8px;padding:10px;border-top:1px solid #1a1f4a}
-    #chatInput{flex:1;min-width:0;background:#0b0f28;border:1px solid #1a1f4a;border-radius:10px;color:#e9ecff;padding:8px 10px}
-    /* profile overlay */
-    #profilePage{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:60}
-    #profileSheet{width:min(720px,96vw);max-height:86vh;overflow:auto;background:#0d1130;border:1px solid #1a1f4a;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.35);padding:14px}
-    .sheet-head{display:flex;gap:10px;align-items:center;justify-content:space-between;border-bottom:1px solid #1a1f4a;padding-bottom:8px;margin-bottom:10px}
-    /* swipe card specifics */
-    #socImg{width:100%;height:360px;object-fit:cover;border-radius:12px}
-    #selfieImg{width:100%;height:220px;object-fit:cover;border-radius:12px;margin-top:8px}
-    .meta{opacity:.8}
-    /* near grid placeholder container, UI from app.js */
-    #nearGrid .card-near{display:block;text-decoration:none}
-  </style>
+  <!-- ✅ usa SOLO il CSS esterno -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -72,7 +25,6 @@
   </header>
 
   <main>
-
     <!-- FILTRI -->
     <div class="filters">
       <div class="filter-block">
@@ -91,11 +43,9 @@
     </div>
 
     <div class="two-col">
-
       <!-- COLONNA SINISTRA: SWIPE / SELFIE / CHAT / PROFILO -->
       <section class="card">
-        <!-- SWIPE CARD -->
-        <article id="socCard">
+        <article id="socCard" class="swipe-card">
           <img id="socImg" src="dog1.jpg" alt="Dog" />
           <h2 id="socTitle" style="margin:10px 0 2px 0">Nome · Età</h2>
           <div id="socMeta" class="meta">Razza · Distanza</div>
@@ -123,12 +73,9 @@
       <!-- COLONNA DESTRA: VICINO A TE -->
       <aside class="card">
         <h3 class="section-title">Vicino a te</h3>
-        <!-- Popolata da app.js (Demo.getNearby → renderNearby) -->
         <div id="nearGrid" class="grid-near"></div>
       </aside>
-
     </div>
-
   </main>
 
   <!-- CHAT PANE -->
@@ -151,11 +98,11 @@
         <h3 id="ppTitle" style="margin:0">Profilo</h3>
         <button class="btn small" onclick="closeProfilePage()">Chiudi</button>
       </div>
-      <div id="ppBody"><!-- popolato da app.js → renderProfile --></div>
+      <div id="ppBody"></div>
     </div>
   </section>
 
   <!-- Script principale -->
-  <script src="app.js" defer></script>
+  <script src="app.js"></script>
 </body>
 </html>
