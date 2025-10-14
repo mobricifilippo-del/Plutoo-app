@@ -7,11 +7,20 @@
   <title>Plutoo</title>
   <meta name="theme-color" content="#0b0b3a" />
   <meta name="description" content="Plutoo — Connetti i proprietari di cani. Swipe, match, chat, selfie, veterinari vicini e altro." />
+  <!-- PWA/Android quality-of-life (facoltativi) -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <!-- <link rel="manifest" href="manifest.json"> -->
+
   <!-- opzionale: il tuo style.css; l'app funziona anche senza, grazie al CSS iniettato da app.js -->
   <!-- <link rel="stylesheet" href="style.css" /> -->
+
   <style>
+    /* IMPORTANTISSIMO: evita il “flash” dell’overlay Profilo/Chat prima che app.js inietti il CSS */
+    .hidden{display:none!important}
+
     /* layout base non invasivo (puoi rimuoverlo se usi il tuo style.css) */
-    body{margin:0;background:#0a0f2a;color:#e9ecff;font:14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif}
+    body{margin:0;background:#0a0f2a;color:#e9ecff;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
     header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;background:#0b0b3a;padding:10px 12px;border-bottom:1px solid #1a1f4a}
     .logo{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.3px}
     .grow{flex:1}
@@ -146,10 +155,7 @@
     </div>
   </section>
 
-  <!-- Match overlay viene creato da app.js se non presente;
-       lasciamo che lo generi lui per garantire struttura corretta. -->
-
   <!-- Script principale -->
-  <script src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
