@@ -82,24 +82,32 @@
     </header>
 
     <!-- HOME -->
-    <main id="view-home" class="view view-active" role="main">
-      <section class="hero">
-        <img src="plutoo-icon-512.png?v=gold3" alt="Plutoo" class="hero-logo" />
-        <p class="hero-subtitle" data-i18n="home.subtitle">
-          L’app etica che unisce proprietari di Dog per amicizie reali e accoppiamenti responsabili.
-        </p>
-        <button id="btnEnter" class="btn btn-primary btn-enter" data-i18n="home.enter">ENTRA</button>
+    <div class="home-wrap">
+  <!-- Logo app grande e centrato -->
+  <img src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
 
-        <!-- Sponsor -->
-        <div class="sponsor">
-          <button id="sponsorFido" class="sponsor-card" aria-label="Fido sponsor">
-            <img src="sponsor-logo.png?v=gold3" alt="Fido" class="sponsor-logo" />
-            <div class="sponsor-copy">
-              <div class="sponsor-title">Fido</div>
-              <div class="sponsor-text" data-i18n="sponsor.fido">Il gelato per i nostri amici a quattro zampe</div>
-            </div>
-          </button>
-        </div>
+  <!-- Bottone ENTRA -->
+  <div class="hero-actions">
+    <button id="btnEnter" class="btn btn-gold btn-lg">ENTRA</button>
+  </div>
+
+  <!-- Sponsor in basso con badge -->
+  <div class="home-sponsor">
+    <div class="sponsor-badge">Sponsor ufficiale</div>
+    <button id="sponsorFido" class="sponsor-card sponsor-card--home">
+      <img src="sponsor-logo.png" class="sponsor-logo" alt="Fido" />
+      <div class="sponsor-copy">
+        <div class="sponsor-title">Fido</div>
+        <div class="sponsor-text">Il gelato per i nostri amici a quattro zampe</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Box etico sotto allo sponsor -->
+  <button id="btnEthic" class="ethic-cta">
+    Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
+  </button>
+</div>
       </section>
 
       <footer class="ethic-footer">
