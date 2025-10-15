@@ -663,3 +663,39 @@ $(".hero")?.addEventListener("click", (e) => {
   if (!btn) show("nearby");
 });
 /* ========== /PATCH ========== */
+/* ===== HOTFIX: interazioni robuste + nascondi "Vicino a te" in Home ===== */
+
+// delega globale: qualsiasi bottone con data-view cambia vista
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-view]");
+  if (!b) return;
+  e.preventDefault();
+  show(b.dataset.view);
+});
+
+// Entra sempre funzionante (backup)
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#btnEnter")) {
+    e.preventDefault();
+    show("nearby");
+  }
+});
+
+// override leggero di show() per gestire la visibilità e il tab "Vicino a te"
+const __show = show; // conserva la versione attuale
+show = function(view){
+  __show(view);
+  // Nascondi il TAB "Vicino a te" quando sei in Home
+  const nearTab = document.getElementById("tab-nearby");
+  if (nearTab) {
+    if (view === "home") nearTab.style.display = "none";
+    else nearTab.style.display = "";
+  }
+};
+
+// all’avvio: home visibile e tab "Vicino a te" nascosto
+document.addEventListener("DOMContentLoaded", () => {
+  const nearTab = document.getElementById("tab-nearby");
+  if (nearTab) nearTab.style.display = "none";
+});
+/* ===== /HOTFIX ===== */
