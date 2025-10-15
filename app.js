@@ -483,9 +483,10 @@ $("#btnCloseLikes")?.addEventListener("click", () => likesPage.hidden = true);
 
 console.log("%cChat, Selfie & Likes loaded (Part 4/5)", "color:gold;font-weight:bold;");
 /* ---------------------------------------------------------
+   /* ---------------------------------------------------------
    Plutoo — Gold Edition
    app.js (Parte 5/5)
-   Plus, Filtri, i18n live, salvataggi
+   Plus, Filtri, i18n live, salvataggi, fix visibilità
    --------------------------------------------------------- */
 
 // --------------------- Plus (mock) ---------------------
@@ -562,11 +563,41 @@ $$(".lang-btn").forEach(btn => {
   });
 });
 
+// --------------------- Funzione show con fix visibilità ---------------------
+function show(view) {
+  const targetId = "view-" + view;
+  $$(".view").forEach(v => {
+    if (v.id === targetId) {
+      v.classList.add("view-active");
+      v.removeAttribute("hidden");        // <— mostra la vista
+    } else {
+      v.classList.remove("view-active");
+      v.setAttribute("hidden", "");       // <— nasconde le altre
+    }
+  });
+  state.currentView = view;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 // --------------------- Salvataggi selfie ---------------------
 try {
   const savedSelfie = localStorage.getItem("selfieUnlocked");
   if (savedSelfie) state.selfieUnlocked = JSON.parse(savedSelfie);
 } catch(e){ console.warn("Selfie storage parse error"); }
+
+// --------------------- Inizializzazione visibilità ---------------------
+document.addEventListener("DOMContentLoaded", () => {
+  // Solo la home visibile al primo avvio
+  $$(".view").forEach(v => {
+    if (v.id === "view-home") {
+      v.classList.add("view-active");
+      v.removeAttribute("hidden");
+    } else {
+      v.classList.remove("view-active");
+      v.setAttribute("hidden", "");
+    }
+  });
+});
 
 // --------------------- Final log ---------------------
 console.log("%cPlutoo Gold Edition fully loaded ✅", "color:gold;font-weight:bold;font-size:14px;");
