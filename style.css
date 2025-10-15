@@ -388,3 +388,26 @@ input:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--ri
 
 /* sponsor che appare anche nelle altre pagine: non farlo gigante */
 .page-sponsor .sponsor-inline img{ width: 40px; height: 40px; object-fit: contain; }
+/* ====== HOME GOLD CLEAN ====== */
+.home-wrap { display:flex; flex-direction:column; align-items:center; gap:18px; padding:24px 16px 40px; }
+.hero-logo { width: 280px; max-width: 70vw; aspect-ratio: 1/1; object-fit: contain; filter: drop-shadow(0 8px 30px rgba(255,215,0,.1)); }
+.hero-actions { margin-top: 6px; }
+.btn.btn-lg { padding: 14px 30px; font-size: 18px; border-radius: 32px; }
+
+.home-sponsor { margin-top: 8px; width: min(520px, 92vw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.sponsor-badge { color: var(--gold); font-weight: 800; letter-spacing: .2px; }
+.sponsor-card--home { width: 100%; display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; padding: 14px 16px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,215,0,.25); box-shadow: 0 8px 24px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02); }
+.sponsor-card--home .sponsor-logo { width: 56px; height: 56px; object-fit: contain; border-radius: 12px; background: #121218; padding: 6px; }
+.sponsor-title { font-weight: 800; font-size: 18px; color: #fff; }
+.sponsor-text { font-size: 13px; opacity: .85; }
+
+.ethic-cta { margin-top: 12px; width: min(520px, 92vw); border-radius: 22px; padding: 14px 16px; font-weight: 800; border: 1px solid rgba(255,215,0,.5); background: radial-gradient(120% 120% at 50% -10%, rgba(255,215,0,.12), rgba(255,215,0,.04) 42%, rgba(255,215,0,.02) 60%, transparent); box-shadow: 0 8px 30px rgba(255,215,0,.12); }
+
+/* Nascondi il tab "Vicino a te" quando sei in Home (con il nostro show() hotfix già attivo) */
+#tab-nearby { display: none; }
+
+/* Griglia Vicino a te più elegante */
+#nearbyGrid { gap: 14px; }
+.card.frame-gold { border: 1px solid rgba(255,215,0,.25); border-radius: 14px; overflow: hidden; background: #121218; }
+.card-photo img { display:block; width:100%; height: 180px; object-fit: cover; }
+.card-info { padding: 10px 12px; }
