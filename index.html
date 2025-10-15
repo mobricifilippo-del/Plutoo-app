@@ -254,5 +254,43 @@
     });
   </script>
   <script src="./app.js?v=gold"></script>
+  <script>
+/* HOTFIX inline: attiva interazioni anche senza app.js */
+(function () {
+  // funzione show che gestisce l'attributo "hidden"
+  window.show = function(view){
+    var targetId = "view-" + view;
+    document.querySelectorAll(".view").forEach(function(v){
+      if (v.id === targetId) { v.classList.add("view-active"); v.removeAttribute("hidden"); }
+      else { v.classList.remove("view-active"); v.setAttribute("hidden",""); }
+    });
+    // Nascondi il tab "Vicino a te" quando si è in home
+    var nearTab = document.getElementById("tab-nearby");
+    if (nearTab) nearTab.style.display = (view === "home") ? "none" : "";
+    window.scrollTo({top:0, behavior:"smooth"});
+  };
+
+  document.addEventListener("DOMContentLoaded", function(){
+    // Inizializza: mostra solo HOME e nasconde il tab "Vicino a te"
+    document.querySelectorAll(".view").forEach(function(v){
+      if (v.id === "view-home") { v.classList.add("view-active"); v.removeAttribute("hidden"); }
+      else { v.classList.remove("view-active"); v.setAttribute("hidden",""); }
+    });
+    var nearTab = document.getElementById("tab-nearby");
+    if (nearTab) nearTab.style.display = "none";
+
+    // ENTRA → Vicino a te
+    document.getElementById("btnEnter")?.addEventListener("click", function(e){
+      e.preventDefault(); show("nearby");
+    });
+
+    // Delegazione per tutti i tab (Amore, Giochiamo, Plus, Ricerca…)
+    document.addEventListener("click", function(e){
+      var b = e.target.closest("[data-view]");
+      if (b && b.dataset.view) { e.preventDefault(); show(b.dataset.view); }
+    });
+  });
+})();
+</script>
 </body>
 </html>
