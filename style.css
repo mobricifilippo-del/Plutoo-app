@@ -376,3 +376,15 @@ input:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--ri
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important;transition:none !important;}
 }
+/* ---- Override Home richiesti ---- */
+.hero-logo{ width: 260px; max-width: 70vw; margin-top: 8px; }
+.hero-subtitle{ display: none !important; } /* via la frase */
+.home-sponsor{ margin: 18px auto 6px; max-width: 520px; display: flex; flex-direction: column; align-items: center; }
+.sponsor-badge{ color: var(--gold); font-weight: 800; margin-bottom: 6px; }
+.sponsor-card--home{ width: 100%; }
+.sponsor-card--home .sponsor-logo{ width: 56px; height: 56px; object-fit: contain; }
+.sponsor-card--home .sponsor-title{ font-size: 18px; }
+.sponsor-card--home .sponsor-text{ display:block; font-size: 13px; }
+
+/* sponsor che appare anche nelle altre pagine: non farlo gigante */
+.page-sponsor .sponsor-inline img{ width: 40px; height: 40px; object-fit: contain; }
