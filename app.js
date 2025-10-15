@@ -226,7 +226,104 @@ document.addEventListener("DOMContentLoaded", () => {
   $$("#btnEthic, #btnEthic2, #btnEthic3, #btnEthic4, #btnEthic5, #btnEthicGlobal")
     .forEach(b => b.addEventListener("click", openEthic));
 });
+/* ---------------------------------------------------------
+   Plutoo — Gold Edition
+   app.js (Parte 2/5) — VERSIONE FIX
+   Rewards mock (upgrade), sponsor, luoghi PET, griglia Dog, profilo
+   --------------------------------------------------------- */
 
+// --------------------- Reward system mock (upgrade) ---------------------
+// ⚠️ Non ridichiariamo 'const Rewards' (definito in Parte 1):
+// aggiorniamo solo il suo metodo .show per evitare l'errore
+// "Identifier 'Rewards' has already been declared".
+Rewards.show = async (reason = "") => {
+  if (state.plus) return true; // Plus: niente ads
+  return new Promise(resolve => {
+    openDialog("rewardDialog");
+    $("#rewardPlay").onclick = () => {
+      $("#rewardDialog").hidden = true;
+      setTimeout(() => resolve(true), 800);
+    };
+    $("#rewardClose").onclick = () => {
+      $("#rewardDialog").hidden = true;
+      resolve(false);
+    };
+  });
+};
+
+// --------------------- Sponsor + Etica ---------------------
+$$("#sponsorFido, #sponsorFido2").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    if (await Rewards.show("sponsor")) openMaps("Fido il gelato per cani");
+  });
+});
+
+// Tutti i pulsanti etici (home, pagine, footer globale)
+$$("#btnEthic, #btnEthic2, #btnEthic3, #btnEthic4, #btnEthic5, #btnEthicGlobal").forEach(b => {
+  b.addEventListener("click", async () => {
+    if (await Rewards.show("ethic")) {
+      const q = state.lang === "en" ? "animal shelters near me" : "canili vicino a me";
+      openMaps(q);
+    }
+  });
+});
+
+// --------------------- Luoghi PET (dropdown) ---------------------
+$$(".dropdown-item").forEach(btn => {
+  btn.addEventListener("click", async e => {
+    const type = e.currentTarget.dataset.service;
+    if (await Rewards.show("service")) {
+      const q = state.lang === "en"
+        ? (type === "canili" ? "animal shelters near me" : `${type} for dogs near me`)
+        : `${type} vicino a me`;
+      openMaps(q);
+    }
+  });
+});
+
+// --------------------- Dataset cani mock ---------------------
+const dogSamples = [
+  { id: 1, name: "Luna",  breed: "Labrador",          age: 3, sex: "female", img: "dog1.jpg", verified: true  },
+  { id: 2, name: "Rocky", breed: "Bulldog",           age: 4, sex: "male",   img: "dog2.jpg", verified: false },
+  { id: 3, name: "Milo",  breed: "Golden Retriever",  age: 2, sex: "male",   img: "dog3.jpg", verified: true  },
+  { id: 4, name: "Bella", breed: "Barboncino",        age: 1, sex: "female", img: "dog4.jpg", verified: false },
+];
+state.dogs = dogSamples;
+
+// --------------------- Griglia “Vicino a te” ---------------------
+function renderNearby() {
+  const grid = $("#nearbyGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  state.dogs.forEach(dog => {
+    const card = document.createElement("div");
+    card.className = "card frame-gold";
+    card.innerHTML = `
+      <div class="card-photo"><img src="\${dog.img}" alt="\${escapeHTML(dog.name)}" /></div>
+      <div class="card-info small">
+        <div><strong>\${escapeHTML(dog.name)}</strong>, \${dog.age}</div>
+        <div>\${escapeHTML(dog.breed)}</div>
+      </div>`;
+    card.addEventListener("click", () => openProfile(dog.id));
+    grid.appendChild(card);
+  });
+}
+document.addEventListener("DOMContentLoaded", renderNearby);
+
+// --------------------- Profilo Dog ---------------------
+function openProfile(id) {
+  const d = state.dogs.find(x => x.id === id);
+  if (!d) return;
+  state.currentDog = d;
+  $("#profileMainPhoto").innerHTML = `<img src="\${d.img}" alt="\${escapeHTML(d.name)}" />`;
+  $("#profileName").textContent = d.name;
+  $("#profileInfo").textContent = \`\${d.breed}, \${d.age} anni\`;
+  $("#badgeVerified").hidden = !d.verified;
+  $("#profilePage").hidden = false;
+}
+$("#btnCloseProfile")?.addEventListener("click", () => { $("#profilePage").hidden = true; });
+
+console.log("%cPlutoo logic loaded (Part 2/5 FIX)", "color:gold;font-weight:bold;");
 // --------------------- Splash fail-safe (se app.js carica prima dell’inline) ---------------------
 document.addEventListener("DOMContentLoaded", () => {
   const splash = $("#splash");
@@ -240,99 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Log di servizio
 console.log("%cPlutoo app core loaded (Part 1/5)", "color:gold;font-weight:bold;");
-/* ---------------------------------------------------------
-   Plutoo — Gold Edition
-   app.js (Parte 2/5)
-   Rewards mock, sponsor, luoghi PET, griglia Dog, profilo
-   --------------------------------------------------------- */
 
-// --------------------- Reward system mock ---------------------
-const Rewards = {
-  show: async (reason = "") => {
-    if (state.plus) return true; // Plus: niente ads
-    return new Promise(resolve => {
-      openDialog("rewardDialog");
-      $("#rewardPlay").onclick = () => {
-        $("#rewardDialog").hidden = true;
-        setTimeout(() => resolve(true), 800);
-      };
-      $("#rewardClose").onclick = () => {
-        $("#rewardDialog").hidden = true;
-        resolve(false);
-      };
-    });
-  }
-};
-
-// --------------------- Sponsor + Etica ---------------------
-$("#sponsorFido")?.addEventListener("click", async () => {
-  if (await Rewards.show("sponsor")) openMaps("Fido il gelato per cani");
-});
-$("#sponsorFido2")?.addEventListener("click", async () => {
-  if (await Rewards.show("sponsor")) openMaps("Fido il gelato per cani");
-});
-$("#btnEthic, #btnEthic2, #btnEthic3, #btnEthic4")?.forEach?.(b => {
-  b.addEventListener("click", async () => {
-    if (await Rewards.show("ethic")) openEthic();
-  });
-});
-
-// --------------------- Luoghi PET ---------------------
-$$(".dropdown-item").forEach(btn => {
-  btn.addEventListener("click", async e => {
-    const type = e.target.dataset.service;
-    if (await Rewards.show("service")) {
-      const q = state.lang === "en"
-        ? (type === "canili" ? "animal shelters near me" : `${type} for dogs near me`)
-        : `${type} vicino a me`;
-      openMaps(q);
-    }
-  });
-});
-
-// --------------------- Dataset cani mock ---------------------
-const dogSamples = [
-  { id: 1, name: "Luna", breed: "Labrador", age: 3, sex: "female", img: "dog1.jpg", verified: true },
-  { id: 2, name: "Rocky", breed: "Bulldog", age: 4, sex: "male", img: "dog2.jpg", verified: false },
-  { id: 3, name: "Milo", breed: "Golden Retriever", age: 2, sex: "male", img: "dog3.jpg", verified: true },
-  { id: 4, name: "Bella", breed: "Barboncino", age: 1, sex: "female", img: "dog4.jpg", verified: false },
-];
-state.dogs = dogSamples;
-
-// --------------------- Griglia “Vicino a te” ---------------------
-function renderNearby() {
-  const grid = $("#nearbyGrid");
-  if (!grid) return;
-  grid.innerHTML = "";
-  state.dogs.forEach(dog => {
-    const card = document.createElement("div");
-    card.className = "card frame-gold";
-    card.innerHTML = `
-      <div class="card-photo"><img src="${dog.img}" alt="${dog.name}" /></div>
-      <div class="card-info small">
-        <div><strong>${escapeHTML(dog.name)}</strong>, ${dog.age}</div>
-        <div>${escapeHTML(dog.breed)}</div>
-      </div>`;
-    card.addEventListener("click", () => openProfile(dog.id));
-    grid.appendChild(card);
-  });
-}
-document.addEventListener("DOMContentLoaded", renderNearby);
-
-// --------------------- Profilo Dog ---------------------
-function openProfile(id) {
-  const d = state.dogs.find(x => x.id === id);
-  if (!d) return;
-  state.currentDog = d;
-  $("#profileMainPhoto").innerHTML = `<img src="${d.img}" alt="${d.name}" />`;
-  $("#profileName").textContent = d.name;
-  $("#profileInfo").textContent = `${d.breed}, ${d.age} anni`;
-  $("#badgeVerified").hidden = !d.verified;
-  $("#profilePage").hidden = false;
-}
-$("#btnCloseProfile")?.addEventListener("click", () => { $("#profilePage").hidden = true; });
-
-console.log("%cPlutoo logic loaded (Part 2/5)", "color:gold;font-weight:bold;");
 /* ---------------------------------------------------------
    Plutoo — Gold Edition
    app.js (Parte 3/5)
