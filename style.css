@@ -1,369 +1,378 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-  <title>Plutoo — Gold Edition</title>
+/* ---------------------------------------------------------
+   Plutoo — Gold Edition
+   STYLE.CSS (completo)
+   Tema premium viola + oro. Mobile-first.
+   Compatibile Android WebView e PWA iOS.
+   --------------------------------------------------------- */
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0B0B0F">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="plutoo-icon-192.png">
+/* --------------- Reset & Base --------------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="plutoo-icon-192.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="plutoo-icon-192.png">
+html, body {
+  height: 100%;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+  color-scheme: dark;
+}
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="style.css?v=gold2" />
+:root{
+  --bg: #0D0B12;          /* viola profondo */
+  --bg-2:#151225;         /* superfici */
+  --bg-3:#1C1930;         /* superfici + chiare */
+  --text:#FAFAFA;         /* testo principale (mai nero) */
+  --muted:#CFCFE2;
+  --gold:#CDA434;         /* oro primario */
+  --gold-2:#E3CA72;
+  --ring:rgba(205,164,52,.35);
+  --shadow:rgba(0,0,0,.35);
+  --radius:16px;
+  --radius-lg:22px;
+  --radius-xl:28px;
+  --space:14px;
+  --space-lg:20px;
+  --maxw:1080px;
+  --speed:.25s;
+  --speed-slow:.6s;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+}
 
-  <!-- CSP (compatibile con Android WebView; da irrigidire in produzione) -->
-  <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' https: blob: data:;
-                 img-src 'self' https: blob: data:;
-                 media-src 'self' https: blob: data:;
-                 style-src 'self' 'unsafe-inline';
-                 script-src 'self' 'unsafe-inline';
-                 connect-src 'self' https:;
-                 frame-src https:;">
-</head>
-<body class="theme-gold">
-  <!-- Splash -->
-  <div id="splash" class="splash">
-    <div class="splash-inner">
-      <img src="plutoo-icon-512.png?v=gold2" alt="Plutoo" class="splash-logo" />
-      <div class="splash-heart" aria-hidden="true">💛</div>
-    </div>
-  </div>
+body.theme-gold{
+  font-family: var(--font);
+  background:
+    radial-gradient(1400px 900px at 50% -10%, #1A1630 0, var(--bg) 60%),
+    var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+}
 
-  <!-- App Wrapper -->
-  <div id="app" class="app hidden">
-    <!-- Top bar -->
-    <header class="topbar" role="banner" aria-label="Top bar">
-      <div class="topbar-left">
-        <button class="brand" id="navHome" aria-label="Plutoo Home">
-          <img src="plutoo-icon-192.png?v=gold2" alt="Plutoo" class="brand-mark" />
-          <span class="brand-text">Plutoo</span>
-        </button>
-      </div>
+img{display:block;max-width:100%;}
 
-      <nav class="tabs" role="navigation" aria-label="Main tabs">
-        <button class="tab" data-view="nearby" id="tab-nearby" data-i18n="tab.nearby">Vicino a te</button>
-        <button class="tab" data-view="love" id="tab-love">
-          <span data-i18n="tab.love">Amore</span> 🥲💛
-        </button>
-        <button class="tab" data-view="play" id="tab-play">
-          <span data-i18n="tab.play">Giochiamo insieme</span> 🥲🐕
-        </button>
-        <button class="tab" data-view="plus" id="tab-plus">
-          <span data-i18n="tab.plus">Plus</span> ⭐
-        </button>
-        <button class="tab" data-view="filters" id="tab-filters">
-          <span data-i18n="tab.filters">Ricerca personalizzata</span> 🔍
-        </button>
+/* Utilities */
+.hidden{display:none !important;}
+[hidden]{display:none !important;}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 var(--space);}
 
-        <!-- Luoghi PET dropdown -->
-        <div class="dropdown">
-          <button class="tab dropdown-toggle" id="tab-services">
-            <span data-i18n="tab.services">Luoghi PET</span> 🐾
-          </button>
-          <div class="dropdown-menu" role="menu" aria-labelledby="tab-services">
-            <button class="dropdown-item" data-service="veterinari" data-i18n="services.veterinari">Veterinari</button>
-            <button class="dropdown-item" data-service="toelettature" data-i18n="services.toelettature">Toelettature</button>
-            <button class="dropdown-item" data-service="negozi" data-i18n="services.negozi">Negozi</button>
-            <button class="dropdown-item" data-service="parchi" data-i18n="services.parchi">Parchi</button>
-            <button class="dropdown-item" data-service="addestratori" data-i18n="services.addestratori">Addestratori</button>
-            <button class="dropdown-item" data-service="canili" data-i18n="services.canili">Canili</button>
-          </div>
-        </div>
-      </nav>
+/* Focus ring */
+:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring);border-radius:10px;}
 
-      <div class="topbar-right">
-        <!-- Switch lingua con bandiere -->
-        <div class="lang-switch" role="group" aria-label="Language switch">
-          <button class="lang-btn" data-lang="it" aria-pressed="true" title="Italiano" id="btn-lang-it">🇮🇹</button>
-          <button class="lang-btn" data-lang="en" aria-pressed="false" title="English" id="btn-lang-en">🇬🇧</button>
-        </div>
-        <!-- Login/Registrati in riquadri dorati -->
-        <div class="auth-chip-group">
-          <button id="btnLogin" class="chip chip-gold" data-i18n="auth.login">Login</button>
-          <button id="btnSignup" class="chip chip-gold" data-i18n="auth.signup">Registrati</button>
-        </div>
-      </div>
-    </header>
+/* --------------- Splash --------------- */
+.splash{
+  position:fixed;inset:0;z-index:1000;
+  display:grid;place-items:center;
+  background:var(--bg);
+  transition:opacity .5s ease, visibility .5s ease;
+}
+.splash.hide{opacity:0;visibility:hidden;}
+.splash-inner{text-align:center;}
+.splash-logo{width:140px;margin:0 auto 10px;filter:drop-shadow(0 12px 24px rgba(0,0,0,.45));}
+.splash-heart{font-size:30px;opacity:.95;animation:pulse 1.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 
-    <!-- HOME -->
-    <main id="view-home" class="view view-active" role="main">
-      <section class="hero">
-        <img src="plutoo-icon-512.png?v=gold2" alt="Plutoo" class="hero-logo" />
-        <p class="hero-subtitle" data-i18n="home.subtitle">
-          L’app etica che unisce proprietari di Dog per amicizie reali e accoppiamenti responsabili.
-        </p>
-        <button id="btnEnter" class="btn btn-primary btn-enter" data-i18n="home.enter">ENTRA</button>
+/* --------------- App Wrapper --------------- */
+.app{min-height:100vh;display:flex;flex-direction:column}
 
-        <!-- Sponsor -->
-        <div class="sponsor">
-          <button id="sponsorFido" class="sponsor-card" aria-label="Fido sponsor">
-            <img src="sponsor-logo.png?v=gold2" alt="Fido" class="sponsor-logo" />
-            <div class="sponsor-copy">
-              <div class="sponsor-title">Fido</div>
-              <div class="sponsor-text" data-i18n="sponsor.fido">
-                Il gelato per i nostri amici a quattro zampe
-              </div>
-            </div>
-          </button>
-        </div>
-      </section>
+/* --------------- Topbar --------------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px var(--space);
+  background:rgba(21,18,37,.82);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(205,164,52,.18);
+}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.brand{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;border:0;color:var(--text);
+}
+.brand-mark{width:28px;height:28px;border-radius:8px;box-shadow:0 1px 0 rgba(255,255,255,.06) inset;}
+.brand-text{font-weight:800;letter-spacing:.2px;}
 
-      <!-- Box etico -->
-      <footer class="ethic-footer">
-        <button id="btnEthic" class="ethic-btn">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
-    </main>
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  background:transparent;color:var(--text);
+  border:1px solid rgba(205,164,52,.22);
+  border-radius:999px;padding:8px 12px;font-size:14px;
+  transition:background var(--speed), border-color var(--speed), transform .08s;
+  white-space:nowrap;
+}
+.tab:hover{background:rgba(205,164,52,.1);border-color:var(--gold);}
+.tab:active{transform:translateY(1px);}
 
-    <!-- VICINO A TE -->
-    <main id="view-nearby" class="view" hidden>
-      <section class="grid grid-2" id="nearbyGrid" aria-live="polite" aria-busy="false">
-        <!-- Cards generate in app.js -->
-      </section>
-      <footer class="page-footer">
-        <div class="page-sponsor">
-          <button id="sponsorFido2" class="sponsor-inline">
-            <img src="sponsor-logo.png?v=gold2" alt="Fido" />
-            <span data-i18n="sponsor.fido">Il gelato per i nostri amici a quattro zampe</span>
-          </button>
-        </div>
-        <button id="btnEthic2" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
-    </main>
+/* Dropdown */
+.dropdown{position:relative}
+.dropdown-menu{
+  position:absolute;top:110%;left:0;min-width:180px;z-index:20;
+  background:var(--bg-2);border:1px solid rgba(205,164,52,.25);
+  border-radius:14px;padding:8px;box-shadow:0 10px 24px var(--shadow);
+  display:none;
+}
+.dropdown:hover .dropdown-menu{display:block;}
+.dropdown-item{
+  width:100%;text-align:left;border:0;background:transparent;color:var(--text);
+  padding:10px;border-radius:10px;font-size:14px;
+}
+.dropdown-item:hover{background:rgba(205,164,52,.08);}
 
-    <!-- AMORE (swipe singolo) -->
-    <main id="view-love" class="view" hidden>
-      <section class="swipe-stage">
-        <div id="swipeCard" class="card-swipe"></div>
-        <div class="swipe-actions">
-          <button id="btnDislike" class="btn ghost big" aria-label="Dislike">🥲</button>
-          <button id="btnLike" class="btn gold big" aria-label="Like">💛</button>
-        </div>
-      </section>
+/* Right area */
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.lang-switch{display:inline-flex;gap:6px;}
+.lang-btn{
+  width:38px;height:28px;line-height:26px;font-size:18px;
+  border:1px solid rgba(205,164,52,.25);
+  background:rgba(17,15,28,.5);border-radius:8px;
+  transition:border-color var(--speed), box-shadow var(--speed), transform .08s;
+}
+.lang-btn[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 0 3px var(--ring);}
+.lang-btn:active{transform:translateY(1px);}
 
-      <div id="matchPopup" class="match-popup" hidden aria-live="assertive">
-        <div class="match-inner">
-          <div class="match-heart" aria-hidden="true">💛</div>
-          <h3 data-i18n="match.title">È un match!</h3>
-          <button id="btnGoChat" class="btn btn-primary" data-i18n="match.goChat">Vai in chat</button>
-        </div>
-      </div>
+.auth-chip-group{display:inline-flex;gap:8px;}
+.chip{
+  border-radius:999px;padding:8px 12px;font-size:14px;color:var(--text);
+  background:rgba(17,15,28,.5);border:1px solid rgba(255,255,255,.08);
+}
+.chip-gold{
+  border-color:var(--gold);
+  background:linear-gradient(180deg, rgba(205,164,52,.18), rgba(205,164,52,.06));
+  box-shadow:inset 0 0 0 1px rgba(205,164,52,.18), 0 2px 10px rgba(0,0,0,.25);
+}
 
-      <footer class="page-footer">
-        <button id="btnEthic3" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
-    </main>
+/* --------------- Views --------------- */
+.view{display:none;padding:14px var(--space);}
+.view.view-active{display:block;}
 
-    <!-- GIOCHIAMO INSIEME -->
-    <main id="view-play" class="view" hidden>
-      <section class="grid grid-2" id="playGrid">
-        <!-- Cards generate in app.js -->
-      </section>
-      <footer class="page-footer">
-        <button id="btnEthic4" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
-    </main>
+/* --------------- Home --------------- */
+.hero{text-align:center;padding:26px var(--space) 18px;}
+.hero-logo{width:180px;margin:6px auto 12px;filter:drop-shadow(0 10px 24px rgba(0,0,0,.4));}
+.pulse-once{animation:pulseLogo .9s ease forwards;}
+@keyframes pulseLogo{
+  0%{transform:scale(.9);opacity:.8}
+  60%{transform:scale(1.15);opacity:1;filter:drop-shadow(0 0 24px rgba(205,164,52,.55))}
+  100%{transform:scale(1);opacity:1}
+}
+.hero-subtitle{color:var(--muted);max-width:560px;margin:0 auto 16px;}
 
-    <!-- PLUS -->
-    <main id="view-plus" class="view" hidden>
-      <section class="plus-hero">
-        <h2 data-i18n="plus.title">Plutoo Gold</h2>
-        <p data-i18n="plus.copy">Rimuove tutti gli annunci, sblocca i filtri Gold e le funzioni Premium.</p>
-        <div class="price" data-i18n="plus.price">€39,90 / anno</div>
-        <button id="btnBuyPlus" class="btn btn-primary" data-i18n="plus.buy">Abbonati ora</button>
-      </section>
-      <section class="plus-features">
-        <ul>
-          <li data-i18n="plus.f1">Niente pubblicità, niente attese</li>
-          <li data-i18n="plus.f2">Filtri Gold sbloccati</li>
-          <li data-i18n="plus.f3">Accesso prioritario alle novità</li>
-        </ul>
-      </section>
-    </main>
+.btn{
+  user-select:none;border:1px solid rgba(255,255,255,.12);
+  background:rgba(17,15,28,.55);color:var(--text);
+  border-radius:999px;padding:10px 14px;font-weight:700;letter-spacing:.2px;
+  transition:transform .08s, background var(--speed), border-color var(--speed), box-shadow var(--speed);
+}
+.btn:hover{border-color:var(--gold);}
+.btn:active{transform:translateY(1px);}
+.btn-primary{
+  background:linear-gradient(180deg, rgba(205,164,52,.22), rgba(205,164,52,.1));
+  border-color:var(--gold);
+  box-shadow:0 8px 26px rgba(205,164,52,.2), inset 0 0 0 1px rgba(205,164,52,.25);
+}
+.btn-enter{padding:12px 24px;font-size:16px;margin-bottom:12px;}
+.btn.gold{
+  background:linear-gradient(180deg, rgba(205,164,52,.28), rgba(205,164,52,.12));
+  border-color:var(--gold);
+  box-shadow:0 6px 22px rgba(205,164,52,.22), inset 0 0 0 1px rgba(205,164,52,.28);
+}
+.btn.ghost{background:transparent;border-color:rgba(255,255,255,.18);}
 
-    <!-- RICERCA PERSONALIZZATA -->
-    <main id="view-filters" class="view" hidden>
-      <form id="filtersForm" class="filters-form" autocomplete="off">
-        <div class="field">
-          <label for="breed" data-i18n="filters.breed">Razza</label>
-          <input id="breed" name="breed" type="text" placeholder="Es. Labrador" data-i18n-ph="filters.breedPh" />
-          <div id="breedSuggest" class="suggest" aria-live="polite"></div>
-        </div>
+/* Sponsor */
+.sponsor{display:flex;justify-content:center;margin:10px 0 6px;}
+.sponsor-card{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(17,15,28,.55);
+  border:1px solid rgba(205,164,52,.22);
+  border-radius:18px;padding:10px 12px;
+  box-shadow:0 8px 22px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.sponsor-logo{width:40px;height:40px;object-fit:contain;border-radius:10px;}
+.sponsor-title{font-weight:800}
+.sponsor-text{color:var(--muted);font-size:13px;}
 
-        <div class="field">
-          <label for="age" data-i18n="filters.age">Età</label>
-          <input id="age" name="age" type="number" min="0" max="30" inputmode="numeric" />
-        </div>
+.page-sponsor{display:flex;justify-content:center;margin:4px 0 8px;}
+.sponsor-inline{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(205,164,52,.22);border-radius:999px;padding:8px 12px;background:rgba(17,15,28,.5);}
 
-        <div class="field">
-          <label for="weight" data-i18n="filters.weight">Peso (kg)</label>
-          <input id="weight" name="weight" type="number" min="0" max="150" inputmode="numeric" />
-        </div>
+/* Box etico */
+.ethic-footer, .global-ethic{
+  position:sticky;bottom:0;z-index:20;
+  background:linear-gradient(180deg, rgba(0,0,0,0), rgba(17,15,28,.92) 35%, rgba(17,15,28,.96));
+  padding:10px var(--space) 14px;display:flex;justify-content:center;
+}
+.ethic-btn{
+  width:100%;max-width:680px;
+  background:linear-gradient(180deg, rgba(205,164,52,.2), rgba(205,164,52,.08));
+  border:1px solid var(--gold);color:var(--text);
+  padding:12px 16px;border-radius:16px;font-weight:800;
+  box-shadow:0 12px 30px rgba(205,164,52,.2), inset 0 0 0 1px rgba(205,164,52,.26);
+}
+.ethic-btn.small{max-width:460px;padding:10px 14px;}
 
-        <div class="field">
-          <label for="height" data-i18n="filters.height">Altezza (cm)</label>
-          <input id="height" name="height" type="number" min="0" max="120" inputmode="numeric" />
-        </div>
+/* --------------- Griglie --------------- */
+.grid{display:grid;gap:12px;}
+.grid-2{grid-template-columns:1fr 1fr;}
+@media(min-width:680px){.grid-2{grid-template-columns:repeat(3,1fr);}}
 
-        <div class="field">
-          <label for="sex" data-i18n="filters.sex">Sesso</label>
-          <select id="sex" name="sex">
-            <option value="" data-i18n="filters.any">Qualsiasi</option>
-            <option value="male" data-i18n="filters.male">Maschio</option>
-            <option value="female" data-i18n="filters.female">Femmina</option>
-          </select>
-        </div>
+/* Card */
+.card{
+  position:relative;overflow:hidden;border-radius:18px;
+  background:var(--bg-2);border:1px solid rgba(205,164,52,.18);
+  box-shadow:0 14px 30px rgba(0,0,0,.35);
+}
+.card-photo{aspect-ratio:1/1;overflow:hidden;}
+.card-info{
+  position:absolute;left:8px;right:8px;bottom:8px;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:8px;
+  text-shadow:0 2px 10px rgba(0,0,0,.7);
+}
+.card-info.small{position:static;padding:8px}
 
-        <div class="field">
-          <label for="distance" data-i18n="filters.distance">Distanza (km)</label>
-          <input id="distance" name="distance" type="number" min="1" max="500" inputmode="numeric" />
-        </div>
+/* Cornice oro animata */
+.frame-gold{position:relative;border-radius:inherit;overflow:hidden;}
+.frame-gold::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:0 0 0 1px rgba(205,164,52,.28),
+             inset 0 0 0 1px rgba(255,255,255,.03),
+             0 0 22px rgba(205,164,52,.12),
+             0 0 44px rgba(205,164,52,.08);
+  animation:goldGlow 2.6s ease-in-out infinite;
+}
+@keyframes goldGlow{
+  0%,100%{opacity:.8;filter:drop-shadow(0 0 0 rgba(205,164,52,0))}
+  50%{opacity:1;filter:drop-shadow(0 0 18px rgba(205,164,52,.45))}
+}
+.glow{animation:goldGlow 2.6s ease-in-out infinite;}
 
-        <div class="divider" data-i18n="filters.goldTitle">Filtri Gold</div>
-        <div class="field">
-          <label for="verified" data-i18n="filters.verified">Badge verificato</label>
-          <input type="checkbox" id="verified" name="verified" />
-        </div>
+/* --------------- Swipe --------------- */
+.swipe-stage{position:relative;height:calc(100dvh - 220px);display:grid;place-items:center;touch-action:pan-y;}
+.card-swipe{
+  width:min(92vw, 420px);height:min(72vh,560px);
+  border-radius:24px;border:1px solid rgba(205,164,52,.2);
+  background:var(--bg-2);box-shadow:0 22px 44px rgba(0,0,0,.45);overflow:hidden;
+}
+.card-solo .swipe-photo{width:100%;height:100%;object-fit:cover;}
+.swipe-info{position:absolute;left:12px;right:12px;bottom:12px;text-shadow:0 2px 10px rgba(0,0,0,.7);}
 
-        <div class="field">
-          <label for="mating" data-i18n="filters.mating">Disponibilità accoppiamento</label>
-          <input type="checkbox" id="mating" name="mating" />
-        </div>
+/* Match popup */
+.match-popup{
+  position:fixed;inset:0;display:grid;place-items:center;z-index:60;
+  background:rgba(10,8,16,.65);backdrop-filter:blur(6px);
+}
+.match-inner{
+  width:min(88vw,380px);text-align:center;
+  background:linear-gradient(180deg, rgba(205,164,52,.18), rgba(205,164,52,.06));
+  border:1px solid rgba(205,164,52,.35);border-radius:20px;padding:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5);animation:pop .22s ease;
+}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.match-heart{font-size:42px;margin-bottom:8px;}
 
-        <div class="field">
-          <label for="pedigree" data-i18n="filters.pedigree">Genealogia</label>
-          <input type="checkbox" id="pedigree" name="pedigree" />
-        </div>
+/* --------------- Plus --------------- */
+.plus-hero{
+  text-align:center;padding:16px;margin:6px auto 10px;max-width:720px;
+  background:rgba(21,18,37,.55);border:1px solid rgba(205,164,52,.2);border-radius:18px;
+  box-shadow:0 14px 32px rgba(0,0,0,.36);
+}
+.price{
+  display:inline-block;margin:6px 0 10px;padding:8px 12px;border-radius:999px;
+  border:1px solid var(--gold);
+  background:linear-gradient(180deg, rgba(205,164,52,.22), rgba(205,164,52,.08));
+  font-weight:800;
+}
+.plus-features{list-style:none;margin:0;padding:0;display:grid;gap:8px;}
+.plus-features li{
+  background:rgba(21,18,37,.5);border:1px solid rgba(205,164,52,.18);
+  border-radius:12px;padding:10px 12px;
+}
 
-        <div class="actions">
-          <button type="submit" class="btn btn-primary" data-i18n="filters.apply">Applica</button>
-          <button type="reset" class="btn ghost" data-i18n="filters.reset">Reset</button>
-        </div>
-      </form>
-      <footer class="page-footer">
-        <button id="btnEthic5" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
-    </main>
+/* --------------- Filtri --------------- */
+.filters-form{
+  max-width:720px;margin:8px auto;padding:12px;background:rgba(21,18,37,.5);
+  border:1px solid rgba(205,164,52,.18);border-radius:18px;box-shadow:0 12px 28px rgba(0,0,0,.35);
+  display:grid;gap:10px;
+}
+.field{display:grid;gap:6px}
+label{font-weight:700}
+input[type="text"], input[type="number"], select{
+  width:100%;background:var(--bg-3);color:var(--text);
+  border:1px solid rgba(205,164,52,.2);border-radius:12px;padding:10px 12px;font-size:15px;
+  transition:border-color var(--speed), box-shadow var(--speed);
+}
+input:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--ring);}
+.suggest{display:none;background:var(--bg-2);border:1px solid rgba(205,164,52,.2);border-radius:12px;max-height:220px;overflow:auto;padding:6px;}
+.suggest.show{display:block;}
+.suggest .sugg{width:100%;text-align:left;border:0;background:transparent;color:var(--text);padding:8px;border-radius:10px;}
+.suggest .sugg:hover{background:rgba(205,164,52,.08);}
+.divider{
+  margin:6px 0 0;color:var(--gold);font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+  border-top:1px solid rgba(205,164,52,.22);padding-top:8px;
+}
+.actions{display:flex;gap:10px;}
 
-    <!-- PAGINA PROFILO DOG -->
-    <section id="profilePage" class="profile-page" hidden aria-modal="true" role="dialog" aria-labelledby="profileName">
-      <button class="profile-close" id="btnCloseProfile" aria-label="Chiudi">✕</button>
-      <div class="profile-content">
-        <div class="profile-photo frame-gold" id="profileMainPhoto"></div>
-        <div class="profile-meta">
-          <h2 id="profileName">Dog Name</h2>
-          <div class="profile-info" id="profileInfo"></div>
-          <div class="profile-badges">
-            <span class="badge badge-gold" id="badgeVerified" hidden>✔ Gold</span>
-          </div>
-        </div>
+/* --------------- Profile --------------- */
+.profile-page{
+  position:fixed;inset:0;z-index:70;background:rgba(10,8,16,.7);backdrop-filter:blur(6px);
+  display:grid;place-items:center;padding:10px;
+}
+.profile-content{
+  width:min(94vw,980px);max-height:92dvh;overflow:auto;position:relative;
+  background:var(--bg-2);border:1px solid rgba(205,164,52,.22);
+  border-radius:22px;padding:14px;box-shadow:0 22px 48px rgba(0,0,0,.5);
+}
+.profile-close{position:absolute;top:8px;right:8px;border:1px solid rgba(205,164,52,.3);background:rgba(17,15,28,.55);color:var(--text);border-radius:10px;padding:4px 8px;}
+.profile-photo{height:clamp(220px, 42vh, 420px);background:#0f0f15;overflow:hidden;border-radius:18px;}
+.profile-meta{display:grid;gap:6px;margin:10px 0;}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;}
+.badge-gold{border:1px solid var(--gold);background:linear-gradient(180deg, rgba(205,164,52,.22), rgba(205,164,52,.08));}
+.profile-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;}
+.profile-gallery img{border-radius:12px;border:1px solid rgba(205,164,52,.18);}
+.profile-selfie{position:relative;height:220px;border-radius:16px;border:1px solid rgba(205,164,52,.2);overflow:hidden;background:#0f0f15;margin:8px 0;}
+.selfie-blur{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,8,16,.55);backdrop-filter:blur(10px);font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.7);}
 
-        <div class="profile-gallery" id="profileGallery"></div>
+/* --------------- Chat --------------- */
+.chat-page{position:fixed;inset:0;background:var(--bg);display:grid;grid-template-rows:auto 1fr auto;}
+.chat-header{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:8px var(--space);background:rgba(21,18,37,.8);border-bottom:1px solid rgba(205,164,52,.2);backdrop-filter:blur(6px);}
+.chat-messages{padding:12px var(--space);overflow-y:auto;display:grid;gap:10px;}
+.msg{max-width:78%;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(21,18,37,.55);}
+.msg.me{margin-left:auto;border-color:var(--gold);background:linear-gradient(180deg, rgba(205,164,52,.18), rgba(205,164,52,.06));}
+.chat-input{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px var(--space) 12px;background:rgba(21,18,37,.5);border-top:1px solid rgba(205,164,52,.18);}
+.chat-input input{background:var(--bg-3);border:1px solid rgba(205,164,52,.18);border-radius:999px;padding:10px 12px;color:var(--text);}
 
-        <div class="profile-selfie" id="profileSelfie">
-          <div class="selfie-blur" id="selfieBlur">
-            <span data-i18n="profile.unlockSelfie">Guarda il selfie (video premio)</span>
-          </div>
-        </div>
+/* --------------- Likes --------------- */
+.likes-page{position:fixed;inset:0;background:var(--bg);display:grid;grid-template-rows:auto 1fr auto;}
+.likes-header{display:flex;align-items:center;gap:10px;padding:10px var(--space);background:rgba(21,18,37,.75);border-bottom:1px solid rgba(205,164,52,.18);backdrop-filter:blur(6px);}
+.likes-footer{padding:10px var(--space) 14px;background:rgba(21,18,37,.6);border-top:1px solid rgba(205,164,52,.18);}
+.likes-footer .hint{color:var(--muted);margin:6px 0 10px;}
 
-        <div class="profile-actions">
-          <button id="btnProfileDislike" class="btn ghost big">🥲</button>
-          <button id="btnProfileLike" class="btn gold big">💛</button>
-        </div>
-      </div>
-    </section>
+/* --------------- Reward dialog --------------- */
+.reward-dialog{position:fixed;inset:0;display:grid;place-items:center;background:rgba(10,8,16,.6);backdrop-filter:blur(6px);z-index:80;}
+.reward-body{
+  width:min(92vw,420px);text-align:center;
+  background:linear-gradient(180deg, rgba(205,164,52,.18), rgba(205,164,52,.06));
+  border:1px solid rgba(205,164,52,.35);border-radius:20px;padding:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,.5);animation:pop .22s ease;
+}
+.reward-actions{display:flex;gap:10px;justify-content:center;margin-top:10px;}
 
-    <!-- CHAT -->
-    <section id="chatPage" class="chat-page" hidden aria-modal="true" role="dialog" aria-labelledby="chatTitle">
-      <header class="chat-header">
-        <button id="btnCloseChat" class="btn ghost">←</button>
-        <h3 id="chatTitle" data-i18n="chat.title">Chat</h3>
-      </header>
-      <div id="chatMessages" class="chat-messages"></div>
-      <form id="chatForm" class="chat-input" autocomplete="off">
-        <input id="chatText" type="text" placeholder="Scrivi un messaggio…" data-i18n-ph="chat.placeholder" />
-        <button id="chatSend" class="btn btn-primary" type="submit" data-i18n="chat.send">Invia</button>
-      </form>
-    </section>
+/* --------------- Footer generico --------------- */
+.page-footer{padding:6px var(--space) 12px;}
 
-    <!-- LIKE RICEVUTI -->
-    <section id="likesPage" class="likes-page" hidden aria-modal="true" role="dialog">
-      <header class="likes-header">
-        <button id="btnCloseLikes" class="btn ghost">←</button>
-        <h3 data-i18n="likes.title">Like ricevuti</h3>
-      </header>
-      <div id="likesList" class="grid grid-2"></div>
-      <footer class="likes-footer">
-        <p class="hint" data-i18n="likes.hint">3 gratis; per vedere altri, guarda un video premio.</p>
-        <button id="btnUnlockMoreLikes" class="btn btn-primary" data-i18n="likes.unlock">Sblocca altri like</button>
-      </footer>
-    </section>
+/* --------------- Scrollbars --------------- */
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.05);}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg, rgba(205,164,52,.35), rgba(205,164,52,.18));
+  border:1px solid rgba(255,255,255,.08);border-radius:10px;
+}
 
-    <!-- VIDEO PREMIO -->
-    <section id="rewardDialog" class="reward-dialog" hidden role="dialog" aria-labelledby="rewardTitle">
-      <div class="reward-body">
-        <h3 id="rewardTitle" data-i18n="reward.title">Video premio</h3>
-        <p id="rewardText" data-i18n="reward.text">Guarda un breve video per continuare.</p>
-        <div class="reward-actions">
-          <button id="rewardPlay" class="btn btn-primary" data-i18n="reward.play">Guarda ora</button>
-          <button id="rewardClose" class="btn ghost" data-i18n="reward.close">Chiudi</button>
-        </div>
-      </div>
-    </section>
+/* --------------- Media queries --------------- */
+@media(min-width:768px){
+  .hero-logo{width:210px;}
+  .btn-enter{padding:14px 26px;font-size:17px;}
+  .swipe-stage{height:calc(100dvh - 240px);}
+  .card-swipe{width:min(78vw,460px);height:min(72vh,600px);}
+}
 
-    <!-- FOOTER ETICO GLOBALE -->
-    <footer class="global-ethic">
-      <button id="btnEthicGlobal" class="ethic-btn">
-        <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-      </button>
-    </footer>
-  </div>
-
-  <!-- Script -->
-  <script src="app.js?v=gold2"></script>
-  <script>
-    // Boot minimale per splash/lingua se app.js ritarda
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const splash = document.getElementById('splash');
-        const app = document.getElementById('app');
-        if (splash) splash.classList.add('hide');
-        if (app) app.classList.remove('hidden');
-      }, 1200);
-
-      const itBtn = document.getElementById('btn-lang-it');
-      const enBtn = document.getElementById('btn-lang-en');
-      function clickLang(e){
-        const lang = e.currentTarget?.dataset?.lang || 'it';
-        if (typeof window.setLanguage === 'function') {
-          window.setLanguage(lang);
-        } else {
-          itBtn.setAttribute('aria-pressed', lang==='it' ? 'true' : 'false');
-          enBtn.setAttribute('aria-pressed', lang==='en' ? 'true' : 'false');
-          document.documentElement.lang = lang;
-        }
-      }
-      itBtn?.addEventListener('click', clickLang);
-      enBtn?.addEventListener('click', clickLang);
-    });
-  </script>
-</body>
-</html>
+/* --------------- Accessibility preference --------------- */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
