@@ -601,3 +601,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --------------------- Final log ---------------------
 console.log("%cPlutoo Gold Edition fully loaded ✅", "color:gold;font-weight:bold;font-size:14px;");
+/* ========== PATCH: interazioni + geolocalizzazione ========== */
+
+// 1) Delegazione globale per i tab (robustezza su mobile)
+document.addEventListener("click", (e) => {
+  const viewBtn = e.target.closest("[data-view]");
+  if (viewBtn && viewBtn.dataset.view) {
+    e.preventDefault();
+    show(viewBtn.dataset.view);
+  }
+  // sponsor inline di sicurezza
+  if (e.target.closest("#sponsorFido") || e.target.closest("#sponsorFido2")) {
+    Rewards.show("sponsor").then((ok) => ok && openMaps("Fido il gelato per cani"));
+  }
+});
+
+// 2) Geolocalizzazione: chiedi permesso e aggiorna distanze
+function initGeolocation() {
+  if (!("geolocation" in navigator)) return;
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      state.userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      // Se non abbiamo le coordinate dei cani reali, simuliamo una distanza 1–12 km
+      state.dogs = state.dogs.map((d, i) => ({
+        ...d,
+        km: d.km || (1 + Math.floor(Math.random() * 12))
+      }));
+      // Aggiorna subito la griglia e la card swipe
+      renderNearby();
+      if (typeof renderSwipeCard === "function") renderSwipeCard();
+    },
+    (err) => {
+      console.warn("Geoloc denied/failed:", err?.message || err);
+      // fallback: assegna distanze mock se mancanti
+      state.dogs = state.dogs.map((d) => ({ ...d, km: d.km || (3 + Math.floor(Math.random() * 10)) }));
+      renderNearby();
+      if (typeof renderSwipeCard === "function") renderSwipeCard();
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+  );
+}
+
+// 3) Chiamala all’avvio (dopo splash)
+document.addEventListener("DOMContentLoaded", () => {
+  // avvia richiesta geolocalizzazione poco dopo il render iniziale
+  setTimeout(initGeolocation, 500);
+});
+
+// 4) ENTRA di sicurezza (se qualche listener mancasse)
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#btnEnter")) {
+    e.preventDefault();
+    show("nearby");
+  }
+});
+
+// 5) Piccolo aiuto visivo: se resti in HOME per errore, rendi clickabile tutta la hero
+$(".hero")?.addEventListener("click", (e) => {
+  const btn = e.target.closest("button, a");
+  if (!btn) show("nearby");
+});
+/* ========== /PATCH ========== */
