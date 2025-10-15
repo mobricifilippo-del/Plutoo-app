@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="plutoo-icon-192.png">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="./style.css?v=gold5">
+  <link rel="stylesheet" href="/style.css">
 
   <!-- CSP semplificata (ok per GitHub Pages / WebView) -->
   <meta http-equiv="Content-Security-Policy"
@@ -225,7 +225,6 @@
         <button id="chatSend" class="btn btn-primary" type="submit" data-i18n="chat.send">Invia</button>
       </form>
     </section>
-
     <!-- LIKE RICEVUTI -->
     <section id="likesPage" class="likes-page" hidden aria-modal="true" role="dialog">
       <header class="likes-header"><button id="btnCloseLikes" class="btn ghost">←</button><h3 data-i18n="likes.title">Like ricevuti</h3></header>
@@ -244,7 +243,7 @@
   </div>
 
   <!-- Script -->
-  <script src="./app.js?v=gold5"></script>
+  <script src="/app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => { document.getElementById('splash')?.classList.add('hide'); document.getElementById('app')?.classList.remove('hidden'); }, 1200);
