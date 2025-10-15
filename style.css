@@ -448,3 +448,44 @@ input:focus, select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--ri
 
 /* Nascondi il tab "Vicino a te" quando sei in Home (hotfix) */
 #tab-nearby { display:none; }
+/* === FIX TOPBAR: chip in fila, non impilati === */
+.topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.topbar-left { display:flex; align-items:center; gap:10px; }
+.topbar-center { display:flex; align-items:center; gap:10px; flex-wrap:nowrap; overflow-x:auto; padding:6px 0; }
+.topbar-center .chip { white-space:nowrap; }
+
+/* === Niente titoloni nelle pagine (come nello ZIP) === */
+.section-title,
+#home-title { display:none !important; }
+
+/* === HOME: logo grande centrato, CTA e sponsor ordinati === */
+.home-wrap { display:flex; flex-direction:column; align-items:center; gap:18px; padding:18px 16px 32px; }
+.hero-logo { width: 320px; max-width: 76vw; aspect-ratio: 1/1; object-fit: contain; filter: drop-shadow(0 10px 40px rgba(255,215,0,.12)); }
+.btn.btn-lg { padding: 14px 28px; font-size: 18px; border-radius: 32px; }
+.home-sponsor { margin-top: 8px; width: min(520px, 92vw); display:flex; flex-direction:column; gap:8px; align-items:center; }
+.sponsor-badge { color: var(--gold); font-weight: 800; }
+
+/* card sponsor compatta (solo in home) */
+.sponsor-card--home { width:100%; display:grid; grid-template-columns:56px 1fr; gap:12px; align-items:center;
+  padding:14px 16px; border-radius:18px; background: rgba(255,255,255,.03);
+  border:1px solid rgba(255,215,0,.25); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.sponsor-card--home .sponsor-logo { width:56px; height:56px; object-fit:contain; border-radius:12px; background:#121218; padding:6px; }
+.sponsor-title { font-weight:800; font-size:18px; color:#fff; }
+.sponsor-text { font-size:13px; opacity:.9; }
+
+/* === VICINO A TE: griglia 2×2, niente “blocco nero” sotto le foto === */
+.grid-2 { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; }
+.card.frame-gold { border:1px solid rgba(255,215,0,.25); border-radius:14px; overflow:hidden; background:#121218; }
+.card-photo { position:relative; width:100%; height: 220px; }
+.card-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.card-info { padding:10px 12px; }
+
+/* footer “Vicino a te” compatto (sponsor + etica) */
+.nearby-footer { margin:16px auto 28px; width:min(520px, 92vw); display:flex; flex-direction:column; gap:12px; }
+.sponsor-inline { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,215,0,.25); }
+.sponsor-inline img { width:40px; height:40px; object-fit:contain; border-radius:8px; background:#121218; }
+.sponsor-inline span { font-size:14px; opacity:.9; }
+
+/* === “Vicino a te” NON visibile in Home; riappare nelle altre viste (hotfix già presente) === */
+#tab-nearby { display:none; }
