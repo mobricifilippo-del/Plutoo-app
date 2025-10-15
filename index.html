@@ -6,19 +6,15 @@
   <title>Plutoo</title>
   <meta name="theme-color" content="#0B0B0F" />
   <meta name="description" content="Plutoo — social per cani: vicini a te, swipe amore e gioco, chat, selfie, servizi e sponsor." />
-
-  <!-- PWA & assets -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="plutoo-icon-192.png" />
   <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
   <noscript>Attiva JavaScript per usare Plutoo.</noscript>
 </head>
 <body>
 
-  <!-- =================== HOME (pre-login) =================== -->
+  <!-- =================== HOME =================== -->
   <section id="homeScreen" class="home" aria-labelledby="homeTitle">
     <header class="home-top">
       <div class="logo-row">
@@ -36,13 +32,11 @@
       </div>
     </header>
 
-    <!-- Logo centrale grande: fermo. La pulsazione partirà SOLO dopo il click su Entra (gestita da app.js) -->
     <div class="home-hero">
       <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
       <button id="btnEnter" class="btn primary xl" type="button" data-i18n="enter">Entra</button>
     </div>
 
-    <!-- Footer Home: Sponsor + Bottone etico + Termini/Privacy -->
     <footer class="home-sponsor">
       <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
       <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
@@ -50,7 +44,6 @@
         <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </a>
 
-      <!-- Bottone etico (Maps canili) -->
       <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
@@ -67,9 +60,8 @@
     </footer>
   </section>
 
-  <!-- =================== APP (post-login) =================== -->
+  <!-- =================== APP =================== -->
   <section id="appScreen" class="app hidden" aria-hidden="true">
-    <!-- Topbar -->
     <header class="topbar">
       <div class="left">
         <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
@@ -77,45 +69,39 @@
         <strong>Plutoo</strong>
       </div>
 
-      <!-- Tabs -->
       <nav class="tabs" role="tablist" aria-label="Sezioni">
-        <button id="tabNearby"   class="tab active" role="tab" aria-selected="true"  data-i18n="nearby">Vicino a te</button>
-        <button id="tabLove"     class="tab"        role="tab" aria-selected="false" data-i18n="love">Amore</button>
-        <button id="tabSocial"   class="tab"        role="tab" aria-selected="false" data-i18n="social">Social</button>
+        <button id="tabNearby" class="tab active" role="tab" aria-selected="true" data-i18n="nearby">Vicino a te</button>
+        <button id="tabLove" class="tab" role="tab" aria-selected="false" data-i18n="love">Amore</button>
+        <button id="tabSocial" class="tab" role="tab" aria-selected="false" data-i18n="social">Social</button>
 
-        <!-- Luoghi Pet: una sola voce con menu a tendina -->
         <div class="tab dropdown">
           <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi Pet ▾</button>
           <div id="luoghiMenu" class="dropdown-menu" role="menu" aria-label="Luoghi Pet">
-            <button class="menu-item" data-cat="vets"      role="menuitem" data-i18n="vets">Veterinari</button>
-            <button class="menu-item" data-cat="groomers"  role="menuitem" data-i18n="groomers">Toelettature</button>
-            <button class="menu-item" data-cat="shops"     role="menuitem" data-i18n="shops">Negozi</button>
-            <button class="menu-item" data-cat="parks"     role="menuitem" data-i18n="parks">Parchi</button>
-            <button class="menu-item" data-cat="trainers"  role="menuitem" data-i18n="trainers">Addestratori</button>
-            <button class="menu-item" data-cat="shelters"  role="menuitem" data-i18n="shelters">Canili & Adozioni</button>
+            <button class="menu-item" data-cat="vets" role="menuitem" data-i18n="vets">Veterinari</button>
+            <button class="menu-item" data-cat="groomers" role="menuitem" data-i18n="groomers">Toelettature</button>
+            <button class="menu-item" data-cat="shops" role="menuitem" data-i18n="shops">Negozi</button>
+            <button class="menu-item" data-cat="parks" role="menuitem" data-i18n="parks">Parchi</button>
+            <button class="menu-item" data-cat="trainers" role="menuitem" data-i18n="trainers">Addestratori</button>
+            <button class="menu-item" data-cat="shelters" role="menuitem" data-i18n="shelters">Canili & Adozioni</button>
           </div>
         </div>
 
-        <button id="tabPlus"     class="tab" type="button" onclick="openPlusDialog()">✨ Plus</button>
+        <button id="tabPlus" class="tab" type="button" onclick="openPlusDialog()">✨ Plus</button>
       </nav>
 
-      <!-- Azione contestuale: Ricerca personalizzata (solo in “Vicino a te”) -->
       <div class="right">
         <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
       </div>
     </header>
 
-    <!-- Contenuto -->
     <main class="content" aria-live="polite">
-
-      <!-- ====== VISTA: VICINO A TE (default) ====== -->
+      <!-- Vicino a te -->
       <section id="viewNearby" class="view active" aria-labelledby="nearbyTitle">
         <h2 id="nearbyTitle" class="visually-hidden">Vicino a te</h2>
-        <!-- Griglia 2xN -->
         <div id="nearGrid" class="grid-2"></div>
       </section>
 
-      <!-- ====== VISTA: AMORE (SWIPE) — SOLO CARD ====== -->
+      <!-- Amore -->
       <section id="viewLove" class="view" aria-labelledby="loveTitle">
         <h2 id="loveTitle" class="visually-hidden">Amore</h2>
         <article id="loveCard" class="card swipe">
@@ -132,7 +118,7 @@
         </article>
       </section>
 
-      <!-- ====== VISTA: SOCIAL (SWIPE) — SOLO CARD ====== -->
+      <!-- Social -->
       <section id="viewSocial" class="view" aria-labelledby="socialTitle">
         <h2 id="socialTitle" class="visually-hidden">Social</h2>
         <article id="socialCard" class="card swipe">
@@ -148,13 +134,9 @@
           </div>
         </article>
       </section>
-
-      <!-- ====== SELFIE (SOLO NEL PROFILO MIO CANE, NON QUI) ====== -->
-      <!-- Rimosso dalla pagina “Vicino a te” come richiesto -->
-
     </main>
 
-    <!-- ====== CHAT (sheet) ====== -->
+    <!-- Chat -->
     <aside id="chatPane" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="chatHeader">
       <div class="sheet-header">
         <div id="chatHeader" data-i18n="chat">Chat</div>
@@ -167,16 +149,16 @@
       </form>
     </aside>
 
-    <!-- ====== PROFILO CANE (sheet) ====== -->
+    <!-- Profilo -->
     <section id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
       <div class="sheet-header">
         <div id="ppTitle" data-i18n="profile">Profilo</div>
         <button class="icon close" type="button" onclick="closeProfilePage()" aria-label="Chiudi">✕</button>
       </div>
-      <div id="ppBody" class="sheet-body"><!-- popolato via app.js --></div>
+      <div id="ppBody" class="sheet-body"></div>
     </section>
 
-    <!-- ====== FOOTER (SPONSOR + ETICA + TERMINI/PRIVACY + BANNER) ====== -->
+    <!-- Footer fisso -->
     <footer class="sponsor">
       <div class="sponsor-wrap">
         <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
@@ -184,7 +166,6 @@
         <p class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</p>
       </div>
 
-      <!-- Bottone etico sempre visibile in ogni pagina -->
       <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me">
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
@@ -193,7 +174,6 @@
         </span>
       </button>
 
-      <!-- Termini & Privacy -->
       <div class="legal-links">
         <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
         <span>·</span>
@@ -204,7 +184,7 @@
     </footer>
   </section>
 
-  <!-- =================== RICERCA PERSONALIZZATA (panel) =================== -->
+  <!-- Ricerca personalizzata -->
   <section id="searchPanel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <div class="panel-inner">
       <div class="panel-head">
@@ -230,7 +210,6 @@
           <input id="distRange" type="range" min="1" max="50" value="5" />
         </div>
 
-        <!-- Nuovi filtri -->
         <div class="f">
           <label for="onlyVerified">Solo verificati ✅</label>
           <input id="onlyVerified" type="checkbox" />
@@ -252,7 +231,6 @@
     </div>
   </section>
 
-  <!-- Service Worker (se presente service-worker.js) -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -260,8 +238,6 @@
       });
     }
   </script>
-
-  <!-- JS (verrà fornito dopo lo style) -->
   <script src="app.js" defer></script>
 </body>
 </html>
