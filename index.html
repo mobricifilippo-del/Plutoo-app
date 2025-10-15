@@ -255,39 +255,67 @@
   </script>
   <script src="./app.js?v=gold"></script>
   <script>
-/* HOTFIX inline: attiva interazioni anche senza app.js */
+/* HOTFIX UNICO — interazioni + Home + griglia 2x2 anche senza app.js */
 (function () {
-  // funzione show che gestisce l'attributo "hidden"
+  // ====== UTIL ======
+  function $(s, c=document){return c.querySelector(s)}
+  function $$(s, c=document){return Array.from(c.querySelectorAll(s))}
+  function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+  // ====== SHOW (gestisce hidden) + tab "Vicino a te" nascosto in Home ======
   window.show = function(view){
     var targetId = "view-" + view;
-    document.querySelectorAll(".view").forEach(function(v){
-      if (v.id === targetId) { v.classList.add("view-active"); v.removeAttribute("hidden"); }
+    $$(".view").forEach(function(v){
+      if (v.id === targetId){ v.classList.add("view-active"); v.removeAttribute("hidden"); }
       else { v.classList.remove("view-active"); v.setAttribute("hidden",""); }
     });
-    // Nascondi il tab "Vicino a te" quando si è in home
-    var nearTab = document.getElementById("tab-nearby");
+    var nearTab = $("#tab-nearby");
     if (nearTab) nearTab.style.display = (view === "home") ? "none" : "";
-    window.scrollTo({top:0, behavior:"smooth"});
+    window.scrollTo({top:0,behavior:"smooth"});
+
+    // quando entro in "nearby", se la griglia è vuota, popola 2x2
+    if (view === "nearby") ensureNearbyGrid();
   };
 
+  // ====== Dataset minimo per la griglia (usa le 4 foto che hai in root) ======
+  var dogs = [
+    { id:1, name:"Luna",  breed:"Labrador",         age:3, img:"dog1.jpg" },
+    { id:2, name:"Rocky", breed:"Bulldog",          age:4, img:"dog2.jpg" },
+    { id:3, name:"Milo",  breed:"Golden Retriever", age:2, img:"dog3.jpg" },
+    { id:4, name:"Bella", breed:"Barboncino",       age:1, img:"dog4.jpg" }
+  ];
+
+  function ensureNearbyGrid(){
+    var grid = $("#nearbyGrid");
+    if (!grid || grid.children.length) return;
+    grid.innerHTML = "";
+    dogs.forEach(function(d){
+      var card = document.createElement("div");
+      card.className = "card frame-gold";
+      card.innerHTML =
+        '<div class="card-photo"><img src="'+d.img+'" alt="'+escapeHTML(d.name)+'"></div>'+
+        '<div class="card-info small"><div><strong>'+escapeHTML(d.name)+'</strong>, '+d.age+'</div>'+
+        '<div>'+escapeHTML(d.breed)+'</div></div>';
+      grid.appendChild(card);
+    });
+  }
+
+  // ====== Inizializzazione ======
   document.addEventListener("DOMContentLoaded", function(){
-    // Inizializza: mostra solo HOME e nasconde il tab "Vicino a te"
-    document.querySelectorAll(".view").forEach(function(v){
-      if (v.id === "view-home") { v.classList.add("view-active"); v.removeAttribute("hidden"); }
+    // mostra solo HOME all’avvio
+    $$(".view").forEach(function(v){
+      if (v.id === "view-home"){ v.classList.add("view-active"); v.removeAttribute("hidden"); }
       else { v.classList.remove("view-active"); v.setAttribute("hidden",""); }
     });
-    var nearTab = document.getElementById("tab-nearby");
-    if (nearTab) nearTab.style.display = "none";
+    var nearTab = $("#tab-nearby"); if (nearTab) nearTab.style.display = "none";
 
     // ENTRA → Vicino a te
-    document.getElementById("btnEnter")?.addEventListener("click", function(e){
-      e.preventDefault(); show("nearby");
-    });
+    $("#btnEnter")?.addEventListener("click", function(e){ e.preventDefault(); show("nearby"); });
 
-    // Delegazione per tutti i tab (Amore, Giochiamo, Plus, Ricerca…)
+    // Delegazione per tab
     document.addEventListener("click", function(e){
       var b = e.target.closest("[data-view]");
-      if (b && b.dataset.view) { e.preventDefault(); show(b.dataset.view); }
+      if (b && b.dataset.view){ e.preventDefault(); show(b.dataset.view); }
     });
   });
 })();
