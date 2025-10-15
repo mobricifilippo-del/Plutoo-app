@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
-<head>
+>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Plutoo — Gold Edition</title>
@@ -10,16 +10,16 @@
   <meta name="theme-color" content="#0B0B0F">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="plutoo-icon-192.png">
 
   <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="plutoo-icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="plutoo-icon-192.png">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=gold2" />
 
-  <!-- CSP (compatibile con Android WebView; da irrigidire in produzione) -->
+  <!-- CSP (compatibile Android WebView) -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' https: blob: data:;
                  img-src 'self' https: blob: data:;
@@ -33,257 +33,174 @@
   <!-- Splash -->
   <div id="splash" class="splash">
     <div class="splash-inner">
-      <img src="assets/logo-plutoo.svg" alt="Plutoo" class="splash-logo" />
-      <div class="splash-heart" aria-hidden="true">💛</div>
+      <img src="plutoo-icon-512.png?v=gold2" alt="Plutoo" class="splash-logo" />
+      <div class="splash-heart">💛</div>
     </div>
   </div>
 
-  <!-- App Wrapper -->
+  <!-- App -->
   <div id="app" class="app hidden">
     <!-- Top bar -->
-    <header class="topbar" role="banner" aria-label="Top bar">
+    <header class="topbar">
       <div class="topbar-left">
-        <button class="brand" id="navHome" aria-label="Plutoo Home">
-          <img src="assets/logo-plutoo-mark.svg" alt="Plutoo" class="brand-mark" />
+        <button id="navHome" class="brand">
+          <img src="plutoo-icon-192.png?v=gold2" alt="Plutoo" class="brand-mark" />
           <span class="brand-text">Plutoo</span>
         </button>
       </div>
 
-      <nav class="tabs" role="navigation" aria-label="Main tabs">
-        <button class="tab" data-view="nearby" id="tab-nearby" data-i18n="tab.nearby">Vicino a te</button>
-        <button class="tab" data-view="love" id="tab-love">
-          <span data-i18n="tab.love">Amore</span> 🥲💛
-        </button>
-        <button class="tab" data-view="play" id="tab-play">
-          <span data-i18n="tab.play">Giochiamo insieme</span> 🥲🐕
-        </button>
-        <button class="tab" data-view="plus" id="tab-plus">
-          <span data-i18n="tab.plus">Plus</span> ⭐
-        </button>
-        <button class="tab" data-view="filters" id="tab-filters">
-          <span data-i18n="tab.filters">Ricerca personalizzata</span> 🔍
-        </button>
+      <nav class="tabs">
+        <button class="tab" data-view="nearby" id="tab-nearby">Vicino a te</button>
+        <button class="tab" data-view="love" id="tab-love">Amore 🥲💛</button>
+        <button class="tab" data-view="play" id="tab-play">Giochiamo 🐕</button>
+        <button class="tab" data-view="plus" id="tab-plus">Plus ⭐</button>
+        <button class="tab" data-view="filters" id="tab-filters">Ricerca 🔍</button>
 
-        <!-- Luoghi PET dropdown -->
         <div class="dropdown">
-          <button class="tab dropdown-toggle" id="tab-services">
-            <span data-i18n="tab.services">Luoghi PET</span> 🐾
-          </button>
-          <div class="dropdown-menu" role="menu" aria-labelledby="tab-services">
-            <button class="dropdown-item" data-service="veterinari" data-i18n="services.veterinari">Veterinari</button>
-            <button class="dropdown-item" data-service="toelettature" data-i18n="services.toelettature">Toelettature</button>
-            <button class="dropdown-item" data-service="negozi" data-i18n="services.negozi">Negozi</button>
-            <button class="dropdown-item" data-service="parchi" data-i18n="services.parchi">Parchi</button>
-            <button class="dropdown-item" data-service="addestratori" data-i18n="services.addestratori">Addestratori</button>
-            <button class="dropdown-item" data-service="canili" data-i18n="services.canili">Canili</button>
+          <button class="tab dropdown-toggle" id="tab-services">Luoghi PET 🐾</button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" data-service="veterinari">Veterinari</button>
+            <button class="dropdown-item" data-service="toelettature">Toelettature</button>
+            <button class="dropdown-item" data-service="negozi">Negozi</button>
+            <button class="dropdown-item" data-service="parchi">Parchi</button>
+            <button class="dropdown-item" data-service="addestratori">Addestratori</button>
+            <button class="dropdown-item" data-service="canili">Canili</button>
           </div>
         </div>
       </nav>
 
       <div class="topbar-right">
-        <!-- Switch lingua con bandiere -->
-        <div class="lang-switch" role="group" aria-label="Language switch">
-          <button class="lang-btn" data-lang="it" aria-pressed="true" title="Italiano" id="btn-lang-it">🇮🇹</button>
-          <button class="lang-btn" data-lang="en" aria-pressed="false" title="English" id="btn-lang-en">🇬🇧</button>
+        <!-- Bandiere -->
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="it" aria-pressed="true" id="btn-lang-it">🇮🇹</button>
+          <button class="lang-btn" data-lang="en" aria-pressed="false" id="btn-lang-en">🇬🇧</button>
         </div>
-        <!-- Login/Registrati in riquadri dorati -->
+        <!-- Login/Registrati -->
         <div class="auth-chip-group">
-          <button id="btnLogin" class="chip chip-gold" data-i18n="auth.login">Login</button>
-          <button id="btnSignup" class="chip chip-gold" data-i18n="auth.signup">Registrati</button>
+          <button id="btnLogin" class="chip chip-gold">Login</button>
+          <button id="btnSignup" class="chip chip-gold">Registrati</button>
         </div>
       </div>
     </header>
 
     <!-- HOME -->
-    <main id="view-home" class="view view-active" role="main">
+    <main id="view-home" class="view view-active">
       <section class="hero">
-        <img src="assets/logo-plutoo.svg" alt="Plutoo" class="hero-logo" />
-        <p class="hero-subtitle" data-i18n="home.subtitle">
+        <img src="plutoo-icon-512.png?v=gold2" alt="Plutoo" class="hero-logo" />
+        <p class="hero-subtitle">
           L’app etica che unisce proprietari di Dog per amicizie reali e accoppiamenti responsabili.
         </p>
-        <button id="btnEnter" class="btn btn-primary btn-enter" data-i18n="home.enter">ENTRA</button>
+        <button id="btnEnter" class="btn btn-primary btn-enter">ENTRA</button>
 
         <!-- Sponsor -->
         <div class="sponsor">
-          <button id="sponsorFido" class="sponsor-card" aria-label="Fido sponsor">
-            <img src="assets/sponsor-fido.png" alt="Fido" class="sponsor-logo" />
+          <button id="sponsorFido" class="sponsor-card">
+            <img src="sponsor-logo.png?v=gold2" alt="Fido" class="sponsor-logo" />
             <div class="sponsor-copy">
               <div class="sponsor-title">Fido</div>
-              <div class="sponsor-text" data-i18n="sponsor.fido">
-                Il gelato per i nostri amici a quattro zampe
-              </div>
+              <div class="sponsor-text">Il gelato per i nostri amici a quattro zampe</div>
             </div>
           </button>
         </div>
       </section>
 
-      <!-- Box etico -->
       <footer class="ethic-footer">
         <button id="btnEthic" class="ethic-btn">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
+          Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
         </button>
       </footer>
     </main>
 
     <!-- VICINO A TE -->
     <main id="view-nearby" class="view" hidden>
-      <section class="grid grid-2" id="nearbyGrid" aria-live="polite" aria-busy="false">
-        <!-- Cards generate in app.js -->
-      </section>
+      <section class="grid grid-2" id="nearbyGrid"></section>
       <footer class="page-footer">
         <div class="page-sponsor">
           <button id="sponsorFido2" class="sponsor-inline">
-            <img src="assets/sponsor-fido.png" alt="Fido" />
-            <span data-i18n="sponsor.fido">Il gelato per i nostri amici a quattro zampe</span>
+            <img src="sponsor-logo.png?v=gold2" alt="Fido" />
+            <span>Il gelato per i nostri amici a quattro zampe</span>
           </button>
         </div>
         <button id="btnEthic2" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
+          Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
         </button>
       </footer>
     </main>
 
-    <!-- AMORE (swipe singolo) -->
+    <!-- AMORE -->
     <main id="view-love" class="view" hidden>
       <section class="swipe-stage">
         <div id="swipeCard" class="card-swipe"></div>
         <div class="swipe-actions">
-          <button id="btnDislike" class="btn ghost big" aria-label="Dislike">🥲</button>
-          <button id="btnLike" class="btn gold big" aria-label="Like">💛</button>
+          <button id="btnDislike" class="btn ghost big">🥲</button>
+          <button id="btnLike" class="btn gold big">💛</button>
         </div>
       </section>
 
-      <div id="matchPopup" class="match-popup" hidden aria-live="assertive">
+      <div id="matchPopup" class="match-popup" hidden>
         <div class="match-inner">
-          <div class="match-heart" aria-hidden="true">💛</div>
-          <h3 data-i18n="match.title">È un match!</h3>
-          <button id="btnGoChat" class="btn btn-primary" data-i18n="match.goChat">Vai in chat</button>
+          <div class="match-heart">💛</div>
+          <h3>È un match!</h3>
+          <button id="btnGoChat" class="btn btn-primary">Vai in chat</button>
         </div>
       </div>
-
-      <footer class="page-footer">
-        <button id="btnEthic3" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
-    </main>
-
-    <!-- GIOCHIAMO INSIEME -->
-    <main id="view-play" class="view" hidden>
-      <section class="grid grid-2" id="playGrid">
-        <!-- Cards generate in app.js -->
-      </section>
-      <footer class="page-footer">
-        <button id="btnEthic4" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
     </main>
 
     <!-- PLUS -->
     <main id="view-plus" class="view" hidden>
       <section class="plus-hero">
-        <h2 data-i18n="plus.title">Plutoo Gold</h2>
-        <p data-i18n="plus.copy">Rimuove tutti gli annunci, sblocca i filtri Gold e le funzioni Premium.</p>
-        <div class="price" data-i18n="plus.price">€39,90 / anno</div>
-        <button id="btnBuyPlus" class="btn btn-primary" data-i18n="plus.buy">Abbonati ora</button>
+        <h2>Plutoo Gold</h2>
+        <p>Rimuove tutti gli annunci e sblocca i filtri Gold Premium.</p>
+        <div class="price">€39,90 / anno</div>
+        <button id="btnBuyPlus" class="btn btn-primary">Abbonati ora</button>
       </section>
-      <section class="plus-features">
-        <ul>
-          <li data-i18n="plus.f1">Niente pubblicità, niente attese</li>
-          <li data-i18n="plus.f2">Filtri Gold sbloccati</li>
-          <li data-i18n="plus.f3">Accesso prioritario alle novità</li>
-        </ul>
-      </section>
+      <ul class="plus-features">
+        <li>Niente pubblicità</li>
+        <li>Filtri Gold sbloccati</li>
+        <li>Accesso prioritario</li>
+      </ul>
     </main>
 
-    <!-- RICERCA PERSONALIZZATA -->
+    <!-- RICERCA -->
     <main id="view-filters" class="view" hidden>
-      <form id="filtersForm" class="filters-form" autocomplete="off">
-        <div class="field">
-          <label for="breed" data-i18n="filters.breed">Razza</label>
-          <input id="breed" name="breed" type="text" placeholder="Es. Labrador" data-i18n-ph="filters.breedPh" />
-          <div id="breedSuggest" class="suggest" aria-live="polite"></div>
-        </div>
+      <form id="filtersForm" class="filters-form">
+        <label>Razza</label>
+        <input id="breed" name="breed" type="text" placeholder="Es. Labrador" />
+        <div id="breedSuggest" class="suggest"></div>
 
-        <div class="field">
-          <label for="age" data-i18n="filters.age">Età</label>
-          <input id="age" name="age" type="number" min="0" max="30" inputmode="numeric" />
-        </div>
+        <label>Età</label><input id="age" name="age" type="number" min="0" max="30" />
+        <label>Sesso</label>
+        <select id="sex" name="sex">
+          <option value="">Qualsiasi</option>
+          <option value="male">Maschio</option>
+          <option value="female">Femmina</option>
+        </select>
+        <label>Distanza (km)</label><input id="distance" name="distance" type="number" min="1" max="500" />
 
-        <div class="field">
-          <label for="weight" data-i18n="filters.weight">Peso (kg)</label>
-          <input id="weight" name="weight" type="number" min="0" max="150" inputmode="numeric" />
-        </div>
-
-        <div class="field">
-          <label for="height" data-i18n="filters.height">Altezza (cm)</label>
-          <input id="height" name="height" type="number" min="0" max="120" inputmode="numeric" />
-        </div>
-
-        <div class="field">
-          <label for="sex" data-i18n="filters.sex">Sesso</label>
-          <select id="sex" name="sex">
-            <option value="" data-i18n="filters.any">Qualsiasi</option>
-            <option value="male" data-i18n="filters.male">Maschio</option>
-            <option value="female" data-i18n="filters.female">Femmina</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="distance" data-i18n="filters.distance">Distanza (km)</label>
-          <input id="distance" name="distance" type="number" min="1" max="500" inputmode="numeric" />
-        </div>
-
-        <div class="divider" data-i18n="filters.goldTitle">Filtri Gold</div>
-        <div class="field">
-          <label for="verified" data-i18n="filters.verified">Badge verificato</label>
-          <input type="checkbox" id="verified" name="verified" />
-        </div>
-
-        <div class="field">
-          <label for="mating" data-i18n="filters.mating">Disponibilità accoppiamento</label>
-          <input type="checkbox" id="mating" name="mating" />
-        </div>
-
-        <div class="field">
-          <label for="pedigree" data-i18n="filters.pedigree">Genealogia</label>
-          <input type="checkbox" id="pedigree" name="pedigree" />
-        </div>
+        <div class="divider">Filtri Gold</div>
+        <label><input type="checkbox" id="verified" name="verified" />Badge verificato</label>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary" data-i18n="filters.apply">Applica</button>
-          <button type="reset" class="btn ghost" data-i18n="filters.reset">Reset</button>
+          <button type="submit" class="btn btn-primary">Applica</button>
+          <button type="reset" class="btn ghost">Reset</button>
         </div>
       </form>
-      <footer class="page-footer">
-        <button id="btnEthic5" class="ethic-btn small">
-          <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-        </button>
-      </footer>
     </main>
 
-    <!-- PAGINA PROFILO DOG -->
-    <section id="profilePage" class="profile-page" hidden aria-modal="true" role="dialog" aria-labelledby="profileName">
-      <button class="profile-close" id="btnCloseProfile" aria-label="Chiudi">✕</button>
+    <!-- PROFILO DOG -->
+    <section id="profilePage" class="profile-page" hidden>
+      <button id="btnCloseProfile" class="profile-close">✕</button>
       <div class="profile-content">
         <div class="profile-photo frame-gold" id="profileMainPhoto"></div>
         <div class="profile-meta">
-          <h2 id="profileName">Dog Name</h2>
-          <div class="profile-info" id="profileInfo"></div>
-          <div class="profile-badges">
-            <span class="badge badge-gold" id="badgeVerified" hidden>✔ Gold</span>
-          </div>
+          <h2 id="profileName">Dog</h2>
+          <div id="profileInfo"></div>
+          <span class="badge badge-gold" id="badgeVerified" hidden>✔ Gold</span>
         </div>
-
         <div class="profile-gallery" id="profileGallery"></div>
-
-        <div class="profile-selfie" id="profileSelfie">
-          <div class="selfie-blur" id="selfieBlur">
-            <span data-i18n="profile.unlockSelfie">Guarda il selfie (video premio)</span>
-          </div>
+        <div class="profile-selfie">
+          <div id="selfieBlur" class="selfie-blur">Guarda il selfie (video premio)</div>
         </div>
-
         <div class="profile-actions">
           <button id="btnProfileDislike" class="btn ghost big">🥲</button>
           <button id="btnProfileLike" class="btn gold big">💛</button>
@@ -292,76 +209,63 @@
     </section>
 
     <!-- CHAT -->
-    <section id="chatPage" class="chat-page" hidden aria-modal="true" role="dialog" aria-labelledby="chatTitle">
+    <section id="chatPage" class="chat-page" hidden>
       <header class="chat-header">
         <button id="btnCloseChat" class="btn ghost">←</button>
-        <h3 id="chatTitle" data-i18n="chat.title">Chat</h3>
+        <h3 id="chatTitle">Chat</h3>
       </header>
       <div id="chatMessages" class="chat-messages"></div>
-      <form id="chatForm" class="chat-input" autocomplete="off">
-        <input id="chatText" type="text" placeholder="Scrivi un messaggio…" data-i18n-ph="chat.placeholder" />
-        <button id="chatSend" class="btn btn-primary" type="submit" data-i18n="chat.send">Invia</button>
+      <form id="chatForm" class="chat-input">
+        <input id="chatText" type="text" placeholder="Scrivi un messaggio…" />
+        <button id="chatSend" class="btn btn-primary" type="submit">Invia</button>
       </form>
     </section>
 
-    <!-- LIKE RICEVUTI -->
-    <section id="likesPage" class="likes-page" hidden aria-modal="true" role="dialog">
+    <!-- LIKES -->
+    <section id="likesPage" class="likes-page" hidden>
       <header class="likes-header">
         <button id="btnCloseLikes" class="btn ghost">←</button>
-        <h3 data-i18n="likes.title">Like ricevuti</h3>
+        <h3>Like ricevuti</h3>
       </header>
       <div id="likesList" class="grid grid-2"></div>
       <footer class="likes-footer">
-        <p class="hint" data-i18n="likes.hint">3 gratis; per vedere altri, guarda un video premio.</p>
-        <button id="btnUnlockMoreLikes" class="btn btn-primary" data-i18n="likes.unlock">Sblocca altri like</button>
+        <p>3 gratis; per altri guarda un video premio.</p>
+        <button id="btnUnlockMoreLikes" class="btn btn-primary">Sblocca altri like</button>
       </footer>
     </section>
 
-    <!-- VIDEO PREMIO -->
-    <section id="rewardDialog" class="reward-dialog" hidden role="dialog" aria-labelledby="rewardTitle">
+    <!-- REWARD VIDEO -->
+    <section id="rewardDialog" class="reward-dialog" hidden>
       <div class="reward-body">
-        <h3 id="rewardTitle" data-i18n="reward.title">Video premio</h3>
-        <p id="rewardText" data-i18n="reward.text">Guarda un breve video per continuare.</p>
+        <h3>Video premio</h3>
+        <p>Guarda un breve video per continuare.</p>
         <div class="reward-actions">
-          <button id="rewardPlay" class="btn btn-primary" data-i18n="reward.play">Guarda ora</button>
-          <button id="rewardClose" class="btn ghost" data-i18n="reward.close">Chiudi</button>
+          <button id="rewardPlay" class="btn btn-primary">Guarda ora</button>
+          <button id="rewardClose" class="btn ghost">Chiudi</button>
         </div>
       </div>
     </section>
-
-    <!-- FOOTER ETICO GLOBALE -->
-    <footer class="global-ethic">
-      <button id="btnEthicGlobal" class="ethic-btn">
-        <span data-i18n="ethic.cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</span>
-      </button>
-    </footer>
   </div>
 
   <!-- Script -->
-  <script src="app.js"></script>
+  <script src="app.js?v=gold2"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
-        const splash = document.getElementById('splash');
-        const app = document.getElementById('app');
-        if (splash) splash.classList.add('hide');
-        if (app) app.classList.remove('hidden');
+        const splash = document.getElementById("splash");
+        const app = document.getElementById("app");
+        splash?.classList.add("hide");
+        app?.classList.remove("hidden");
       }, 1200);
 
-      const itBtn = document.getElementById('btn-lang-it');
-      const enBtn = document.getElementById('btn-lang-en');
-      function clickLang(e){
-        const lang = e.currentTarget?.dataset?.lang || 'it';
-        if (typeof window.setLanguage === 'function') {
-          window.setLanguage(lang);
-        } else {
-          itBtn.setAttribute('aria-pressed', lang==='it' ? 'true' : 'false');
-          enBtn.setAttribute('aria-pressed', lang==='en' ? 'true' : 'false');
-          document.documentElement.lang = lang;
-        }
+      const itBtn = document.getElementById("btn-lang-it");
+      const enBtn = document.getElementById("btn-lang-en");
+      function setLang(e) {
+        const lang = e.currentTarget.dataset.lang;
+        if (typeof window.setLanguage === "function") window.setLanguage(lang);
       }
-      itBtn.addEventListener('click', clickLang);
-      enBtn.addEventListener('click', clickLang);
+      itBtn?.addEventListener("click", setLang);
+      enBtn?.addEventListener("click", setLang);
     });
   </script>
 </body>
