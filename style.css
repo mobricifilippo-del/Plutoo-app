@@ -321,7 +321,7 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
 #view-home{
   display: flex;
   flex-direction: column;
-  min-height: calc(100svh - var(--topbar-h, 88px));
+  min-height: calc(100vh - var(--topbar-h, 88px));
    padding-bottom: 0;
    flex: 1;
   padding: 20px 14px 6px;
