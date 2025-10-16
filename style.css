@@ -320,7 +320,7 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   display:flex;
   flex-direction:column;
   /* occupa tutta l’altezza visibile tolta la topbar (stima 120–140px) */
-  min-height: calc(100svh - 130px);
+  min-height: 100svh;
   gap: 20px;
 }
 /* spinge tutto il blocco sponsor + canili + termini/privacy in fondo */
@@ -328,7 +328,7 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   margin-top: auto;
 }
 /* un po’ di aria sotto lo sponsor */
-#ethicCta{
+.ethic-cta{
   margin-top: 14px;
 }
 .home-sponsor { display: grid; gap: 16px; }
@@ -372,7 +372,11 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
 .btn:focus-visible{outline:2px solid #FFD54A;outline-offset:2px}
 
 /* ---- Sponsor più in basso, più piccolo, testo non blu ---- */
-.home-sponsor{margin-top:40px}
+.home-sponsor{
+  margin-top: auto;        /* spinge tutto in basso */
+  margin-bottom: 0;
+  padding-bottom: 12px;
+}
 .sponsor-card{max-width:560px;margin:0 auto 28px;padding:14px 18px}
 .sponsor-logo{width:64px;height:64px;border-radius:12px;object-fit:contain}
 .sponsor-card,.sponsor-card:link,.sponsor-card:visited{color:#e8e8e8;text-decoration:none}
