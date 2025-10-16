@@ -230,30 +230,7 @@
     <!-- =============== DIALOGO REWARD / INTERSTITIAL =============== -->
     <dialog id="rewardDialog"></dialog>
   </main>
-
   <!-- Script principale -->
-  <!-- carica lo script dalla root, con cache-bust e in modo sicuro -->
-<script src="/app.js?v=lg9" defer></script>
-  <script>
-window.addEventListener('DOMContentLoaded', function () {
-  const b = document.getElementById('btnEnter');
-  if (!b) { alert('btnEnter non trovato'); return; }
-
-  // assicura che sia cliccabile
-  b.classList.remove('disabled');
-  b.removeAttribute('disabled');
-
-  // hotfix: imposta lo stato "postlogin" e navighiamo
-  b.addEventListener('click', function (e) {
-    e.preventDefault();
-    try {
-      localStorage.setItem('pl_postlogin', '1'); // stessa chiave usata dall’app
-    } catch (_) {}
-    // se app.js non è partito, almeno navighiamo e al reload parte
-    location.href = '#love';
-    location.reload();
-  }, { once: true });
-});
-</script>
+<script src="/app.js?v=fix12" defer></script>
 </body>
 </html>
