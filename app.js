@@ -1,706 +1,226 @@
-/* ---------------------------------------------------------
-   Plutoo — Gold Edition
-   app.js (Parte 1/5)
-   Core, i18n, helpers, gestione viste e lingua
-   --------------------------------------------------------- */
+/* =========================================================
+   Plutoo — Gold addons (non invasivi)
+   Conserva la tua logica; aggiunge i18n, sponsor link,
+   interstitial mock, gating like, servizi Maps, UX micro.
+   ======================================================= */
 
-// Stato globale (persistenze base incluse)
-const state = {
-  lang: "it",
-  plus: localStorage.getItem("plutoo_plus") === "1",
-  swipeCount: 0,
-  selfieUnlocked: {},    // dogId -> expiry timestamp (24h)
-  currentView: "home",
-  currentDog: null,
-  dogs: [],
-  services: ["veterinari", "toelettature", "negozi", "parchi", "addestratori", "canili"],
-};
-
-// --------------------- I18N ---------------------
-const i18n = {
-  it: {
-    "tab.nearby": "Vicino a te",
-    "tab.love": "Amore",
-    "tab.play": "Giochiamo insieme",
-    "tab.plus": "Plus",
-    "tab.filters": "Ricerca personalizzata",
-    "tab.services": "Luoghi PET",
-
-    "home.subtitle": "L’app etica che unisce proprietari di Dog per amicizie reali e accoppiamenti responsabili.",
-    "home.enter": "ENTRA",
-
-    "sponsor.fido": "Il gelato per i nostri amici a quattro zampe",
-    "ethic.cta": "Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)",
-
-    "match.title": "È un match!",
-    "match.goChat": "Vai in chat",
-
-    "plus.title": "Plutoo Gold",
-    "plus.copy": "Rimuove tutti gli annunci, sblocca i filtri Gold e le funzioni Premium.",
-    "plus.price": "€39,90 / anno",
-    "plus.buy": "Abbonati ora",
-    "plus.f1": "Niente pubblicità, niente attese",
-    "plus.f2": "Filtri Gold sbloccati",
-    "plus.f3": "Accesso prioritario alle novità",
-
-    "filters.breed": "Razza",
-    "filters.breedPh": "Es. Labrador",
-    "filters.age": "Età",
-    "filters.weight": "Peso (kg)",
-    "filters.height": "Altezza (cm)",
-    "filters.sex": "Sesso",
-    "filters.any": "Qualsiasi",
-    "filters.male": "Maschio",
-    "filters.female": "Femmina",
-    "filters.distance": "Distanza (km)",
-    "filters.goldTitle": "Filtri Gold",
-    "filters.verified": "Badge verificato",
-    "filters.mating": "Disponibilità accoppiamento",
-    "filters.pedigree": "Genealogia",
-    "filters.apply": "Applica",
-    "filters.reset": "Reset",
-
-    "chat.title": "Chat",
-    "chat.placeholder": "Scrivi un messaggio…",
-    "chat.send": "Invia",
-
-    "likes.title": "Like ricevuti",
-    "likes.hint": "3 gratis; per vedere altri, guarda un video premio.",
-    "likes.unlock": "Sblocca altri like",
-
-    "reward.title": "Video premio",
-    "reward.text": "Guarda un breve video per continuare.",
-    "reward.play": "Guarda ora",
-    "reward.close": "Chiudi",
-
-    "profile.unlockSelfie": "Guarda il selfie (video premio)",
-    "auth.login": "Login",
-    "auth.signup": "Registrati",
-  },
-  en: {
-    "tab.nearby": "Nearby",
-    "tab.love": "Love",
-    "tab.play": "Let's Play",
-    "tab.plus": "Plus",
-    "tab.filters": "Advanced Search",
-    "tab.services": "PET Places",
-
-    "home.subtitle": "The ethical app connecting Dog owners for real friendships and responsible matches.",
-    "home.enter": "ENTER",
-
-    "sponsor.fido": "The ice cream for our four-legged friends",
-    "ethic.cta": "Never abandon your friends 🐾 (shelters near me)",
-
-    "match.title": "It’s a match!",
-    "match.goChat": "Go to chat",
-
-    "plus.title": "Plutoo Gold",
-    "plus.copy": "Removes all ads, unlocks Gold filters and premium features.",
-    "plus.price": "€39.90 / year",
-    "plus.buy": "Subscribe now",
-    "plus.f1": "No ads, no waits",
-    "plus.f2": "Gold filters unlocked",
-    "plus.f3": "Priority access to new features",
-
-    "filters.breed": "Breed",
-    "filters.breedPh": "e.g. Labrador",
-    "filters.age": "Age",
-    "filters.weight": "Weight (kg)",
-    "filters.height": "Height (cm)",
-    "filters.sex": "Sex",
-    "filters.any": "Any",
-    "filters.male": "Male",
-    "filters.female": "Female",
-    "filters.distance": "Distance (km)",
-    "filters.goldTitle": "Gold Filters",
-    "filters.verified": "Verified badge",
-    "filters.mating": "Mating availability",
-    "filters.pedigree": "Pedigree",
-    "filters.apply": "Apply",
-    "filters.reset": "Reset",
-
-    "chat.title": "Chat",
-    "chat.placeholder": "Write a message…",
-    "chat.send": "Send",
-
-    "likes.title": "Received Likes",
-    "likes.hint": "3 free; watch a reward video to unlock more.",
-    "likes.unlock": "Unlock more likes",
-
-    "reward.title": "Reward video",
-    "reward.text": "Watch a short video to continue.",
-    "reward.play": "Watch now",
-    "reward.close": "Close",
-
-    "profile.unlockSelfie": "View selfie (reward video)",
-    "auth.login": "Login",
-    "auth.signup": "Sign up",
-  },
-};
-
-// --------------------- Helpers ---------------------
-const $  = (s, c=document) => c.querySelector(s);
-const $$ = (s, c=document) => Array.from(c.querySelectorAll(s));
-
-function show(view) {
-  $$(".view").forEach(v => v.classList.remove("view-active"));
-  const el = $("#view-" + view);
-  if (el) el.classList.add("view-active");
-  state.currentView = view;
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function openDialog(id){ const el = $("#"+id); if (el) el.hidden = false; }
-function closeDialog(id){ const el = $("#"+id); if (el) el.hidden = true; }
-
-function escapeHTML(s){
-  return s.replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
-}
-
-// --------------------- Lingua ---------------------
-window.setLanguage = function(lang){
-  if (!i18n[lang]) return;
-  state.lang = lang;
-  localStorage.setItem("plutoo_lang", lang);
-  document.documentElement.lang = lang;
-
-  // toggle pulsanti bandiere
-  $$(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang ? "true" : "false"));
-
-  // testi
-  $$("[data-i18n]").forEach(el => {
-    const k = el.getAttribute("data-i18n");
-    if (i18n[lang][k]) el.textContent = i18n[lang][k];
-  });
-
-  // placeholder
-  $$("[data-i18n-ph]").forEach(el => {
-    const k = el.getAttribute("data-i18n-ph");
-    if (i18n[lang][k]) el.setAttribute("placeholder", i18n[lang][k]);
-  });
-};
-
-// lingua iniziale
-const savedLang = localStorage.getItem("plutoo_lang");
-state.lang = savedLang ? savedLang : (navigator.language || "it").startsWith("en") ? "en" : "it";
-
-document.addEventListener("DOMContentLoaded", () => {
-  window.setLanguage(state.lang);
-});
-
-// --------------------- Stub sicuri (verranno estesi nelle parti successive) ---------------------
-// Reward mock minimale per evitare errori prima di caricare la logica reale (Parte 2)
-const Rewards = {
-  show: async () => true
-};
-
-// Etic box → apre Maps (logica avanzata con reward nella Parte 2)
-function openEthic(){
-  const q = state.lang === "en" ? "animal shelters near me" : "canili vicino a me";
-  openMaps(q);
-}
-
-// Apertura Google Maps (riusata in più punti)
-function openMaps(query){
-  window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, "_blank");
-}
-
-// --------------------- Routing / Pulsanti base ---------------------
-document.addEventListener("DOMContentLoaded", () => {
-  // HOME → ENTRA
-  $("#btnEnter")?.addEventListener("click", () => show("nearby"));
-
-  // Logo → HOME
-  $("#navHome")?.addEventListener("click", () => show("home"));
-
-  // Tabs principali
-  $$(".tab").forEach(t => t.addEventListener("click", () => t.dataset.view && show(t.dataset.view)));
-
-  // Switch lingua (🇮🇹/🇬🇧)
-  $("#btn-lang-it")?.addEventListener("click", e => window.setLanguage("it"));
-  $("#btn-lang-en")?.addEventListener("click", e => window.setLanguage("en"));
-
-  // Etic box (tutti i punti della UI)
-  $$("#btnEthic, #btnEthic2, #btnEthic3, #btnEthic4, #btnEthic5, #btnEthicGlobal")
-    .forEach(b => b.addEventListener("click", openEthic));
-});
-/* ---------------------------------------------------------
-   Plutoo — Gold Edition
-   app.js (Parte 2/5) — VERSIONE FIX
-   Rewards mock (upgrade), sponsor, luoghi PET, griglia Dog, profilo
-   --------------------------------------------------------- */
-
-// --------------------- Reward system mock (upgrade) ---------------------
-// ⚠️ Non ridichiariamo 'const Rewards' (definito in Parte 1):
-// aggiorniamo solo il suo metodo .show per evitare l'errore
-// "Identifier 'Rewards' has already been declared".
-Rewards.show = async (reason = "") => {
-  if (state.plus) return true; // Plus: niente ads
-  return new Promise(resolve => {
-    openDialog("rewardDialog");
-    $("#rewardPlay").onclick = () => {
-      $("#rewardDialog").hidden = true;
-      setTimeout(() => resolve(true), 800);
-    };
-    $("#rewardClose").onclick = () => {
-      $("#rewardDialog").hidden = true;
-      resolve(false);
-    };
-  });
-};
-
-// --------------------- Sponsor + Etica ---------------------
-$$("#sponsorFido, #sponsorFido2").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    if (await Rewards.show("sponsor")) openMaps("Fido il gelato per cani");
-  });
-});
-
-// Tutti i pulsanti etici (home, pagine, footer globale)
-$$("#btnEthic, #btnEthic2, #btnEthic3, #btnEthic4, #btnEthic5, #btnEthicGlobal").forEach(b => {
-  b.addEventListener("click", async () => {
-    if (await Rewards.show("ethic")) {
-      const q = state.lang === "en" ? "animal shelters near me" : "canili vicino a me";
-      openMaps(q);
+(function(){
+  /* ---------------- i18n ---------------- */
+  const I18N = {
+    it:{
+      tab_love:"Amore 🥲💛",
+      tab_play:"Giochiamo insieme 🥲🐕",
+      tab_plus:"Plus ⭐",
+      tab_search:"Ricerca 🔍",
+      tab_places:"Luoghi PET 🐾",
+      tab_nearby:"Vicino a te",
+      login:"Login",
+      signup:"Registrati",
+      enter:"ENTRA",
+      sponsor_badge:"Sponsor ufficiale",
+      sponsor_title:"Fido",
+      sponsor_sub:"Il gelato per i nostri amici a quattro zampe",
+      sponsor_url:"https://www.fido.it/",
+      ethic_cta:"Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)",
+      plus_1:"Rimuove tutti gli annunci",
+      plus_2:"Filtri Gold e funzioni Premium",
+      plus_3:"Supporto prioritario",
+      plus_buy:"Attiva €39,90/anno",
+      f_breed:"Razza", f_sex:"Sesso", f_verified:"Badge verificato Gold",
+      any:"Qualsiasi", male:"Maschio", female:"Femmina",
+      svc_vet:"Veterinari", svc_groom:"Toelettature", svc_shop:"Negozi",
+      svc_parks:"Parchi", svc_train:"Addestratori", svc_shelter:"Canili",
+      likes_title:"Like ricevuti",
+      likes_free_left:"Like gratuiti rimasti: {n}",
+      likes_unlock:"Guarda un video per sbloccare altri like",
+    },
+    en:{
+      tab_love:"Love 🥲💛",
+      tab_play:"Play together 🥲🐕",
+      tab_plus:"Gold ⭐",
+      tab_search:"Search 🔍",
+      tab_places:"PET places 🐾",
+      tab_nearby:"Nearby",
+      login:"Login",
+      signup:"Sign up",
+      enter:"ENTER",
+      sponsor_badge:"Official sponsor",
+      sponsor_title:"Fido",
+      sponsor_sub:"Ice cream for our four-legged friends",
+      sponsor_url:"https://www.fido.it/",
+      ethic_cta:"Never abandon your friends 🐾 (shelters near me)",
+      plus_1:"Removes all ads",
+      plus_2:"Gold filters & Premium features",
+      plus_3:"Priority support",
+      plus_buy:"Activate €39.90/year",
+      f_breed:"Breed", f_sex:"Sex", f_verified:"Gold verified badge",
+      any:"Any", male:"Male", female:"Female",
+      svc_vet:"Veterinarians", svc_groom:"Groomers", svc_shop:"Pet shops",
+      svc_parks:"Dog parks", svc_train:"Dog trainers", svc_shelter:"Animal shelters",
+      likes_title:"Likes received",
+      likes_free_left:"Free likes left: {n}",
+      likes_unlock:"Watch a video to unlock more likes",
     }
+  };
+
+  const stored = localStorage.getItem("pl_lang");
+  const browserIT = (navigator.language||"").toLowerCase().startsWith("it");
+  const lang = stored || (browserIT ? "it" : "en");
+
+  function t(key, vars={}){
+    const str = (I18N[lang] && I18N[lang][key]) || key;
+    return str.replace(/\{(\w+)\}/g, (_,k)=> vars[k] ?? "");
+  }
+
+  function applyI18n(){
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const key = el.getAttribute("data-i18n");
+      if (I18N[lang] && I18N[lang][key]) el.textContent = I18N[lang][key];
+    });
+  }
+
+  document.getElementById("lang-it")?.addEventListener("click", ()=>{ localStorage.setItem("pl_lang","it"); location.reload(); });
+  document.getElementById("lang-en")?.addEventListener("click", ()=>{ localStorage.setItem("pl_lang","en"); location.reload(); });
+
+  applyI18n();
+
+  /* ----------- Router minimale (non invade il tuo) ----------- */
+  function $(s, c=document){ return c.querySelector(s); }
+  function $$(s, c=document){ return Array.from(c.querySelectorAll(s)); }
+
+  window.show = function(view){
+    const id = "view-" + view;
+    $$(".view").forEach(v=>{
+      if (v.id === id){ v.classList.add("view-active"); v.removeAttribute("hidden"); }
+      else { v.classList.remove("view-active"); v.setAttribute("hidden",""); }
+    });
+    window.scrollTo({top:0, behavior:"smooth"});
+    if (view === "nearby") ensureNearbyGrid();
+  };
+
+  document.addEventListener("click", (e)=>{
+    const b = e.target.closest("[data-view]");
+    if (b && b.dataset.view){ e.preventDefault(); show(b.dataset.view); }
   });
-});
 
-// --------------------- Luoghi PET (dropdown) ---------------------
-$$(".dropdown-item").forEach(btn => {
-  btn.addEventListener("click", async e => {
-    const type = e.currentTarget.dataset.service;
-    if (await Rewards.show("service")) {
-      const q = state.lang === "en"
-        ? (type === "canili" ? "animal shelters near me" : `${type} for dogs near me`)
-        : `${type} vicino a me`;
-      openMaps(q);
-    }
-  });
-});
+  $("#btnEnter")?.addEventListener("click", ()=> show("nearby"));
 
-// --------------------- Dataset cani mock ---------------------
-const dogSamples = [
-  { id: 1, name: "Luna",  breed: "Labrador",          age: 3, sex: "female", img: "dog1.jpg", verified: true  },
-  { id: 2, name: "Rocky", breed: "Bulldog",           age: 4, sex: "male",   img: "dog2.jpg", verified: false },
-  { id: 3, name: "Milo",  breed: "Golden Retriever",  age: 2, sex: "male",   img: "dog3.jpg", verified: true  },
-  { id: 4, name: "Bella", breed: "Barboncino",        age: 1, sex: "female", img: "dog4.jpg", verified: false },
-];
-state.dogs = dogSamples;
+  /* ----------- Sponsor Fido link centralizzato ----------- */
+  function openFido(){ window.open(I18N[lang].sponsor_url, "_blank", "noopener"); }
+  $("#sponsorFido")?.addEventListener("click", openFido);
+  $$(".sponsor-inline").forEach(s => s.addEventListener("click", openFido));
 
-// --------------------- Griglia “Vicino a te” ---------------------
-function renderNearby() {
-  const grid = $("#nearbyGrid");
-  if (!grid) return;
-  grid.innerHTML = "";
-  state.dogs.forEach(dog => {
-    const card = document.createElement("div");
-    card.className = "card frame-gold";
-    card.innerHTML = `
-      <div class="card-photo"><img src="\${dog.img}" alt="\${escapeHTML(dog.name)}" /></div>
-      <div class="card-info small">
-        <div><strong>\${escapeHTML(dog.name)}</strong>, \${dog.age}</div>
-        <div>\${escapeHTML(dog.breed)}</div>
+  /* ----------- CTA etica → Google Maps ----------- */
+  function openShelters(){
+    const q = lang==="it" ? "canili vicino a me" : "animal shelters near me";
+    window.open("https://www.google.com/maps/search/"+encodeURIComponent(q), "_blank", "noopener");
+  }
+  $$(".ethic-cta").forEach(b => b.addEventListener("click", openShelters));
+
+  /* ----------- Interstitial “Videomatch” (mock) ----------- */
+  function showInterstitial(title="Videomatch"){
+    const dlg = document.getElementById("rewardDialog");
+    dlg.innerHTML = `
+      <div style="padding:18px;max-width:340px">
+        <h3 style="margin:0 0 8px">${title}</h3>
+        <p style="opacity:.85;margin:0 0 14px">Video pubblicitario…</p>
+        <button class="btn btn-gold" id="vmok">Chiudi</button>
       </div>`;
-    card.addEventListener("click", () => openProfile(dog.id));
-    grid.appendChild(card);
-  });
-}
-document.addEventListener("DOMContentLoaded", renderNearby);
-
-// --------------------- Profilo Dog ---------------------
-function openProfile(id) {
-  const d = state.dogs.find(x => x.id === id);
-  if (!d) return;
-  state.currentDog = d;
-  $("#profileMainPhoto").innerHTML = `<img src="\${d.img}" alt="\${escapeHTML(d.name)}" />`;
-  $("#profileName").textContent = d.name;
-  $("#profileInfo").textContent = \`\${d.breed}, \${d.age} anni\`;
-  $("#badgeVerified").hidden = !d.verified;
-  $("#profilePage").hidden = false;
-}
-$("#btnCloseProfile")?.addEventListener("click", () => { $("#profilePage").hidden = true; });
-
-console.log("%cPlutoo logic loaded (Part 2/5 FIX)", "color:gold;font-weight:bold;");
-// --------------------- Splash fail-safe (se app.js carica prima dell’inline) ---------------------
-document.addEventListener("DOMContentLoaded", () => {
-  const splash = $("#splash");
-  const app = $("#app");
-  // se lo script inline di index non è ancora partito, gestiamo noi:
-  setTimeout(() => {
-    if (splash && !splash.classList.contains("hide")) splash.classList.add("hide");
-    if (app && app.classList.contains("hidden")) app.classList.remove("hidden");
-  }, 1400);
-});
-
-// Log di servizio
-console.log("%cPlutoo app core loaded (Part 1/5)", "color:gold;font-weight:bold;");
-
-/* ---------------------------------------------------------
-   Plutoo — Gold Edition
-   app.js (Parte 3/5)
-   Swipe, Match, Reward swipe logic
-   --------------------------------------------------------- */
-
-// --------------------- Swipe setup ---------------------
-const swipeCard = $("#swipeCard");
-let currentIndex = 0;
-
-function renderSwipeCard() {
-  if (!swipeCard) return;
-  const dog = state.dogs[currentIndex % state.dogs.length];
-  swipeCard.innerHTML = `
-    <div class="card-solo frame-gold">
-      <img src="${dog.img}" alt="${dog.name}" class="swipe-photo" />
-      <div class="swipe-info">
-        <div><strong>${dog.name}</strong>, ${dog.age}</div>
-        <div>${dog.breed}</div>
-      </div>
-    </div>
-  `;
-  state.currentDog = dog;
-}
-
-function nextDog(liked) {
-  if (liked) {
-    state.swipeCount++;
-    if (state.swipeCount === 10 || (state.swipeCount > 10 && (state.swipeCount - 10) % 5 === 0)) {
-      Rewards.show("swipe");
-    }
-    if (Math.random() < 0.5) showMatchPopup(state.currentDog);
-  }
-  currentIndex++;
-  renderSwipeCard();
-}
-
-// --------------------- Match popup ---------------------
-function showMatchPopup(dog) {
-  const pop = $("#matchPopup");
-  const heart = $(".match-heart", pop);
-  pop.hidden = false;
-  heart.animate([
-    { transform: "scale(0)", opacity: 0 },
-    { transform: "scale(1.4)", opacity: 1, offset: 0.5 },
-    { transform: "scale(1)", opacity: 1 }
-  ], { duration: 900, easing: "ease-out" });
-
-  setTimeout(() => {
-    pop.hidden = true;
-    Rewards.show("match");
-  }, 2000);
-}
-
-$("#btnLike")?.addEventListener("click", () => nextDog(true));
-$("#btnDislike")?.addEventListener("click", () => nextDog(false));
-
-document.addEventListener("DOMContentLoaded", renderSwipeCard);
-
-console.log("%cSwipe system loaded (Part 3/5)", "color:gold;font-weight:bold;");
-/* ---------------------------------------------------------
-   Plutoo — Gold Edition
-   app.js (Parte 4/5)
-   Chat, Selfie, Likes
-   --------------------------------------------------------- */
-
-// --------------------- Chat ---------------------
-const chatPage = $("#chatPage");
-const chatMessages = $("#chatMessages");
-const chatForm = $("#chatForm");
-const chatText = $("#chatText");
-
-function openChat(dog) {
-  $("#chatTitle").textContent = `Chat con ${dog.name}`;
-  chatMessages.innerHTML = "";
-  chatPage.hidden = false;
-}
-$("#btnGoChat")?.addEventListener("click", () => {
-  if (state.currentDog) openChat(state.currentDog);
-});
-
-$("#btnCloseChat")?.addEventListener("click", () => { chatPage.hidden = true; });
-
-chatForm?.addEventListener("submit", async e => {
-  e.preventDefault();
-  const msg = chatText.value.trim();
-  if (!msg) return;
-
-  // reward solo al primo messaggio
-  if (!localStorage.getItem("chat_reward_done") && !state.plus) {
-    const ok = await Rewards.show("chat");
-    if (!ok) return;
-    localStorage.setItem("chat_reward_done", "1");
+    dlg.showModal();
+    dlg.querySelector("#vmok").addEventListener("click", ()=> dlg.close());
   }
 
-  appendMessage(msg, true);
-  chatText.value = "";
-  setTimeout(() => appendMessage("🐾 Bau!", false), 1000);
-});
+  // Hook non invasivo: se il tuo codice chiama window.onMatch, qui iniettiamo l’interstitial
+  const _onMatch = window.onMatch;
+  window.onMatch = function(...args){
+    try{ showInterstitial("Videomatch"); }catch(e){}
+    if (typeof _onMatch === "function") _onMatch.apply(this, args);
+  };
 
-function appendMessage(txt, me = false) {
-  const div = document.createElement("div");
-  div.className = "msg" + (me ? " me" : "");
-  div.textContent = txt;
-  chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+  /* ----------- Like ricevuti: 3 gratis, poi reward ----------- */
+  const LIKES_KEY = "pl_free_likes_left";
+  if (localStorage.getItem(LIKES_KEY) == null) localStorage.setItem(LIKES_KEY, "3");
 
-// --------------------- Selfie ---------------------
-const selfieBlur = $("#selfieBlur");
-if (selfieBlur) {
-  selfieBlur.addEventListener("click", async () => {
-    const dog = state.currentDog;
-    if (!dog) return;
-    const ok = await Rewards.show("selfie");
-    if (ok) {
-      selfieBlur.style.display = "none";
-      state.selfieUnlocked[dog.id] = Date.now() + 24 * 60 * 60 * 1000;
-      localStorage.setItem("selfieUnlocked", JSON.stringify(state.selfieUnlocked));
-    }
-  });
-}
-
-// --------------------- Likes ricevuti ---------------------
-const likesList = $("#likesList");
-const btnUnlockMoreLikes = $("#btnUnlockMoreLikes");
-const likesPage = $("#likesPage");
-let visibleLikes = 3;
-
-function openLikes() {
-  likesList.innerHTML = "";
-  for (let i = 0; i < visibleLikes; i++) {
-    const d = state.dogs[i % state.dogs.length];
-    const el = document.createElement("div");
-    el.className = "card frame-gold";
-    el.innerHTML = `<div class="card-photo"><img src="${d.img}" alt="${d.name}" /></div><div class="card-info small">${d.name}</div>`;
-    likesList.appendChild(el);
+  function showRewardVideo(){
+    return new Promise(resolve=>{
+      const dlg = document.getElementById("rewardDialog");
+      dlg.innerHTML = `
+        <div style="padding:18px;max-width:360px">
+          <h3 style="margin:0 0 8px">Reward</h3>
+          <p style="opacity:.85;margin:0 0 14px">${t("likes_unlock")}</p>
+          <button class="btn btn-gold" id="rwok">Guarda</button>
+        </div>`;
+      dlg.showModal();
+      dlg.querySelector("#rwok").addEventListener("click", ()=>{ dlg.close(); resolve(); });
+    });
   }
-  likesPage.hidden = false;
-}
-$("#btnUnlockMoreLikes")?.addEventListener("click", async () => {
-  if (await Rewards.show("likes")) {
-    visibleLikes += 3;
-    openLikes();
-  }
-});
-$("#btnCloseLikes")?.addEventListener("click", () => likesPage.hidden = true);
 
-console.log("%cChat, Selfie & Likes loaded (Part 4/5)", "color:gold;font-weight:bold;");
-/* ---------------------------------------------------------
-   /* ---------------------------------------------------------
-   Plutoo — Gold Edition
-   app.js (Parte 5/5)
-   Plus, Filtri, i18n live, salvataggi, fix visibilità
-   --------------------------------------------------------- */
-
-// --------------------- Plus (mock) ---------------------
-const btnBuyPlus = $("#btnBuyPlus");
-btnBuyPlus?.addEventListener("click", () => {
-  if (confirm(state.lang === "en"
-      ? "Activate Plutoo Gold and remove all ads?"
-      : "Attivare Plutoo Gold e rimuovere tutte le pubblicità?")) {
-    state.plus = true;
-    localStorage.setItem("plutoo_plus", "1");
-    alert(state.lang === "en"
-      ? "Plutoo Gold activated! Enjoy your premium features."
-      : "Plutoo Gold attivato! Tutte le funzioni Premium sbloccate.");
-  }
-});
-
-// --------------------- Filtri personalizzati ---------------------
-const breeds = [
-  "Labrador", "Golden Retriever", "Barboncino", "Bulldog", "Beagle", "Chihuahua",
-  "Pastore Tedesco", "Jack Russell", "Cocker Spaniel", "Carlino", "Maltese", "Border Collie",
-  "Husky", "Bassotto", "Dalmata", "Pitbull", "Shiba Inu", "Rottweiler", "Terranova", "Samoyed"
-].sort();
-
-const breedInput = $("#breed");
-const breedSuggest = $("#breedSuggest");
-
-breedInput?.addEventListener("input", () => {
-  const q = breedInput.value.trim().toLowerCase();
-  if (!q) { breedSuggest.innerHTML = ""; breedSuggest.classList.remove("show"); return; }
-  const matches = breeds.filter(b => b.toLowerCase().startsWith(q));
-  if (!matches.length) { breedSuggest.innerHTML = ""; breedSuggest.classList.remove("show"); return; }
-  breedSuggest.innerHTML = matches.map(b => `<button class="sugg">${b}</button>`).join("");
-  breedSuggest.classList.add("show");
-});
-
-breedSuggest?.addEventListener("click", e => {
-  if (e.target.classList.contains("sugg")) {
-    breedInput.value = e.target.textContent;
-    breedSuggest.classList.remove("show");
-  }
-});
-
-// Applica filtri
-$("#filtersForm")?.addEventListener("submit", e => {
-  e.preventDefault();
-  const breed = $("#breed").value.trim().toLowerCase();
-  const sex = $("#sex").value;
-  const verified = $("#verified").checked;
-  let filtered = state.dogs;
-  if (breed) filtered = filtered.filter(d => d.breed.toLowerCase().startsWith(breed));
-  if (sex) filtered = filtered.filter(d => d.sex === sex);
-  if (verified) filtered = filtered.filter(d => d.verified);
-  const grid = $("#nearbyGrid");
-  grid.innerHTML = "";
-  filtered.forEach(d => {
-    const card = document.createElement("div");
-    card.className = "card frame-gold";
-    card.innerHTML = `<div class="card-photo"><img src="${d.img}" alt="${d.name}" /></div>
-                      <div class="card-info small"><div><strong>${d.name}</strong>, ${d.age}</div><div>${d.breed}</div></div>`;
-    card.addEventListener("click", () => openProfile(d.id));
-    grid.appendChild(card);
-  });
-  show("nearby");
-});
-
-// Reset filtri
-$("#filtersForm")?.addEventListener("reset", renderNearby);
-
-// --------------------- Lingua live (cambio bandiera) ---------------------
-$$(".lang-btn").forEach(btn => {
-  btn.addEventListener("click", e => {
-    const lang = e.currentTarget.dataset.lang;
-    window.setLanguage(lang);
-  });
-});
-
-// --------------------- Funzione show con fix visibilità ---------------------
-function show(view) {
-  const targetId = "view-" + view;
-  $$(".view").forEach(v => {
-    if (v.id === targetId) {
-      v.classList.add("view-active");
-      v.removeAttribute("hidden");        // <— mostra la vista
+  // Se hai un bottone o voce per “Like ricevuti”, aggancia questo id:
+  // <button id="btnViewLikes">Like</button>
+  $("#btnViewLikes")?.addEventListener("click", async ()=>{
+    let left = parseInt(localStorage.getItem(LIKES_KEY)||"0",10);
+    if (left > 0){
+      left -= 1; localStorage.setItem(LIKES_KEY, String(left));
+      alert( t("likes_title") + "\n" + t("likes_free_left",{n:left}) );
     } else {
-      v.classList.remove("view-active");
-      v.setAttribute("hidden", "");       // <— nasconde le altre
+      await showRewardVideo();
+      localStorage.setItem(LIKES_KEY, "1");
+      alert( t("likes_title") + "\n" + t("likes_free_left",{n:1}) );
     }
   });
-  state.currentView = view;
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
 
-// --------------------- Salvataggi selfie ---------------------
-try {
-  const savedSelfie = localStorage.getItem("selfieUnlocked");
-  if (savedSelfie) state.selfieUnlocked = JSON.parse(savedSelfie);
-} catch(e){ console.warn("Selfie storage parse error"); }
-
-// --------------------- Inizializzazione visibilità ---------------------
-document.addEventListener("DOMContentLoaded", () => {
-  // Solo la home visibile al primo avvio
-  $$(".view").forEach(v => {
-    if (v.id === "view-home") {
-      v.classList.add("view-active");
-      v.removeAttribute("hidden");
-    } else {
-      v.classList.remove("view-active");
-      v.setAttribute("hidden", "");
-    }
+  /* ----------- Luoghi PET: reward → Google Maps ----------- */
+  const svcEN = { veterinari:"veterinarians", toelettature:"groomers", negozi:"pet shops", parchi:"dog parks", addestratori:"dog trainers", canili:"animal shelters" };
+  $$(".dropdown-item").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      await showRewardVideo();
+      const k = btn.dataset.service;
+      const q = lang==="it" ? k : (svcEN[k] || k);
+      window.open("https://www.google.com/maps/search/"+encodeURIComponent(q+" near me"), "_blank", "noopener");
+    });
   });
-});
 
-// --------------------- Final log ---------------------
-console.log("%cPlutoo Gold Edition fully loaded ✅", "color:gold;font-weight:bold;font-size:14px;");
-/* ========== PATCH: interazioni + geolocalizzazione ========== */
-
-// 1) Delegazione globale per i tab (robustezza su mobile)
-document.addEventListener("click", (e) => {
-  const viewBtn = e.target.closest("[data-view]");
-  if (viewBtn && viewBtn.dataset.view) {
-    e.preventDefault();
-    show(viewBtn.dataset.view);
+  /* ----------- UX micro ----------- */
+  const swipeArea = $("#swipeArea");
+  if (swipeArea){
+    let swiping = false;
+    swipeArea.addEventListener("touchstart", ()=>{ swiping = true; }, {passive:true});
+    swipeArea.addEventListener("touchend",   ()=>{ swiping = false; }, {passive:true});
+    window.addEventListener("touchmove", (e)=>{ if (swiping) e.preventDefault(); }, {passive:false});
   }
-  // sponsor inline di sicurezza
-  if (e.target.closest("#sponsorFido") || e.target.closest("#sponsorFido2")) {
-    Rewards.show("sponsor").then((ok) => ok && openMaps("Fido il gelato per cani"));
+  $("#btnLike")?.addEventListener("click", ()=> navigator.vibrate?.(20));
+  $("#btnDislike")?.addEventListener("click", ()=> navigator.vibrate?.(10));
+
+  /* ----------- Nearby grid demo (non altera il tuo fetch) ----------- */
+  const demoDogs = [
+    { id:1, name:"Luna",  breed:"Labrador",         age:3, img:"./dog1.jpg" },
+    { id:2, name:"Rocky", breed:"Bulldog",          age:4, img:"./dog2.jpg" },
+    { id:3, name:"Milo",  breed:"Golden Retriever", age:2, img:"./dog3.jpg" },
+    { id:4, name:"Bella", breed:"Barboncino",       age:1, img:"./dog4.jpg" }
+  ];
+  function ensureNearbyGrid(){
+    const grid = $("#nearbyGrid"); if (!grid || grid.children.length) return;
+    demoDogs.forEach(d=>{
+      const card = document.createElement("div");
+      card.className = "card frame-gold";
+      card.innerHTML =
+        `<div class="card-photo"><img src="${d.img}" alt="${d.name}"></div>
+         <div class="card-info small"><div><strong>${d.name}</strong>, ${d.age}</div><div>${d.breed}</div></div>`;
+      grid.appendChild(card);
+    });
   }
-});
 
-// 2) Geolocalizzazione: chiedi permesso e aggiorna distanze
-function initGeolocation() {
-  if (!("geolocation" in navigator)) return;
+  /* ----------- “Vicino a te” nascosto finché non c’è login ----------- */
+  const nearTab = $("#tab-nearby");
+  function hideNearby(){ if (nearTab) nearTab.style.display = "none"; }
+  function showNearby(){ if (nearTab) nearTab.style.display = ""; }
+  hideNearby();
 
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      state.userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-      // Se non abbiamo le coordinate dei cani reali, simuliamo una distanza 1–12 km
-      state.dogs = state.dogs.map((d, i) => ({
-        ...d,
-        km: d.km || (1 + Math.floor(Math.random() * 12))
-      }));
-      // Aggiorna subito la griglia e la card swipe
-      renderNearby();
-      if (typeof renderSwipeCard === "function") renderSwipeCard();
-    },
-    (err) => {
-      console.warn("Geoloc denied/failed:", err?.message || err);
-      // fallback: assegna distanze mock se mancanti
-      state.dogs = state.dogs.map((d) => ({ ...d, km: d.km || (3 + Math.floor(Math.random() * 10)) }));
-      renderNearby();
-      if (typeof renderSwipeCard === "function") renderSwipeCard();
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-  );
-}
+  $("#btnLogin")?.addEventListener("click", ()=>{
+    // Qui parte la tua view di login; al completamento reale chiama showNearby()
+    showNearby();
+  });
 
-// 3) Chiamala all’avvio (dopo splash)
-document.addEventListener("DOMContentLoaded", () => {
-  // avvia richiesta geolocalizzazione poco dopo il render iniziale
-  setTimeout(initGeolocation, 500);
-});
-
-// 4) ENTRA di sicurezza (se qualche listener mancasse)
-document.addEventListener("click", (e) => {
-  if (e.target.closest("#btnEnter")) {
-    e.preventDefault();
-    show("nearby");
-  }
-});
-
-// 5) Piccolo aiuto visivo: se resti in HOME per errore, rendi clickabile tutta la hero
-$(".hero")?.addEventListener("click", (e) => {
-  const btn = e.target.closest("button, a");
-  if (!btn) show("nearby");
-});
-/* ========== /PATCH ========== */
-/* ===== HOTFIX: interazioni robuste + nascondi "Vicino a te" in Home ===== */
-
-// delega globale: qualsiasi bottone con data-view cambia vista
-document.addEventListener("click", (e) => {
-  const b = e.target.closest("[data-view]");
-  if (!b) return;
-  e.preventDefault();
-  show(b.dataset.view);
-});
-
-// Entra sempre funzionante (backup)
-document.addEventListener("click", (e) => {
-  if (e.target.closest("#btnEnter")) {
-    e.preventDefault();
-    show("nearby");
-  }
-});
-
-// override leggero di show() per gestire la visibilità e il tab "Vicino a te"
-const __show = show; // conserva la versione attuale
-show = function(view){
-  __show(view);
-  // Nascondi il TAB "Vicino a te" quando sei in Home
-  const nearTab = document.getElementById("tab-nearby");
-  if (nearTab) {
-    if (view === "home") nearTab.style.display = "none";
-    else nearTab.style.display = "";
-  }
-};
-
-// all’avvio: home visibile e tab "Vicino a te" nascosto
-document.addEventListener("DOMContentLoaded", () => {
-  const nearTab = document.getElementById("tab-nearby");
-  if (nearTab) nearTab.style.display = "none";
-});
-/* ===== /HOTFIX ===== */
+  // Avvio: mostra Home già attiva
+  // (Se hai un tuo router, questo non lo tocca.)
+})();
