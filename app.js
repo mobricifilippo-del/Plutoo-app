@@ -6,6 +6,47 @@
 
 (function(){
   "use strict";
+   /* ============ Plutoo — navigazione & stato postlogin ============ */
+const PL_STATE_KEY = 'pl_postlogin';
+let navStack = [];
+
+const qs  = sel => document.querySelector(sel);
+const qsa = sel => Array.from(document.querySelectorAll(sel));
+
+const show = el => { if (!el) return; el.classList.remove('hidden'); el.hidden = false; };
+const hide = el => { if (!el) return; el.classList.add('hidden'); el.hidden = true; };
+
+const setPostlogin = v => localStorage.setItem(PL_STATE_KEY, v ? '1' : '0');
+const isPostlogin  = () => localStorage.getItem(PL_STATE_KEY) === '1';
+
+/* mostra/nasconde le chip centrali della topbar */
+function showChips(visible){
+  qsa('.topbar-center .chip').forEach(btn => visible ? show(btn) : hide(btn));
+}
+
+/* cambia vista gestendo lo stack per il tasto ← */
+function goTo(viewId){
+  const current = qs('.view.view-active');
+  if (current && current.id !== `view-${viewId}`) {
+    navStack.push(current.id);
+    current.classList.remove('view-active');
+    current.hidden = true;
+  }
+  const next = qs(`#view-${viewId}`);
+  if (next) {
+    next.hidden = false;
+    next.classList.add('view-active');
+  }
+  updateBackButton();
+}
+
+/* mostra/nasconde il tasto ← in base al contesto */
+function updateBackButton(){
+  const btnBack = qs('#btnBack');
+  const atHome  = qs('#view-home')?.classList.contains('view-active');
+  if (!isPostlogin() || atHome || navStack.length === 0) hide(btnBack);
+  else show(btnBack);
+}
 
   /* -------------------- NAMESPACE -------------------- */
   const App = window.Plutoo = window.Plutoo || {};
@@ -679,3 +720,57 @@
 
   // fine namespace IIFE
 })();
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Stato iniziale: chip visibili solo se già "dentro"
+  if (isPostlogin()) {
+    showChips(true);
+    // atterraggio come nello ZIP: "Vicino a te"
+    goTo('nearby');
+  } else {
+    showChips(false);
+    // assicura che la Home sia attiva
+    qsa('.view').forEach(v => { v.hidden = true; v.classList.remove('view-active'); });
+    const home = qs('#view-home'); if (home){ home.hidden = false; home.classList.add('view-active'); }
+  }
+  updateBackButton();
+
+  // 2) Chip di navigazione (centrali)
+  qsa('.topbar-center .chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-view');
+      if (target) goTo(target);
+    });
+  });
+
+  // 3) ENTRA / LOGIN → entra, mostra chip, vai su "Vicino a te"
+  ['#btnEnter', '#btnLogin'].forEach(sel => {
+    const b = qs(sel);
+    if (b) b.addEventListener('click', () => {
+      setPostlogin(true);
+      showChips(true);
+      goTo('nearby');
+    });
+  });
+
+  // 4) Bottone ←
+  const back = qs('#btnBack');
+  if (back) back.addEventListener('click', () => {
+    if (navStack.length) {
+      const prevId = navStack.pop();
+      const current = qs('.view.view-active');
+      if (current) { current.classList.remove('view-active'); current.hidden = true; }
+      const prev = qs('#' + prevId);
+      if (prev) { prev.hidden = false; prev.classList.add('view-active'); }
+    } else {
+      // fallback: torna a Home
+      qsa('.view').forEach(v => { v.hidden = true; v.classList.remove('view-active'); });
+      const home = qs('#view-home'); if (home){ home.hidden = false; home.classList.add('view-active'); }
+    }
+    updateBackButton();
+  });
+
+  // 5) Back hardware / popstate → simula il click su ←
+  window.addEventListener('popstate', () => {
+    qs('#btnBack')?.click();
+  });
+});
