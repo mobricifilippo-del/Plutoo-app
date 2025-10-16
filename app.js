@@ -39,7 +39,19 @@ function goTo(viewId){
   }
   updateBackButton();
 }
-
+// --- Pulsante ENTRA: mostra chip e passa a "Vicino a te" ---
+document.addEventListener('DOMContentLoaded', () => {
+  const btnEnter = document.getElementById('btnEnter');
+  if (btnEnter) {
+    btnEnter.addEventListener('click', (e) => {
+      e.preventDefault();
+      setPostlogin(true);     // segna che l'utente è "dentro"
+      showChips(true);        // mostra i bottoni centrali
+      goTo('nearby');         // vai alla schermata "Vicino a te"
+      updateBackButton();     // aggiorna il tasto ←
+    }, { once: true });
+  }
+});
 /* mostra/nasconde il tasto ← in base al contesto */
 function updateBackButton(){
   const btnBack = qs('#btnBack');
