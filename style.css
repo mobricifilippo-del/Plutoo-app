@@ -327,3 +327,47 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
 #ethicCta{
   margin-top: 14px;
 }
+/* ===== Miglioramento layout sponsor Home ===== */
+#sponsorArea {
+  margin-top: auto;
+  text-align: center;
+  padding-bottom: 40px; /* spazio dal bordo inferiore */
+}
+
+.sponsor-badge {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #FFD700;
+  margin-bottom: 10px;
+}
+
+.sponsor-card {
+  display: inline-block;
+  background: rgba(255, 215, 0, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 14px;
+  padding: 12px 18px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.sponsor-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.sponsor-title {
+  font-weight: 600;
+  color: #fff;
+}
+
+.sponsor-text {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.ethic-cta {
+  margin-top: 16px;
+  margin-bottom: 30px;
+}
