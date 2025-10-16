@@ -53,6 +53,7 @@
 
     <!-- =============== HOME =============== -->
     <section id="view-home" class="view view-active" aria-label="Home">
+      <div class="home-stack">
       <div class="home-wrap">
         <!-- Logo grande -->
         <img src="./plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
@@ -63,22 +64,23 @@
 
         <!-- Sponsor -->
         <div class="home-sponsor">
-          <div class="sponsor-badge" data-i18n="sponsor_badge">Sponsor ufficiale</div>
-          <button id="sponsorFido" class="sponsor-card sponsor-card--home" type="button">
+        <div id="sponsorArea">
+  <h4 class="sponsor-badge" ...>Sponsor ufficiale</h4>
+  <div class="sponsor-card ..."> ... </div>
+</div> type="button">
             <img src="./sponsor-logo.png" class="sponsor-logo" alt="Fido" />
             <div class="sponsor-copy">
               <div class="sponsor-title" data-i18n="sponsor_title">Fido</div>
               <div class="sponsor-text"  data-i18n="sponsor_sub">Il gelato per i nostri amici a quattro zampe</div>
             </div>
           </button>
-        </div>
-
+        </div> <!-- /home-stack -->
         <!-- Box etico -->
         <button class="ethic-cta" data-i18n="ethic_cta">
           Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
         </button>
-      </div>
-    </section>
+      </div> <!-- /home-stack -->
+    </section> <!-- fine view-home -->
 
     <!-- =============== VICINO A TE =============== -->
     <section id="view-nearby" class="view" hidden aria-label="Vicino a te">
