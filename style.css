@@ -317,6 +317,12 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   .btn-lg{ width:100%; }
 }
 /* ===== Layout Home: sponsor in fondo ===== */
+/* ---- View Home: rendila un contenitore flex a tutta altezza (meno topbar) ---- */
+#view-home{
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - var(--topbar-h, 88px));
+}
 #view-home .home-stack{
   display:flex;
   flex-direction:column;
