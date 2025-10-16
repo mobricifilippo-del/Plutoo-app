@@ -52,7 +52,7 @@ a{ text-decoration:none; }
 }
 
 /* ---------- Layout viste ---------- */
-main{ padding-bottom:40px; }
+main{ padding-bottom:0; }
 .view{ display:none; padding:20px 14px; }
 .view.view-active{ display:block; }
 
