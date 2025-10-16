@@ -322,6 +322,8 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   display: flex;
   flex-direction: column;
   min-height: calc(100svh - var(--topbar-h, 88px));
+   padding-bottom: 0;
+   flex: 1;
 }
 #view-home .home-stack{
   display:flex;
@@ -398,7 +400,7 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
 /* --- Link legali centrati e stile coerente --- */
 .legal-links{
   text-align:center;
-  margin: 12px 0 24px;
+  margin: 12px 0 0;
 }
 .legal-links a{
   color: #eae7d3;           /* dorato tenue, niente blu */
