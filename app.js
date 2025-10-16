@@ -95,96 +95,6 @@ function updateBackButton(){
     set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
     remove(k){ try{ localStorage.removeItem(k); } catch(e){} }
   };
-
-  /* -------------------- I18N COMPLETO ---------------- */
-  const I18N = {
-    it:{
-      tab_love:"Amore 🥲💛", tab_play:"Giochiamo insieme 🥲🐕", tab_plus:"Plus ⭐",
-      tab_search:"Ricerca 🔍", tab_places:"Luoghi PET 🐾", tab_nearby:"Vicino a te",
-      login:"Login", signup:"Registrati", logout:"Esci",
-      enter:"ENTRA", sponsor_badge:"Sponsor ufficiale", sponsor_title:"Fido",
-      sponsor_sub:"Il gelato per i nostri amici a quattro zampe",
-      sponsor_url:"https://www.fido.it/",
-      ethic_cta:"Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)",
-      f_breed:"Razza", f_age:"Età", f_weight:"Peso", f_height:"Altezza", f_sex:"Sesso",
-      any:"Qualsiasi", male:"Maschio", female:"Femmina", distance:"Distanza",
-      f_verified:"Badge verificato Gold", f_mating:"Disponibile accoppiamento",
-      f_gene:"Genealogia (Gold)", reset:"Reset", apply:"Applica",
-      plus_1:"Rimuove tutti gli annunci", plus_2:"Filtri Gold e funzioni Premium",
-      plus_3:"Supporto prioritario", plus_buy:`Attiva ${GOLD_PRICE}`,
-      likes_title:"Like ricevuti", likes_free_left:"Like gratuiti rimasti: {n}",
-      likes_unlock:"Guarda un video per sbloccare altri like",
-      selfie_locked:"Selfie sfocato — sbloccalo con un reward video (24h)",
-      selfie_unlocked:"Selfie sbloccato (24h)", docs_title:"Documenti",
-      doc_vacc:"Vaccini", doc_ped:"Pedigree", doc_chip:"Microchip",
-      verified_gold:"Verificato Gold", open_chat:"Apri chat", first_msg_gate:"Guarda un video per inviare il primo messaggio",
-      svc_vet:"Veterinari", svc_groom:"Toelettature", svc_shop:"Negozi",
-      svc_parks:"Parchi", svc_train:"Addestratori", svc_shelter:"Canili",
-      gold_needed:"Richiede Plutoo Gold",
-      home_title:"Plutoo — Home",
-      match_toast:"È un Match! 💛",
-    },
-    en:{
-      tab_love:"Love 🥲💛", tab_play:"Play together 🥲🐕", tab_plus:"Gold ⭐",
-      tab_search:"Search 🔍", tab_places:"PET places 🐾", tab_nearby:"Nearby",
-      login:"Login", signup:"Sign up", logout:"Logout",
-      enter:"ENTER", sponsor_badge:"Official sponsor", sponsor_title:"Fido",
-      sponsor_sub:"Ice cream for our four-legged friends",
-      sponsor_url:"https://www.fido.it/",
-      ethic_cta:"Never abandon your friends 🐾 (shelters near me)",
-      f_breed:"Breed", f_age:"Age", f_weight:"Weight", f_height:"Height", f_sex:"Sex",
-      any:"Any", male:"Male", female:"Female", distance:"Distance",
-      f_verified:"Gold verified badge", f_mating:"Available for mating",
-      f_gene:"Pedigree (Gold)", reset:"Reset", apply:"Apply",
-      plus_1:"Removes all ads", plus_2:"Gold filters & Premium features",
-      plus_3:"Priority support", plus_buy:`Activate ${GOLD_PRICE}`,
-      likes_title:"Likes received", likes_free_left:"Free likes left: {n}",
-      likes_unlock:"Watch a video to unlock more likes",
-      selfie_locked:"Blurred selfie — unlock with a reward video (24h)",
-      selfie_unlocked:"Selfie unlocked (24h)", docs_title:"Documents",
-      doc_vacc:"Vaccines", doc_ped:"Pedigree", doc_chip:"Microchip",
-      verified_gold:"Gold Verified", open_chat:"Open chat", first_msg_gate:"Watch a video to send the first message",
-      svc_vet:"Veterinarians", svc_groom:"Groomers", svc_shop:"Pet shops",
-      svc_parks:"Dog parks", svc_train:"Dog trainers", svc_shelter:"Animal shelters",
-      gold_needed:"Requires Plutoo Gold",
-      home_title:"Plutoo — Home",
-      match_toast:"It's a Match! 💛",
-    }
-  };
-
-  function getLang(){
-    const saved = storage.get(STORAGE_KEYS.lang);
-    if (saved) return saved;
-    return (navigator.language||"").toLowerCase().startsWith("it") ? "it" : "en";
-  }
-
-  function t(key, vars={}){
-    const lang = App.state.lang;
-    const str = (I18N[lang] && I18N[lang][key]) || key;
-    return str.replace(/\{(\w+)\}/g, (_,k)=> vars[k] ?? "");
-  }
-
-  function applyI18n(){
-    document.querySelectorAll("[data-i18n]").forEach(el=>{
-      const key = el.getAttribute("data-i18n");
-      if (I18N[App.state.lang] && I18N[App.state.lang][key]){
-        el.textContent = I18N[App.state.lang][key];
-      }
-    });
-    document.title = t("home_title");
-  }
-
-  /* -------------------- ROUTER BASE ------------------ */
-  function $(sel, root=document){ return root.querySelector(sel); }
-  function $$(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
-
-  App.show = function(view){
-    App.state.view = view;
-    $$(".view").forEach(v=>{
-      if (v.id === "view-"+view){ v.classList.add("view-active"); v.removeAttribute("hidden"); }
-      else { v.classList.remove("view-active"); v.setAttribute("hidden",""); }
-    });
-    window.scrollTo({top:0, behavior:"smooth"});
     if (view === "nearby") renderNearby();
   };
 
@@ -772,5 +682,68 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5) Back hardware / popstate → simula il click su ←
   window.addEventListener('popstate', () => {
     qs('#btnBack')?.click();
+     /* ====== INIT: login/logout, chip visibilità e back ====== */
+document.addEventListener('DOMContentLoaded', () => {
+  const btnLogin   = qs('#btnLogin');
+  const btnSignup  = qs('#btnSignup');
+  const btnLogout  = qs('#btnLogout');
+  const btnEnter   = qs('#btnEnter');
+  const btnBack    = qs('#btnBack');
+
+  // Stato iniziale: chip solo se "dentro"
+  if (isPostlogin()) {
+    showChips(true);
+    hide(btnLogin); hide(btnSignup); show(btnLogout);
+    goTo('nearby');  // atterraggio come nello ZIP
+  } else {
+    showChips(false);
+    show(btnLogin); show(btnSignup); hide(btnLogout);
+    goTo('home');   // resta in Home
+  }
+  updateBackButton();
+
+  // ENTRA / LOGIN → entra, mostra chip, vai a "Vicino a te"
+  ['#btnEnter', '#btnLogin'].forEach(sel => {
+    const b = qs(sel);
+    if (!b) return;
+    b.addEventListener('click', () => {
+      setPostlogin(true);
+      showChips(true);
+      goTo('nearby');
+      hide(btnLogin); hide(btnSignup); show(btnLogout);
+      updateBackButton();
+    });
   });
+
+  // LOGOUT → torna a Home, nascondi chip
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      setPostlogin(false);
+      showChips(false);
+      navStack = [];
+      goTo('home');
+      hide(btnLogout); show(btnLogin); show(btnSignup);
+      updateBackButton();
+    });
+  }
+
+  // ← Torna indietro
+  if (btnBack) {
+    btnBack.addEventListener('click', () => {
+      if (navStack.length) {
+        const prevId = navStack.pop();
+        const current = qs('.view.view-active');
+        if (current) { current.classList.remove('view-active'); current.hidden = true; }
+        const prev = qs('#' + prevId);
+        if (prev) { prev.hidden = false; prev.classList.add('view-active'); }
+      } else {
+        goTo('home');
+      }
+      updateBackButton();
+    });
+  }
+
+  // Back hardware / popstate
+  window.addEventListener('popstate', () => { btnBack?.click(); });
 });
+  });
