@@ -332,7 +332,13 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
 .ethic-cta{
   margin-top: 14px;
 }
-.home-sponsor { display: grid; gap: 16px; }
+.home-sponsor{
+  margin-top: auto;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  display: grid;
+  gap: 16px;
+}
 
 .sponsor-card{
   display: flex;
