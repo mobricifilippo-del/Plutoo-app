@@ -309,3 +309,21 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   .filters{ grid-template-columns:1fr; }
   .btn-lg{ width:100%; }
 }
+/* ===== Layout Home: sponsor in fondo ===== */
+#view-home .home-stack{
+  display:flex;
+  flex-direction:column;
+  /* occupa tutta l’altezza visibile tolta la topbar (stima 120–140px) */
+  min-height: calc(100svh - 130px);
+  gap: 20px;
+}
+
+/* spinge lo sponsor verso il basso */
+#sponsorArea{
+  margin-top: auto;
+}
+
+/* un po’ di aria sotto lo sponsor */
+#ethicCta{
+  margin-top: 14px;
+}
