@@ -360,3 +360,18 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   overflow: hidden;               /* se troppo lunga… */
   text-overflow: ellipsis;        /* …mostra ellissi */
 }
+/* ---- CTA ENTRA ---- */
+.hero-cta{display:flex;justify-content:center;margin:18px 0 32px}
+.btn{border:1px solid rgba(255,215,0,.35);padding:14px 28px;border-radius:9999px;
+     background:#111;color:#fff;font-weight:700;letter-spacing:.4px}
+.btn-gold-lg{box-shadow:0 0 0 1px rgba(255,215,0,.35) inset,0 0 24px rgba(255,215,0,.12)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid #FFD54A;outline-offset:2px}
+
+/* ---- Sponsor più in basso, più piccolo, testo non blu ---- */
+.home-sponsor{margin-top:40px}
+.sponsor-card{max-width:560px;margin:0 auto 28px;padding:14px 18px}
+.sponsor-logo{width:64px;height:64px;border-radius:12px;object-fit:contain}
+.sponsor-card,.sponsor-card:link,.sponsor-card:visited{color:#e8e8e8;text-decoration:none}
+.sponsor-line{font-size:16px;line-height:1.25;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sponsor-line strong{color:#FFD54A}
