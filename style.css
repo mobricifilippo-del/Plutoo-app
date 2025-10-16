@@ -52,7 +52,12 @@ a{ text-decoration:none; }
 }
 
 /* ---------- Layout viste ---------- */
-main{ padding-bottom:0; }
+main{
+  min-height: calc(100vh - var(--topbar-h, 88px));
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
 .view{ display:none; padding:20px 14px; }
 .view.view-active{ display:block; }
 
