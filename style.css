@@ -22,6 +22,7 @@
   --gold-55: rgba(255,215,0,.55);
   --shadow-1: 0 8px 28px rgba(0,0,0,.35);
   --shadow-2: 0 12px 40px rgba(0,0,0,.50);
+  --topbar-h: 88px;
 }
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
@@ -320,7 +321,7 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   display:flex;
   flex-direction:column;
   /* occupa tutta l’altezza visibile tolta la topbar (stima 120–140px) */
-  min-height: 100svh;
+  min-height: calc(100svh - var(--topbar-h));
   gap: 20px;
 }
 /* spinge tutto il blocco sponsor + canili + termini/privacy in fondo */
@@ -346,7 +347,7 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   text-decoration: none;
 }
  .sponsor-logo{
-  width:72px;
+    width:72px;
   height:72px;
   border-radius:16px;
   object-fit:contain;
