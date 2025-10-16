@@ -21,7 +21,17 @@ const isPostlogin  = () => localStorage.getItem(PL_STATE_KEY) === '1';
 
 /* mostra/nasconde le chip centrali della topbar */
 function showChips(visible){
-  qsa('.topbar-center .chip').forEach(btn => visible ? show(btn) : hide(btn));
+  const bar = document.getElementById('chipsBar');
+  if (bar){
+    if (visible){
+      bar.classList.remove('hidden');
+      bar.removeAttribute('hidden');
+    } else {
+      bar.classList.add('hidden');
+      bar.setAttribute('hidden','');
+    }
+  qsa('#chipsBar .chip').forEach(btn => visible ? show(btn) : hide(btn));
+}
 }
 
 /* cambia vista gestendo lo stack per il tasto ← */
