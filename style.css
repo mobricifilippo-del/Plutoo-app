@@ -323,12 +323,10 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   min-height: calc(100svh - 130px);
   gap: 20px;
 }
-
-/* spinge lo sponsor verso il basso */
-#sponsorArea{
+/* spinge tutto il blocco sponsor + canili + termini/privacy in fondo */
+.home-sponsor{
   margin-top: auto;
 }
-
 /* un po’ di aria sotto lo sponsor */
 #ethicCta{
   margin-top: 14px;
