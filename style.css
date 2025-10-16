@@ -331,18 +331,10 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
    flex: 1;
   padding: 20px 14px 6px;
 }
-/* ---- View Home: flex responsive ---- */
-#view-home{
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - var(--topbar-h, 88px));
-  padding: 20px 14px 6px;
-}
-/* Solo su schermi larghi (desktop) forza altezza piena */
+/* Desktop: altezza piena e logo più grande */
 @media (min-width: 900px){
-  #view-home{
-    min-height: 100vh;
-  }
+  #view-home{ min-height: 100vh; }
+  .hero-logo{ width: 56vw; max-width: 520px; }
 }
 /* spinge tutto il blocco sponsor + canili + termini/privacy in fondo */
   margin-top: auto;
@@ -351,7 +343,6 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
   display: grid;
   gap: 16px;
 }
-
 .sponsor-card{
   display: flex;
   flex-direction: column;
