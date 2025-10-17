@@ -72,7 +72,7 @@
     const allowed = ['home','nearby','love','play','plus','search','places'];
     goTo( allowed.includes(h) ? h : 'home' );
   }
-// ENTRA → abilita chip e porta a Nearby
+// ENTRA → abilita chip e porta a Nearby (forzo anche goTo)
 window.addEventListener('DOMContentLoaded', () => {
   const btnEnter = document.getElementById('btnEnter');
   if (btnEnter) {
@@ -80,13 +80,13 @@ window.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       setPostlogin(true);
       showChips(true);
-      location.hash = '#nearby';   // <-- RIATTIVATO
-    }, { once: true });
+      goTo('nearby');              // <-- cambio vista subito
+      location.hash = '#nearby';   // <-- aggiorno l'hash
+      return false;
+    });
   }
-  routeFromHash(); // applica lo stato corrente dell’hash all’avvio
+  routeFromHash(); // applica lo stato corrente
 });
-    routeFromHash(); // applica lo stato corrente dell’hash all’avvio
-  });
 
   window.addEventListener('hashchange', routeFromHash);
 // LOGOUT → disconnette e torna alla Home
