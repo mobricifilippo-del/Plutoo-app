@@ -80,8 +80,7 @@ window.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       setPostlogin(true);
       showChips(true);
-      goTo('nearby');              // <-- cambio vista subito
-      location.hash = '#nearby';   // <-- aggiorno l'hash
+      goTo('nearby');
       return false;
     });
   }
