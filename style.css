@@ -29,6 +29,37 @@
   --shadow-1: 0 8px 28px rgba(0,0,0,.35);
   --shadow-2: 0 12px 40px rgba(0,0,0,.50);
   --topbar-h: 88px;
+   /* ===== TOPBAR • FIX LAYOUT MOBILE ===== */
+header{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #000;               /* stesso bg della pagina */
+  padding-top: env(safe-area-inset-top);
+}
+
+/* contenitore sinistro con chip (nav) — scorrevole orizzontale */
+header nav{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;          /* Firefox */
+}
+header nav::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
+
+.chip{ flex: 0 0 auto; }          /* evita che i chip si comprimano/spezzino */
+
+.topbar-right{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;              /* spinge i pulsanti a destra */
+}
+
+/* piccolo respiro sotto la topbar per non “appiccicare” i contenuti */
+#views{ margin-top: 8px; }
 }
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
