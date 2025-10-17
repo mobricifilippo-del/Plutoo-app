@@ -67,20 +67,7 @@ header nav::-webkit-scrollbar{ display: none; }
 }
 
 /* un po’ di respiro sotto la barra */
-#views{ margin-top: 8px; }
-
-.chip{ flex: 0 0 auto; }          /* evita che i chip si comprimano/spezzino */
-
-.topbar-right{
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;              /* spinge i pulsanti a destra */
-}
-
-/* piccolo respiro sotto la topbar per non “appiccicare” i contenuti */
-#views{ margin-top: 8px; }
-}
+#views{ margin-top: calc(var(--topbar-h, 64px) + 8px); }
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 html{ -webkit-text-size-adjust:100%; }
