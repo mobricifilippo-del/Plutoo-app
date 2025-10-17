@@ -56,20 +56,16 @@ function routeFromHash(){
   if (h === 'nearby')        goTo('nearby');
   else if (!h || h === 'home') goTo('home');
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  // click sul bottone ENTRA -> cambia solo l'hash
+// === Pulsante ENTRA: passa a "Vicino a te" ===
+window.addEventListener('DOMContentLoaded', () => {
   const btnEnter = document.getElementById('btnEnter');
   if (btnEnter) {
     btnEnter.addEventListener('click', (e) => {
       e.preventDefault();
-      try { localStorage.setItem('pl_postlogin', 'true'); } catch(_) {}
+      localStorage.setItem('pl_postlogin', 'true');
       location.hash = '#nearby';
     }, { once: true });
   }
-
-  // all’avvio, vai dove indica l’hash (se presente)
-  routeFromHash();
 });
 
 // quando cambia l’hash (es. tramite ENTRA), esegui la rotta
