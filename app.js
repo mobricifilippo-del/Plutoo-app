@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
-});
 /* mostra/nasconde il tasto ← in base al contesto */
 function updateBackButton(){
   const btnBack = qs('#btnBack');
