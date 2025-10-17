@@ -72,24 +72,31 @@
     const allowed = ['home','nearby','love','play','plus','search','places'];
     goTo( allowed.includes(h) ? h : 'home' );
   }
-
-  // ENTRA → abilita chip e porta a Nearby (usa hash per coerenza)
-  window.addEventListener('DOMContentLoaded', () => {
-    const btnEnter = document.getElementById('btnEnter');
-    if (btnEnter) {
-      btnEnter.addEventListener('click', (e) => {
-        e.preventDefault();
-        setPostlogin(true);
-        showChips(true);
-        // location.hash = '#nearby';  // disattivato per restare in Home dopo Entra
-      }, { once: true });
-    }
+// ENTRA → abilita chip e porta a Nearby
+window.addEventListener('DOMContentLoaded', () => {
+  const btnEnter = document.getElementById('btnEnter');
+  if (btnEnter) {
+    btnEnter.addEventListener('click', (e) => {
+      e.preventDefault();
+      setPostlogin(true);
+      showChips(true);
+      location.hash = '#nearby';   // <-- RIATTIVATO
+    }, { once: true });
+  }
+  routeFromHash(); // applica lo stato corrente dell’hash all’avvio
+});
     routeFromHash(); // applica lo stato corrente dell’hash all’avvio
   });
 
   window.addEventListener('hashchange', routeFromHash);
-
-  /* ========== Stato app & storage minimo ========== */
+// LOGOUT → disconnette e torna alla Home
+document.getElementById('btnLogout')?.addEventListener('click', () => {
+  setPostlogin(false);
+  showChips(false);
+  navStack = [];
+  location.hash = '#home'; // torna esplicitamente alla Home
+});
+/* ========== Stato app & storage minimo ========== */
   const STORAGE_KEYS = {
     lang: "pl_lang",
     gold: "pl_has_gold",
