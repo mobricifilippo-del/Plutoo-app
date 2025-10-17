@@ -520,3 +520,27 @@ main, #app, #views, .views {
   padding-top: 12px;
   padding-bottom: 18px; /* per non attaccarsi al footer */
 }
+/* ======== CTA ENTRA ======== */
+.hero-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.cta {
+  background: linear-gradient(90deg, #CDA434, #FFD678);
+  color: #000;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 36px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 18px rgba(205, 164, 52, 0.5);
+  transition: all 0.25s ease;
+}
+
+.cta:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 28px rgba(255, 215, 100, 0.7);
+}
