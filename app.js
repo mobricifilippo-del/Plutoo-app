@@ -49,18 +49,18 @@ function goTo(viewId){
   }
   updateBackButton();
 }
-// --- Pulsante ENTRA: mostra chip e passa a "Vicino a te" ---
-document.addEventListener('DOMContentLoaded', () => {
-  const btnEnter = document.getElementById('btnEnter');
+// === Pulsante ENTRA: passa a "Vicino a te" ===
+document.addEventListener("DOMContentLoaded", () => {
+  const btnEnter = document.getElementById("btnEnter");
   if (btnEnter) {
-    btnEnter.addEventListener('click', (e) => {
+    btnEnter.addEventListener("click", (e) => {
       e.preventDefault();
-      setPostlogin(true);     // segna che l'utente è "dentro"
-      showChips(true);        // mostra i bottoni centrali
-      goTo('nearby');         // vai alla schermata "Vicino a te"
-      updateBackButton();     // aggiorna il tasto ←
-    }, { once: true });
+      document.getElementById("view-home").classList.remove("view-active");
+      document.getElementById("view-nearby").classList.add("view-active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   }
+});
 });
 /* mostra/nasconde il tasto ← in base al contesto */
 function updateBackButton(){
