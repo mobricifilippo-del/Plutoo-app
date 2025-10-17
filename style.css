@@ -10,6 +10,8 @@
 [hidden]{ display:none !important; }
 .view{ display:none; }
 .view.view-active{ display:block; }
+/* Riserva spazio alla griglia per evitare salto */
+#nearbyGrid{ min-height: 420px; }
 :root{
   --bg: #0B0B0F;             /* fondo quasi-nero violaceo */
   --bg-2: #0F0F14;
