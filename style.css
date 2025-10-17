@@ -330,11 +330,11 @@ dialog::backdrop{ background: rgba(0,0,0,.55); }
    padding-bottom: 0;
    flex: 1;
   padding: 20px 14px 6px;
-}
-/* Desktop: altezza piena e logo più grande */
+   /* --- Desktop: altezza piena e sponsor appiccicato al fondo --- */
 @media (min-width: 900px){
-  #view-home{ min-height: 100vh; }
-  .hero-logo{ width: 56vw; max-width: 520px; }
+  #view-home{ min-height: 100dvh; }
+  #view-home .home-stack{ flex: 1; }
+  .home-sponsor{ margin-top: auto;
 }
 /* spinge tutto il blocco sponsor + canili + termini/privacy in fondo */
   margin-top: auto;
