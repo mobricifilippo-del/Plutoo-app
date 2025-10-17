@@ -29,24 +29,45 @@
   --shadow-1: 0 8px 28px rgba(0,0,0,.35);
   --shadow-2: 0 12px 40px rgba(0,0,0,.50);
   --topbar-h: 88px;
-   /* ===== TOPBAR • FIX LAYOUT MOBILE ===== */
+ /* ===== TOPBAR • FIX LAYOUT MOBILE (definitivo) ===== */
 header{
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: #000;               /* stesso bg della pagina */
-  padding-top: env(safe-area-inset-top);
+  background: #000;
+  display: flex;                 /* <— allinea nav e pulsanti su una sola riga */
+  align-items: center;
+  gap: 8px;
+  min-height: var(--topbar-h, 64px);
+  padding: 6px 12px;
+  padding-top: calc(env(safe-area-inset-top) + 6px);
 }
 
-/* contenitore sinistro con chip (nav) — scorrevole orizzontale */
+/* area chip a sinistra (scorrevole orizzontale, niente a capo) */
 header nav{
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   gap: 8px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;          /* Firefox */
+  white-space: nowrap;
+  scrollbar-width: none;
 }
+header nav::-webkit-scrollbar{ display: none; }
+
+.chip{ flex: 0 0 auto; }         /* evita che i chip si comprimano o vadano a capo */
+
+/* pulsanti a destra (lingue / login / signup / logout) */
+.topbar-right{
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* un po’ di respiro sotto la barra */
+#views{ margin-top: 8px; }  
 header nav::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
 
 .chip{ flex: 0 0 auto; }          /* evita che i chip si comprimano/spezzino */
