@@ -122,7 +122,6 @@ document.getElementById('btnLogout')?.addEventListener('click', () => {
     { id:4, name:"Bella", breed:"Barboncino",       age:1, sex:"female", km:null, img:"./dog4.jpg", verified:false },
   ];
   App.state.dogs = DEMO_DOGS.slice();
-   // renderNearby(); // mostra subito le card (disattivata: niente auto-apertura)
 
   /* ========== Geolocalizzazione: assegna km mock se negata ========== */
   function initGeolocation(){
