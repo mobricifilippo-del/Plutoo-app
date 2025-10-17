@@ -590,3 +590,22 @@ main, #app, #views, .views {
   text-align: center;
   box-shadow: var(--shadow-1);
 }
+/* Layout sezione LUOGHI: griglia piena + footer in basso */
+#view-places{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: calc(100vh - var(--topbar-h, 64px) - 8px);
+}
+
+#placesGrid{
+  flex: 1 1 auto; /* riempie lo spazio */
+}
+
+.places-footer{
+  display: grid;
+  gap: 14px;
+  padding: 12px;
+}
+
+/* riusa gli stessi stili di sponsor-inline ed ethic-cta già definiti */
