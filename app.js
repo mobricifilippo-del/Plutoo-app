@@ -81,7 +81,7 @@
         e.preventDefault();
         setPostlogin(true);
         showChips(true);
-        location.hash = '#nearby';
+        // location.hash = '#nearby';  // disattivato per restare in Home dopo Entra
       }, { once: true });
     }
     routeFromHash(); // applica lo stato corrente dell’hash all’avvio
