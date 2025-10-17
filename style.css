@@ -544,3 +544,49 @@ main, #app, #views, .views {
   transform: scale(1.05);
   box-shadow: 0 0 28px rgba(255, 215, 100, 0.7);
 }
+/* Layout sezione VICINO A TE: griglia piena + footer in basso */
+#view-nearby {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: calc(100vh - var(--topbar-h, 64px) - 8px);
+}
+
+#nearbyGrid {
+  flex: 1 1 auto; /* riempie lo spazio */
+}
+
+.nearby-footer {
+  display: grid;
+  gap: 14px;
+  padding: 12px;
+}
+
+.sponsor-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--gold-25);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-1);
+  background: #0b0b0f;
+}
+
+.sponsor-inline img {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: block;
+}
+
+.ethic-cta {
+  display: block;
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--gold-25);
+  background: #0b0b0f;
+  padding: 14px 16px;
+  text-align: center;
+  box-shadow: var(--shadow-1);
+}
