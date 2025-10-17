@@ -50,15 +50,30 @@ function goTo(viewId){
   updateBackButton();
 }
    window.goTo = goTo;
-// === Pulsante ENTRA: passa a "Vicino a te" ===
-document.addEventListener("DOMContentLoaded", () => {
-  const btnEnter = document.getElementById("btnEnter");
+   // === Router su hash + click ENTRA ===
+function routeFromHash(){
+  const h = location.hash.slice(1);      // es. "nearby"
+  if (h === 'nearby')        goTo('nearby');
+  else if (!h || h === 'home') goTo('home');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // click sul bottone ENTRA -> cambia solo l'hash
+  const btnEnter = document.getElementById('btnEnter');
   if (btnEnter) {
-    btnEnter.addEventListener("click", (e) => {
+    btnEnter.addEventListener('click', (e) => {
       e.preventDefault();
-      goTo("nearby"); // attiva #view-nearby e rimuove hidden
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+      try { localStorage.setItem('pl_postlogin', 'true'); } catch(_) {}
+      location.hash = '#nearby';
+    }, { once: true });
+  }
+
+  // all’avvio, vai dove indica l’hash (se presente)
+  routeFromHash();
+});
+
+// quando cambia l’hash (es. tramite ENTRA), esegui la rotta
+window.addEventListener('hashchange', routeFromHash);
   }
 /* mostra/nasconde il tasto ← in base al contesto */
 function updateBackButton(){
