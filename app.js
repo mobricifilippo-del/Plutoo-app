@@ -60,8 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-});
-});
 /* mostra/nasconde il tasto ← in base al contesto */
 function updateBackButton(){
   const btnBack = qs('#btnBack');
