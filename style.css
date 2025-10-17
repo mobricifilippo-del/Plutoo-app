@@ -67,8 +67,7 @@ header nav::-webkit-scrollbar{ display: none; }
 }
 
 /* un po’ di respiro sotto la barra */
-#views{ margin-top: 8px; }  
-header nav::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
+#views{ margin-top: 8px; }
 
 .chip{ flex: 0 0 auto; }          /* evita che i chip si comprimano/spezzino */
 
