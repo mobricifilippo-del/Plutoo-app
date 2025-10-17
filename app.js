@@ -2,7 +2,8 @@
    Plutoo — Gold Edition (app.js)
    File completo ed esteso. Funziona con index/style dello ZIP.
    ========================================================= */
-
+alert('BOOT OK');                                // <-- test: capiamo se lo script parte
+window.addEventListener('error', e => alert('JS ERROR: ' + e.message));
 (function(){
   "use strict";
 
