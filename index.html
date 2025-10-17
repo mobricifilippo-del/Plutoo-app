@@ -24,8 +24,7 @@
   <!-- =============== TOP BAR =============== -->
   <header class="topbar">
     <div class="topbar-left">
-      <button id="btnBack" class="chip hidden" 
-      aria-label="Torna indietro">←</button>
+      <button id="btnBack" class="chip hidden" aria-label="Torna indietro">←</button>
       <img src="./plutoo-icon-192.png" class="brand-icon" alt="Plutoo" />
       <span class="brand-name">Plutoo</span>
     </div>
@@ -39,13 +38,12 @@
       <button id="tab-nearby" class="chip" data-view="nearby" data-i18n="tab_nearby">Vicino a te</button>
     </nav>
 
-    <div <div class="topbar-right">
-  <button id="lang-it" class="lang-btn" aria-label="Italiano">🇮🇹</button>
-  <button id="lang-en" class="lang-btn" aria-label="English">🇬🇧</button>
-  <button id="btnLogin" class="chip chip-gold" data-i18n="login">Login</button>
-  <button id="btnSignup" class="chip chip-gold" data-i18n="signup">Registrati</button>
-  <button id="btnLogout" class="chip chip-gold hidden" data-i18n="logout">Logout</button>
-</div>
+    <div class="topbar-right">
+      <button id="lang-it" class="lang-btn" aria-label="Italiano">🇮🇹</button>
+      <button id="lang-en" class="lang-btn" aria-label="English">🇬🇧</button>
+      <button id="btnLogin"  class="chip chip-gold" data-i18n="login">Login</button>
+      <button id="btnSignup" class="chip chip-gold" data-i18n="signup">Registrati</button>
+      <button id="btnLogout" class="chip chip-gold hidden" data-i18n="logout">Logout</button>
     </div>
   </header>
 
@@ -54,46 +52,50 @@
     <!-- =============== HOME =============== -->
     <section id="view-home" class="view view-active" aria-label="Home">
       <div class="home-stack">
-      <div class="home-wrap">
-        <!-- Logo grande -->
-        <img src="./plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
+        <div class="home-wrap">
+          <!-- Logo grande -->
+          <img src="./plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
 
-        <!-- CTA Entra -->
-        <div class="hero-cta">
- <a id="btnEnter" href="#nearby" class="btn btn-gold-lg">ENTRA</a>
-</div>
-        <div>
+          <!-- CTA Entra -->
+          <div class="hero-cta">
+            <a id="btnEnter" href="#nearby" class="btn btn-gold-lg">ENTRA</a>
+          </div>
+
           <!-- Sponsor -->
-<div class="home-sponsor">
-  <div id="sponsorArea">
-    <h4 class="sponsor-badge" data-i18n="sponsor_badge">Sponsor ufficiale</h4>
-    <a id="sponsorLink" class="sponsor-card" href="https://www.fido.it/" target="_blank" rel="noopener">
-      <img src="./sponsor-logo.png" alt="Fido" class="sponsor-logo">
-      <p class="sponsor-line"><strong>Fido</strong> — il gelato per i nostri amici a quattro zampe</p>
-    </a>
-  </div>
-  <button class="ethic-cta" data-i18n="ethic_cta">
-    Non abbandonare mai i tuoi amici 🐾 (canili nelle vicinanze)
-    </button>
-  <div class="legal-links">
-  <a href="termini.html">Termini di servizio</a> · 
-  <a href="privacy.html">Privacy Policy</a>
-</div>
-      </div> <!-- /home-stack -->
-    </section> <!-- fine view-home -->
+          <div class="home-sponsor">
+            <div id="sponsorArea">
+              <h4 class="sponsor-badge" data-i18n="sponsor_badge">Sponsor ufficiale</h4>
+              <a id="sponsorLink" class="sponsor-card" href="https://www.fido.it/" target="_blank" rel="noopener">
+                <img src="./sponsor-logo.png" alt="Fido" class="sponsor-logo">
+                <p class="sponsor-line"><strong>Fido</strong> — il gelato per i nostri amici a quattro zampe</p>
+              </a>
+            </div>
+
+            <button class="ethic-cta" data-i18n="ethic_cta">
+              Non abbandonare mai i tuoi amici 🐾 (canili nelle vicinanze)
+            </button>
+
+            <div class="legal-links">
+              <a href="termini.html">Termini di servizio</a> ·
+              <a href="privacy.html">Privacy Policy</a>
+            </div>
+          </div><!-- /home-sponsor -->
+        </div><!-- /home-wrap -->
+      </div><!-- /home-stack -->
+    </section><!-- /view-home -->
 
     <!-- =============== VICINO A TE =============== -->
     <section id="view-nearby" class="view" hidden aria-label="Vicino a te">
-      <div id="nearbyGrid" class="grid-2">
-        <!-- popolato da app.js -->
-      </div>
+      <div id="nearbyGrid" class="grid-2"></div>
 
       <div class="nearby-footer">
         <div class="sponsor-inline">
           <img src="./sponsor-logo.png" alt="Fido" />
           <span>Fido — il gelato per cani</span>
         </div>
-        <button class="ethic-cta" data-i18n="ethic_cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</button>
+        <button class="ethic-cta" data-i18n="ethic_cta">
+          Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
+        </button>
       </div>
     </section>
 
@@ -116,7 +118,9 @@
         </div>
       </div>
 
-      <button class="ethic-cta" data-i18n="ethic_cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</button>
+      <button class="ethic-cta" data-i18n="ethic_cta">
+        Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
+      </button>
     </section>
 
     <!-- =============== GIOCHIAMO INSIEME =============== -->
@@ -130,7 +134,9 @@
         </div>
       </div>
 
-      <button class="ethic-cta" data-i18n="ethic_cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</button>
+      <button class="ethic-cta" data-i18n="ethic_cta">
+        Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
+      </button>
     </section>
 
     <!-- =============== PLUS (ABBONAMENTO) =============== -->
@@ -207,11 +213,14 @@
         </div>
       </div>
 
-      <button class="ethic-cta" data-i18n="ethic_cta">Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)</button>
+      <button class="ethic-cta" data-i18n="ethic_cta">
+        Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
+      </button>
     </section>
 
-    <!-- =============== PROFILO (SHEET) =============== -->
-<script src="app.js?v=fix14" defer></script>
-</script>   
+  </main>
+
+  <!-- Script unico (pulito) -->
+  <script src="app.js?v=fix14" defer></script>
 </body>
 </html>
