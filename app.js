@@ -55,11 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnEnter) {
     btnEnter.addEventListener("click", (e) => {
       e.preventDefault();
-      document.getElementById("view-home").classList.remove("view-active");
-      document.getElementById("view-nearby").classList.add("view-active");
+      goTo("nearby"); // attiva #view-nearby e rimuove hidden
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
+});
 });
 });
 /* mostra/nasconde il tasto ← in base al contesto */
