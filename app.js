@@ -6,7 +6,16 @@ alert('BOOT OK');                                // <-- test: capiamo se lo scri
 window.addEventListener('error', e => alert('JS ERROR: ' + e.message));
 (function(){
   "use strict";
-
+// DEBUG: forza ingresso a "Vicino a te" per test
+document.addEventListener('DOMContentLoaded', ()=>{
+  try {
+    setPostlogin(true);
+    showChips(true);
+    goTo('nearby');
+  } catch (e) {
+    alert('ERR goTo: ' + (e && e.message));
+  }
+});
   /* ========= helpers base ========= */
   const qs  = sel => document.querySelector(sel);
   const qsa = sel => Array.from(document.querySelectorAll(sel));
