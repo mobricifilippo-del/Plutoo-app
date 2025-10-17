@@ -212,26 +212,6 @@
 
     <!-- =============== PROFILO (SHEET) =============== -->
 <script src="/app.js?v=fix12" defer></script>
-       <script>
-window.addEventListener('DOMContentLoaded', function () {
-  const b = document.getElementById('btnEnter');
-  if (!b) return;
-
-  b.classList.remove('disabled');
-  b.removeAttribute('disabled');
-
-  b.addEventListener('click', function (e) {
-    e.preventDefault();
-    try {
-      localStorage.setItem('pl_postlogin', 'true');
-      if (typeof goTo === 'function') goTo('nearby');     // cambia vista subito
-      try { history.replaceState(null, '', '#nearby'); }  // aggiorna l’URL…
-      catch (_) {}                                        // …senza rompere se non supportato
-    } catch (err) {
-      console.error('Errore ENTRA:', err);
-    }
-  }, { once: true });
-});
 </script>   
 </body>
 </html>
