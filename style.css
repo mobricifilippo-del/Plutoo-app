@@ -6,6 +6,10 @@
    ========================================================= */
 
 /* ---------- Palette & base ---------- */
+/* HARD VISIBILITY FIX */
+[hidden]{ display:none !important; }
+.view{ display:none; }
+.view.view-active{ display:block; }
 :root{
   --bg: #0B0B0F;             /* fondo quasi-nero violaceo */
   --bg-2: #0F0F14;
