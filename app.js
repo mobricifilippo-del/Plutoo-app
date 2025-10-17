@@ -49,6 +49,7 @@ function goTo(viewId){
   }
   updateBackButton();
 }
+   window.goTo = goTo;
 // === Pulsante ENTRA: passa a "Vicino a te" ===
 document.addEventListener("DOMContentLoaded", () => {
   const btnEnter = document.getElementById("btnEnter");
