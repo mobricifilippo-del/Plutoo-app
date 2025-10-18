@@ -160,20 +160,23 @@ button{cursor:pointer}
   display:block;background:#0f0f16;
   outline:1px solid rgba(205,164,52,.28);
   box-shadow: 0 0 22px rgba(205,164,52,.18);
+  border-top-left-radius:16px;border-top-right-radius:16px; /* arrotondamento top */
 }
 .card-info{padding:.7rem .85rem}
 .card-info h3{margin:0 0 .25rem 0;color:var(--gold);font-size:1.06rem}
 .card-info .meta{margin:0;color:var(--muted);font-size:.88rem}
 .card-info .bio{margin:.4rem 0 0 0;font-size:.9rem;color:var(--text)}
-.card-actions{display:flex;justify-content:space-around;gap:1rem;padding:.7rem .85rem .9rem}
+
+/* Bottoni swipe: rotondi 56px */
+.card-actions{display:flex;justify-content:center;gap:.8rem;padding:.7rem .85rem .9rem}
 .btn.no,.btn.yes{
-  width:44%;border-radius:14px;font-weight:800;letter-spacing:.3px
+  width:56px;height:56px;border-radius:999px;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:1.25rem;line-height:1;
 }
 .btn.no{background:#2a2232;color:#fff;border:1px solid rgba(255,255,255,.08)}
 .btn.yes{background:linear-gradient(180deg,#E8CE7A 0%, #CDA434 52%, #B8892A 100%);color:#141414;border:1px solid rgba(0,0,0,.12)}
-.btn.no,.btn.yes{
-  font-size:1.3rem;box-shadow:0 0 12px rgba(205,164,52,.25);
-}
+.btn.no,.btn.yes{ box-shadow:0 0 12px rgba(205,164,52,.25); }
 .btn.no:hover,.btn.yes:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(205,164,52,.35)}
 
 /* Stato verificato Gold: bordo più intenso */
@@ -251,15 +254,17 @@ button{cursor:pointer}
 .sponsor-copy{color:var(--muted);font-size:.92rem}
 .ad-banner{margin-top:.5rem}
 
-/* ---------- ETHICS BUTTON ---------- */
+/* ---------- ETHICS BUTTON (canili) – discreto e piccolo ---------- */
 .btn.ethics{
-  display:inline-flex;align-items:center;gap:.6rem;margin-top:.6rem;color:#141414;background:linear-gradient(180deg,#FFD1E6 0%, #FFC2DE 100%);
-  box-shadow:0 6px 14px rgba(255,194,222,.3)
+  display:inline-flex;align-items:center;gap:.45rem;margin-top:.4rem;
+  background:transparent;color:var(--muted);
+  border:1px solid var(--line);box-shadow:none;padding:.45rem .6rem;
+  font-weight:700;border-radius:12px;
 }
-.btn.ethics .emoji{font-size:1.1rem}
+.btn.ethics .emoji{font-size:1rem}
 .btn.ethics .ethics-lines{display:flex;flex-direction:column;align-items:flex-start}
 .btn.ethics .l1{font-weight:800}
-.btn.ethics .l2{font-size:.9rem}
+.btn.ethics .l2{font-size:.85rem}
 
 /* ---------- MISC ---------- */
 .noscroll{overflow:hidden}
