@@ -2,236 +2,217 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-  <title>Plutoo — Gold Edition</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Plutoo</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.json" />
-  <meta name="theme-color" content="#1A0F2E">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="./plutoo-icon-192.png">
+  <!-- PWA / Meta -->
+  <meta name="theme-color" content="#0B0B0F" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="Plutoo — social per cani: vicino a te, swipe Amore/Social, chat, selfie, servizi e sponsor." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="plutoo-icon-192.png" />
+  <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
 
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="./plutoo-icon-192.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./plutoo-icon-512.png" />
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="./style.css?v=lg4">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+  <noscript>Attiva JavaScript per usare Plutoo.</noscript>
 </head>
-<body class="theme-gold">
+<body>
 
-  <!-- =============== TOP BAR =============== -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <button id="btnBack" class="chip hidden" aria-label="Torna indietro">←</button>
-      <img src="./plutoo-icon-192.png" class="brand-icon" alt="Plutoo" />
-      <span class="brand-name">Plutoo</span>
-    </div>
-
-    <nav id="chipsBar" class="topbar-center hidden">
-      <button id="tab-love"   class="chip" data-view="love"   data-i18n="tab_love">Amore 🥲💛</button>
-      <button id="tab-play"   class="chip" data-view="play"   data-i18n="tab_play">Giochiamo insieme 🥲🐕</button>
-      <button id="tab-plus"   class="chip" data-view="plus"   data-i18n="tab_plus">Plus ⭐</button>
-      <button id="tab-search" class="chip" data-view="search" data-i18n="tab_search">Ricerca 🔍</button>
-      <button id="tab-places" class="chip" data-view="places" data-i18n="tab_places">Luoghi PET 🐾</button>
-      <button id="tab-nearby" class="chip" data-view="nearby" data-i18n="tab_nearby">Vicino a te</button>
-    </nav>
-
-    <div class="topbar-right">
-      <button id="lang-it" class="lang-btn" aria-label="Italiano">🇮🇹</button>
-      <button id="lang-en" class="lang-btn" aria-label="English">🇬🇧</button>
-      <button id="btnLogin"  class="chip chip-gold" data-i18n="login">Login</button>
-      <button id="btnSignup" class="chip chip-gold" data-i18n="signup">Registrati</button>
-      <button id="btnLogout" class="chip chip-gold hidden" data-i18n="logout">Logout</button>
-    </div>
-  </header>
-
-  <main id="views">
-
-    <!-- =============== HOME =============== -->
-    <section id="view-home" class="view view-active" aria-label="Home">
-      <div class="home-stack">
-        <div class="home-wrap">
-          <!-- Logo grande -->
-          <img src="./plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
-
-          <!-- CTA Entra -->
-<div class="hero-cta">
-  <button id="btnEnter" class="cta" type="button">ENTRA</button>
-</div>
-</div>
-          <!-- Sponsor -->
-          <div class="home-sponsor">
-            <div id="sponsorArea">
-              <h4 class="sponsor-badge" data-i18n="sponsor_badge">Sponsor ufficiale</h4>
-              <a id="sponsorLink" class="sponsor-card" href="https://www.fido.it/" target="_blank" rel="noopener">
-                <img src="./sponsor-logo.png" alt="Fido" class="sponsor-logo">
-                <p class="sponsor-line"><strong>Fido</strong> — il gelato per i nostri amici a quattro zampe</p>
-              </a>
+  <!-- =============== HOME =============== -->
+  <section id="homeScreen" class="home" aria-labelledby="homeTitle">
+    <header class="home-top">
+      <div class="container">
+        <div class="row">
+          <div class="left">
+            <div class="logo-row">
+              <img src="plutoo-icon-192.png" alt="Plutoo" class="logo-small" width="42" height="42" />
+              <h1 id="homeTitle" class="brand">Plutoo</h1>
             </div>
-
-            <button class="ethic-cta" data-i18n="ethic_cta">
-              Non abbandonare mai i tuoi amici 🐾 (canili nelle vicinanze)
-            </button>
-
+          </div>
+          <div class="right">
+            <div class="auth-links">
+              <!-- FIX: Contatti → mailto (no 404) -->
+              <a href="mailto:plutoo.team@gmail.com">Contatti</a>
+              <span>·</span>
+              <a href="#" id="btnLogin" class="login-link" data-i18n="login">Login</a>
+              <span>·</span>
+              <a href="#" id="btnSignup" class="signup-link" data-i18n="signup">Registrati</a>
             </div>
-          </div><!-- /home-sponsor -->
-        </div><!-- /home-wrap -->
-      </div><!-- /home-stack -->
-    </section><!-- /view-home -->
+            <div class="lang">
+              <button id="langIT" class="btn tiny ghost" type="button" aria-label="Italiano">IT</button>
+              <button id="langEN" class="btn tiny ghost" type="button" aria-label="English">EN</button>
+            </div>
+            <button id="langToggle" class="btn tiny ghost" type="button" aria-label="Cambia lingua">IT/EN</button>
+          </div>
+        </div>
+      </div>
+    </header>
 
-    <!-- =============== VICINO A TE =============== -->
-    <section id="view-nearby" class="view" hidden aria-label="Vicino a te">
-      <div id="nearbyGrid" class="grid-2"></div>
-
-     <!-- ============== LUOGHI PET ============== -->
-<section id="view-places" class="view" hidden>
-  <div id="placesGrid" class="grid-2"></div>
-
-  <div class="places-footer">
-    <div class="sponsor-inline">
-      <img src="./sponsor-logo.png" alt="Fido">
-      <span>Fido — il gelato per cani</span>
+    <div class="home-hero">
+      <!-- Logo grande -->
+      <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
+      <button id="btnEnter" class="btn primary xl" type="button" data-i18n="enter">Entra</button>
     </div>
 
-    <button class="ethic-cta" data-i18n="ethic_cta">
-      Non abbandonare mai i tuoi amici 🐾 (canili nelle vicinanze)
-    </button>
-  </div>
-</section> 
+    <footer class="home-sponsor">
+      <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
+      <!-- Clic sponsor: gestito in app.js con reward e apertura link -->
+      <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
+        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+        <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
+      </a>
 
-    <!-- =============== AMORE (SWIPE) =============== -->
-    <section id="view-love" class="view" hidden aria-label="Amore">
-      <div id="swipeArea" class="swipe-area">
-        <div id="swipeCard" class="swipe-card frame-gold">
-          <div class="placeholder">💛</div>
-        </div>
-        <div class="swipe-actions">
-          <button id="btnDislike" class="btn btn-ghost">🥲</button>
-          <button id="btnLike"    class="btn btn-gold">💛</button>
-        </div>
-      </div>
-
-      <div class="page-sponsor">
-        <div class="sponsor-inline">
-          <img src="./sponsor-logo.png" alt="Fido" />
-          <span>Fido — il gelato per cani</span>
-        </div>
-      </div>
-
-      <button class="ethic-cta" data-i18n="ethic_cta">
-        Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
+      <!-- Bottone etico: emoji 🐾 + link a Maps canili (via reward) -->
+      <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
+        <span class="emoji">🐾</span>
+        <span class="ethics-lines">
+          <span class="l1" data-i18n="ethicsLine1">Non abbandonare mai i tuoi amici</span>
+          <span class="l2" data-i18n="ethicsLine2">(canili vicino a me)</span>
+        </span>
       </button>
-    </section>
 
-    <!-- =============== GIOCHIAMO INSIEME =============== -->
-    <section id="view-play" class="view" hidden aria-label="Giochiamo insieme">
-      <div class="placeholder">Social & passeggiate</div>
+      <div class="legal-links">
+        <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">terms</a>
+        <span>·</span>
+        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">privacy</a>
+      </div>
+    </footer>
+  </section>
 
-      <div class="page-sponsor">
-        <div class="sponsor-inline">
-          <img src="./sponsor-logo.png" alt="Fido" />
-          <span>Fido — il gelato per cani</span>
-        </div>
+  <!-- =============== APP =============== -->
+  <section id="appScreen" class="app hidden" aria-hidden="true">
+    <header class="topbar">
+      <div class="left">
+        <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
+        <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
+        <strong class="brand-mini">Plutoo</strong>
       </div>
 
-      <button class="ethic-cta" data-i18n="ethic_cta">
-        Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
+      <!-- Tabs -->
+      <nav class="tabs" role="tablist" aria-label="Sezioni">
+        <button id="tabNearby" class="tab active" role="tab" aria-selected="true" data-i18n="nearby">Vicino a te</button>
+        <button id="tabLove"   class="tab" role="tab" aria-selected="false" data-i18n="love">Amore</button>
+        <button id="tabSocial" class="tab" role="tab" aria-selected="false" data-i18n="social">Social</button>
+
+        <!-- Luoghi Pet: menu a tendina -->
+        <div class="tab dropdown">
+          <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi Pet ▾</button>
+          <div id="luoghiMenu" class="dropdown-menu" role="menu" aria-label="Luoghi Pet">
+            <button class="menu-item" data-cat="vets"      role="menuitem" data-i18n="vets">Veterinari</button>
+            <button class="menu-item" data-cat="groomers"  role="menuitem" data-i18n="groomers">Toelettature</button>
+            <button class="menu-item" data-cat="shops"     role="menuitem" data-i18n="shops">Negozi</button>
+            <button class="menu-item" data-cat="parks"     role="menuitem" data-i18n="parks">Parchi</button>
+            <button class="menu-item" data-cat="trainers"  role="menuitem" data-i18n="trainers">Addestratori</button>
+            <button class="menu-item" data-cat="shelters"  role="menuitem" data-i18n="shelters">Canili &amp; Adozioni</button>
+          </div>
+        </div>
+      </nav>
+
+      <div class="right">
+        <button id="btnSearch" class="btn tiny ghost" type="button" aria-label="Ricerca" data-i18n="customSearch">Ricerca</button>
+        <button id="tabPlus" class="btn tiny ghost" type="button" aria-label="Plus" data-i18n="plus">Plus</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- Vicino a te -->
+      <section id="viewNearby" class="view active" role="tabpanel" aria-labelledby="tabNearby">
+        <div class="grid-2" id="nearbyGrid">
+          <!-- riempito da app.js -->
+        </div>
+      </section>
+
+      <!-- Amore -->
+      <section id="viewLove" class="view" role="tabpanel" aria-labelledby="tabLove">
+        <div id="loveDeck" class="love-deck">
+          <!-- cards swipe -->
+        </div>
+      </section>
+
+      <!-- Social -->
+      <section id="viewSocial" class="view" role="tabpanel" aria-labelledby="tabSocial">
+        <div id="socialDeck" class="social-deck">
+          <!-- cards swipe/meet -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Panel Ricerca -->
+    <section id="panelSearch" class="panel" aria-hidden="true" role="dialog" aria-label="Ricerca personalizzata">
+      <div class="panel-inner">
+        <div class="panel-head">
+          <strong data-i18n="customSearch">Ricerca personalizzata</strong>
+          <button class="btn tiny ghost icon close" id="btnCloseSearch" aria-label="Chiudi">✕</button>
+        </div>
+
+        <div class="filters">
+          <div class="f">
+            <label for="breed" data-i18n="breed">Razza</label>
+            <input id="breed" type="text" placeholder="Retriever…" autocomplete="off" />
+            <div id="suggestions" class="suggestions" role="listbox" aria-label="Suggerimenti razze"></div>
+          </div>
+
+          <div class="f two">
+            <div>
+              <label for="sex" data-i18n="sex">Sesso</label>
+              <select id="sex">
+                <option value="" data-i18n="any">Qualsiasi</option>
+                <option value="male" data-i18n="male">Maschio</option>
+                <option value="female" data-i18n="female">Femmina</option>
+              </select>
+            </div>
+            <div>
+              <label for="verified" data-i18n="verifiedOnly">Solo verificati</label>
+              <input id="verified" type="checkbox" />
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button id="btnApplyFilters" class="btn primary" type="button" data-i18n="apply">Applica</button>
+            <button id="btnResetFilters" class="btn ghost" type="button" data-i18n="reset">Reset</button>
+          </div>
+          <p class="hint" data-i18n="goldHint">Il badge Gold si ottiene caricando vaccini, microchip e pedigree.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scheda Profilo Cane -->
+    <section id="profilePanel" class="sheet" aria-hidden="true" role="dialog" aria-label="Profilo cane">
+      <div class="sheet-head">
+        <button id="btnCloseProfile" class="btn tiny ghost icon close" aria-label="Chiudi">✕</button>
+      </div>
+      <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
+    </section>
+
+    <!-- Footer sponsor fisso (tutte le pagine in app) -->
+    <footer class="sponsor">
+      <div class="sponsor-wrap">
+        <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
+        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+        <p class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</p>
+      </div>
+
+      <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me">
+        <span class="emoji">🐾</span>
+        <span class="ethics-lines">
+          <span class="l1" data-i18n="ethicsLine1">Non abbandonare mai i tuoi amici</span>
+          <span class="l2" data-i18n="ethicsLine2">(canili vicino a me)</span>
+        </span>
       </button>
-    </section>
 
-    <!-- =============== PLUS (ABBONAMENTO) =============== -->
-    <section id="view-plus" class="view" hidden aria-label="Plus">
-      <ul class="plus-list">
-        <li data-i18n="plus_1">Rimuove tutti gli annunci</li>
-        <li data-i18n="plus_2">Filtri Gold e funzioni Premium</li>
-        <li data-i18n="plus_3">Supporto prioritario</li>
-      </ul>
-      <button id="btnBuyPlus" class="btn btn-gold" data-i18n="plus_buy">Attiva €39,90/anno</button>
+      <div class="ad-banner" id="adBannerHome" aria-hidden="true"></div>
+    </footer>
+  </section>
 
-      <div class="page-sponsor">
-        <div class="sponsor-inline">
-          <img src="./sponsor-logo.png" alt="Fido" />
-          <span>Fido — il gelato per cani</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- =============== RICERCA PERSONALIZZATA =============== -->
-    <section id="view-search" class="view" hidden aria-label="Ricerca">
-      <form id="filtersForm" class="filters">
-        <div class="field">
-          <label for="breed" data-i18n="f_breed">Razza</label>
-          <input id="breed" type="text" autocomplete="off" placeholder="Inizia a scrivere…" />
-          <div id="breedSuggest" class="suggest"></div>
-        </div>
-
-        <div class="field">
-          <label for="sex" data-i18n="f_sex">Sesso</label>
-          <select id="sex">
-            <option value=""        data-i18n="any">Qualsiasi</option>
-            <option value="male"    data-i18n="male">Maschio</option>
-            <option value="female"  data-i18n="female">Femmina</option>
-          </select>
-        </div>
-
-        <div class="field check">
-          <label>
-            <input id="verified" type="checkbox" />
-            <span data-i18n="f_verified">Badge verificato Gold</span>
-          </label>
-        </div>
-
-        <div class="actions">
-          <button type="reset"  class="btn btn-ghost" data-i18n="reset">Reset</button>
-          <button type="submit" class="btn btn-gold"  data-i18n="apply">Applica</button>
-        </div>
-      </form>
-
-      <div class="page-sponsor">
-        <div class="sponsor-inline">
-          <img src="./sponsor-logo.png" alt="Fido" />
-          <span>Fido — il gelato per cani</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- =============== LUOGHI PET =============== -->
-    <section id="view-places" class="view" hidden aria-label="Luoghi PET">
-      <div class="dropdown">
-        <button class="dropdown-item" data-service="veterinari"   data-i18n="svc_vet">Veterinari</button>
-        <button class="dropdown-item" data-service="toelettature" data-i18n="svc_groom">Toelettature</button>
-        <button class="dropdown-item" data-service="negozi"       data-i18n="svc_shop">Negozi</button>
-        <button class="dropdown-item" data-service="parchi"       data-i18n="svc_parks">Parchi</button>
-        <button class="dropdown-item" data-service="addestratori" data-i18n="svc_train">Addestratori</button>
-        <button class="dropdown-item" data-service="canili"       data-i18n="svc_shelter">Canili</button>
-      </div>
-
-      <div class="page-sponsor">
-        <div class="sponsor-inline">
-          <img src="./sponsor-logo.png" alt="Fido" />
-          <span>Fido — il gelato per cani</span>
-        </div>
-      </div>
-
-      <button class="ethic-cta" data-i18n="ethic_cta">
-        Non abbandonare mai i tuoi amici 🐾 (canili vicino a me)
-      </button>
-    </section>
-
-  </main>
-
-  <!-- Script unico (pulito) -->
-  <script src="app.js?v=fix14" defer></script>
-  <footer id="site-footer" class="site-footer">
-  <div class="footer-links">
-    <a href="termini.html">Termini di servizio</a>
-    <span class="dot">·</span>
-    <a href="privacy.html">Privacy Policy</a>
-    <span class="dot">·</span>
-    <a href="contatti.html">Contatti</a>
-  </div>
-</footer>
+  <!-- SW + JS -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+      });
+    }
+  </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
