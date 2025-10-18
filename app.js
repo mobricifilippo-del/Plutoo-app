@@ -142,7 +142,12 @@
   initHome();
 
   function initHome(){
-    if (state.entered){ homeScreen.classList.add("hidden"); appScreen.classList.remove("hidden"); }
+    // Mostra Home di default; entri nell'app solo se apri con ?app=1
+const startApp = new URLSearchParams(location.search).has("app");
+if (state.entered && startApp){
+  homeScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+}
 
     // Entra → gold pulse (1.5s) → Nearby
     btnEnter?.addEventListener("click", ()=>{
