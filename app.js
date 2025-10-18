@@ -142,15 +142,15 @@
   initHome();
 
   function initHome(){
-    // Mostra Home di default; entri nell'app solo se apri con ?app=1
-const startApp = new URLSearchParams(location.search).has("app");
-if (state.entered && startApp){
-  homeScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
-}
+    // MODIFICA A: Mostra Home di default; salta alla app solo se l'URL ha ?app=1
+    const startApp = new URLSearchParams(location.search).has("app");
+    if (state.entered && startApp){
+      homeScreen.classList.add("hidden");
+      appScreen.classList.remove("hidden");
+    }
 
-    // Entra → gold pulse (1.5s) → Nearby
-    btnEnter?.addEventListener("click", ()=>{
+    // ENTRA → gold pulse (1.5s) → Nearby
+    on(btnEnter, "click", ()=>{
       heroLogo.classList.add("gold-glow");
       setTimeout(()=>{
         heroLogo.classList.remove("gold-glow");
@@ -162,20 +162,19 @@ if (state.entered && startApp){
     });
 
     // Sponsor con reward (coerente con base)
-    sponsorLink?.addEventListener("click",(e)=>{
+    on(sponsorLink, "click",(e)=>{
       e.preventDefault();
       reward("Video prima di aprire lo sponsor").then(()=>{
         window.open(t("sponsorUrl"), "_blank", "noopener");
       });
     });
 
-    // Etica (home)
-    ethicsHome?.addEventListener("click", async ()=>{
+    // Etica (home e app) → Maps dopo reward
+    on(ethicsHome, "click", async ()=>{
       await reward("Video prima di aprire Google Maps (canili)");
       openSheltersMaps();
     });
-    // Etica (app)
-    ethicsApp?.addEventListener("click", async ()=>{
+    on(ethicsApp, "click", async ()=>{
       await reward("Video prima di aprire Google Maps (canili)");
       openSheltersMaps();
     });
@@ -192,7 +191,7 @@ if (state.entered && startApp){
   on(tabLove,   "click", ()=>setActiveView("love"));
   on(tabSocial, "click", ()=>setActiveView("social"));
 
-  // Luoghi Pet dropdown (già presente)
+  // Luoghi Pet: dropdown + apertura Maps con reward
   on(tabLuoghi, "click", (e)=>{
     e.stopPropagation();
     const expanded = tabLuoghi.getAttribute("aria-expanded")==="true";
@@ -229,9 +228,9 @@ if (state.entered && startApp){
       const id = card.getAttribute("data-id");
       const d  = DOGS.find(x=>x.id===id);
       const img = qs("img", card);
-      // Click foto → Apri profilo (era già nella base)
+      // Click foto → Apri profilo (già previsto)
       img?.addEventListener("click", ()=>openProfile(d));
-      // Pulsante "Apri" con reward opzionale
+      // CTA "Apri profilo" con reward (coerente con tua base)
       qs(".open-profile", card)?.addEventListener("click", async ()=>{
         await reward("Video prima di aprire il profilo");
         openProfile(d);
@@ -280,13 +279,11 @@ if (state.entered && startApp){
       </div>
     `;
 
-    // Messaggi: reward solo al primo messaggio dopo match (logica base già presente)
     on(qs("#btnMessage", ppBody), "click", async ()=>{
       await maybeFirstMessageReward(d.id);
       openChat(d);
     });
 
-    // Selfie: blur finché non si guarda un reward (sblocco 24h) – coerente con base
     on(qs("#btnSelfie", ppBody), "click", async ()=>{
       if (isSelfieUnlocked(d.id)){ toast("Selfie già sbloccato ✅", 1200); return; }
       await reward("Video per sbloccare il selfie (24h)");
@@ -304,7 +301,7 @@ if (state.entered && startApp){
 
   // --------------- Chat (first message reward) ---------------
   function openChat(dog){
-    // simulazione apertura chat in overlay minimal
+    // overlay minimale mock, invariato
     const wrap = document.createElement("div");
     wrap.className = "chat-pane";
     wrap.innerHTML = `
@@ -386,7 +383,7 @@ if (state.entered && startApp){
     });
   }
 
-  // Swipe base (invariato, con micro-polish CSS già nel file CSS)
+  // Swipe base (invariato)
   function enableSwipe(card, d){
     let startX=0, dx=0, dragging=false;
     function start(x){ dragging=true; startX=x; card.style.transition="none"; }
@@ -424,23 +421,6 @@ if (state.entered && startApp){
       }
     }
   }
-  function maybeMatch(){
-    if (Math.random() < 0.55){
-      state.matches++; localStorage.setItem("matches", String(state.matches));
-      if (!state.plus && state.matches>=4){ reward("Video per sbloccare il nuovo match"); }
-      const burst = document.createElement("div");
-      burst.className = "match-burst";
-      burst.innerHTML = `
-        <div class="burst-inner">
-          <div class="heart">💛</div>
-          <div class="copy">It’s a match!</div>
-        </div>
-      `;
-      document.body.appendChild(burst);
-      setTimeout(()=>burst.classList.add("show"), 10);
-      setTimeout(()=>{ burst.classList.remove("show"); setTimeout(()=>burst.remove(), 400); }, 1200);
-    }
-  }
 
   // --------------- Ricerca (apri/chiudi) ---------------
   on(qs("#btnSearch"), "click", ()=>{
@@ -451,7 +431,6 @@ if (state.entered && startApp){
   });
 
   // --------------- Avvio ---------------
-  // Precarica un minimo
   (function preload(){
     const imgs = ["dog1.jpg","dog2.jpg","dog3.jpg","dog4.jpg","plutoo-icon-512.png"];
     imgs.forEach(src=>{ const i=new Image(); i.src=src; });
