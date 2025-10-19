@@ -48,24 +48,27 @@
     </div>
 
     <footer class="home-sponsor">
-      <!-- Sponsor (in evidenza) -->
-      <div class="sponsor-stack">
-        <div class="sponsor-title">Sponsor ufficiale</div>
-        <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
-          <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
-          <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
-        </a>
-      </div>
+      <!-- ROW: sponsor sinistra / canili destra -->
+      <div class="home-sponsor-row">
+        <!-- Sponsor (in evidenza) -->
+        <div class="sponsor-stack">
+          <div class="sponsor-title">Sponsor ufficiale</div>
+          <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
+            <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+            <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
+          </a>
+        </div>
 
-      <!-- Canili (secondario, distinto) -->
-      <div class="ethics-stack">
-        <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
-          <span class="emoji">🐾</span>
-          <span class="ethics-lines">
-            <span class="l1">Non abbandonare mai i tuoi amici</span>
-            <span class="l2">(canili vicino a me)</span>
-          </span>
-        </button>
+        <!-- Canili (secondario, distinto) -->
+        <div class="ethics-stack">
+          <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
+            <span class="emoji">🐾</span>
+            <span class="ethics-lines">
+              <span class="l1">Non abbandonare mai i tuoi amici</span>
+              <span class="l2">(canili vicino a me)</span>
+            </span>
+          </button>
+        </div>
       </div>
 
       <!-- Legale + contatti in fondo -->
@@ -242,19 +245,24 @@
 
     <!-- Footer sponsor + Banner -->
     <footer class="sponsor">
-      <div class="sponsor-wrap">
-        <div class="sponsor-title">Sponsor ufficiale</div>
-        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
-        <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
+      <div class="sponsor-row">
+        <div class="sponsor-wrap">
+          <div class="sponsor-title">Sponsor ufficiale</div>
+          <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+          <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
+        </div>
+
+        <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me">
+          <span class="emoji">🐾</span>
+          <span class="ethics-lines">
+            <span class="l1">Non abbandonare mai i tuoi amici</span>
+            <span class="l2">(canili vicino a me)</span>
+          </span>
+        </button>
       </div>
+
+      <!-- Banner fisso a tutta larghezza -->
       <div class="ad-banner" id="adBannerHome">[ Bannerhome ]</div>
-      <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me">
-        <span class="emoji">🐾</span>
-        <span class="ethics-lines">
-          <span class="l1">Non abbandonare mai i tuoi amici</span>
-          <span class="l2">(canili vicino a me)</span>
-        </span>
-      </button>
     </footer>
   </section>
 
