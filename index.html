@@ -1,21 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Plutoo — Gold Edition</title>
+  <title>Plutoo — Gold (Violet Edition)</title>
   <meta name="theme-color" content="#0B0B0F" />
-  <meta name="color-scheme" content="dark" />
-  <meta name="description" content="Plutoo: amici a quattro zampe vicino a te. Amore, Giochiamo insieme, chat, profili, ricerca, Luoghi PET." />
+  <meta name="description" content="Plutoo: amici a quattro zampe vicino a te" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="plutoo-icon-192.png" />
   <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
   <link rel="stylesheet" href="style.css" />
-  <noscript>Attiva JavaScript per usare Plutoo.</noscript>
 </head>
 <body>
 
-  <!-- ======================= HOME (OM) ======================= -->
+  <!-- HOME -->
   <section id="homeScreen" class="home" aria-labelledby="homeTitle">
     <header class="home-top">
       <div class="container row">
@@ -25,6 +23,7 @@
             <h1 id="homeTitle" class="brand">Plutoo</h1>
           </div>
         </div>
+
         <div class="right top-actions">
           <div class="lang">
             <button id="langIT" class="btn tiny ghost" type="button" aria-label="Italiano">🇮🇹 IT</button>
@@ -40,28 +39,24 @@
     </header>
 
     <div class="home-hero">
-      <!-- LOGO più grande + cornice oro -->
       <div class="hero-frame">
         <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
       </div>
-      <button id="btnEnter" class="btn primary xl" type="button">Entra</button>
+      <button id="btnEnter" class="btn primary xl" type="button" aria-label="Entra">Entra</button>
     </div>
 
     <footer class="home-sponsor">
-      <!-- ROW: sponsor sinistra / canili destra -->
       <div class="home-sponsor-row">
-        <!-- Sponsor (in evidenza) -->
         <div class="sponsor-stack">
           <div class="sponsor-title">Sponsor ufficiale</div>
-          <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
+          <a id="sponsorLinkHome" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
             <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
-            <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
+            <div class="sponsor-copy">Fido — il gelato per i nostri amici a quattro zampe</div>
           </a>
         </div>
 
-        <!-- Canili (secondario, distinto) -->
         <div class="ethics-stack">
-          <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
+          <button id="ethicsButtonHome" class="btn ethics" type="button" aria-label="Canili vicino a me">
             <span class="emoji">🐾</span>
             <span class="ethics-lines">
               <span class="l1">Non abbandonare mai i tuoi amici</span>
@@ -71,7 +66,6 @@
         </div>
       </div>
 
-      <!-- Legale + contatti in fondo -->
       <div class="legal-links">
         <a href="termini.html" target="_blank" rel="noopener">Termini</a>
         <span>·</span>
@@ -82,59 +76,57 @@
     </footer>
   </section>
 
-  <!-- ======================= APP ======================= -->
+  <!-- APP -->
   <section id="appScreen" class="app hidden" aria-hidden="true">
 
-    <!-- Navbar: UNICA LINEA, oro/nero; Social rimosso -->
     <header class="topbar">
       <div class="left">
         <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
         <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
         <strong class="brand-mini">Plutoo</strong>
       </div>
+
       <nav class="tabs" role="tablist" aria-label="Sezioni">
         <button id="tabNearby" class="tab active" role="tab" aria-selected="true">Vicino a te</button>
-        <button id="tabLove"   class="tab" role="tab" aria-selected="false">Amore</button>
-        <button id="tabPlay"   class="tab" role="tab" aria-selected="false">Giochiamo insieme</button>
+        <button id="tabLove" class="tab" role="tab" aria-selected="false">Amore</button>
+        <button id="tabPlay" class="tab" role="tab" aria-selected="false">Giochiamo insieme</button>
+        <button id="btnSearchTab" class="tab" role="tab" aria-controls="panelSearch">Ricerca personalizzata</button>
 
-        <!-- Luoghi PET (dropdown) -->
         <div class="tab dropdown" id="luoghiTabWrap">
           <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi PET ▾</button>
           <div id="luoghiMenu" class="dropdown-menu" role="menu">
-            <button class="menu-item" data-cat="vets"     role="menuitem">Veterinari</button>
-            <button class="menu-item" data-cat="shops"    role="menuitem">Negozi</button>
+            <button class="menu-item" data-cat="vets" role="menuitem">Veterinari</button>
             <button class="menu-item" data-cat="groomers" role="menuitem">Toelettature</button>
-            <button class="menu-item" data-cat="parks"    role="menuitem">Parchi</button>
+            <button class="menu-item" data-cat="shops" role="menuitem">Negozi</button>
+            <button class="menu-item" data-cat="parks" role="menuitem">Parchi</button>
             <button class="menu-item" data-cat="trainers" role="menuitem">Addestratori</button>
           </div>
         </div>
-
-        <!-- Ricerca overlay -->
-        <button id="btnSearch" class="tab" type="button" aria-controls="panelSearch" aria-expanded="false">Ricerca personalizzata</button>
       </nav>
+
       <div class="right">
         <button id="tabPlus" class="btn tiny ghost" type="button" aria-label="Plus">Plus ✨</button>
       </div>
     </header>
 
     <main class="content">
-      <!-- Vicino a te (AMICI) -->
+      <!-- VICINO A TE -->
       <section id="viewNearby" class="view active" role="tabpanel" aria-labelledby="tabNearby">
         <div class="grid-2" id="nearbyGrid"></div>
       </section>
 
-      <!-- Amore (deck singola card) -->
+      <!-- AMORE -->
       <section id="viewLove" class="view" role="tabpanel" aria-labelledby="tabLove">
         <div id="loveDeck" class="love-deck"></div>
       </section>
 
-      <!-- Giochiamo insieme (deck) -->
+      <!-- GIOCHIAMO INSIEME -->
       <section id="viewPlay" class="view" role="tabpanel" aria-labelledby="tabPlay">
         <div id="playDeck" class="love-deck"></div>
       </section>
     </main>
 
-    <!-- Ricerca OVERLAY -->
+    <!-- RICERCA OVERLAY -->
     <section id="panelSearch" class="panel" aria-hidden="true" role="dialog" aria-label="Ricerca personalizzata">
       <div class="panel-inner">
         <div class="panel-head">
@@ -176,7 +168,7 @@
           </div>
 
           <div class="f gold-only">
-            <div class="gold-label">Filtri Gold (Plus)</div>
+            <div class="gold-label">Filtri Plus</div>
             <div class="gold-grid">
               <label><input type="checkbox" id="coatLong"  /> Pelo lungo</label>
               <label><input type="checkbox" id="coatShort" /> Pelo corto</label>
@@ -194,7 +186,7 @@
       </div>
     </section>
 
-    <!-- Pagina PROFILO (dedicata) -->
+    <!-- PROFILO DEDICATO -->
     <section id="profilePage" class="page hidden" aria-hidden="true" aria-label="Profilo amico">
       <header class="subbar">
         <button id="btnBackProfile" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
@@ -213,8 +205,8 @@
 
         <section class="profile-actions">
           <button class="btn primary" id="btnSeeSelfie">Vedi selfie (24h)</button>
-          <button class="btn ghost"   id="btnUploadSelfie">Carica selfie con il tuo amico 🐾</button>
-          <button class="btn ghost"   id="btnOpenChat">Invia messaggio</button>
+          <button class="btn ghost" id="btnUploadSelfie">Carica selfie con il tuo amico 🐾</button>
+          <button class="btn ghost" id="btnOpenChat">Invia messaggio</button>
         </section>
 
         <section class="profile-bio">
@@ -243,13 +235,15 @@
       </main>
     </section>
 
-    <!-- Footer sponsor + Banner -->
+    <!-- FOOTER SPONSOR + BANNER -->
     <footer class="sponsor">
       <div class="sponsor-row">
         <div class="sponsor-wrap">
           <div class="sponsor-title">Sponsor ufficiale</div>
-          <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
-          <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
+          <a id="sponsorLinkApp" href="https://example.com/fido-gelato" target="_blank" rel="noopener">
+            <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+          </a>
+          <p class="sponsor-copy">Fido — il gelato per i nostri amici</p>
         </div>
 
         <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me">
@@ -261,17 +255,10 @@
         </button>
       </div>
 
-      <!-- Banner fisso a tutta larghezza -->
       <div class="ad-banner" id="adBannerHome">[ Bannerhome ]</div>
     </footer>
   </section>
 
-  <!-- Service worker (cache) -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      addEventListener('load', ()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
-    }
-  </script>
   <script src="app.js" defer></script>
 </body>
 </html>
