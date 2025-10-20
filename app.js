@@ -1,473 +1,341 @@
-// app.js - Plutoo Violet Edition
-// Gestisce navigazione, topbar tabs, deck swipe, ricerca overlay, geolocalizzazione, sponsor/canili
+/* =====================================================
+   PLUTOO – VIOLET EDITION JS
+   ===================================================== */
 
-/* -------------------------
-   Helper / DOM
-   ------------------------- */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-
-// Screens
-const homeScreen = $('#homeScreen');
-const appScreen = $('#appScreen');
-const profilePage = $('#profilePage');
-
-// Topbar + tabs
-const tabs = {
-  nearby: $('#tabNearby'),
-  love: $('#tabLove'),
-  play: $('#tabPlay'),
-  search: $('#btnSearchTab'),
-  luoghiWrap: $('#luoghiTabWrap'),
-  luoghiMenu: $('#luoghiMenu'),
-  plus: $('#tabPlus')
+const state = {
+  entered: false,
+  plus: false,                // mock abbonamento
+  view: 'nearby',
+  friends: [],                // dataset mock
+  swipes: 0,
+  geo: null,
+  selfieUnlocks: {},          // {friendId: timestamp}
 };
 
-// Buttons
-const btnEnter = $('#btnEnter');
-const btnBack = $('#btnBack');
-const sponsorLinkHome = $('#sponsorLinkHome');
-const sponsorLinkApp = $('#sponsorLinkApp');
-const ethicsButtonHome = $('#ethicsButtonHome');
-const ethicsButtonApp = $('#ethicsButtonApp');
+// -------------------- HOME ↔ APP --------------------
+initHome();
 
-// Views
-const viewNearby = $('#viewNearby');
-const viewLove = $('#viewLove');
-const viewPlay = $('#viewPlay');
+function initHome(){
+  // Logo pulse più lungo
+  const heroLogo = document.getElementById('heroLogo');
+  const btnEnter = document.getElementById('btnEnter');
 
-// Decks
-const loveDeck = $('#loveDeck');
-const playDeck = $('#playDeck');
+  btnEnter?.addEventListener('click', ()=>{
+    heroLogo.classList.remove('violet-glow');
+    // forza reflow per riavviare animazione
+    void heroLogo.offsetWidth;
+    heroLogo.classList.add('violet-glow');
 
-// Search panel
-const panelSearch = $('#panelSearch');
-const btnCloseSearch = $('#btnCloseSearch');
-const breedInput = $('#breed');
-const suggestionsBox = $('#suggestions');
-const sexSelect = $('#sex');
-const badgeCheckbox = null; // eventually map to a control if present
-
-// Other
-const adBannerHome = $('#adBannerHome');
-
-// State
-let state = {
-  currentView: 'home', // home, app, profile
-  activeTab: 'nearby',
-  swipeCount: 0, // count swipes for reward logic
-  lastSwipeTime: 0,
-  plus: (localStorage.getItem('plutoo_plus') === 'true'),
-  breeds: [
-    'Akita','Alano','Barboncino','Beagle','Bichon Frise','Border Collie','Boxer','Bulldog','Chihuahua','Cocker Spaniel',
-    'Dachshund','Doberman','Husky','Labrador','Maltese','Pastore Tedesco','Pomerania','Rottweiler','Shiba Inu','Yorkshire'
-  ],
-  deckLove: [],
-  deckPlay: [],
-  isSwiping: false
-};
-
-/* -------------------------
-   Utility: navigation
-   ------------------------- */
-function showHome() {
-  state.currentView = 'home';
-  homeScreen.classList.remove('hidden');
-  appScreen.classList.add('hidden');
-  profilePage.classList.add('hidden');
-  window.scrollTo(0,0);
-}
-function showApp() {
-  state.currentView = 'app';
-  homeScreen.classList.add('hidden');
-  appScreen.classList.remove('hidden');
-  profilePage.classList.add('hidden');
-  // default to nearby
-  activateTab('nearby');
-}
-function showProfile() {
-  state.currentView = 'profile';
-  homeScreen.classList.add('hidden');
-  appScreen.classList.add('hidden');
-  profilePage.classList.remove('hidden');
-}
-
-/* -------------------------
-   Event wiring: Home -> App
-   ------------------------- */
-btnEnter.addEventListener('click', ()=> {
-  // animate logo with violet pulse
-  const logo = $('#heroLogo');
-  logo.classList.remove('violet-pulse');
-  void logo.offsetWidth;
-  logo.classList.add('violet-pulse');
-
-  // navigate to app after a short timeout
-  setTimeout(()=> {
-    showApp();
-  }, 420);
-});
-
-// Back button behaviour: go to previous page (profile -> app, app -> home)
-btnBack.addEventListener('click', ()=> {
-  if (state.currentView === 'profile') {
-    showApp();
-  } else if (state.currentView === 'app') {
-    showHome();
-  } else {
-    showHome();
-  }
-});
-
-// Sponsor clickable everywhere
-sponsorLinkHome?.addEventListener('click', e => {
-  // open in new tab
-  window.open(sponsorLinkHome.href, '_blank', 'noopener');
-});
-sponsorLinkApp?.addEventListener('click', e => {
-  window.open(sponsorLinkApp.href, '_blank', 'noopener');
-});
-
-/* -------------------------
-   Canili -> Google Maps
-   - Only in Home & Footer App buttons (ethics)
-   ------------------------- */
-async function openCaniliNearby() {
-  // Try geolocation
-  const q = encodeURIComponent('canili vicino a me');
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      const url = `https://www.google.com/maps/search/canili+vicino+a+me/@${lat},${lng},13z`;
-      window.open(url, '_blank', 'noopener');
-    }, err => {
-      // fallback to text query
-      window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, '_blank', 'noopener');
-    }, {timeout:7000});
-  } else {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, '_blank', 'noopener');
-  }
-}
-ethicsButtonHome?.addEventListener('click', e => {
-  // reward video before open (mock)
-  showRewardVideo('Guarda il video per sbloccare i canili', ()=> openCaniliNearby());
-});
-ethicsButtonApp?.addEventListener('click', e => {
-  // App footer ethics button also opens maps, but we want canili only in home per requests.
-  // Here we will behave the same as home by default to be safe; if you truly want it only in home,
-  // remove the listener for ethicsButtonApp.
-  showRewardVideo('Guarda il video per sbloccare i canili', ()=> openCaniliNearby());
-});
-
-/* -------------------------
-   LUOGHI PET dropdown
-   - when selecting an item => show reward then open maps for that category
-   ------------------------- */
-$('#luoghiMenu')?.addEventListener('click', (ev) => {
-  const item = ev.target.closest('.menu-item');
-  if (!item) return;
-  const cat = item.dataset.cat;
-  if (!cat) return;
-  // mapping category -> query text
-  const map = {
-    vets: 'veterinari vicino a me',
-    groomers: 'toelettature vicino a me',
-    shops: 'negozi per animali vicino a me',
-    parks: 'parchi per cani vicino a me',
-    trainers: 'addestratori vicino a me'
-  };
-  const query = map[cat] || 'animali vicino a me';
-  showRewardVideo('Guarda il video per vedere i risultati', ()=> openMapsQuery(query));
-});
-
-function openMapsQuery(text) {
-  const q = encodeURIComponent(text);
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      const url = `https://www.google.com/maps/search/${q}/@${lat},${lng},13z`;
-      window.open(url, '_blank', 'noopener');
-    }, err => {
-      window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, '_blank', 'noopener');
-    }, {timeout:7000});
-  } else {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, '_blank', 'noopener');
-  }
-}
-
-/* Dropdown toggle */
-tabs.luoghiWrap?.addEventListener('click', (ev) => {
-  const wrap = tabs.luoghiWrap;
-  const expanded = wrap.getAttribute('aria-expanded') === 'true';
-  wrap.setAttribute('aria-expanded', (!expanded).toString());
-});
-
-/* -------------------------
-   Search overlay + breeds suggestion (simple)
-   ------------------------- */
-btnCloseSearch?.addEventListener('click', ()=> {
-  panelSearch.setAttribute('aria-hidden','true');
-  panelSearch.style.display = 'none';
-  $('#btnSearchTab').classList.remove('active');
-});
-$('#btnSearchTab')?.addEventListener('click', ()=> {
-  panelSearch.setAttribute('aria-hidden','false');
-  panelSearch.style.display = 'block';
-  $('#btnSearchTab').classList.add('active');
-  breedInput.focus();
-});
-
-/* breed suggestions: filter by first letters typed, alphabetic */
-breedInput?.addEventListener('input', (ev) => {
-  const q = ev.target.value.trim().toLowerCase();
-  suggestionsBox.innerHTML = '';
-  if (!q) { suggestionsBox.classList.remove('show'); return; }
-  const matches = state.breeds.filter(b => b.toLowerCase().startsWith(q)).sort();
-  if (matches.length === 0) { suggestionsBox.classList.remove('show'); return; }
-  matches.forEach(m => {
-    const div = document.createElement('div');
-    div.className = 'item';
-    div.tabIndex = 0;
-    div.textContent = m;
-    div.addEventListener('click', ()=> {
-      breedInput.value = m;
-      suggestionsBox.classList.remove('show');
-    });
-    suggestionsBox.appendChild(div);
+    setTimeout(()=>{
+      state.entered = true;
+      localStorage.setItem('entered', '1');
+      document.getElementById('homeScreen').classList.add('hidden');
+      const app = document.getElementById('appScreen');
+      app.classList.remove('hidden');
+      setActiveView('nearby');
+      ensureDataset();
+    }, 1600); // più lungo
   });
-  suggestionsBox.classList.add('show');
+
+  document.getElementById('btnAccedi')?.addEventListener('click', e=>{
+    e.preventDefault(); alert('Login coming soon.');
+  });
+
+  // Sponsor cliccabile
+  document.getElementById('sponsorLinkHome')?.addEventListener('click', ()=>{});
+  // Canili in HOME: sempre libero
+  document.getElementById('ethicsButtonHome')?.addEventListener('click', openSheltersMaps);
+
+  // Lingue mock
+  document.getElementById('langIT')?.addEventListener('click', ()=>toast('Lingua: Italiano'));
+  document.getElementById('langEN')?.addEventListener('click', ()=>toast('Language: English'));
+}
+
+// -------------------- TOPBAR / VIEWS --------------------
+const tabs = {
+  nearby: document.getElementById('tabNearby'),
+  love:   document.getElementById('tabLove'),
+  play:   document.getElementById('tabPlay'),
+};
+
+tabs.nearby?.addEventListener('click', ()=>setActiveView('nearby'));
+tabs.love  ?.addEventListener('click', ()=>setActiveView('love'));
+tabs.play  ?.addEventListener('click', ()=>setActiveView('play'));
+
+document.getElementById('btnBack')?.addEventListener('click', goBackSmart);
+document.getElementById('btnBackProfile')?.addEventListener('click', ()=>{
+  // Torna alla vista precedente, non alla home
+  showPage('profilePage', false);
 });
 
-/* Apply filters (just console for now) */
-$('#btnApplyFilters')?.addEventListener('click', ()=> {
-  const filters = {
-    breed: breedInput.value.trim(),
-    sex: sexSelect.value,
-    distance: $('#distance').value,
-    plus: state.plus
-  };
-  // close panel
+function setActiveView(view){
+  state.view = view;
+  for (const id of ['viewNearby','viewLove','viewPlay']){
+    document.getElementById(id).classList.remove('active');
+  }
+  if (view==='nearby') document.getElementById('viewNearby').classList.add('active');
+  if (view==='love')   document.getElementById('viewLove').classList.add('active');
+  if (view==='play')   document.getElementById('viewPlay').classList.add('active');
+
+  for (const key in tabs){ tabs[key].classList.remove('active'); }
+  (view==='nearby'?tabs.nearby:view==='love'?tabs.love:tabs.play).classList.add('active');
+
+  if (view==='nearby') renderNearby();
+  if (view==='love')   renderDeck('loveDeck');
+  if (view==='play')   renderDeck('playDeck');
+}
+
+// -------------------- LUOGHI PET (Maps) --------------------
+document.getElementById('tabLuoghi')?.addEventListener('click', ()=>{
+  const wrap = document.getElementById('luoghiTabWrap');
+  const expanded = wrap.getAttribute('aria-expanded') === 'true';
+  wrap.setAttribute('aria-expanded', expanded ? 'false':'true');
+});
+document.querySelectorAll('#luoghiMenu .menu-item').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const q = btn.dataset.cat;
+    openMapsQuery(q + ' vicino a me');
+    document.getElementById('luoghiTabWrap').setAttribute('aria-expanded','false');
+  });
+});
+
+// Sponsor in app sempre cliccabile
+document.getElementById('sponsorLinkApp')?.addEventListener('click', ()=>{});
+
+// -------------------- RICERCA PERSONALIZZATA --------------------
+const panelSearch = document.getElementById('panelSearch');
+document.getElementById('btnSearch')?.addEventListener('click', ()=>{
+  panelSearch.setAttribute('aria-hidden','false');
+  document.getElementById('btnSearch').classList.add('active');
+});
+document.getElementById('btnCloseSearch')?.addEventListener('click', ()=>{
   panelSearch.setAttribute('aria-hidden','true');
-  panelSearch.style.display = 'none';
-  $('#btnSearchTab').classList.remove('active');
-  // TODO: apply filter to data source (mock)
-  console.log('Filters applied', filters);
+  document.getElementById('btnSearch').classList.remove('active');
+});
+document.getElementById('btnApplyFilters')?.addEventListener('click', ()=>{
+  applyFilters();
+  panelSearch.setAttribute('aria-hidden','true');
+  document.getElementById('btnSearch').classList.remove('active');
+});
+document.getElementById('btnResetFilters')?.addEventListener('click', ()=>{
+  document.getElementById('breed').value='';
+  document.getElementById('sex').value='';
+  document.getElementById('badge').value='';
+  document.getElementById('distance').value=20;
 });
 
-/* -------------------------
-   Tabs navigation logic (activateTab)
-   ------------------------- */
-function activateTab(name) {
-  state.activeTab = name;
-  // remove active from all tabs
-  $$('.tab').forEach(t => t.classList.remove('active'));
-  $('#tabNearby').classList.toggle('active', name === 'nearby');
-  $('#tabLove').classList.toggle('active', name === 'love');
-  $('#tabPlay').classList.toggle('active', name === 'play');
-  $('#btnSearchTab').classList.toggle('active', name === 'search');
+// Autocomplete razze (dataset minimo mock)
+const breeds = ['Akita','Beagle','Border Collie','Bulldog','Dobermann','Husky','Labrador','Maltese','Pinscher','Poodle','Shiba Inu','Terrier','Volpino'];
+const breedInput = document.getElementById('breed');
+const suggestions = document.getElementById('suggestions');
+breedInput?.addEventListener('input', ()=>{
+  const q = breedInput.value.trim().toLowerCase();
+  if (!q){ suggestions.classList.remove('show'); suggestions.innerHTML=''; return; }
+  const items = breeds.filter(b=>b.toLowerCase().startsWith(q)).slice(0,10);
+  suggestions.innerHTML = items.map(b=>`<div class="item" role="option">${b}</div>`).join('');
+  suggestions.classList.add('show');
+});
+suggestions?.addEventListener('click', (e)=>{
+  const item = e.target.closest('.item');
+  if (!item) return;
+  breedInput.value = item.textContent;
+  suggestions.classList.remove('show');
+});
 
-  // show / hide views
-  viewNearby.classList.toggle('active', name === 'nearby');
-  viewLove.classList.toggle('active', name === 'love');
-  viewPlay.classList.toggle('active', name === 'play');
-
-  // add a small focus animation
-  const activeBtn = name === 'nearby' ? $('#tabNearby') : name === 'love' ? $('#tabLove') : name === 'play' ? $('#tabPlay') : $('#btnSearchTab');
-  if (activeBtn) {
-    activeBtn.animate([{transform:'scale(1)'},{transform:'scale(1.02)'}],{duration:180,fill:'forwards'});
-  }
-}
-
-// Tab clicks
-$('#tabNearby')?.addEventListener('click', ()=> activateTab('nearby'));
-$('#tabLove')?.addEventListener('click', ()=> activateTab('love'));
-$('#tabPlay')?.addEventListener('click', ()=> activateTab('play'));
-
-/* -------------------------
-   Deck logic: render one card at a time (mock data)
-   ------------------------- */
-function mockCards() {
-  // sample mock cards
-  const dogs = [
-    {id:1,name:'Toby',breed:'Beagle',age:'3 anni',distance:'2 km',img:'dog1.jpg',verified:true,sex:'male'},
-    {id:2,name:'Luna',breed:'Labrador',age:'4 anni',distance:'5 km',img:'dog2.jpg',verified:false,sex:'female'},
-    {id:3,name:'Rex',breed:'Boxer',age:'2 anni',distance:'1.2 km',img:'dog3.jpg',verified:true,sex:'male'},
-    {id:4,name:'Mia',breed:'Shiba Inu',age:'1 anno',distance:'3.4 km',img:'dog4.jpg',verified:false,sex:'female'}
+// -------------------- DATASET / RENDER --------------------
+function ensureDataset(){
+  if (state.friends.length) return;
+  state.friends = [
+    {id:1, name:'Luna', sex:'female', breed:'Labrador', km:1.2, img:'dogs/dog1.jpg', bio:'Amante dei parchi', badge:true, age:2},
+    {id:2, name:'Rocky', sex:'male',   breed:'Beagle',   km:2.5, img:'dogs/dog2.jpg', bio:'Corre come il vento', badge:false, age:3},
+    {id:3, name:'Maya',  sex:'female', breed:'Husky',    km:3.1, img:'dogs/dog3.jpg', bio:'Dolcissima', badge:true, age:1},
+    {id:4, name:'Otto',  sex:'male',   breed:'Maltese',  km:0.9, img:'dogs/dog4.jpg', bio:'Coccolone', badge:false, age:4},
   ];
-  state.deckLove = [...dogs];
-  state.deckPlay = [...dogs.map(d=>({...d}))];
+  renderNearby();
 }
 
-function renderDeck(container, deck) {
-  container.innerHTML = '';
-  if (!deck || deck.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'muted';
-    empty.textContent = 'Nessun amico trovato.';
-    container.appendChild(empty);
-    return;
-  }
-  const cardData = deck[0];
-  const card = buildCard(cardData);
-  container.appendChild(card);
-  attachSwipeHandlers(card, deck, container);
+function renderNearby(list = state.friends){
+  const grid = document.getElementById('nearbyGrid');
+  grid.innerHTML = list.map(f=>cardHTML(f)).join('');
+  grid.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const id = Number(card.dataset.id);
+      openProfile(state.friends.find(x=>x.id===id));
+    });
+  });
 }
 
-function buildCard(d) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'card';
-  wrapper.innerHTML = `
-    <img class="card-img" src="${d.img}" alt="${d.name}">
+function cardHTML(f){
+  // SOLO: nome, sesso, razza, distanza
+  const sex = f.sex==='male'?'Maschio':'Femmina';
+  return `
+  <article class="card" data-id="${f.id}" tabindex="0">
+    <img class="card-img" src="${f.img}" alt="${f.name}" />
     <div class="card-info">
-      <h3>${d.name} ${d.verified ? '✅' : ''}</h3>
-      <div class="meta">${d.breed} · ${d.age} · ${d.distance}</div>
+      <h3>${f.name}</h3>
+      <p class="meta">${f.breed} · ${sex} · ${f.km}km</p>
     </div>
     <div class="card-actions">
-      <button class="btn no" data-action="no">🥲</button>
-      <button class="btn yes" data-action="yes">💜</button>
+      <button class="btn no" aria-label="giochiamo">🥲</button>
+      <button class="btn yes" aria-label="mi piace">💜</button>
     </div>
-  `;
-  // click on image opens profile dedicated
-  wrapper.querySelector('.card-img').addEventListener('click', ()=> openProfile(d));
-  return wrapper;
+  </article>`;
 }
 
-function openProfile(d) {
-  // populate profile page
-  $('#profilePhoto').src = d.img;
-  $('#profileName').textContent = d.name;
-  $('#profileMeta').textContent = `${d.breed} · ${d.sex === 'male' ? 'Maschio' : 'Femmina'} · ${d.age}`;
-  // badges
-  const badges = $('#profileBadges');
-  badges.innerHTML = '';
-  if (d.verified) {
-    const b = document.createElement('span'); b.className='badge'; b.textContent='Verificato';
-    badges.appendChild(b);
-  }
-  showProfile();
+// -------------------- DECK (Amore/Giochiamo) --------------------
+function renderDeck(id){
+  const deck = document.getElementById(id);
+  deck.innerHTML = '';
+  // Ultima card mostrata deve stare CENTRATA; impilo in z-index
+  const stack = [...state.friends].reverse();
+  stack.forEach((f,i)=>{
+    const div = document.createElement('div');
+    div.innerHTML = cardHTML(f);
+    const card = div.firstElementChild;
+    card.style.zIndex = String(100 - i);
+    deck.appendChild(card);
+  });
+  attachSwipe(deck);
+  deck.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      // se clicchi pulsante non aprire profilo
+      if (e.target.closest('.btn')) return;
+      const idFriend = Number(card.dataset.id);
+      openProfile(state.friends.find(x=>x.id===idFriend));
+    });
+  });
 }
 
-/* Swipe handler: one card at a time, avoid fast double-swipe */
-function attachSwipeHandlers(card, deck, container) {
-  const btnNo = card.querySelector('.btn.no');
-  const btnYes = card.querySelector('.btn.yes');
-
-  // click taps
-  btnNo?.addEventListener('click', ()=> handleSwipe('left', deck, container));
-  btnYes?.addEventListener('click', ()=> handleSwipe('right', deck, container));
-
-  // touch drag for swipe
-  let startX = 0, currentX = 0, dragging=false;
-  const threshold = 80;
-  card.addEventListener('touchstart', (e)=> {
-    if (state.isSwiping) return;
+function attachSwipe(deck){
+  let startX = 0; let dragging=false; let target=null;
+  deck.addEventListener('touchstart', (e)=>{
+    target = deck.querySelector('.card:last-of-type'); // card in cima
     startX = e.touches[0].clientX; dragging=true;
-    card.style.transition='none';
   }, {passive:true});
-  card.addEventListener('touchmove', (e)=> {
-    if (!dragging) return;
-    currentX = e.touches[0].clientX - startX;
-    card.style.transform = `translateX(${currentX}px) rotate(${currentX/25}deg)`;
+  deck.addEventListener('touchmove', (e)=>{
+    if(!dragging || !target) return;
+    const dx = e.touches[0].clientX - startX;
+    target.style.transform = `translateX(${dx}px) rotate(${dx/18}deg)`;
   }, {passive:true});
-  card.addEventListener('touchend', (e)=> {
-    if (!dragging) return;
-    dragging=false;
-    card.style.transition='';
-    if (Math.abs(currentX) > threshold) {
-      handleSwipe(currentX > 0 ? 'right' : 'left', deck, container);
-    } else {
-      card.style.transform='translateX(0) rotate(0)';
-    }
+  deck.addEventListener('touchend', (e)=>{
+    if(!dragging || !target) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const threshold = 80;
+    if (dx > threshold){ swipeOut(target, 'right'); }
+    else if (dx < -threshold){ swipeOut(target, 'left'); }
+    else { target.style.transform='translateX(0) rotate(0)'; }
+    dragging=false; target=null;
   });
 }
-
-function handleSwipe(direction, deck, container) {
-  if (state.isSwiping) return;
-  state.isSwiping = true;
-  state.swipeCount++;
-  // animate out
-  const card = container.querySelector('.card');
-  if (!card) { state.isSwiping=false; return; }
-  card.classList.add(direction === 'right' ? 'swipe-out-right' : 'swipe-out-left');
-  // after animation remove and render next
-  setTimeout(()=> {
-    deck.shift();
-    renderDeck(container, deck);
-    state.isSwiping=false;
-    // reward video logic: after 10 swipes then every 5
-    if (state.swipeCount >= 10 && (state.swipeCount === 10 || (state.swipeCount - 10) % 5 === 0)) {
-      showRewardVideo('Guarda il video per sbloccare altri swipe', ()=> {
-        // on reward granted, optionally add 5 mocked cards (here we just log)
-        console.log('Reward granted for swipes');
-      });
-    }
-  }, 460);
+function swipeOut(card, dir){
+  card.classList.add(dir==='right'?'swipe-out-right':'swipe-out-left');
+  setTimeout(()=>{ card.remove(); afterSwipe(); }, 420);
 }
-
-/* initial mock render */
-mockCards();
-renderDeck(loveDeck, state.deckLove);
-renderDeck(playDeck, state.deckPlay);
-
-/* -------------------------
-   Reward video mock
-   - this simulates showing a reward video. Real implementation uses AdMob
-   ------------------------- */
-function showRewardVideo(message, onComplete) {
-  // Simple modal prompt: user "watches" video (ok) or cancels
-  const watching = confirm(message + "\n\nSimulazione reward video: premi OK per simulare la visualizzazione.");
-  if (watching) {
-    // simulate delay
-    setTimeout(()=> {
-      alert('Grazie! Reward completato.');
-      onComplete?.();
-    }, 700);
+function afterSwipe(){
+  state.swipes++;
+  if (!state.plus){
+    if (state.swipes===10 || (state.swipes>10 && state.swipes%5===0)){
+      reward('Video pubblicitario','Guarda un video per continuare a scorrere altri profili.');
+    }
   }
 }
 
-/* -------------------------
-   Chat / first message reward
-   ------------------------- */
-$('#btnOpenChat')?.addEventListener('click', ()=> {
-  // first message requires showing reward video (mock)
-  showRewardVideo('Guarda il video per poter inviare il primo messaggio', ()=> {
-    alert('Puoi scrivere il primo messaggio (simulato).');
-  });
+// -------------------- PROFILO --------------------
+function openProfile(f){
+  if (!f) return;
+  document.getElementById('profileName').textContent = f.name;
+  document.getElementById('profilePhoto').src = f.img;
+  document.getElementById('profileMeta').textContent = `${f.breed} · ${f.sex==='male'?'Maschio':'Femmina'} · ${f.age} anni`;
+  document.getElementById('profileBio').textContent = f.bio || '';
+  const badges = document.getElementById('profileBadges');
+  badges.innerHTML = f.badge? `<span class="badge">✔︎ Verificato</span>` : '';
+  // galleria mock
+  const gal = document.getElementById('profileGallery');
+  gal.innerHTML = [f.img,f.img,f.img].map(src=>`<img src="${src}" alt="${f.name}">`).join('');
+  showPage('profilePage', true);
+}
+
+// Selfie 24h (mock sblocchi)
+document.getElementById('btnSeeSelfie')?.addEventListener('click', ()=>{
+  if (state.plus){ toast('Selfie visibile (Plus attivo)'); return; }
+  const ok = confirm('Guarda un video per sbloccare il selfie per 24 ore?');
+  if (ok){ reward('Selfie', 'Video prima di vedere il selfie'); }
+});
+document.getElementById('btnUploadSelfie')?.addEventListener('click', ()=>alert('Carica solo foto con il tuo amico (niente persone sole).'));
+document.getElementById('btnOpenChat')?.addEventListener('click', ()=>{
+  reward('Chat', 'Il primo messaggio è gratuito. Dopo l’invio parte il video.');
 });
 
-/* -------------------------
-   Plus toggles (mock)
-   ------------------------- */
-$('#tabPlus')?.addEventListener('click', ()=> {
-  const wants = confirm('Attiva Plutoo Plus (simulazione). Premi OK per attivare mock Plus.');
-  if (wants) {
-    state.plus = true;
-    localStorage.setItem('plutoo_plus','true');
-    alert('Plutoo Plus attivato (mock).');
-  } else {
-    state.plus = false;
-    localStorage.removeItem('plutoo_plus');
+// Documenti per badge
+document.getElementById('btnUploadDogDocs')?.addEventListener('click', ()=>alert('Carica documenti cane (vaccini, microchip, pedigree)…'));
+document.getElementById('btnUploadOwnerDocs')?.addEventListener('click', ()=>alert('Carica documenti personali (proprietario)…'));
+
+// -------------------- NAVIGAZIONE --------------------
+function showPage(pageId, show){
+  const page = document.getElementById(pageId);
+  page.classList.toggle('hidden', !show);
+  page.setAttribute('aria-hidden', show?'false':'true');
+}
+function goBackSmart(){
+  // Se profilo aperto → chiudilo, altrimenti resta nell’app
+  const profile = document.getElementById('profilePage');
+  if (!profile.classList.contains('hidden')){ showPage('profilePage', false); return; }
+  // Torna a Home solo se l’utente lo vuole
+  document.getElementById('appScreen').classList.add('hidden');
+  document.getElementById('homeScreen').classList.remove('hidden');
+}
+
+// -------------------- FILTRI --------------------
+function applyFilters(){
+  const breed = document.getElementById('breed').value.trim().toLowerCase();
+  const sex   = document.getElementById('sex').value;
+  const badge = document.getElementById('badge').value;
+
+  let list = state.friends.filter(f=>{
+    if (breed && f.breed.toLowerCase().indexOf(breed)!==0) return false;
+    if (sex && f.sex!==sex) return false;
+    if (badge==='yes' && !f.badge) return false;
+    if (badge==='no'  &&  f.badge) return false;
+    return true;
+  });
+  renderNearby(list);
+}
+
+// -------------------- GEO / MAPS --------------------
+function openMapsQuery(q){
+  // usa la lingua/geo del dispositivo
+  const url = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+  window.open(url, '_blank', 'noopener');
+}
+function openSheltersMaps(){
+  openMapsQuery('canili vicino a me');
+}
+
+// -------------------- TOAST / REWARD (mock) --------------------
+function toast(msg){
+  let box = document.querySelector('.toast');
+  if (!box){
+    box = document.createElement('div');
+    box.className='toast';
+    box.innerHTML = `<div class="toast-box" id="toastBox"></div>`;
+    document.body.appendChild(box);
   }
-});
-
-/* -------------------------
-   Ensure topbar items visible, add small keyboard-accessible behavior
-   ------------------------- */
-$$('.tab').forEach(t => {
-  t.addEventListener('keydown', (e)=> {
-    if (e.key === 'Enter' || e.key === ' ') t.click();
+  box.querySelector('#toastBox').textContent = msg;
+  box.classList.add('show');
+  setTimeout(()=>box.classList.remove('show'), 1600);
+}
+function reward(title, msg){
+  const wrap = document.createElement('div');
+  wrap.className='reward-box';
+  wrap.innerHTML = `
+   <div class="reward-inner">
+     <div class="rw-title">${title}</div>
+     <div class="rw-msg">${msg}</div>
+     <button class="btn primary" id="rwOk">Guarda video</button>
+   </div>`;
+  document.body.appendChild(wrap);
+  wrap.querySelector('#rwOk').addEventListener('click', ()=>{
+    document.body.removeChild(wrap);
+    toast('Video completato ✔︎');
   });
-});
-
-/* -------------------------
-   App init: ensure home visible
-   ------------------------- */
-showHome();
-
-/* Expose small helper to console for testing */
-window._plutoo = {
-  state,
-  showHome, showApp, activateTab, openCaniliNearby, openMapsQuery
-};
+}
