@@ -115,48 +115,64 @@ a{color:inherit;text-decoration:none}
    APP / NAVBAR
    ===================================================== */
 .app{min-height:100vh;display:flex;flex-direction:column}
+
+/* Barra fissa in alto */
 .topbar{
-  position:sticky;top:0;z-index:20;
+  position:sticky;top:0;z-index:50;
   display:flex;align-items:center;
-  background:rgba(12,12,18,.86);
+  padding:.5rem .75rem;
+  background:rgba(13,13,22,.88);
   backdrop-filter:saturate(120%) blur(6px);
   border-bottom:1px solid var(--line);
-  padding:.45rem .8rem;
 }
-.topbar .left,.topbar .right{display:flex;align-items:center;flex:0 0 auto;z-index:2}
+
+/* Colonne ai lati NON devono comprimere le tab */
+.topbar .left,
+.topbar .right{
+  display:flex;align-items:center;
+  gap:.5rem;flex:0 0 auto;
+}
+
+/* Contenitore tab: prende lo spazio centrale, scorre SOLO in orizzontale */
 .tabs{
-  display:flex;gap:.45rem;align-items:center;justify-content:center;
-  flex:1 1 auto;max-width:100%;flex-wrap:nowrap;overflow:hidden;white-space:nowrap;padding:.25rem 0
+  display:flex;align-items:center;justify-content:flex-start;
+  flex:1 1 auto;gap:.5rem;padding:.25rem .25rem;
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
 }
 .tabs::-webkit-scrollbar{display:none}
+
+/* Singola tab: non si stringe, niente a capo */
 .tab{
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(124,104,255,.28);
-  color:var(--text);
-  font-size:clamp(.8rem,2.6vw,.94rem);
-  padding:.4rem .7rem;border-radius:14px;
-  box-shadow:0 0 1px rgba(124,104,255,.08), inset 0 -1px 0 rgba(255,255,255,.04);
-  white-space:nowrap;transition:filter .15s ease, box-shadow .2s ease
+  flex:0 0 auto;white-space:nowrap;
+  padding:.45rem .7rem;border-radius:14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(133,120,255,.28);
+  color:var(--text);font-weight:600;
 }
+.tab:focus{outline:2px solid rgba(133,120,255,.5);outline-offset:2px}
 .tab.active,.tab:hover{
   color:var(--violet-2);
-  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-  border-color:rgba(124,104,255,.55);
-  box-shadow:0 0 16px rgba(124,104,255,.35), inset 0 0 0 1px rgba(124,104,255,.22);
+  background:rgba(133,120,255,.18);
+  border-color:rgba(133,120,255,.5);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
 }
 
 /* Dropdown Luoghi PET */
 .tab.dropdown{position:relative}
 .dropdown-menu{
-  position:absolute;top:110%;right:0;left:auto;
+  position:absolute;top:calc(100% + 8px);left:0;right:auto;
+  min-width:220px;display:none;padding:.45rem;
   background:rgba(18,18,38,.98);
-  border:1px solid rgba(124,104,255,.22);
-  border-radius:14px;padding:.45rem;display:none
+  border:1px solid var(--line);border-radius:14px;
 }
 .tab.dropdown[aria-expanded="true"] .dropdown-menu{display:block}
-.menu-item{width:100%;text-align:left;padding:.55rem .6rem;border-radius:10px;background:transparent;border:0;color:var(--text)}
-.menu-item:hover{background:rgba(255,255,255,.05)}
-
+.menu-item{
+  width:100%;text-align:left;padding:.5rem .6rem;border-radius:10px;
+  background:transparent;border:0;color:var(--text)
+}
+.menu-item:hover{background:rgba(255,255,255,.06)}
 /* =====================================================
    CONTENT / VIEWS
    ===================================================== */
