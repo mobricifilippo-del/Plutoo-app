@@ -1,284 +1,328 @@
 /* =====================================================
-   PLUTOO — Interazioni base (no backend)
+   PLUTOO APP – VIOLET EDITION
+   Tutta la logica dell'app in modo modulare.
    ===================================================== */
 
-// ---------- Helpers
+/* ----------------------- Utils ----------------------- */
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const on = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
+const sleep = (ms) => new Promise(r=>setTimeout(r, ms));
+const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+const html = String.raw; // per template literal leggibile
 
-const state = {
-  plus:false,
-  activeView:'nearby',
-  data: {
-    nearby: [], // riempito sotto (mock)
-    love:   [],
-    play:   []
-  }
+/* Debounce per input */
+function debounce(fn, wait=250){
+  let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); };
+}
+
+/* ----------------------- Stato ----------------------- */
+const State = {
+  currentTab: 'nearby',       // nearby | love | play
+  lang: 'it',                 // it | en
+  plus: false,                // gating filtri avanzati
+  dogs: [],                   // dataset mock
+  filters: { breed:'', sex:'', badge:'' },
+  geo: null,                  // {lat, lng}
 };
 
-// ---------- HOME
-const home = {
-  enterBtn: $('#btnEnter'),
-  heroLogo: $('#heroLogo'),
-  homeScreen: $('#homeScreen'),
-  appScreen: $('#appScreen'),
-  sponsorLinks: ['#sponsorLinkHome','#sponsorLinkApp'],
+/* ----------------------- Dataset mock ----------------------- */
+const DOGS = [
+  {id:1, name:'Luna',  breed:'Labrador', sex:'Femmina', km:1.2, img:'dog1.jpg', badge:true},
+  {id:2, name:'Rocky', breed:'Beagle',   sex:'Maschio', km:2.5, img:'dog2.jpg', badge:false},
+  {id:3, name:'Maya',  breed:'Husky',    sex:'Femmina', km:3.1, img:'dog3.jpg', badge:true},
+  {id:4, name:'Otto',  breed:'Maltese',  sex:'Maschio', km:0.9, img:'dog4.jpg', badge:false},
+  {id:5, name:'Kira',  breed:'Shiba Inu',sex:'Femmina', km:4.8, img:'dog5.jpg', badge:true},
+  {id:6, name:'Bobby', breed:'Cocker',   sex:'Maschio', km:1.9, img:'dog6.jpg', badge:false},
+];
 
-  init(){
-    // Animazione logo su "Entra"
-    this.enterBtn.addEventListener('click', ()=>{
-      this.heroLogo.classList.remove('gold-glow');
-      void this.heroLogo.offsetWidth; // restart animation
-      this.heroLogo.classList.add('gold-glow');
-      setTimeout(()=>this.showApp(), 900); // breve attesa, animazione continua
-    });
-    $('#btnEnterLink').addEventListener('click', (e)=>{ e.preventDefault(); this.showApp(); });
+/* Razze per suggerimenti */
+const BREEDS = [
+  "Akita","Barboncino","Beagle","Border Collie","Bulldog",
+  "Chihuahua","Cocker","Dalmata","Dobermann","Husky",
+  "Labrador","Maltese","Pastore Tedesco","Shiba Inu","Shih Tzu"
+];
 
-    // Sponsor cliccabile ovunque
-    this.sponsorLinks.forEach(sel=>{
-      const a = $(sel);
-      if(a) a.addEventListener('click', ()=>{/* link già nell'anchor */});
-    });
+/* ----------------------- Elementi DOM ----------------------- */
+// schermate principali
+const homeScreen = $('#homeScreen');
+const appScreen  = $('#appScreen');
 
-    // Canili SOLO in Home → Google Maps
-    $('#ethicsButtonHome')?.addEventListener('click', ()=>{
-      const url = 'https://www.google.com/maps/search/?api=1&query=canili+vicino+a+me';
-      window.open(url,'_blank');
-    });
-  },
+// home
+const heroLogo = $('#heroLogo');
+const btnEnter = $('#btnEnter');
+const btnEnterLink = $('#btnEnterLink');
+const ethicsButtonHome = $('#ethicsButtonHome');
+const sponsorLinkHome  = $('#sponsorLinkHome');
 
-  showApp(){
-    this.homeScreen.classList.add('hidden');
-    this.appScreen.classList.remove('hidden');
-    this.appScreen.setAttribute('aria-hidden','false');
-    app.initOnce();
-  }
-};
+// topbar app
+const tabNearby = $('#tabNearby');
+const tabLove   = $('#tabLove');
+const tabPlay   = $('#tabPlay');
+const btnSearch = $('#btnSearch');
+const tabPlus   = $('#tabPlus');
 
-// ---------- APP (navbar, viste, cards)
-const app = {
-  initialized:false,
+// luoghi PET
+const luoghiWrap = $('#luoghiTabWrap');
+const luoghiBtn  = $('#tabLuoghi');
+const luoghiMenu = $('#luoghiMenu');
 
-  initOnce(){
-    if (this.initialized) return;
-    this.initialized = true;
+// viste
+const viewNearby = $('#viewNearby');
+const viewLove   = $('#viewLove');
+const viewPlay   = $('#viewPlay');
 
-    // Tabs
-    $('#tabNearby').addEventListener('click', ()=>this.show('nearby'));
-    $('#tabLove').addEventListener('click',   ()=>this.show('love'));
-    $('#tabPlay').addEventListener('click',   ()=>this.show('play'));
+const nearbyGrid = $('#nearbyGrid');
+const loveDeck   = $('#loveDeck');
+const playDeck   = $('#playDeck');
 
-    // Ricerca overlay
-    $('#btnSearch').addEventListener('click', ()=>{
-      $('#panelSearch').setAttribute('aria-hidden','false');
-      $('#btnSearch').setAttribute('aria-expanded','true');
-    });
-    $('#btnCloseSearch').addEventListener('click', ()=>{
-      $('#panelSearch').setAttribute('aria-hidden','true');
-      $('#btnSearch').setAttribute('aria-expanded','false');
-    });
+// ricerca overlay
+const panelSearch   = $('#panelSearch');
+const btnCloseSearch= $('#btnCloseSearch');
+const breedInput    = $('#breed');
+const suggestionsEl = $('#suggestions');
+const sexSelect     = $('#sex');
+const badgeSelect   = $('#badge');
+const btnApplyFilters = $('#btnApplyFilters');
+const btnResetFilters  = $('#btnResetFilters');
 
-    // Luoghi PET dropdown — apri/chiudi + chiusura clic esterno
-const wrapLuoghi = document.querySelector('#luoghiTabWrap');
-const btnLuoghi  = document.querySelector('#tabLuoghi');
+// sponsor in app
+const sponsorLinkApp = $('#sponsorLinkApp');
 
-btnLuoghi.addEventListener('click', (e)=>{
-  e.stopPropagation();
-  const isOpen = wrapLuoghi.getAttribute('aria-expanded') === 'true';
-  wrapLuoghi.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+/* ---------------------- Router / UI ---------------------- */
+function showHome(){
+  appScreen.classList.add('hidden');
+  homeScreen.classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function showApp(){
+  homeScreen.classList.add('hidden');
+  appScreen.classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function setActiveTab(name){
+  State.currentTab = name;
+
+  // attiva/disattiva bottoni
+  [tabNearby,tabLove,tabPlay].forEach(b=>b && b.classList.remove('active'));
+  if(name==='nearby') tabNearby?.classList.add('active');
+  if(name==='love')   tabLove?.classList.add('active');
+  if(name==='play')   tabPlay?.classList.add('active');
+
+  // mostra vista
+  [viewNearby,viewLove,viewPlay].forEach(v=>v && v.classList.remove('active'));
+  if(name==='nearby') viewNearby?.classList.add('active');
+  if(name==='love')   viewLove?.classList.add('active');
+  if(name==='play')   viewPlay?.classList.add('active');
+
+  // render dedicato
+  if(name==='nearby') renderNearby();
+  if(name==='love')   renderDeck(loveDeck);
+  if(name==='play')   renderDeck(playDeck);
+}
+
+/* ------------------ HOME: interazioni ------------------ */
+on(btnEnter,'click', async ()=>{
+  heroLogo.classList.add('gold-glow'); // (viola adesso)
+  await sleep(950); // animazione un po' più lunga
+  showApp();
+  setActiveTab('nearby');
+});
+on(btnEnterLink,'click', e=>{ e.preventDefault(); btnEnter.click(); });
+
+on(ethicsButtonHome,'click', ()=>{
+  const q = encodeURIComponent('Canili vicino a me');
+  window.open(`https://www.google.com/maps/search/${q}`,'_blank');
+});
+on(sponsorLinkHome,'click', ()=>{/* solo tracking se serve */});
+
+/* ------------------ TOPBAR: tabs & plus ------------------ */
+on(tabNearby, 'click', ()=>setActiveTab('nearby'));
+on(tabLove,   'click', ()=>setActiveTab('love'));
+on(tabPlay,   'click', ()=>setActiveTab('play'));
+
+on(tabPlus, 'click', ()=>{
+  State.plus = !State.plus;
+  alert(State.plus ? 'Plutoo Plus attivato (demo).' : 'Plutoo Plus disattivato (demo).');
 });
 
-// chiudi se clic fuori
+/* ------------------ Dropdown Luoghi PET ------------------ */
+on(luoghiBtn,'click', ()=>{
+  const exp = luoghiWrap.getAttribute('aria-expanded')==='true';
+  luoghiWrap.setAttribute('aria-expanded', String(!exp));
+});
 document.addEventListener('click', (e)=>{
-  if (!wrapLuoghi.contains(e.target)) {
-    wrapLuoghi.setAttribute('aria-expanded','false');
-  }
+  if(!luoghiWrap) return;
+  if(!luoghiWrap.contains(e.target)) luoghiWrap.setAttribute('aria-expanded','false');
 });
-      
-      $$('#luoghiMenu .menu-item').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const cat = btn.dataset.cat;
-        const qmap = {
-          vets:'veterinari',
-          shops:'negozi per animali',
-          groomers:'toelettatura',
-          parks:'parchi cani',
-          trainers:'addestratori cani'
-        }[cat] || 'animali';
-        // (No ad video qui) → vai subito su Maps
-        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qmap+' vicino a me')}`,'_blank');
-      });
-    });
+on(luoghiMenu, 'click', (e)=>{
+  const item = e.target.closest('.menu-item'); if(!item) return;
+  const q = encodeURIComponent(item.dataset.map || 'Servizi per animali vicino a me');
+  window.open(`https://www.google.com/maps/search/${q}`, '_blank');
+  luoghiWrap.setAttribute('aria-expanded','false');
+});
 
-    // Bottone back: torna alla vista precedente (non alla Home)
-    $('#btnBack').addEventListener('click', ()=>{
-      // semplice: torna a Nearby
-      this.show('nearby');
-      window.scrollTo({top:0,behavior:'instant'});
-    });
+/* ------------------ Ricerca personalizzata ------------------ */
+on(btnSearch,'click', ()=>{
+  panelSearch.setAttribute('aria-hidden','false');
+  btnSearch.setAttribute('aria-expanded','true');
+});
+on(btnCloseSearch,'click', ()=>{
+  panelSearch.setAttribute('aria-hidden','true');
+  btnSearch.setAttribute('aria-expanded','false');
+});
 
-    // Profilo: back
-    $('#btnBackProfile').addEventListener('click', ()=>{
-      this.hideProfile();
-    });
+on(btnApplyFilters,'click', ()=>{
+  State.filters = {
+    breed:  (breedInput.value||'').trim(),
+    sex:    sexSelect.value||'',
+    badge:  badgeSelect.value||''
+  };
+  // i filtri avanzati sarebbero dietro Plus (mock)
+  renderNearby();
+  panelSearch.setAttribute('aria-hidden','true');
+  btnSearch.setAttribute('aria-expanded','false');
+});
+on(btnResetFilters,'click', ()=>{
+  breedInput.value=''; sexSelect.value=''; badgeSelect.value='';
+  State.filters = {breed:'',sex:'',badge:''};
+  renderNearby();
+});
 
-    // Dati mock (immagini incluse)
-    this.seed();
-    this.renderNearby();
-    this.prepareDeck('love','#loveDeck');
-    this.prepareDeck('play','#playDeck');
+/* Suggerimenti razze (startsWith + ord. alfabetico) */
+on(breedInput,'input', debounce(()=>{
+  const v = (breedInput.value||'').trim().toLowerCase();
+  const items = v ? BREEDS.filter(b => b.toLowerCase().startsWith(v)).sort() : [];
+  suggestionsEl.innerHTML = items.map(b=>`<div class="item" role="option">${b}</div>`).join('');
+  suggestionsEl.classList.toggle('show', items.length>0);
+}, 120));
+on(suggestionsEl,'click', e=>{
+  const it = e.target.closest('.item'); if(!it) return;
+  breedInput.value = it.textContent; suggestionsEl.classList.remove('show');
+});
 
-    // Ricerca suggerimenti razze
-    this.setupBreedSuggestions();
-  },
+/* ------------------ Render: Vicino a te ------------------ */
+function dogCard(d){
+  return html`
+  <article class="card" data-id="${d.id}" tabindex="0">
+    <img class="card-img" src="${d.img}" alt="${d.name}" loading="lazy"/>
+    <div class="card-info">
+      <h3>${d.name}</h3>
+      <p class="meta">${d.breed} · ${d.sex} · ${d.km}km</p>
+    </div>
+    <div class="card-actions">
+      <div class="round" data-act="smile" title="Saluta">😊</div>
+      <div class="round" data-act="like"  title="Mi piace">💜</div>
+    </div>
+  </article>`;
+}
 
-  setActiveTab(id){
-    $$('.tabs .tab').forEach(b=>b.classList.remove('active'));
-    if(id==='nearby') $('#tabNearby').classList.add('active');
-    if(id==='love')   $('#tabLove').classList.add('active');
-    if(id==='play')   $('#tabPlay').classList.add('active');
-  },
+function applyFilters(list){
+  const f = State.filters;
+  return list.filter(d=>{
+    if(f.breed && !d.breed.toLowerCase().startsWith(f.breed.toLowerCase())) return false;
+    if(f.sex && d.sex.toLowerCase() !== (f.sex==='male'?'maschio':'femmina')) return false;
+    if(f.badge){
+      const need = f.badge==='yes';
+      if(Boolean(d.badge)!==need) return false;
+    }
+    return true;
+  });
+}
 
-  show(view){
-    state.activeView = view;
-    $$('.view').forEach(v=>v.classList.remove('active'));
-    if(view==='nearby') $('#viewNearby').classList.add('active');
-    if(view==='love')   $('#viewLove').classList.add('active');
-    if(view==='play')   $('#viewPlay').classList.add('active');
-    this.setActiveTab(view);
-    window.scrollTo({top:0,behavior:'instant'});
-  },
+function renderNearby(){
+  const data = applyFilters(DOGS);
+  nearbyGrid.innerHTML = data.map(dogCard).join('');
+}
 
-  seed(){
-    const dogs = [
-      {id:1,name:'Luna',  sex:'Femmina',breed:'Labrador',dist:'1.2km',img:'dog1.jpg',bio:'Amante dei parchi'},
-      {id:2,name:'Rocky', sex:'Maschio', breed:'Beagle',  dist:'2.5km',img:'dog2.jpg',bio:'Corre come il vento'},
-      {id:3,name:'Maya',  sex:'Femmina',breed:'Husky',    dist:'3.1km',img:'dog3.jpg',bio:'Dolcissima'},
-      {id:4,name:'Otto',  sex:'Maschio', breed:'Maltese', dist:'0.9km',img:'dog4.jpg',bio:'Coccolone'}
-    ];
-    state.data.nearby = dogs;
-    state.data.love   = dogs.slice();
-    state.data.play   = dogs.slice().reverse();
-  },
+/* Click card → profilo (mock, pagina dedicata verrà dopo) */
+on(nearbyGrid, 'click', e=>{
+  const card = e.target.closest('.card'); if(!card) return;
+  const d = DOGS.find(x=>x.id == card.dataset.id);
+  if(!d) return;
+  alert(`Apri profilo: ${d.name}\n(la pagina profilo dedicata verrà collegata qui)`);
+});
 
-  // ---- Nearby: griglia 2 colonne, card cliccabile → profilo
-  renderNearby(){
-    const grid = $('#nearbyGrid');
-    grid.innerHTML = '';
-    state.data.nearby.forEach(d=>{
-      const card = document.createElement('article');
-      card.className='card';
-      card.innerHTML = `
-        <img class="card-img" src="${d.img}" alt="${d.name}" loading="lazy">
-        <div class="card-info">
-          <h3>${d.name}</h3>
-          <p class="meta">${d.breed} · ${d.sex} · ${d.dist}</p>
-        </div>
-        <div class="card-actions" aria-hidden="true">
-          <button class="btn no"  aria-label="Salta">🙂</button>
-          <button class="btn yes" aria-label="Mi piace">💜</button>
-        </div>
-      `;
-      card.addEventListener('click', (e)=>{
-        // se clic sulle azioni, non aprire profilo
-        if (e.target.closest('.btn')) return;
-        this.openProfile(d);
-      });
-      grid.appendChild(card);
-    });
-  },
+/* ------------------ Render: Deck (Love/Play) ------------------ */
+function renderDeck(container){
+  const d = DOGS[Math.floor(Math.random()*DOGS.length)];
+  container.innerHTML = dogCard(d).replace('card"', 'card love-card"');
+  enableSwipe(container);
+}
 
-  // ---- Deck (Amore/Giochiamo) centrato e pagina ferma
-  prepareDeck(key, sel){
-    const deck = $(sel);
-    deck.innerHTML = '';
-    const list = state.data[key].slice().reverse(); // top è ultimo
-    list.forEach(d=>{
-      const c = document.createElement('article');
-      c.className='card';
-      c.style.transform='translateY(-50%)';
-      c.innerHTML = `
-        <img class="card-img" src="${d.img}" alt="${d.name}">
-        <div class="card-info">
-          <h3>${d.name}</h3>
-          <p class="meta">${d.breed} · ${d.sex} · ${d.dist}</p>
-        </div>
-        <div class="card-actions">
-          <button class="btn no">🙂</button>
-          <button class="btn yes">💜</button>
-        </div>
-      `;
-      // swipe controllato SOLO sulla card (no scroll pagina)
-      let startX=0, dragging=false;
-      const onStart = (x)=>{ startX=x; dragging=true; document.body.classList.add('noscroll'); };
-      const onMove  = (x)=>{ if(!dragging) return; const dx=x-startX; c.style.transform=`translate(${dx}px, -50%) rotate(${dx/18}deg)`; };
-      const onEnd   = (x)=>{ if(!dragging) return; dragging=false; document.body.classList.remove('noscroll');
-        const dx=x-startX;
-        if (Math.abs(dx)>110){
-          c.classList.add(dx>0?'swipe-out-right':'swipe-out-left');
-          setTimeout(()=>c.remove(), 420);
-        }else{
-          c.style.transform='translateY(-50%)';
-        }
-      };
-      c.addEventListener('touchstart',e=>onStart(e.touches[0].clientX),{passive:true});
-      c.addEventListener('touchmove', e=>onMove(e.touches[0].clientX),{passive:true});
-      c.addEventListener('touchend',  e=>onEnd(e.changedTouches[0].clientX));
-      c.addEventListener('mousedown', e=>onStart(e.clientX));
-      window.addEventListener('mousemove', e=>onMove(e.clientX));
-      window.addEventListener('mouseup',  e=>onEnd(e.clientX));
+/* Swipe che muove SOLO la card (pagina ferma) */
+function enableSwipe(container){
+  const card = container.querySelector('.love-card');
+  if(!card) return;
 
-      // click immagine → profilo
-      c.querySelector('.card-img').addEventListener('click', ()=>this.openProfile(d));
-      deck.appendChild(c);
-    });
-  },
+  let startX=0, dx=0, dragging=false;
 
-  // ---- Profilo
-  openProfile(d){
-    $('#profilePhoto').src = d.img;
-    $('#profileName').textContent = d.name;
-    $('#profileMeta').textContent = `${d.breed} · ${d.sex} · 3 anni`;
-    $('#profileBio').textContent  = d.bio || '—';
-    const b = $('#profileBadges');
-    b.innerHTML = `<span class="badge">✔︎ Verificato</span>`;
-
-    // mostra pagina
-    $('#profilePage').classList.remove('hidden');
-    $('#profilePage').setAttribute('aria-hidden','false');
-    // nascondi main views
-    $('.content').classList.add('hidden');
-    window.scrollTo({top:0,behavior:'instant'});
-  },
-
-  hideProfile(){
-    $('#profilePage').classList.add('hidden');
-    $('#profilePage').setAttribute('aria-hidden','true');
-    $('.content').classList.remove('hidden');
-  },
-
-  // ---- Ricerca: suggerimenti per lettera iniziale
-  setupBreedSuggestions(){
-    const input = $('#breed');
-    const box   = $('#suggestions');
-    const breeds = ['Akita','Beagle','Bichon Frisé','Border Collie','Bulldog','Cane Corso','Dobermann','Golden Retriever','Husky','Jack Russell','Labrador','Maltese','Pastore Tedesco','Pinscher','Poodle','Rottweiler','Shiba Inu','Volpino'];
-
-    const render = (items)=>{
-      box.innerHTML = items.map(r=>`<div class="item" role="option">${r}</div>`).join('');
-      box.classList.toggle('show', items.length>0);
-      $$('.item',box).forEach(it=>it.addEventListener('click',()=>{input.value=it.textContent; box.classList.remove('show');}));
-    };
-
-    input.addEventListener('input', ()=>{
-      const t = input.value.trim().toLowerCase();
-      if(!t){ box.classList.remove('show'); box.innerHTML=''; return; }
-      const first = t[0];
-      const out = breeds.filter(b=>b.toLowerCase().startsWith(first));
-      render(out);
-    });
-    document.addEventListener('click', (e)=>{ if(!box.contains(e.target) && e.target!==input) box.classList.remove('show'); });
+  function onStart(ev){
+    dragging = true;
+    const t = ev.touches? ev.touches[0] : ev;
+    startX = t.clientX; dx=0;
+    // impedisce lo scroll pagina durante il drag
+    document.body.style.overflow='hidden';
+    card.style.transition='none';
   }
-};
+  function onMove(ev){
+    if(!dragging) return;
+    const t = ev.touches? ev.touches[0] : ev;
+    dx = t.clientX - startX;
+    if(ev.cancelable) ev.preventDefault();
+    card.style.transform = `translateX(${dx}px) rotate(${dx/25}deg)`;
+  }
+  function onEnd(){
+    if(!dragging) return;
+    dragging=false;
+    document.body.style.overflow='';
+    const TH = 120;
+    if(Math.abs(dx)>TH){
+      card.style.transition='transform .25s ease, opacity .25s ease';
+      card.style.transform = `translateX(${dx>0?600:-600}px) rotate(${dx>0?14:-14}deg)`;
+      card.style.opacity='0';
+      setTimeout(()=>renderDeck(container), 260);
+    }else{
+      card.style.transition='transform .2s ease';
+      card.style.transform='translateX(0) rotate(0)';
+    }
+  }
 
-// ---------- Avvio
-home.init();
+  on(card,'touchstart',onStart,{passive:true});
+  on(card,'touchmove', onMove, {passive:false});
+  on(card,'touchend',  onEnd);
+  on(card,'mousedown',onStart);
+  on(window,'mousemove',onMove);
+  on(window,'mouseup', onEnd);
+}
+
+/* ------------------ Geolocalizzazione (base) ------------------ */
+async function initGeo(){
+  if(!('geolocation' in navigator)) return;
+  navigator.geolocation.getCurrentPosition(
+    pos=>{ State.geo={lat:pos.coords.latitude,lng:pos.coords.longitude}; },
+    ()=>{}, {enableHighAccuracy:true, timeout:5000, maximumAge:60000}
+  );
+}
+
+/* ------------------ Sponsor link (app) ------------------ */
+on(sponsorLinkApp,'click', ()=>{/* tracking opzionale */});
+
+/* ------------------ Bootstrap ------------------ */
+function boot(){
+  // dataset
+  State.dogs = DOGS.slice();
+  // prima vista
+  renderNearby();
+  renderDeck(loveDeck);
+  renderDeck(playDeck);
+  initGeo();
+}
+boot();
+
+/* ------------------ Service Worker ------------------ */
+if('serviceWorker' in navigator){
+  addEventListener('load', ()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
+}
