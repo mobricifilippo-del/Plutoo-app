@@ -1,341 +1,343 @@
-/* =====================================================
-   PLUTOO – VIOLET EDITION JS
-   ===================================================== */
+/* =========================================================
+   PLUTOO – logica client (mock dati + navigazione)
+   ========================================================= */
 
 const state = {
   entered: false,
-  plus: false,                // mock abbonamento
-  view: 'nearby',
-  friends: [],                // dataset mock
-  swipes: 0,
+  plus: false,
+  deckBusy: false,
   geo: null,
-  selfieUnlocks: {},          // {friendId: timestamp}
+  lang: localStorage.getItem("lang") || "it",
 };
 
-// -------------------- HOME ↔ APP --------------------
-initHome();
+const qs = (s, root=document) => root.querySelector(s);
+const qsa = (s, root=document) => Array.from(root.querySelectorAll(s));
+const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
+const $home = qs("#homeScreen");
+const $app  = qs("#appScreen");
 
-function initHome(){
-  // Logo pulse più lungo
-  const heroLogo = document.getElementById('heroLogo');
-  const btnEnter = document.getElementById('btnEnter');
+/* ---------------------------------------------------------
+   MOCK DATI (immagini vere per evitare carte vuote)
+--------------------------------------------------------- */
+const dogs = [
+  { id:1, name:"Luna",   sex:"female", breed:"Labrador", age:"2", km:1.2, bio:"Amante dei parchi", img:"https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1200&auto=format&fit=crop", gold:true },
+  { id:2, name:"Rocky",  sex:"male",   breed:"Beagle",   age:"3", km:2.5, bio:"Corre come il vento", img:"https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1200&auto=format&fit=crop", gold:false },
+  { id:3, name:"Maya",   sex:"female", breed:"Husky",    age:"1", km:3.1, bio:"Dolcissima",        img:"https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1200&auto=format&fit=crop", gold:true },
+  { id:4, name:"Otto",   sex:"male",   breed:"Maltese",  age:"4", km:0.9, bio:"Coccolone",         img:"https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1200&auto=format&fit=crop", gold:false },
+];
 
-  btnEnter?.addEventListener('click', ()=>{
-    heroLogo.classList.remove('violet-glow');
-    // forza reflow per riavviare animazione
-    void heroLogo.offsetWidth;
-    heroLogo.classList.add('violet-glow');
+/* ---------------------------------------------------------
+   HOME → APP
+--------------------------------------------------------- */
+on(qs("#btnEnter"), "click", () => {
+  // animazione più lunga sul logo
+  qs("#heroLogo").classList.remove("gold-glow");
+  void qs("#heroLogo").offsetWidth; // reflow
+  qs("#heroLogo").classList.add("gold-glow");
 
-    setTimeout(()=>{
-      state.entered = true;
-      localStorage.setItem('entered', '1');
-      document.getElementById('homeScreen').classList.add('hidden');
-      const app = document.getElementById('appScreen');
-      app.classList.remove('hidden');
-      setActiveView('nearby');
-      ensureDataset();
-    }, 1600); // più lungo
-  });
+  setTimeout(()=> {
+    state.entered = true;
+    localStorage.setItem("entered","1");
+    showApp();
+  }, 900); // lascia scorrere l'animazione
+});
 
-  document.getElementById('btnAccedi')?.addEventListener('click', e=>{
-    e.preventDefault(); alert('Login coming soon.');
-  });
-
-  // Sponsor cliccabile
-  document.getElementById('sponsorLinkHome')?.addEventListener('click', ()=>{});
-  // Canili in HOME: sempre libero
-  document.getElementById('ethicsButtonHome')?.addEventListener('click', openSheltersMaps);
-
-  // Lingue mock
-  document.getElementById('langIT')?.addEventListener('click', ()=>toast('Lingua: Italiano'));
-  document.getElementById('langEN')?.addEventListener('click', ()=>toast('Language: English'));
+function showApp(){
+  $home.classList.add("hidden");
+  $app.classList.remove("hidden");
+  $app.setAttribute("aria-hidden","false");
+  initAppOnce();
 }
 
-// -------------------- TOPBAR / VIEWS --------------------
-const tabs = {
-  nearby: document.getElementById('tabNearby'),
-  love:   document.getElementById('tabLove'),
-  play:   document.getElementById('tabPlay'),
-};
+/* ---------------------------------------------------------
+   TOOLS
+--------------------------------------------------------- */
+function kmLabel(k){ return `${k.toFixed(1)}km`; }
+function sexLabel(s){ return s==="male"?"Maschio":"Femmina"; }
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
 
-tabs.nearby?.addEventListener('click', ()=>setActiveView('nearby'));
-tabs.love  ?.addEventListener('click', ()=>setActiveView('love'));
-tabs.play  ?.addEventListener('click', ()=>setActiveView('play'));
-
-document.getElementById('btnBack')?.addEventListener('click', goBackSmart);
-document.getElementById('btnBackProfile')?.addEventListener('click', ()=>{
-  // Torna alla vista precedente, non alla home
-  showPage('profilePage', false);
-});
-
-function setActiveView(view){
-  state.view = view;
-  for (const id of ['viewNearby','viewLove','viewPlay']){
-    document.getElementById(id).classList.remove('active');
-  }
-  if (view==='nearby') document.getElementById('viewNearby').classList.add('active');
-  if (view==='love')   document.getElementById('viewLove').classList.add('active');
-  if (view==='play')   document.getElementById('viewPlay').classList.add('active');
-
-  for (const key in tabs){ tabs[key].classList.remove('active'); }
-  (view==='nearby'?tabs.nearby:view==='love'?tabs.love:tabs.play).classList.add('active');
-
-  if (view==='nearby') renderNearby();
-  if (view==='love')   renderDeck('loveDeck');
-  if (view==='play')   renderDeck('playDeck');
+/* ---------------------------------------------------------
+   NAVBAR / TABS / DROPDOWN
+--------------------------------------------------------- */
+function setActiveView(viewId){
+  qsa(".view").forEach(v=>v.classList.remove("active"));
+  qs(`#${viewId}`).classList.add("active");
+  qsa(".tab").forEach(t=>t.classList.remove("active"));
+  const map = {viewNearby:"#tabNearby", viewLove:"#tabLove", viewPlay:"#tabPlay"};
+  const btn = qs(map[viewId]);
+  btn && btn.classList.add("active");
+  window.scrollTo({top:0,behavior:"instant"});
 }
 
-// -------------------- LUOGHI PET (Maps) --------------------
-document.getElementById('tabLuoghi')?.addEventListener('click', ()=>{
-  const wrap = document.getElementById('luoghiTabWrap');
-  const expanded = wrap.getAttribute('aria-expanded') === 'true';
-  wrap.setAttribute('aria-expanded', expanded ? 'false':'true');
+on(qs("#tabNearby"), "click", ()=> setActiveView("viewNearby"));
+on(qs("#tabLove"),   "click", ()=> setActiveView("viewLove"));
+on(qs("#tabPlay"),   "click", ()=> setActiveView("viewPlay"));
+
+const tabLuoghi = qs("#tabLuoghi");
+const luoghiMenu = qs("#luoghiMenu");
+on(tabLuoghi, "click", ()=>{
+  const open = tabLuoghi.getAttribute("aria-expanded")==="true";
+  tabLuoghi.setAttribute("aria-expanded", !open);
 });
-document.querySelectorAll('#luoghiMenu .menu-item').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const q = btn.dataset.cat;
-    openMapsQuery(q + ' vicino a me');
-    document.getElementById('luoghiTabWrap').setAttribute('aria-expanded','false');
+
+qsa("#luoghiMenu .menu-item").forEach(btn=>{
+  on(btn,"click",()=>{
+    // video reward (mock) poi Maps
+    tabLuoghi.setAttribute("aria-expanded","false");
+    toast("Apro i risultati vicini in Google Maps…");
+    const type = btn.dataset.cat;
+    const queryMap = {
+      vets: "veterinari",
+      shops: "negozi animali",
+      groomers: "toelettatura",
+      parks: "parco per cani",
+      trainers: "addestratori cinofili"
+    };
+    openMaps(queryMap[type]);
   });
 });
 
-// Sponsor in app sempre cliccabile
-document.getElementById('sponsorLinkApp')?.addEventListener('click', ()=>{});
-
-// -------------------- RICERCA PERSONALIZZATA --------------------
-const panelSearch = document.getElementById('panelSearch');
-document.getElementById('btnSearch')?.addEventListener('click', ()=>{
-  panelSearch.setAttribute('aria-hidden','false');
-  document.getElementById('btnSearch').classList.add('active');
+/* ---------------------------------------------------------
+   RICERCA PERSONALIZZATA
+--------------------------------------------------------- */
+const panelSearch = qs("#panelSearch");
+on(qs("#btnSearch"), "click", ()=>{
+  panelSearch.setAttribute("aria-hidden","false");
+  document.body.classList.add("noscroll");
 });
-document.getElementById('btnCloseSearch')?.addEventListener('click', ()=>{
-  panelSearch.setAttribute('aria-hidden','true');
-  document.getElementById('btnSearch').classList.remove('active');
+on(qs("#btnCloseSearch"), "click", ()=>{
+  panelSearch.setAttribute("aria-hidden","true");
+  document.body.classList.remove("noscroll");
 });
-document.getElementById('btnApplyFilters')?.addEventListener('click', ()=>{
-  applyFilters();
-  panelSearch.setAttribute('aria-hidden','true');
-  document.getElementById('btnSearch').classList.remove('active');
+on(qs("#btnResetFilters"), "click", ()=>{
+  qs("#breed").value=""; qs("#sex").value=""; qs("#badge").value=""; qs("#distance").value=20;
+  qs("#suggestions").classList.remove("show"); qs("#suggestions").innerHTML="";
 });
-document.getElementById('btnResetFilters')?.addEventListener('click', ()=>{
-  document.getElementById('breed').value='';
-  document.getElementById('sex').value='';
-  document.getElementById('badge').value='';
-  document.getElementById('distance').value=20;
+on(qs("#btnApplyFilters"), "click", ()=>{
+  panelSearch.setAttribute("aria-hidden","true");
+  document.body.classList.remove("noscroll");
+  toast("Filtri applicati (mock)");
 });
 
-// Autocomplete razze (dataset minimo mock)
-const breeds = ['Akita','Beagle','Border Collie','Bulldog','Dobermann','Husky','Labrador','Maltese','Pinscher','Poodle','Shiba Inu','Terrier','Volpino'];
-const breedInput = document.getElementById('breed');
-const suggestions = document.getElementById('suggestions');
-breedInput?.addEventListener('input', ()=>{
-  const q = breedInput.value.trim().toLowerCase();
-  if (!q){ suggestions.classList.remove('show'); suggestions.innerHTML=''; return; }
-  const items = breeds.filter(b=>b.toLowerCase().startsWith(q)).slice(0,10);
-  suggestions.innerHTML = items.map(b=>`<div class="item" role="option">${b}</div>`).join('');
-  suggestions.classList.add('show');
+// Typeahead razze (lista base)
+const BREEDS = ["Beagle","Border Collie","Bulldog","Chihuahua","Dobermann","Golden Retriever","Husky","Labrador","Maltese","Pitbull","Pastore Tedesco","Terranova","Volpino"];
+on(qs("#breed"), "input", (e)=>{
+  const v = e.target.value.trim().toLowerCase();
+  const s = qs("#suggestions");
+  if(!v){ s.classList.remove("show"); s.innerHTML=""; return; }
+  const out = BREEDS.filter(b=>b.toLowerCase().startsWith(v)).sort();
+  s.innerHTML = out.map(b=>`<div class="item" role="option">${b}</div>`).join("");
+  s.classList.toggle("show", out.length>0);
 });
-suggestions?.addEventListener('click', (e)=>{
-  const item = e.target.closest('.item');
-  if (!item) return;
-  breedInput.value = item.textContent;
-  suggestions.classList.remove('show');
+on(qs("#suggestions"), "click", (e)=>{
+  const it = e.target.closest(".item"); if(!it) return;
+  qs("#breed").value = it.textContent;
+  qs("#suggestions").classList.remove("show");
 });
 
-// -------------------- DATASET / RENDER --------------------
-function ensureDataset(){
-  if (state.friends.length) return;
-  state.friends = [
-    {id:1, name:'Luna', sex:'female', breed:'Labrador', km:1.2, img:'dogs/dog1.jpg', bio:'Amante dei parchi', badge:true, age:2},
-    {id:2, name:'Rocky', sex:'male',   breed:'Beagle',   km:2.5, img:'dogs/dog2.jpg', bio:'Corre come il vento', badge:false, age:3},
-    {id:3, name:'Maya',  sex:'female', breed:'Husky',    km:3.1, img:'dogs/dog3.jpg', bio:'Dolcissima', badge:true, age:1},
-    {id:4, name:'Otto',  sex:'male',   breed:'Maltese',  km:0.9, img:'dogs/dog4.jpg', bio:'Coccolone', badge:false, age:4},
-  ];
-  renderNearby();
+/* ---------------------------------------------------------
+   VICINO A TE (griglia stabile)
+--------------------------------------------------------- */
+function renderNearby(list=dogs){
+  const grid = qs("#nearbyGrid");
+  grid.innerHTML = "";
+  list.forEach(d=>{
+    const card = el("article","card");
+    const img = el("img","card-img"); img.src = d.img; img.alt = d.name;
+    const info = el("div","card-info");
+    info.innerHTML = `
+      <h3>${d.name}</h3>
+      <p class="meta">${sexLabel(d.sex)} · ${d.breed} · ${kmLabel(d.km)}</p>
+      <p class="bio">${d.bio}</p>
+      <div class="card-actions" role="group">
+        <button class="btn no" title="🥲">🥲</button>
+        <button class="btn yes" title="💜">💜</button>
+      </div>
+    `;
+    card.append(img, info);
+    img.addEventListener("click", ()=> openProfile(d));
+    grid.append(card);
+  });
 }
 
-function renderNearby(list = state.friends){
-  const grid = document.getElementById('nearbyGrid');
-  grid.innerHTML = list.map(f=>cardHTML(f)).join('');
-  grid.querySelectorAll('.card').forEach(card=>{
-    card.addEventListener('click', ()=>{
-      const id = Number(card.dataset.id);
-      openProfile(state.friends.find(x=>x.id===id));
+/* ---------------------------------------------------------
+   DECK SWIPE (centrale, pagina ferma)
+--------------------------------------------------------- */
+function renderDeck(rootId, list=dogs){
+  const root = qs(`#${rootId}`);
+  root.innerHTML = "";
+  const stack = [...list].reverse(); // ultima in DOM = sotto
+  stack.forEach(d=>{
+    const card = el("article","card");
+    card.style.transform="translate(-50%, -50%)";
+    const img = el("img","card-img"); img.src=d.img; img.alt=d.name;
+    const info = el("div","card-info");
+    info.innerHTML = `
+      <h3>${d.name}</h3>
+      <p class="meta">${sexLabel(d.sex)} · ${d.breed} · ${kmLabel(d.km)}</p>
+      <div class="card-actions">
+        <button class="btn no" title="🥲">🥲</button>
+        <button class="btn yes" title="💜">💜</button>
+      </div>
+    `;
+    card.append(img, info);
+    root.append(card);
+  });
+
+  // Gestione swipe su top card, senza muovere la pagina
+  let startX=0, dx=0, active=null, lastTime=0;
+
+  const bindTop = ()=>{
+    const cards = qsa(".love-deck .card", root.parentElement);
+    active = cards[cards.length-1]; // top
+    if(!active){ return; }
+    const move = (x)=>{
+      dx = x-startX;
+      active.style.transition="none";
+      active.style.transform = `translate(-50%, -50%) translateX(${dx}px) rotate(${dx/18}deg)`;
+    };
+    const end = ()=>{
+      document.removeEventListener("touchmove", touchMove, {passive:false});
+      document.removeEventListener("mousemove", mouseMove);
+      document.removeEventListener("touchend", touchEnd);
+      document.removeEventListener("mouseup", mouseEnd);
+      const abs = Math.abs(dx);
+      active.style.transition="";
+      if(abs>120){
+        const dir = dx>0 ? "right" : "left";
+        active.classList.add(dir==="right"?"swipe-out-right":"swipe-out-left");
+        setTimeout(()=>{ active.remove(); bindTop(); }, 380);
+      }else{
+        active.style.transform="translate(-50%, -50%)";
+      }
+      dx=0; startX=0;
+    };
+    function touchMove(e){ e.preventDefault(); move(e.touches[0].clientX); }
+    function mouseMove(e){ move(e.clientX); }
+    function touchEnd(){ end(); }
+    function mouseEnd(){ end(); }
+
+    const start = (x, t)=>{
+      // debounce per evitare doppio swipe
+      if(t - lastTime < 150) return;
+      lastTime = t;
+      startX = x;
+      document.addEventListener("touchmove", touchMove, {passive:false});
+      document.addEventListener("mousemove", mouseMove);
+      document.addEventListener("touchend", touchEnd);
+      document.addEventListener("mouseup", mouseEnd);
+    };
+
+    active.addEventListener("touchstart", e=> start(e.touches[0].clientX, e.timeStamp), {passive:true});
+    active.addEventListener("mousedown", e=> start(e.clientX, e.timeStamp));
+    // click immagine → profilo
+    active.querySelector(".card-img").addEventListener("click", ()=> {
+      if(Math.abs(dx)<6) openProfile(list[list.length-1]); // top logical
     });
-  });
+  };
+  bindTop();
 }
 
-function cardHTML(f){
-  // SOLO: nome, sesso, razza, distanza
-  const sex = f.sex==='male'?'Maschio':'Femmina';
-  return `
-  <article class="card" data-id="${f.id}" tabindex="0">
-    <img class="card-img" src="${f.img}" alt="${f.name}" />
-    <div class="card-info">
-      <h3>${f.name}</h3>
-      <p class="meta">${f.breed} · ${sex} · ${f.km}km</p>
-    </div>
-    <div class="card-actions">
-      <button class="btn no" aria-label="giochiamo">🥲</button>
-      <button class="btn yes" aria-label="mi piace">💜</button>
-    </div>
-  </article>`;
+/* ---------------------------------------------------------
+   PROFILO
+--------------------------------------------------------- */
+function openProfile(d){
+  qs("#profileName").textContent = d.name;
+  qs("#profileMeta").textContent = `${d.breed} · ${sexLabel(d.sex)} · ${d.age} anni`;
+  qs("#profilePhoto").src = d.img;
+  const badges = qs("#profileBadges");
+  badges.innerHTML = d.gold ? `<span class="badge">Verificato ⭐</span>` : `<span class="badge">Non verificato</span>`;
+
+  // gallery mock
+  const gal = qs("#profileGallery");
+  gal.innerHTML = "";
+  [d.img,d.img,d.img].forEach(src=>{
+    const im = new Image(); im.src=src; im.alt=d.name; gal.append(im);
+  });
+
+  // apri pagina profilo
+  qs("#profilePage").classList.remove("hidden");
+  $app.classList.add("noscroll");
+  window.history.pushState({p:"profile"}, "", "#profile");
 }
 
-// -------------------- DECK (Amore/Giochiamo) --------------------
-function renderDeck(id){
-  const deck = document.getElementById(id);
-  deck.innerHTML = '';
-  // Ultima card mostrata deve stare CENTRATA; impilo in z-index
-  const stack = [...state.friends].reverse();
-  stack.forEach((f,i)=>{
-    const div = document.createElement('div');
-    div.innerHTML = cardHTML(f);
-    const card = div.firstElementChild;
-    card.style.zIndex = String(100 - i);
-    deck.appendChild(card);
-  });
-  attachSwipe(deck);
-  deck.querySelectorAll('.card').forEach(card=>{
-    card.addEventListener('click', (e)=>{
-      // se clicchi pulsante non aprire profilo
-      if (e.target.closest('.btn')) return;
-      const idFriend = Number(card.dataset.id);
-      openProfile(state.friends.find(x=>x.id===idFriend));
-    });
-  });
-}
+on(qs("#btnBackProfile"), "click", ()=>{
+  qs("#profilePage").classList.add("hidden");
+  $app.classList.remove("noscroll");
+  window.history.back();
+});
 
-function attachSwipe(deck){
-  let startX = 0; let dragging=false; let target=null;
-  deck.addEventListener('touchstart', (e)=>{
-    target = deck.querySelector('.card:last-of-type'); // card in cima
-    startX = e.touches[0].clientX; dragging=true;
-  }, {passive:true});
-  deck.addEventListener('touchmove', (e)=>{
-    if(!dragging || !target) return;
-    const dx = e.touches[0].clientX - startX;
-    target.style.transform = `translateX(${dx}px) rotate(${dx/18}deg)`;
-  }, {passive:true});
-  deck.addEventListener('touchend', (e)=>{
-    if(!dragging || !target) return;
-    const dx = e.changedTouches[0].clientX - startX;
-    const threshold = 80;
-    if (dx > threshold){ swipeOut(target, 'right'); }
-    else if (dx < -threshold){ swipeOut(target, 'left'); }
-    else { target.style.transform='translateX(0) rotate(0)'; }
-    dragging=false; target=null;
-  });
-}
-function swipeOut(card, dir){
-  card.classList.add(dir==='right'?'swipe-out-right':'swipe-out-left');
-  setTimeout(()=>{ card.remove(); afterSwipe(); }, 420);
-}
-function afterSwipe(){
-  state.swipes++;
-  if (!state.plus){
-    if (state.swipes===10 || (state.swipes>10 && state.swipes%5===0)){
-      reward('Video pubblicitario','Guarda un video per continuare a scorrere altri profili.');
-    }
+/* ---------------------------------------------------------
+   SPONSOR & CANILI
+--------------------------------------------------------- */
+on(qs("#ethicsButtonHome"), "click", ()=> {
+  // NO video: sempre libero
+  openMaps("canile");
+});
+function openMaps(query){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const {latitude,longitude} = pos.coords;
+      window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}/@${latitude},${longitude},14z`, "_blank");
+    }, ()=>{
+      window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, "_blank");
+    }, {enableHighAccuracy:true, timeout:5000});
+  }else{
+    window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, "_blank");
   }
 }
 
-// -------------------- PROFILO --------------------
-function openProfile(f){
-  if (!f) return;
-  document.getElementById('profileName').textContent = f.name;
-  document.getElementById('profilePhoto').src = f.img;
-  document.getElementById('profileMeta').textContent = `${f.breed} · ${f.sex==='male'?'Maschio':'Femmina'} · ${f.age} anni`;
-  document.getElementById('profileBio').textContent = f.bio || '';
-  const badges = document.getElementById('profileBadges');
-  badges.innerHTML = f.badge? `<span class="badge">✔︎ Verificato</span>` : '';
-  // galleria mock
-  const gal = document.getElementById('profileGallery');
-  gal.innerHTML = [f.img,f.img,f.img].map(src=>`<img src="${src}" alt="${f.name}">`).join('');
-  showPage('profilePage', true);
-}
-
-// Selfie 24h (mock sblocchi)
-document.getElementById('btnSeeSelfie')?.addEventListener('click', ()=>{
-  if (state.plus){ toast('Selfie visibile (Plus attivo)'); return; }
-  const ok = confirm('Guarda un video per sbloccare il selfie per 24 ore?');
-  if (ok){ reward('Selfie', 'Video prima di vedere il selfie'); }
-});
-document.getElementById('btnUploadSelfie')?.addEventListener('click', ()=>alert('Carica solo foto con il tuo amico (niente persone sole).'));
-document.getElementById('btnOpenChat')?.addEventListener('click', ()=>{
-  reward('Chat', 'Il primo messaggio è gratuito. Dopo l’invio parte il video.');
-});
-
-// Documenti per badge
-document.getElementById('btnUploadDogDocs')?.addEventListener('click', ()=>alert('Carica documenti cane (vaccini, microchip, pedigree)…'));
-document.getElementById('btnUploadOwnerDocs')?.addEventListener('click', ()=>alert('Carica documenti personali (proprietario)…'));
-
-// -------------------- NAVIGAZIONE --------------------
-function showPage(pageId, show){
-  const page = document.getElementById(pageId);
-  page.classList.toggle('hidden', !show);
-  page.setAttribute('aria-hidden', show?'false':'true');
-}
-function goBackSmart(){
-  // Se profilo aperto → chiudilo, altrimenti resta nell’app
-  const profile = document.getElementById('profilePage');
-  if (!profile.classList.contains('hidden')){ showPage('profilePage', false); return; }
-  // Torna a Home solo se l’utente lo vuole
-  document.getElementById('appScreen').classList.add('hidden');
-  document.getElementById('homeScreen').classList.remove('hidden');
-}
-
-// -------------------- FILTRI --------------------
-function applyFilters(){
-  const breed = document.getElementById('breed').value.trim().toLowerCase();
-  const sex   = document.getElementById('sex').value;
-  const badge = document.getElementById('badge').value;
-
-  let list = state.friends.filter(f=>{
-    if (breed && f.breed.toLowerCase().indexOf(breed)!==0) return false;
-    if (sex && f.sex!==sex) return false;
-    if (badge==='yes' && !f.badge) return false;
-    if (badge==='no'  &&  f.badge) return false;
-    return true;
-  });
-  renderNearby(list);
-}
-
-// -------------------- GEO / MAPS --------------------
-function openMapsQuery(q){
-  // usa la lingua/geo del dispositivo
-  const url = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
-  window.open(url, '_blank', 'noopener');
-}
-function openSheltersMaps(){
-  openMapsQuery('canili vicino a me');
-}
-
-// -------------------- TOAST / REWARD (mock) --------------------
+/* ---------------------------------------------------------
+   TOAST (mock)
+--------------------------------------------------------- */
 function toast(msg){
-  let box = document.querySelector('.toast');
-  if (!box){
-    box = document.createElement('div');
-    box.className='toast';
-    box.innerHTML = `<div class="toast-box" id="toastBox"></div>`;
-    document.body.appendChild(box);
+  let box = qs("#toastBox");
+  if(!box){
+    box = document.createElement("div");
+    box.className = "toast";
+    box.id = "toastBox";
+    box.innerHTML = `<div class="toast-box" id="toastInner"></div>`;
+    document.body.append(box);
   }
-  box.querySelector('#toastBox').textContent = msg;
-  box.classList.add('show');
-  setTimeout(()=>box.classList.remove('show'), 1600);
+  qs("#toastInner").textContent = msg;
+  box.classList.add("show");
+  setTimeout(()=>box.classList.remove("show"), 1200);
 }
-function reward(title, msg){
-  const wrap = document.createElement('div');
-  wrap.className='reward-box';
-  wrap.innerHTML = `
-   <div class="reward-inner">
-     <div class="rw-title">${title}</div>
-     <div class="rw-msg">${msg}</div>
-     <button class="btn primary" id="rwOk">Guarda video</button>
-   </div>`;
-  document.body.appendChild(wrap);
-  wrap.querySelector('#rwOk').addEventListener('click', ()=>{
-    document.body.removeChild(wrap);
-    toast('Video completato ✔︎');
+
+/* ---------------------------------------------------------
+   INIZIALIZZAZIONE APP
+--------------------------------------------------------- */
+let appInited = false;
+function initAppOnce(){
+  if(appInited) return; appInited = true;
+
+  // griglia vicini
+  renderNearby(dogs);
+
+  // deck amore/gioco
+  renderDeck("loveDeck", dogs);
+  renderDeck("playDeck", dogs);
+
+  // sponsor cliccabile già via <a>
+  // back pulsante
+  on(qs("#btnBack"), "click", ()=>{
+    // torna alla pagina precedente (non home forzata)
+    history.back();
   });
+
+  // geolocalizzazione base
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(p=>{ state.geo = p.coords; }, ()=>{}, {enableHighAccuracy:true, timeout:5000});
+  }
 }
+
+/* ---------------------------------------------------------
+   AVVIO
+--------------------------------------------------------- */
+if(localStorage.getItem("entered")==="1"){ showApp(); }
+
+/* evitare scroll orizzontali involontari su deck */
+["touchmove","wheel"].forEach(ev=>{
+  on(qs("#loveDeck"), ev, (e)=>{ if(e.type==="wheel") return; if(Math.abs(e.deltaY||0)===0) e.preventDefault(); }, {passive:false});
+  on(qs("#playDeck"), ev, (e)=>{ if(e.type==="wheel") return; if(Math.abs(e.deltaY||0)===0) e.preventDefault(); }, {passive:false});
+});
