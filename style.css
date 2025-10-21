@@ -25,7 +25,9 @@ a{color:inherit;text-decoration:none}
 .noscroll{overflow:hidden}
 
 .container{max-width:980px;margin:0 auto;width:100%}
-.row{display:flex;justify-content:space-between;align-items:center;gap:.8rem}
+.row{
+  display:flex;align-items:center;justify-content:space-between;  /* estremi: sx e dx */gap:.8rem;width:100%;                     /* fondamentale: occupa tutta la riga */flex-wrap:nowrap;               /* evita che le voci vadano a capo */
+}
 
 /* =====================================================
    BUTTONS
@@ -64,10 +66,10 @@ a{color:inherit;text-decoration:none}
    HOME
 ===================================================== */
 .home{min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:1.2rem}
-.home-top{display:flex;justify-content:center;background:linear-gradient(180deg,rgba(18,18,42,.95),rgba(18,18,42,.88));border-bottom:1px solid rgba(124,108,255,.18);box-shadow:0 6px 18px rgba(0,0,0,.35);padding:.55rem .9rem}
+.home-top{display:flex;justify-content:space-between; ... }background:linear-gradient(180deg,rgba(18,18,42,.95),rgba(18,18,42,.88));border-bottom:1px solid rgba(124,108,255,.18);box-shadow:0 6px 18px rgba(0,0,0,.35);padding:.55rem .9rem}
 .logo-small{width:44px;height:44px;border-radius:10px}
 .brand{font-size:2rem;color:var(--violet-2);text-shadow:0 0 12px rgba(124,108,255,.45);margin:0}
-.top-actions{margin-left:auto;gap:1.2rem;display:flex;align-items:center}
+.top-actions{margin-left:auto;gap:1.6rem;display:flex;align-items:center}
 .lang{display:flex;gap:.4rem}
 .auth-links{font-size:.95rem}
 .auth-links a{color:var(--muted)}
