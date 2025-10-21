@@ -97,19 +97,7 @@ a{color:inherit;text-decoration:none}
 .sponsor-card{
   display:flex;flex-direction:column;align-items:center;gap:.5rem;
   padding:1rem;border-radius:16px;background:radial-gradient(120% 100% at 50% 0, rgba(124,104,255,.18), rgba(124,104,255,.08));
-  outline:1px solid rgba(124,108,255,.18);box-shadow:0 10px 28px rgba(124,108,255,.25)
-}
-.sponsor-title{font-weight:800;color:var(--violet-2)}
-.sponsor-logo{width:72px;height:72px;object-fit:contain;border-radius:12px;background:#fff}
-.sponsor-copy{font-size:.95rem}
-.btn.ethics{
-  display:inline-flex;align-items:center;gap:.45rem;margin:.3rem 0;background:transparent;color:var(--muted);
-  border:1px solid var(--line);box-shadow:none;padding:.6rem .8rem;font-weight:700;border-radius:12px
-}
-.btn.ethics .emoji{font-size:1rem}
-.btn.ethics .ethics-lines{display:flex;flex-direction:column;align-items:flex-start}
-.btn.ethics .l1{font-weight:800}.btn.ethics .l2{font-size:.85rem}
-.legal-links{margin:1rem 0 1.2rem;font-size:.95rem;color:var(--violet-2);display:flex;gap:.6rem;justify-content:center}
+  outline:1px solid legal-links{margin:1rem 0 1.2rem;font-size:.95rem;color:var(--violet-2);display:flex;gap:.6rem;justify-content:center}
 
 /* =====================================================
    APP / NAVBAR
@@ -125,54 +113,48 @@ a{color:inherit;text-decoration:none}
   backdrop-filter:saturate(120%) blur(6px);
   border-bottom:1px solid var(--line);
 }
-
-/* Colonne ai lati NON devono comprimere le tab */
-.topbar .left,
-.topbar .right{
-  display:flex;align-items:center;
-  gap:.5rem;flex:0 0 auto;
-}
-
-/* Contenitore tab: prende lo spazio centrale, scorre SOLO in orizzontale */
+/* Contenitore tab: fisso, niente scroll orizzontale, dropdown visibile fuori */
 .tabs{
-  display:flex;align-items:center;justify-content:flex-start;
-  flex:1 1 auto;gap:.5rem;padding:.25rem .25rem;
-  overflow-x:auto;overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  scroll-behavior:smooth;
+  display:flex;
+  align-items:center;
+  justify-content:center;        /* voci centrate */
+  flex:1 1 auto;
+  gap:.4rem;
+  padding:.25rem .25rem;
+  overflow:visible;               /* <— IMPORTANTE: niente scroll, mostra dropdown */
+  white-space:nowrap;             /* tutto su una riga */
 }
-.tabs::-webkit-scrollbar{display:none}
 
-/* Singola tab: non si stringe, niente a capo */
+/* Singola tab: può stringersi un po’ se serve, ma resta su una riga */
 .tab{
-  flex:0 0 auto;white-space:nowrap;
-  padding:.45rem .7rem;border-radius:14px;
+  flex:0 1 auto;                  /* <— permette di comprimere leggermente */
+  white-space:nowrap;
+  padding:.40rem .62rem;          /* più compatte per stare su una riga */
+  border-radius:14px;
   background:rgba(255,255,255,.06);
   border:1px solid rgba(133,120,255,.28);
-  color:var(--text);font-weight:600;
+  color:var(--text);
+  font-weight:600;
+  font-size:clamp(.78rem,2.4vw,.92rem); /* si adatta per non andare a capo */
 }
 .tab:focus{outline:2px solid rgba(133,120,255,.5);outline-offset:2px}
 .tab.active,.tab:hover{
-  color:var(--violet-2);
+  color:#B29CFF;
   background:rgba(133,120,255,.18);
   border-color:rgba(133,120,255,.5);
   box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
 }
 
-/* Dropdown Luoghi PET */
-.tab.dropdown{position:relative}
+/* Dropdown Luoghi PET: visibile sopra le tab, non tagliato */
+.tab.dropdown{position:relative; z-index: 10;}   /* <— z-index per stare sopra */
 .dropdown-menu{
-  position:absolute;top:calc(100% + 8px);left:0;right:auto;
-  min-width:220px;display:none;padding:.45rem;
+  position:absolute; top:calc(100% + 8px); left:0; right:auto;
+  min-width:220px; display:none; padding:.45rem;
   background:rgba(18,18,38,.98);
-  border:1px solid var(--line);border-radius:14px;
+  border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 12px 28px rgba(0,0,0,.45);
 }
 .tab.dropdown[aria-expanded="true"] .dropdown-menu{display:block}
-.menu-item{
-  width:100%;text-align:left;padding:.5rem .6rem;border-radius:10px;
-  background:transparent;border:0;color:var(--text)
-}
-.menu-item:hover{background:rgba(255,255,255,.06)}
 /* =====================================================
    CONTENT / VIEWS
    ===================================================== */
