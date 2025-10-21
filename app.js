@@ -78,14 +78,24 @@ const app = {
       $('#btnSearch').setAttribute('aria-expanded','false');
     });
 
-    // Luoghi PET dropdown
-    $('#tabLuoghi').addEventListener('click', (e)=>{
-      const wrap = $('#luoghiTabWrap');
-      const expanded = wrap.getAttribute('aria-expanded') === 'true';
-      wrap.setAttribute('aria-expanded', !expanded);
-      wrap.classList.toggle('open', !expanded);
-    });
-    $$('#luoghiMenu .menu-item').forEach(btn=>{
+    // Luoghi PET dropdown — apri/chiudi + chiusura clic esterno
+const wrapLuoghi = document.querySelector('#luoghiTabWrap');
+const btnLuoghi  = document.querySelector('#tabLuoghi');
+
+btnLuoghi.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const isOpen = wrapLuoghi.getAttribute('aria-expanded') === 'true';
+  wrapLuoghi.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+});
+
+// chiudi se clic fuori
+document.addEventListener('click', (e)=>{
+  if (!wrapLuoghi.contains(e.target)) {
+    wrapLuoghi.setAttribute('aria-expanded','false');
+  }
+});
+      
+      $$('#luoghiMenu .menu-item').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const cat = btn.dataset.cat;
         const qmap = {
