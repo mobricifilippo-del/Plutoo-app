@@ -19,23 +19,25 @@
   <section id="homeScreen" class="home" aria-labelledby="homeTitle">
     <header class="home-top">
       <div class="container row">
+        <!-- SX: logo -->
         <div class="left">
           <div class="logo-row">
             <img src="plutoo-icon-192.png" alt="Plutoo" class="logo-small" width="44" height="44" />
             <h1 id="homeTitle" class="brand">Plutoo</h1>
           </div>
         </div>
-
-        <!-- TUTTO a destra: IT/EN + Login/Registrati -->
+        <!-- CENTRO VUOTO -->
+        <div class="spacer" aria-hidden="true"></div>
+        <!-- DX: lingue + auth -->
         <div class="right top-actions">
           <div class="lang">
             <button id="langIT" class="btn tiny ghost" type="button" aria-label="Italiano">🇮🇹 IT</button>
             <button id="langEN" class="btn tiny ghost" type="button" aria-label="English">🇬🇧 EN</button>
           </div>
           <div class="auth-links">
-            <a href="#" id="btnLogin">Login</a>
-            <span>·</span>
-            <a href="#" id="btnSignup">Registrati</a>
+            <a href="#" id="btnLogin" class="pill-link">Login</a>
+            <span class="dot">·</span>
+            <a href="#" id="btnSignup" class="pill-link">Registrati</a>
           </div>
         </div>
       </div>
@@ -46,18 +48,19 @@
         <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
       </div>
       <button id="btnEnter" class="btn primary xl" type="button">Entra</button>
+      <a id="btnEnterLink" class="muted accedi-link" href="#app">Accedi</a>
     </div>
 
     <footer class="home-sponsor">
       <div class="container sponsor-split">
-        <!-- Sponsor (sinistra) -->
+        <!-- Sponsor (a sinistra) -->
         <a id="sponsorLinkHome" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
           <div class="sponsor-title">Sponsor ufficiale</div>
           <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
           <div class="sponsor-copy">Fido — il gelato per i nostri amici a quattro zampe</div>
         </a>
 
-        <!-- Canili (destra) SOLO IN HOME -->
+        <!-- Canili (a destra) SOLO HOME -->
         <button id="ethicsButtonHome" class="btn ethics" type="button" aria-label="Canili vicino a me">
           <span class="emoji">🐾</span>
           <span class="ethics-lines">
@@ -79,7 +82,6 @@
 
   <!-- ======================= APP ======================= -->
   <section id="appScreen" class="app hidden" aria-hidden="true">
-    <!-- Navbar -->
     <header class="topbar">
       <div class="left">
         <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
@@ -87,25 +89,24 @@
         <strong class="brand-mini">Plutoo</strong>
       </div>
 
+      <!-- TAB CENTRALI -->
       <nav class="tabs" role="tablist" aria-label="Sezioni">
         <button id="tabNearby" class="tab active" role="tab" aria-selected="true">Vicino a te</button>
         <button id="tabLove"   class="tab" role="tab" aria-selected="false">Amore</button>
         <button id="tabPlay"   class="tab" role="tab" aria-selected="false">Giochiamo insieme</button>
+        <button id="btnSearch" class="tab" type="button" aria-controls="panelSearch" aria-expanded="false">Ricerca personalizzata</button>
 
         <!-- Luoghi PET (dropdown) -->
-        <div class="tab dropdown" id="luoghiTabWrap" aria-expanded="false">
+        <div class="tab dropdown" id="luoghiTabWrap">
           <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi PET ▾</button>
           <div id="luoghiMenu" class="dropdown-menu" role="menu">
-            <button class="menu-item" data-map="Veterinari vicino a me" role="menuitem">Veterinari</button>
-            <button class="menu-item" data-map="Negozi animali vicino a me" role="menuitem">Negozi</button>
-            <button class="menu-item" data-map="Toelettatura vicino a me" role="menuitem">Toelettature</button>
-            <button class="menu-item" data-map="Parchi per cani vicino a me" role="menuitem">Parchi</button>
-            <button class="menu-item" data-map="Addestratori cani vicino a me" role="menuitem">Addestratori</button>
+            <button class="menu-item" data-query="Veterinari vicino a me" role="menuitem">Veterinari</button>
+            <button class="menu-item" data-query="Negozi animali vicino a me" role="menuitem">Negozi</button>
+            <button class="menu-item" data-query="Toelettatura cani vicino a me" role="menuitem">Toelettature</button>
+            <button class="menu-item" data-query="Parchi per cani vicino a me" role="menuitem">Parchi</button>
+            <button class="menu-item" data-query="Addestratori cani vicino a me" role="menuitem">Addestratori</button>
           </div>
         </div>
-
-        <!-- Ricerca overlay -->
-        <button id="btnSearch" class="tab" type="button" aria-controls="panelSearch" aria-expanded="false">Ricerca personalizzata</button>
       </nav>
 
       <div class="right">
@@ -150,18 +151,35 @@
               <label for="sex">Sesso</label>
               <select id="sex">
                 <option value="">Qualsiasi</option>
-                <option value="male">Maschio</option>
-                <option value="female">Femmina</option>
+                <option value="Femmina">Femmina</option>
+                <option value="Maschio">Maschio</option>
               </select>
             </div>
             <div>
-              <label for="badge">Badge verificato</label>
+              <label for="badge">Badge verifica</label>
               <select id="badge">
                 <option value="">Qualsiasi</option>
-                <option value="yes">Con badge</option>
-                <option value="no">Senza badge</option>
+                <option value="true">Con badge</option>
+                <option value="false">Senza badge</option>
               </select>
             </div>
+          </div>
+
+          <div class="f">
+            <label for="distance">Distanza</label>
+            <input id="distance" type="range" min="1" max="100" step="1" value="20" />
+            <div class="range-labels"><span>1 km</span><span>100 km</span></div>
+          </div>
+
+          <div class="f gold-only">
+            <div class="gold-label">Filtri Gold (Plus)</div>
+            <div class="gold-grid">
+              <label><input type="checkbox" disabled /> Pelo lungo</label>
+              <label><input type="checkbox" disabled /> Pelo corto</label>
+              <label><input type="checkbox" disabled /> Pedigree</label>
+              <label><input type="checkbox" disabled /> Vaccini</label>
+            </div>
+            <p class="hint">Attiva Plutoo Plus per usare questi filtri</p>
           </div>
 
           <div class="panel-actions">
@@ -172,11 +190,11 @@
       </div>
     </section>
 
-    <!-- Pagina PROFILO (dedicata) -->
+    <!-- Pagina PROFILO -->
     <section id="profilePage" class="page hidden" aria-hidden="true" aria-label="Profilo amico">
       <header class="subbar">
         <button id="btnBackProfile" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
-        <strong class="subbar-title" id="profileHeaderTitle">Profilo amico</strong>
+        <strong class="subbar-title">Profilo amico</strong>
       </header>
 
       <main class="profile-content">
@@ -221,16 +239,24 @@
       </main>
     </section>
 
-    <!-- Footer sponsor (SOLO sponsor, niente canili) -->
+    <!-- Footer sponsor APP -->
     <footer class="sponsor">
-      <a id="sponsorLinkApp" class="sponsor-wrap" href="https://example.com/fido-gelato" target="_blank" rel="noopener">
+      <div class="sponsor-wrap">
         <div class="sponsor-title">Sponsor ufficiale</div>
-        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
-        <p class="sponsor-copy">Fido — il gelato per i nostri amici a quattro zampe</p>
-      </a>
+        <a id="sponsorLinkApp" href="https://example.com/fido-gelato" target="_blank" rel="noopener">
+          <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+        </a>
+        <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
+      </div>
     </footer>
   </section>
 
+  <script>
+    if ('serviceWorker' in navigator) {
+      // lo riattiveremo stabile dopo i test
+      // addEventListener('load', ()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
+    }
+  </script>
   <script src="app.js" defer></script>
 </body>
 </html>
