@@ -83,34 +83,33 @@
 <section id="appScreen" class="app hidden" aria-hidden="true">
   <!-- Navbar: una sola riga, stabile -->
   <header class="topbar">
-    <div class="left">
-      <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
-      <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
-      <strong class="brand-mini">Plutoo</strong>
-    </div>
-    <nav class="tabs" role="tablist" aria-label="Sezioni">
-      <button id="tabNearby" class="tab active" role="tab" aria-selected="true">Vicino a te</button>
-      <button id="tabLove"   class="tab" role="tab" aria-selected="false">Amore</button>
-      <button id="tabPlay"   class="tab" role="tab" aria-selected="false">Giochiamo insieme</button>
-      <button id="btnSearch" class="tab" type="button" aria-controls="panelSearch" aria-expanded="false">Ricerca personalizzata</button>
+  <div class="left">
+    <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
+    <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
+    <strong class="brand-mini">Plutoo</strong>
+  </div>
 
-      <!-- Luoghi PET (dropdown) -->
-      <div class="tab dropdown" id="luoghiTabWrap">
-        <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi PET ▾</button>
-        <div id="luoghiMenu" class="dropdown-menu" role="menu">
-          <button class="menu-item" data-cat="vets"     role="menuitem">Veterinari</button>
-          <button class="menu-item" data-cat="shops"    role="menuitem">Negozi</button>
-          <button class="menu-item" data-cat="groomers" role="menuitem">Toelettature</button>
-          <button class="menu-item" data-cat="parks"    role="menuitem">Parchi</button>
-          <button class="menu-item" data-cat="trainers" role="menuitem">Addestratori</button>
-        </div>
+  <nav class="tabs" role="tablist" aria-label="Sezioni">
+    <button id="tabNearby" class="tab active" role="tab" aria-selected="true">Vicino a te</button>
+    <button id="tabLove"   class="tab" role="tab" aria-selected="false">Amore</button>
+    <button id="tabPlay"   class="tab" role="tab" aria-selected="false">Giochiamo insieme</button>
+    <button id="btnSearch" class="tab" type="button" aria-controls="panelSearch" aria-expanded="false">Ricerca personalizzata</button>
+
+    <div class="tab dropdown" id="luoghiTabWrap">
+      <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi PET ▾</button>
+      <div id="luoghiMenu" class="dropdown-menu" role="menu">
+        <button class="menu-item" data-cat="vets"     role="menuitem">Veterinari</button>
+        <button class="menu-item" data-cat="shops"    role="menuitem">Negozi</button>
+        <button class="menu-item" data-cat="groomers" role="menuitem">Toelettature</button>
+        <button class="menu-item" data-cat="parks"    role="menuitem">Parchi</button>
+        <button class="menu-item" data-cat="trainers" role="menuitem">Addestratori</button>
       </div>
-    </nav>
-    <div class="right">
-      <button id="tabPlus" class="btn tiny ghost" type="button" aria-label="Plus">Plus ✨</button>
     </div>
-  </header>
-
+  </nav>
+ <div class="right">
+    <button id="tabPlus" class="btn tiny ghost" type="button" aria-label="Plus">Plus ✨</button>
+  </div>
+</header>
   <main class="content">
     <!-- Vicino a te (AMICI) -->
     <section id="viewNearby" class="view active" role="tabpanel" aria-labelledby="tabNearby">
