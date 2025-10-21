@@ -1,300 +1,198 @@
 /* =====================================================
-   PLUTOO APP – VIOLET EDITION (completo)
+   PLUTOO – logica base (no random, sezioni stabili)
    ===================================================== */
 
-/* ---------- Helpers ---------- */
-const $ = (sel, root=document) => root.querySelector(sel);
-const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-const on = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
-const sleep = (ms) => new Promise(r=>setTimeout(r, ms));
-const html = String.raw;
+/* ---------- Stato / helpers ---------- */
+const $ = (sel,ctx=document)=>ctx.querySelector(sel);
+const $$ = (sel,ctx=document)=>Array.from(ctx.querySelectorAll(sel));
 
-/* ---------- Stato ---------- */
-const State = {
-  currentTab: 'nearby',
-  plus: false,
-  currentDog: null,
-  filters: { breed:'', sex:'', badge:'' },
+const screens = {
+  home: $('#homeScreen'),
+  app:  $('#appScreen'),
+  profile: $('#profilePage'),
 };
+function show(el){el.classList.remove('hidden'); el.setAttribute('aria-hidden','false');}
+function hide(el){el.classList.add('hidden'); el.setAttribute('aria-hidden','true');}
 
+/* ---------- Dati demo (ordine fisso) ---------- */
 const DOGS = [
-  {id:1, name:'Luna',  breed:'Labrador', sex:'Femmina', km:1.2, img:'dog1.jpg', badge:true,  bio:'Amante dei parchi.'},
-  {id:2, name:'Rocky', breed:'Beagle',   sex:'Maschio', km:2.5, img:'dog2.jpg', badge:false, bio:'Corre come il vento.'},
-  {id:3, name:'Maya',  breed:'Husky',    sex:'Femmina', km:3.1, img:'dog3.jpg', badge:true,  bio:'Dolcissima.'},
-  {id:4, name:'Otto',  breed:'Maltese',  sex:'Maschio', km:0.9, img:'dog4.jpg', badge:false, bio:'Coccolone.'},
+  {id:1, name:'Luna',   sex:'Femmina', breed:'Labrador', dist:'1.2km', img:'dog1.jpg', bio:'Amante dei parchi', badge:true},
+  {id:2, name:'Rocky',  sex:'Maschio', breed:'Beagle',   dist:'2.5km', img:'dog2.jpg', bio:'Corre come il vento', badge:false},
+  {id:3, name:'Maya',   sex:'Femmina', breed:'Husky',    dist:'3.1km', img:'dog3.jpg', bio:'Dolcissima', badge:false},
+  {id:4, name:'Otto',   sex:'Maschio', breed:'Maltese',  dist:'0.9km', img:'dog4.jpg', bio:'Coccolone', badge:true},
 ];
 
-/* ---------- DOM ---------- */
-const homeScreen = $('#homeScreen');
-const appScreen  = $('#appScreen');
-const heroLogo = $('#heroLogo');
-const btnEnter = $('#btnEnter');
+/* ---------- HOME ---------- */
+$('#btnEnter').addEventListener('click', ()=>{
+  $('#heroLogo').classList.add('gold-glow');
+  setTimeout(()=>openApp(), 900); // animazione un po’ più lunga
+});
+$('#btnEnterLink').addEventListener('click', (e)=>{ e.preventDefault(); openApp(); });
 
-const tabNearby = $('#tabNearby');
-const tabLove   = $('#tabLove');
-const tabPlay   = $('#tabPlay');
-const btnSearch = $('#btnSearch');
-const tabPlus   = $('#tabPlus');
-const luoghiWrap= $('#luoghiTabWrap');
-const luoghiBtn = $('#tabLuoghi');
-const luoghiMenu= $('#luoghiMenu');
-
-const viewNearby= $('#viewNearby');
-const viewLove  = $('#viewLove');
-const viewPlay  = $('#viewPlay');
-const nearbyGrid= $('#nearbyGrid');
-const loveDeck  = $('#loveDeck');
-const playDeck  = $('#playDeck');
-
-const panelSearch   = $('#panelSearch');
-const btnCloseSearch= $('#btnCloseSearch');
-const breedInput    = $('#breed');
-const suggestionsEl = $('#suggestions');
-const sexSelect     = $('#sex');
-const badgeSelect   = $('#badge');
-const btnApplyFilters = $('#btnApplyFilters');
-const btnResetFilters  = $('#btnResetFilters');
-
-const sponsorLinkHome = $('#sponsorLinkHome');
-const ethicsButtonHome= $('#ethicsButtonHome');
-const sponsorLinkApp  = $('#sponsorLinkApp');
-
-const profilePage    = $('#profilePage');
-const btnBackProfile = $('#btnBackProfile');
-const profileName    = $('#profileName');
-const profileMeta    = $('#profileMeta');
-const profilePhoto   = $('#profilePhoto');
-const profileBadges  = $('#profileBadges');
-const profileBio     = $('#profileBio');
-const profileGallery = $('#profileGallery');
-const profileHeaderTitle = $('#profileHeaderTitle');
-
-/* ---------- Router ---------- */
-function showHome(){
-  appScreen.classList.add('hidden');
-  profilePage.classList.add('hidden');
-  homeScreen.classList.remove('hidden');
-  window.scrollTo(0,0);
-}
-function showApp(){
-  homeScreen.classList.add('hidden');
-  profilePage.classList.add('hidden');
-  appScreen.classList.remove('hidden');
-  window.scrollTo(0,0);
-}
-function showProfile(dog){
-  State.currentDog = dog;
-  appScreen.classList.add('hidden');
-  homeScreen.classList.add('hidden');
-  profilePage.classList.remove('hidden');
-
-  profileHeaderTitle.textContent = dog.name;
-  profileName.textContent = dog.name;
-  profileMeta.textContent = `${dog.breed} · ${dog.sex} · ${dog.km}km`;
-  profilePhoto.src = dog.img;
-  profileBio.textContent = dog.bio || '';
-  profileBadges.innerHTML = dog.badge ? `<span class="badge">✔︎ Verificato</span>` : '';
-  profileGallery.innerHTML = `
-    <img src="${dog.img}" alt="${dog.name}">
-    <img src="${dog.img}" alt="${dog.name}">
-    <img src="${dog.img}" alt="${dog.name}">
-  `;
-  window.scrollTo(0,0);
+function openApp(){
+  hide(screens.home); show(screens.app);
+  renderNearby();
+  setActiveTab('nearby');
 }
 
-/* ---------- Home ---------- */
-on(btnEnter,'click', async ()=>{
-  heroLogo.classList.add('gold-glow');
-  await sleep(950);
-  showApp();
+/* Sponsor sempre cliccabile */
+['#sponsorLinkHome','#sponsorLinkApp'].forEach(id=>{
+  const el=$(id); if(el){ el.addEventListener('click',()=>{}) }
+});
+
+/* Canili SOLO Home → Google Maps */
+$('#ethicsButtonHome').addEventListener('click', ()=>{
+  const q = encodeURIComponent('canili vicino a me');
+  window.open(`https://www.google.com/maps/search/?api=1&query=${q}`,'_blank');
+});
+
+/* ---------- TAB BAR ---------- */
+const tabButtons = {
+  nearby: $('#tabNearby'),
+  love:   $('#tabLove'),
+  play:   $('#tabPlay'),
+};
+function setActiveTab(key){
+  $$('.tab').forEach(b=>b.classList.remove('active'));
+  if(tabButtons[key]) tabButtons[key].classList.add('active');
+  $$('.view').forEach(v=>v.classList.remove('active'));
+  if(key==='nearby') $('#viewNearby').classList.add('active');
+  if(key==='love')   $('#viewLove').classList.add('active');
+  if(key==='play')   $('#viewPlay').classList.add('active');
+}
+tabButtons.nearby.addEventListener('click', ()=>{ setActiveTab('nearby'); });
+tabButtons.love.addEventListener('click',   ()=>{ setActiveTab('love');   renderDeck('#loveDeck'); });
+tabButtons.play.addEventListener('click',   ()=>{ setActiveTab('play');   renderDeck('#playDeck'); });
+
+/* Dropdown Luoghi PET */
+const luoghiBtn  = $('#tabLuoghi');
+const luoghiWrap = $('#luoghiTabWrap');
+const luoghiMenu = $('#luoghiMenu');
+luoghiBtn.addEventListener('click', (e)=>{
+  const expanded = luoghiBtn.getAttribute('aria-expanded')==='true';
+  luoghiBtn.setAttribute('aria-expanded', String(!expanded));
+  if(!expanded) luoghiWrap.setAttribute('aria-expanded','true');
+  else luoghiWrap.removeAttribute('aria-expanded');
+});
+luoghiMenu.addEventListener('click', (e)=>{
+  const item = e.target.closest('.menu-item'); if(!item) return;
+  const q = encodeURIComponent(item.dataset.query || 'Animali vicino a me');
+  window.open(`https://www.google.com/maps/search/?api=1&query=${q}`,'_blank');
+  luoghiBtn.setAttribute('aria-expanded','false'); luoghiWrap.removeAttribute('aria-expanded');
+});
+
+/* Ricerca personalizzata */
+const panel = $('#panelSearch');
+$('#btnSearch').addEventListener('click', ()=> panel.setAttribute('aria-hidden','false'));
+$('#btnCloseSearch').addEventListener('click', ()=> panel.setAttribute('aria-hidden','true'));
+$('#btnResetFilters').addEventListener('click', ()=>{
+  $('#breed').value=''; $('#sex').value=''; $('#badge').value=''; $('#distance').value=20;
+  $('#suggestions').classList.remove('show'); $('#suggestions').innerHTML='';
+});
+$('#btnApplyFilters').addEventListener('click', ()=>{
+  const breed = $('#breed').value.trim().toLowerCase();
+  const sex   = $('#sex').value;
+  const badge = $('#badge').value;
+  const filtered = DOGS.filter(d=>{
+    let ok=true;
+    if(breed) ok = ok && d.breed.toLowerCase().includes(breed);
+    if(sex)   ok = ok && d.sex===sex;
+    if(badge) ok = ok && (String(!!d.badge)===badge);
+    return ok;
+  });
+  renderNearby(filtered);
+  panel.setAttribute('aria-hidden','true');
+});
+
+/* Autosuggest razze (demo) */
+const ALL_BREEDS = ['Labrador','Beagle','Husky','Maltese','Maremmano','Terrier','Volpino','Setter','Pastore Tedesco','Pastore Maremmano'];
+$('#breed').addEventListener('input', (e)=>{
+  const v = e.target.value.trim().toLowerCase();
+  const box = $('#suggestions');
+  if(!v){ box.classList.remove('show'); box.innerHTML=''; return; }
+  const list = ALL_BREEDS.filter(b=>b.toLowerCase().startsWith(v)).sort();
+  box.innerHTML = list.map(b=>`<div class="item" role="option">${b}</div>`).join('');
+  box.classList.toggle('show', list.length>0);
+});
+$('#suggestions').addEventListener('click',(e)=>{
+  const it = e.target.closest('.item'); if(!it) return;
+  $('#breed').value = it.textContent;
+  $('#suggestions').classList.remove('show'); $('#suggestions').innerHTML='';
+});
+
+/* ---------- RENDER: Vicino a te ---------- */
+function renderNearby(list=DOGS){
+  const grid = $('#nearbyGrid');
+  grid.innerHTML = list.map(d=>cardHTML(d)).join('');
+  // click su card -> profilo
+  $$('#nearbyGrid .card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.btn')) return; // ignora bottoni
+      openProfile(Number(card.dataset.id));
+    });
+  });
+}
+function cardHTML(d){
+  return `
+  <article class="card" data-id="${d.id}" aria-label="${d.name}">
+    <img class="card-img" src="${d.img}" alt="${d.name}" loading="lazy" />
+    <div class="card-info">
+      <h3>${d.name}</h3>
+      <p class="meta">${d.breed} · ${d.sex} · ${d.dist}</p>
+    </div>
+    <div class="card-actions">
+      <button class="btn no"  type="button" aria-label="Passa">🙂</button>
+      <button class="btn yes" type="button" aria-label="Mi piace">💜</button>
+    </div>
+  </article>`;
+}
+
+/* ---------- RENDER: Deck (Amore / Giochiamo) ---------- */
+function renderDeck(sel){
+  const wrap = $(sel);
+  // una card alla volta, centrata
+  wrap.innerHTML = cardHTML(DOGS[0]);
+  const card = $('.card', wrap);
+  let startX=0, dx=0;
+  card.addEventListener('touchstart', e=>{ startX = e.touches[0].clientX; card.style.transition='none'; }, {passive:true});
+  card.addEventListener('touchmove',  e=>{ dx = e.touches[0].clientX - startX; card.style.transform=`translateX(${dx}px) rotate(${dx/25}deg)`; }, {passive:true});
+  card.addEventListener('touchend',   ()=>{
+    card.style.transition='transform .25s ease';
+    if(Math.abs(dx)>90){ card.style.transform=`translateX(${dx>0?400:-400}px) rotate(${dx/15}deg)`; setTimeout(()=>renderDeck(sel),260); }
+    else { card.style.transform='translateX(0) rotate(0)'; }
+    dx=0;
+  }, {passive:true});
+}
+
+/* ---------- PROFILO ---------- */
+function openProfile(id){
+  const d = DOGS.find(x=>x.id===id); if(!d) return;
+  // popolamento
+  $('#profilePhoto').src = d.img;
+  $('#profileName').textContent = d.name;
+  $('#profileMeta').textContent = `${d.breed} · ${d.sex} · ${d.dist}`;
+  $('#profileBio').textContent  = d.bio || '—';
+  const badges = $('#profileBadges');
+  badges.innerHTML = d.badge ? `<span class="badge">✔︎ Verificato</span>` : '';
+  // mostra pagina dedicata
+  show(screens.profile); hide($('#viewNearby').closest('.view')); hide($('#viewLove').closest('.view')); hide($('#viewPlay').closest('.view'));
+  // nasconde top content per evitare “scroll che si muove”
+  window.scrollTo({top:0,behavior:'instant'});
+}
+$('#btnBackProfile').addEventListener('click', ()=>{
+  hide(screens.profile);
   setActiveTab('nearby');
 });
-on(ethicsButtonHome,'click', ()=>{
-  const q = encodeURIComponent('Canili vicino a me');
-  window.open(`https://www.google.com/maps/search/${q}`,'_blank');
-});
-on(sponsorLinkHome,'click', ()=>{ /* tracking opzionale */ });
 
-/* ---------- Tabs ---------- */
-function setActiveTab(name){
-  State.currentTab = name;
-  [tabNearby,tabLove,tabPlay].forEach(b=>b.classList.remove('active'));
-  ({nearby:tabNearby,love:tabLove,play:tabPlay}[name]).classList.add('active');
-
-  [viewNearby,viewLove,viewPlay].forEach(v=>v.classList.remove('active'));
-  ({nearby:viewNearby,love:viewLove,play:viewPlay}[name]).classList.add('active');
-
-  if(name==='nearby') renderNearby();
-  if(name==='love')   renderDeck(loveDeck);
-  if(name==='play')   renderDeck(playDeck);
-}
-on(tabNearby,'click', ()=>setActiveTab('nearby'));
-on(tabLove,'click',   ()=>setActiveTab('love'));
-on(tabPlay,'click',   ()=>setActiveTab('play'));
-
-/* ---------- Luoghi PET dropdown ---------- */
-on(luoghiBtn,'click', ()=>{
-  const exp = luoghiWrap.getAttribute('aria-expanded')==='true';
-  luoghiWrap.setAttribute('aria-expanded', String(!exp));
-});
-document.addEventListener('click', (e)=>{
-  if(!luoghiWrap) return;
-  if(!luoghiWrap.contains(e.target)) luoghiWrap.setAttribute('aria-expanded','false');
-});
-on(luoghiMenu,'click', (e)=>{
-  const item = e.target.closest('.menu-item'); if(!item) return;
-  const q = encodeURIComponent(item.dataset.map);
-  window.open(`https://www.google.com/maps/search/${q}`,'_blank');
-  luoghiWrap.setAttribute('aria-expanded','false');
+/* ---------- Torna alla HOME ---------- */
+$('#btnBack').addEventListener('click', ()=>{
+  hide(screens.app); show(screens.home);
+  window.scrollTo({top:0,behavior:'instant'});
 });
 
-/* ---------- Ricerca ---------- */
-const BREEDS = ["Akita","Barboncino","Beagle","Border Collie","Bulldog","Chihuahua","Cocker","Dalmata","Dobermann","Husky","Labrador","Maltese","Pastore Tedesco","Shiba Inu","Shih Tzu"];
+/* ---------- Lingue (placeholder demo) ---------- */
+$('#langIT').addEventListener('click', ()=>alert('Lingua impostata: Italiano'));
+$('#langEN').addEventListener('click', ()=>alert('Language set: English'));
 
-function debounce(fn, wait=160){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
-on(btnSearch,'click', ()=>{
-  panelSearch.setAttribute('aria-hidden','false');
-  btnSearch.setAttribute('aria-expanded','true');
-});
-on(btnCloseSearch,'click', ()=>{
-  panelSearch.setAttribute('aria-hidden','true');
-  btnSearch.setAttribute('aria-expanded','false');
-});
-on(breedInput,'input', debounce(()=>{
-  const v = (breedInput.value||'').trim().toLowerCase();
-  const arr = v ? BREEDS.filter(b=>b.toLowerCase().startsWith(v)).sort() : [];
-  suggestionsEl.innerHTML = arr.map(b=>`<div class="item" role="option">${b}</div>`).join('');
-  suggestionsEl.classList.toggle('show', arr.length>0);
-}, 100));
-on(suggestionsEl,'click', e=>{
-  const it = e.target.closest('.item'); if(!it) return;
-  breedInput.value = it.textContent; suggestionsEl.classList.remove('show');
-});
-on(btnApplyFilters,'click', ()=>{
-  State.filters = {
-    breed:(breedInput.value||'').trim(),
-    sex:sexSelect.value||'',
-    badge:badgeSelect.value||''
-  };
-  renderNearby();
-  panelSearch.setAttribute('aria-hidden','true');
-  btnSearch.setAttribute('aria-expanded','false');
-});
-on(btnResetFilters,'click', ()=>{
-  breedInput.value=''; sexSelect.value=''; badgeSelect.value='';
-  State.filters = {breed:'',sex:'',badge:''};
-  renderNearby();
-});
-
-/* ---------- Nearby (griglia) ---------- */
-function dogCard(d){
-  return html`
-    <article class="card" data-id="${d.id}" tabindex="0">
-      <img class="card-img" src="${d.img}" alt="${d.name}" loading="lazy"/>
-      <div class="card-info">
-        <h3>${d.name}</h3>
-        <p class="meta">${d.breed} · ${d.sex} · ${d.km}km</p>
-      </div>
-      <div class="card-actions">
-        <div class="round" data-act="smile" title="Saluta">😊</div>
-        <div class="round" data-act="like"  title="Mi piace">💜</div>
-      </div>
-    </article>`;
-}
-function applyFilters(list){
-  const f = State.filters;
-  return list.filter(d=>{
-    if(f.breed && !d.breed.toLowerCase().startsWith(f.breed.toLowerCase())) return false;
-    if(f.sex){
-      const sx = f.sex==='male'?'Maschio':'Femmina';
-      if(d.sex!==sx) return false;
-    }
-    if(f.badge){
-      const need = f.badge==='yes';
-      if(Boolean(d.badge)!==need) return false;
-    }
-    return true;
-  });
-}
-function renderNearby(){
-  const data = applyFilters(DOGS);
-  nearbyGrid.innerHTML = data.map(dogCard).join('');
-}
-on(nearbyGrid,'click', e=>{
-  const card = e.target.closest('.card'); if(!card) return;
-  const dog = DOGS.find(x=>x.id==card.dataset.id);
-  if(dog) showProfile(dog);
-});
-
-/* ---------- Deck (Love/Play) con swipe senza muovere pagina ---------- */
-function renderDeck(container){
-  const d = DOGS[Math.floor(Math.random()*DOGS.length)];
-  container.innerHTML = dogCard(d).replace('card"', 'card love-card"');
-  enableSwipe(container, d);
-}
-function enableSwipe(container, dog){
-  const card = container.querySelector('.love-card'); if(!card) return;
-
-  let startX=0, dx=0, dragging=false;
-
-  function start(ev){
-    dragging=true;
-    const t = ev.touches? ev.touches[0]:ev;
-    startX = t.clientX; dx=0;
-    document.body.style.overflow='hidden';
-    card.style.transition='none';
-  }
-  function move(ev){
-    if(!dragging) return;
-    const t = ev.touches? ev.touches[0]:ev;
-    dx = t.clientX - startX;
-    if(ev.cancelable) ev.preventDefault();
-    card.style.transform = `translateX(${dx}px) rotate(${dx/25}deg)`;
-  }
-  function end(){
-    if(!dragging) return; dragging=false;
-    document.body.style.overflow='';
-    const TH=120;
-    if(Math.abs(dx)>TH){
-      card.style.transition='transform .25s ease, opacity .25s ease';
-      card.style.transform=`translateX(${dx>0?600:-600}px) rotate(${dx>0?14:-14}deg)`; card.style.opacity='0';
-      setTimeout(()=>renderDeck(container),260);
-    }else{
-      card.style.transition='transform .2s ease'; card.style.transform='translateX(0) rotate(0)';
-    }
-  }
-  on(card,'touchstart',start,{passive:true});
-  on(card,'touchmove', move,{passive:false});
-  on(card,'touchend',  end);
-  on(card,'mousedown',start);
-  on(window,'mousemove',move);
-  on(window,'mouseup', end);
-
-  // click sulla card apre profilo
-  on(card,'click', (e)=>{
-    if(Math.abs(dx)<10) showProfile(dog);
-  });
-}
-
-/* ---------- Profilo ---------- */
-on(btnBackProfile,'click', ()=>{
-  showApp();
-  setActiveTab(State.currentTab || 'nearby');
-});
-
-/* ---------- Sponsor ---------- */
-on(sponsorLinkApp,'click', ()=>{/* tracking opz. */});
-
-/* ---------- Boot ---------- */
-function boot(){
-  showHome();      // avvio sulla home
-  renderNearby();  // pre-render
-  renderDeck(loveDeck);
-  renderDeck(playDeck);
-}
-boot();
-
-/* ---------- SW ---------- */
-if('serviceWorker' in navigator){
-  addEventListener('load', ()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
-}
+/* ---------- Plus (placeholder) ---------- */
+$('#tabPlus').addEventListener('click', ()=>alert('Plutoo Plus in arrivo!'));
