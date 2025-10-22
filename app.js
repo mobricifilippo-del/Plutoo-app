@@ -1,248 +1,531 @@
-/* =====================================================
-   PLUTOO – logica base (tema viola, no video reward)
-   Nessun asset nuovo: usa dog1.jpg…dog4.jpg locali
-   ===================================================== */
+/* =========================================================
+   PLUTOO – app.js (minimally patched per test UX)
+   - Reward disattivati (ritornano subito)
+   - Swipe non muove la pagina
+   - Sponsor cliccabile anche nel footer app
+   - Nessuna rimozione strutturale
+   ========================================================= */
 
-/* ---------- Helpers ---------- */
-const $ = (sel,ctx=document)=>ctx.querySelector(sel);
-const $$ = (sel,ctx=document)=>Array.from(ctx.querySelectorAll(sel));
-const show = el => {el.classList.remove('hidden'); el.setAttribute('aria-hidden','false');};
-const hide = el => {el.classList.add('hidden'); el.setAttribute('aria-hidden','true');};
-const toast = (msg,ms=1400)=>{ const t=$('#toast'); const m=$('#toastMsg'); if(!t||!m) return; m.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),ms); };
+document.addEventListener("DOMContentLoaded", () => {
+  // ---------------- Helpers ----------------
+  const $  = (id) => document.getElementById(id);
+  const qs = (s, r=document) => r.querySelector(s);
+  const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-/* ---------- Stato ---------- */
-const screens = {
-  home: $('#homeScreen'),
-  app:  $('#appScreen'),
-  profile: $('#profilePage'),
-};
+  // ---------------- DOM refs ----------------
+  const homeScreen   = $("homeScreen");
+  const appScreen    = $("appScreen");
+  const heroLogo     = $("heroLogo");
+  const btnEnter     = $("btnEnter");
+  const sponsorLink  = $("sponsorLink");
+  const ethicsButton = $("ethicsButton");
+  const ethicsButtonApp = $("ethicsButtonApp");
+  const btnBack      = $("btnBack");
 
-/* ---------- Dati demo (locali, ordine fisso) ---------- */
-const DOGS = [
-  {id:1, name:'Luna',  sex:'Femmina', breed:'Labrador', dist:'1.2 km', img:'dog1.jpg', bio:'Amante dei parchi, dolcissima.', badge:true},
-  {id:2, name:'Rocky', sex:'Maschio',  breed:'Beagle',   dist:'2.5 km', img:'dog2.jpg', bio:'Corre come il vento.',       badge:false},
-  {id:3, name:'Maya',  sex:'Femmina', breed:'Husky',    dist:'3.1 km', img:'dog3.jpg', bio:'Occhi di ghiaccio, cuore caldo.', badge:false},
-  {id:4, name:'Otto',  sex:'Maschio',  breed:'Maltese',  dist:'0.9 km', img:'dog4.jpg', bio:'Coccolone professionista.',   badge:true},
-];
+  const tabNearby = $("tabNearby");
+  const tabLove   = $("tabLove");
+  const tabSocial = $("tabSocial");
+  const tabLuoghi = $("tabLuoghi");
+  const luoghiMenu = $("luoghiMenu");
 
-/* =====================================================
-   HOME
-   ===================================================== */
-$('#btnEnter')?.addEventListener('click', ()=>{
-  const logo = $('#heroLogo');
-  logo?.classList.remove('violet-pulse'); // restart anim
-  void logo?.offsetWidth;
-  logo?.classList.add('violet-pulse');
-  setTimeout(openApp, 1100);
-});
-$('#langIT')?.addEventListener('click', ()=>toast('Lingua: Italiano'));
-$('#langEN')?.addEventListener('click', ()=>toast('Language: English'));
+  const viewNearby = $("viewNearby");
+  const viewLove   = $("viewLove");
+  const viewSocial = $("viewSocial");
+  const nearGrid   = $("nearGrid");
 
-/* Sponsor e Canili (solo link) */
-$('#sponsorLinkHome')?.addEventListener('click', ()=>{});
-$('#ethicsButtonHome')?.addEventListener('click', ()=>{
-  const q = encodeURIComponent('canili vicino a me');
-  window.open(`https://www.google.com/maps/search/?api=1&query=${q}`,'_blank');
-});
+  const loveCard = $("loveCard");
+  const loveImg  = $("loveImg");
+  const loveTitleTxt = $("loveTitleTxt");
+  const loveMeta = $("loveMeta");
+  const loveBio  = $("loveBio");
+  const loveNo   = $("loveNo");
+  const loveYes  = $("loveYes");
 
-function openApp(){
-  hide(screens.home); show(screens.app);
-  renderNearby(DOGS);
-  setActiveTab('nearby');
-  window.scrollTo({top:0,behavior:'instant'});
-}
+  const socialCard = $("socialCard");
+  const socialImg  = $("socialImg");
+  const socialTitleTxt = $("socialTitleTxt");
+  const socialMeta  = $("socialMeta");
+  const socialBio   = $("socialBio");
+  const socialNo    = $("socialNo");
+  const socialYes   = $("socialYes");
 
-/* =====================================================
-   NAVIGAZIONE TOPBAR / TABS
-   ===================================================== */
-function setActiveTab(key){
-  $$('.tab').forEach(b=>b.classList.remove('active'));
-  const btn = $(`.tab[data-tab="${key}"]`) || $(`#tab${capitalize(key)}`);
-  btn?.classList.add('active');
+  const btnSearchPanel = $("btnSearchPanel");
+  const searchPanel = $("searchPanel");
+  const closeSearch = $("closeSearch");
+  const breedInput  = $("breedInput");
+  const breedsList  = $("breedsList");
+  const distRange   = $("distRange");
+  const distLabel   = $("distLabel");
+  const onlyVerified = $("onlyVerified");
+  const sexFilter   = $("sexFilter");
+  const weightInput = $("weightInput");
+  const heightInput = $("heightInput");
+  const applyFilters = $("applyFilters");
+  const resetFilters = $("resetFilters");
 
-  $$('.view').forEach(v=>v.classList.remove('active'));
-  if(key==='nearby') $('#viewNearby')?.classList.add('active');
-  if(key==='love')   $('#viewLove')?.classList.add('active');
-  if(key==='play')   $('#viewPlay')?.classList.add('active');
-  if(key==='search') openSearchPanel();
-}
-function capitalize(s){return s? s[0].toUpperCase()+s.slice(1):s;}
+  const chatPane   = $("chatPane");
+  const closeChat  = $("closeChat");
+  const chatList   = $("chatList");
+  const chatComposer = $("chatComposer");
+  const chatInput  = $("chatInput");
 
-$('#tabNearby')?.addEventListener('click', ()=>{ setActiveTab('nearby'); });
-$('#tabLove')  ?.addEventListener('click', ()=>{ setActiveTab('love');   renderDeck('#loveDeck'); });
-$('#tabPlay')  ?.addEventListener('click', ()=>{ setActiveTab('play');   renderDeck('#playDeck'); });
-$('#btnBack')  ?.addEventListener('click', ()=>{
-  hide(screens.app); show(screens.home);
-  window.scrollTo({top:0,behavior:'instant'});
-});
+  const profileSheet = $("profileSheet");
+  const ppBody   = $("ppBody");
 
-/* Luoghi PET dropdown */
-const luoghiBtn  = $('#tabLuoghi');
-const luoghiWrap = $('#luoghiTabWrap');
-const luoghiMenu = $('#luoghiMenu');
-luoghiBtn?.addEventListener('click', ()=>{
-  const expanded = luoghiBtn.getAttribute('aria-expanded')==='true';
-  luoghiBtn.setAttribute('aria-expanded', String(!expanded));
-  luoghiWrap.setAttribute('aria-expanded', String(!expanded));
-});
-luoghiMenu?.addEventListener('click', (e)=>{
-  const item = e.target.closest('.menu-item'); if(!item) return;
-  const q = encodeURIComponent(item.dataset.query || 'Animali vicino a me');
-  window.open(`https://www.google.com/maps/search/?api=1&query=${q}`,'_blank');
-  luoghiBtn.setAttribute('aria-expanded','false');
-  luoghiWrap.setAttribute('aria-expanded','false');
-});
+  // Sponsor nel footer app (rendilo cliccabile ovunque)
+  const sponsorAppClickable = $("sponsorAppClickable");
 
-/* Ricerca personalizzata (overlay) */
-const panel = $('#panelSearch');
-function openSearchPanel(){ panel?.setAttribute('aria-hidden','false'); }
-$('#btnSearch')     ?.addEventListener('click', openSearchPanel);
-$('#btnCloseSearch')?.addEventListener('click', ()=> panel?.setAttribute('aria-hidden','true'));
-$('#btnResetFilters')?.addEventListener('click', ()=>{
-  $('#breed').value=''; $('#sex').value=''; $('#badge').value=''; $('#distance').value=20;
-  $('#suggestions').classList.remove('show'); $('#suggestions').innerHTML='';
-});
-$('#btnApplyFilters')?.addEventListener('click', ()=>{
-  const breed = $('#breed').value.trim().toLowerCase();
-  const sex   = $('#sex').value;
-  const badge = $('#badge').value;
-  const filtered = DOGS.filter(d=>{
-    let ok=true;
-    if(breed) ok = ok && d.breed.toLowerCase().includes(breed);
-    if(sex)   ok = ok && d.sex===sex;
-    if(badge) ok = ok && (String(!!d.badge)===badge);
-    return ok;
+  // ---------------- Stato ----------------
+  const state = {
+    lang: (localStorage.getItem("lang") || autodetectLang()),
+    plus: localStorage.getItem("plutoo_plus")==="1",
+    entered: localStorage.getItem("entered")==="1",
+    swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
+    matches: parseInt(localStorage.getItem("matches")||"0"),
+    firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
+    selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
+    currentLoveIdx: 0,
+    currentSocialIdx: 0,
+    filters: {
+      breed: localStorage.getItem("f_breed") || "",
+      distKm: parseInt(localStorage.getItem("f_distKm")||"5"),
+      verified: localStorage.getItem("f_verified")==="1",
+      sex: localStorage.getItem("f_sex") || "",
+      weight: localStorage.getItem("f_weight") || "",
+      height: localStorage.getItem("f_height") || ""
+    },
+    geo: null,
+    breeds: []
+  };
+
+  // ---------------- I18N min ----------------
+  const I18N = {
+    it: { sponsorUrl:"https://example.com/fido-gelato", mapsShelters:"canili vicino a me", noProfiles:"Nessun profilo. Modifica i filtri."},
+    en: { sponsorUrl:"https://example.com/fido-gelato", mapsShelters:"animal shelters near me", noProfiles:"No profiles. Adjust filters."}
+  };
+  const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
+  function autodetectLang(){ return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; }
+
+  // ---------------- Dati mock ----------------
+  const DOGS = [
+    { id:"d1", name:"Luna",  age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love",   sex:"F", verified:true  },
+    { id:"d2", name:"Rex",   age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"social", sex:"M", verified:true  },
+    { id:"d3", name:"Maya",  age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg", bio:"Coccole e passeggiate.",  mode:"love",   sex:"F", verified:false },
+    { id:"d4", name:"Rocky", age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.",    mode:"social", sex:"M", verified:true  },
+    { id:"d5", name:"Chicco",age:1, breed:"Barboncino",       km:0.8, img:"dog1.jpg", bio:"Piccolo fulmine.",        mode:"love",   sex:"M", verified:true  },
+    { id:"d6", name:"Kira",  age:6, breed:"Labrador",         km:5.1, img:"dog2.jpg", bio:"Acqua e palla.",          mode:"social", sex:"F", verified:true  },
+  ];
+
+  // Breeds (prefisso); se c’è breeds.json lo usiamo
+  fetch("breeds.json").then(r=>r.json()).then(arr=>{
+    if (Array.isArray(arr)) state.breeds = arr;
+  }).catch(()=>{ state.breeds = [
+    "Pastore Tedesco","Labrador","Golden Retriever","Jack Russell",
+    "Bulldog Francese","Barboncino","Border Collie","Chihuahua",
+    "Carlino","Beagle","Maltese","Shih Tzu","Husky","Bassotto","Cocker Spaniel"
+  ];});
+
+  // Geo (facoltativo)
+  if ("geolocation" in navigator){
+    navigator.geolocation.getCurrentPosition(
+      p=>{ state.geo = { lat:p.coords.latitude, lon:p.coords.longitude }; },
+      ()=>{}, { enableHighAccuracy:true, timeout:5000, maximumAge:60000 }
+    );
+  }
+
+  // ---------------- HOME ↔ APP ----------------
+  initHome();
+
+  function initHome(){
+    if (state.entered){ homeScreen.classList.add("hidden"); appScreen.classList.remove("hidden"); }
+    btnEnter?.addEventListener("click", ()=>{
+      heroLogo.classList.add("gold-glow");
+      setTimeout(()=>{
+        heroLogo.classList.remove("gold-glow");
+        state.entered=true; localStorage.setItem("entered","1");
+        homeScreen.classList.add("hidden");
+        appScreen.classList.remove("hidden");
+        setActiveView("nearby");
+      }, 1500);
+    });
+
+    // Sponsor: apertura diretta (no reward)
+    sponsorLink?.addEventListener("click",(e)=>{
+      e.preventDefault();
+      window.open(t("sponsorUrl"), "_blank", "noopener");
+    });
+
+    // Canili in Home: apertura diretta (no reward)
+    ethicsButton?.addEventListener("click", ()=>{
+      openSheltersMaps();
+    });
+
+    // Sponsor anche nel footer app
+    sponsorAppClickable?.addEventListener("click", ()=>{
+      window.open(t("sponsorUrl"), "_blank", "noopener");
+    });
+  }
+
+  // ---------------- Tabs & Views ----------------
+  tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
+  tabLove  ?.addEventListener("click", ()=>setActiveView("love"));
+  tabSocial?.addEventListener("click", ()=>setActiveView("social"));
+
+  // Luoghi Pet menu (toggle) – apertura Maps diretta
+  tabLuoghi?.addEventListener("click",(e)=>{
+    e.stopPropagation();
+    tabLuoghi.parentElement.classList.toggle("open");
   });
-  renderNearby(filtered);
-  panel?.setAttribute('aria-hidden','true');
-});
-
-/* Autosuggest razze (lista locale) */
-const ALL_BREEDS = ['Labrador','Beagle','Husky','Maltese','Maremmano','Terrier','Volpino','Setter','Pastore Tedesco','Pastore Maremmano'];
-$('#breed')?.addEventListener('input', (e)=>{
-  const v = e.target.value.trim().toLowerCase();
-  const box = $('#suggestions');
-  if(!v){ box.classList.remove('show'); box.innerHTML=''; return; }
-  const list = ALL_BREEDS.filter(b=>b.toLowerCase().startsWith(v)).sort();
-  box.innerHTML = list.map(b=>`<div class="item" role="option">${b}</div>`).join('');
-  box.classList.toggle('show', list.length>0);
-});
-$('#suggestions')?.addEventListener('click',(e)=>{
-  const it = e.target.closest('.item'); if(!it) return;
-  $('#breed').value = it.textContent;
-  $('#suggestions').classList.remove('show'); $('#suggestions').innerHTML='';
-});
-
-/* =====================================================
-   VICINO A TE (griglia 2 col, click → profilo)
-   ===================================================== */
-function cardHTML(d){
-  return `
-  <article class="card" data-id="${d.id}" aria-label="${d.name}">
-    <img class="card-img" src="${d.img}" alt="${d.name}" />
-    <div class="card-info">
-      <h3>${d.name}</h3>
-      <p class="meta">${d.breed} · ${d.sex} · ${d.dist}</p>
-    </div>
-    <div class="card-actions">
-      <button class="btn no"  type="button" aria-label="Saluta">😊</button>
-      <button class="btn yes" type="button" aria-label="Mi piace">💜</button>
-    </div>
-  </article>`;
-}
-function renderNearby(list=DOGS){
-  const grid = $('#nearbyGrid'); if(!grid) return;
-  grid.innerHTML = list.map(d=>cardHTML(d)).join('');
-  // click su card -> profilo (ignora bottoni)
-  $$('#nearbyGrid .card').forEach(card=>{
-    card.addEventListener('click', (e)=>{
-      if(e.target.closest('.btn')) return;
-      openProfile(Number(card.dataset.id));
+  document.addEventListener("click",()=>tabLuoghi?.parentElement.classList.remove("open"));
+  qa(".menu-item", luoghiMenu).forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const cat = btn.getAttribute("data-cat");
+      tabLuoghi.parentElement.classList.remove("open");
+      openMapsCategory(cat);
     });
   });
-}
 
-/* =====================================================
-   AMORE / GIOCHIAMO (deck centrato, swipe senza muovere pagina)
-   ===================================================== */
-function renderDeck(sel){
-  const wrap = $(sel); if(!wrap) return;
-  wrap.innerHTML = cardHTML(DOGS[0]);
-  const card = $('.card', wrap);
-  let startX=0, dx=0;
+  function setActiveView(name){
+    [viewNearby, viewLove, viewSocial].forEach(v=>v?.classList.remove("active"));
+    [tabNearby, tabLove, tabSocial].forEach(t=>t?.classList.remove("active"));
 
-  card.addEventListener('touchstart', e=>{
-    startX = e.touches[0].clientX;
-    card.style.transition='none';
-  }, {passive:false});
+    if (name==="nearby"){ viewNearby.classList.add("active"); tabNearby.classList.add("active"); renderNearby(); btnSearchPanel.disabled=false; }
+    if (name==="love"){   viewLove.classList.add("active");   tabLove.classList.add("active");   renderSwipe("love"); btnSearchPanel.disabled=true; }
+    if (name==="social"){ viewSocial.classList.add("active"); tabSocial.classList.add("active"); renderSwipe("social"); btnSearchPanel.disabled=true; }
 
-  card.addEventListener('touchmove', e=>{
-    e.preventDefault(); // evita scroll della pagina
-    dx = e.touches[0].clientX - startX;
-    card.style.transform = `translateX(${dx}px) rotate(${dx/25}deg)`;
-  }, {passive:false});
+    window.scrollTo({top:0,behavior:"instant"});
+  }
 
-  card.addEventListener('touchend', ()=>{
-    card.style.transition='transform .25s ease';
-    if(Math.abs(dx)>90){
-      card.style.transform=`translateX(${dx>0?480:-480}px) rotate(${dx/14}deg)`;
-      setTimeout(()=>renderDeck(sel),260);
-    }else{
-      card.style.transform='translateX(0) rotate(0)';
+  // Back
+  btnBack?.addEventListener("click", ()=>{
+    if (!viewNearby.classList.contains("active")) { setActiveView("nearby"); return; }
+    if (confirm("Tornare alla Home?")){
+      localStorage.removeItem("entered");
+      state.entered=false;
+      appScreen.classList.add("hidden");
+      homeScreen.classList.remove("hidden");
     }
-    dx=0;
-  }, {passive:false});
-}
+  });
 
-/* =====================================================
-   PROFILO (pagina dedicata) + Selfie mock (senza video)
-   ===================================================== */
-function openProfile(id){
-  const d = DOGS.find(x=>x.id===id); if(!d) return;
+  // ---------------- Reward (DISATTIVATO per test) ----------------
+  function reward(){ return Promise.resolve(true); } // no overlay, no video
 
-  // Popola
-  $('#profilePhoto').src = d.img;
-  $('#profileName').textContent = d.name;
-  $('#profileMeta').textContent = `${d.breed} · ${d.sex} · ${d.dist}`;
-  $('#profileBio').textContent  = d.bio || '—';
-  $('#profileBadges').innerHTML = d.badge ? `<span class="badge">✔︎ Verificato</span>` : '';
-  $('#profileSelfie').src = d.img;
-  $('#profileSelfie').classList.remove('blur-on');
-  $('#profileSelfie').classList.add('blur-off');
+  // ---------------- Nearby (grid 2×N) ----------------
+  function renderNearby(){
+    const list = filteredDogs();
+    if (!list.length){ nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; return; }
+    nearGrid.innerHTML = list.map(cardHTML).join("");
+    qa(".dog-card").forEach(card=>{
+      const id = card.getAttribute("data-id");
+      const d  = DOGS.find(x=>x.id===id);
+      const img = qs("img", card);
+      // Apri profilo su click immagine
+      img?.addEventListener("click", ()=>openProfile(d));
+      // Bottone "Apri profilo" (senza reward)
+      qs(".open-profile", card)?.addEventListener("click", ()=>openProfile(d));
+    });
+  }
+  function cardHTML(d){
+    return `
+      <article class="card dog-card" data-id="${d.id}">
+        <img src="${d.img}" alt="${d.name}" class="card-img" />
+        <div class="card-info">
+          <h3>${d.name} ${d.verified?"✅":""}</h3>
+          <p class="meta">${d.breed} · ${d.age} ${state.lang==="it"?"anni":"yrs"} · ${fmtKm(d.km)}</p>
+          <p class="bio">${d.bio||""}</p>
+        </div>
+        <div class="card-actions">
+          <button class="btn ghost small open-profile">Apri profilo</button>
+        </div>
+      </article>`;
+  }
+  const fmtKm = n => `${n.toFixed(1)} km`;
 
-  // Mini galleria
-  $('#profileGallery').innerHTML = `
-    <img src="${d.img}" alt="">
-    <img src="dog2.jpg" alt="">
-    <img src="dog3.jpg" alt="">
-  `;
+  function filteredDogs(){
+    const f = state.filters;
+    return DOGS
+      .filter(d => d.km <= (f.distKm||999))
+      .filter(d => (!f.verified ? true : d.verified))
+      .filter(d => (!f.sex ? true : d.sex===f.sex))
+      .filter(d => (!f.breed ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase())));
+  }
 
-  // Mostra pagina profilo
-  hide(screens.app); show(screens.profile);
-  window.scrollTo({top:0,behavior:'instant'});
-}
-$('#btnBackProfile')?.addEventListener('click', ()=>{
-  hide(screens.profile); show(screens.app);
-  setActiveTab('nearby');
-});
+  // ---------------- Swipe Decks (no scroll pagina) ----------------
+  function renderSwipe(mode){
+    const deck = DOGS.filter(d=>d.mode===mode);
+    const idx = (mode==="love"?state.currentLoveIdx:state.currentSocialIdx) % (deck.length||1);
+    const d = deck[idx] || DOGS[0];
 
-/* Selfie: pulsante (mock, niente reward) */
-$('#btnSeeSelfie')?.addEventListener('click', ()=>{
-  const s = $('#profileSelfie'); if(!s) return;
-  s.classList.toggle('blur-on');
-  s.classList.toggle('blur-off');
-});
+    const img   = mode==="love" ? loveImg : socialImg;
+    const title = mode==="love" ? loveTitleTxt : socialTitleTxt;
+    const meta  = mode==="love" ? loveMeta : socialMeta;
+    const bio   = mode==="love" ? loveBio : socialBio;
+    const card  = mode==="love" ? loveCard : socialCard;
 
-/* Placeholder azioni */
-$('#btnUploadSelfie') ?.addEventListener('click', ()=>toast('Upload selfie (mock)'));
-$('#btnUploadDogDocs')?.addEventListener('click', ()=>toast('Carica documenti dog (mock)'));
-$('#btnUploadOwnerDocs')?.addEventListener('click', ()=>toast('Carica documenti personali (mock)'));
-$('#btnOpenChat')      ?.addEventListener('click', ()=>toast('Chat (mock) — primo messaggio gratis'));
+    img.src = d.img;
+    title.textContent = `${d.name} ${d.verified?"✅":""}`;
+    meta.textContent  = `${d.breed} · ${d.age} ${state.lang==="it"?"anni":"yrs"} · ${fmtKm(d.km)}`;
+    bio.textContent   = d.bio || "";
+    img.onclick = ()=>openProfile(d);
 
-/* =====================================================
-   AVVIO
-   ===================================================== */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // non registriamo il SW durante i test per evitare cache
-  // render iniziale rimandato a openApp() dopo "Entra"
+    attachSwipe(card, dir=>{
+      if (dir==="right") maybeMatch();
+      if (mode==="love") state.currentLoveIdx++; else state.currentSocialIdx++;
+      setTimeout(()=>renderSwipe(mode), 10);
+    });
+
+    (mode==="love"?loveYes:socialYes).onclick = ()=>simulateSwipe(card,"right");
+    (mode==="love"?loveNo:socialNo).onclick   = ()=>simulateSwipe(card,"left");
+  }
+
+  function attachSwipe(card, cb){
+    if (card._sw) return;
+    card._sw = true;
+    let sx=0, dx=0, dragging=false;
+
+    const start=(x)=>{
+      sx=x; dragging=true; card.style.transition="none";
+      // blocca scroll body mentre trascino
+      document.body.style.overflow='hidden';
+    };
+    const move =(x, e)=>{
+      if(!dragging) return;
+      dx=x-sx; const rot=dx/18;
+      card.style.transform=`translate3d(${dx}px,0,0) rotate(${rot}deg)`;
+      if (e && e.cancelable) e.preventDefault(); // blocca scroll pagina
+    };
+    const end =(e)=>{
+      if(!dragging) return;
+      dragging=false; card.style.transition="";
+      document.body.style.overflow=''; // ripristina scroll
+      const th=90;
+      if (dx>th){ card.classList.add("swipe-out-right"); setTimeout(()=>{ resetCard(card); cb("right"); }, 550); }
+      else if (dx<-th){ card.classList.add("swipe-out-left"); setTimeout(()=>{ resetCard(card); cb("left"); }, 550); }
+      else { resetCard(card); }
+      dx=0;
+    };
+
+    card.addEventListener("touchstart", e=>start(e.touches[0].clientX), {passive:false});
+    card.addEventListener("touchmove",  e=>move(e.touches[0].clientX, e), {passive:false});
+    card.addEventListener("touchend", end, {passive:false});
+
+    card.addEventListener("mousedown", e=>start(e.clientX));
+    window.addEventListener("mousemove", e=>move(e.clientX, e));
+    window.addEventListener("mouseup", end);
+  }
+  function resetCard(card){ card.classList.remove("swipe-out-right","swipe-out-left"); card.style.transform=""; }
+  function simulateSwipe(card, dir){
+    card.classList.add(dir==="right"?"swipe-out-right":"swipe-out-left");
+    setTimeout(()=>{ resetCard(card); card.dispatchEvent(new CustomEvent("swiped",{detail:{dir}})); }, 550);
+  }
+
+  function maybeMatch(){
+    if (Math.random() < 0.55){
+      state.matches++; localStorage.setItem("matches", String(state.matches));
+      const burst = document.createElement("div");
+      burst.className = "match-burst";
+      burst.textContent = "💜";
+      document.body.appendChild(burst);
+      setTimeout(()=>burst.remove(), 1200);
+    }
+  }
+
+  // ---------------- Ricerca panel ----------------
+  btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
+  closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
+
+  distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
+
+  breedInput?.addEventListener("input", ()=>{
+    const v = (breedInput.value||"").trim().toLowerCase();
+    breedsList.innerHTML=""; breedsList.style.display="none";
+    if (!v) return;
+    const matches = state.breeds.filter(b=>b.toLowerCase().startsWith(v)).sort().slice(0,16);
+    if (!matches.length) return;
+    breedsList.innerHTML = matches.map(b=>`<div class="item">${b}</div>`).join("");
+    breedsList.style.display = "block";
+    qa(".item",breedsList).forEach(it=>it.addEventListener("click",()=>{
+      breedInput.value = it.textContent; breedsList.style.display="none";
+    }));
+  });
+  document.addEventListener("click",(e)=>{
+    if (e.target!==breedInput && !breedsList.contains(e.target)) breedsList.style.display="none";
+  });
+
+  onlyVerified?.addEventListener("change", ()=> state.filters.verified = !!onlyVerified.checked);
+  sexFilter?.addEventListener("change", ()=> state.filters.sex = sexFilter.value || "");
+
+  applyFilters?.addEventListener("click",(e)=>{
+    e.preventDefault();
+    state.filters.breed = (breedInput.value||"").trim();
+    state.filters.distKm = parseInt(distRange.value||"5");
+    if (state.plus){
+      state.filters.weight = (weightInput.value||"").trim();
+      state.filters.height = (heightInput.value||"").trim();
+    }
+    persistFilters();
+    renderNearby();
+    searchPanel.classList.add("hidden");
+  });
+  resetFilters?.addEventListener("click",()=>{
+    breedInput.value=""; distRange.value=5; distLabel.textContent="5 km";
+    onlyVerified.checked=false; sexFilter.value="";
+    if (state.plus){ weightInput.value=""; heightInput.value=""; }
+    Object.assign(state.filters,{breed:"",distKm:5,verified:false,sex:"",weight:"",height:""});
+    persistFilters(); renderNearby();
+  });
+
+  function persistFilters(){
+    localStorage.setItem("f_breed", state.filters.breed);
+    localStorage.setItem("f_distKm", String(state.filters.distKm));
+    localStorage.setItem("f_verified", state.filters.verified?"1":"0");
+    localStorage.setItem("f_sex", state.filters.sex);
+    localStorage.setItem("f_weight", state.filters.weight||"");
+    localStorage.setItem("f_height", state.filters.height||"");
+  }
+  function enableGoldInputs(){
+    weightInput?.removeAttribute("disabled");
+    heightInput?.removeAttribute("disabled");
+    qa(".f-lock").forEach(n=>n.style.opacity="1");
+  }
+  if (state.plus) enableGoldInputs();
+
+  // ---------------- Profilo (sheet) ----------------
+  window.openProfile = (d)=>{
+    profileSheet.classList.remove("hidden");
+    setTimeout(()=>profileSheet.classList.add("show"), 10);
+
+    const selfieUnlocked = isSelfieUnlocked(d.id);
+    ppBody.innerHTML = `
+      <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
+      <div class="pp-head">
+        <h2 class="pp-name">${d.name} ${d.verified?"✅":""}</h2>
+        <div class="pp-badges">
+          <span class="badge">${d.breed}</span>
+          <span class="badge">${d.age} ${state.lang==="it"?"anni":"yrs"}</span>
+          <span class="badge">${fmtKm(d.km)}</span>
+        </div>
+      </div>
+      <div class="pp-meta soft">${d.bio||""}</div>
+
+      <h3 class="section-title">Galleria</h3>
+      <div class="gallery">
+        <div class="ph"><img src="${d.img}" alt=""></div>
+        <div class="ph"><img src="dog2.jpg" alt=""></div>
+        <div class="ph"><img src="dog3.jpg" alt=""></div>
+        <div class="ph"><button class="add-photo">+ Aggiungi</button></div>
+      </div>
+
+      <h3 class="section-title">Selfie</h3>
+      <div class="selfie ${selfieUnlocked?'unlocked':''}">
+        <img class="img" src="${d.img}" alt="Selfie">
+        <div class="over">
+          <button id="unlockSelfie" class="btn ghost small">${selfieUnlocked?"Sbloccato 24h":"Sblocca selfie"}</button>
+          <button id="uploadSelfie" class="btn small">Carica selfie</button>
+        </div>
+      </div>
+
+      <div class="separator"></div>
+      <div class="pp-actions">
+        <button id="btnDocsOwner" class="btn outline">Documenti proprietario</button>
+        <button id="btnDocsDog"   class="btn outline">Documenti cane</button>
+        <button id="btnOpenChat"  class="btn">Apri chat</button>
+      </div>
+    `;
+
+    $("btnDocsOwner").onclick = ()=>{ alert("Upload documenti proprietario (mock)"); d.verified=true; renderNearby(); };
+    $("btnDocsDog").onclick   = ()=>{ alert("Upload documenti cane (mock)"); d.verified=true; renderNearby(); };
+    $("btnOpenChat").onclick  = ()=>{ closeProfilePage(); setTimeout(()=>openChat(d), 180); };
+
+    $("uploadSelfie").onclick = ()=>alert("Upload selfie (mock)");
+
+    // Selfie sblocco: SENZA reward
+    $("unlockSelfie").onclick = ()=>{
+      if (!isSelfieUnlocked(d.id)){
+        state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+        localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+        openProfile(d);
+      }
+    };
+  };
+  window.closeProfilePage = ()=>{
+    profileSheet.classList.remove("show");
+    setTimeout(()=>profileSheet.classList.add("hidden"), 250);
+  };
+  function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
+
+  // ---------------- Chat (primo messaggio SENZA reward) ----------------
+  function openChat(dog){
+    chatPane.classList.remove("hidden");
+    setTimeout(()=>chatPane.classList.add("show"), 10);
+    chatPane.dataset.dogId = dog.id;
+    chatList.innerHTML = `<div class="msg">Ciao ${dog.name}! 🐾</div>`;
+    chatInput.value="";
+  }
+  function closeChatPane(){ chatPane.classList.remove("show"); setTimeout(()=>chatPane.classList.add("hidden"), 250); }
+  closeChat?.addEventListener("click", closeChatPane);
+
+  chatComposer?.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const text = chatInput.value.trim(); if (!text) return;
+    const bubble = document.createElement("div");
+    bubble.className="msg me"; bubble.textContent=text;
+    chatList.appendChild(bubble); chatInput.value="";
+    chatList.scrollTop = chatList.scrollHeight;
+  });
+
+  // ---------------- Maps helpers ----------------
+  function openMapsCategory(cat){
+    const map = {
+      vets:"veterinari per animali vicino a me",
+      groomers:"toelettature per cani vicino a me",
+      shops:"negozi animali vicino a me",
+      parks:"parchi per cani vicino a me",
+      trainers:"addestratori per cani vicino a me",
+      shelters:"canili vicino a me" // presente nel menu, ma il bottone canili dell'app è nascosto via CSS
+    };
+    const q = map[cat] || "servizi animali vicino a me";
+    openMapsQuery(q);
+  }
+  function openSheltersMaps(){ openMapsQuery(t("mapsShelters")); }
+  function openMapsQuery(q){
+    if (state.geo){
+      const url = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
+      window.open(url,"_blank","noopener");
+    } else {
+      window.open(`https://www.google.com/maps/search/${encodeURIComponent(q)}`,"_blank","noopener");
+    }
+  }
+
+  // ---------------- Init ----------------
+  function init(){
+    breedInput.value = state.filters.breed;
+    distRange.value  = state.filters.distKm; distLabel.textContent = `${distRange.value} km`;
+    onlyVerified.checked = !!state.filters.verified;
+    sexFilter.value  = state.filters.sex;
+    if (state.plus){ enableGoldInputs(); weightInput.value = state.filters.weight; heightInput.value = state.filters.height; }
+
+    if (state.entered){ setActiveView("nearby"); }
+  }
+  init();
+
+  function persistFilters(){
+    localStorage.setItem("f_breed", state.filters.breed);
+    localStorage.setItem("f_distKm", String(state.filters.distKm));
+    localStorage.setItem("f_verified", state.filters.verified?"1":"0");
+    localStorage.setItem("f_sex", state.filters.sex);
+    localStorage.setItem("f_weight", state.filters.weight||"");
+    localStorage.setItem("f_height", state.filters.height||"");
+  }
+  function enableGoldInputs(){
+    weightInput?.removeAttribute("disabled");
+    heightInput?.removeAttribute("disabled");
+    qa(".f-lock").forEach(n=>n.style.opacity="1");
+  }
+
+  // Lang toggle persist
+  $("langToggle")?.addEventListener("click", ()=>{
+    state.lang = state.lang==="it"?"en":"it";
+    localStorage.setItem("lang", state.lang);
+  });
 });
