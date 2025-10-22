@@ -136,15 +136,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // HOME ↔ APP
-  if (state.entered){ homeScreen.classList.add("hidden"); appScreen.classList.remove("hidden"); }
-  btnEnter?.addEventListener("click", ()=>{
-    state.entered=true; localStorage.setItem("entered","1");
+if (state.entered) {
+  homeScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+  setActiveView("nearby");
+}
+
+// Entra: animazione viola→oro→viola e poi entra
+btnEnter?.addEventListener("click", ()=>{
+  heroLogo?.classList.remove("glow-vg");
+  void heroLogo?.offsetWidth;          // forza reflow per riavviare animazione
+  heroLogo?.classList.add("glow-vg");
+
+  setTimeout(()=>{
+    state.entered = true;
+    localStorage.setItem("entered","1");
     homeScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
     setActiveView("nearby");
-  });
-
-  // Sponsor click (Home + App) — senza reward reali ora
+  }, 2200);
+});
+    
+   // Sponsor click (Home + App) — senza reward reali ora
   function openSponsor(){ window.open(t("sponsorUrl"), "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
