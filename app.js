@@ -1,44 +1,34 @@
 /* =========================================================
-   PLUTOO – app.js (Gold Edition, esteso sui TUOI file)
-   Aggiunte: splash, tab Giochiamo, Luoghi PET esteso,
-   profilo (Documenti dog, bottoni accent, lightbox),
-   contatti solo in Home, canili solo in Home.
+   PLUTOO – app.js (Gold Edition, esteso)
+   Palette: viola-notte + oro (niente rosa/blu)
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Helpers
+  // ---------------- Helpers ----------------
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
   const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-  // Splash show/hide
-  const splash = $("splash");
-  if (splash){
-    // Piccola pausa per percezione logo; poi fade-out
-    setTimeout(()=> splash.classList.add("hide"), 900);
-    setTimeout(()=> splash.remove(), 1400);
-  }
-
-  // DOM refs
+  // ---------------- DOM refs ----------------
   const homeScreen   = $("homeScreen");
   const appScreen    = $("appScreen");
   const heroLogo     = $("heroLogo");
   const btnEnter     = $("btnEnter");
   const sponsorLink  = $("sponsorLink");
-  const sponsorLinkApp = $("sponsorLinkApp");
   const ethicsButton = $("ethicsButton");
-  const ethicsButtonApp = $("ethicsButtonApp"); // nascosto nell'app
+  const ethicsButtonApp = $("ethicsButtonApp");
   const btnBack      = $("btnBack");
 
   const tabNearby = $("tabNearby");
   const tabLove   = $("tabLove");
-  const tabPlay   = $("tabPlay");
+  const tabSocial = $("tabSocial");
   const tabLuoghi = $("tabLuoghi");
   const luoghiMenu = $("luoghiMenu");
+  const tabPlus   = $("tabPlus");
 
   const viewNearby = $("viewNearby");
   const viewLove   = $("viewLove");
-  const viewPlay   = $("viewPlay");
+  const viewSocial = $("viewSocial");
   const nearGrid   = $("nearGrid");
 
   const loveCard = $("loveCard");
@@ -49,13 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const loveNo   = $("loveNo");
   const loveYes  = $("loveYes");
 
-  const playCard = $("playCard");
-  const playImg  = $("playImg");
-  const playTitleTxt = $("playTitleTxt");
-  const playMeta  = $("playMeta");
-  const playBio   = $("playBio");
-  const playNo    = $("playNo");
-  const playYes   = $("playYes");
+  const socialCard = $("socialCard");
+  const socialImg  = $("socialImg");
+  const socialTitleTxt = $("socialTitleTxt");
+  const socialMeta  = $("socialMeta");
+  const socialBio   = $("socialBio");
+  const socialNo    = $("socialNo");
+  const socialYes   = $("socialYes");
 
   const btnSearchPanel = $("btnSearchPanel");
   const searchPanel = $("searchPanel");
@@ -80,7 +70,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileSheet = $("profileSheet");
   const ppBody   = $("ppBody");
 
-  // Stato
+  // ---------------- Splash on load ----------------
+  makeSplash();
+
+  function makeSplash(){
+    const wrap = document.createElement("div");
+    wrap.id = "plutooSplash";
+    wrap.style.cssText = "position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:1000";
+    wrap.innerHTML = `
+      <div style="text-align:center">
+        <img id="splashLogo" src="plutoo-icon-512.png" alt="Plutoo" style="width:120px;height:120px;opacity:0;transform:scale(.9);filter:drop-shadow(0 0 24px rgba(205,164,52,.35));transition:all .8s ease">
+        <div id="splashText" style="margin-top:8px;color:#CDA434;font-weight:800;opacity:0;transition:opacity .8s ease">Plutoo</div>
+      </div>`;
+    document.body.appendChild(wrap);
+    requestAnimationFrame(()=>{
+      $("splashLogo").style.opacity = "1";
+      $("splashLogo").style.transform = "scale(1)";
+      $("splashText").style.opacity = "1";
+    });
+    setTimeout(()=>wrap.remove(), 1400);
+  }
+
+  // ---------------- Stato ----------------
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
     plus: localStorage.getItem("plutoo_plus")==="1",
@@ -90,12 +101,13 @@ document.addEventListener("DOMContentLoaded", () => {
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
     currentLoveIdx: 0,
-    currentPlayIdx: 0,
+    currentSocialIdx: 0,
     filters: {
       breed: localStorage.getItem("f_breed") || "",
       distKm: parseInt(localStorage.getItem("f_distKm")||"5"),
       verified: localStorage.getItem("f_verified")==="1",
-      sex: localStorage.getItem("f_sex") || "",
+      sex: localStorage.getItem("f_sex") || "", // "", "M", "F"
+      // Gold fields (disabilitati finché non Plus)
       weight: localStorage.getItem("f_weight") || "",
       height: localStorage.getItem("f_height") || ""
     },
@@ -103,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     breeds: []
   };
 
-  // I18N min
+  // ---------------- I18N min ----------------
   const I18N = {
     it: { sponsorUrl:"https://example.com/fido-gelato", mapsShelters:"canili vicino a me", noProfiles:"Nessun profilo. Modifica i filtri."},
     en: { sponsorUrl:"https://example.com/fido-gelato", mapsShelters:"animal shelters near me", noProfiles:"No profiles. Adjust filters."}
@@ -111,21 +123,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
   function autodetectLang(){ return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; }
 
-  // Lang flags
-  $("langIT")?.addEventListener("click", ()=>{ state.lang="it"; localStorage.setItem("lang","it"); });
-  $("langEN")?.addEventListener("click", ()=>{ state.lang="en"; localStorage.setItem("lang","en"); });
-
-  // Dati mock
+  // ---------------- Dati mock ----------------
   const DOGS = [
     { id:"d1", name:"Luna",  age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love",   sex:"F", verified:true  },
-    { id:"d2", name:"Rex",   age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"play",  sex:"M", verified:true  },
+    { id:"d2", name:"Rex",   age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"social", sex:"M", verified:true  },
     { id:"d3", name:"Maya",  age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg", bio:"Coccole e passeggiate.",  mode:"love",   sex:"F", verified:false },
-    { id:"d4", name:"Rocky", age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.",    mode:"play",  sex:"M", verified:true  },
+    { id:"d4", name:"Rocky", age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.",    mode:"social", sex:"M", verified:true  },
     { id:"d5", name:"Chicco",age:1, breed:"Barboncino",       km:0.8, img:"dog1.jpg", bio:"Piccolo fulmine.",        mode:"love",   sex:"M", verified:true  },
-    { id:"d6", name:"Kira",  age:6, breed:"Labrador",         km:5.1, img:"dog2.jpg", bio:"Acqua e palla.",          mode:"play",  sex:"F", verified:true  },
+    { id:"d6", name:"Kira",  age:6, breed:"Labrador",         km:5.1, img:"dog2.jpg", bio:"Acqua e palla.",          mode:"social", sex:"F", verified:true  },
   ];
 
-  // Razze
+  // Breeds (prefisso); se c’è breeds.json lo usiamo
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
     if (Array.isArray(arr)) state.breeds = arr;
   }).catch(()=>{ state.breeds = [
@@ -134,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Carlino","Beagle","Maltese","Shih Tzu","Husky","Bassotto","Cocker Spaniel"
   ];});
 
-  // Geo
+  // Geo (facoltativo)
   if ("geolocation" in navigator){
     navigator.geolocation.getCurrentPosition(
       p=>{ state.geo = { lat:p.coords.latitude, lon:p.coords.longitude }; },
@@ -142,51 +150,69 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // HOME ↔ APP
-  if (state.entered){ homeScreen.classList.add("hidden"); appScreen.classList.remove("hidden"); }
-  btnEnter?.addEventListener("click", ()=>{
-    state.entered=true; localStorage.setItem("entered","1");
-    homeScreen.classList.add("hidden");
-    appScreen.classList.remove("hidden");
-    setActiveView("nearby");
-  });
+  // ---------------- HOME ↔ APP ----------------
+  initHome();
 
-  // Sponsor click (Home + App) — senza reward reali ora
-  function openSponsor(){ window.open(t("sponsorUrl"), "_blank", "noopener"); }
-  sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
-  sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
+  function initHome(){
+    // mostra home o app in base allo stato
+    if (state.entered){ homeScreen.classList.add("hidden"); appScreen.classList.remove("hidden"); }
+    // Entra: animazione glow sul logo poi entra (UNICA MODIFICA RICHIESTA)
+    btnEnter?.addEventListener("click", ()=>{
+      heroLogo?.classList.add("gold-glow");
+      setTimeout(()=>{
+        heroLogo?.classList.remove("gold-glow");
+        state.entered=true; localStorage.setItem("entered","1");
+        homeScreen.classList.add("hidden");
+        appScreen.classList.remove("hidden");
+        setActiveView("nearby");
+      }, 1200);
+    });
 
-  // Etico canili (solo Home)
-  ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
+    // Sponsor con reward
+    sponsorLink?.addEventListener("click",(e)=>{
+      e.preventDefault();
+      reward("Video prima di aprire lo sponsor").then(()=>{
+        window.open(t("sponsorUrl"), "_blank", "noopener");
+      });
+    });
 
-  // Tabs & Views
+    // Etico canili
+    [ethicsButton, ethicsButtonApp].forEach(b=>{
+      b?.addEventListener("click", async ()=>{
+        await reward("Video prima di aprire Google Maps (canili)");
+        openSheltersMaps();
+      });
+    });
+  }
+
+  // ---------------- Tabs & Views ----------------
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
-  tabPlay?.addEventListener("click",   ()=>setActiveView("play"));
+  tabSocial?.addEventListener("click", ()=>setActiveView("social"));
 
+  // Luoghi Pet menu (toggle)
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
-    const wrap = tabLuoghi.parentElement;
-    const expanded = wrap.classList.toggle("open");
-    tabLuoghi.setAttribute("aria-expanded", expanded ? "true" : "false");
+    tabLuoghi.parentElement.classList.toggle("open");
   });
   document.addEventListener("click",()=>tabLuoghi?.parentElement.classList.remove("open"));
 
   qa(".menu-item", luoghiMenu).forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+    btn.addEventListener("click", async ()=>{
       const cat = btn.getAttribute("data-cat");
       tabLuoghi.parentElement.classList.remove("open");
+      await reward("Video prima di aprire Google Maps");
       openMapsCategory(cat);
     });
   });
 
   function setActiveView(name){
-    [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
-    [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
+    [viewNearby, viewLove, viewSocial].forEach(v=>v?.classList.remove("active"));
+    [tabNearby, tabLove, tabSocial].forEach(t=>t?.classList.remove("active"));
 
     if (name==="nearby"){ viewNearby.classList.add("active"); tabNearby.classList.add("active"); renderNearby(); btnSearchPanel.disabled=false; }
     if (name==="love"){   viewLove.classList.add("active");   tabLove.classList.add("active");   renderSwipe("love"); btnSearchPanel.disabled=true; }
-    if (name==="play"){   viewPlay.classList.add("active");   tabPlay.classList.add("active");   renderSwipe("play"); btnSearchPanel.disabled=true; }
+    if (name==="social"){ viewSocial.classList.add("active"); tabSocial.classList.add("active"); renderSwipe("social"); btnSearchPanel.disabled=true; }
 
     window.scrollTo({top:0,behavior:"smooth"});
   }
@@ -194,7 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Back
   btnBack?.addEventListener("click", ()=>{
     if (!viewNearby.classList.contains("active")) { setActiveView("nearby"); return; }
-    // Torna a Home (conferma)
     if (confirm("Tornare alla Home?")){
       localStorage.removeItem("entered");
       state.entered=false;
@@ -203,7 +228,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Nearby (grid 2×N)
+  // ---------------- Monetizzazione mock ----------------
+  function reward(msg="Guarda un breve video per continuare"){
+    if (state.plus) return Promise.resolve(true);
+    return new Promise(res=>{
+      const panel = document.createElement("div");
+      panel.className = "panel";
+      panel.innerHTML = `
+        <div class="panel-inner center" style="text-align:center">
+          <h3 style="color:#CDA434">🎬 ${msg}</h3>
+          <p class="soft">Mock demo: non vengono caricate pubblicità reali.</p>
+          <button id="rwStart" class="btn primary">Guarda ora</button>
+        </div>`;
+      document.body.appendChild(panel);
+      $("rwStart").onclick = ()=>{
+        qs(".panel-inner",panel).innerHTML = `<h3 style="color:#CDA434">Video in riproduzione…</h3>`;
+        setTimeout(()=>{ panel.remove(); res(true); }, 2200);
+      };
+    });
+  }
+  window.openPlusDialog = ()=>{
+    const panel = document.createElement("div");
+    panel.className="panel";
+    panel.innerHTML = `
+      <div class="panel-inner center" style="text-align:center">
+        <h3 style="color:#CDA434">✨ Plutoo Plus</h3>
+        <p class="soft">Niente video, filtri Gold sbloccati, selfie illimitati (mock).</p>
+        <button id="plOn" class="btn primary">Attiva ora</button>
+        <button id="plOff" class="btn ghost small" style="margin-top:.6rem">${state.plus?"Disattiva":"Chiudi"}</button>
+      </div>`;
+    document.body.appendChild(panel);
+    $("plOn").onclick = ()=>{ state.plus=true; localStorage.setItem("plutoo_plus","1"); panel.remove(); alert("Plutoo Plus attivato!"); enableGoldInputs(); };
+    $("plOff").onclick = ()=> panel.remove();
+  };
+
+  // ---------------- Nearby (grid 2×N) ----------------
   function renderNearby(){
     const list = filteredDogs();
     if (!list.length){ nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; return; }
@@ -213,7 +272,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const d  = DOGS.find(x=>x.id===id);
       const img = qs("img", card);
       img?.addEventListener("click", ()=>openProfile(d));
-      qs(".open-profile", card)?.addEventListener("click", ()=>openProfile(d));
+      qs(".open-profile", card)?.addEventListener("click", async ()=>{
+        await reward("Video prima di aprire il profilo");
+        openProfile(d);
+      });
     });
   }
   function cardHTML(d){
@@ -238,22 +300,21 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(d => d.km <= (f.distKm||999))
       .filter(d => (!f.verified ? true : d.verified))
       .filter(d => (!f.sex ? true : d.sex===f.sex))
-      .filter(d => (!f.breed ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase())));
+      .filter(d => (!f.breed ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase())))
+      .filter(d => (!state.plus ? true : true)); // (peso/altezza reali in fase backend)
   }
 
-  // Swipe Decks
+  // ---------------- Swipe Decks ----------------
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
-    const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % (deck.length||1);
+    const idx = (mode==="love"?state.currentLoveIdx:state.currentSocialIdx) % (deck.length||1);
     const d = deck[idx] || DOGS[0];
 
-    const img   = mode==="love" ? loveImg : playImg;
-    const title = mode==="love" ? loveTitleTxt : playTitleTxt;
-    const meta  = mode==="love" ? loveMeta : playMeta;
-    const bio   = mode==="love" ? loveBio : playBio;
-    const card  = mode==="love" ? loveCard : playCard;
-    const yesBtn = mode==="love" ? loveYes : playYes;
-    const noBtn  = mode==="love" ? loveNo  : playNo;
+    const img   = mode==="love" ? loveImg : socialImg;
+    const title = mode==="love" ? loveTitleTxt : socialTitleTxt;
+    const meta  = mode==="love" ? loveMeta : socialMeta;
+    const bio   = mode==="love" ? loveBio : socialBio;
+    const card  = mode==="love" ? loveCard : socialCard;
 
     img.src = d.img;
     title.textContent = `${d.name} ${d.verified?"✅":""}`;
@@ -262,12 +323,14 @@ document.addEventListener("DOMContentLoaded", () => {
     img.onclick = ()=>openProfile(d);
 
     attachSwipe(card, dir=>{
-      if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
+      incSwipe();
+      if (dir==="right") maybeMatch();
+      if (mode==="love") state.currentLoveIdx++; else state.currentSocialIdx++;
       setTimeout(()=>renderSwipe(mode), 10);
     });
 
-    yesBtn.onclick = ()=>simulateSwipe(card,"right");
-    noBtn.onclick  = ()=>simulateSwipe(card,"left");
+    (mode==="love"?loveYes:socialYes).onclick = ()=>simulateSwipe(card,"right");
+    (mode==="love"?loveNo:socialNo).onclick   = ()=>simulateSwipe(card,"left");
   }
 
   function attachSwipe(card, cb){
@@ -294,10 +357,31 @@ document.addEventListener("DOMContentLoaded", () => {
     card.classList.add(dir==="right"?"swipe-out-right":"swipe-out-left");
     setTimeout(()=>{ resetCard(card); card.dispatchEvent(new CustomEvent("swiped",{detail:{dir}})); }, 550);
   }
+  function incSwipe(){
+    state.swipeCount++; localStorage.setItem("swipes", String(state.swipeCount));
+    if (!state.plus){
+      if (state.swipeCount===10 || (state.swipeCount>10 && (state.swipeCount-10)%5===0)){
+        reward("Video per continuare a fare swipe");
+      }
+    }
+  }
+  function maybeMatch(){
+    // 55% chance match mock + burst gigante
+    if (Math.random() < 0.55){
+      state.matches++; localStorage.setItem("matches", String(state.matches));
+      if (!state.plus && state.matches>=4){ reward("Video per sbloccare il nuovo match"); }
+      const burst = document.createElement("div");
+      burst.className = "match-burst";
+      burst.textContent = "💛";
+      document.body.appendChild(burst);
+      setTimeout(()=>burst.remove(), 1200);
+    }
+  }
 
-  // Ricerca panel
+  // ---------------- Ricerca panel ----------------
   btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
+
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
   breedInput?.addEventListener("input", ()=>{
@@ -323,6 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     state.filters.breed = (breedInput.value||"").trim();
     state.filters.distKm = parseInt(distRange.value||"5");
+    // Gold: weight/height solo se Plus
     if (state.plus){
       state.filters.weight = (weightInput.value||"").trim();
       state.filters.height = (heightInput.value||"").trim();
@@ -347,8 +432,14 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_weight", state.filters.weight||"");
     localStorage.setItem("f_height", state.filters.height||"");
   }
+  function enableGoldInputs(){
+    weightInput?.removeAttribute("disabled");
+    heightInput?.removeAttribute("disabled");
+    qa(".f-lock").forEach(n=>n.style.opacity="1");
+  }
+  if (state.plus) enableGoldInputs();
 
-  // Profilo (sheet) + lightbox galleria
+  // ---------------- Profilo (sheet elegante) ----------------
   window.openProfile = (d)=>{
     profileSheet.classList.remove("hidden");
     setTimeout(()=>profileSheet.classList.add("show"), 10);
@@ -378,39 +469,27 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="selfie ${selfieUnlocked?'unlocked':''}">
         <img class="img" src="${d.img}" alt="Selfie">
         <div class="over">
-          <button id="unlockSelfie" class="btn accent small">${selfieUnlocked?"Sbloccato 24h":"Sblocca selfie"}</button>
-          <button id="uploadSelfie" class="btn accent small">Carica selfie</button>
+          <button id="unlockSelfie" class="btn ghost small">${selfieUnlocked?"Sbloccato 24h":"Sblocca selfie"}</button>
+          <button id="uploadSelfie" class="btn small">Carica selfie</button>
         </div>
       </div>
 
       <div class="separator"></div>
       <div class="pp-actions">
         <button id="btnDocsOwner" class="btn outline">Documenti proprietario</button>
-        <button id="btnDocsDog"   class="btn outline">Documenti dog</button>
-        <button id="btnOpenChat"  class="btn accent">Apri chat</button>
+        <button id="btnDocsDog"   class="btn outline">Documenti cane</button>
+        <button id="btnOpenChat"  class="btn">Apri chat</button>
       </div>
     `;
 
-    // Lightbox sulle foto
-    qa(".gallery img", ppBody).forEach(img=>{
-      img.addEventListener("click", ()=>{
-        const lb = document.createElement("div");
-        lb.className = "lightbox";
-        lb.innerHTML = `<button class="close" aria-label="Chiudi">✕</button><img src="${img.src}" alt="">`;
-        document.body.appendChild(lb);
-        qs(".close", lb).onclick = ()=> lb.remove();
-        lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
-      });
-    });
-
     $("btnDocsOwner").onclick = ()=>{ alert("Upload documenti proprietario (mock)"); d.verified=true; renderNearby(); };
-    $("btnDocsDog").onclick   = ()=>{ alert("Upload documenti dog (mock)"); d.verified=true; renderNearby(); };
+    $("btnDocsDog").onclick   = ()=>{ alert("Upload documenti cane (mock)"); d.verified=true; renderNearby(); };
     $("btnOpenChat").onclick  = ()=>{ closeProfilePage(); setTimeout(()=>openChat(d), 180); };
 
     $("uploadSelfie").onclick = ()=>alert("Upload selfie (mock)");
     $("unlockSelfie").onclick = async ()=>{
       if (!isSelfieUnlocked(d.id)){
-        // mock sblocco 24h senza adv ora
+        await reward("Video per sbloccare il selfie per 24h");
         state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
         localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
         openProfile(d);
@@ -423,7 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // Chat
+  // ---------------- Chat (first message reward) ----------------
   function openChat(dog){
     chatPane.classList.remove("hidden");
     setTimeout(()=>chatPane.classList.add("show"), 10);
@@ -438,22 +517,26 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const text = chatInput.value.trim(); if (!text) return;
     const dogId = chatPane.dataset.dogId || "unknown";
-    // primo messaggio libero (niente video ora)
+    if (!state.plus && !state.firstMsgRewardByDog[dogId]){
+      await reward("Video per inviare il primo messaggio");
+      state.firstMsgRewardByDog[dogId] = true;
+      localStorage.setItem("firstMsgRewardByDog", JSON.stringify(state.firstMsgRewardByDog));
+    }
     const bubble = document.createElement("div");
     bubble.className="msg me"; bubble.textContent=text;
     chatList.appendChild(bubble); chatInput.value="";
     chatList.scrollTop = chatList.scrollHeight;
   });
 
-  // Maps helpers (Luoghi PET esteso)
+  // ---------------- Maps helpers ----------------
   function openMapsCategory(cat){
     const map = {
-      vets:"cliniche veterinarie vicino a me",
-      groomers:"toelettature vicino a me",
-      shops:"negozi per animali vicino a me",
-      trainers:"addestratori cani vicino a me",
-      kennels:"pensioni per dogs vicino a me",
-      parks:"parchi vicino a me"
+      vets:"veterinari per animali vicino a me",
+      groomers:"toelettature per cani vicino a me",
+      shops:"negozi animali vicino a me",
+      parks:"parchi per cani vicino a me",
+      trainers:"addestratori per cani vicino a me",
+      shelters:"canili vicino a me"
     };
     const q = map[cat] || "servizi animali vicino a me";
     openMapsQuery(q);
@@ -468,15 +551,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Ricerca UI preset + primo rendering
+  // ---------------- Init ----------------
   function init(){
+    // preset filtri UI
     breedInput.value = state.filters.breed;
     distRange.value  = state.filters.distKm; distLabel.textContent = `${distRange.value} km`;
     onlyVerified.checked = !!state.filters.verified;
     sexFilter.value  = state.filters.sex;
-    if (state.plus){ weightInput?.removeAttribute("disabled"); heightInput?.removeAttribute("disabled"); }
+    if (state.plus){ enableGoldInputs(); weightInput.value = state.filters.weight; heightInput.value = state.filters.height; }
 
+    // primo rendering
     if (state.entered){ setActiveView("nearby"); }
   }
   init();
+
+  // ---------------- Persist Lang toggle (se presente) ----------------
+  $("langToggle")?.addEventListener("click", ()=>{
+    state.lang = state.lang==="it"?"en":"it";
+    localStorage.setItem("lang", state.lang);
+  });
 });
