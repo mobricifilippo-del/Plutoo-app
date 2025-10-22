@@ -1,8 +1,5 @@
-/* =========================================================
-   PLUTOO – app.js (Gold Edition, esteso)
-   Palette: viola-notte + oro (niente rosa/blu)
-   ========================================================= */
-
+<!-- app.js (completo, aggiornato) -->
+<script>
 document.addEventListener("DOMContentLoaded", () => {
   // ---------------- Helpers ----------------
   const $  = (id) => document.getElementById(id);
@@ -79,7 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
     wrap.style.cssText = "position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:1000";
     wrap.innerHTML = `
       <div style="text-align:center">
-        <img id="splashLogo" src="plutoo-icon-512.png" alt="Plutoo" style="width:120px;height:120px;opacity:0;transform:scale(.9);filter:drop-shadow(0 0 24px rgba(205,164,52,.35));transition:all .8s ease">
+        <img id="splashLogo" src="plutoo-icon-512.png" alt="Plutoo"
+             style="width:120px;height:120px;opacity:0;transform:scale(.9);
+             filter:drop-shadow(0 0 24px rgba(205,164,52,.35));transition:all .8s ease">
         <div id="splashText" style="margin-top:8px;color:#CDA434;font-weight:800;opacity:0;transition:opacity .8s ease">Plutoo</div>
       </div>`;
     document.body.appendChild(wrap);
@@ -88,8 +87,14 @@ document.addEventListener("DOMContentLoaded", () => {
       $("splashLogo").style.transform = "scale(1)";
       $("splashText").style.opacity = "1";
     });
-    setTimeout(()=>wrap.remove(), 1400);
   }
+
+  function removeSplashNow(){
+    const s = $("plutooSplash");
+    if (s) s.remove();
+  }
+  // Fallback assoluto: se per qualche motivo non l'avessimo tolto
+  window.addEventListener("load", removeSplashNow, { once:true });
 
   // ---------------- Stato ----------------
   const state = {
@@ -156,16 +161,20 @@ document.addEventListener("DOMContentLoaded", () => {
   function initHome(){
     // mostra home o app in base allo stato
     if (state.entered){ homeScreen.classList.add("hidden"); appScreen.classList.remove("hidden"); }
-    // Entra: animazione glow sul logo poi entra (UNICA MODIFICA RICHIESTA)
+    // Rimuovi SUBITO lo splash appena la prima schermata è pronta
+    removeSplashNow();
+
+    // Entra: pulse e passa ad app
     btnEnter?.addEventListener("click", ()=>{
-      heroLogo?.classList.add("gold-glow");
+      heroLogo.classList.add("gold-glow");
       setTimeout(()=>{
-        heroLogo?.classList.remove("gold-glow");
+        heroLogo.classList.remove("gold-glow");
         state.entered=true; localStorage.setItem("entered","1");
         homeScreen.classList.add("hidden");
         appScreen.classList.remove("hidden");
         setActiveView("nearby");
-      }, 1200);
+        removeSplashNow(); // ulteriore sicurezza
+      }, 1500);
     });
 
     // Sponsor con reward
@@ -477,7 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="separator"></div>
       <div class="pp-actions">
         <button id="btnDocsOwner" class="btn outline">Documenti proprietario</button>
-        <button id="btnDocsDog"   class="btn outline">Documenti cane</button>
+        <button id="btnDocsDog"   class="btn outline">Documenti dog</button>
         <button id="btnOpenChat"  class="btn">Apri chat</button>
       </div>
     `;
@@ -534,7 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
       vets:"veterinari per animali vicino a me",
       groomers:"toelettature per cani vicino a me",
       shops:"negozi animali vicino a me",
-      parks:"parchi per cani vicino a me",
+      parks:"parchi vicino a me",
       trainers:"addestratori per cani vicino a me",
       shelters:"canili vicino a me"
     };
@@ -571,3 +580,4 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("lang", state.lang);
   });
 });
+</script>
