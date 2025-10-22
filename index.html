@@ -26,32 +26,38 @@
         <img src="plutoo-icon-192.png" alt="Plutoo" class="logo-small" />
         <div class="home-brand">
           <h1 id="homeTitle" class="brand" data-i18n="brand">Plutoo</h1>
+
           <div class="auth-links">
             <a href="#" id="btnLogin" data-i18n="login">Login</a>
             <span>·</span>
             <a href="#" id="btnRegister" data-i18n="register">Registrati</a>
             <span>·</span>
             <button id="langToggle" class="btn tiny ghost" type="button" aria-label="Cambia lingua">IT/EN</button>
+
+            <!-- ADDED: bandierine lingua -->
+            <div class="lang-flags" role="group" aria-label="Lingua">
+              <button class="flag-btn" data-lang="it" aria-pressed="false" title="Italiano">🇮🇹</button>
+              <button class="flag-btn" data-lang="en" aria-pressed="false" title="English">🇬🇧</button>
+            </div>
           </div>
         </div>
       </div>
     </header>
 
     <div class="home-hero">
-      <!-- Logo grande -->
+      <!-- Logo grande (ingrandito via CSS override) -->
       <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
       <button id="btnEnter" class="btn primary xl" type="button" data-i18n="enter">Entra</button>
     </div>
 
     <footer class="home-sponsor">
       <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-      <!-- Clic sponsor: gestito in app.js -->
       <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
         <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </a>
 
-      <!-- Bottone etico: emoji 🐾 + link a Maps canili -->
+      <!-- Canili: SOLO in Home -->
       <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
@@ -61,11 +67,12 @@
       </button>
 
       <div class="legal-links">
-        <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">terms</a>
+        <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
         <span>·</span>
-        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">privacy</a>
+        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">Privacy</a>
         <span>·</span>
-        <a href="mailto:plutoo.team@gmail.com" data-i18n="contacts">contatti</a>
+        <!-- ADDED: Contatti -->
+        <a href="mailto:plutoo.team@gmail.com" data-i18n="contact">Contatti</a>
       </div>
     </footer>
   </section>
@@ -79,24 +86,24 @@
         <strong class="brand-mini">Plutoo</strong>
       </div>
 
-      <!-- Tabs -->
+      <!-- Tabs (pillole in rilievo) -->
       <nav class="tabs" role="tablist" aria-label="Sezioni">
         <button id="tabNearby" class="tab active" role="tab" aria-selected="true" data-i18n="nearby">Vicino a te</button>
         <button id="tabLove"   class="tab" role="tab" aria-selected="false" data-i18n="love">Amore</button>
         <button id="tabSocial" class="tab" role="tab" aria-selected="false" data-i18n="social">Social</button>
 
-        <!-- Luoghi Pet: menu a tendina -->
         <div class="tab dropdown">
-          <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi Pet ▾</button>
-          <div id="luoghiMenu" class="dropdown-menu" role="menu" aria-label="Luoghi Pet">
+          <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi PET ▾</button>
+          <div id="luoghiMenu" class="dropdown-menu" role="menu" aria-label="Luoghi PET">
             <button class="menu-item" data-cat="vets"      role="menuitem" data-i18n="vets">Veterinari</button>
             <button class="menu-item" data-cat="groomers"  role="menuitem" data-i18n="groomers">Toelettature</button>
             <button class="menu-item" data-cat="shops"     role="menuitem" data-i18n="shops">Negozi</button>
             <button class="menu-item" data-cat="parks"     role="menuitem" data-i18n="parks">Parchi</button>
             <button class="menu-item" data-cat="trainers"  role="menuitem" data-i18n="trainers">Addestratori</button>
-            <button class="menu-item" data-cat="shelters"  role="menuitem" data-i18n="shelters">Canili & Adozioni</button>
           </div>
         </div>
+
+        <button id="tabPlus" class="tab" type="button" onclick="openPlusDialog()">✨ Plus</button>
       </nav>
 
       <div class="right">
@@ -168,15 +175,15 @@
       <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
     </section>
 
-    <!-- Footer sponsor fisso (app) -->
+    <!-- Footer sponsor fisso (in app) -->
     <footer class="sponsor">
-      <div class="sponsor-wrap" id="sponsorAppClickable">
+      <div class="sponsor-wrap">
         <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
         <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         <p class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</p>
       </div>
 
-      <!-- Canili in app: nascosti via CSS (restano solo in Home) -->
+      <!-- NOTA: Canili solo in Home -> questo in app lo nascondiamo via CSS -->
       <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me">
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
@@ -186,9 +193,11 @@
       </button>
 
       <div class="legal-links">
-        <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">terms</a>
+        <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
         <span>·</span>
-        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">privacy</a>
+        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">Privacy</a>
+        <span>·</span>
+        <a href="mailto:plutoo.team@gmail.com" data-i18n="contact">Contatti</a>
       </div>
 
       <div id="adBanner" class="ad-banner" aria-hidden="true"></div>
@@ -215,7 +224,6 @@
           <input id="distRange" type="range" min="1" max="50" value="5" />
         </div>
 
-        <!-- Solo verificati -->
         <div class="f switch">
           <span>Solo verificati ✅</span>
           <label class="switcher">
@@ -224,7 +232,6 @@
           </label>
         </div>
 
-        <!-- Sesso cane -->
         <div class="f">
           <label for="sexFilter">Cerco (sesso cane)</label>
           <select id="sexFilter">
@@ -234,7 +241,7 @@
           </select>
         </div>
 
-        <!-- Gold (bloccati finché non Plus) -->
+        <!-- Gold esistenti -->
         <div class="f f-lock">
           <label for="weightInput">Peso (kg) · Gold</label>
           <input id="weightInput" type="number" min="1" max="100" placeholder="—" disabled />
@@ -243,6 +250,70 @@
         <div class="f f-lock">
           <label for="heightInput">Altezza (cm) · Gold</label>
           <input id="heightInput" type="number" min="10" max="120" placeholder="—" disabled />
+          <span class="lock">🔒</span>
+        </div>
+
+        <!-- ADDED: Gold con valore reale -->
+        <div class="f f-lock">
+          <label for="goalInput">Obiettivo · Gold</label>
+          <select id="goalInput" disabled>
+            <option value="">Qualsiasi</option>
+            <option value="mate">Accoppiamento</option>
+            <option value="play">Gioco</option>
+            <option value="friends">Amicizia</option>
+            <option value="adopt">Adozione</option>
+          </select>
+          <span class="lock">🔒</span>
+        </div>
+
+        <div class="f f-lock">
+          <label for="availabilityInput">Disponibilità incontri · Gold</label>
+          <select id="availabilityInput" disabled>
+            <option value="">Qualsiasi</option>
+            <option value="today">Oggi</option>
+            <option value="weekend">Weekend</option>
+            <option value="evening">Sera</option>
+          </select>
+          <span class="lock">🔒</span>
+        </div>
+
+        <div class="f f-lock">
+          <label for="temperamentInput">Carattere · Gold</label>
+          <select id="temperamentInput" disabled>
+            <option value="">Qualsiasi</option>
+            <option value="calm">Calmo</option>
+            <option value="playful">Giocherellone</option>
+            <option value="high">Molto energico</option>
+          </select>
+          <span class="lock">🔒</span>
+        </div>
+
+        <div class="f f-lock">
+          <label>Compatibilità · Gold</label>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+            <label><input id="compKids" type="checkbox" disabled/> Bambini</label>
+            <label><input id="compDogs" type="checkbox" disabled/> Altri cani</label>
+            <label><input id="compCats" type="checkbox" disabled/> Gatti</label>
+          </div>
+          <span class="lock">🔒</span>
+        </div>
+
+        <div class="f f-lock">
+          <label for="verifiedDocsOnly">Solo profili con documenti/pedigree · Gold</label>
+          <label class="switcher">
+            <input id="verifiedDocsOnly" type="checkbox" disabled />
+            <span class="track"></span>
+          </label>
+        </div>
+
+        <div class="f f-lock">
+          <label for="sortInput">Ordina per · Gold</label>
+          <select id="sortInput" disabled>
+            <option value="">Default</option>
+            <option value="near">Più vicini</option>
+            <option value="active">Più attivi</option>
+            <option value="new">Più recenti</option>
+          </select>
           <span class="lock">🔒</span>
         </div>
 
