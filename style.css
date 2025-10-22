@@ -369,5 +369,3 @@ html,body{ overscroll-behavior:none }
   .panel-inner{max-width:560px}
   .pp-hero img{height:280px}
 }
-/* Paracadute: se lo splash resta appiccicato, nascondilo */
-#plutooSplash { display: none !important; }
