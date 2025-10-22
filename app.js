@@ -1,5 +1,6 @@
 <!-- app.js (completo, aggiornato) -->
 <script>
+  document.getElementById('plutooSplash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
   // ---------------- Helpers ----------------
   const $  = (id) => document.getElementById(id);
