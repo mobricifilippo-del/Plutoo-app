@@ -4,20 +4,13 @@
    profilo (Documenti dog, bottoni accent, lightbox),
    contatti solo in Home, canili solo in Home.
    ========================================================= */
+document.getElementById('plutooSplash')?.remove();
 
 document.addEventListener("DOMContentLoaded", () => {
   // Helpers
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
   const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
-
-  // Splash show/hide
-  const splash = $("splash");
-  if (splash){
-    // Piccola pausa per percezione logo; poi fade-out
-    setTimeout(()=> splash.classList.add("hide"), 900);
-    setTimeout(()=> splash.remove(), 1400);
-  }
 
   // DOM refs
   const homeScreen   = $("homeScreen");
