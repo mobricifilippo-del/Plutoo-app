@@ -521,7 +521,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ricerca UI preset + primo rendering
   function init(){
     breedInput.value = state.filters.breed;
-    distRange.value  = state.filters.distKm; distLabel.textContent = `${distRange.value} km`;
+    // Gestione doppia distanza: slider o campo libero
+distRange?.addEventListener("input", () => {
+  const val = distRange.value;
+  distLabel.textContent = val ? `${val} km` : "∞";
+  localStorage.setItem("f_distKm", val);
+});
+$("distKmInput")?.addEventListener("input", (e) => {
+  const val = e.target.value;
+  if (val === "" || val === "0") {
+    distLabel.textContent = "∞";
+    localStorage.removeItem("f_distKm");
+  } else {
+    distLabel.textContent = `${val} km`;
+    localStorage.setItem("f_distKm", val);
+  }
+});
     onlyVerified.checked = !!state.filters.verified;
     sexFilter.value  = state.filters.sex;
     if (state.plus){ weightInput?.removeAttribute("disabled"); heightInput?.removeAttribute("disabled"); }
