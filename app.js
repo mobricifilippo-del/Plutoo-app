@@ -95,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       verified: localStorage.getItem("f_verified")==="1",
       sex: localStorage.getItem("f_sex") || "",
       weight: localStorage.getItem("f_weight") || "",
+       heat: localStorage.getItem("f_heat") || "",
       height: localStorage.getItem("f_height") || ""
     },
     geo: null,
@@ -348,6 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
     state.filters.breed = (breedInput.value||"").trim();
     const manualKm = distKmInput?.value?.trim();
 state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(manualKm || distRange.value || "0", 10);
+     state.filters.sex = sexFilter.value;
     if (state.plus){
       state.filters.weight = (weightInput.value||"").trim();
       state.filters.height = (heightInput.value||"").trim();
@@ -522,6 +524,14 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
   // Ricerca UI preset + primo rendering
   function init(){
     breedInput.value = state.filters.breed;
+     // Stato iniziale del label distanza in base al valore salvato
+const savedKm = localStorage.getItem("f_distKm");
+if (!savedKm || savedKm === "" || savedKm === "0") {
+  distLabel.textContent = "∞";
+} else {
+  distRange.value = savedKm;
+  distLabel.textContent = `${savedKm} km`;
+}
     // Gestione doppia distanza: slider o campo libero
 distRange?.addEventListener("input", () => {
   const val = distRange.value;
@@ -540,6 +550,7 @@ $("distKmInput")?.addEventListener("input", (e) => {
 });
     onlyVerified.checked = !!state.filters.verified;
     sexFilter.value  = state.filters.sex;
+     heatFilter.value = state.filters.heat || "";
     if (state.plus){ weightInput?.removeAttribute("disabled"); heightInput?.removeAttribute("disabled"); }
 
     if (state.entered){ setActiveView("nearby"); }
