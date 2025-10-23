@@ -102,9 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // I18N min
   const I18N = {
-    it: { sponsorUrl:"https://example.com/fido-gelato", mapsShelters:"canili vicino a me", noProfiles:"Nessun profilo. Modifica i filtri."},
-    en: { sponsorUrl:"https://example.com/fido-gelato", mapsShelters:"animal shelters near me", noProfiles:"No profiles. Adjust filters."}
-  };
+  it: { sponsorUrl:"https://www.gelatofido.it/", mapsShelters:"canili vicino a me", noProfiles:"Nessun profilo. Modifica i filtri."},
+  en: { sponsorUrl:"https://www.gelatofido.it/", mapsShelters:"animal shelters near me", noProfiles:"No profiles. Adjust filters."}
+};
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
   function autodetectLang(){ return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; }
 
