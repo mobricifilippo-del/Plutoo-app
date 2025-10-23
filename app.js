@@ -3,6 +3,7 @@
    Aggiunte: splash, tab Giochiamo, Luoghi PET esteso,
    profilo (Documenti dog, bottoni accent, lightbox),
    contatti solo in Home, canili solo in Home.
+   + MOD: fullscreen stabile + topbar toggle
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -23,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const ethicsButton = $("ethicsButton");
   const ethicsButtonApp = $("ethicsButtonApp"); // nascosto nell'app
   const btnBack      = $("btnBack");
+
+  const topbar       = $("topbar"); // MOD: topbar id
 
   const tabNearby = $("tabNearby");
   const tabLove   = $("tabLove");
@@ -137,28 +140,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // HOME ↔ APP
-if (state.entered) {
-  homeScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
-  setActiveView("nearby");
-}
-
-// Entra: animazione viola→oro→viola e poi entra
-btnEnter?.addEventListener("click", ()=>{
-  heroLogo?.classList.remove("glow-vg");
-  void heroLogo?.offsetWidth;          // forza reflow per riavviare animazione
-  heroLogo?.classList.add("glow-vg");
-
-  setTimeout(()=>{
-    state.entered = true;
-    localStorage.setItem("entered","1");
+  if (state.entered) {
     homeScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
     setActiveView("nearby");
-  }, 2200);
-});
+  }
+
+  // Entra: animazione viola→oro→viola e poi entra
+  btnEnter?.addEventListener("click", ()=>{
+    heroLogo?.classList.remove("glow-vg");
+    void heroLogo?.offsetWidth;          // forza reflow per riavviare animazione
+    heroLogo?.classList.add("glow-vg");
+
+    setTimeout(()=>{
+      state.entered = true;
+      localStorage.setItem("entered","1");
+      homeScreen.classList.add("hidden");
+      appScreen.classList.remove("hidden");
+      setActiveView("nearby");
+    }, 2200);
+  });
     
-   // Sponsor click (Home + App) — senza reward reali ora
+  // Sponsor click (Home + App) — senza reward reali ora
   function openSponsor(){ window.open(t("sponsorUrl"), "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
@@ -219,7 +222,7 @@ btnEnter?.addEventListener("click", ()=>{
       const id = card.getAttribute("data-id");
       const d  = DOGS.find(x=>x.id===id);
       const img = qs("img", card);
-      img?.addEventListener("click", ()=>openProfile(d));
+      img?.addEventListener("click", ()=>openProfile(d));              // foto apre profilo
       qs(".open-profile", card)?.addEventListener("click", ()=>openProfile(d));
     });
   }
@@ -302,11 +305,24 @@ btnEnter?.addEventListener("click", ()=>{
     setTimeout(()=>{ resetCard(card); card.dispatchEvent(new CustomEvent("swiped",{detail:{dir}})); }, 550);
   }
 
-  // Ricerca panel
-  btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
-  closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
+  // ===== MOD: FULLSCREEN RICERCA con topbar toggle e body lock =====
+  btnSearchPanel?.addEventListener("click", ()=>{
+    document.body.classList.add("noscroll","no-topbar");
+    topbar?.classList.add("hidden");
+    searchPanel.classList.add("fullscreen");
+    btnSearchPanel.setAttribute("aria-expanded","true");
+    searchPanel.classList.remove("hidden");
+  });
+  closeSearch?.addEventListener("click", ()=>{
+    searchPanel.classList.add("hidden");
+    btnSearchPanel.setAttribute("aria-expanded","false");
+    document.body.classList.remove("noscroll","no-topbar");
+    topbar?.classList.remove("hidden");
+  });
+  // Dist label live
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
+  // Autocomplete razze
   breedInput?.addEventListener("input", ()=>{
     const v = (breedInput.value||"").trim().toLowerCase();
     breedsList.innerHTML=""; breedsList.style.display="none";
@@ -336,7 +352,11 @@ btnEnter?.addEventListener("click", ()=>{
     }
     persistFilters();
     renderNearby();
+    // chiudi panel + ripristina topbar/body
     searchPanel.classList.add("hidden");
+    btnSearchPanel.setAttribute("aria-expanded","false");
+    document.body.classList.remove("noscroll","no-topbar");
+    topbar?.classList.remove("hidden");
   });
   resetFilters?.addEventListener("click",()=>{
     breedInput.value=""; distRange.value=5; distLabel.textContent="5 km";
@@ -355,8 +375,13 @@ btnEnter?.addEventListener("click", ()=>{
     localStorage.setItem("f_height", state.filters.height||"");
   }
 
-  // Profilo (sheet) + lightbox galleria
+  // ===== Profilo (sheet) + lightbox galleria =====
   window.openProfile = (d)=>{
+    // MOD: fullscreen + topbar off + body lock
+    profileSheet.classList.add("fullscreen");
+    document.body.classList.add("noscroll","no-topbar");
+    topbar?.classList.add("hidden");
+
     profileSheet.classList.remove("hidden");
     setTimeout(()=>profileSheet.classList.add("show"), 10);
 
@@ -426,19 +451,36 @@ btnEnter?.addEventListener("click", ()=>{
   };
   window.closeProfilePage = ()=>{
     profileSheet.classList.remove("show");
-    setTimeout(()=>profileSheet.classList.add("hidden"), 250);
+    setTimeout(()=>{
+      profileSheet.classList.add("hidden");
+      // MOD: ripristina topbar/body
+      document.body.classList.remove("noscroll","no-topbar");
+      topbar?.classList.remove("hidden");
+    }, 250);
   };
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // Chat
+  // ===== Chat full-screen stabile =====
   function openChat(dog){
+    chatPane.classList.add("fullscreen");     // MOD
+    document.body.classList.add("noscroll","no-topbar");  // MOD
+    topbar?.classList.add("hidden");          // MOD
+
     chatPane.classList.remove("hidden");
     setTimeout(()=>chatPane.classList.add("show"), 10);
     chatPane.dataset.dogId = dog.id;
     chatList.innerHTML = `<div class="msg">Ciao ${dog.name}! 🐾</div>`;
     chatInput.value="";
   }
-  function closeChatPane(){ chatPane.classList.remove("show"); setTimeout(()=>chatPane.classList.add("hidden"), 250); }
+  function closeChatPane(){
+    chatPane.classList.remove("show");
+    setTimeout(()=>{
+      chatPane.classList.add("hidden");
+      // MOD: ripristina topbar/body
+      document.body.classList.remove("noscroll","no-topbar");
+      topbar?.classList.remove("hidden");
+    }, 250);
+  }
   closeChat?.addEventListener("click", closeChatPane);
 
   chatComposer?.addEventListener("submit", async (e)=>{
