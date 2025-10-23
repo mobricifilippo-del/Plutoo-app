@@ -1,6 +1,6 @@
 /* =====================================================
    PLUTOO – GOLD EDITION (Dark Violet + Pure Gold)
-   (Aggiunte: splash, topbar leggibile, viola legale, lightbox)
+   (Aggiunte: topbar leggibile/adattiva, badge Plus)
    ===================================================== */
 
 :root{
@@ -25,33 +25,13 @@ a{color:inherit;text-decoration:none}
 .noscroll{overflow:hidden}
 .container{max-width:980px;margin:0 auto;width:100%}
 
-/* Splash */
-.splash{
-  position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999;opacity:1;transition:opacity .4s ease;
-}
+/* Splash (se usata in futuro) */
+.splash{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999;opacity:1;transition:opacity .4s ease}
 .splash.hide{opacity:0;pointer-events:none}
 .splash-logo{width:220px;height:220px;filter:drop-shadow(0 18px 40px rgba(0,0,0,.6))}
 @media (min-width:480px){.splash-logo{width:280px;height:280px}}
-/* Animazione glow viola → oro → viola */
-.hero-logo.glow-vg {
-  animation: goldPulse 2.2s ease both;
-}
 
-@keyframes goldPulse {
-  0% {
-    filter: drop-shadow(0 0 0 var(--violet));
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 30px var(--gold));
-    transform: scale(1.1);
-  }
-  100% {
-    filter: drop-shadow(0 0 0 var(--violet));
-    transform: scale(1);
-  }
-}
-/* Buttons */
+/* Pulsanti */
 .btn{
   appearance:none;border:0;border-radius:14px;padding:.62rem .9rem;
   color:#111;background:#fff;font-weight:800;letter-spacing:.2px;
@@ -67,7 +47,6 @@ a{color:inherit;text-decoration:none}
 }
 .btn.primary:hover{filter:brightness(1.06)}
 .btn.primary.xl{font-size:1.12rem;padding:.86rem 1.2rem;border-radius:16px;box-shadow:inset 0 0 1px rgba(0,0,0,.2),0 0 22px rgba(205,164,52,.45),0 8px 24px rgba(205,164,52,.25)}
-/* Accent viola per profilo */
 .btn.accent{background:linear-gradient(180deg,#A99DFF,#7F70FF);color:#111;border:1px solid rgba(0,0,0,.1);box-shadow:0 6px 16px rgba(138,123,255,.28)}
 
 /* Cerchi trasparenti (swipe) */
@@ -81,7 +60,7 @@ a{color:inherit;text-decoration:none}
   color:#F6D978;
 }
 
-/* HOME */
+/* ================= HOME ================= */
 .home{min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:1.2rem}
 .home-top{display:flex;justify-content:center}
 .home-bar{display:flex;align-items:center;gap:.8rem;width:100%}
@@ -108,25 +87,39 @@ a{color:inherit;text-decoration:none}
 .btn.ethics{display:inline-flex;align-items:center;gap:.45rem;margin-top:.5rem;background:transparent;color:var(--muted);border:1px solid var(--line);padding:.45rem .6rem;font-weight:700;border-radius:12px}
 .legal-links{margin-top:.7rem;font-size:.9rem}
 .legal-links a{color:var(--muted)}
-.legal-links.legal-purple a{color:var(--violet)} /* viola richiesto */
+.legal-links.legal-purple a{color:var(--violet)}
 .legal-links a:hover{filter:brightness(1.2)}
 
-/* APP / NAVBAR */
+/* ================= APP / NAVBAR ================= */
 .app{min-height:100vh;display:flex;flex-direction:column}
+
+/* TOPBAR FISSA + LEGGIBILE + ADATTIVA (NUOVA) */
 .topbar{
-  position:sticky;top:0;z-index:20;
+  position:sticky;top:0;z-index:1000;
   display:flex;align-items:center;gap:.6rem;
-  background:rgba(12,12,18,.92);
+  background:rgba(12,12,18,.94);
+  -webkit-backdrop-filter:saturate(120%) blur(6px);
   backdrop-filter:saturate(120%) blur(6px);
   border-bottom:1px solid var(--line);
   padding:.45rem .8rem;
 }
 .topbar .left,.topbar .right{display:flex;align-items:center;flex:0 0 auto;z-index:2;gap:.45rem}
 .topbar .logo{border-radius:8px}
+
+/* Tabs: centrati, **wrapping su mobile**, singola riga su desktop */
 .tabs{
-  display:flex;gap:.45rem;align-items:center;justify-content:center;
-  flex:1 1 auto;max-width:100%;white-space:nowrap;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  flex:1 1 auto;max-width:100%;
+  gap:.45rem;
+  flex-wrap:wrap;                /* mobile: può andare su 2 righe */
+  row-gap:.4rem;column-gap:.45rem;
+  white-space:normal;overflow:visible;
 }
+@media (min-width:720px){
+  .tabs{flex-wrap:nowrap;white-space:nowrap;overflow:hidden}
+}
+
+/* Pill dei tab: viola per default; oro quando attivo/hover */
 .tab{
   background:rgba(255,255,255,.04);
   border:1px solid rgba(138,123,255,.35);
@@ -135,13 +128,15 @@ a{color:inherit;text-decoration:none}
   font-size:clamp(.82rem,2.5vw,.95rem);
   padding:.42rem .68rem;
   border-radius:14px;
+  transition:transform .12s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
   box-shadow:0 0 1px rgba(138,123,255,.25), inset 0 -1px 0 rgba(255,255,255,.04);
 }
-.tab.active,.tab:hover{
+.tab:hover,.tab.active{
   color:#fff;
-  background:linear-gradient(180deg,rgba(138,123,255,.25),rgba(138,123,255,.10));
-  border-color:rgba(138,123,255,.75);
-  box-shadow:0 0 16px rgba(138,123,255,.35), inset 0 0 0 1px rgba(255,255,255,.18);
+  background:linear-gradient(180deg,rgba(205,164,52,.28),rgba(205,164,52,.12));
+  border-color:rgba(205,164,52,.75);
+  box-shadow:0 0 16px rgba(205,164,52,.30), inset 0 0 0 1px rgba(255,255,255,.18);
+  transform:translateY(-1px);
 }
 
 /* Dropdown Luoghi PET */
@@ -157,12 +152,12 @@ a{color:inherit;text-decoration:none}
 .menu-item{width:100%;text-align:left;padding:.55rem .7rem;border-radius:10px;background:transparent;border:0;color:var(--text)}
 .menu-item:hover{background:rgba(138,123,255,.12)}
 
-/* CONTENT / VIEWS */
+/* ================= CONTENT / VIEWS ================= */
 .content{flex:1;padding:1rem}
 .view{display:none}
 .view.active{display:block}
 
-/* VICINO A TE */
+/* ================= VICINO A TE ================= */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
 .card{
   position:relative;overflow:hidden;border-radius:16px;background:transparent;
@@ -185,7 +180,11 @@ a{color:inherit;text-decoration:none}
 .card-info .meta{margin:0;color:var(--muted);font-size:.86rem}
 .card-info .bio{margin:.35rem 0 0}
 
-/* DECK (Amore/Giochiamo) */
+/* Evidenza profili Plus (opzionale, non rompe niente) */
+.badge-plus{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .5rem;border-radius:999px;color:#111;background:linear-gradient(180deg,#E8CE7A,#CDA434);border:1px solid rgba(0,0,0,.15);font-weight:800;font-size:.78rem}
+.card.plus .card-info h3{color:var(--gold)}
+
+/* ================= DECK (Amore/Giochiamo) ================= */
 .swipe{will-change:transform}
 #viewLove .card,#viewPlay .card{max-width:420px;margin:12px auto 0;position:relative}
 .swipe-out-right{animation:swipeRight .55s cubic-bezier(.22,.61,.36,1) forwards}
@@ -193,7 +192,7 @@ a{color:inherit;text-decoration:none}
 @keyframes swipeRight{to{transform:translateX(120%) rotate(12deg);opacity:.75}}
 @keyframes swipeLeft{to{transform:translateX(-120%) rotate(-12deg);opacity:.75}}
 
-/* Panel Ricerca */
+/* ================= Panel Ricerca ================= */
 .panel{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:140}
 .panel-inner{
   width:92%;max-width:480px;background:var(--panel);border:1px solid var(--gold);
@@ -223,7 +222,7 @@ a{color:inherit;text-decoration:none}
 .switcher input:checked + .track{background:linear-gradient(180deg,var(--gold-2),var(--gold));border-color:var(--gold)}
 .switcher input:checked + .track:after{transform:translateX(20px);background:#111}
 
-/* Sheets (Chat + Profilo) */
+/* ================= Sheets (Chat + Profilo) ================= */
 .sheet{
   position:fixed;left:0;right:0;bottom:0;background:var(--panel);
   border-top:2px solid var(--gold);border-radius:20px 20px 0 0;
@@ -279,53 +278,26 @@ a{color:inherit;text-decoration:none}
 .sponsor-copy{color:var(--muted);font-size:.92rem}
 .ad-banner{margin-top:.6rem;min-height:52px;border:1px dashed rgba(255,255,255,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem}
 
-/* Lightbox overlay (galleria fullscreen) */
-.lightbox{
-  position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:2000
-}
+/* Lightbox overlay */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:2000}
 .lightbox img{max-width:96vw;max-height:90vh;border-radius:12px;box-shadow:0 20px 48px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12)}
 .lightbox .close{position:absolute;top:10px;right:14px;background:transparent;border:0;color:#fff;font-size:1.6rem}
 
-/* Responsive */
+/* Responsive minori */
 @media (max-width:520px){
   .grid-2{grid-template-columns:1fr 1fr}
   .card-img{height:160px}
 }
-/* Animazione lunga viola→oro→viola per il logo in Home */
-.hero-logo.glow-vg {
-  animation: purpleGoldPulse 2.2s ease-in-out 1;
-  will-change: transform, filter;
-}
 
+/* Glow logo (se attivato) */
+.hero-logo.glow-vg{
+  animation:purpleGoldPulse 2.2s ease-in-out 1;
+  will-change:transform,filter;
+}
 @keyframes purpleGoldPulse{
-  0%{
-    transform: scale(1);
-    filter:
-      drop-shadow(0 12px 24px rgba(0,0,0,.55))
-      drop-shadow(0 0 0 rgba(180,140,255,0)); /* viola spento */
-  }
-  25%{
-    transform: scale(1.06);
-    filter:
-      drop-shadow(0 12px 24px rgba(0,0,0,.55))
-      drop-shadow(0 0 36px rgba(180,140,255,.85)); /* viola acceso */
-  }
-  55%{
-    transform: scale(1.12);
-    filter:
-      drop-shadow(0 14px 30px rgba(0,0,0,.55))
-      drop-shadow(0 0 56px rgba(205,164,52,.95)); /* oro pieno */
-  }
-  85%{
-    transform: scale(1.06);
-    filter:
-      drop-shadow(0 12px 24px rgba(0,0,0,.55))
-      drop-shadow(0 0 34px rgba(180,140,255,.75)); /* ritorno al viola */
-  }
-  100%{
-    transform: scale(1);
-    filter:
-      drop-shadow(0 12px 24px rgba(0,0,0,.55))
-      drop-shadow(0 0 0 rgba(180,140,255,0));
-  }
+  0%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(180,140,255,0))}
+  25%{transform:scale(1.06);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 36px rgba(180,140,255,.85))}
+  55%{transform:scale(1.12);filter:drop-shadow(0 14px 30px rgba(0,0,0,.55)) drop-shadow(0 0 56px rgba(205,164,52,.95))}
+  85%{transform:scale(1.06);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(180,140,255,.75))}
+  100%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(180,140,255,0))}
 }
