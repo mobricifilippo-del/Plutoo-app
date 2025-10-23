@@ -346,7 +346,8 @@ document.addEventListener("DOMContentLoaded", () => {
   applyFilters?.addEventListener("click",(e)=>{
     e.preventDefault();
     state.filters.breed = (breedInput.value||"").trim();
-    state.filters.distKm = parseInt(distRange.value||"5");
+    const manualKm = distKmInput?.value?.trim();
+state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(manualKm || distRange.value || "0", 10);
     if (state.plus){
       state.filters.weight = (weightInput.value||"").trim();
       state.filters.height = (heightInput.value||"").trim();
