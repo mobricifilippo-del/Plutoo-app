@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const breedsList  = $("breedsList");
   const distRange   = $("distRange");
   const distLabel   = $("distLabel");
+   const distKmInput = $("distKmInput");
   const onlyVerified = $("onlyVerified");
   const sexFilter   = $("sexFilter");
   const weightInput = $("weightInput");
