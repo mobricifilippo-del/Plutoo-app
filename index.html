@@ -222,10 +222,18 @@
           <div id="breedsList" class="suggestions" role="listbox" aria-label="Suggerimenti razza"></div>
         </div>
 
-        <div class="f">
-          <label for="distRange" data-i18n="distance">Distanza: <span id="distLabel">5 km</span></label>
-          <input id="distRange" type="range" min="1" max="50" value="5" />
-        </div>
+       <div class="f">
+  <label for="distRange" data-i18n="distance">Distanza: <span id="distLabel">5 km</span></label>
+
+  <!-- Slider (fino a 100 km) -->
+  <input id="distRange" type="range" min="0" max="100" value="5" />
+
+  <!-- Campo libero: lascia vuoto = nessun limite -->
+  <input id="distKmInput" type="number" min="0" inputmode="numeric"
+         placeholder="∞" aria-label="Distanza in km (vuoto = ovunque)" />
+
+  <p class="hint">Lascia vuoto per mostrare cani ovunque.</p>
+</div> 
 
         <!-- Switch verificati -->
         <div class="f switch">
