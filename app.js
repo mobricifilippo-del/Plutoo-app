@@ -4,8 +4,10 @@
    profilo (Documenti dog, bottoni accent, lightbox),
    contatti solo in Home, canili solo in Home.
    ========================================================= */
-
+document.getElementById('plutooSplash')?.remove();
+document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
+   
   // Helpers
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
