@@ -78,7 +78,8 @@
 
   <!-- =============== APP =============== -->
   <section id="appScreen" class="app hidden" aria-hidden="true">
-    <header class="topbar">
+    <!-- MOD: id="topbar" + role -->
+    <header id="topbar" class="topbar" role="banner">
       <div class="left">
         <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
         <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
@@ -106,7 +107,8 @@
       </nav>
 
       <div class="right">
-        <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
+        <!-- MOD: aria-controls + aria-expanded -->
+        <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" aria-controls="searchPanel" aria-expanded="false" data-i18n="searchAdvanced">Ricerca personalizzata</button>
       </div>
     </header>
 
@@ -166,7 +168,8 @@
     </aside>
 
     <!-- Profilo -->
-    <section id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <!-- MOD: aggiunta classe 'fullscreen' (gestita da CSS) -->
+    <section id="profileSheet" class="sheet hidden fullscreen" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
       <div class="sheet-header">
         <div id="ppTitle" data-i18n="profile">Profilo</div>
         <button class="icon close" type="button" onclick="closeProfilePage()" aria-label="Chiudi">✕</button>
@@ -204,7 +207,8 @@
   </section>
 
   <!-- =============== PANNELLO RICERCA =============== -->
-  <section id="searchPanel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+  <!-- MOD: aggiunta classe 'fullscreen' e wiring ARIA -->
+  <section id="searchPanel" class="panel hidden fullscreen" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <div class="panel-inner">
       <div class="panel-head">
         <h3 id="searchTitle" data-i18n="searchAdvanced">Ricerca personalizzata</h3>
