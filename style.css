@@ -301,3 +301,39 @@ a{color:inherit;text-decoration:none}
   85%{transform:scale(1.06);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(180,140,255,.75))}
   100%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(180,140,255,0))}
 }
+/* === PATCH UX DEDICATE: fullscreen + topbar toggle (non distruttivo) === */
+
+/* 1) Nascondi topbar quando siamo in viste dedicate (profilo, ricerca, chat) */
+.topbar.hidden{ display:none !important; }
+
+/* 2) Body senza scroll “di sotto” quando apriamo viste dedicate */
+html, body{ overscroll-behavior: none; }
+body.noscroll{ overflow: hidden; }
+
+/* 3) Ricerca personalizzata a SCHERMO PIENO */
+.panel.fullscreen{
+  align-items: stretch;
+  justify-content: stretch;
+  background: rgba(0,0,0,.85);
+  z-index: 1700; /* sopra i contenuti, senza confliggere col lightbox */
+}
+.panel.fullscreen .panel-inner{
+  width: 100%;
+  max-width: none;
+  height: 100dvh;            /* viewport mobile sicura */
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  padding: 1rem;
+}
+
+/* 4) Profilo/Chat a SCHERMO PIENO (partendo dal bottom-sheet esistente) */
+.sheet.fullscreen{
+  top: 0;                   /* copre dall’alto */
+  bottom: 0;
+  border-radius: 0 !important;
+  max-height: 100dvh;
+}
+
+/* 5) Quando la topbar è nascosta, niente offset extra sui contenuti */
+body.no-topbar .content{ padding-top: 0 !important; }
