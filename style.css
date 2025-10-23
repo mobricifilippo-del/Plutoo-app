@@ -116,7 +116,7 @@ a{color:inherit;text-decoration:none}
 .topbar{
   position:sticky;top:0;z-index:20;
   display:flex;align-items:center;gap:.6rem;
-  background:#121226;
+  background:rgba(18,18,38,.98); /* opaca, leggermente più chiara del page bg */
   border-bottom:1px solid var(--line);
   padding:.45rem .8rem;
 }
