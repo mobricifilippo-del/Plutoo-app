@@ -116,11 +116,12 @@ a{color:inherit;text-decoration:none}
 .topbar{
   position:sticky;top:0;z-index:20;
   display:flex;align-items:center;gap:.6rem;
-  background:rgba(12,12,18,.92);
-  backdrop-filter:saturate(120%) blur(6px);
+  background:#121226;
   border-bottom:1px solid var(--line);
   padding:.45rem .8rem;
 }
+/* Spazio di sicurezza sotto la topbar */
+.content { padding-top:.4rem; }
 .topbar .left,.topbar .right{display:flex;align-items:center;flex:0 0 auto;z-index:2;gap:.45rem}
 .topbar .logo{border-radius:8px}
 .tabs{
