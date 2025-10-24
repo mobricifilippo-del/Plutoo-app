@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playBio   = $("playBio");
   const playNo    = $("playNo");
   const playYes   = $("playYes");
-const btnEnter = $("#btnEnter");
+
   const btnSearchPanel = $("btnSearchPanel");
   const searchPanel = $("searchPanel");
   const closeSearch = $("closeSearch");
