@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const distRange   = $("distRange");
   const distLabel   = $("distLabel");
    const distKmInput = $("distKmInput");
-  const onlyVerified = $("onlyVerified");
+  const verifiedInput = $("#verifiedInput");
   const sexFilter   = $("sexFilter");
   const weightInput = $("weightInput");
   const heightInput = $("heightInput");
@@ -341,7 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target!==breedInput && !breedsList.contains(e.target)) breedsList.style.display="none";
   });
 
-  onlyVerified?.addEventListener("change", ()=> state.filters.verified = !!onlyVerified.checked);
   sexFilter?.addEventListener("change", ()=> state.filters.sex = sexFilter.value || "");
 
   applyFilters?.addEventListener("click",(e)=>{
@@ -350,6 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const manualKm = distKmInput?.value?.trim();
 state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(manualKm || distRange.value || "0", 10);
      state.filters.sex = sexFilter.value;
+     state.filters.verified = state.plus ? !!verifiedInput.checked : false;
     if (state.plus){
       state.filters.weight = (weightInput.value||"").trim();
       state.filters.height = (heightInput.value||"").trim();
@@ -364,7 +364,8 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
   });
   resetFilters?.addEventListener("click",()=>{
     breedInput.value=""; distRange.value=5; distLabel.textContent="5 km";
-    onlyVerified.checked=false; sexFilter.value="";
+    verifiedInput.checked = false
+     distLabel.textContent = "5 km";
     if (state.plus){ weightInput.value=""; heightInput.value=""; }
     Object.assign(state.filters,{breed:"",distKm:5,verified:false,sex:"",weight:"",height:""});
     persistFilters(); renderNearby();
@@ -543,17 +544,22 @@ $("distKmInput")?.addEventListener("input", (e) => {
   if (val === "" || val === "0") {
     distLabel.textContent = "∞";
     localStorage.removeItem("f_distKm");
-  } else {
-    distLabel.textContent = `${val} km`;
-    localStorage.setItem("f_distKm", val);
   }
-});
-    onlyVerified.checked = !!state.filters.verified;
-    sexFilter.value  = state.filters.sex;
-     heatFilter.value = state.filters.heat || "";
-    if (state.plus){ weightInput?.removeAttribute("disabled"); heightInput?.removeAttribute("disabled"); }
+sexFilter.value = state.filters.sex;
 
-    if (state.entered){ setActiveView("nearby"); }
+// preset del toggle "Solo verificati"
+verifiedInput.checked = !!state.filters.verified;
+
+// Se l’utente ha il Plus, sblocchiamo i campi premium
+if (state.plus){
+  weightInput?.removeAttribute("disabled");
+  heightInput?.removeAttribute("disabled");
+  verifiedInput?.removeAttribute("disabled");
+} else {
+  // in free resta bloccato
+  verifiedInput?.setAttribute("disabled", "");
+}
+    
   }
   init();
 });
