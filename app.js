@@ -524,7 +524,7 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
   // Ricerca UI preset + primo rendering
   function init(){
     breedInput.value = state.filters.breed;
-     localStorage.removeItem("f_heat");
+   
      // Stato iniziale del label distanza in base al valore salvato
 const savedKm = localStorage.getItem("f_distKm");
 if (!savedKm || savedKm === "" || savedKm === "0") {
