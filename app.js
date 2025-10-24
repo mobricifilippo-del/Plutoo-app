@@ -149,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Entra: animazione viola→oro→viola e poi entra
   btnEnter?.addEventListener("click", ()=>{
-     alert("CLICK");
     heroLogo?.classList.remove("glow-vg");
     void heroLogo?.offsetWidth;          // forza reflow per riavviare animazione
     heroLogo?.classList.add("glow-vg");
