@@ -95,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
       verified: localStorage.getItem("f_verified")==="1",
       sex: localStorage.getItem("f_sex") || "",
       weight: localStorage.getItem("f_weight") || "",
-       heat: localStorage.getItem("f_heat") || "",
       height: localStorage.getItem("f_height") || ""
     },
     geo: null,
@@ -525,6 +524,7 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
   // Ricerca UI preset + primo rendering
   function init(){
     breedInput.value = state.filters.breed;
+     localStorage.removeItem("f_heat");
      // Stato iniziale del label distanza in base al valore salvato
 const savedKm = localStorage.getItem("f_distKm");
 if (!savedKm || savedKm === "" || savedKm === "0") {
