@@ -233,16 +233,7 @@
          placeholder="∞" aria-label="Distanza in km (vuoto = ovunque)" />
 
   <p class="hint">Lascia vuoto per mostrare cani ovunque.</p>
-</div> 
-
-        <!-- Switch verificati -->
-        <div class="f switch">
-          <span>Solo verificati ✅</span>
-          <label class="switcher">
-            <input id="onlyVerified" type="checkbox" />
-            <span class="track"></span>
-          </label>
-        </div>
+</div>
 
         <div class="f">
           <label for="sexFilter">Cerco (sesso dog)</label>
@@ -250,16 +241,7 @@
             <option value="">Tutti</option>
             <option value="M">Maschio</option>
             <option value="F">Femmina</option>
-            <!-- Stato riproduttivo -->
-<div class="f">
-  <label for="heatFilter">Stato riproduttivo</label>
-  <select id="heatFilter">
-    <option value="">Non specificato</option>
-    <option value="in_heat">In calore</option>
-    <option value="not_in_heat">Non in calore</option>
-  </select>
-</div>
-
+          
         <!-- Campi Gold bloccati (restano, ma non tocchiamo la tua logica) -->
         <div class="f f-lock">
           <label for="weightInput">Peso (kg) · Gold</label>
@@ -271,7 +253,11 @@
           <input id="heightInput" type="number" min="10" max="120" placeholder="—" disabled />
           <span class="lock">🔒</span>
         </div>
-
+<div class="f f-lock">
+  <label for="verifiedInput">Solo verificati ✅</label>
+  <input id="verifiedInput" type="checkbox" disabled>
+  <span class="lock">🔒</span>
+</div>
         <div class="panel-actions">
           <button id="applyFilters" class="btn primary" type="submit" data-i18n="apply">Applica</button>
           <button id="resetFilters" class="btn ghost" type="button" data-i18n="reset">Reset</button>
