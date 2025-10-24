@@ -544,7 +544,7 @@ $("distKmInput")?.addEventListener("input", (e) => {
   if (val === "" || val === "0") {
     distLabel.textContent = "∞";
     localStorage.removeItem("f_distKm");
-  }
+  }}
 sexFilter.value = state.filters.sex;
 
 // preset del toggle "Solo verificati"
