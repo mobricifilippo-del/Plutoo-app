@@ -337,3 +337,20 @@ body.noscroll{ overflow: hidden; }
 
 /* 5) Quando la topbar è nascosta, niente offset extra sui contenuti */
 body.no-topbar .content{ padding-top: 0 !important; }
+
+/* ====== PLUS BADGE STABILITÀ ====== */
+.plus-badge {
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .25);
+  font-size: .8rem;
+  white-space: nowrap;
+}
+
+/* Allineamento sicuro lato destro topbar */
+.topbar .right {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
