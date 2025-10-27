@@ -161,8 +161,8 @@ a{color:inherit;text-decoration:none}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
 .card{
   position:relative;overflow:hidden;border-radius:16px;background:transparent;
-  border:1px solid rgba(205,164,52,.22);
-  box-shadow:0 0 0 1px rgba(205,164,52,.08) inset, 0 6px 24px rgba(0,0,0,.25);
+  border:3px solid rgba(205,164,52,.35);
+  box-shadow:0 0 4px rgba(205,164,52,.15);
 }
 .card:before{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
@@ -172,7 +172,7 @@ a{color:inherit;text-decoration:none}
 .card-img{
   width:100%;height:170px;object-fit:cover;object-position:center;
   display:block;background:#0f0f16;
-  outline:1px solid rgba(205,164,52,.28);
+  outline:3px solid rgba(205,164,52,.35);
   border-top-left-radius:16px;border-top-right-radius:16px;
 }
 .card-info{padding:.6rem .8rem}
@@ -183,6 +183,33 @@ a{color:inherit;text-decoration:none}
 /* Evidenza profili Plus (opzionale, non rompe niente) */
 .badge-plus{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .5rem;border-radius:999px;color:#111;background:linear-gradient(180deg,#E8CE7A,#CDA434);border:1px solid rgba(0,0,0,.15);font-weight:800;font-size:.78rem}
 .card.plus .card-info h3{color:var(--gold)}
+/* ==== Purple Glow (solo viola) ==== */
+:root{
+  --violet-1:#6A4CFF;   /* viola principale */
+  --violet-2:#B084FF;   /* viola chiaro per alone */
+}
+
+/* Logo Home: rimpiazza il vecchio glow oro con viola */
+.hero-logo.glow-vg{
+  animation: heroPulseViolet 1.6s ease-out 1;
+}
+@keyframes heroPulseViolet{
+  0%   { box-shadow: 0 0 0 0 rgba(106,76,255,0);    transform: scale(1); }
+  40%  { box-shadow: 0 0 24px 6px rgba(106,76,255,.45); transform: scale(1.02); }
+  100% { box-shadow: 0 0 0 0 rgba(106,76,255,0);   transform: scale(1); }
+}
+
+/* Tap feedback sulla FOTO del DOG (solo al click, breve) */
+.card-img.tap-glow{
+  outline-color: rgba(106,76,255,.65); /* più “cicciotta” già dal tuo outline 3px */
+  box-shadow: 0 0 24px 6px rgba(106,76,255,.45);
+  animation: tapGlowViolet .45s ease-out 1;
+}
+@keyframes tapGlowViolet{
+  0%   { box-shadow: 0 0 0 0 rgba(106,76,255,0); }
+  60%  { box-shadow: 0 0 24px 6px rgba(106,76,255,.45); }
+  100% { box-shadow: 0 0 0 0 rgba(106,76,255,0); }
+}
 
 /* ================= DECK (Amore/Giochiamo) ================= */
 .swipe{will-change:transform}
