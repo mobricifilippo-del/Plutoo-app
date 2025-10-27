@@ -378,16 +378,15 @@ gap: .35rem;
 }
 #plusModal.hidden{ display:none; }
 
-#plusModal .panel-inner{
-  width: min(560px, 92vw);
-  background: #0B0B0F;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0,0,0,.45);
-  padding: 1rem;
-   color:#fff;
-max-height: 85vh;
-overflow: auto;
+#plusModal .panel-inner {
+  background: #1a1a1f;         /* sfondo pieno viola-notte */
+  color: #fff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  max-width: 360px;
+  width: 90%;
+  text-align: left;
+  box-shadow: 0 0 25px rgba(0,0,0,.8);
 }
 
 #plusModal .panel-head{
