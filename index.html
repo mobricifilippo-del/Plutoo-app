@@ -289,27 +289,39 @@
       </form>
     </div>
   </section>
-<!-- =============== MODALE PLUS =============== -->
-<section id="plusModal" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="plusTitle">
-  <div class="panel-inner">
-    <div class="panel-head">
-      <h3 id="plusTitle">Plutoo Plus 💎</h3>
-      <button id="closePlus" class="btn tiny ghost" type="button" aria-label="Chiudi">✕</button>
+
+  <!-- === MODALE PLUTOO PLUS === -->
+  <section id="plusModal" class="sheet hidden" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="panel-inner">
+      <div class="panel-head">
+        <div id="plusTitle">Plutoo Plus</div>
+        <button id="closePlus" class="icon close" type="button" aria-label="Chiudi">✕</button>
+      </div>
+
+      <div class="panel-body">
+        <p class="soft">Con <b>Plutoo Plus</b> ottieni accesso completo:</p>
+        <ul class="soft">
+          <li>• Solo profili verificati ✅</li>
+          <li>• Peso e altezza nei filtri</li>
+          <li>• Raggio illimitato / manuale</li>
+          <li>• Razza con suggerimenti</li>
+          <li>• Niente pubblicità</li>
+          <li>• Selfie sbloccati 24h</li>
+          <li>• Messaggi senza limiti</li>
+          <li>• Filtri esclusivi futuri</li>
+        </ul>
+
+        <div class="panel-actions" style="margin-top:.75rem;display:flex;gap:.5rem;justify-content:flex-end;">
+          <button id="goPlus" class="btn accent" type="button">Attiva Plus</button>
+          <button id="laterPlus" class="btn ghost" type="button">Più tardi</button>
+        </div>
+      </div>
     </div>
-    <div class="panel-body">
-      <p>Con <strong>Plutoo Plus</strong> sblocchi tutte le funzioni: filtri avanzati, niente pubblicità, like e chat illimitati.</p>
-      <ul>
-        <li>✅ Filtri esclusivi (verificati, peso, altezza, selfie, ecc.)</li>
-        <li>💬 Messaggi e like illimitati</li>
-        <li>🚫 Nessuna pubblicità</li>
-      </ul>
-    </div>
-    <div class="panel-actions">
-      <button id="goPlus" class="btn primary">Attiva Plus</button>
-      <button id="laterPlus" class="btn ghost">Più tardi</button>
-    </div>
-  </div>
-</section>
+  </section>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
   <!-- SW + JS -->
   <script>
     if ('serviceWorker' in navigator) {
