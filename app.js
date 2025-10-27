@@ -83,14 +83,25 @@ const plusModal = $("plusModal");
 const closePlus = $("closePlus");
 const goPlus = $("goPlus");
 const laterPlus = $("laterPlus");
-   // Fallback globale per apertura/chiusura modale PLUS
+// Fallback globale per apertura/chiusura modale Plus
 window.openPlusModal = () => {
+  // applico stile SOLO mentre è aperto
+  plusModal.style.position = "fixed";
+  plusModal.style.inset = "0";
+  plusModal.style.zIndex = "9999";
+
   plusModal.classList.remove("hidden");
   plusModal.setAttribute("aria-hidden", "false");
 };
+
 window.closePlusModal = () => {
   plusModal.classList.add("hidden");
   plusModal.setAttribute("aria-hidden", "true");
+
+  // rimuovo lo stile per non bloccare la pagina
+  plusModal.style.position = "";
+  plusModal.style.inset = "";
+  plusModal.style.zIndex = "";
 };
   // Stato
   const state = {
