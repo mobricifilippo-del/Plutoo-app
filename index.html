@@ -268,8 +268,7 @@
       </form>
     </div>
   </section>
-
-<!-- === MODALE PLUTOO PLUS === -->
+    <!-- === MODALE PLUTOO PLUS === -->
 <section id="plusModal" class="sheet hidden" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="panel-inner">
     <div class="panel-head">
@@ -278,34 +277,23 @@
     </div>
 
     <div class="panel-body">
-      <p><b>Plutoo Plus</b> ti sblocca tutte le funzioni premium:</p>
+      <p><b>Plutoo Plus</b> ti sblocca tutto:</p>
       <ul>
-        <li>• Nessuna pubblicità in tutta l’app</li>
+        <li>• Nessuna pubblicità</li>
         <li>• Selfie sempre visibili (24h su 24)</li>
         <li>• Messaggi illimitati dopo il match</li>
-        <li>• Filtri avanzati: solo verificati, peso, altezza, razza, raggio manuale</li>
+        <li>• Filtri avanzati: solo verificati, peso/altezza, raggio manuale, razza con suggerimenti</li>
         <li>• Accesso anticipato a funzioni future</li>
       </ul>
 
-      <div class="panel-actions" style="margin-top:1rem;display:flex;gap:.5rem;justify-content:flex-end;">
-        <button id="goPlus" class="btn accent" type="button">Attiva Plus 💎</button>
+      <div class="panel-actions" style="margin-top:.75rem;display:flex;gap:.5rem;justify-content:flex-end;">
+        <button id="goPlus" class="btn accent" type="button">Attiva Plus</button>
         <button id="laterPlus" class="btn ghost" type="button">Più tardi</button>
       </div>
     </div>
   </div>
-</section>
+</section>    
 
-  <script src="app.js" defer></script>
-</body>
-</html>
-  <!-- SW + JS -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-      });
-    }
-  </script>
   <script src="app.js" defer></script>
 </body>
 </html>
