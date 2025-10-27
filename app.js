@@ -129,7 +129,13 @@ document.body.classList.remove("noscroll");
     geo: null,
     breeds: []
   };
-
+// === Effetto glow viola al tap sulla foto del DOG ===
+document.addEventListener("click", e => {
+  const img = e.target.closest(".card-img");
+  if (!img) return;
+  img.classList.add("tap-glow");
+  setTimeout(() => img.classList.remove("tap-glow"), 450);
+});
   // I18N min
   const I18N = {
   it: { sponsorUrl:"https://www.gelatofido.it/", mapsShelters:"canili vicino a me", noProfiles:"Nessun profilo. Modifica i filtri."},
