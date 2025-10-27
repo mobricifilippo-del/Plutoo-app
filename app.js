@@ -626,4 +626,5 @@ goPlus?.addEventListener("click", () => {
     document.body.appendChild(b);
     setTimeout(() => b.remove(), 2200);
   } catch (e) {}
+init();
 });
