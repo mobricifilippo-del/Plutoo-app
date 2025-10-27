@@ -366,3 +366,39 @@ align-items: center;
 gap: .35rem;
   z-index: 5; /* <-- cambia 2 in 5 */
 }
+/* ====== MODALE PLUS (overlay centrato) ====== */
+#plusModal{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.55);
+  z-index: 50;
+}
+#plusModal.hidden{ display:none; }
+
+#plusModal .panel-inner{
+  width: min(560px, 92vw);
+  background: #0B0B0F;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  padding: 1rem;
+}
+
+#plusModal .panel-head{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap:.5rem;
+  margin-bottom:.5rem;
+}
+
+#plusModal .panel-body ul{ margin:.5rem 0; padding-left:1.1rem; }
+#plusModal .panel-actions{
+  display:flex;
+  gap:.5rem;
+  justify-content:flex-end;
+  margin-top:.75rem;
+}
