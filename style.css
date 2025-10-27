@@ -352,13 +352,17 @@ body.no-topbar .content{ padding-top: 0 !important; }
 .topbar .right{
   display: flex;
   flex-direction: column;   /* <— impila verso il basso */
-  align-items: flex-end;    /* allineati a destra */
+  align-items: center;    /* allineati a destra */
   gap: .4rem;
    position: relative;
+   width: max-content;
 }
 /* assicura click + sopraeventuali overlay */
 .plus-badge{
   cursor: pointer;
   position: relative;
+   display: inline-flex;
+align-items: center;
+gap: .35rem;
   z-index: 5; /* <-- cambia 2 in 5 */
 }
