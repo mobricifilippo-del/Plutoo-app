@@ -83,6 +83,15 @@ const plusModal = $("plusModal");
 const closePlus = $("closePlus");
 const goPlus = $("goPlus");
 const laterPlus = $("laterPlus");
+   // Fallback globale per apertura/chiusura modale PLUS
+window.openPlusModal = () => {
+  plusModal.classList.remove("hidden");
+  plusModal.setAttribute("aria-hidden", "false");
+};
+window.closePlusModal = () => {
+  plusModal.classList.add("hidden");
+  plusModal.setAttribute("aria-hidden", "true");
+};
   // Stato
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
