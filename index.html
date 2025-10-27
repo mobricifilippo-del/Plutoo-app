@@ -107,9 +107,9 @@
       </nav>
 
       <div class="right">
-        <button id="btnPlus" class="btn tiny ghost" type="button" aria-label="Plutoo Plus">PLUS 💎</button>
         <!-- MOD: aria-controls + aria-expanded -->
         <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" aria-controls="searchPanel" aria-expanded="false" data-i18n="searchAdvanced">Ricerca personalizzata</button>
+        <button id="btnPlus" class="plus-badge" type="button" aria-label="Plutoo Plus">PLUS 💎</button>
       </div>
     </header>
 
@@ -177,6 +177,27 @@
       </div>
       <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
     </section>
+    <!-- PLUS modal -->
+<section id="plusModal" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="plusTitle">
+  <div class="sheet-header">
+    <div id="plusTitle">Plutoo Plus</div>
+    <button id="closePlus" class="icon close" type="button" aria-label="Chiudi">✕</button>
+  </div>
+  <div class="sheet-body">
+    <p class="soft">Sblocca filtri avanzati per trovare più in fretta:</p>
+    <ul class="soft">
+      <li>• Solo verificati ✅</li>
+      <li>• Peso e altezza</li>
+      <li>• Raggio illimitato / manuale</li>
+      <li>• Razza con suggerimenti</li>
+      <li>• Altri filtri esclusivi</li>
+    </ul>
+    <div style="margin-top:1rem;display:flex;gap:.5rem">
+      <button id="goPlus" class="btn accent" type="button">Prova Plus</button>
+      <button id="laterPlus" class="btn ghost" type="button">Più tardi</button>
+    </div>
+  </div>
+</section>
 
     <!-- Footer sponsor fisso (App): niente “Contatti”, niente canili -->
     <footer class="sponsor">
