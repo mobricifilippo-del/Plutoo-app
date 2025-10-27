@@ -594,11 +594,38 @@ laterPlus?.addEventListener("click", () => {
   plusModal.setAttribute("aria-hidden", "true");
 });
 
-// (Facoltativo: futura attivazione Plus)
 goPlus?.addEventListener("click", () => {
-  alert("Attiva Plutoo Plus per sbloccare tutti i filtri 💎");
+  // Attiva Plus
+  localStorage.setItem("plutoo_plus", "yes");
+  state.plus = true;
+
+  // Sblocca immediatamente i filtri Gold
+  weightInput?.removeAttribute("disabled");
+  heightInput?.removeAttribute("disabled");
+  verifiedInput?.removeAttribute("disabled");
+
+  // Chiudi il modale in modo pulito
   plusModal.classList.add("hidden");
   plusModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+
+  // Piccolo feedback visivo
+  try {
+    const b = document.createElement("div");
+    b.textContent = "Plutoo Plus attivato. Filtri sbloccati ✅";
+    b.style.position = "fixed";
+    b.style.bottom = "1rem";
+    b.style.left = "50%";
+    b.style.transform = "translateX(-50%)";
+    b.style.padding = ".6rem 1rem";
+    b.style.background = "rgba(0,0,0,.85)";
+    b.style.color = "#fff";
+    b.style.border = "1px solid rgba(255,255,255,.15)";
+    b.style.borderRadius = "10px";
+    b.style.zIndex = "1000";
+    document.body.appendChild(b);
+    setTimeout(() => b.remove(), 2200);
+  } catch (e) {}
 });
   init();
 });
