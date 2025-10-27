@@ -95,7 +95,7 @@ window.closePlusModal = () => {
   // Stato
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
-    plus: localStorage.getItem("plutoo_plus")==="1",
+    plus: localStorage.getItem("plutoo_plus")==="yes",
     entered: localStorage.getItem("entered")==="1",
     swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
     matches: parseInt(localStorage.getItem("matches")||"0"),
@@ -627,4 +627,5 @@ goPlus?.addEventListener("click", () => {
     setTimeout(() => b.remove(), 2200);
   } catch (e) {}
 init();
+});
 });
