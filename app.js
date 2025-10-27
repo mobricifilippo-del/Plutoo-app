@@ -580,11 +580,13 @@ if (state.plus){
 btnPlus?.addEventListener("click", () => {
   plusModal.classList.remove("hidden");
   plusModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden"; 
 });
 
 closePlus?.addEventListener("click", () => {
   plusModal.classList.add("hidden");
   plusModal.setAttribute("aria-hidden", "true");
+   document.body.style.overflow = "";
 });
 
 laterPlus?.addEventListener("click", () => {
