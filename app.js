@@ -77,7 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const profileSheet = $("profileSheet");
   const ppBody   = $("ppBody");
-
+// --- PLUS modal elements ---
+const btnPlus = $("btnPlus");
+const plusModal = $("plusModal");
+const closePlus = $("closePlus");
+const goPlus = $("goPlus");
+const laterPlus = $("laterPlus");
   // Stato
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
@@ -562,5 +567,27 @@ if (state.plus){
 }
     
   }
+   // === PLUS MODAL OPEN/CLOSE ===
+btnPlus?.addEventListener("click", () => {
+  plusModal.classList.remove("hidden");
+  plusModal.setAttribute("aria-hidden", "false");
+});
+
+closePlus?.addEventListener("click", () => {
+  plusModal.classList.add("hidden");
+  plusModal.setAttribute("aria-hidden", "true");
+});
+
+laterPlus?.addEventListener("click", () => {
+  plusModal.classList.add("hidden");
+  plusModal.setAttribute("aria-hidden", "true");
+});
+
+// (Facoltativo: futura attivazione Plus)
+goPlus?.addEventListener("click", () => {
+  alert("Attiva Plutoo Plus per sbloccare tutti i filtri 💎");
+  plusModal.classList.add("hidden");
+  plusModal.setAttribute("aria-hidden", "true");
+});
   init();
 });
