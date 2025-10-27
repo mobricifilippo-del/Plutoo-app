@@ -92,9 +92,13 @@ window.openPlusModal = () => {
 
   plusModal.classList.remove("hidden");
   plusModal.setAttribute("aria-hidden", "false");
+   plusModal.classList.add("show");
+document.body.classList.add("noscroll");
 };
 
 window.closePlusModal = () => {
+   plusModal.classList.remove("show");
+document.body.classList.remove("noscroll");
   plusModal.classList.add("hidden");
   plusModal.setAttribute("aria-hidden", "true");
 
