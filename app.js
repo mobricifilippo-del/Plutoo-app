@@ -574,19 +574,18 @@ if (state.plus){
   // in free resta bloccato
   verifiedInput?.setAttribute("disabled", "");
 }
-    
-  }
-   // === PLUS MODAL OPEN/CLOSE ===
+   }
+// === PLUS MODAL OPEN/CLOSE ===
 btnPlus?.addEventListener("click", () => {
   plusModal.classList.remove("hidden");
   plusModal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden"; 
+  document.body.style.overflow = "hidden";
 });
 
 closePlus?.addEventListener("click", () => {
   plusModal.classList.add("hidden");
   plusModal.setAttribute("aria-hidden", "true");
-   document.body.style.overflow = "";
+  document.body.style.overflow = "";
 });
 
 laterPlus?.addEventListener("click", () => {
@@ -594,6 +593,7 @@ laterPlus?.addEventListener("click", () => {
   plusModal.setAttribute("aria-hidden", "true");
 });
 
+// --- QUI SOSTITUISCI TUTTO FINO IN FONDO ---
 goPlus?.addEventListener("click", () => {
   // Attiva Plus
   localStorage.setItem("plutoo_plus", "yes");
@@ -626,5 +626,10 @@ goPlus?.addEventListener("click", () => {
     document.body.appendChild(b);
     setTimeout(() => b.remove(), 2200);
   } catch (e) {}
-init();
+  
+  // Re-inizializza preset UI dopo l’attivazione
+  init();
+});
+
+// Chiusura DEFINITIVA del DOMContentLoaded:
 });
