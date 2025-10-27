@@ -627,10 +627,3 @@ goPlus?.addEventListener("click", () => {
     setTimeout(() => b.remove(), 2200);
   } catch (e) {}
 });
-   const btnPlus = document.getElementById("btnPlus");
-btnPlus?.addEventListener("click", () => {
-  plusModal.classList.remove("hidden");
-});
-
-   init();
-});
