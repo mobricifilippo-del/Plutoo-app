@@ -348,9 +348,17 @@ body.no-topbar .content{ padding-top: 0 !important; }
   white-space: nowrap;
 }
 
-/* Allineamento sicuro lato destro topbar */
-.topbar .right {
+/* Allineamento sicuro lato destro topbar: impila i bottoni in colonna */
+.topbar .right{
   display: flex;
-  align-items: center;
-  gap: .5rem;
+  flex-direction: column;   /* <— impila verso il basso */
+  align-items: flex-end;    /* allineati a destra */
+  gap: .4rem;
+   position: relative;
+}
+/* assicura click + sopraeventuali overlay */
+.plus-badge{
+  cursor: pointer;
+  position: relative;
+  z-index: 5; /* <-- cambia 2 in 5 */
 }
