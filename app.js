@@ -628,4 +628,3 @@ goPlus?.addEventListener("click", () => {
   } catch (e) {}
 init();
 });
-});
