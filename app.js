@@ -440,6 +440,7 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
   // mostra la pagina profilo
   profilePage.classList.remove("hidden");
   profilePage.classList.add("active");
+     state.currentProfileDog = d;
 
   const selfieUnlocked = isSelfieUnlocked(d.id);
   ppBody.innerHTML = `
@@ -491,10 +492,10 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
     });
   });
 
-  $("#btnOpenChat").onclick = () => {
+  qs("#btnOpenChat", profilePage)?.addEventListener("click", () => {
   closeProfilePage();
-  setTimeout(() => openChat(d), 150); // attendo la chiusura animata
-};
+  setTimeout(() => openChat(state.currentProfileDog), 250);
+});
   $("unlockSelfie").onclick = async ()=>{
     if (!isSelfieUnlocked(d.id)){
       state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
@@ -508,6 +509,7 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
     profilePage.classList.remove("active");
 setTimeout(()=>{
   profilePage.classList.add("hidden");
+   viewNearby.classList.add("active");
   document.body.classList.remove("noscroll","noScroll");
   topbar?.classList.remove("hidden");
 },250);
