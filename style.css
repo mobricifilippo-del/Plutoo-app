@@ -201,8 +201,8 @@ html, body{ overscroll-behavior: none; }  /* niente bounce */
 .card{
   position:relative;overflow:hidden;border-radius:16px;background:transparent;
   /* Cornice spessa VIOLA (richiesta) */
-  border:4px solid var(--violet);
-  box-shadow:0 0 12px rgba(126,63,242,.45);
+  border:2px solid var(--violet);
+  box-shadow:0 0 6px rgba(126,63,242,.35);
 }
 .card:before{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
@@ -212,11 +212,11 @@ html, body{ overscroll-behavior: none; }  /* niente bounce */
 .card-img{
   width:100%;height:170px;object-fit:cover;object-position:center;
   display:block;background:#0f0f16;
-  outline:4px solid var(--violet);    /* più “cicciotta” */
+  outline:2px solid var(--violet);
   border-top-left-radius:16px;border-top-right-radius:16px;
   transition:box-shadow .25s ease, transform .25s ease;
 }
-.card-img:hover{ box-shadow:0 0 18px rgba(126,63,242,.9); transform:scale(1.015); }
+.card-img:hover{ box-shadow:0 0 12px rgba(126,63,242,.55); transform:scale(1.01); }
 
 .card-info{padding:.6rem .8rem}
 .card-info h3{margin:0 0 .15rem;color:#FFF;font-size:1.02rem;text-shadow:0 0 12px rgba(126,63,242,.35)}
