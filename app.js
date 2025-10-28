@@ -24,14 +24,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const ethicsButton = $("ethicsButton");
   const ethicsButtonApp = $("ethicsButtonApp"); // nascosto nell'app
   const btnBack      = $("btnBack");
-// --- Effetto glow viola all'ingresso ---
 btnEnter.onclick = () => {
   const logo = qs(".hero-logo");
   logo.classList.add("glow-vg");
-  setTimeout(() => logo.classList.remove("glow-vg"), 1100);
-
-  homeScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
+  // attendo fine animazione CSS (1.1s) + 50ms di margine
+  setTimeout(() => {
+    logo.classList.remove("glow-vg");
+    homeScreen.classList.add("hidden");
+    appScreen.classList.remove("hidden");
+  }, 1150);
 };
   const topbar       = $("topbar"); // MOD: topbar id
 
