@@ -491,11 +491,10 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
     });
   });
 
-  $("btnDocsOwner").onclick = ()=>{ alert("Upload documenti proprietario (mock)"); d.verified=true; renderNearby(); };
-  $("btnDocsDog").onclick   = ()=>{ alert("Upload documenti dog (mock)"); d.verified=true; renderNearby(); };
-  $("btnOpenChat").onclick  = ()=>{ closeProfilePage(); setTimeout(()=>openChat(d), 120); };
-
-  $("uploadSelfie").onclick = ()=>alert("Upload selfie (mock)");
+  $("#btnOpenChat").onclick = () => {
+  closeProfilePage();
+  setTimeout(() => openChat(d), 150); // attendo la chiusura animata
+};
   $("unlockSelfie").onclick = async ()=>{
     if (!isSelfieUnlocked(d.id)){
       state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
@@ -506,13 +505,12 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
 };
 
   window.closeProfilePage = ()=>{
-    profileSheet.classList.remove("show");
-    setTimeout(()=>{
-      profileSheet.classList.add("hidden");
-      // MOD: ripristina topbar/body
-      document.body.classList.remove("noscroll","no-topbar");
-      topbar?.classList.remove("hidden");
-    }, 250);
+    profilePage.classList.remove("active");
+setTimeout(()=>{
+  profilePage.classList.add("hidden");
+  document.body.classList.remove("noscroll","noScroll");
+  topbar?.classList.remove("hidden");
+},250);
   };
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
