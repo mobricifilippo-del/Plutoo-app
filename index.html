@@ -168,15 +168,11 @@
       </form>
     </aside>
 
-    <!-- Profilo -->
-    <!-- MOD: aggiunta classe 'fullscreen' (gestita da CSS) -->
-    <section id="profileSheet" class="sheet hidden fullscreen" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
-      <div class="sheet-header">
-        <div id="ppTitle" data-i18n="profile">Profilo</div>
-        <button class="icon close" type="button" onclick="closeProfilePage()" aria-label="Chiudi">✕</button>
-      </div>
-      <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
-    </section>
+    <!-- Profilo (pagina dedicata, non più sheet) -->
+<section id="viewProfile" class="view" aria-labelledby="ppTitle">
+  <h2 id="ppTitle" class="visually-hidden">Profilo</h2>
+  <div id="ppBody" class="profile-page"><!-- riempito da app.js --></div>
+</section>
     
     <!-- Footer sponsor fisso (App): niente “Contatti”, niente canili -->
     <footer class="sponsor">
