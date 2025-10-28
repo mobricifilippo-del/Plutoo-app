@@ -128,7 +128,16 @@ function showView(id){
   $(id).classList.add("active");
   lastViewId = id;
 }
-
+// === Gestione tasto indietro fisico (Android) ===
+window.onpopstate = () => {
+  if (!homeScreen.classList.contains("hidden")) return;
+  if (profilePage && !profilePage.classList.contains("hidden")) {
+    profilePage.classList.add("hidden");
+    showView(lastViewId || "viewNearby");
+  } else {
+    showView("viewNearby");
+  }
+};
 // Back: non tornare alla Home, resta nell'app e riapri l’ultima vista
 btnBack.onclick = () => {
   homeScreen.classList.add("hidden");
