@@ -1,86 +1,69 @@
 /* =========================================================
-   PLUTOO – app.js (Gold Edition, esteso sui TUOI file)
-   Aggiunte: splash, tab Giochiamo, Luoghi PET esteso,
-   profilo (Documenti dog, bottoni accent, lightbox),
-   contatti solo in Home, canili solo in Home.
-   + MOD: fullscreen stabile + topbar toggle
+   PLUTOO – app.js (Ricerca completa + Gold 🔒 + hash back)
+   - Nessun cambio struttura/ID
+   - Pannello Ricerca sempre apribile
+   - Filtri liberi: Sesso, Razza (autocomplete prefix), Distanza (slider+numero)
+   - Filtri Gold 🔒 (solo Plus): Solo verificati, Accoppiamento, Peso, Altezza
+   - Persistenza localStorage
+   - Back hardware sicuro via hash (#nearby | #love | #play | #profile-<id>)
+   - Nessun codice dopo la chiusura del DOMContentLoaded
    ========================================================= */
+
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
+
 document.addEventListener("DOMContentLoaded", () => {
-   
+
+  // -----------------------
   // Helpers
+  // -----------------------
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
   const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
+  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+  const fmtKm = n => `${(+n).toFixed(1)} km`;
+
+  // -----------------------
   // DOM refs
+  // -----------------------
   const homeScreen   = $("homeScreen");
   const appScreen    = $("appScreen");
-  const heroLogo     = $("heroLogo");
+
   const btnEnter     = $("btnEnter");
-  const sponsorLink  = $("sponsorLink");
-  const sponsorLinkApp = $("sponsorLinkApp");
-  const ethicsButton = $("ethicsButton");
-  const ethicsButtonApp = $("ethicsButtonApp"); // nascosto nell'app
-  const btnBack      = $("btnBack");
-btnEnter.onclick = () => {
-  const logo = qs(".hero-logo");
-  logo.classList.add("glow-vg");
-  // attendo fine animazione CSS (1.1s) + 50ms di margine
-  setTimeout(() => {
-    logo.classList.remove("glow-vg");
-    homeScreen.classList.add("hidden");
-    appScreen.classList.remove("hidden");
-  }, 1150);
-};
-  const topbar       = $("topbar"); // MOD: topbar id
+  const heroLogo     = $("heroLogo");
 
-  const tabNearby = $("tabNearby");
-  const tabLove   = $("tabLove");
-  const tabPlay   = $("tabPlay");
-  const tabLuoghi = $("tabLuoghi");
-  const luoghiMenu = $("luoghiMenu");
-// Click tab → mostra vista e memorizza ultima
-tabNearby.onclick = () => showView("viewNearby");
-tabLove.onclick   = () => showView("viewLove");
-tabPlay.onclick   = () => showView("viewPlay");
-  const viewNearby = $("viewNearby");
-  const viewLove   = $("viewLove");
-  const viewPlay   = $("viewPlay");
-   const viewProfile = $("viewProfile");
-  const nearGrid   = $("nearGrid");
-
-  const loveCard = $("loveCard");
-  const loveImg  = $("loveImg");
-  const loveTitleTxt = $("loveTitleTxt");
-  const loveMeta = $("loveMeta");
-  const loveBio  = $("loveBio");
-  const loveNo   = $("loveNo");
-  const loveYes  = $("loveYes");
-
-  const playCard = $("playCard");
-  const playImg  = $("playImg");
-  const playTitleTxt = $("playTitleTxt");
-  const playMeta  = $("playMeta");
-  const playBio   = $("playBio");
-  const playNo    = $("playNo");
-  const playYes   = $("playYes");
+  const tabNearby    = $("tabNearby");
+  const tabLove      = $("tabLove");
+  const tabPlay      = $("tabPlay");
+  const tabLuoghi    = $("tabLuoghi");
+  const luoghiMenu   = $("luoghiMenu");
 
   const btnSearchPanel = $("btnSearchPanel");
-  const searchPanel = $("searchPanel");
-  const closeSearch = $("closeSearch");
-  const breedInput  = $("breedInput");
-  const breedsList  = $("breedsList");
-  const distRange   = $("distRange");
-  const distLabel   = $("distLabel");
-   const distKmInput = $("distKmInput");
-  const verifiedInput = $("verifiedInput");
-  const sexFilter   = $("sexFilter");
-  const weightInput = $("weightInput");
-  const heightInput = $("heightInput");
+  const searchPanel  = $("searchPanel");
+  const closePanel   = $("closePanel");
+
+  // Filtri (liberi)
+  const sexInput     = $("sexInput");
+  const breedInput   = $("breedInput");
+  const breedSuggest = $("breedSuggest");
+  const distInput    = $("distInput");
+  const distNum      = $("distNum");
+
+  // Filtri Gold (data-plus-only)
+  const onlyVerified = $("onlyVerified");
+  const mateAvail    = $("mateAvail");
+  const weightMin    = $("weightMin");
+  const weightMax    = $("weightMax");
+  const heightMin    = $("heightMin");
+  const heightMax    = $("heightMax");
+
   const applyFilters = $("applyFilters");
   const resetFilters = $("resetFilters");
+
+  const profilePage  = $("profilePage");
+  const ppBody       = $("ppBody");
+  const btnBack      = $("closeProfile");
 
   const chatPane   = $("chatPane");
   const closeChat  = $("closeChat");
@@ -88,164 +71,163 @@ tabPlay.onclick   = () => showView("viewPlay");
   const chatComposer = $("chatComposer");
   const chatInput  = $("chatInput");
 
-  const profilePage = $("profilePage");
-const ppBody = $("ppBody");
-let lastViewId = "viewNearby"; // vista corrente per back
-// --- PLUS modal elements ---
-const btnPlus = $("btnPlus");
-const plusModal = $("plusModal");
-const closePlus = $("closePlus");
-const goPlus = $("goPlus");
-const laterPlus = $("laterPlus");
-// Fallback globale per apertura/chiusura modale Plus
-window.openPlusModal = () => {
-  // applico stile SOLO mentre è aperto
-  plusModal.style.position = "fixed";
-  plusModal.style.inset = "0";
-  plusModal.style.zIndex = "9999";
+  const sponsorLink    = $("sponsorLink");
+  const sponsorLinkApp = $("sponsorLinkApp");
+  const btnEthics      = $("btnEthics");
 
-  plusModal.classList.remove("hidden");
-  plusModal.setAttribute("aria-hidden", "false");
-   plusModal.classList.add("show");
-document.body.classList.add("noscroll");
-};
+  // Viste
+  const viewNearby = $("viewNearby");
+  const viewLove   = $("viewLove");
+  const viewPlay   = $("viewPlay");
+  const nearGrid   = $("nearGrid");
 
-window.closePlusModal = () => {
-   plusModal.classList.remove("show");
-document.body.classList.remove("noscroll");
-  plusModal.classList.add("hidden");
-  plusModal.setAttribute("aria-hidden", "true");
+  const loveCard   = $("loveCard");
+  const loveImg    = $("loveImg");
+  const loveTitleTxt = $("loveTitleTxt");
+  const loveMeta   = $("loveMeta");
+  const loveBio    = $("loveBio");
+  const loveNo     = $("loveNo");
+  const loveYes    = $("loveYes");
 
-  // rimuovo lo stile per non bloccare la pagina
-  plusModal.style.position = "";
-  plusModal.style.inset = "";
-  plusModal.style.zIndex = "";
-};
-   // --- Gestione viste + Back coerente ---
-function showView(id){
-  // mostra solo la vista richiesta e aggiorna il "lastViewId"
-  qa(".view").forEach(v => v.classList.remove("active"));
-  $(id).classList.add("active");
-  lastViewId = id;
-}
-// === Gestione tasto indietro fisico (Android) ===
-window.onpopstate = () => {
-  if (!homeScreen.classList.contains("hidden")) return;
-  if (profilePage && !profilePage.classList.contains("hidden")) {
-    profilePage.classList.add("hidden");
-    showView(lastViewId || "viewNearby");
-  } else {
-    showView("viewNearby");
-  }
-};
-// Back: non tornare alla Home, resta nell'app e riapri l’ultima vista
-btnBack.onclick = () => {
-  homeScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
-  showView(lastViewId || "viewNearby");
-};
-  // Stato
+  const playCard   = $("playCard");
+  const playImg    = $("playImg");
+  const playTitleTxt = $("playTitleTxt");
+  const playMeta   = $("playMeta");
+  const playBio    = $("playBio");
+  const playNo     = $("playNo");
+  const playYes    = $("playYes");
+
+  const btnPlus    = $("btnPlus");
+  const plusModal  = $("plusModal");
+
+  let lastViewId = "viewNearby";
+
+  // -----------------------
+  // Stato & i18n
+  // -----------------------
+  const STRINGS = {
+    it:{
+      noProfiles:"Nessun profilo disponibile al momento.",
+      unlockSelfie:"Guarda un video per vedere il selfie (24h).",
+      rewardDone:"Ricompensa vista! ✅",
+      sponsorUrl:"https://www.google.com/search?q=Fido+gelato+per+cani",
+      onlyPlus:"Disponibile con Plus",
+    },
+    en:{
+      noProfiles:"No profiles available right now.",
+      unlockSelfie:"Watch a video to view selfie (24h).",
+      rewardDone:"Reward watched! ✅",
+      sponsorUrl:"https://www.google.com/search?q=Fido+ice+cream+for+dogs",
+      onlyPlus:"Available with Plus",
+    }
+  };
+  const lang = (localStorage.getItem("lang") || autodetectLang());
+  const t = (k)=>STRINGS[lang]?.[k] || k;
+
   const state = {
-    lang: (localStorage.getItem("lang") || autodetectLang()),
+    lang,
     plus: localStorage.getItem("plutoo_plus")==="yes",
     entered: localStorage.getItem("entered")==="1",
-    swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
-    matches: parseInt(localStorage.getItem("matches")||"0"),
-    firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
-    selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
-    currentLoveIdx: 0,
-    currentPlayIdx: 0,
+    swipeCount: parseInt(localStorage.getItem("swipes")||"0",10) || 0,
+    matches: parseInt(localStorage.getItem("matches")||"0",10) || 0,
+    currentLoveIdx: parseInt(localStorage.getItem("idx_love")||"0",10) || 0,
+    currentPlayIdx: parseInt(localStorage.getItem("idx_play")||"0",10) || 0,
+    // Filtri (persistiti)
     filters: {
-      breed: localStorage.getItem("f_breed") || "",
-      distKm: parseInt(localStorage.getItem("f_distKm")||"5"),
-      verified: localStorage.getItem("f_verified")==="1",
-      sex: localStorage.getItem("f_sex") || "",
-      weight: localStorage.getItem("f_weight") || "",
-      height: localStorage.getItem("f_height") || ""
-    },
-    geo: null,
-    breeds: []
+      sex:         localStorage.getItem("f_sex") || "",
+      breed:       localStorage.getItem("f_breed") || "",
+      distKm:      parseInt(localStorage.getItem("f_distKm")||"5",10),
+      onlyVerified:localStorage.getItem("f_onlyVerified")==="1",   // Gold
+      mateAvail:   localStorage.getItem("f_mateAvail") || "",      // "si" | "no" | ""
+      weightMin:   numOrNull(localStorage.getItem("f_weightMin")),
+      weightMax:   numOrNull(localStorage.getItem("f_weightMax")),
+      heightMin:   numOrNull(localStorage.getItem("f_heightMin")),
+      heightMax:   numOrNull(localStorage.getItem("f_heightMax")),
+    }
   };
-// === Effetto glow viola al tap sulla foto del DOG ===
-document.addEventListener("click", e => {
-  const img = e.target.closest(".card-img");
-  if (!img) return;
-  img.classList.add("tap-glow");
-  setTimeout(() => img.classList.remove("tap-glow"), 450);
-});
-  // I18N min
-  const I18N = {
-  it: { sponsorUrl:"https://www.gelatofido.it/", mapsShelters:"canili vicino a me", noProfiles:"Nessun profilo. Modifica i filtri."},
-  en: { sponsorUrl:"https://www.gelatofido.it/", mapsShelters:"animal shelters near me", noProfiles:"No profiles. Adjust filters."}
-};
-  const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
-  function autodetectLang(){ return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; }
 
-  // Lang flags
-  $("langIT")?.addEventListener("click", ()=>{ state.lang="it"; localStorage.setItem("lang","it"); });
-  $("langEN")?.addEventListener("click", ()=>{ state.lang="en"; localStorage.setItem("lang","en"); });
+  function numOrNull(v){ return v===""||v===null||v===undefined ? null : Number(v); }
 
-  // Dati mock
+  function autodetectLang(){
+    const n = (navigator.language||"it").slice(0,2);
+    return (n==="it"||n==="en")?n:"it";
+  }
+
+  // -----------------------
+  // Dataset DOGS (foto fisse, coerenza tra viste)
+  // Aggiunti: weightKg, heightCm, mate ("si"/"no")
+  // -----------------------
   const DOGS = [
-    { id:"d1", name:"Luna",  age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love",   sex:"F", verified:true  },
-    { id:"d2", name:"Rex",   age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"play",  sex:"M", verified:true  },
-    { id:"d3", name:"Maya",  age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg", bio:"Coccole e passeggiate.",  mode:"love",   sex:"F", verified:false },
-    { id:"d4", name:"Rocky", age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.",    mode:"play",  sex:"M", verified:true  },
-    { id:"d5", name:"Chicco",age:1, breed:"Barboncino",       km:0.8, img:"dog1.jpg", bio:"Piccolo fulmine.",        mode:"love",   sex:"M", verified:true  },
-    { id:"d6", name:"Kira",  age:6, breed:"Labrador",         km:5.1, img:"dog2.jpg", bio:"Acqua e palla.",          mode:"play",  sex:"F", verified:true  },
+    { id:"d1", name:"Luna",  sex:"F", age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", verified:true,  mode:"love", weightKg:28, heightCm:55, mate:"si" },
+    { id:"d2", name:"Rex",   sex:"M", age:4, breed:"Pastore Tedesco",  km:2.5, img:"dog2.jpg", bio:"Fedele e giocherellone.",verified:true,  mode:"play", weightKg:34, heightCm:62, mate:"no" },
+    { id:"d3", name:"Maya",  sex:"F", age:3, breed:"Bulldog Francese", km:3.2, img:"dog3.jpg", bio:"Coccole e passeggiate.", verified:false, mode:"love", weightKg:11, heightCm:30, mate:"si" },
+    { id:"d4", name:"Rocky", sex:"M", age:5, breed:"Beagle",           km:4.1, img:"dog4.jpg", bio:"Sempre in movimento.",   verified:true,  mode:"play", weightKg:13, heightCm:38, mate:"si" },
+    { id:"d5", name:"Chicco",sex:"M", age:1, breed:"Barboncino",       km:0.8, img:"dog5.jpg", bio:"Piccolo fulmine.",       verified:true,  mode:"love", weightKg:6,  heightCm:28, mate:"no" },
+    { id:"d6", name:"Kira",  sex:"F", age:6, breed:"Labrador",         km:5.6, img:"dog6.jpg", bio:"Acqua e palla.",         verified:true,  mode:"play", weightKg:29, heightCm:56, mate:"no" },
   ];
 
-  // Razze
+  // -----------------------
+  // Razze (autocomplete)
+  // -----------------------
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
-    if (Array.isArray(arr)) state.breeds = arr;
-  }).catch(()=>{ state.breeds = [
+    if (Array.isArray(arr)) window.ALL_BREEDS = arr;
+  }).catch(()=>{ window.ALL_BREEDS = [
     "Pastore Tedesco","Labrador","Golden Retriever","Jack Russell",
     "Bulldog Francese","Barboncino","Border Collie","Chihuahua",
     "Carlino","Beagle","Maltese","Shih Tzu","Husky","Bassotto","Cocker Spaniel"
   ];});
 
-  // Geo
-  if ("geolocation" in navigator){
-    navigator.geolocation.getCurrentPosition(
-      p=>{ state.geo = { lat:p.coords.latitude, lon:p.coords.longitude }; },
-      ()=>{}, { enableHighAccuracy:true, timeout:5000, maximumAge:60000 }
-    );
-  }
+  breedInput?.addEventListener("input", ()=>{
+    const q = (breedInput.value||"").trim().toLowerCase();
+    if (!q){ breedSuggest.innerHTML=""; breedSuggest.style.display="none"; return; }
+    const src = (window.ALL_BREEDS||[]).filter(x=>x.toLowerCase().startsWith(q)).slice(0,20);
+    breedSuggest.innerHTML = src.map(x=>`<li>${x}</li>`).join("");
+    breedSuggest.style.display = src.length ? "block" : "none";
+    qa("li",breedSuggest).forEach(li=>{
+      li.addEventListener("click",()=>{
+        breedInput.value = li.textContent;
+        breedSuggest.innerHTML=""; breedSuggest.style.display="none";
+      });
+    });
+  });
 
-  // HOME ↔ APP
-  if (state.entered) {
-    homeScreen.classList.add("hidden");
-    appScreen.classList.remove("hidden");
-    setActiveView("nearby");
-  }
-
-  // Entra: animazione viola→oro→viola e poi entra
+  // -----------------------
+  // Entrata App / Home
+  // -----------------------
   btnEnter?.addEventListener("click", ()=>{
-    heroLogo?.classList.remove("glow-vg");
-    void heroLogo?.offsetWidth;          // forza reflow per riavviare animazione
-    heroLogo?.classList.add("glow-vg");
-
+    try{ heroLogo?.classList.add("glow-vg"); }catch(e){}
     setTimeout(()=>{
       state.entered = true;
       localStorage.setItem("entered","1");
       homeScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
-       history.replaceState({ view: "nearby" }, "");
       setActiveView("nearby");
-    }, 2200);
+    }, 220);
   });
-    
-  // Sponsor click (Home + App) — senza reward reali ora
+
+  // Etico (solo Home)
+  btnEthics?.addEventListener("click",(e)=>{
+    e.preventDefault();
+    if (state.plus){
+      window.open("https://www.google.com/maps/search/"+encodeURIComponent("canili vicino a me"), "_blank","noopener");
+    } else {
+      // Reward mock → poi Maps
+      toast("Video…"); 
+      setTimeout(()=>window.open("https://www.google.com/maps/search/"+encodeURIComponent("canili vicino a me"), "_blank","noopener"), 800);
+    }
+  });
+
+  // Sponsor
   function openSponsor(){ window.open(t("sponsorUrl"), "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
-  // Etico canili (solo Home)
-  ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
-
-  tabNearby?.addEventListener("click", ()=>{ if (lastViewId==="nearby") return; history.replaceState({ view:"nearby" }, ""); setActiveView("nearby"); });
-tabLove  ?.addEventListener("click", ()=>{ if (lastViewId==="love")   return; history.replaceState({ view:"love"   }, ""); setActiveView("love"); });
-tabPlay  ?.addEventListener("click", ()=>{ if (lastViewId==="play")   return; history.replaceState({ view:"play"   }, ""); setActiveView("play"); });
+  // -----------------------
+  // Tabs & menu Luoghi
+  // -----------------------
+  tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
+  tabLove?.addEventListener("click",   ()=>setActiveView("love"));
+  tabPlay?.addEventListener("click",   ()=>setActiveView("play"));
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -262,58 +244,196 @@ tabPlay  ?.addEventListener("click", ()=>{ if (lastViewId==="play")   return; hi
       openMapsCategory(cat);
     });
   });
-lastView = name;
- function setActiveView(name){
-  [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
-  [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
-  if (name==="nearby"){ 
-    viewNearby.classList.add("active"); 
-    tabNearby.classList.add("active"); 
-    btnSearchPanel.disabled = false; 
-    renderNearby(); 
-  }
-  if (name==="love"){   
-    viewLove.classList.add("active");   
-    tabLove.classList.add("active");   
-    btnSearchPanel.disabled = true; 
-    renderSwipe("love"); 
-  }
-  if (name==="play"){   
-    viewPlay.classList.add("active");   
-    tabPlay.classList.add("active");   
-    btnSearchPanel.disabled = true; 
-    renderSwipe("play"); 
+  function openMapsCategory(cat){
+    const qMap = {
+      veterinari:"veterinari per cani vicino a me",
+      toelettatura:"toelettatura per cani vicino a me",
+      negozi:"negozi animali vicino a me",
+      parchi:"parchi per cani vicino a me",
+      addestratori:"addestratori cani vicino a me",
+      canili:"canili vicino a me"
+    }[cat]||"negozi animali vicino a me";
+    // Reward opzionale (mock) se non Plus
+    if (!state.plus){ toast("Video…"); setTimeout(()=>window.open(`https://www.google.com/maps/search/${encodeURIComponent(qMap)}`,"_blank","noopener"),800); }
+    else { window.open(`https://www.google.com/maps/search/${encodeURIComponent(qMap)}`,"_blank","noopener"); }
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
-} 
+  // -----------------------
+  // Back hardware via hash
+  // -----------------------
+  function showView(id){
+    qa(".view").forEach(v => v.classList.remove("active"));
+    $(id)?.classList.add("active");
+    lastViewId = id;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-  // Back
-  btnBack?.addEventListener("click", ()=>{
-    if (!viewNearby.classList.contains("active")) { setActiveView("nearby"); return; }
-    // Torna a Home (conferma)
-    if (confirm("Tornare alla Home?")){
-      localStorage.removeItem("entered");
-      state.entered=false;
-      appScreen.classList.add("hidden");
-      homeScreen.classList.remove("hidden");
+  function setActiveView(name){
+    [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
+    [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
+
+    if (name==="nearby"){
+      viewNearby.classList.add("active");
+      tabNearby.classList.add("active");
+      renderNearby();
+      if (location.hash !== "#nearby") location.hash = "#nearby";
+      lastViewId = "viewNearby";
+    }
+    if (name==="love"){
+      viewLove.classList.add("active");
+      tabLove.classList.add("active");
+      renderSwipe("love");
+      if (location.hash !== "#love") location.hash = "#love";
+      lastViewId = "viewLove";
+    }
+    if (name==="play"){
+      viewPlay.classList.add("active");
+      tabPlay.classList.add("active");
+      renderSwipe("play");
+      if (location.hash !== "#play") location.hash = "#play";
+      lastViewId = "viewPlay";
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  window.addEventListener("hashchange", ()=>{
+    const h = (location.hash||"").replace(/^#/, "");
+    if (!h) return;
+    if (h.startsWith("profile-")){
+      const id = h.slice("profile-".length);
+      const d = DOGS.find(x=>x.id===id);
+      if (d){
+        homeScreen.classList.add("hidden");
+        appScreen.classList.remove("hidden");
+        openProfile(d);
+        return;
+      }
+    }
+    if (h==="nearby"||h==="love"||h==="play"){
+      profilePage?.classList.add("hidden");
+      setActiveView(h);
+      return;
     }
   });
 
-  // Nearby (grid 2×N)
-  function renderNearby(){
-    const list = filteredDogs();
-    if (!list.length){ nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; return; }
-    nearGrid.innerHTML = list.map(cardHTML).join("");
-    qa(".dog-card").forEach(card=>{
-      const id = card.getAttribute("data-id");
-      const d  = DOGS.find(x=>x.id===id);
-      const img = qs("img", card);
-      img?.addEventListener("click", ()=>openProfile(d));              // foto apre profilo
-      qs(".open-profile", card)?.addEventListener("click", ()=>openProfile(d));
-    });
+  (function honorHashOnLoad(){
+    if (!state.entered) return;
+    const h = (location.hash||"").replace(/^#/, "");
+    if (h==="nearby"||h==="love"||h==="play"){ setActiveView(h); }
+    else if (h.startsWith("profile-")){
+      const id = h.slice("profile-".length);
+      const d = DOGS.find(x=>x.id===id);
+      if (d) openProfile(d);
+    }
+  })();
+
+  // -----------------------
+  // Ricerca personalizzata
+  // -----------------------
+
+  // Pannello SEMPRE apribile (gating solo sui campi Gold)
+  btnSearchPanel?.addEventListener("click", ()=>{
+    restoreFiltersToUI();
+    handlePlusLockUI();
+    searchPanel.classList.remove("hidden");
+  });
+  closePanel?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
+
+  // Sync distanza slider ↔ numero (1..50)
+  function syncDistFromSlider(){
+    const v = clamp(parseInt(distInput.value||"5",10),1,50);
+    distInput.value = String(v);
+    distNum.value   = String(v);
   }
+  function syncDistFromNumber(){
+    const v = clamp(parseInt(distNum.value||"5",10),1,50);
+    distNum.value   = String(v);
+    distInput.value = String(v);
+  }
+  distInput?.addEventListener("input", syncDistFromSlider);
+  distNum?.addEventListener("input",   syncDistFromNumber);
+
+  // Gating Gold: disabilita campi con data-plus-only se non Plus
+  function handlePlusLockUI(){
+    const isPlus = state.plus === true;
+    qa("[data-plus-only]").forEach(el=>{
+      el.disabled = !isPlus;
+      // click/tap su elemento disabilitato → apri Plus
+      const openPlus = (ev)=>{
+        if (!isPlus){
+          ev.preventDefault();
+          ev.stopPropagation();
+          plusModal?.classList.remove("hidden");
+          return false;
+        }
+      };
+      // Bind su eventi principali
+      el.onpointerdown = openPlus;
+      el.onfocus = openPlus;
+      el.onclick = openPlus;
+    });
+    // Decorazione visiva (testo "gold-locked" già nel markup/CSS)
+  }
+
+  // Salvataggio / ripristino filtri
+  function persistFiltersFromUI(){
+    state.filters.sex         = sexInput.value || "";
+    state.filters.breed       = (breedInput.value||"").trim();
+    state.filters.distKm      = clamp(parseInt(distInput.value||"5",10),1,50);
+    state.filters.onlyVerified= !!onlyVerified.checked;
+    state.filters.mateAvail   = mateAvail.value || "";
+    state.filters.weightMin   = valOrNull(weightMin.value);
+    state.filters.weightMax   = valOrNull(weightMax.value);
+    state.filters.heightMin   = valOrNull(heightMin.value);
+    state.filters.heightMax   = valOrNull(heightMax.value);
+
+    localStorage.setItem("f_sex", state.filters.sex);
+    localStorage.setItem("f_breed", state.filters.breed);
+    localStorage.setItem("f_distKm", String(state.filters.distKm));
+    localStorage.setItem("f_onlyVerified", state.filters.onlyVerified ? "1" : "");
+    localStorage.setItem("f_mateAvail", state.filters.mateAvail);
+    localStorage.setItem("f_weightMin", state.filters.weightMin ?? "");
+    localStorage.setItem("f_weightMax", state.filters.weightMax ?? "");
+    localStorage.setItem("f_heightMin", state.filters.heightMin ?? "");
+    localStorage.setItem("f_heightMax", state.filters.heightMax ?? "");
+  }
+  function valOrNull(v){ return (v===null || v===undefined || v==="") ? null : Number(v); }
+
+  function restoreFiltersToUI(){
+    sexInput.value   = state.filters.sex || "";
+    breedInput.value = state.filters.breed || "";
+    distInput.value  = String(clamp(state.filters.distKm||5,1,50));
+    distNum.value    = distInput.value;
+
+    onlyVerified.checked = !!state.filters.onlyVerified;
+    mateAvail.value      = state.filters.mateAvail || "";
+
+    weightMin.value = state.filters.weightMin ?? "";
+    weightMax.value = state.filters.weightMax ?? "";
+    heightMin.value = state.filters.heightMin ?? "";
+    heightMax.value = state.filters.heightMax ?? "";
+  }
+
+  applyFilters?.addEventListener("click", ()=>{
+    persistFiltersFromUI();
+    searchPanel.classList.add("hidden");
+    renderNearby();
+    // Se ci troviamo su Love/Play, non ricarichiamo le card qui (restano indipendenti)
+  });
+
+  resetFilters?.addEventListener("click", ()=>{
+    sexInput.value=""; breedInput.value=""; distInput.value="5"; distNum.value="5";
+    onlyVerified.checked=false; mateAvail.value="";
+    weightMin.value=""; weightMax.value=""; heightMin.value=""; heightMax.value="";
+    persistFiltersFromUI();
+    breedSuggest.innerHTML=""; breedSuggest.style.display="none";
+    renderNearby();
+  });
+
+  // -----------------------
+  // Rendering liste
+  // -----------------------
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
@@ -328,52 +448,59 @@ lastView = name;
         </div>
       </article>`;
   }
-  const fmtKm = n => `${n.toFixed(1)} km`;
 
   function filteredDogs(){
     const f = state.filters;
-    return DOGS
-      .filter(d => d.km <= (f.distKm||999))
-      .filter(d => (!f.verified ? true : d.verified))
-      .filter(d => (!f.sex ? true : d.sex===f.sex))
-      .filter(d => (!f.breed ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase())));
+    let list = DOGS.slice();
+
+    // Filtri liberi
+    if (f.sex)   list = list.filter(d => d.sex === f.sex);
+    if (f.breed) list = list.filter(d => d.breed.toLowerCase().startsWith(f.breed.toLowerCase()));
+    list = list.filter(d => d.km <= (f.distKm||999));
+
+    // Filtri Gold solo se Plus; se non Plus, non influiscono (ma restano in UI)
+    if (state.plus){
+      if (f.onlyVerified) list = list.filter(d => d.verified === true);
+      if (f.mateAvail)    list = list.filter(d => d.mate === f.mateAvail); // "si"/"no"
+      if (f.weightMin!=null) list = list.filter(d => (d.weightKg ?? 0) >= f.weightMin);
+      if (f.weightMax!=null) list = list.filter(d => (d.weightKg ?? 0) <= f.weightMax);
+      if (f.heightMin!=null) list = list.filter(d => (d.heightCm ?? 0) >= f.heightMin);
+      if (f.heightMax!=null) list = list.filter(d => (d.heightCm ?? 0) <= f.heightMax);
+    }
+
+    return list;
   }
 
-  // Swipe Decks
-  function renderSwipe(mode){
-    const deck = DOGS.filter(d=>d.mode===mode);
-    const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % (deck.length||1);
-    const d = deck[idx] || DOGS[0];
-
-    const img   = mode==="love" ? loveImg : playImg;
-    const title = mode==="love" ? loveTitleTxt : playTitleTxt;
-    const meta  = mode==="love" ? loveMeta : playMeta;
-    const bio   = mode==="love" ? loveBio : playBio;
-    const card  = mode==="love" ? loveCard : playCard;
-    const yesBtn = mode==="love" ? loveYes : playYes;
-    const noBtn  = mode==="love" ? loveNo  : playNo;
-
-    img.src = d.img;
-    title.textContent = `${d.name} ${d.verified?"✅":""}`;
-    meta.textContent  = `${d.breed} · ${d.age} ${state.lang==="it"?"anni":"yrs"} · ${fmtKm(d.km)}`;
-    bio.textContent   = d.bio || "";
-    img.onclick = ()=>openProfile(d);
-
-    attachSwipe(card, dir=>{
-      if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
-      setTimeout(()=>renderSwipe(mode), 10);
+  function renderNearby(){
+    const list = filteredDogs();
+    if (!list.length){
+      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
+      return;
+    }
+    nearGrid.innerHTML = list.map(cardHTML).join("");
+    qa(".dog-card").forEach(card=>{
+      const id = card.getAttribute("data-id");
+      const d  = DOGS.find(x=>x.id===id);
+      const img = qs(".card-img", card);
+      img?.addEventListener("click", ()=>{
+        img.classList.add("tap-glow");
+        setTimeout(()=>img.classList.remove("tap-glow"), 450);
+        openProfile(d);
+      });
+      qs(".open-profile", card)?.addEventListener("click", ()=>openProfile(d));
     });
-
-    yesBtn.onclick = ()=>simulateSwipe(card,"right");
-    noBtn.onclick  = ()=>simulateSwipe(card,"left");
   }
 
+  // -----------------------
+  // Swipe Decks (Love/Play)
+  // -----------------------
   function attachSwipe(card, cb){
     if (card._sw) return;
     card._sw = true;
     let sx=0, dx=0, dragging=false;
     const start=(x)=>{ sx=x; dragging=true; card.style.transition="none"; };
-    const move =(x)=>{ if(!dragging) return; dx=x-sx; const rot=dx/18; card.style.transform=`translate3d(${dx}px,0,0) rotate(${rot}deg)`; };
+    const move =(x)=>{ if(!dragging) return; dx=x-sx; const rot=Math.max(-12,Math.min(12,dx/12)); card.style.transform=`translate3d(${dx}px,0,0) rotate(${rot}deg)`; };
+    const resetCard = (c)=>{ c.style.transition="transform .45s ease"; c.style.transform="translate3d(0,0,0) rotate(0)"; c.classList.remove("swipe-out-left","swipe-out-right"); };
     const end =()=>{ if(!dragging) return; dragging=false; card.style.transition=""; const th=90;
       if (dx>th){ card.classList.add("swipe-out-right"); setTimeout(()=>{ resetCard(card); cb("right"); }, 550); }
       else if (dx<-th){ card.classList.add("swipe-out-left"); setTimeout(()=>{ resetCard(card); cb("left"); }, 550); }
@@ -383,327 +510,131 @@ lastView = name;
     card.addEventListener("touchstart", e=>start(e.touches[0].clientX), {passive:true});
     card.addEventListener("touchmove",  e=>move(e.touches[0].clientX),  {passive:true});
     card.addEventListener("touchend", end);
-    card.addEventListener("mousedown", e=>start(e.clientX));
-    window.addEventListener("mousemove", e=>move(e.clientX));
-    window.addEventListener("mouseup", end);
-  }
-  function resetCard(card){ card.classList.remove("swipe-out-right","swipe-out-left"); card.style.transform=""; }
-  function simulateSwipe(card, dir){
-    card.classList.add(dir==="right"?"swipe-out-right":"swipe-out-left");
-    setTimeout(()=>{ resetCard(card); card.dispatchEvent(new CustomEvent("swiped",{detail:{dir}})); }, 550);
   }
 
-  // ===== MOD: FULLSCREEN RICERCA con topbar toggle e body lock =====
-  btnSearchPanel?.addEventListener("click", ()=>{
-    document.body.classList.add("noscroll","no-topbar");
-    topbar?.classList.add("hidden");
-    searchPanel.classList.add("fullscreen");
-    btnSearchPanel.setAttribute("aria-expanded","true");
-    searchPanel.classList.remove("hidden");
-  });
-  closeSearch?.addEventListener("click", ()=>{
-    searchPanel.classList.add("hidden");
-    btnSearchPanel.setAttribute("aria-expanded","false");
-    document.body.classList.remove("noscroll","no-topbar");
-    topbar?.classList.remove("hidden");
-  });
-  // Dist label live
-  distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
-
-  // Autocomplete razze
-  breedInput?.addEventListener("input", ()=>{
-    const v = (breedInput.value||"").trim().toLowerCase();
-    breedsList.innerHTML=""; breedsList.style.display="none";
-    if (!v) return;
-    const matches = state.breeds.filter(b=>b.toLowerCase().startsWith(v)).sort().slice(0,16);
-    if (!matches.length) return;
-    breedsList.innerHTML = matches.map(b=>`<div class="item">${b}</div>`).join("");
-    breedsList.style.display = "block";
-    qa(".item",breedsList).forEach(it=>it.addEventListener("click",()=>{
-      breedInput.value = it.textContent; breedsList.style.display="none";
-    }));
-  });
-  document.addEventListener("click",(e)=>{
-    if (e.target!==breedInput && !breedsList.contains(e.target)) breedsList.style.display="none";
-  });
-
-  sexFilter?.addEventListener("change", ()=> state.filters.sex = sexFilter.value || "");
-
-  applyFilters?.addEventListener("click",(e)=>{
-    e.preventDefault();
-    state.filters.breed = (breedInput.value||"").trim();
-    const manualKm = distKmInput?.value?.trim();
-state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(manualKm || distRange.value || "0", 10);
-     state.filters.sex = sexFilter.value;
-     state.filters.verified = state.plus ? !!verifiedInput.checked : false;
-    if (state.plus){
-      state.filters.weight = (weightInput.value||"").trim();
-      state.filters.height = (heightInput.value||"").trim();
-    }
-    persistFilters();
-    renderNearby();
-    // chiudi panel + ripristina topbar/body
-    searchPanel.classList.add("hidden");
-    btnSearchPanel.setAttribute("aria-expanded","false");
-    document.body.classList.remove("noscroll","no-topbar");
-    topbar?.classList.remove("hidden");
-  });
-  resetFilters?.addEventListener("click",()=>{
-    breedInput.value=""; distRange.value=5; distLabel.textContent="5 km";
-    verifiedInput.checked = false
-     distLabel.textContent = "5 km";
-    if (state.plus){ weightInput.value=""; heightInput.value=""; }
-    Object.assign(state.filters,{breed:"",distKm:5,verified:false,sex:"",weight:"",height:""});
-    persistFilters(); renderNearby();
-  });
-
-  function persistFilters(){
-    localStorage.setItem("f_breed", state.filters.breed);
-    localStorage.setItem("f_distKm", String(state.filters.distKm));
-    localStorage.setItem("f_verified", state.filters.verified?"1":"0");
-    localStorage.setItem("f_sex", state.filters.sex);
-    localStorage.setItem("f_weight", state.filters.weight||"");
-    localStorage.setItem("f_height", state.filters.height||"");
+  function simulateSwipe(card, side){
+    if (side==="right"){ card.classList.add("swipe-out-right"); }
+    if (side==="left") { card.classList.add("swipe-out-left"); }
+    setTimeout(()=>card.dispatchEvent(new Event("touchend")), 350);
   }
 
-  window.openProfile = (d) => {
-     history.pushState({ view: "profile", id: d.id }, "");
-  // nascondi le 3 viste principali
-  viewNearby.classList.remove("active"); viewNearby.classList.add("hidden");
-  viewLove.classList.remove("active");   viewLove.classList.add("hidden");
-  viewPlay.classList.remove("active");   viewPlay.classList.add("hidden");
+  function pickNext(mode){
+    const list = DOGS.filter(d=>d.mode===mode);
+    const idx  = mode==="love" ? (state.currentLoveIdx % list.length) : (state.currentPlayIdx % list.length);
+    return list[idx];
+  }
 
-  // mostra la pagina profilo
-  profilePage.classList.remove("hidden");
-  profilePage.classList.add("active");
-     state.currentProfileDog = d;
+  function renderSwipe(mode){
+    const d = pickNext(mode);
+    const card = mode==="love" ? loveCard : playCard;
+    const img  = mode==="love" ? loveImg  : playImg;
+    const title= mode==="love" ? loveTitleTxt : playTitleTxt;
+    const meta = mode==="love" ? loveMeta : playMeta;
+    const bio  = mode==="love" ? loveBio  : playBio;
+    const yesBtn= mode==="love" ? loveYes : playYes;
+    const noBtn = mode==="love" ? loveNo  : playNo;
 
-  const selfieUnlocked = isSelfieUnlocked(d.id);
-  ppBody.innerHTML = `
-    <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
-    <div class="pp-head">
-      <h2 class="pp-name">${d.name} ${d.verified?"✅":""}</h2>
-      <div class="pp-badges">
-        <span class="badge">${d.breed}</span>
-        <span class="badge">${d.age} ${state.lang==="it"?"anni":"yrs"}</span>
-        <span class="badge">${fmtKm(d.km)}</span>
-      </div>
-    </div>
-    <div class="pp-meta soft">${d.bio||""}</div>
+    img.src = d.img;
+    title.textContent = `${d.name} ${d.verified?"✅":""}`;
+    meta.textContent  = `${d.breed} · ${d.age} ${state.lang==="it"?"anni":"yrs"} · ${fmtKm(d.km)}`;
+    bio.textContent   = d.bio || "";
+    img.onclick = ()=>openProfile(d);
 
-    <h3 class="section-title">Galleria</h3>
-    <div class="gallery">
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><img src="dog2.jpg" alt=""></div>
-      <div class="ph"><img src="dog3.jpg" alt=""></div>
-      <div class="ph"><button class="add-photo">+ Aggiungi</button></div>
-    </div>
-
-    <h3 class="section-title">Selfie</h3>
-    <div class="selfie ${selfieUnlocked?'unlocked':''}">
-      <img class="img" src="${d.img}" alt="Selfie">
-      <div class="over">
-        <button id="unlockSelfie" class="btn accent small">${selfieUnlocked?"Sbloccato 24h":"Sblocca selfie"}</button>
-        <button id="uploadSelfie" class="btn accent small">Carica selfie</button>
-      </div>
-    </div>
-
-    <div class="separator"></div>
-    <div class="pp-actions">
-      <button id="btnDocsOwner" class="btn outline">Documenti proprietario</button>
-      <button id="btnDocsDog"   class="btn outline">Documenti dog</button>
-      <button id="btnOpenChat"  class="btn accent">Apri chat</button>
-    </div>
-  `;
-
-  // lightbox
-  qa(".gallery img", ppBody).forEach(img=>{
-    img.addEventListener("click", ()=>{
-      const lb = document.createElement("div");
-      lb.className = "lightbox";
-      lb.innerHTML = `<button class="close" aria-label="Chiudi">✕</button><img src="${img.src}" alt="">`;
-      document.body.appendChild(lb);
-      qs(".close", lb).onclick = ()=> lb.remove();
-      lb.addEventListener("click",(e)=>{ if(e.target===lb) lb.remove(); });
+    attachSwipe(card, dir=>{
+      if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
+      localStorage.setItem("idx_love", String(state.currentLoveIdx));
+      localStorage.setItem("idx_play", String(state.currentPlayIdx));
+      setTimeout(()=>renderSwipe(mode), 10);
     });
+
+    yesBtn.onclick = ()=>simulateSwipe(card,"right");
+    noBtn.onclick  = ()=>simulateSwipe(card,"left");
+  }
+
+  // -----------------------
+  // Profilo
+  // -----------------------
+  window.openProfile = (d) => {
+    if (!d) return;
+    try { if (d && location.hash !== "#profile-"+d.id) location.hash = "#profile-"+d.id; } catch(e){}
+    ppBody.innerHTML = `
+      <div class="photo"><img src="${d.img}" alt="${d.name}"></div>
+      <h2>${d.name}</h2>
+      <div class="dog-attr">${d.breed} · ${d.age} ${state.lang==="it"?"anni":"yrs"} · ${fmtKm(d.km)}</div>
+      ${d.verified?`<div class="badge-verified">Verificato</div>`:""}
+      <div class="profile-actions" style="display:flex;gap:.5rem;margin-top:.6rem">
+        <button id="openChat" class="btn accent">Messaggio</button>
+        <button id="viewSelfie" class="btn ghost">Vedi selfie</button>
+      </div>
+    `;
+    profilePage.classList.remove("hidden");
+    $("openChat")?.addEventListener("click", openChat);
+    $("viewSelfie")?.addEventListener("click", ()=>viewSelfie(d));
+  };
+
+  btnBack?.addEventListener("click", ()=>{
+    profilePage.classList.add("hidden");
+    if (location.hash.startsWith("#profile-")){ history.back(); return; }
+    setActiveView("nearby");
   });
 
-  qs("#btnOpenChat", profilePage)?.addEventListener("click", () => {
-  closeProfilePage();
-  setTimeout(() => openChat(state.currentProfileDog), 250);
-});
-  $("unlockSelfie").onclick = async ()=>{
-    if (!isSelfieUnlocked(d.id)){
-      state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-      localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-      openProfile(d);
-    }
-  };
-};
-
-  window.closeProfilePage = ()=>{
-    profilePage.classList.remove("active");
-setTimeout(()=>{
-  profilePage.classList.add("hidden");
-   viewNearby.classList.add("active");
-  document.body.classList.remove("noscroll","noScroll");
-  topbar?.classList.remove("hidden");
-},250);
-  };
-  function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
-
-  // ===== Chat full-screen stabile =====
-  function openChat(dog){
-    chatPane.classList.add("fullscreen");     // MOD
-    document.body.classList.add("noscroll","no-topbar");  // MOD
-    topbar?.classList.add("hidden");          // MOD
-
+  // -----------------------
+  // Chat & Selfie (mock reward)
+  // -----------------------
+  function openChat(){
     chatPane.classList.remove("hidden");
-    setTimeout(()=>chatPane.classList.add("show"), 10);
-    chatPane.dataset.dogId = dog.id;
-    chatList.innerHTML = `<div class="msg">Ciao ${dog.name}! 🐾</div>`;
-    chatInput.value="";
+    chatList.innerHTML = "";
   }
-  function closeChatPane(){
-    chatPane.classList.remove("show");
+  closeChat?.addEventListener("click", ()=>chatPane.classList.add("hidden"));
+
+  function viewSelfie(d){
+    if (state.plus){ toast("Selfie sempre visibile con Plus ✅"); return; }
+    const key = "selfie_"+d.id;
+    const until = parseInt(localStorage.getItem(key)||"0",10);
+    const now = Date.now();
+    if (now < until){ toast("Selfie già sbloccato ✅"); return; }
+    toast(t("unlockSelfie"));
     setTimeout(()=>{
-      chatPane.classList.add("hidden");
-      // MOD: ripristina topbar/body
-      document.body.classList.remove("noscroll","no-topbar");
-      topbar?.classList.remove("hidden");
-    }, 250);
-  }
-  closeChat?.addEventListener("click", closeChatPane);
-
-  chatComposer?.addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    const text = chatInput.value.trim(); if (!text) return;
-    const dogId = chatPane.dataset.dogId || "unknown";
-    // primo messaggio libero (niente video ora)
-    const bubble = document.createElement("div");
-    bubble.className="msg me"; bubble.textContent=text;
-    chatList.appendChild(bubble); chatInput.value="";
-    chatList.scrollTop = chatList.scrollHeight;
-  });
-
-  // Maps helpers (Luoghi PET esteso)
-  function openMapsCategory(cat){
-    const map = {
-      vets:"cliniche veterinarie vicino a me",
-      groomers:"toelettature vicino a me",
-      shops:"negozi per animali vicino a me",
-      trainers:"addestratori cani vicino a me",
-      kennels:"pensioni per dogs vicino a me",
-      parks:"parchi vicino a me"
-    };
-    const q = map[cat] || "servizi animali vicino a me";
-    openMapsQuery(q);
-  }
-  function openSheltersMaps(){ openMapsQuery(t("mapsShelters")); }
-  function openMapsQuery(q){
-    if (state.geo){
-      const url = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
-      window.open(url,"_blank","noopener");
-    } else {
-      window.open(`https://www.google.com/maps/search/${encodeURIComponent(q)}`,"_blank","noopener");
-    }
+      const next = now + 24*60*60*1000;
+      localStorage.setItem(key, String(next));
+      toast(t("rewardDone"));
+    }, 800);
   }
 
-  // Ricerca UI preset + primo rendering
-  function init(){
-    breedInput.value = state.filters.breed;
-   
-     // Stato iniziale del label distanza in base al valore salvato
-const savedKm = localStorage.getItem("f_distKm");
-if (!savedKm || savedKm === "" || savedKm === "0") {
-  distLabel.textContent = "∞";
-} else {
-  distRange.value = savedKm;
-  distLabel.textContent = `${savedKm} km`;
-}
-    // Gestione doppia distanza: slider o campo libero
-distRange?.addEventListener("input", () => {
-  const val = distRange.value;
-  distLabel.textContent = val ? `${val} km` : "∞";
-  localStorage.setItem("f_distKm", val);
-});
-$("distKmInput")?.addEventListener("input", (e) => {
-  const val = e.target.value;
-  if (val === "" || val === "0") {
-    distLabel.textContent = "∞";
-    localStorage.removeItem("f_distKm");
+  // -----------------------
+  // TOAST utility
+  // -----------------------
+  function toast(msg){
+    try{
+      const b = document.createElement("div");
+      b.textContent = msg;
+      b.style.position = "fixed";
+      b.style.bottom = "1rem";
+      b.style.left = "50%";
+      b.style.transform = "translateX(-50%)";
+      b.style.padding = ".6rem 1rem";
+      b.style.background = "rgba(0,0,0,.85)";
+      b.style.color = "#fff";
+      b.style.border = "1px solid rgba(255,255,255,.15)";
+      b.style.borderRadius = "10px";
+      b.style.zIndex = "1000";
+      document.body.appendChild(b);
+      setTimeout(() => b.remove(), 2000);
+    } catch (e) {}
   }
-});
-sexFilter.value = state.filters.sex;
 
-// preset del toggle "Solo verificati"
-verifiedInput.checked = !!state.filters.verified;
+  // -----------------------
+  // Avvio
+  // -----------------------
+  if (state.entered){
+    homeScreen.classList.add("hidden");
+    appScreen.classList.remove("hidden");
+    setActiveView("nearby");
+  } else {
+    homeScreen.classList.remove("hidden");
+    appScreen.classList.add("hidden");
+  }
 
-// Se l’utente ha il Plus, sblocchiamo i campi premium
-if (state.plus){
-  weightInput?.removeAttribute("disabled");
-  heightInput?.removeAttribute("disabled");
-  verifiedInput?.removeAttribute("disabled");
-} else {
-  // in free resta bloccato
-  verifiedInput?.setAttribute("disabled", "");
-}
-   }
-// === PLUS MODAL OPEN/CLOSE ===
-btnPlus?.addEventListener("click", () => {
-  plusModal.classList.remove("hidden");
-  plusModal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-});
-
-closePlus?.addEventListener("click", () => {
-  plusModal.classList.add("hidden");
-  plusModal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-});
-
-laterPlus?.addEventListener("click", () => {
-  plusModal.classList.add("hidden");
-  plusModal.setAttribute("aria-hidden", "true");
-});
-
-// --- QUI SOSTITUISCI TUTTO FINO IN FONDO ---
-goPlus?.addEventListener("click", () => {
-  // Attiva Plus
-  localStorage.setItem("plutoo_plus", "yes");
-  state.plus = true;
-
-  // Sblocca immediatamente i filtri Gold
-  weightInput?.removeAttribute("disabled");
-  heightInput?.removeAttribute("disabled");
-  verifiedInput?.removeAttribute("disabled");
-
-  // Chiudi il modale in modo pulito
-  plusModal.classList.add("hidden");
-  plusModal.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-
-  // Piccolo feedback visivo
-  try {
-    const b = document.createElement("div");
-    b.textContent = "Plutoo Plus attivato. Filtri sbloccati ✅";
-    b.style.position = "fixed";
-    b.style.bottom = "1rem";
-    b.style.left = "50%";
-    b.style.transform = "translateX(-50%)";
-    b.style.padding = ".6rem 1rem";
-    b.style.background = "rgba(0,0,0,.85)";
-    b.style.color = "#fff";
-    b.style.border = "1px solid rgba(255,255,255,.15)";
-    b.style.borderRadius = "10px";
-    b.style.zIndex = "1000";
-    document.body.appendChild(b);
-    setTimeout(() => b.remove(), 2200);
-  } catch (e) {}
-  
-  // Re-inizializza preset UI dopo l’attivazione
+  function init(){ /* hook per eventuali inizializzazioni future */ }
   init();
-});
-
-// Chiusura DEFINITIVA del DOMContentLoaded:
-});
+}); // <-- chiusura unica corretta del DOMContentLoaded
