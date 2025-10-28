@@ -230,7 +230,7 @@ document.addEventListener("click", e => {
       localStorage.setItem("entered","1");
       homeScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
-       history.pushState({ view: "app" }, "");
+       history.replaceState({ view: "nearby" }, "");
       setActiveView("nearby");
     }, 2200);
   });
@@ -243,9 +243,9 @@ document.addEventListener("click", e => {
   // Etico canili (solo Home)
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
-  tabNearby?.addEventListener("click", ()=>{ history.pushState({ view:"nearby" }, ""); setActiveView("nearby"); });
-tabLove  ?.addEventListener("click", ()=>{ history.pushState({ view:"love"   }, ""); setActiveView("love"); });
-tabPlay  ?.addEventListener("click", ()=>{ history.pushState({ view:"play"   }, ""); setActiveView("play"); });
+  tabNearby?.addEventListener("click", ()=>{ if (lastViewId==="nearby") return; history.replaceState({ view:"nearby" }, ""); setActiveView("nearby"); });
+tabLove  ?.addEventListener("click", ()=>{ if (lastViewId==="love")   return; history.replaceState({ view:"love"   }, ""); setActiveView("love"); });
+tabPlay  ?.addEventListener("click", ()=>{ if (lastViewId==="play")   return; history.replaceState({ view:"play"   }, ""); setActiveView("play"); });
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
