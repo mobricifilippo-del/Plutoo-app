@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewNearby = $("viewNearby");
   const viewLove   = $("viewLove");
   const viewPlay   = $("viewPlay");
+   const viewProfile = $("viewProfile");
   const nearGrid   = $("nearGrid");
 
   const loveCard = $("loveCard");
@@ -75,8 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatComposer = $("chatComposer");
   const chatInput  = $("chatInput");
 
-  const profileSheet = $("profileSheet");
-  const ppBody   = $("ppBody");
+  const profilePage = $("profilePage");
+const ppBody = $("ppBody");
+let lastView = "nearby"; // memorizza l’ultima vista (vicino/love/play)
 // --- PLUS modal elements ---
 const btnPlus = $("btnPlus");
 const plusModal = $("plusModal");
@@ -225,17 +227,32 @@ document.addEventListener("click", e => {
       openMapsCategory(cat);
     });
   });
+lastView = name;
+ function setActiveView(name){
+  [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
+  [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
-  function setActiveView(name){
-    [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
-    [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
-
-    if (name==="nearby"){ viewNearby.classList.add("active"); tabNearby.classList.add("active"); renderNearby(); btnSearchPanel.disabled=false; }
-    if (name==="love"){   viewLove.classList.add("active");   tabLove.classList.add("active");   renderSwipe("love"); btnSearchPanel.disabled=true; }
-    if (name==="play"){   viewPlay.classList.add("active");   tabPlay.classList.add("active");   renderSwipe("play"); btnSearchPanel.disabled=true; }
-
-    window.scrollTo({top:0,behavior:"smooth"});
+  if (name==="nearby"){ 
+    viewNearby.classList.add("active"); 
+    tabNearby.classList.add("active"); 
+    btnSearchPanel.disabled = false; 
+    renderNearby(); 
   }
+  if (name==="love"){   
+    viewLove.classList.add("active");   
+    tabLove.classList.add("active");   
+    btnSearchPanel.disabled = true; 
+    renderSwipe("love"); 
+  }
+  if (name==="play"){   
+    viewPlay.classList.add("active");   
+    tabPlay.classList.add("active");   
+    btnSearchPanel.disabled = true; 
+    renderSwipe("play"); 
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+} 
 
   // Back
   btnBack?.addEventListener("click", ()=>{
@@ -414,80 +431,80 @@ state.filters.distKm = (manualKm === "" || manualKm == null) ? null : parseInt(m
     localStorage.setItem("f_height", state.filters.height||"");
   }
 
-  // ===== Profilo (sheet) + lightbox galleria =====
-  window.openProfile = (d)=>{
-    // MOD: fullscreen + topbar off + body lock
-    profileSheet.classList.add("fullscreen");
-    document.body.classList.add("noscroll","no-topbar");
-    topbar?.classList.add("hidden");
+  window.openProfile = (d) => {
+  // nascondi le 3 viste principali
+  viewNearby.classList.remove("active"); viewNearby.classList.add("hidden");
+  viewLove.classList.remove("active");   viewLove.classList.add("hidden");
+  viewPlay.classList.remove("active");   viewPlay.classList.add("hidden");
 
-    profileSheet.classList.remove("hidden");
-    setTimeout(()=>profileSheet.classList.add("show"), 10);
+  // mostra la pagina profilo
+  profilePage.classList.remove("hidden");
+  profilePage.classList.add("active");
 
-    const selfieUnlocked = isSelfieUnlocked(d.id);
-    ppBody.innerHTML = `
-      <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
-      <div class="pp-head">
-        <h2 class="pp-name">${d.name} ${d.verified?"✅":""}</h2>
-        <div class="pp-badges">
-          <span class="badge">${d.breed}</span>
-          <span class="badge">${d.age} ${state.lang==="it"?"anni":"yrs"}</span>
-          <span class="badge">${fmtKm(d.km)}</span>
-        </div>
+  const selfieUnlocked = isSelfieUnlocked(d.id);
+  ppBody.innerHTML = `
+    <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
+    <div class="pp-head">
+      <h2 class="pp-name">${d.name} ${d.verified?"✅":""}</h2>
+      <div class="pp-badges">
+        <span class="badge">${d.breed}</span>
+        <span class="badge">${d.age} ${state.lang==="it"?"anni":"yrs"}</span>
+        <span class="badge">${fmtKm(d.km)}</span>
       </div>
-      <div class="pp-meta soft">${d.bio||""}</div>
+    </div>
+    <div class="pp-meta soft">${d.bio||""}</div>
 
-      <h3 class="section-title">Galleria</h3>
-      <div class="gallery">
-        <div class="ph"><img src="${d.img}" alt=""></div>
-        <div class="ph"><img src="dog2.jpg" alt=""></div>
-        <div class="ph"><img src="dog3.jpg" alt=""></div>
-        <div class="ph"><button class="add-photo">+ Aggiungi</button></div>
+    <h3 class="section-title">Galleria</h3>
+    <div class="gallery">
+      <div class="ph"><img src="${d.img}" alt=""></div>
+      <div class="ph"><img src="dog2.jpg" alt=""></div>
+      <div class="ph"><img src="dog3.jpg" alt=""></div>
+      <div class="ph"><button class="add-photo">+ Aggiungi</button></div>
+    </div>
+
+    <h3 class="section-title">Selfie</h3>
+    <div class="selfie ${selfieUnlocked?'unlocked':''}">
+      <img class="img" src="${d.img}" alt="Selfie">
+      <div class="over">
+        <button id="unlockSelfie" class="btn accent small">${selfieUnlocked?"Sbloccato 24h":"Sblocca selfie"}</button>
+        <button id="uploadSelfie" class="btn accent small">Carica selfie</button>
       </div>
+    </div>
 
-      <h3 class="section-title">Selfie</h3>
-      <div class="selfie ${selfieUnlocked?'unlocked':''}">
-        <img class="img" src="${d.img}" alt="Selfie">
-        <div class="over">
-          <button id="unlockSelfie" class="btn accent small">${selfieUnlocked?"Sbloccato 24h":"Sblocca selfie"}</button>
-          <button id="uploadSelfie" class="btn accent small">Carica selfie</button>
-        </div>
-      </div>
+    <div class="separator"></div>
+    <div class="pp-actions">
+      <button id="btnDocsOwner" class="btn outline">Documenti proprietario</button>
+      <button id="btnDocsDog"   class="btn outline">Documenti dog</button>
+      <button id="btnOpenChat"  class="btn accent">Apri chat</button>
+    </div>
+  `;
 
-      <div class="separator"></div>
-      <div class="pp-actions">
-        <button id="btnDocsOwner" class="btn outline">Documenti proprietario</button>
-        <button id="btnDocsDog"   class="btn outline">Documenti dog</button>
-        <button id="btnOpenChat"  class="btn accent">Apri chat</button>
-      </div>
-    `;
-
-    // Lightbox sulle foto
-    qa(".gallery img", ppBody).forEach(img=>{
-      img.addEventListener("click", ()=>{
-        const lb = document.createElement("div");
-        lb.className = "lightbox";
-        lb.innerHTML = `<button class="close" aria-label="Chiudi">✕</button><img src="${img.src}" alt="">`;
-        document.body.appendChild(lb);
-        qs(".close", lb).onclick = ()=> lb.remove();
-        lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
-      });
+  // lightbox
+  qa(".gallery img", ppBody).forEach(img=>{
+    img.addEventListener("click", ()=>{
+      const lb = document.createElement("div");
+      lb.className = "lightbox";
+      lb.innerHTML = `<button class="close" aria-label="Chiudi">✕</button><img src="${img.src}" alt="">`;
+      document.body.appendChild(lb);
+      qs(".close", lb).onclick = ()=> lb.remove();
+      lb.addEventListener("click",(e)=>{ if(e.target===lb) lb.remove(); });
     });
+  });
 
-    $("btnDocsOwner").onclick = ()=>{ alert("Upload documenti proprietario (mock)"); d.verified=true; renderNearby(); };
-    $("btnDocsDog").onclick   = ()=>{ alert("Upload documenti dog (mock)"); d.verified=true; renderNearby(); };
-    $("btnOpenChat").onclick  = ()=>{ closeProfilePage(); setTimeout(()=>openChat(d), 180); };
+  $("btnDocsOwner").onclick = ()=>{ alert("Upload documenti proprietario (mock)"); d.verified=true; renderNearby(); };
+  $("btnDocsDog").onclick   = ()=>{ alert("Upload documenti dog (mock)"); d.verified=true; renderNearby(); };
+  $("btnOpenChat").onclick  = ()=>{ closeProfilePage(); setTimeout(()=>openChat(d), 120); };
 
-    $("uploadSelfie").onclick = ()=>alert("Upload selfie (mock)");
-    $("unlockSelfie").onclick = async ()=>{
-      if (!isSelfieUnlocked(d.id)){
-        // mock sblocco 24h senza adv ora
-        state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-        localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-        openProfile(d);
-      }
-    };
+  $("uploadSelfie").onclick = ()=>alert("Upload selfie (mock)");
+  $("unlockSelfie").onclick = async ()=>{
+    if (!isSelfieUnlocked(d.id)){
+      state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+      localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+      openProfile(d);
+    }
   };
+};
+
   window.closeProfilePage = ()=>{
     profileSheet.classList.remove("show");
     setTimeout(()=>{
