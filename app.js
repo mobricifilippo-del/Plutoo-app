@@ -41,7 +41,10 @@ btnEnter.onclick = () => {
   const tabPlay   = $("tabPlay");
   const tabLuoghi = $("tabLuoghi");
   const luoghiMenu = $("luoghiMenu");
-
+// Click tab → mostra vista e memorizza ultima
+tabNearby.onclick = () => showView("viewNearby");
+tabLove.onclick   = () => showView("viewLove");
+tabPlay.onclick   = () => showView("viewPlay");
   const viewNearby = $("viewNearby");
   const viewLove   = $("viewLove");
   const viewPlay   = $("viewPlay");
@@ -87,7 +90,7 @@ btnEnter.onclick = () => {
 
   const profilePage = $("profilePage");
 const ppBody = $("ppBody");
-let lastView = "nearby"; // memorizza l’ultima vista (vicino/love/play)
+let lastViewId = "viewNearby"; // vista corrente per back
 // --- PLUS modal elements ---
 const btnPlus = $("btnPlus");
 const plusModal = $("plusModal");
@@ -117,6 +120,20 @@ document.body.classList.remove("noscroll");
   plusModal.style.position = "";
   plusModal.style.inset = "";
   plusModal.style.zIndex = "";
+};
+   // --- Gestione viste + Back coerente ---
+function showView(id){
+  // mostra solo la vista richiesta e aggiorna il "lastViewId"
+  qa(".view").forEach(v => v.classList.remove("active"));
+  $(id).classList.add("active");
+  lastViewId = id;
+}
+
+// Back: non tornare alla Home, resta nell'app e riapri l’ultima vista
+btnBack.onclick = () => {
+  homeScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+  showView(lastViewId || "viewNearby");
 };
   // Stato
   const state = {
