@@ -1,266 +1,227 @@
 <!DOCTYPE html>
 <html lang="it">
-<head> 
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plutoo</title>
-  <meta name="description" content="Plutoo — Badoo per cani: trova amici, amore e giochi nei dintorni." />
-  <meta name="theme-color" content="#0B0B0F" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon-192.png" sizes="192x192" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="preload" href="breeds.json" as="fetch" crossorigin="anonymous" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#0B0B0F" />
+  <link rel="icon" href="plutoo-icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css?v=7" />
 </head>
-
-<body class="theme-violet-gold">
-  <!-- ======== HEADER ======== -->
-  <header id="topbar" class="topbar">
-    <div class="tb-left">
-      <button id="btnMenu" class="btn icon" type="button" aria-label="Menu" title="Menu">☰</button>
-      <a class="brand" href="#" aria-label="Plutoo Home">
-        <span class="logo">🐶</span><span class="brand-text">Plutoo</span>
-      </a>
-    </div>
-    <nav class="tb-center" aria-label="Navigazione principale">
-      <button class="tab active" data-tab="viewNearby" type="button">Vicino a te</button>
-      <button class="tab" data-tab="viewLove" type="button">Amore</button>
-      <button class="tab" data-tab="viewPlay" type="button">Giochiamo insieme</button>
-      <button class="tab" data-tab="viewSearch" type="button">Ricerca personalizzata</button>
-      <button class="tab" data-tab="viewServices" type="button">Servizi</button>
-    </nav>
-    <div class="tb-right">
-      <button id="btnLang" class="btn ghost" type="button" aria-label="Lingua">🌐</button>
-      <button id="btnPlus" class="btn gold" type="button" aria-haspopup="dialog" aria-expanded="false">Plus</button>
-    </div>
-  </header>
-
-  <!-- Duplicato corretto: il secondo topbar è rinominato -->
-  <header id="topbar2" class="topbar sticky hidden" aria-hidden="true"></header>
-
-  <!-- ======== HOME ======== -->
-  <main id="homeScreen" class="home">
-    <section class="hero">
-      <div class="hero-logo" aria-hidden="true">🐶</div>
-      <h1 class="hero-title">Plutoo</h1>
-      <p class="hero-subtitle">Amici, amore e giochi per i tuoi DOG vicino a te</p>
-      <div class="hero-actions">
-        <button id="btnEnter" class="btn primary xl" type="button">Entra</button>
+<body>
+  <!-- HOME -->
+  <section id="homeScreen" class="screen">
+    <header class="home-header">
+      <div class="home-left">
+        <img src="plutoo-icon-192.png" class="brand-small" alt="Plutoo logo" />
       </div>
-    </section>
-
-    <!-- Etico: solo Home -->
-    <section class="ethics-banner" aria-label="Messaggio etico">
-      <div class="ethics-content">
-        <span class="emoji">🐾</span>
-        <span class="ethics-lines">Non abbandonare mai i tuoi amici 🐾 – Canili nelle vicinanze</span>
-        <a id="btnShelters" class="btn link" href="#" role="button">Apri in Maps</a>
-      </div>
-      <div class="legal-links legal-purple">
-        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">Privacy</a>
-        <span>·</span>
-        <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
-      </div>
-    </section>
-
-    <!-- Sponsor (solo Home) -->
-    <section class="sponsor-home" aria-label="Sponsor ufficiale">
-      <h2 class="sponsor-title">Sponsor ufficiale</h2>
-      <div class="sponsor-card">
-        <a id="sponsorLink" href="#" role="button" aria-label="Apri sponsor Fido">
-          <img src="sponsor-fido.png" alt="Fido — il gelato per i tuoi amici a quattro zampe" class="sponsor-logo" />
-        </a>
-        <p class="sponsor-copy">Fido, il gelato per i tuoi amici a quattro zampe</p>
-      </div>
-    </section>
-  </main>
-
-  <!-- ======== APP VIEW (TABS) ======== -->
-  <section id="appScreen" class="app hidden" aria-hidden="true">
-    <div class="app-top">
-      <div class="left">
-        <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
-      </div>
-      <div class="center">
-        <div class="tabs">
-          <button class="tab" data-tab="viewNearby" type="button">Vicino a te</button>
-          <button class="tab" data-tab="viewLove" type="button">Amore</button>
-          <button class="tab" data-tab="viewPlay" type="button">Giochiamo insieme</button>
-          <button class="tab" data-tab="viewSearch" type="button">Ricerca personalizzata</button>
-          <button class="tab" data-tab="viewServices" type="button">Servizi</button>
+      <div class="home-right">
+        <div class="lang-switch">
+          <button id="langIT" class="flag">🇮🇹</button>
+          <button id="langEN" class="flag">🇬🇧</button>
+        </div>
+        <div class="auth-links">
+          <a href="#" id="btnLogin" data-i18n="login">Login</a>
+          <span>·</span>
+          <a href="#" id="btnRegister" data-i18n="register">Registrati</a>
         </div>
       </div>
-      <div class="right">
-        <button id="btnOpenPlus" class="btn ghost" type="button">Plus</button>
-      </div>
-    </div>
-
-    <!-- Vicino a te -->
-    <section id="viewNearby" class="view">
-      <div id="nearbyGrid" class="grid grid-2"></div>
-    </section>
-
-    <!-- Amore -->
-    <section id="viewLove" class="view hidden" aria-hidden="true">
-      <div class="deck" id="loveDeck" aria-live="polite"></div>
-      <div class="deck-actions">
-        <button id="btnDislikeLove" class="btn ghost" type="button" aria-label="Nope">🥲</button>
-        <button id="btnLikeLove" class="btn gold" type="button" aria-label="Like">💛</button>
-      </div>
-    </section>
-
-    <!-- Giochiamo insieme -->
-    <section id="viewPlay" class="view hidden" aria-hidden="true">
-      <div class="deck" id="playDeck" aria-live="polite"></div>
-      <div class="deck-actions">
-        <button id="btnDislikePlay" class="btn ghost" type="button" aria-label="Nope">🥲</button>
-        <button id="btnLikePlay" class="btn gold" type="button" aria-label="Like">💛</button>
-      </div>
-    </section>
-
-    <!-- Ricerca personalizzata -->
-    <section id="viewSearch" class="view hidden" aria-hidden="true">
-      <form id="searchForm" class="filters" autocomplete="off">
-        <div class="filter">
-          <label for="breedInput">Razza</label>
-          <input id="breedInput" name="breed" type="text" placeholder="Inizia a digitare..." inputmode="text" />
-          <ul id="breedSuggest" class="suggestions" role="listbox" aria-label="Suggerimenti razza"></ul>
-        </div>
-        <div class="filter">
-          <label for="sexFilter">Sesso</label>
-          <select id="sexFilter" name="sex">
-            <option value="">Qualsiasi</option>
-            <option value="M">Maschio</option>
-            <option value="F">Femmina</option>
-          </select>
-        </div>
-        <div class="filter">
-          <label for="badgeFilter">Badge Verificato</label>
-          <select id="badgeFilter" name="badge">
-            <option value="">Qualsiasi</option>
-            <option value="yes">Sì</option>
-            <option value="no">No</option>
-          </select>
-        </div>
-
-        <!-- Gold filter: visibile solo Plus -->
-        <div class="filter gold-only" data-plus-only="true">
-          <label for="pairingFilter">Disponibile per accoppiamento</label>
-          <select id="pairingFilter" name="pairingFilter" aria-label="Filtro: disponibile per accoppiamento">
-            <option value="">Qualsiasi</option>
-            <option value="si">Sì</option>
-            <option value="no">No</option>
-          </select>
-        </div>
-
-        <div class="actions">
-          <button id="btnApplyFilters" class="btn primary" type="submit">Applica filtri</button>
-          <button id="btnResetFilters" class="btn ghost" type="reset">Reset</button>
-        </div>
-      </form>
-      <div id="searchResults" class="grid grid-2"></div>
-    </section>
-
-    <!-- Servizi -->
-    <section id="viewServices" class="view hidden" aria-hidden="true">
-      <div class="services">
-        <button class="svc" data-q="veterinari vicino a me">Veterinari</button>
-        <button class="svc" data-q="toelettatura per cani vicino a me">Toelettatura</button>
-        <button class="svc" data-q="negozi animali vicino a me">Negozi</button>
-        <button class="svc" data-q="parchi per cani vicino a me">Parchi</button>
-        <button class="svc" data-q="addestratori cani vicino a me">Addestratori</button>
-        <button class="svc" data-q="canili vicino a me">Canili</button>
-      </div>
-    </section>
-  </section>
-
-  <!-- ======== PROFILO DOG ======== -->
-  <section id="profilePage" class="profile hidden" aria-hidden="true">
-    <header class="profile-header">
-      <button id="btnCloseProfile" class="btn ghost" type="button" aria-label="Chiudi profilo">✕</button>
-      <h2 id="profileName" class="profile-name">Nome</h2>
-      <div class="verified-badge" id="profileBadge" hidden>✔ Verificato</div>
     </header>
 
-    <div class="profile-body">
-      <div class="profile-photo">
-        <img id="profilePhoto" alt="Foto DOG" src="dog1.jpg" />
-        <button id="btnViewSelfie" class="btn ghost small" type="button">Vedi selfie</button>
-      </div>
-
-      <div class="profile-info">
-        <dl class="facts">
-          <div><dt>Razza</dt><dd id="profileBreed">-</dd></div>
-          <div><dt>Età</dt><dd id="profileAge">-</dd></div>
-          <div><dt>Distanza</dt><dd id="profileKm">-</dd></div>
-          <div><dt>Sesso</dt><dd id="profileSex">-</dd></div>
-        </dl>
-
-        <!-- Gold field: visibile solo Plus -->
-        <div class="field gold-only" data-plus-only="true">
-          <label for="pairingInput">Disponibile per accoppiamento</label>
-          <select id="pairingInput" name="pairingInput" aria-label="Disponibile per accoppiamento">
-            <option value="">Seleziona…</option>
-            <option value="si">Sì</option>
-            <option value="no">No</option>
-          </select>
-        </div>
-
-        <div class="profile-actions">
-          <button id="btnMessage" class="btn primary" type="button">Messaggio</button>
-        </div>
-      </div>
-
-      <div class="profile-gallery">
-        <h3>Foto</h3>
-        <div id="profileGallery" class="gallery grid grid-3"></div>
-      </div>
+    <div class="home-hero">
+      <!-- Logo grande -->
+      <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
+      <button id="btnEnter" class="btn primary xl" type="button" data-i18n="enter">Entra</button>
     </div>
 
-    <footer class="profile-footer">
-      <div class="sponsor-footer">
-        <h4 class="sponsor-title small">Sponsor ufficiale</h4>
-        <a id="sponsorLinkProfile" href="#" role="button" aria-label="Apri sponsor Fido">
-          <img src="sponsor-fido.png" alt="Fido — il gelato per i tuoi amici a quattro zampe" class="sponsor-logo small" />
-        </a>
-        <p class="sponsor-copy small">Fido, il gelato per i tuoi amici a quattro zampe</p>
+    <footer class="home-sponsor">
+      <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
+      <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
+        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+        <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
+      </a>
+
+      <!-- Bottone etico: solo in Home -->
+      <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili nelle vicinanze">
+        <span class="emoji">🐾</span>
+        <span class="ethics-lines">
+          <span class="l1" data-i18n="ethicsLine1">Non abbandonare mai i tuoi amici</span>
+          <span class="l2" data-i18n="ethicsLine2">– Canili nelle vicinanze</span>
+        </span>
+      </button>
+
+      <div class="legal-links legal-purple">
+        <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
+        <span>·</span>
+        <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">Privacy</a>
+        <span>·</span>
+        <a href="mailto:plutoo.team@gmail.com" target="_blank" rel="noopener" data-i18n="contact">Contatti</a>
       </div>
     </footer>
   </section>
 
-  <!-- ======== MODALE PLUS ======== -->
-  <dialog id="plusModal" class="modal" aria-labelledby="plusTitle">
-    <form method="dialog" class="modal-content">
-      <header class="modal-header">
-        <h2 id="plusTitle">Plutoo Plus</h2>
-        <button id="closePlus" class="btn ghost" type="submit" aria-label="Chiudi">✕</button>
-      </header>
-      <div class="modal-body">
-        <ul class="benefits">
-          <li>Rimuove tutte le pubblicità e i video reward</li>
-          <li>Sblocca i filtri Gold (incluso “Disponibile per accoppiamento”)</li>
-          <li>Supporta lo sviluppo dell’app</li>
-        </ul>
+  <!-- APP -->
+  <section id="appScreen" class="screen hidden">
+    <header class="app-header">
+      <button id="btnBack" class="btn ghost tiny" aria-label="Indietro">←</button>
+      <img src="plutoo-icon-192.png" class="brand-small" alt="Plutoo logo" />
+      <nav class="tabs">
+        <button id="tabNearby" class="tab active" data-i18n="nearby">Vicino a te</button>
+        <button id="tabLove" class="tab" data-i18n="love">Amore</button>
+        <button id="tabPlay" class="tab" data-i18n="play">Giochiamo insieme</button>
+        <div class="tab luoghi-wrap">
+          <button id="tabLuoghi" class="tab has-menu" aria-expanded="false" data-i18n="places">Servizi</button>
+          <div id="luoghiMenu" class="menu">
+            <button class="menu-item" data-cat="veterinari">Veterinari</button>
+            <button class="menu-item" data-cat="toelettatura">Toelettatura</button>
+            <button class="menu-item" data-cat="negozi">Negozi</button>
+            <button class="menu-item" data-cat="parchi">Parchi</button>
+            <button class="menu-item" data-cat="addestratori">Addestratori</button>
+            <button class="menu-item" data-cat="canili">Canili</button>
+          </div>
+        </div>
+      </nav>
+      <div class="spacer"></div>
+      <a id="sponsorLinkApp" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-inline" aria-label="Apri sponsor Fido">
+        <img src="sponsor-logo.png" alt="Fido" class="sponsor-inline-logo" />
+      </a>
+      <!-- Etico: nascosto nell’app -->
+      <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili nelle vicinanze" hidden>
+        <span class="emoji">🐾</span>
+        <span class="ethics-lines">
+          <span class="l1" data-i18n="ethicsLine1">Non abbandonare mai i tuoi amici</span>
+          <span class="l2" data-i18n="ethicsLine2">– Canili nelle vicinanze</span>
+        </span>
+      </button>
+    </header>
+
+    <!-- Views -->
+    <main class="views">
+      <section id="viewNearby" class="view active">
+        <div class="toolbar">
+          <button id="btnSearchPanel" class="btn outline" type="button" aria-controls="searchPanel">Ricerca personalizzata</button>
+        </div>
+        <div id="nearGrid" class="grid"></div>
+      </section>
+
+      <section id="viewLove" class="view">
+        <article id="loveCard" class="swipe-card">
+          <img id="loveImg" class="swipe-img" alt="" />
+          <div class="swipe-info">
+            <h3 id="loveTitleTxt"></h3>
+            <p id="loveMeta" class="meta"></p>
+            <p id="loveBio" class="bio"></p>
+          </div>
+          <div class="swipe-cta">
+            <button id="loveNo" class="btn ghost">🥲</button>
+            <button id="loveYes" class="btn primary">💛</button>
+          </div>
+        </article>
+      </section>
+
+      <section id="viewPlay" class="view">
+        <article id="playCard" class="swipe-card">
+          <img id="playImg" class="swipe-img" alt="" />
+          <div class="swipe-info">
+            <h3 id="playTitleTxt"></h3>
+            <p id="playMeta" class="meta"></p>
+            <p id="playBio" class="bio"></p>
+          </div>
+          <div class="swipe-cta">
+            <button id="playNo" class="btn ghost">🥲</button>
+            <button id="playYes" class="btn primary">💛</button>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <!-- Pannello ricerca personalizzata -->
+    <section id="searchPanel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+      <div class="panel-inner">
+        <div class="panel-head">
+          <h3 id="searchTitle" data-i18n="searchAdvanced">Ricerca personalizzata</h3>
+          <button id="closeSearch" class="btn tiny ghost" type="button" aria-label="Chiudi">✕</button>
+        </div>
+
+        <form id="searchForm" class="filters" autocomplete="off">
+          <div class="f">
+            <label for="breedInput" data-i18n="breed">Razza</label>
+            <input id="breedInput" type="text" inputmode="search" placeholder="Cerca razza…" autocomplete="off" data-i18n-placeholder="breedPh" />
+            <div id="breedsList" class="suggestions" role="listbox" aria-label="Suggerimenti razza"></div>
+          </div>
+
+          <div class="f">
+            <label for="distRange" data-i18n="distance">Distanza: <span id="distLabel">5 km</span></label>
+            <input id="distRange" type="range" min="1" max="50" value="5" />
+          </div>
+
+          <!-- Switch verificati -->
+          <div class="f switch">
+            <span>Solo verificati ✅</span>
+            <label class="switcher">
+              <input id="onlyVerified" type="checkbox" />
+              <span class="track"></span>
+            </label>
+          </div>
+
+          <div class="f">
+            <label for="sexFilter">Cerco (sesso dog)</label>
+            <select id="sexFilter">
+              <option value="">Tutti</option>
+              <option value="M">Maschio</option>
+              <option value="F">Femmina</option>
+            </select>
+          </div>
+
+          <!-- Campi Gold bloccati (restano, ma non tocchiamo la tua logica) -->
+          <div class="f f-lock">
+            <label for="weightInput">Peso (kg) · Gold</label>
+            <input id="weightInput" type="number" step="0.1" min="0" placeholder="Es. 12.5" disabled />
+          </div>
+          <div class="f f-lock">
+            <label for="heightInput">Altezza (cm) · Gold</label>
+            <input id="heightInput" type="number" step="1" min="0" placeholder="Es. 45" disabled />
+          </div>
+          <div class="f f-lock">
+            <label for="pairingFilter">Disponibile per accoppiamento · Gold</label>
+            <select id="pairingFilter" disabled>
+              <option value="">Indifferente</option>
+              <option value="yes">Sì</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <div class="panel-actions">
+            <button id="applyFilters" class="btn primary" type="submit" data-i18n="apply">Applica</button>
+            <button id="resetFilters" class="btn ghost" type="button" data-i18n="reset">Reset</button>
+          </div>
+
+          <p class="hint">Vuoi sbloccare i filtri avanzati? Attiva <strong>Plutoo Plus</strong> dal menu in alto.</p>
+        </form>
       </div>
-      <footer class="modal-footer">
-        <button id="getPlus" class="btn gold" type="button">Attiva Plus</button>
-        <button id="laterPlus" class="btn ghost" type="submit">Più tardi</button>
-      </footer>
-    </form>
-  </dialog>
+    </section>
 
-  <!-- ======== OVERLAY ANIMAZIONI ======== -->
-  <!-- Bagliore viola per ingresso/Entra e apertura profilo -->
-  <div id="transitionOverlay" class="overlay overlay-enter hidden" aria-hidden="true">
-    <div class="overlay-violet" role="presentation"></div>
-  </div>
+    <!-- Footer app -->
+    <footer class="app-footer">
+      <div class="sponsor-title">Sponsor ufficiale</div>
+      <a id="sponsorLinkApp2" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
+        <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
+        <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
+      </a>
+    </footer>
+  </section>
 
-  <!-- Cuore dorato per match (Amore & Play) -->
-  <div id="matchOverlay" class="overlay overlay-match hidden" aria-hidden="true">
-    <div class="heart-gold" role="img" aria-label="Match">💛</div>
-  </div>
-
-  <!-- ======== SCRIPT ======== -->
+  <!-- Unico script: defer e versione -->
   <script src="app.js?v=7" defer></script>
+
+  <!-- SW + JS -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      try { navigator.serviceWorker.register('sw.js'); } catch (e) {}
+    }
+  </script>
 </body>
 </html>
