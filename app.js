@@ -1,4 +1,4 @@
-/* --- INIZIO app.js (incollare in /app.js) --- */
+*/
 ;(() => {
   const $ = (sel,scope=document) => scope.querySelector(sel);
   const $$ = (sel,scope=document) => Array.from(scope.querySelectorAll(sel));
