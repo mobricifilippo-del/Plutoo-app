@@ -107,6 +107,11 @@
 
       <div class="right">
         <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
+        <!-- 💎 PLUTOO PLUS -->
+        <button id="btnPlus" class="btn plus-btn" type="button" aria-label="Plutoo Plus">
+          <span class="plus-icon">💎</span>
+          <span data-i18n="plusBtn">PLUS</span>
+        </button>
       </div>
     </header>
 
@@ -174,7 +179,7 @@
       <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
     </section>
 
-    <!-- Footer sponsor fisso (App): niente “Contatti”, niente canili -->
+    <!-- Footer sponsor fisso (App): niente "Contatti", niente canili -->
     <footer class="sponsor">
       <div class="sponsor-wrap">
         <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
@@ -184,7 +189,7 @@
         <p class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</p>
       </div>
 
-      <!-- Etico: nascosto nell’app -->
+      <!-- Etico: nascosto nell'app -->
       <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me" hidden>
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
@@ -203,7 +208,7 @@
     </footer>
   </section>
 
-  <!-- =============== PANNELLO RICERCA =============== -->
+  <!-- =============== PANNELLO RICERCA PERSONALIZZATA =============== -->
   <section id="searchPanel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <div class="panel-inner">
       <div class="panel-head">
@@ -212,65 +217,127 @@
       </div>
 
       <form id="searchForm" class="filters" autocomplete="off">
-        <div class="f">
-          <label for="breedInput" data-i18n="breed">Razza</label>
-          <input id="breedInput" type="text" inputmode="search" placeholder="Cerca razza…" autocomplete="off" data-i18n-placeholder="breedPh" />
-          <div id="breedsList" class="suggestions" role="listbox" aria-label="Suggerimenti razza"></div>
-        </div>
+        <!-- CAMPI LIBERI (per tutti) -->
+        <fieldset class="filter-group">
+          <legend data-i18n="freeFilters">Filtri base</legend>
 
-        <div class="f">
-          <label for="distRange" data-i18n="distance">Distanza: <span id="distLabel">5 km</span></label>
-          <input id="distRange" type="range" min="1" max="50" value="5" />
-        </div>
+          <div class="f">
+            <label for="sexFilter" data-i18n="sexFilter">Sesso</label>
+            <select id="sexFilter">
+              <option value="" data-i18n="sexAll">Tutti</option>
+              <option value="M" data-i18n="sexMale">Maschio</option>
+              <option value="F" data-i18n="sexFemale">Femmina</option>
+            </select>
+          </div>
 
-        <!-- Switch verificati -->
-        <div class="f switch">
-          <span>Solo verificati ✅</span>
-          <label class="switcher">
-            <input id="onlyVerified" type="checkbox" />
-            <span class="track"></span>
-          </label>
-        </div>
+          <div class="f">
+            <label for="distRange">
+              <span data-i18n="distance">Distanza</span>: <span id="distLabel">5 km</span>
+            </label>
+            <input id="distRange" type="range" min="1" max="50" value="5" />
+          </div>
 
-        <div class="f">
-          <label for="sexFilter">Cerco (sesso dog)</label>
-          <select id="sexFilter">
-            <option value="">Tutti</option>
-            <option value="M">Maschio</option>
-            <option value="F">Femmina</option>
-          </select>
-        </div>
+          <div class="f">
+            <label for="breedInput" data-i18n="breed">Razza</label>
+            <input id="breedInput" type="text" inputmode="search" placeholder="Cerca razza…" autocomplete="off" data-i18n-placeholder="breedPh" />
+            <div id="breedsList" class="suggestions" role="listbox" aria-label="Suggerimenti razza"></div>
+          </div>
+        </fieldset>
 
-        <!-- Campi Gold bloccati (restano, ma non tocchiamo la tua logica) -->
-        <div class="f f-lock">
-          <label for="weightInput">Peso (kg) · Gold</label>
-          <input id="weightInput" type="number" min="1" max="100" placeholder="—" disabled />
-          <span class="lock">🔒</span>
-        </div>
-        <div class="f f-lock">
-          <label for="heightInput">Altezza (cm) · Gold</label>
-          <input id="heightInput" type="number" min="10" max="120" placeholder="—" disabled />
-          <span class="lock">🔒</span>
-        </div>
+        <!-- CAMPI GOLD (solo Plus) -->
+        <fieldset class="filter-group gold-filters">
+          <legend>
+            <span data-i18n="goldFilters">Filtri Gold</span>
+            <span class="gold-badge">💎</span>
+          </legend>
+
+          <!-- Solo con badge -->
+          <div class="f switch f-gold">
+            <span data-i18n="onlyVerified">Solo con badge verificato ✅</span>
+            <label class="switcher">
+              <input id="onlyVerified" type="checkbox" />
+              <span class="track"></span>
+            </label>
+            <span class="lock-icon">🔒</span>
+          </div>
+
+          <!-- Età Min/Max -->
+          <div class="f-row">
+            <div class="f f-gold">
+              <label for="ageMin" data-i18n="ageMin">Età minima (anni)</label>
+              <input id="ageMin" type="number" min="0" max="20" placeholder="—" />
+              <span class="lock-icon">🔒</span>
+            </div>
+            <div class="f f-gold">
+              <label for="ageMax" data-i18n="ageMax">Età massima (anni)</label>
+              <input id="ageMax" type="number" min="0" max="20" placeholder="—" />
+              <span class="lock-icon">🔒</span>
+            </div>
+          </div>
+
+          <!-- Peso -->
+          <div class="f f-gold">
+            <label for="weightInput" data-i18n="weight">Peso (kg)</label>
+            <input id="weightInput" type="number" min="1" max="100" placeholder="—" />
+            <span class="lock-icon">🔒</span>
+          </div>
+
+          <!-- Altezza -->
+          <div class="f f-gold">
+            <label for="heightInput" data-i18n="height">Altezza (cm)</label>
+            <input id="heightInput" type="number" min="10" max="120" placeholder="—" />
+            <span class="lock-icon">🔒</span>
+          </div>
+
+          <!-- Pedigree -->
+          <div class="f f-gold">
+            <label for="pedigreeFilter" data-i18n="pedigree">Pedigree</label>
+            <select id="pedigreeFilter">
+              <option value="" data-i18n="indifferent">Indifferente</option>
+              <option value="yes" data-i18n="yes">Sì</option>
+              <option value="no" data-i18n="no">No</option>
+            </select>
+            <span class="lock-icon">🔒</span>
+          </div>
+
+          <!-- Disponibile accoppiamento -->
+          <div class="f f-gold">
+            <label for="breedingFilter" data-i18n="breeding">Disponibile per accoppiamento</label>
+            <select id="breedingFilter">
+              <option value="" data-i18n="indifferent">Indifferente</option>
+              <option value="yes" data-i18n="yes">Sì</option>
+              <option value="no" data-i18n="no">No</option>
+            </select>
+            <span class="lock-icon">🔒</span>
+          </div>
+
+          <!-- Taglia -->
+          <div class="f f-gold">
+            <label for="sizeFilter" data-i18n="size">Taglia</label>
+            <select id="sizeFilter">
+              <option value="" data-i18n="indifferent">Indifferente</option>
+              <option value="small" data-i18n="sizeSmall">Piccola</option>
+              <option value="medium" data-i18n="sizeMedium">Media</option>
+              <option value="large" data-i18n="sizeLarge">Grande</option>
+            </select>
+            <span class="lock-icon">🔒</span>
+          </div>
+        </fieldset>
 
         <div class="panel-actions">
           <button id="applyFilters" class="btn primary" type="submit" data-i18n="apply">Applica</button>
           <button id="resetFilters" class="btn ghost" type="button" data-i18n="reset">Reset</button>
         </div>
 
-        <p class="hint">Vuoi sbloccare i filtri avanzati? Attiva <strong>Plutoo Plus</strong> dal menu in alto.</p>
+        <p class="hint" data-i18n="unlockHint">Vuoi sbloccare i filtri Gold? Attiva <strong>Plutoo Plus 💎</strong></p>
       </form>
     </div>
   </section>
 
-  <!-- SW + JS -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-      });
-    }
-  </script>
-  <script src="app.js" defer></script>
-</body>
-</html>
+  <!-- =============== MODALE PLUTOO PLUS =============== -->
+  <section id="plusModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="plusTitle">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <button id="closePlus" class="modal-close" type="button" aria-label="Chiudi">✕</button>
+      <div class="modal-body">
+        <div
