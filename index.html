@@ -45,25 +45,23 @@
     </header>
 
     <div class="home-hero">
-      <!-- Logo grande con animazione potenziata -->
       <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
       <button id="btnEnter" class="btn primary xl" type="button" data-i18n="enter">Entra</button>
     </div>
 
     <footer class="home-sponsor">
       <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-      <!-- URL UFFICIALE FIDO -->
       <a id="sponsorLink" href="https://www.fido.it/" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
         <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </a>
 
-      <!-- Bottone etico: SOLO in Home -->
-      <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
+      <!-- MODIFICA #1: Testo etico "canili nelle vicinanze" - SOLO in Home -->
+      <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili nelle vicinanze">
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
           <span class="l1" data-i18n="ethicsLine1">Non abbandonare mai i tuoi amici</span>
-          <span class="l2" data-i18n="ethicsLine2">(canili vicino a me)</span>
+          <span class="l2" data-i18n="ethicsLine2">(canili nelle vicinanze)</span>
         </span>
       </button>
 
@@ -79,20 +77,20 @@
 
   <!-- =============== APP =============== -->
   <section id="appScreen" class="app hidden" aria-hidden="true">
-    <header class="topbar">
+    <!-- MODIFICA #5: Topbar standard (nascosta in profilo) -->
+    <header id="mainTopbar" class="topbar">
       <div class="left">
         <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
         <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
         <strong class="brand-mini">Plutoo</strong>
       </div>
 
-      <!-- Tabs: ordine pulito e spaziatura migliorata -->
+      <!-- MODIFICA #6: Tabs migliorati (leggibilità, spacing, stato attivo) -->
       <nav class="tabs" role="tablist" aria-label="Sezioni">
         <button id="tabNearby" class="tab active" role="tab" aria-selected="true" data-i18n="nearby">Vicino a te</button>
         <button id="tabLove"   class="tab" role="tab" aria-selected="false" data-i18n="love">Amore</button>
         <button id="tabPlay"   class="tab" role="tab" aria-selected="false">Giochiamo insieme</button>
 
-        <!-- Luoghi Pet: menu a tendina -->
         <div class="tab dropdown">
           <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi PET ▾</button>
           <div id="luoghiMenu" class="dropdown-menu" role="menu" aria-label="Luoghi PET">
@@ -108,7 +106,7 @@
 
       <div class="right">
         <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
-        <!-- 💎 PLUTOO PLUS - posizionato sotto ricerca -->
+        <!-- MODIFICA #2: PLUS subito sotto Ricerca personalizzata -->
         <button id="btnPlus" class="btn plus-btn" type="button" aria-label="Plutoo Plus">
           <span class="plus-icon">💎</span>
           <span data-i18n="plusBtn">PLUS</span>
@@ -116,15 +114,25 @@
       </div>
     </header>
 
+    <!-- MODIFICA #3: Topbar essenziale per profilo (logo + Indietro) -->
+    <header id="profileTopbar" class="topbar-minimal hidden">
+      <button id="btnBackProfile" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
+      <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
+      <strong class="brand-mini">Plutoo</strong>
+    </header>
+
     <main class="content" aria-live="polite">
-      <!-- Vicino a te (griglia 2×4 = 8 profili) -->
+      <!-- Vicino a te (griglia 2×4) -->
       <section id="viewNearby" class="view active" aria-labelledby="nearbyTitle">
         <h2 id="nearbyTitle" class="visually-hidden">Vicino a te</h2>
         <div id="nearGrid" class="grid-2"></div>
       </section>
 
-      <!-- Amore: singola card con swipe -->
+      <!-- Amore: singola card con swipe + MODIFICA #5: Indietro -->
       <section id="viewLove" class="view" aria-labelledby="loveTitle">
+        <div class="view-header">
+          <button id="btnBackLove" class="btn tiny ghost" type="button">← Indietro</button>
+        </div>
         <h2 id="loveTitle" class="visually-hidden">Amore</h2>
         <article id="loveCard" class="card swipe">
           <img id="loveImg" class="card-img" src="dog1.jpg" alt="Foto dog" />
@@ -140,8 +148,11 @@
         </article>
       </section>
 
-      <!-- Giochiamo insieme: singola card con swipe -->
+      <!-- Giochiamo insieme: singola card con swipe + MODIFICA #5: Indietro -->
       <section id="viewPlay" class="view" aria-labelledby="playTitle">
+        <div class="view-header">
+          <button id="btnBackPlay" class="btn tiny ghost" type="button">← Indietro</button>
+        </div>
         <h2 id="playTitle" class="visually-hidden">Giochiamo insieme</h2>
         <article id="playCard" class="card swipe">
           <img id="playImg" class="card-img" src="dog2.jpg" alt="Foto dog" />
@@ -171,20 +182,15 @@
       </form>
     </aside>
 
-    <!-- Profilo (PAGINA DEDICATA stile Facebook) -->
+    <!-- MODIFICA #3: Profilo PAGINA DEDICATA (topbar essenziale separata) -->
     <section id="profileSheet" class="sheet profile-page hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
-      <div class="sheet-header">
-        <div id="ppTitle" data-i18n="profile">Profilo</div>
-        <button class="icon close" type="button" onclick="closeProfilePage()" aria-label="Chiudi">✕</button>
-      </div>
       <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
     </section>
 
-    <!-- Footer sponsor fisso (App): NO etico, solo sponsor + legali -->
+    <!-- Footer sponsor (NO etico nell'app) -->
     <footer class="sponsor">
       <div class="sponsor-wrap">
         <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-        <!-- URL UFFICIALE FIDO -->
         <a id="sponsorLinkApp" href="https://www.fido.it/" target="_blank" rel="noopener">
           <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         </a>
@@ -203,7 +209,7 @@
     </footer>
   </section>
 
-  <!-- =============== PANNELLO RICERCA PERSONALIZZATA (elegante) =============== -->
+  <!-- =============== PANNELLO RICERCA PERSONALIZZATA =============== -->
   <section id="searchPanel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <div class="panel-inner">
       <div class="panel-head">
@@ -212,7 +218,6 @@
       </div>
 
       <form id="searchForm" class="filters" autocomplete="off">
-        <!-- CAMPI LIBERI (per tutti) -->
         <fieldset class="filter-group">
           <legend data-i18n="freeFilters">Filtri base</legend>
 
@@ -239,14 +244,12 @@
           </div>
         </fieldset>
 
-        <!-- CAMPI GOLD (solo Plus) -->
         <fieldset class="filter-group gold-filters">
           <legend>
             <span data-i18n="goldFilters">Filtri Gold</span>
             <span class="gold-badge">💎</span>
           </legend>
 
-          <!-- Solo con badge -->
           <div class="f switch f-gold">
             <span data-i18n="onlyVerified">Solo con badge verificato ✅</span>
             <label class="switcher">
@@ -256,7 +259,6 @@
             <span class="lock-icon">🔒</span>
           </div>
 
-          <!-- Età Min/Max -->
           <div class="f-row">
             <div class="f f-gold">
               <label for="ageMin" data-i18n="ageMin">Età minima (anni)</label>
@@ -270,21 +272,18 @@
             </div>
           </div>
 
-          <!-- Peso -->
           <div class="f f-gold">
             <label for="weightInput" data-i18n="weight">Peso (kg)</label>
             <input id="weightInput" type="number" min="1" max="100" placeholder="—" />
             <span class="lock-icon">🔒</span>
           </div>
 
-          <!-- Altezza -->
           <div class="f f-gold">
             <label for="heightInput" data-i18n="height">Altezza (cm)</label>
             <input id="heightInput" type="number" min="10" max="120" placeholder="—" />
             <span class="lock-icon">🔒</span>
           </div>
 
-          <!-- Pedigree -->
           <div class="f f-gold">
             <label for="pedigreeFilter" data-i18n="pedigree">Pedigree</label>
             <select id="pedigreeFilter">
@@ -295,7 +294,6 @@
             <span class="lock-icon">🔒</span>
           </div>
 
-          <!-- Disponibile accoppiamento -->
           <div class="f f-gold">
             <label for="breedingFilter" data-i18n="breeding">Disponibile per accoppiamento</label>
             <select id="breedingFilter">
@@ -306,7 +304,6 @@
             <span class="lock-icon">🔒</span>
           </div>
 
-          <!-- Taglia -->
           <div class="f f-gold">
             <label for="sizeFilter" data-i18n="size">Taglia</label>
             <select id="sizeFilter">
@@ -367,7 +364,6 @@
     </div>
   </div>
 
-  <!-- SW + JS -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
