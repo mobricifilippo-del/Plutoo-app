@@ -45,19 +45,20 @@
     </header>
 
     <div class="home-hero">
-      <!-- Logo grande -->
+      <!-- Logo grande con animazione potenziata -->
       <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo" />
       <button id="btnEnter" class="btn primary xl" type="button" data-i18n="enter">Entra</button>
     </div>
 
     <footer class="home-sponsor">
       <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-      <a id="sponsorLink" href="https://example.com/fido-gelato" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
+      <!-- URL UFFICIALE FIDO -->
+      <a id="sponsorLink" href="https://www.fido.it/" target="_blank" rel="noopener" class="sponsor-card" aria-label="Apri sponsor Fido">
         <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
-        <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
+        <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </a>
 
-      <!-- Bottone etico: solo in Home -->
+      <!-- Bottone etico: SOLO in Home -->
       <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili vicino a me">
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
@@ -85,13 +86,13 @@
         <strong class="brand-mini">Plutoo</strong>
       </div>
 
-      <!-- Tabs: ordine e labels aggiornati -->
+      <!-- Tabs: ordine pulito e spaziatura migliorata -->
       <nav class="tabs" role="tablist" aria-label="Sezioni">
         <button id="tabNearby" class="tab active" role="tab" aria-selected="true" data-i18n="nearby">Vicino a te</button>
         <button id="tabLove"   class="tab" role="tab" aria-selected="false" data-i18n="love">Amore</button>
         <button id="tabPlay"   class="tab" role="tab" aria-selected="false">Giochiamo insieme</button>
 
-        <!-- Luoghi Pet: menu a tendina (esteso) -->
+        <!-- Luoghi Pet: menu a tendina -->
         <div class="tab dropdown">
           <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">Luoghi PET ▾</button>
           <div id="luoghiMenu" class="dropdown-menu" role="menu" aria-label="Luoghi PET">
@@ -107,7 +108,7 @@
 
       <div class="right">
         <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
-        <!-- 💎 PLUTOO PLUS -->
+        <!-- 💎 PLUTOO PLUS - posizionato sotto ricerca -->
         <button id="btnPlus" class="btn plus-btn" type="button" aria-label="Plutoo Plus">
           <span class="plus-icon">💎</span>
           <span data-i18n="plusBtn">PLUS</span>
@@ -116,7 +117,7 @@
     </header>
 
     <main class="content" aria-live="polite">
-      <!-- Vicino a te (griglia 2×N) -->
+      <!-- Vicino a te (griglia 2×4 = 8 profili) -->
       <section id="viewNearby" class="view active" aria-labelledby="nearbyTitle">
         <h2 id="nearbyTitle" class="visually-hidden">Vicino a te</h2>
         <div id="nearGrid" class="grid-2"></div>
@@ -170,8 +171,8 @@
       </form>
     </aside>
 
-    <!-- Profilo -->
-    <section id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+    <!-- Profilo (PAGINA DEDICATA stile Facebook) -->
+    <section id="profileSheet" class="sheet profile-page hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
       <div class="sheet-header">
         <div id="ppTitle" data-i18n="profile">Profilo</div>
         <button class="icon close" type="button" onclick="closeProfilePage()" aria-label="Chiudi">✕</button>
@@ -179,36 +180,30 @@
       <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
     </section>
 
-    <!-- Footer sponsor fisso (App): niente "Contatti", niente canili -->
+    <!-- Footer sponsor fisso (App): NO etico, solo sponsor + legali -->
     <footer class="sponsor">
       <div class="sponsor-wrap">
         <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-        <a id="sponsorLinkApp" href="https://example.com/fido-gelato" target="_blank" rel="noopener">
+        <!-- URL UFFICIALE FIDO -->
+        <a id="sponsorLinkApp" href="https://www.fido.it/" target="_blank" rel="noopener">
           <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         </a>
-        <p class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</p>
+        <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
       </div>
-
-      <!-- Etico: nascosto nell'app -->
-      <button id="ethicsButtonApp" class="btn ethics" type="button" aria-label="Canili vicino a me" hidden>
-        <span class="emoji">🐾</span>
-        <span class="ethics-lines">
-          <span class="l1" data-i18n="ethicsLine1">Non abbandonare mai i tuoi amici</span>
-          <span class="l2" data-i18n="ethicsLine2">(canili vicino a me)</span>
-        </span>
-      </button>
 
       <div class="legal-links legal-purple">
         <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
         <span>·</span>
         <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">Privacy</a>
+        <span>·</span>
+        <a href="mailto:plutoo.team@gmail.com">Contatti</a>
       </div>
 
       <div id="adBanner" class="ad-banner" aria-hidden="true"></div>
     </footer>
   </section>
 
-  <!-- =============== PANNELLO RICERCA PERSONALIZZATA =============== -->
+  <!-- =============== PANNELLO RICERCA PERSONALIZZATA (elegante) =============== -->
   <section id="searchPanel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <div class="panel-inner">
       <div class="panel-head">
@@ -339,6 +334,47 @@
     <div class="modal-backdrop"></div>
     <div class="modal-content">
       <button id="closePlus" class="modal-close" type="button" aria-label="Chiudi">✕</button>
-      <script src="app.js" defer></script>
       <div class="modal-body">
-        <div
+        <div class="plus-icon-large">💎</div>
+        <h2 id="plusTitle" data-i18n="plusTitle">Plutoo Plus</h2>
+        <p data-i18n="plusSubtitle">Sblocca tutte le funzionalità premium</p>
+        
+        <ul class="plus-features">
+          <li><span class="check">✓</span> <span data-i18n="plusFeature1">Nessuna pubblicità</span></li>
+          <li><span class="check">✓</span> <span data-i18n="plusFeature2">Swipe illimitati</span></li>
+          <li><span class="check">✓</span> <span data-i18n="plusFeature3">Messaggi illimitati</span></li>
+          <li><span class="check">✓</span> <span data-i18n="plusFeature4">Tutti i filtri Gold sbloccati</span></li>
+          <li><span class="check">✓</span> <span data-i18n="plusFeature5">Supporto prioritario</span></li>
+        </ul>
+
+        <div class="plus-price">
+          <span class="price-amount">€4.99</span>
+          <span class="price-period" data-i18n="plusPeriod">/mese</span>
+        </div>
+
+        <button id="activatePlus" class="btn primary large" type="button" data-i18n="activatePlus">Attiva Plutoo Plus</button>
+        <button id="cancelPlus" class="btn ghost" type="button" data-i18n="cancel">Annulla</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Match Animation Overlay -->
+  <div id="matchOverlay" class="match-overlay hidden">
+    <div class="match-content">
+      <div class="match-heart">💛</div>
+      <h2 class="match-title">È un Match!</h2>
+      <div class="confetti-container"></div>
+    </div>
+  </div>
+
+  <!-- SW + JS -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+      });
+    }
+  </script>
+  <script src="app.js" defer></script>
+</body>
+</html>
