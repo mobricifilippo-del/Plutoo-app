@@ -56,7 +56,6 @@
         <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </a>
 
-      <!-- MODIFICA #1: Testo etico "canili nelle vicinanze" - SOLO in Home -->
       <button id="ethicsButton" class="btn ethics" type="button" aria-label="Canili nelle vicinanze">
         <span class="emoji">🐾</span>
         <span class="ethics-lines">
@@ -77,7 +76,6 @@
 
   <!-- =============== APP =============== -->
   <section id="appScreen" class="app hidden" aria-hidden="true">
-    <!-- MODIFICA #5: Topbar standard (nascosta in profilo) -->
     <header id="mainTopbar" class="topbar">
       <div class="left">
         <button id="btnBack" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
@@ -85,7 +83,6 @@
         <strong class="brand-mini">Plutoo</strong>
       </div>
 
-      <!-- MODIFICA #6: Tabs migliorati (leggibilità, spacing, stato attivo) -->
       <nav class="tabs" role="tablist" aria-label="Sezioni">
         <button id="tabNearby" class="tab active" role="tab" aria-selected="true" data-i18n="nearby">Vicino a te</button>
         <button id="tabLove"   class="tab" role="tab" aria-selected="false" data-i18n="love">Amore</button>
@@ -105,30 +102,22 @@
       </nav>
 
       <div class="right">
-        <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
-        <!-- MODIFICA #2: PLUS subito sotto Ricerca personalizzata -->
-        <button id="btnPlus" class="btn plus-btn" type="button" aria-label="Plutoo Plus">
-          <span class="plus-icon">💎</span>
-          <span data-i18n="plusBtn">PLUS</span>
-        </button>
+        <div class="search-plus-wrapper">
+          <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
+          <button id="btnPlus" class="btn plus-btn" type="button" aria-label="Plutoo Plus">
+            <span class="plus-icon">💎</span>
+            <span data-i18n="plusBtn">PLUS</span>
+          </button>
+        </div>
       </div>
     </header>
 
-    <!-- MODIFICA #3: Topbar essenziale per profilo (logo + Indietro) -->
-    <header id="profileTopbar" class="topbar-minimal hidden">
-      <button id="btnBackProfile" class="btn tiny ghost" type="button" aria-label="Indietro">←</button>
-      <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" width="28" height="28" />
-      <strong class="brand-mini">Plutoo</strong>
-    </header>
-
     <main class="content" aria-live="polite">
-      <!-- Vicino a te (griglia 2×4) -->
       <section id="viewNearby" class="view active" aria-labelledby="nearbyTitle">
         <h2 id="nearbyTitle" class="visually-hidden">Vicino a te</h2>
         <div id="nearGrid" class="grid-2"></div>
       </section>
 
-      <!-- Amore: singola card con swipe + MODIFICA #5: Indietro -->
       <section id="viewLove" class="view" aria-labelledby="loveTitle">
         <div class="view-header">
           <button id="btnBackLove" class="btn tiny ghost" type="button">← Indietro</button>
@@ -148,7 +137,6 @@
         </article>
       </section>
 
-      <!-- Giochiamo insieme: singola card con swipe + MODIFICA #5: Indietro -->
       <section id="viewPlay" class="view" aria-labelledby="playTitle">
         <div class="view-header">
           <button id="btnBackPlay" class="btn tiny ghost" type="button">← Indietro</button>
@@ -169,35 +157,32 @@
       </section>
     </main>
 
-    <!-- Chat -->
     <aside id="chatPane" class="sheet hidden" role="dialog" aria-modal="true" aria-labelledby="chatHeader">
       <div class="sheet-header">
-        <div id="chatHeader" data-i18n="chat">Chat</div>
+        <div id="chatHeader">Chat</div>
         <button id="closeChat" class="icon close" type="button" aria-label="Chiudi">✕</button>
       </div>
-      <div id="chatList" class="chat-list" aria-live="polite"></div>
-      <form id="chatComposer" class="composer" autocomplete="off">
-        <input id="chatInput" type="text" placeholder="Scrivi un messaggio…" data-i18n-placeholder="typeMessage" />
-        <button id="chatSend" type="submit" class="btn send" data-i18n="send">Invia</button>
+      <div id="chatList" class="chat-list sheet-body"></div>
+      <form id="chatComposer" class="composer">
+        <input id="chatInput" type="text" placeholder="Scrivi un messaggio…" autocomplete="off" data-i18n-placeholder="typeMessage" />
+        <button type="submit" class="btn accent small" data-i18n="send">Invia</button>
       </form>
     </aside>
 
-    <!-- MODIFICA #3: Profilo PAGINA DEDICATA (topbar essenziale separata) -->
-    <section id="profileSheet" class="sheet profile-page hidden" role="dialog" aria-modal="true" aria-labelledby="ppTitle">
-      <div id="ppBody" class="sheet-body"><!-- riempito da app.js --></div>
-    </section>
+    <aside id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true">
+      <div id="ppBody" class="sheet-body"></div>
+    </aside>
 
-    <!-- Footer sponsor (NO etico nell'app) -->
     <footer class="sponsor">
       <div class="sponsor-wrap">
         <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-        <a id="sponsorLinkApp" href="https://www.fido.it/" target="_blank" rel="noopener">
+        <a id="sponsorLinkApp" href="https://www.fido.it/" target="_blank" rel="noopener" aria-label="Apri sponsor Fido">
           <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         </a>
-        <p class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</p>
+        <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </div>
 
-      <div class="legal-links legal-purple">
+      <div class="legal-links">
         <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
         <span>·</span>
         <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">Privacy</a>
@@ -209,7 +194,6 @@
     </footer>
   </section>
 
-  <!-- =============== PANNELLO RICERCA PERSONALIZZATA =============== -->
   <section id="searchPanel" class="panel hidden" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <div class="panel-inner">
       <div class="panel-head">
@@ -326,7 +310,6 @@
     </div>
   </section>
 
-  <!-- =============== MODALE PLUTOO PLUS =============== -->
   <section id="plusModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="plusTitle">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
@@ -355,7 +338,6 @@
     </div>
   </section>
 
-  <!-- Match Animation Overlay -->
   <div id="matchOverlay" class="match-overlay hidden">
     <div class="match-content">
       <div class="match-heart">💛</div>
