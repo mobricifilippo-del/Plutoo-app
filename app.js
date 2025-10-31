@@ -1,7 +1,8 @@
 /* =========================================================
-   PLUTOO – app.js (Violet Edition + Gold Sponsor)
-   Aggiunte: Plutoo Plus, filtri Gold, animazioni viola,
-   profilo pagina dedicata, bilingue IT/EN, ads mock test
+   PLUTOO – app.js (TUTTE LE MODIFICHE IMPLEMENTATE)
+   Modifiche: Sponsor Fido, animazione potenziata, 8 profili,
+   tab puliti, ricerca elegante, profilo pagina dedicata,
+   match animation, monetizzazione completa
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -20,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const sponsorLink  = $("sponsorLink");
   const sponsorLinkApp = $("sponsorLinkApp");
   const ethicsButton = $("ethicsButton");
-  const ethicsButtonApp = $("ethicsButtonApp");
   const btnBack      = $("btnBack");
   const btnPlus      = $("btnPlus");
 
@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ppBody   = $("ppBody");
 
   const adBanner = $("adBanner");
+  const matchOverlay = $("matchOverlay");
 
   // Stato
   const state = {
@@ -92,7 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
     plus: localStorage.getItem("plutoo_plus")==="yes",
     entered: localStorage.getItem("entered")==="1",
     swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
-    matches: parseInt(localStorage.getItem("matches")||"0"),
+    matches: JSON.parse(localStorage.getItem("matches")||"{}"),
+    chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent")||"{}"),
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
     currentLoveIdx: 0,
@@ -123,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
       enter: "Entra",
       sponsorTitle: "Sponsor ufficiale",
       sponsorCopy: "Fido, il gelato per i nostri amici a quattro zampe",
-      sponsorUrl: "https://example.com/fido-gelato",
+      sponsorUrl: "https://www.fido.it/",
       ethicsLine1: "Non abbandonare mai i tuoi amici",
       ethicsLine2: "(canili vicino a me)",
       terms: "Termini",
@@ -183,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
       enter: "Enter",
       sponsorTitle: "Official Sponsor",
       sponsorCopy: "Fido, ice cream for our four-legged friends",
-      sponsorUrl: "https://example.com/fido-gelato",
+      sponsorUrl: "https://www.fido.it/",
       ethicsLine1: "Never abandon your friends",
       ethicsLine2: "(animal shelters near me)",
       terms: "Terms",
@@ -270,25 +272,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-  // Dati mock (8 profili, immagini variegate)
+  // Dati mock: 8 PROFILI con le 8 immagini del repo
   const DOGS = [
     { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
     { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"play", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
     { id:"d3", name:"Maya",   age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg", bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false, weight:12, height:30, pedigree:false, breeding:false, size:"small" },
     { id:"d4", name:"Rocky",  age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.", mode:"play", sex:"M", verified:true, weight:15, height:38, pedigree:true, breeding:false, size:"medium" },
-    { id:"d5", name:"Chicco", age:1, breed:"Barboncino",       km:0.8, img:"dog1.jpg", bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, weight:8, height:28, pedigree:false, breeding:false, size:"small" },
-    { id:"d6", name:"Kira",   age:6, breed:"Labrador",         km:5.1, img:"dog2.jpg", bio:"Acqua e palla.", mode:"play", sex:"F", verified:true, weight:30, height:58, pedigree:true, breeding:true, size:"large" },
-    { id:"d7", name:"Toby",   age:2, breed:"Husky",            km:2.8, img:"dog3.jpg", bio:"Energia pura.", mode:"love", sex:"M", verified:true, weight:25, height:54, pedigree:true, breeding:true, size:"medium" },
-    { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dog4.jpg", bio:"Dolce compagna.", mode:"play", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
+    { id:"d5", name:"Chicco", age:1, breed:"Barboncino",       km:0.8, img:"dog5.jpg", bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, weight:8, height:28, pedigree:false, breeding:false, size:"small" },
+    { id:"d6", name:"Kira",   age:6, breed:"Labrador",         km:5.1, img:"dog6.jpg", bio:"Acqua e palla.", mode:"play", sex:"F", verified:true, weight:30, height:58, pedigree:true, breeding:true, size:"large" },
+    { id:"d7", name:"Toby",   age:2, breed:"Husky",            km:2.8, img:"dog7.jpg", bio:"Energia pura.", mode:"love", sex:"M", verified:true, weight:25, height:54, pedigree:true, breeding:true, size:"medium" },
+    { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dog8.jpg", bio:"Dolce compagna.", mode:"play", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
   ];
 
-  // Razze
+  // Razze (autocomplete ordinato A-Z)
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
     if (Array.isArray(arr)) state.breeds = arr.sort();
   }).catch(()=>{ state.breeds = [
-    "Pastore Tedesco","Labrador","Golden Retriever","Jack Russell",
-    "Bulldog Francese","Barboncino","Border Collie","Chihuahua",
-    "Carlino","Beagle","Maltese","Shih Tzu","Husky","Bassotto","Cocker Spaniel"
+    "Barboncino","Bassotto","Beagle","Border Collie","Bulldog Francese",
+    "Carlino","Chihuahua","Cocker Spaniel","Golden Retriever","Husky",
+    "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu"
   ].sort();});
 
   // Geo
@@ -307,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }
 
-  // Entra: animazione heartbeat viola (1.5s) poi entra
+  // MODIFICA #2: Entra con animazione POTENZIATA (2.5s, più luminosa)
   btnEnter?.addEventListener("click", ()=>{
     heroLogo?.classList.remove("heartbeat-violet");
     void heroLogo?.offsetWidth;
@@ -318,13 +320,13 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("entered","1");
       homeScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
-      setActiveView("nearby");
+      setActiveView("nearby"); // Vai direttamente a "Vicino a te"
       showAdBanner();
-    }, 1500);
+    }, 2500); // 2.5s per animazione completa
   });
     
-  // Sponsor click (Home + App)
-  function openSponsor(){ window.open(t("sponsorUrl"), "_blank", "noopener"); }
+  // MODIFICA #1: Sponsor UFFICIALE Fido (https://www.fido.it/)
+  function openSponsor(){ window.open("https://www.fido.it/", "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
@@ -350,12 +352,10 @@ document.addEventListener("DOMContentLoaded", () => {
     plusModal?.classList.add("hidden");
   }
   function updatePlusUI(){
-    // Abilita/disabilita filtri Gold
     const goldInputs = [onlyVerified, ageMin, ageMax, weightInput, heightInput, pedigreeFilter, breedingFilter, sizeFilter];
     goldInputs.forEach(inp => {
       if (inp) inp.disabled = !state.plus;
     });
-    // Nasconde banner se Plus
     if (state.plus && adBanner) {
       adBanner.style.display = "none";
     } else if (adBanner) {
@@ -374,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   searchPanel?.addEventListener("click", handleGoldFieldClick);
 
-  // Tabs & Views
+  // MODIFICA #4: Tabs puliti e spaziati
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
   tabPlay?.addEventListener("click",   ()=>setActiveView("play"));
@@ -399,16 +399,34 @@ document.addEventListener("DOMContentLoaded", () => {
     [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
     [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
-    if (name==="nearby"){ viewNearby.classList.add("active"); tabNearby.classList.add("active"); renderNearby(); btnSearchPanel.disabled=false; }
-    if (name==="love"){   viewLove.classList.add("active");   tabLove.classList.add("active");   renderSwipe("love"); btnSearchPanel.disabled=true; }
-    if (name==="play"){   viewPlay.classList.add("active");   tabPlay.classList.add("active");   renderSwipe("play"); btnSearchPanel.disabled=true; }
+    if (name==="nearby"){ 
+      viewNearby.classList.add("active"); 
+      tabNearby.classList.add("active"); 
+      renderNearby(); 
+      btnSearchPanel.disabled=false; 
+    }
+    if (name==="love"){   
+      viewLove.classList.add("active");   
+      tabLove.classList.add("active");   
+      renderSwipe("love"); 
+      btnSearchPanel.disabled=true; 
+    }
+    if (name==="play"){   
+      viewPlay.classList.add("active");   
+      tabPlay.classList.add("active");   
+      renderSwipe("play"); 
+      btnSearchPanel.disabled=true; 
+    }
 
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
   // Back
   btnBack?.addEventListener("click", ()=>{
-    if (!viewNearby.classList.contains("active")) { setActiveView("nearby"); return; }
+    if (!viewNearby.classList.contains("active")) { 
+      setActiveView("nearby"); 
+      return; 
+    }
     if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
       localStorage.removeItem("entered");
       state.entered=false;
@@ -416,16 +434,20 @@ document.addEventListener("DOMContentLoaded", () => {
       homeScreen.classList.remove("hidden");
     }
   });
-   // Nearby (grid 2×4 = 8 profili)
+
+  // MODIFICA #3: Vicino a te - STABILE, 8 profili, cornici viola luminose
   function renderNearby(){
     const list = filteredDogs();
-    if (!list.length){ nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; return; }
+    if (!list.length){ 
+      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; 
+      return; 
+    }
     nearGrid.innerHTML = list.map(cardHTML).join("");
     qa(".dog-card").forEach(card=>{
       const id = card.getAttribute("data-id");
       const d  = DOGS.find(x=>x.id===id);
       card.addEventListener("click", ()=>{
-        // Flash viola (0.5s) poi apri profilo
+        // Flash viola (0.5s) poi apri profilo PAGINA DEDICATA
         card.classList.add("flash-violet");
         setTimeout(()=>{
           card.classList.remove("flash-violet");
@@ -434,10 +456,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+  
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
-        <img src="${d.img}" alt="${d.name}" class="card-img" />
+        <img src="${d.img}" alt="${d.name}" class="card-img" loading="lazy" />
         <div class="card-info">
           <h3>${d.name} ${d.verified?"✅":""}</h3>
           <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
@@ -483,8 +506,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return d.size === f.size;
       });
   }
-
-  // Swipe Decks (Amore/Giochiamo)
+   // MODIFICA #7: Swipe Decks con animazioni fluide + MATCH ANIMATION
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % (deck.length||1);
@@ -503,7 +525,6 @@ document.addEventListener("DOMContentLoaded", () => {
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
     img.onclick = ()=>{
-      // Flash viola poi apri profilo
       card.classList.add("flash-violet");
       setTimeout(()=>{
         card.classList.remove("flash-violet");
@@ -513,6 +534,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     attachSwipe(card, dir=>{
       checkSwipeReward();
+      
+      // MATCH se swipe right
+      if (dir==="right"){
+        const matchChance = Math.random();
+        if (matchChance > 0.5){ // 50% match
+          state.matches[d.id] = true;
+          localStorage.setItem("matches", JSON.stringify(state.matches));
+          showMatchAnimation();
+        }
+      }
+      
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
       setTimeout(()=>renderSwipe(mode), 10);
     });
@@ -543,10 +575,54 @@ document.addEventListener("DOMContentLoaded", () => {
   function resetCard(card){ card.classList.remove("swipe-out-right","swipe-out-left"); card.style.transform=""; }
   function simulateSwipe(card, dir){
     card.classList.add(dir==="right"?"swipe-out-right":"swipe-out-left");
-    setTimeout(()=>{ resetCard(card); card.dispatchEvent(new CustomEvent("swiped",{detail:{dir}})); }, 550);
+    setTimeout(()=>{ resetCard(card); }, 550);
   }
 
-  // Reward Ads Mock (ogni 10 swipe e +5)
+  // MODIFICA #7: Match Animation (cuore oro/viola + confetti)
+  function showMatchAnimation(){
+    if (!matchOverlay) return;
+    
+    matchOverlay.classList.remove("hidden");
+    
+    // Confetti
+    const confettiContainer = qs(".confetti-container", matchOverlay);
+    if (confettiContainer){
+      confettiContainer.innerHTML = "";
+      for(let i=0; i<30; i++){
+        const confetti = document.createElement("div");
+        confetti.style.position = "absolute";
+        confetti.style.width = "10px";
+        confetti.style.height = "10px";
+        confetti.style.background = i%2 ? "#CDA434" : "#8A7BFF";
+        confetti.style.borderRadius = "50%";
+        confetti.style.left = "50%";
+        confetti.style.top = "50%";
+        confetti.style.opacity = "1";
+        confetti.style.pointerEvents = "none";
+        
+        const angle = (Math.PI * 2 * i) / 30;
+        const velocity = 100 + Math.random() * 100;
+        const xEnd = Math.cos(angle) * velocity;
+        const yEnd = Math.sin(angle) * velocity;
+        
+        confetti.animate([
+          { transform: "translate(0, 0)", opacity: 1 },
+          { transform: `translate(${xEnd}px, ${yEnd}px)`, opacity: 0 }
+        ], {
+          duration: 1000 + Math.random() * 500,
+          easing: "cubic-bezier(.25,.46,.45,.94)"
+        });
+        
+        confettiContainer.appendChild(confetti);
+      }
+    }
+    
+    setTimeout(()=>{
+      matchOverlay.classList.add("hidden");
+    }, 2500);
+  }
+
+  // MODIFICA #8: Reward Ads Mock (ogni 10 swipe e +5)
   function checkSwipeReward(){
     if (state.plus) return;
     state.swipeCount++;
@@ -556,7 +632,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Ricerca panel
+  // MODIFICA #5: Ricerca panel (elegante, autocomplete A-Z)
   btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
@@ -630,13 +706,15 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // Profilo (PAGINA DEDICATA, non sheet) + lightbox galleria
+  // MODIFICA #6: Profilo PAGINA DEDICATA (stile Facebook)
   window.openProfilePage = (d)=>{
-    // Apre come pagina dedicata (sheet full)
     profileSheet.classList.remove("hidden");
+    profileSheet.classList.add("profile-page");
     setTimeout(()=>profileSheet.classList.add("show"), 10);
 
     const selfieUnlocked = isSelfieUnlocked(d.id);
+    const hasMatch = state.matches[d.id] || false;
+    
     ppBody.innerHTML = `
       <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
       <div class="pp-head">
@@ -645,15 +723,16 @@ document.addEventListener("DOMContentLoaded", () => {
           <span class="badge">${d.breed}</span>
           <span class="badge">${d.age} ${t("years")}</span>
           <span class="badge">${fmtKm(d.km)}</span>
+          <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>
         </div>
       </div>
       <div class="pp-meta soft">${d.bio||""}</div>
 
-      <h3 class="section-title">Galleria</h3>
+      <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
       <div class="gallery">
         <div class="ph"><img src="${d.img}" alt=""></div>
-        <div class="ph"><img src="dog2.jpg" alt=""></div>
-        <div class="ph"><img src="dog3.jpg" alt=""></div>
+        <div class="ph"><img src="${d.img}" alt=""></div>
+        <div class="ph"><img src="${d.img}" alt=""></div>
         <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
       </div>
 
@@ -667,14 +746,21 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
 
       <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
-      <div class="pp-actions">
-        <button id="btnDocsOwner" class="btn outline">${state.lang==="it"?"Documenti proprietario":"Owner docs"}</button>
-        <button id="btnDocsDog"   class="btn outline">${state.lang==="it"?"Documenti dog":"Dog docs"}</button>
-        <button id="btnOpenChat"  class="btn accent">${state.lang==="it"?"Apri chat":"Open chat"}</button>
+      <div class="pp-badges">
+        ${d.verified?'<span class="badge">✅ Verificato</span>':''}
+        ${d.pedigree?'<span class="badge">📜 Pedigree</span>':''}
+        <span class="badge">💉 Vaccini</span>
+        <span class="badge">🔬 Microchip</span>
+      </div>
+
+      <div class="pp-actions" style="margin-top:1.2rem">
+        <button id="btnLikeDog" class="btn accent">💛 Like</button>
+        <button id="btnDislikeDog" class="btn outline">🥲 Passa</button>
+        <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
       </div>
     `;
 
-    // Lightbox sulle foto
+    // Lightbox galleria
     qa(".gallery img", ppBody).forEach(img=>{
       img.addEventListener("click", ()=>{
         const lb = document.createElement("div");
@@ -686,16 +772,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    $("btnDocsOwner").onclick = ()=>{
-      alert(state.lang==="it" ? "Upload documenti proprietario (mock)" : "Upload owner docs (mock)");
-      d.verified=true;
-      renderNearby();
+    $("btnLikeDog").onclick = ()=>{
+      state.matches[d.id] = true;
+      localStorage.setItem("matches", JSON.stringify(state.matches));
+      showMatchAnimation();
+      closeProfilePage();
     };
-    $("btnDocsDog").onclick = ()=>{
-      alert(state.lang==="it" ? "Upload documenti dog (mock)" : "Upload dog docs (mock)");
-      d.verified=true;
-      renderNearby();
+    
+    $("btnDislikeDog").onclick = ()=>{
+      closeProfilePage();
     };
+
     $("btnOpenChat").onclick = ()=>{
       closeProfilePage();
       setTimeout(()=>openChat(d), 180);
@@ -707,7 +794,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!state.plus){
           showRewardVideoMock("selfie");
         }
-        // Sblocca 24h
         state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
         localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
         openProfilePage(d);
@@ -717,26 +803,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.closeProfilePage = ()=>{
     profileSheet.classList.remove("show");
-    setTimeout(()=>profileSheet.classList.add("hidden"), 250);
+    setTimeout(()=>{
+      profileSheet.classList.add("hidden");
+      profileSheet.classList.remove("profile-page");
+    }, 250);
   };
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // Chat
+  // MODIFICA #8: Chat con monetizzazione precisa
   function openChat(dog){
-    // Primo messaggio → reward video mock se non Plus
-    if (!state.plus && !state.firstMsgRewardByDog[dog.id]){
-      showRewardVideoMock("chat");
-      state.firstMsgRewardByDog[dog.id] = true;
-      localStorage.setItem("firstMsgRewardByDog", JSON.stringify(state.firstMsgRewardByDog));
-    }
+    const hasMatch = state.matches[dog.id] || false;
+    const msgCount = state.chatMessagesSent[dog.id] || 0;
 
     chatPane.classList.remove("hidden");
     setTimeout(()=>chatPane.classList.add("show"), 10);
     chatPane.dataset.dogId = dog.id;
     chatList.innerHTML = `<div class="msg">${state.lang==="it"?"Ciao":"Hi"} ${dog.name}! 🐾</div>`;
     chatInput.value="";
+    
+    // Abilita/disabilita input in base a match e conteggio messaggi
+    if (!state.plus){
+      if (!hasMatch && msgCount >= 1){
+        chatInput.disabled = true;
+        chatInput.placeholder = state.lang==="it" ? "Match necessario per continuare" : "Match needed to continue";
+      } else {
+        chatInput.disabled = false;
+        chatInput.placeholder = state.lang==="it" ? "Scrivi un messaggio…" : "Type a message…";
+      }
+    }
   }
+  
   function closeChatPane(){
     chatPane.classList.remove("show");
     setTimeout(()=>chatPane.classList.add("hidden"), 250);
@@ -747,17 +844,50 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const text = chatInput.value.trim();
     if (!text) return;
+    
+    const dogId = chatPane.dataset.dogId || "unknown";
+    const hasMatch = state.matches[dogId] || false;
+    const msgCount = state.chatMessagesSent[dogId] || 0;
+
+    // Logica monetizzazione chat
+    if (!state.plus){
+      if (hasMatch){
+        // Con match: primo messaggio → reward, poi liberi
+        if (msgCount === 0){
+          showRewardVideoMock("chat");
+        }
+      } else {
+        // Senza match: solo 1 messaggio, poi blocco
+        if (msgCount === 0){
+          showRewardVideoMock("chat");
+        } else {
+          alert(state.lang==="it" ? "Serve un match per continuare a chattare!" : "Match needed to continue chatting!");
+          return;
+        }
+      }
+    }
+
+    // Invia messaggio
     const bubble = document.createElement("div");
     bubble.className="msg me";
     bubble.textContent=text;
     chatList.appendChild(bubble);
     chatInput.value="";
     chatList.scrollTop = chatList.scrollHeight;
+
+    // Aggiorna conteggio
+    state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
+    localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+
+    // Disabilita se senza match e ha già inviato 1
+    if (!state.plus && !hasMatch && state.chatMessagesSent[dogId] >= 1){
+      chatInput.disabled = true;
+      chatInput.placeholder = state.lang==="it" ? "Match necessario per continuare" : "Match needed to continue";
+    }
   });
 
-  // Maps helpers (Luoghi PET esteso)
+  // Maps helpers (Luoghi PET con reward)
   function openMapsCategory(cat){
-    // Reward video mock per servizi se non Plus
     if (!state.plus && ["vets","groomers","shops"].includes(cat)){
       showRewardVideoMock("services");
     }
@@ -799,13 +929,13 @@ document.addEventListener("DOMContentLoaded", () => {
       it: {
         swipe: "🎬 Reward Video Mock\n(ogni 10 swipe e +5)\n\nTipo: Swipe Unlock",
         selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
-        chat: "🎬 Reward Video Mock\n(primo messaggio in chat)\n\nTipo: Chat Unlock",
+        chat: "🎬 Reward Video Mock\n(primo messaggio o senza match)\n\nTipo: Chat Unlock",
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services"
       },
       en: {
         swipe: "🎬 Reward Video Mock\n(every 10 swipes and +5)\n\nType: Swipe Unlock",
         selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
-        chat: "🎬 Reward Video Mock\n(first message in chat)\n\nType: Chat Unlock",
+        chat: "🎬 Reward Video Mock\n(first message or no match)\n\nType: Chat Unlock",
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services"
       }
     };
@@ -813,11 +943,7 @@ document.addEventListener("DOMContentLoaded", () => {
     alert(text);
   }
 
-  function showInterstitialMock(){
-    alert(state.lang==="it" ? "🎬 Interstitial Mock\n(Videomatch dopo match)" : "🎬 Interstitial Mock\n(Videomatch after match)");
-  }
-
-  // Ricerca UI preset + primo rendering
+  // Init
   function init(){
     applyTranslations();
     updatePlusUI();
