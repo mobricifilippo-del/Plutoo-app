@@ -23,10 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnBack      = $("btnBack");
   const btnPlus      = $("btnPlus");
 
-  // MODIFICA #3 + #5: Topbars e navigazione
+  // MODIFICA: Topbars e navigazione (profileTopbar rimosso completamente)
   const mainTopbar = $("mainTopbar");
-  const profileTopbar = $("profileTopbar");
-  const btnBackProfile = $("btnBackProfile");
   const btnBackLove = $("btnBackLove");
   const btnBackPlay = $("btnBackPlay");
 
@@ -104,10 +102,12 @@ document.addEventListener("DOMContentLoaded", () => {
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
     ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded")||"{}"),
+    dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded")||"{}"),
     currentLoveIdx: 0,
     currentPlayIdx: 0,
     currentView: "nearby",
     viewHistory: [],
+    currentDogProfile: null,
     filters: {
       breed: localStorage.getItem("f_breed") || "",
       distKm: parseInt(localStorage.getItem("f_distKm")||"5"),
@@ -298,10 +298,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "Barboncino","Bassotto","Beagle","Border Collie","Bulldog Francese",
     "Carlino","Chihuahua","Cocker Spaniel","Golden Retriever","Husky",
     "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu"
-  ].sort();});
+  ].sort(); });
 
   // Geo
-  if ("geolocation" in navigator){
+  if (navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
       p=>{ state.geo = { lat:p.coords.latitude, lon:p.coords.longitude }; },
       ()=>{}, { enableHighAccuracy:true, timeout:5000, maximumAge:60000 }
@@ -401,7 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // MODIFICA #3 + #5: setActiveView con gestione topbar
+  // MODIFICA: setActiveView con gestione topbar (nascosta completamente in profilo)
   function setActiveView(name){
     // Salva history per navigazione indietro
     if (state.currentView !== name && state.currentView !== "profile"){
@@ -412,13 +412,11 @@ document.addEventListener("DOMContentLoaded", () => {
     [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
     [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
-    // Mostra/nascondi topbar appropriata
+    // MODIFICA: Topbar completamente invisibile nel profilo
     if (name === "profile"){
       mainTopbar?.classList.add("hidden");
-      profileTopbar?.classList.remove("hidden");
     } else {
       mainTopbar?.classList.remove("hidden");
-      profileTopbar?.classList.add("hidden");
     }
 
     if (name==="nearby"){ 
@@ -443,9 +441,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  // MODIFICA #5: Navigazione Indietro (UI + hardware Android)
+  // MODIFICA: Navigazione Indietro (UI + hardware Android)
   btnBack?.addEventListener("click", ()=> goBack() );
-  btnBackProfile?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
   btnBackPlay?.addEventListener("click", ()=> goBack() );
 
@@ -554,8 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return d.size === f.size;
       });
   }
-
-  // Swipe Decks con match animation
+// Swipe Decks con match animation
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % (deck.length||1);
@@ -751,9 +747,13 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // MODIFICA #3 + #4: Profilo PAGINA DEDICATA con documenti proprietario
+  // MODIFICA: Profilo PAGINA DEDICATA con documenti semplificati + history API
   window.openProfilePage = (d)=>{
+    state.currentDogProfile = d;
     setActiveView("profile");
+    
+    // MODIFICA: Push state per back button Android
+    history.pushState({view: "profile", dogId: d.id}, "", "");
     
     profileSheet.classList.remove("hidden");
     profileSheet.classList.add("profile-page");
@@ -762,6 +762,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const selfieUnlocked = isSelfieUnlocked(d.id);
     const hasMatch = state.matches[d.id] || false;
     const ownerDocs = state.ownerDocsUploaded[d.id] || {};
+    const dogDocs = state.dogDocsUploaded[d.id] || {};
     
     ppBody.innerHTML = `
       <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
@@ -794,31 +795,37 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
 
       <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
-      <div class="pp-badges">
-        ${d.verified?'<span class="badge">✅ Verificato</span>':''}
-        ${d.pedigree?'<span class="badge">📜 Pedigree</span>':''}
-        <span class="badge">💉 Vaccini</span>
-        <span class="badge">🔬 Microchip</span>
-      </div>
-
+      
       <div class="pp-docs-section">
-        <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario":"Owner Documents"}</h4>
-        <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Carica i documenti per ottenere il badge verificato":"Upload documents to get verified badge"}</p>
+        <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>
+        <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>
         <div class="pp-docs-grid">
-          <div class="doc-item" data-doc="identity">
+          <div class="doc-item" data-doc="owner-identity" data-type="owner">
             <div class="doc-icon">🪪</div>
-            <div class="doc-label">${state.lang==="it"?"Identità":"Identity"}</div>
+            <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>
             <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
           </div>
-          <div class="doc-item" data-doc="address">
-            <div class="doc-icon">🏠</div>
-            <div class="doc-label">${state.lang==="it"?"Residenza":"Address"}</div>
-            <div class="doc-status ${ownerDocs.address?'uploaded':'pending'}">${ownerDocs.address?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+        </div>
+      </div>
+
+      <div class="pp-docs-section" style="margin-top:1.2rem">
+        <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>
+        <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>
+        <div class="pp-docs-grid">
+          <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
+            <div class="doc-icon">💉</div>
+            <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>
+            <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
           </div>
-          <div class="doc-item" data-doc="phone">
-            <div class="doc-icon">📱</div>
-            <div class="doc-label">${state.lang==="it"?"Telefono":"Phone"}</div>
-            <div class="doc-status ${ownerDocs.phone?'uploaded':'pending'}">${ownerDocs.phone?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+          <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
+            <div class="doc-icon">📜</div>
+            <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>
+            <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+          </div>
+          <div class="doc-item" data-doc="dog-microchip" data-type="dog">
+            <div class="doc-icon">🔬</div>
+            <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>
+            <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
           </div>
         </div>
       </div>
@@ -842,19 +849,29 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // MODIFICA #4: Gestione upload documenti proprietario
+    // MODIFICA: Gestione upload documenti (owner + dog) con badge condizionale
     qa(".doc-item", ppBody).forEach(item=>{
       item.addEventListener("click", ()=>{
         const docType = item.getAttribute("data-doc");
-        if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
-        state.ownerDocsUploaded[d.id][docType] = true;
-        localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+        const docCategory = item.getAttribute("data-type"); // "owner" o "dog"
         
-        // Verifica se tutti i documenti sono caricati
-        const allUploaded = ["identity","address","phone"].every(dt => state.ownerDocsUploaded[d.id][dt]);
-        if (allUploaded && !d.verified){
-          d.verified = true;
-          alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+        if (docCategory === "owner"){
+          // Documenti proprietario
+          if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
+          state.ownerDocsUploaded[d.id].identity = true;
+          localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+          
+          // MODIFICA: Badge verificato solo se documento proprietario caricato
+          if (!d.verified){
+            d.verified = true;
+            alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+          }
+        } else if (docCategory === "dog"){
+          // Documenti DOG (facoltativi)
+          if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
+          const docName = docType.replace("dog-", ""); // "dog-vaccines" -> "vaccines"
+          state.dogDocsUploaded[d.id][docName] = true;
+          localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
         }
         
         openProfilePage(d);
@@ -898,6 +915,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Torna alla vista precedente
       const previousView = state.viewHistory.pop() || "nearby";
       setActiveView(previousView);
+      state.currentDogProfile = null;
     }, 250);
   };
 
