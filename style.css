@@ -399,4 +399,59 @@ a{color:inherit;text-decoration:none}
 .selfie{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--violet);box-shadow:0 8px 20px rgba(0,0,0,.4), inset 0 0 0 1px rgba(138,123,255,.16)}
 .selfie .img{display:block;width:100%;height:220px;object-fit:cover;filter:blur(16px) brightness(.7)}
 .selfie.unlocked .img{filter:none}
-.selfie .over{position:absolute;inset:
+.selfie .over{position:absolute;inset:auto 0 0 0;display:flex;gap:.7rem;justify-content:center;padding:.75rem;background:linear-gradient(180deg,transparent,rgba(0,0,0,.65))}
+
+/* Footer sponsor */
+.sponsor{margin-top:auto;padding:1rem;border-top:1px solid var(--line);text-align:center;background:rgba(18,18,38,.85);backdrop-filter:blur(6px)}
+.sponsor-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.sponsor-title{font-weight:800;color:var(--gold);font-size:1.05rem}
+.sponsor-logo{width:56px;height:56px;object-fit:contain;border-radius:12px;background:#fff;margin:.3rem auto}
+.sponsor-copy{color:var(--muted);font-size:.93rem}
+.ad-banner{margin-top:.7rem;min-height:52px;border:1px dashed rgba(255,255,255,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem}
+
+/* Lightbox overlay */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:2000}
+.lightbox img{max-width:96vw;max-height:90vh;border-radius:12px;box-shadow:0 20px 48px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12)}
+.lightbox .close{position:absolute;top:10px;right:14px;background:transparent;border:0;color:#fff;font-size:1.6rem;cursor:pointer}
+
+/* Responsive */
+@media (max-width:520px){
+  .grid-2{grid-template-columns:1fr 1fr;gap:.8rem}
+  .card-img{height:160px}
+  .panel-inner{max-height:85vh}
+  .pp-hero img{height:240px}
+}
+
+/* ================= ANIMAZIONI VIOLA POTENZIATE ================= */
+
+/* Heartbeat viola PIÙ LENTO e PIÙ LUMINOSO (2.5s invece di 1.5s) */
+.hero-logo.heartbeat-violet{
+  animation:heartbeatVioletPowerful 2.5s ease-in-out 1;
+  will-change:transform,filter;
+}
+@keyframes heartbeatVioletPowerful{
+  0%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(138,123,255,0))}
+  10%{transform:scale(1.03);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 24px rgba(138,123,255,.5))}
+  20%{transform:scale(1.08);filter:drop-shadow(0 14px 28px rgba(0,0,0,.55)) drop-shadow(0 0 48px rgba(138,123,255,.85))}
+  30%{transform:scale(1.14);filter:drop-shadow(0 16px 32px rgba(0,0,0,.55)) drop-shadow(0 0 64px rgba(138,123,255,1))}
+  40%{transform:scale(1.10);filter:drop-shadow(0 14px 28px rgba(0,0,0,.55)) drop-shadow(0 0 52px rgba(138,123,255,.9))}
+  50%{transform:scale(1.15);filter:drop-shadow(0 16px 32px rgba(0,0,0,.55)) drop-shadow(0 0 72px rgba(138,123,255,1))}
+  60%{transform:scale(1.12);filter:drop-shadow(0 14px 28px rgba(0,0,0,.55)) drop-shadow(0 0 56px rgba(138,123,255,.9))}
+  70%{transform:scale(1.08);filter:drop-shadow(0 14px 26px rgba(0,0,0,.55)) drop-shadow(0 0 44px rgba(138,123,255,.75))}
+  80%{transform:scale(1.05);filter:drop-shadow(0 13px 25px rgba(0,0,0,.55)) drop-shadow(0 0 32px rgba(138,123,255,.6))}
+  90%{transform:scale(1.02);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 20px rgba(138,123,255,.4))}
+  100%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(138,123,255,0))}
+}
+
+/* Legacy glow (backup) */
+.hero-logo.glow-vg{
+  animation:purpleGoldPulse 2.2s ease-in-out 1;
+  will-change:transform,filter;
+}
+@keyframes purpleGoldPulse{
+  0%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(180,140,255,0))}
+  25%{transform:scale(1.06);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 36px rgba(180,140,255,.85))}
+  55%{transform:scale(1.12);filter:drop-shadow(0 14px 30px rgba(0,0,0,.55)) drop-shadow(0 0 56px rgba(205,164,52,.95))}
+  85%{transform:scale(1.06);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 34px rgba(180,140,255,.75))}
+  100%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(180,140,255,0))}
+}
