@@ -1,8 +1,7 @@
 /* =========================================================
-   PLUTOO – app.js (TUTTE LE MODIFICHE IMPLEMENTATE)
-   Modifiche: Sponsor Fido, animazione potenziata, 8 profili,
-   tab puliti, ricerca elegante, profilo pagina dedicata,
-   match animation, monetizzazione completa
+   PLUTOO – app.js FINALE (TUTTE LE MODIFICHE)
+   Modifiche finali: testo etico, PLUS, profilo pulito,
+   documenti proprietario, navigazione indietro, tab migliorati
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -23,6 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const ethicsButton = $("ethicsButton");
   const btnBack      = $("btnBack");
   const btnPlus      = $("btnPlus");
+
+  // MODIFICA #3 + #5: Topbars e navigazione
+  const mainTopbar = $("mainTopbar");
+  const profileTopbar = $("profileTopbar");
+  const btnBackProfile = $("btnBackProfile");
+  const btnBackLove = $("btnBackLove");
+  const btnBackPlay = $("btnBackPlay");
 
   const tabNearby = $("tabNearby");
   const tabLove   = $("tabLove");
@@ -87,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // Stato
+  // Stato + history per navigazione
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
     plus: localStorage.getItem("plutoo_plus")==="yes",
@@ -97,8 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
     chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent")||"{}"),
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
+    ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded")||"{}"),
     currentLoveIdx: 0,
     currentPlayIdx: 0,
+    currentView: "nearby",
+    viewHistory: [],
     filters: {
       breed: localStorage.getItem("f_breed") || "",
       distKm: parseInt(localStorage.getItem("f_distKm")||"5"),
@@ -116,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
     breeds: []
   };
 
-  // I18N completo IT/EN
+  // MODIFICA #1: I18N con "canili nelle vicinanze"
   const I18N = {
     it: {
       brand: "Plutoo",
@@ -127,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sponsorCopy: "Fido, il gelato per i nostri amici a quattro zampe",
       sponsorUrl: "https://www.fido.it/",
       ethicsLine1: "Non abbandonare mai i tuoi amici",
-      ethicsLine2: "(canili vicino a me)",
+      ethicsLine2: "(canili nelle vicinanze)",
       terms: "Termini",
       privacy: "Privacy",
       nearby: "Vicino a te",
@@ -174,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       plusPeriod: "/mese",
       activatePlus: "Attiva Plutoo Plus",
       cancel: "Annulla",
-      mapsShelters: "canili vicino a me",
+      mapsShelters: "canili nelle vicinanze",
       noProfiles: "Nessun profilo. Modifica i filtri.",
       years: "anni"
     },
@@ -187,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sponsorCopy: "Fido, ice cream for our four-legged friends",
       sponsorUrl: "https://www.fido.it/",
       ethicsLine1: "Never abandon your friends",
-      ethicsLine2: "(animal shelters near me)",
+      ethicsLine2: "(animal shelters nearby)",
       terms: "Terms",
       privacy: "Privacy",
       nearby: "Nearby",
@@ -234,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
       plusPeriod: "/month",
       activatePlus: "Activate Plutoo Plus",
       cancel: "Cancel",
-      mapsShelters: "animal shelters near me",
+      mapsShelters: "animal shelters nearby",
       noProfiles: "No profiles. Adjust filters.",
       years: "yrs"
     }
@@ -242,7 +251,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
   function autodetectLang(){ return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; }
 
-  // Applica traduzioni dinamiche
   function applyTranslations(){
     qa("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
@@ -258,7 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Lang flags
   $("langIT")?.addEventListener("click", ()=>{
     state.lang="it";
     localStorage.setItem("lang","it");
@@ -272,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-  // Dati mock: 8 PROFILI con le 8 immagini del repo
+  // 8 PROFILI con immagini del repo
   const DOGS = [
     { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
     { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"play", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
@@ -309,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }
 
-  // MODIFICA #2: Entra con animazione POTENZIATA (2.5s, più luminosa)
+  // Entra con animazione POTENZIATA (2.5s)
   btnEnter?.addEventListener("click", ()=>{
     heroLogo?.classList.remove("heartbeat-violet");
     void heroLogo?.offsetWidth;
@@ -320,12 +327,12 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("entered","1");
       homeScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
-      setActiveView("nearby"); // Vai direttamente a "Vicino a te"
+      setActiveView("nearby");
       showAdBanner();
-    }, 2500); // 2.5s per animazione completa
+    }, 2500);
   });
     
-  // MODIFICA #1: Sponsor UFFICIALE Fido (https://www.fido.it/)
+  // Sponsor UFFICIALE Fido
   function openSponsor(){ window.open("https://www.fido.it/", "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
@@ -363,7 +370,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Gestione clic su campi Gold bloccati
   function handleGoldFieldClick(e){
     if (!state.plus && e.target.closest(".f-gold")){
       const input = e.target.closest(".f-gold").querySelector("input, select");
@@ -374,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   searchPanel?.addEventListener("click", handleGoldFieldClick);
 
-  // MODIFICA #4: Tabs puliti e spaziati
+  // Tabs
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
   tabPlay?.addEventListener("click",   ()=>setActiveView("play"));
@@ -395,9 +401,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // MODIFICA #3 + #5: setActiveView con gestione topbar
   function setActiveView(name){
+    // Salva history per navigazione indietro
+    if (state.currentView !== name && state.currentView !== "profile"){
+      state.viewHistory.push(state.currentView);
+    }
+    state.currentView = name;
+
     [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
     [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
+
+    // Mostra/nascondi topbar appropriata
+    if (name === "profile"){
+      mainTopbar?.classList.add("hidden");
+      profileTopbar?.classList.remove("hidden");
+    } else {
+      mainTopbar?.classList.remove("hidden");
+      profileTopbar?.classList.add("hidden");
+    }
 
     if (name==="nearby"){ 
       viewNearby.classList.add("active"); 
@@ -421,21 +443,48 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  // Back
-  btnBack?.addEventListener("click", ()=>{
-    if (!viewNearby.classList.contains("active")) { 
-      setActiveView("nearby"); 
-      return; 
+  // MODIFICA #5: Navigazione Indietro (UI + hardware Android)
+  btnBack?.addEventListener("click", ()=> goBack() );
+  btnBackProfile?.addEventListener("click", ()=> goBack() );
+  btnBackLove?.addEventListener("click", ()=> goBack() );
+  btnBackPlay?.addEventListener("click", ()=> goBack() );
+
+  function goBack(){
+    // Se in profilo, torna alla vista precedente
+    if (state.currentView === "profile"){
+      closeProfilePage();
+      return;
     }
-    if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
-      localStorage.removeItem("entered");
-      state.entered=false;
-      appScreen.classList.add("hidden");
-      homeScreen.classList.remove("hidden");
+
+    // Se in love/play, torna a nearby
+    if (state.currentView === "love" || state.currentView === "play"){
+      setActiveView("nearby");
+      return;
     }
+
+    // Se in nearby, conferma uscita
+    if (state.currentView === "nearby"){
+      if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
+        localStorage.removeItem("entered");
+        state.entered=false;
+        appScreen.classList.add("hidden");
+        homeScreen.classList.remove("hidden");
+      }
+    }
+  }
+
+  // Gestione tasto hardware Android
+  window.addEventListener("popstate", (e)=>{
+    e.preventDefault();
+    goBack();
   });
 
-  // MODIFICA #3: Vicino a te - STABILE, 8 profili, cornici viola luminose
+  // Push state iniziale
+  if (state.entered){
+    history.pushState({view: "app"}, "", "");
+  }
+
+  // Vicino a te (8 profili, stabile)
   function renderNearby(){
     const list = filteredDogs();
     if (!list.length){ 
@@ -447,7 +496,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const id = card.getAttribute("data-id");
       const d  = DOGS.find(x=>x.id===id);
       card.addEventListener("click", ()=>{
-        // Flash viola (0.5s) poi apri profilo PAGINA DEDICATA
         card.classList.add("flash-violet");
         setTimeout(()=>{
           card.classList.remove("flash-violet");
@@ -506,7 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return d.size === f.size;
       });
   }
-   // MODIFICA #7: Swipe Decks con animazioni fluide + MATCH ANIMATION
+
+  // Swipe Decks con match animation
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % (deck.length||1);
@@ -535,10 +584,9 @@ document.addEventListener("DOMContentLoaded", () => {
     attachSwipe(card, dir=>{
       checkSwipeReward();
       
-      // MATCH se swipe right
       if (dir==="right"){
         const matchChance = Math.random();
-        if (matchChance > 0.5){ // 50% match
+        if (matchChance > 0.5){
           state.matches[d.id] = true;
           localStorage.setItem("matches", JSON.stringify(state.matches));
           showMatchAnimation();
@@ -578,13 +626,11 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(()=>{ resetCard(card); }, 550);
   }
 
-  // MODIFICA #7: Match Animation (cuore oro/viola + confetti)
   function showMatchAnimation(){
     if (!matchOverlay) return;
     
     matchOverlay.classList.remove("hidden");
     
-    // Confetti
     const confettiContainer = qs(".confetti-container", matchOverlay);
     if (confettiContainer){
       confettiContainer.innerHTML = "";
@@ -622,7 +668,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2500);
   }
 
-  // MODIFICA #8: Reward Ads Mock (ogni 10 swipe e +5)
   function checkSwipeReward(){
     if (state.plus) return;
     state.swipeCount++;
@@ -632,7 +677,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // MODIFICA #5: Ricerca panel (elegante, autocomplete A-Z)
+  // Ricerca panel
   btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
@@ -706,14 +751,17 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // MODIFICA #6: Profilo PAGINA DEDICATA (stile Facebook)
+  // MODIFICA #3 + #4: Profilo PAGINA DEDICATA con documenti proprietario
   window.openProfilePage = (d)=>{
+    setActiveView("profile");
+    
     profileSheet.classList.remove("hidden");
     profileSheet.classList.add("profile-page");
     setTimeout(()=>profileSheet.classList.add("show"), 10);
 
     const selfieUnlocked = isSelfieUnlocked(d.id);
     const hasMatch = state.matches[d.id] || false;
+    const ownerDocs = state.ownerDocsUploaded[d.id] || {};
     
     ppBody.innerHTML = `
       <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
@@ -753,6 +801,28 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="badge">🔬 Microchip</span>
       </div>
 
+      <div class="pp-docs-section">
+        <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario":"Owner Documents"}</h4>
+        <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Carica i documenti per ottenere il badge verificato":"Upload documents to get verified badge"}</p>
+        <div class="pp-docs-grid">
+          <div class="doc-item" data-doc="identity">
+            <div class="doc-icon">🪪</div>
+            <div class="doc-label">${state.lang==="it"?"Identità":"Identity"}</div>
+            <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+          </div>
+          <div class="doc-item" data-doc="address">
+            <div class="doc-icon">🏠</div>
+            <div class="doc-label">${state.lang==="it"?"Residenza":"Address"}</div>
+            <div class="doc-status ${ownerDocs.address?'uploaded':'pending'}">${ownerDocs.address?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+          </div>
+          <div class="doc-item" data-doc="phone">
+            <div class="doc-icon">📱</div>
+            <div class="doc-label">${state.lang==="it"?"Telefono":"Phone"}</div>
+            <div class="doc-status ${ownerDocs.phone?'uploaded':'pending'}">${ownerDocs.phone?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+          </div>
+        </div>
+      </div>
+
       <div class="pp-actions" style="margin-top:1.2rem">
         <button id="btnLikeDog" class="btn accent">💛 Like</button>
         <button id="btnDislikeDog" class="btn outline">🥲 Passa</button>
@@ -769,6 +839,25 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(lb);
         qs(".close", lb).onclick = ()=> lb.remove();
         lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
+      });
+    });
+
+    // MODIFICA #4: Gestione upload documenti proprietario
+    qa(".doc-item", ppBody).forEach(item=>{
+      item.addEventListener("click", ()=>{
+        const docType = item.getAttribute("data-doc");
+        if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
+        state.ownerDocsUploaded[d.id][docType] = true;
+        localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+        
+        // Verifica se tutti i documenti sono caricati
+        const allUploaded = ["identity","address","phone"].every(dt => state.ownerDocsUploaded[d.id][dt]);
+        if (allUploaded && !d.verified){
+          d.verified = true;
+          alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+        }
+        
+        openProfilePage(d);
       });
     });
 
@@ -806,12 +895,15 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(()=>{
       profileSheet.classList.add("hidden");
       profileSheet.classList.remove("profile-page");
+      // Torna alla vista precedente
+      const previousView = state.viewHistory.pop() || "nearby";
+      setActiveView(previousView);
     }, 250);
   };
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // MODIFICA #8: Chat con monetizzazione precisa
+  // Chat con monetizzazione
   function openChat(dog){
     const hasMatch = state.matches[dog.id] || false;
     const msgCount = state.chatMessagesSent[dog.id] || 0;
@@ -822,7 +914,6 @@ document.addEventListener("DOMContentLoaded", () => {
     chatList.innerHTML = `<div class="msg">${state.lang==="it"?"Ciao":"Hi"} ${dog.name}! 🐾</div>`;
     chatInput.value="";
     
-    // Abilita/disabilita input in base a match e conteggio messaggi
     if (!state.plus){
       if (!hasMatch && msgCount >= 1){
         chatInput.disabled = true;
@@ -849,15 +940,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const hasMatch = state.matches[dogId] || false;
     const msgCount = state.chatMessagesSent[dogId] || 0;
 
-    // Logica monetizzazione chat
     if (!state.plus){
       if (hasMatch){
-        // Con match: primo messaggio → reward, poi liberi
         if (msgCount === 0){
           showRewardVideoMock("chat");
         }
       } else {
-        // Senza match: solo 1 messaggio, poi blocco
         if (msgCount === 0){
           showRewardVideoMock("chat");
         } else {
@@ -867,7 +955,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Invia messaggio
     const bubble = document.createElement("div");
     bubble.className="msg me";
     bubble.textContent=text;
@@ -875,18 +962,16 @@ document.addEventListener("DOMContentLoaded", () => {
     chatInput.value="";
     chatList.scrollTop = chatList.scrollHeight;
 
-    // Aggiorna conteggio
     state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
     localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
 
-    // Disabilita se senza match e ha già inviato 1
     if (!state.plus && !hasMatch && state.chatMessagesSent[dogId] >= 1){
       chatInput.disabled = true;
       chatInput.placeholder = state.lang==="it" ? "Match necessario per continuare" : "Match needed to continue";
     }
   });
 
-  // Maps helpers (Luoghi PET con reward)
+  // Maps helpers
   function openMapsCategory(cat){
     if (!state.plus && ["vets","groomers","shops"].includes(cat)){
       showRewardVideoMock("services");
