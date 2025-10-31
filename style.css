@@ -1,6 +1,6 @@
 /* =====================================================
    PLUTOO – VIOLET EDITION + GOLD SPONSOR
-   (Tutte le modifiche implementate)
+   (6 modifiche finali implementate)
    ===================================================== */
 
 :root{
@@ -33,7 +33,7 @@ a{color:inherit;text-decoration:none}
   transition:transform .15s ease, box-shadow .2s ease, filter .2s ease;
   cursor:pointer;
 }
-.btn.tiny{padding:.35rem .5rem;border-radius:10px;font-weight:700}
+.btn.tiny{padding:.35rem .5rem;border-radius:10px;font-weight:700;font-size:.88rem}
 .btn.small{padding:.45rem .7rem;border-radius:12px;font-size:.9rem}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
 .btn.primary{
@@ -46,14 +46,14 @@ a{color:inherit;text-decoration:none}
 .btn.primary.large{font-size:1.05rem;padding:.75rem 1.1rem;border-radius:14px}
 .btn.accent{background:linear-gradient(180deg,#A99DFF,#7F70FF);color:#111;border:1px solid rgba(0,0,0,.1);box-shadow:0 6px 16px rgba(138,123,255,.28)}
 
-/* 💎 Bottone PLUS */
+/* 💎 Bottone PLUS - MODIFICA #2: sotto Ricerca personalizzata */
 .btn.plus-btn{
   display:inline-flex;align-items:center;gap:.4rem;
   background:linear-gradient(135deg,#E8CE7A,#CDA434);
   color:#111;border:1px solid rgba(0,0,0,.15);
   padding:.5rem .75rem;border-radius:12px;font-size:.88rem;
   box-shadow:0 4px 12px rgba(205,164,52,.35), inset 0 0 0 1px rgba(255,255,255,.25);
-  margin-top:.4rem;
+  margin-top:.5rem;
 }
 .btn.plus-btn:hover{
   filter:brightness(1.08);
@@ -115,7 +115,7 @@ a{color:inherit;text-decoration:none}
 /* ================= APP / NAVBAR ================= */
 .app{min-height:100vh;display:flex;flex-direction:column}
 
-/* TOPBAR - spaziatura migliorata */
+/* TOPBAR standard - MODIFICA #3: nascosta in profilo */
 .topbar{
   position:sticky;top:0;z-index:1000;
   display:flex;align-items:center;gap:.8rem;
@@ -129,37 +129,55 @@ a{color:inherit;text-decoration:none}
 .topbar .logo{border-radius:8px}
 .brand-mini{color:var(--gold)}
 
-/* Tabs: PULITI e spaziati */
+/* MODIFICA #3: Topbar essenziale per profilo (logo + Indietro) */
+.topbar-minimal{
+  position:sticky;top:0;z-index:1000;
+  display:flex;align-items:center;gap:.6rem;
+  background:rgba(12,12,18,.94);
+  -webkit-backdrop-filter:saturate(120%) blur(6px);
+  backdrop-filter:saturate(120%) blur(6px);
+  border-bottom:1px solid var(--line);
+  padding:.6rem 1rem;
+}
+.topbar-minimal .logo{border-radius:8px}
+
+/* MODIFICA #6: Tabs migliorati (leggibilità, spacing, stato attivo evidente) */
 .tabs{
   display:flex;align-items:center;justify-content:center;
   flex:1 1 auto;max-width:100%;
-  gap:.6rem;
+  gap:.7rem;
   flex-wrap:wrap;
-  row-gap:.5rem;column-gap:.6rem;
+  row-gap:.55rem;column-gap:.7rem;
   white-space:normal;overflow:visible;
 }
 @media (min-width:720px){
-  .tabs{flex-wrap:nowrap;white-space:nowrap;overflow:hidden;gap:.7rem}
+  .tabs{flex-wrap:nowrap;white-space:nowrap;overflow:hidden;gap:.8rem}
 }
 
-/* Pill dei tab: viola default, oro quando attivo */
+/* Pill dei tab: viola default, ORO MARCATO quando attivo */
 .tab{
   background:rgba(255,255,255,.04);
-  border:1px solid rgba(138,123,255,.35);
+  border:1px solid rgba(138,123,255,.4);
   color:#E9E7FF;
   font-weight:800;
-  font-size:clamp(.84rem,2.5vw,.96rem);
-  padding:.45rem .72rem;
+  font-size:clamp(.85rem,2.5vw,.97rem);
+  padding:.48rem .75rem;
   border-radius:14px;
   transition:transform .12s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
-  box-shadow:0 0 1px rgba(138,123,255,.25), inset 0 -1px 0 rgba(255,255,255,.04);
+  box-shadow:0 0 2px rgba(138,123,255,.3), inset 0 -1px 0 rgba(255,255,255,.04);
   cursor:pointer;
 }
-.tab:hover,.tab.active{
+.tab:hover{
   color:#fff;
-  background:linear-gradient(180deg,rgba(205,164,52,.28),rgba(205,164,52,.12));
-  border-color:rgba(205,164,52,.75);
-  box-shadow:0 0 16px rgba(205,164,52,.30), inset 0 0 0 1px rgba(255,255,255,.18);
+  background:rgba(138,123,255,.12);
+  border-color:rgba(138,123,255,.6);
+  box-shadow:0 0 12px rgba(138,123,255,.25);
+}
+.tab.active{
+  color:#fff;
+  background:linear-gradient(180deg,rgba(205,164,52,.35),rgba(205,164,52,.18));
+  border-color:rgba(205,164,52,.85);
+  box-shadow:0 0 20px rgba(205,164,52,.4), inset 0 0 0 1px rgba(255,255,255,.22);
   transform:translateY(-1px);
 }
 
@@ -181,6 +199,10 @@ a{color:inherit;text-decoration:none}
 .content{flex:1;padding:1rem;min-height:60vh}
 .view{display:none}
 .view.active{display:block}
+
+/* MODIFICA #5: Header viste con Indietro */
+.view-header{padding:.5rem 0;margin-bottom:.8rem}
+.view-header .btn{font-size:.9rem}
 
 /* ================= VICINO A TE (stabile, cornici viola luminose) ================= */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;will-change:auto}
@@ -355,8 +377,13 @@ a{color:inherit;text-decoration:none}
 }
 .sheet.show{transform:translateY(0)}
 
-/* Profilo PAGINA DEDICATA (stile Facebook) */
-.sheet.profile-page{max-height:100vh;border-radius:0;border-top:none}
+/* MODIFICA #3: Profilo PAGINA DEDICATA (full screen, no header interno) */
+.sheet.profile-page{
+  max-height:100vh;
+  border-radius:0;
+  border-top:none;
+  padding-top:0;
+}
 .sheet-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:10}
 .sheet-header div{color:var(--violet-glow);font-weight:800;font-size:1.15rem}
 .sheet-body{padding:1rem}
@@ -387,6 +414,39 @@ a{color:inherit;text-decoration:none}
 .btn.outline{background:transparent;color:var(--text);border:1px solid var(--violet);padding:.6rem 1rem;border-radius:12px}
 .btn.outline:hover{background:rgba(138,123,255,.1);border-color:var(--violet-glow)}
 .section-title{color:var(--violet-glow);font-weight:900;margin:1.2rem 0 .6rem 0;font-size:1.15rem}
+
+/* MODIFICA #4: Sezione documenti proprietario */
+.pp-docs-section{
+  background:rgba(138,123,255,.06);
+  border:1px solid rgba(138,123,255,.25);
+  border-radius:12px;
+  padding:.9rem;
+  margin:1rem 0;
+}
+.pp-docs-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:.6rem;
+  margin-top:.6rem;
+}
+.doc-item{
+  background:#1a1a2a;
+  border:1px solid rgba(138,123,255,.2);
+  border-radius:10px;
+  padding:.7rem;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+}
+.doc-item:hover{
+  background:#222238;
+  border-color:rgba(138,123,255,.4);
+}
+.doc-icon{font-size:2rem;margin-bottom:.3rem}
+.doc-label{font-size:.85rem;color:var(--muted)}
+.doc-status{font-size:.75rem;margin-top:.2rem}
+.doc-status.uploaded{color:#4ade80}
+.doc-status.pending{color:#fbbf24}
 
 /* Galleria + Lightbox */
 .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem}
@@ -420,11 +480,13 @@ a{color:inherit;text-decoration:none}
   .card-img{height:160px}
   .panel-inner{max-height:85vh}
   .pp-hero img{height:240px}
+  .tabs{gap:.5rem;row-gap:.45rem}
+  .tab{font-size:.82rem;padding:.4rem .65rem}
 }
 
 /* ================= ANIMAZIONI VIOLA POTENZIATE ================= */
 
-/* Heartbeat viola PIÙ LENTO e PIÙ LUMINOSO (2.5s invece di 1.5s) */
+/* Heartbeat viola PIÙ LENTO e PIÙ LUMINOSO (2.5s) */
 .hero-logo.heartbeat-violet{
   animation:heartbeatVioletPowerful 2.5s ease-in-out 1;
   will-change:transform,filter;
