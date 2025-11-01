@@ -1,6 +1,6 @@
 /* =========================================================
-   PLUTOO – app.js
-   ✅ FIX DEFINITIVO: Reward swipe (10, poi +5, zero duplicati)
+   PLUTOO – app.js COMPLETO
+   ✅ FIX TOTALE: Bug reward swipe risolto definitivamente
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // STATO GLOBALE con persistenza corretta
+  // STATO GLOBALE
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
     plus: localStorage.getItem("plutoo_plus")==="yes",
@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
     nextRewardAt: parseInt(localStorage.getItem("nextRewardAt")||"10"),
     rewardOpen: false,
+    processingSwipe: false, // FIX: Flag per bloccare swipe multipli
     matches: JSON.parse(localStorage.getItem("matches")||"{}"),
     chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent")||"{}"),
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
@@ -350,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
-  // PLUTOO PLUS con selettore piano
+  // PLUTOO PLUS
   btnPlus?.addEventListener("click", ()=> openPlusModal() );
   closePlus?.addEventListener("click", ()=> closePlusModal() );
   cancelPlus?.addEventListener("click", ()=> closePlusModal() );
@@ -581,7 +582,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // FIX DEFINITIVO: Swipe Decks con reward CORRETTO
+  // ============================================
+  // FIX TOTALE SWIPE: Logica completamente rifatta
+  // ============================================
+  
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -605,8 +609,8 @@ document.addEventListener("DOMContentLoaded", () => {
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
     
-    img.onclick = null;
     img.onclick = ()=>{
+      if(state.processingSwipe) return;
       card.classList.add("flash-violet");
       setTimeout(()=>{
         card.classList.remove("flash-violet");
@@ -614,11 +618,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 500);
     };
 
-    // FIX: Reset swipe handler per evitare duplicati
-    card._sw = false;
-    attachSwipe(card, dir=>{
-      // Match logic
-      if (dir==="right"){
+    // FIX: Rimuovi onclick precedenti
+    if(yesBtn) yesBtn.onclick = null;
+    if(noBtn) noBtn.onclick = null;
+
+    // Handler swipe completo
+    function handleSwipeComplete(direction){
+      // BLOCCA ulteriori interazioni
+      if(state.processingSwipe) return;
+      state.processingSwipe = true;
+      
+      // Match logic (solo se right)
+      if (direction === "right"){
         const matchChance = Math.random();
         if (matchChance > 0.5){
           state.matches[d.id] = true;
@@ -627,72 +638,116 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // FIX: Incrementa contatore E controlla reward
-      handleSwipeComplete();
-      
-      // Avanza alla prossima card
+      // Avanza card
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
-      setTimeout(()=>renderSwipe(mode), 10);
-    });
+      
+      // ASPETTA che animazione finisca
+      setTimeout(()=>{
+        resetCard(card);
+        
+        // INCREMENTA contatore
+        state.swipeCount++;
+        localStorage.setItem("swipes", String(state.swipeCount));
+        
+        // CONTROLLA reward
+        if (!state.plus && state.swipeCount === state.nextRewardAt && !state.rewardOpen){
+          state.rewardOpen = true;
+          
+          showRewardVideoMock("swipe", ()=>{
+            // Callback DOPO chiusura video
+            state.rewardOpen = false;
+            state.nextRewardAt += 5;
+            localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
+            
+            // Sblocca e renderizza prossima card
+            state.processingSwipe = false;
+            renderSwipe(mode);
+          });
+        } else {
+          // Nessun video: renderizza subito
+          state.processingSwipe = false;
+          renderSwipe(mode);
+        }
+      }, 600);
+    }
 
+    // Attach bottoni YES/NO
     if(yesBtn){
-      yesBtn.onclick = null;
-      yesBtn.onclick = ()=>simulateSwipe(card,"right");
+      yesBtn.onclick = ()=>{
+        if(state.processingSwipe) return;
+        card.classList.add("swipe-out-right");
+        handleSwipeComplete("right");
+      };
     }
     if(noBtn){
-      noBtn.onclick = null;
-      noBtn.onclick = ()=>simulateSwipe(card,"left");
+      noBtn.onclick = ()=>{
+        if(state.processingSwipe) return;
+        card.classList.add("swipe-out-left");
+        handleSwipeComplete("left");
+      };
     }
+
+    // Attach gesture swipe
+    attachSwipe(card, handleSwipeComplete);
   }
 
-  function attachSwipe(card, cb){
-    if (card._sw) return;
-    card._sw = true;
+  function attachSwipe(card, onComplete){
     let sx=0, dx=0, dragging=false;
-    const start=(x)=>{ sx=x; dragging=true; card.style.transition="none"; };
+    
+    const start=(x)=>{ 
+      if(state.processingSwipe) return;
+      sx=x; 
+      dragging=true; 
+      card.style.transition="none"; 
+    };
+    
     const move =(x)=>{ 
-      if(!dragging) return; 
+      if(!dragging || state.processingSwipe) return;
       dx=x-sx; 
       const rot=dx/18; 
       card.style.transform=`translate3d(${dx}px,0,0) rotate(${rot}deg)`; 
     };
+    
     const end =()=>{ 
-      if(!dragging) return; 
+      if(!dragging || state.processingSwipe) return;
       dragging=false; 
       card.style.transition=""; 
+      
       const th=90;
-      if (dx>th){ 
-        card.classList.add("swipe-out-right"); 
-        setTimeout(()=>{ resetCard(card); cb("right"); }, 550); 
-      }
-      else if (dx<-th){ 
-        card.classList.add("swipe-out-left"); 
-        setTimeout(()=>{ resetCard(card); cb("left"); }, 550); 
-      }
-      else { 
+      if (Math.abs(dx) > th){ 
+        const direction = dx > 0 ? "right" : "left";
+        card.classList.add(dx > 0 ? "swipe-out-right" : "swipe-out-left");
+        onComplete(direction);
+      } else { 
         resetCard(card); 
       }
       dx=0;
     };
+    
     card.addEventListener("touchstart", e=>start(e.touches[0].clientX), {passive:true});
     card.addEventListener("touchmove",  e=>move(e.touches[0].clientX),  {passive:true});
-    card.addEventListener("touchend", end);
+    card.addEventListener("touchend", end, {passive:true});
     card.addEventListener("mousedown", e=>start(e.clientX));
-    window.addEventListener("mousemove", e=>move(e.clientX));
-    window.addEventListener("mouseup", end);
+    
+    const handleMouseMove = e => move(e.clientX);
+    const handleMouseUp = () => end();
+    
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    
+    // Cleanup per evitare memory leak
+    card._cleanup = ()=>{
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
   }
   
   function resetCard(card){ 
     card.classList.remove("swipe-out-right","swipe-out-left"); 
     card.style.transform=""; 
-  }
-  
-  function simulateSwipe(card, dir){
-    card.classList.add(dir==="right"?"swipe-out-right":"swipe-out-left");
-    setTimeout(()=>{ resetCard(card); }, 550);
+    if(card._cleanup) card._cleanup();
   }
 
-  // Match animation
   function showMatchAnimation(){
     if (!matchOverlay) return;
     matchOverlay.classList.remove("hidden");
@@ -701,35 +756,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1200);
   }
 
-  // FIX DEFINITIVO: Handler swipe con logica corretta
-  function handleSwipeComplete(){
-    // Se Plus attivo, nessun video
-    if (state.plus) return;
-    
-    // Se reward già aperto, blocca
-    if (state.rewardOpen) return;
-    
-    // Incrementa contatore
-    state.swipeCount++;
-    localStorage.setItem("swipes", String(state.swipeCount));
-    
-    // Controlla se raggiungo la soglia
-    if (state.swipeCount === state.nextRewardAt){
-      // Blocca trigger multipli
-      state.rewardOpen = true;
-      
-      // Mostra video
-      showRewardVideoMock("swipe", ()=>{
-        // Al termine del video:
-        // 1. Rimuovi lock
-        state.rewardOpen = false;
-        
-        // 2. Calcola prossima soglia (+5)
-        state.nextRewardAt += 5;
-        localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
-      });
-    }
-  }
+  // Ricerca panel
   btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
@@ -1102,13 +1129,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function showRewardVideoMock(type, onClose){
     const msg = {
       it: {
-        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}/${state.nextRewardAt}\nProssimo video: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
+        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nProssima soglia: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
         selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services"
       },
       en: {
-        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}/${state.nextRewardAt}\nNext video: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
+        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nNext threshold: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
         selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services"
