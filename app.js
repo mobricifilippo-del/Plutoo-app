@@ -1,3 +1,7 @@
+/* =========================================================
+   PLUTOO – app.js FINALE
+   ✅ Correzione: tutti 8 profili DOG visibili
+   ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
@@ -106,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentDogProfile: null,
     filters: {
       breed: localStorage.getItem("f_breed") || "",
-      distKm: parseInt(localStorage.getItem("f_distKm")||"5"),
+      distKm: parseInt(localStorage.getItem("f_distKm")||"50"),
       verified: localStorage.getItem("f_verified")==="1",
       sex: localStorage.getItem("f_sex") || "",
       ageMin: localStorage.getItem("f_ageMin") || "",
@@ -277,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-  // 8 PROFILI con immagini del repo
+  // FIX BUG #2: 8 PROFILI completi (tutte e 8 le immagini dog1.jpg-dog8.jpg)
   const DOGS = [
     { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
     { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"play", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
@@ -401,7 +405,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // setActiveView con gestione topbar (nascosta completamente in profilo)
   function setActiveView(name){
-    // Salva history per navigazione indietro
     if (state.currentView !== name && state.currentView !== "profile"){
       state.viewHistory.push(state.currentView);
     }
@@ -410,7 +413,6 @@ document.addEventListener("DOMContentLoaded", () => {
     [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
     [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
-    // Topbar completamente invisibile nel profilo
     if (name === "profile"){
       mainTopbar?.classList.add("hidden");
     } else {
@@ -445,19 +447,16 @@ document.addEventListener("DOMContentLoaded", () => {
   btnBackPlay?.addEventListener("click", ()=> goBack() );
 
   function goBack(){
-    // Se in profilo, torna alla vista precedente
     if (state.currentView === "profile"){
       closeProfilePage();
       return;
     }
 
-    // Se in love/play, torna a nearby
     if (state.currentView === "love" || state.currentView === "play"){
       setActiveView("nearby");
       return;
     }
 
-    // Se in nearby, conferma uscita
     if (state.currentView === "nearby"){
       if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
         localStorage.removeItem("entered");
@@ -468,18 +467,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Gestione tasto hardware Android
   window.addEventListener("popstate", (e)=>{
     e.preventDefault();
     goBack();
   });
 
-  // Push state iniziale
   if (state.entered){
     history.pushState({view: "app"}, "", "");
   }
 
-  // FIX BUG #4: Vicino a te (8 profili, stabile) - verifica elementi esistenti
+  // FIX BUG #2: Vicino a te mostra TUTTI gli 8 profili
   function renderNearby(){
     if(!nearGrid) return;
     
@@ -490,7 +487,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     nearGrid.innerHTML = list.map(cardHTML).join("");
     
-    // FIX: Riattacca listener solo dopo render
     setTimeout(()=>{
       qa(".dog-card").forEach(card=>{
         const id = card.getAttribute("data-id");
@@ -521,6 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const fmtKm = n => `${n.toFixed(1)} km`;
 
+  // FIX BUG #2: Filtro distKm iniziale a 50km per mostrare tutti gli 8 profili
   function filteredDogs(){
     const f = state.filters;
     return DOGS
@@ -557,7 +554,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return d.size === f.size;
       });
   }
-// FIX BUG #4: Swipe Decks - reset listener per evitare duplicati
+
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -581,7 +578,6 @@ document.addEventListener("DOMContentLoaded", () => {
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
     
-    // FIX: Rimuovi listener precedenti
     img.onclick = null;
     img.onclick = ()=>{
       card.classList.add("flash-violet");
@@ -591,7 +587,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 500);
     };
 
-    // FIX: Reset swipe handler per evitare duplicati
     card._sw = false;
     attachSwipe(card, dir=>{
       checkSwipeReward();
@@ -716,7 +711,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyFilters?.addEventListener("click",(e)=>{
     e.preventDefault();
     state.filters.breed = (breedInput.value||"").trim();
-    state.filters.distKm = parseInt(distRange.value||"5");
+    state.filters.distKm = parseInt(distRange.value||"50");
     state.filters.sex = sexFilter.value || "";
     state.filters.verified = !!onlyVerified.checked;
     if (state.plus){
@@ -734,7 +729,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   resetFilters?.addEventListener("click",()=>{
-    breedInput.value=""; distRange.value=5; distLabel.textContent="5 km";
+    breedInput.value=""; distRange.value=50; distLabel.textContent="50 km";
     onlyVerified.checked=false; sexFilter.value="";
     if (state.plus){
       ageMin.value=""; ageMax.value="";
@@ -742,7 +737,7 @@ document.addEventListener("DOMContentLoaded", () => {
       pedigreeFilter.value=""; breedingFilter.value=""; sizeFilter.value="";
     }
     Object.assign(state.filters,{
-      breed:"",distKm:5,verified:false,sex:"",
+      breed:"",distKm:50,verified:false,sex:"",
       ageMin:"",ageMax:"",weight:"",height:"",
       pedigree:"",breeding:"",size:""
     });
@@ -763,7 +758,6 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // Profilo PAGINA DEDICATA con documenti semplificati + history API
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
@@ -853,7 +847,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    // Lightbox galleria
     qa(".gallery img", ppBody).forEach(img=>{
       img.addEventListener("click", ()=>{
         const lb = document.createElement("div");
@@ -865,7 +858,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Gestione upload documenti (owner + dog) con badge condizionale
     qa(".doc-item", ppBody).forEach(item=>{
       item.addEventListener("click", ()=>{
         const docType = item.getAttribute("data-doc");
@@ -907,7 +899,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(()=>openChat(d), 180);
     };
 
-    // MODIFICA #3: Handler per "Giochiamo insieme"
     $("btnPlayTogether").onclick = ()=>{
       alert(state.lang==="it" ? "Richiesta di gioco inviata! 🐕" : "Play request sent! 🐕");
     };
@@ -925,7 +916,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   };
 
-  // MODIFICA #2: Chiusura profilo con X
   closeProfile?.addEventListener("click", ()=> closeProfilePage());
 
   window.closeProfilePage = ()=>{
@@ -941,7 +931,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // Chat con monetizzazione
   function openChat(dog){
     const hasMatch = state.matches[dog.id] || false;
     const msgCount = state.chatMessagesSent[dog.id] || 0;
@@ -1009,7 +998,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Maps helpers
   function openMapsCategory(cat){
     if (!state.plus && ["vets","groomers","shops"].includes(cat)){
       showRewardVideoMock("services");
@@ -1040,7 +1028,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ADS MOCK TEST
   function showAdBanner(){
     if (!adBanner || state.plus) return;
     adBanner.textContent = "Banner Test AdMob • Bannerhome";
@@ -1066,7 +1053,6 @@ document.addEventListener("DOMContentLoaded", () => {
     alert(text);
   }
 
-  // Init
   function init(){
     applyTranslations();
     updatePlusUI();
