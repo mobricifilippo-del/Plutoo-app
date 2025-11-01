@@ -1,10 +1,3 @@
-/* =========================================================
-   PLUTOO – app.js FINALE (TUTTE LE MODIFICHE)
-   ✅ PLUS centrato
-   ✅ X chiusura profilo
-   ✅ 4 azioni profilo (LIKE, PASSA, CHAT, GIOCHIAMO)
-   ✅ Bug schermata nera risolto
-   ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
