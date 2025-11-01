@@ -1,6 +1,6 @@
 /* =====================================================
    PLUTOO – VIOLET EDITION + GOLD SPONSOR
-   (6 modifiche finali implementate)
+   (Tutte le modifiche implementate)
    ===================================================== */
 
 :root{
@@ -46,12 +46,13 @@ a{color:inherit;text-decoration:none}
 .btn.primary.large{font-size:1.05rem;padding:.75rem 1.1rem;border-radius:14px}
 .btn.accent{background:linear-gradient(180deg,#A99DFF,#7F70FF);color:#111;border:1px solid rgba(0,0,0,.1);box-shadow:0 6px 16px rgba(138,123,255,.28)}
 
-/* 💎 Bottone PLUS - MODIFICA #2: sotto Ricerca personalizzata */
+/* MODIFICA #1: Bottone PLUS centrato sotto Ricerca personalizzata */
 .search-plus-wrapper{
   display:flex;
   flex-direction:column;
-  align-items:flex-end;
+  align-items:center;
   gap:.45rem;
+  width:100%;
 }
 .btn.plus-btn{
   display:inline-flex;align-items:center;gap:.4rem;
@@ -120,7 +121,7 @@ a{color:inherit;text-decoration:none}
 /* ================= APP / NAVBAR ================= */
 .app{min-height:100vh;display:flex;flex-direction:column}
 
-/* TOPBAR standard - MODIFICA #3: nascosta in profilo */
+/* TOPBAR standard */
 .topbar{
   position:sticky;top:0;z-index:1000;
   display:flex;align-items:center;gap:.8rem;
@@ -134,7 +135,7 @@ a{color:inherit;text-decoration:none}
 .topbar .logo{border-radius:8px}
 .brand-mini{color:var(--gold)}
 
-/* MODIFICA #6: Tabs migliorati (leggibilità, spacing, stato attivo evidente) */
+/* Tabs migliorati */
 .tabs{
   display:flex;align-items:center;justify-content:center;
   flex:1 1 auto;max-width:100%;
@@ -433,13 +434,41 @@ a{color:inherit;text-decoration:none}
 }
 .sheet.show{transform:translateY(0)}
 
-/* MODIFICA #3: Profilo PAGINA DEDICATA (full screen, no header interno) */
+/* Profilo PAGINA DEDICATA (full screen, no header interno) */
 .sheet.profile-page{
   max-height:100vh;
   border-radius:0;
   border-top:none;
   padding-top:0;
 }
+
+/* MODIFICA #2: Pulsante X chiusura profilo */
+.profile-close{
+  position:fixed;
+  top:1rem;
+  right:1rem;
+  z-index:170;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--violet);
+  color:var(--text);
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.5);
+  transition:all .2s ease;
+}
+.profile-close:hover{
+  background:rgba(138,123,255,.3);
+  border-color:var(--violet-glow);
+  transform:scale(1.05);
+}
+
 .sheet-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:10}
 .sheet-header div{color:var(--violet-glow);font-weight:800;font-size:1.15rem}
 .sheet-body{padding:1rem}
@@ -466,12 +495,25 @@ a{color:inherit;text-decoration:none}
 .badge{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .5rem;border-radius:10px;background:#24243a;border:1px solid rgba(138,123,255,.25);font-size:.85rem;color:var(--text)}
 .pp-meta{color:var(--muted);font-size:.98rem;margin:.15rem 0 .8rem 0}
 .pp-bio{margin:.5rem 0 1.2rem 0;line-height:1.5}
-.pp-actions{display:flex;gap:.7rem;flex-wrap:wrap}
+
+/* MODIFICA #3: 4 azioni invece di 3 */
+.pp-actions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:.7rem;
+  margin-top:1.2rem;
+}
+@media (min-width:520px){
+  .pp-actions{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
+
 .btn.outline{background:transparent;color:var(--text);border:1px solid var(--violet);padding:.6rem 1rem;border-radius:12px}
 .btn.outline:hover{background:rgba(138,123,255,.1);border-color:var(--violet-glow)}
 .section-title{color:var(--violet-glow);font-weight:900;margin:1.2rem 0 .6rem 0;font-size:1.15rem}
 
-/* MODIFICA #4: Sezione documenti proprietario */
+/* Sezione documenti proprietario */
 .pp-docs-section{
   background:rgba(138,123,255,.06);
   border:1px solid rgba(138,123,255,.25);
