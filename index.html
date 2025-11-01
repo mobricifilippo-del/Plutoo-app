@@ -104,7 +104,6 @@
       <div class="right">
         <div class="search-plus-wrapper">
           <button id="btnSearchPanel" class="btn ghost small" type="button" aria-haspopup="dialog" data-i18n="searchAdvanced">Ricerca personalizzata</button>
-          <!-- MODIFICA #1: PLUS centrato sotto Ricerca personalizzata -->
           <button id="btnPlus" class="btn plus-btn" type="button" aria-label="Plutoo Plus">
             <span class="plus-icon">💎</span>
             <span data-i18n="plusBtn">PLUS</span>
@@ -170,7 +169,6 @@
       </form>
     </aside>
 
-    <!-- MODIFICA #2: Profilo con X di chiusura -->
     <aside id="profileSheet" class="sheet hidden" role="dialog" aria-modal="true">
       <button id="closeProfile" class="profile-close" type="button" aria-label="Chiudi profilo">✕</button>
       <div id="ppBody" class="sheet-body"></div>
@@ -185,7 +183,8 @@
         <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
       </div>
 
-      <div class="legal-links">
+      <!-- FIX #2: Link legali sempre viola -->
+      <div class="legal-links legal-purple">
         <a href="termini.html" target="_blank" rel="noopener" data-i18n="terms">Termini</a>
         <span>·</span>
         <a href="privacy.html" target="_blank" rel="noopener" data-i18n="privacy">Privacy</a>
@@ -313,6 +312,7 @@
     </div>
   </section>
 
+  <!-- FIX #3: Modale PLUS con piano mensile + annuale -->
   <section id="plusModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="plusTitle">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
@@ -330,9 +330,16 @@
           <li><span class="check">✓</span> <span data-i18n="plusFeature5">Supporto prioritario</span></li>
         </ul>
 
-        <div class="plus-price">
-          <span class="price-amount">€4.99</span>
-          <span class="price-period" data-i18n="plusPeriod">/mese</span>
+        <div class="plus-plan-selector">
+          <button id="planMonthly" class="plan-btn active" type="button">
+            <span class="plan-name" data-i18n="planMonthly">Mensile</span>
+            <span class="plan-price">€4.99<span class="plan-period">/mese</span></span>
+          </button>
+          <button id="planYearly" class="plan-btn" type="button">
+            <span class="plan-name" data-i18n="planYearly">Annuale</span>
+            <span class="plan-price">€40<span class="plan-period">/anno</span></span>
+            <span class="plan-save" data-i18n="planSave">Risparmia €20!</span>
+          </button>
         </div>
 
         <button id="activatePlus" class="btn primary large" type="button" data-i18n="activatePlus">Attiva Plutoo Plus</button>
@@ -341,11 +348,11 @@
     </div>
   </section>
 
+  <!-- FIX #4: Match overlay con logo Plutoo animato -->
   <div id="matchOverlay" class="match-overlay hidden">
     <div class="match-content">
-      <div class="match-heart">💛</div>
+      <img src="plutoo-icon-512.png" alt="Plutoo" class="match-logo" />
       <h2 class="match-title">È un Match!</h2>
-      <div class="confetti-container"></div>
     </div>
   </div>
 
