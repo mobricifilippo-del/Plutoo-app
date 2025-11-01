@@ -1,7 +1,9 @@
 /* =========================================================
    PLUTOO – app.js FINALE (TUTTE LE MODIFICHE)
-   Modifiche finali: testo etico, PLUS, profilo pulito,
-   documenti proprietario, navigazione indietro, tab migliorati
+   ✅ PLUS centrato
+   ✅ X chiusura profilo
+   ✅ 4 azioni profilo (LIKE, PASSA, CHAT, GIOCHIAMO)
+   ✅ Bug schermata nera risolto
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -23,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnBack      = $("btnBack");
   const btnPlus      = $("btnPlus");
 
-  // MODIFICA: Topbars e navigazione (profileTopbar rimosso completamente)
+  // Topbars e navigazione
   const mainTopbar = $("mainTopbar");
   const btnBackLove = $("btnBackLove");
   const btnBackPlay = $("btnBackPlay");
@@ -86,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput  = $("chatInput");
 
   const profileSheet = $("profileSheet");
+  const closeProfile = $("closeProfile");
   const ppBody   = $("ppBody");
 
   const adBanner = $("adBanner");
@@ -125,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     breeds: []
   };
 
-  // MODIFICA #1: I18N con "canili nelle vicinanze"
+  // I18N con "canili nelle vicinanze"
   const I18N = {
     it: {
       brand: "Plutoo",
@@ -185,7 +188,8 @@ document.addEventListener("DOMContentLoaded", () => {
       cancel: "Annulla",
       mapsShelters: "canili nelle vicinanze",
       noProfiles: "Nessun profilo. Modifica i filtri.",
-      years: "anni"
+      years: "anni",
+      playTogether: "Giochiamo insieme"
     },
     en: {
       brand: "Plutoo",
@@ -245,7 +249,8 @@ document.addEventListener("DOMContentLoaded", () => {
       cancel: "Cancel",
       mapsShelters: "animal shelters nearby",
       noProfiles: "No profiles. Adjust filters.",
-      years: "yrs"
+      years: "yrs",
+      playTogether: "Play together"
     }
   };
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
@@ -401,7 +406,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // MODIFICA: setActiveView con gestione topbar (nascosta completamente in profilo)
+  // setActiveView con gestione topbar (nascosta completamente in profilo)
   function setActiveView(name){
     // Salva history per navigazione indietro
     if (state.currentView !== name && state.currentView !== "profile"){
@@ -412,7 +417,7 @@ document.addEventListener("DOMContentLoaded", () => {
     [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
     [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
-    // MODIFICA: Topbar completamente invisibile nel profilo
+    // Topbar completamente invisibile nel profilo
     if (name === "profile"){
       mainTopbar?.classList.add("hidden");
     } else {
@@ -423,25 +428,25 @@ document.addEventListener("DOMContentLoaded", () => {
       viewNearby.classList.add("active"); 
       tabNearby.classList.add("active"); 
       renderNearby(); 
-      btnSearchPanel.disabled=false; 
+      if(btnSearchPanel) btnSearchPanel.disabled=false; 
     }
     if (name==="love"){   
       viewLove.classList.add("active");   
       tabLove.classList.add("active");   
       renderSwipe("love"); 
-      btnSearchPanel.disabled=true; 
+      if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
     if (name==="play"){   
       viewPlay.classList.add("active");   
       tabPlay.classList.add("active");   
       renderSwipe("play"); 
-      btnSearchPanel.disabled=true; 
+      if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
 
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  // MODIFICA: Navigazione Indietro (UI + hardware Android)
+  // Navigazione Indietro (UI + hardware Android)
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
   btnBackPlay?.addEventListener("click", ()=> goBack() );
@@ -481,25 +486,33 @@ document.addEventListener("DOMContentLoaded", () => {
     history.pushState({view: "app"}, "", "");
   }
 
-  // Vicino a te (8 profili, stabile)
+  // FIX BUG #4: Vicino a te (8 profili, stabile) - verifica elementi esistenti
   function renderNearby(){
+    if(!nearGrid) return;
+    
     const list = filteredDogs();
     if (!list.length){ 
       nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; 
       return; 
     }
     nearGrid.innerHTML = list.map(cardHTML).join("");
-    qa(".dog-card").forEach(card=>{
-      const id = card.getAttribute("data-id");
-      const d  = DOGS.find(x=>x.id===id);
-      card.addEventListener("click", ()=>{
-        card.classList.add("flash-violet");
-        setTimeout(()=>{
-          card.classList.remove("flash-violet");
-          openProfilePage(d);
-        }, 500);
+    
+    // FIX: Riattacca listener solo dopo render
+    setTimeout(()=>{
+      qa(".dog-card").forEach(card=>{
+        const id = card.getAttribute("data-id");
+        const d  = DOGS.find(x=>x.id===id);
+        if(!d) return;
+        
+        card.addEventListener("click", ()=>{
+          card.classList.add("flash-violet");
+          setTimeout(()=>{
+            card.classList.remove("flash-violet");
+            openProfilePage(d);
+          }, 500);
+        });
       });
-    });
+    }, 10);
   }
   
   function cardHTML(d){
@@ -551,11 +564,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return d.size === f.size;
       });
   }
-// Swipe Decks con match animation
+// FIX BUG #4: Swipe Decks - reset listener per evitare duplicati
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
-    const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % (deck.length||1);
-    const d = deck[idx] || DOGS[0];
+    if(!deck.length) return;
+    
+    const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
+    const d = deck[idx];
+    if(!d) return;
 
     const img   = mode==="love" ? loveImg : playImg;
     const title = mode==="love" ? loveTitleTxt : playTitleTxt;
@@ -565,10 +581,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const yesBtn = mode==="love" ? loveYes : playYes;
     const noBtn  = mode==="love" ? loveNo  : playNo;
 
+    if(!img || !title || !meta || !bio || !card) return;
+
     img.src = d.img;
     title.textContent = `${d.name} ${d.verified?"✅":""}`;
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
+    
+    // FIX: Rimuovi listener precedenti
+    img.onclick = null;
     img.onclick = ()=>{
       card.classList.add("flash-violet");
       setTimeout(()=>{
@@ -577,6 +598,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 500);
     };
 
+    // FIX: Reset swipe handler per evitare duplicati
+    card._sw = false;
     attachSwipe(card, dir=>{
       checkSwipeReward();
       
@@ -593,8 +616,8 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(()=>renderSwipe(mode), 10);
     });
 
-    yesBtn.onclick = ()=>simulateSwipe(card,"right");
-    noBtn.onclick  = ()=>simulateSwipe(card,"left");
+    if(yesBtn) yesBtn.onclick = ()=>simulateSwipe(card,"right");
+    if(noBtn) noBtn.onclick  = ()=>simulateSwipe(card,"left");
   }
 
   function attachSwipe(card, cb){
@@ -747,12 +770,11 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // MODIFICA: Profilo PAGINA DEDICATA con documenti semplificati + history API
+  // Profilo PAGINA DEDICATA con documenti semplificati + history API
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
     
-    // MODIFICA: Push state per back button Android
     history.pushState({view: "profile", dogId: d.id}, "", "");
     
     profileSheet.classList.remove("hidden");
@@ -830,10 +852,11 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
 
-      <div class="pp-actions" style="margin-top:1.2rem">
+      <div class="pp-actions">
         <button id="btnLikeDog" class="btn accent">💛 Like</button>
-        <button id="btnDislikeDog" class="btn outline">🥲 Passa</button>
+        <button id="btnDislikeDog" class="btn outline">🥲 ${state.lang==="it"?"Passa":"Pass"}</button>
         <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
+        <button id="btnPlayTogether" class="btn accent">🐕 ${t("playTogether")}</button>
       </div>
     `;
 
@@ -849,27 +872,24 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // MODIFICA: Gestione upload documenti (owner + dog) con badge condizionale
+    // Gestione upload documenti (owner + dog) con badge condizionale
     qa(".doc-item", ppBody).forEach(item=>{
       item.addEventListener("click", ()=>{
         const docType = item.getAttribute("data-doc");
-        const docCategory = item.getAttribute("data-type"); // "owner" o "dog"
+        const docCategory = item.getAttribute("data-type");
         
         if (docCategory === "owner"){
-          // Documenti proprietario
           if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
           state.ownerDocsUploaded[d.id].identity = true;
           localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
           
-          // MODIFICA: Badge verificato solo se documento proprietario caricato
           if (!d.verified){
             d.verified = true;
             alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
           }
         } else if (docCategory === "dog"){
-          // Documenti DOG (facoltativi)
           if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
-          const docName = docType.replace("dog-", ""); // "dog-vaccines" -> "vaccines"
+          const docName = docType.replace("dog-", "");
           state.dogDocsUploaded[d.id][docName] = true;
           localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
         }
@@ -894,6 +914,11 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(()=>openChat(d), 180);
     };
 
+    // MODIFICA #3: Handler per "Giochiamo insieme"
+    $("btnPlayTogether").onclick = ()=>{
+      alert(state.lang==="it" ? "Richiesta di gioco inviata! 🐕" : "Play request sent! 🐕");
+    };
+
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
@@ -907,12 +932,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   };
 
+  // MODIFICA #2: Chiusura profilo con X
+  closeProfile?.addEventListener("click", ()=> closeProfilePage());
+
   window.closeProfilePage = ()=>{
     profileSheet.classList.remove("show");
     setTimeout(()=>{
       profileSheet.classList.add("hidden");
       profileSheet.classList.remove("profile-page");
-      // Torna alla vista precedente
       const previousView = state.viewHistory.pop() || "nearby";
       setActiveView(previousView);
       state.currentDogProfile = null;
@@ -1051,11 +1078,11 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTranslations();
     updatePlusUI();
 
-    breedInput.value = state.filters.breed;
-    distRange.value  = state.filters.distKm;
-    distLabel.textContent = `${distRange.value} km`;
-    onlyVerified.checked = !!state.filters.verified;
-    sexFilter.value  = state.filters.sex;
+    if(breedInput) breedInput.value = state.filters.breed;
+    if(distRange) distRange.value  = state.filters.distKm;
+    if(distLabel) distLabel.textContent = `${distRange.value} km`;
+    if(onlyVerified) onlyVerified.checked = !!state.filters.verified;
+    if(sexFilter) sexFilter.value  = state.filters.sex;
 
     if (state.plus){
       if (ageMin) ageMin.value = state.filters.ageMin;
