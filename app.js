@@ -1,7 +1,8 @@
 /* =========================================================
    PLUTOO – app.js FINALE
-   ✅ FIX: Reward swipe corretto (10, poi +5)
-   ✅ VERIFICA: Monetizzazione completa e stabile
+   ✅ FIX #1: Reward swipe corretto (10, poi +5, no duplicati)
+   ✅ FIX #3: Piano mensile + annuale (UI completa)
+   ✅ FIX #4: Match con logo Plutoo animato
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -23,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnBack      = $("btnBack");
   const btnPlus      = $("btnPlus");
 
-  // Topbars e navigazione
   const mainTopbar = $("mainTopbar");
   const btnBackLove = $("btnBackLove");
   const btnBackPlay = $("btnBackPlay");
@@ -78,6 +78,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const closePlus = $("closePlus");
   const cancelPlus = $("cancelPlus");
   const activatePlus = $("activatePlus");
+  const planMonthly = $("planMonthly");
+  const planYearly = $("planYearly");
 
   const chatPane   = $("chatPane");
   const closeChat  = $("closeChat");
@@ -92,10 +94,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // FIX: Stato globale per reward swipe
+  // FIX #1: Stato globale per reward swipe con soglie precise
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
     plus: localStorage.getItem("plutoo_plus")==="yes",
+    plusPlan: localStorage.getItem("plusPlan") || "monthly",
     entered: localStorage.getItem("entered")==="1",
     swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
     nextRewardAt: parseInt(localStorage.getItem("nextRewardAt")||"10"),
@@ -183,6 +186,9 @@ document.addEventListener("DOMContentLoaded", () => {
       plusFeature3: "Messaggi illimitati",
       plusFeature4: "Tutti i filtri Gold sbloccati",
       plusFeature5: "Supporto prioritario",
+      planMonthly: "Mensile",
+      planYearly: "Annuale",
+      planSave: "Risparmia €20!",
       plusPeriod: "/mese",
       activatePlus: "Attiva Plutoo Plus",
       cancel: "Annulla",
@@ -244,6 +250,9 @@ document.addEventListener("DOMContentLoaded", () => {
       plusFeature3: "Unlimited messages",
       plusFeature4: "All Gold filters unlocked",
       plusFeature5: "Priority support",
+      planMonthly: "Monthly",
+      planYearly: "Yearly",
+      planSave: "Save €20!",
       plusPeriod: "/month",
       activatePlus: "Activate Plutoo Plus",
       cancel: "Cancel",
@@ -343,20 +352,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
-  // 💎 PLUTOO PLUS
+  // FIX #3: PLUTOO PLUS con selettore piano mensile/annuale
   btnPlus?.addEventListener("click", ()=> openPlusModal() );
   closePlus?.addEventListener("click", ()=> closePlusModal() );
   cancelPlus?.addEventListener("click", ()=> closePlusModal() );
+
+  planMonthly?.addEventListener("click", ()=>{
+    state.plusPlan = "monthly";
+    updatePlanSelector();
+  });
+
+  planYearly?.addEventListener("click", ()=>{
+    state.plusPlan = "yearly";
+    updatePlanSelector();
+  });
+
+  function updatePlanSelector(){
+    if(planMonthly && planYearly){
+      planMonthly.classList.toggle("active", state.plusPlan === "monthly");
+      planYearly.classList.toggle("active", state.plusPlan === "yearly");
+    }
+  }
+
   activatePlus?.addEventListener("click", ()=> {
     state.plus = true;
     localStorage.setItem("plutoo_plus", "yes");
+    localStorage.setItem("plusPlan", state.plusPlan);
     closePlusModal();
     updatePlusUI();
-    alert(state.lang==="it" ? "Plutoo Plus attivato! 💎" : "Plutoo Plus activated! 💎");
+    const price = state.plusPlan === "yearly" ? "€40/anno" : "€4.99/mese";
+    alert(state.lang==="it" ? `Plutoo Plus attivato! 💎\nPiano: ${price}` : `Plutoo Plus activated! 💎\nPlan: ${price}`);
   });
 
   function openPlusModal(){
     plusModal?.classList.remove("hidden");
+    updatePlanSelector();
   }
   function closePlusModal(){
     plusModal?.classList.add("hidden");
@@ -553,7 +583,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // FIX: Swipe Decks con reward corretto
+  // FIX #1: Swipe Decks con reward corretto (10, poi +5, no duplicati)
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -588,7 +618,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     card._sw = false;
     attachSwipe(card, dir=>{
-      // FIX: Incrementa contatore DOPO swipe completo
       if (dir==="right"){
         const matchChance = Math.random();
         if (matchChance > 0.5){
@@ -598,7 +627,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // FIX: Reward swipe DOPO incremento
+      // FIX #1: Reward DOPO swipe completo, con soglia precisa
       checkSwipeReward();
       
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
@@ -634,49 +663,19 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(()=>{ resetCard(card); }, 550);
   }
 
+  // FIX #4: Match animation con logo Plutoo (violet+gold pulse)
   function showMatchAnimation(){
     if (!matchOverlay) return;
     
     matchOverlay.classList.remove("hidden");
     
-    const confettiContainer = qs(".confetti-container", matchOverlay);
-    if (confettiContainer){
-      confettiContainer.innerHTML = "";
-      for(let i=0; i<30; i++){
-        const confetti = document.createElement("div");
-        confetti.style.position = "absolute";
-        confetti.style.width = "10px";
-        confetti.style.height = "10px";
-        confetti.style.background = i%2 ? "#CDA434" : "#8A7BFF";
-        confetti.style.borderRadius = "50%";
-        confetti.style.left = "50%";
-        confetti.style.top = "50%";
-        confetti.style.opacity = "1";
-        confetti.style.pointerEvents = "none";
-        
-        const angle = (Math.PI * 2 * i) / 30;
-        const velocity = 100 + Math.random() * 100;
-        const xEnd = Math.cos(angle) * velocity;
-        const yEnd = Math.sin(angle) * velocity;
-        
-        confetti.animate([
-          { transform: "translate(0, 0)", opacity: 1 },
-          { transform: `translate(${xEnd}px, ${yEnd}px)`, opacity: 0 }
-        ], {
-          duration: 1000 + Math.random() * 500,
-          easing: "cubic-bezier(.25,.46,.45,.94)"
-        });
-        
-        confettiContainer.appendChild(confetti);
-      }
-    }
-    
+    // Auto-dismiss dopo 1.2s
     setTimeout(()=>{
       matchOverlay.classList.add("hidden");
-    }, 2500);
+    }, 1200);
   }
 
-  // FIX: Logica reward swipe corretta (10, poi +5)
+  // FIX #1: Logica reward swipe CORRETTA (10, poi +5, no duplicati)
   function checkSwipeReward(){
     if (state.plus) return;
     if (state.rewardOpen) return;
@@ -684,7 +683,8 @@ document.addEventListener("DOMContentLoaded", () => {
     state.swipeCount++;
     localStorage.setItem("swipes", String(state.swipeCount));
     
-    if (state.swipeCount >= state.nextRewardAt){
+    // LOGICA: 10, poi ogni +5 (15, 20, 25, 30...)
+    if (state.swipeCount === state.nextRewardAt){
       state.rewardOpen = true;
       showRewardVideoMock("swipe", ()=>{
         state.rewardOpen = false;
@@ -693,8 +693,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
-
-  // Ricerca panel
+⚙️ FILE 3: app.js (PARTE 2/2 - FINALE)
+// Ricerca panel
   btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
@@ -916,7 +916,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
     
-    // MONETIZZAZIONE SELFIE: reward prima di sbloccare (una volta ogni 24h)
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
         if (!state.plus){
@@ -949,7 +948,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // MONETIZZAZIONE CHAT: reward al primo messaggio (con o senza match)
   function openChat(dog){
     const hasMatch = state.matches[dog.id] || false;
     const msgCount = state.chatMessagesSent[dog.id] || 0;
@@ -987,7 +985,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const msgCount = state.chatMessagesSent[dogId] || 0;
 
     if (!state.plus){
-      // MONETIZZAZIONE CHAT: reward al primo messaggio
       if (msgCount === 0){
         if (state.rewardOpen) return;
         state.rewardOpen = true;
@@ -1022,7 +1019,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // MONETIZZAZIONE LUOGHI PET: reward quando clicco su vets/groomers/shops
   function openMapsCategory(cat){
     if (!state.plus && ["vets","groomers","shops"].includes(cat)){
       if (state.rewardOpen) return;
@@ -1062,24 +1058,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Banner Bannerhome
   function showAdBanner(){
     if (!adBanner || state.plus) return;
     adBanner.textContent = "Banner Test AdMob • Bannerhome";
     adBanner.style.display = "";
   }
 
-  // FIX: Reward video con callback per chiusura corretta
   function showRewardVideoMock(type, onClose){
     const msg = {
       it: {
-        swipe: "🎬 Reward Video Mock\n(ogni 10 swipe, poi +5)\n\nTipo: Swipe Unlock",
+        swipe: "🎬 Reward Video Mock\n(10° swipe, poi ogni +5)\n\nTipo: Swipe Unlock",
         selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services"
       },
       en: {
-        swipe: "🎬 Reward Video Mock\n(every 10 swipes, then +5)\n\nType: Swipe Unlock",
+        swipe: "🎬 Reward Video Mock\n(10th swipe, then every +5)\n\nType: Swipe Unlock",
         selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services"
