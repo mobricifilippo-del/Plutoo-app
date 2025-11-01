@@ -1,6 +1,6 @@
 /* =====================================================
    PLUTOO – VIOLET EDITION + GOLD SPONSOR
-   (Tutte le modifiche implementate)
+   (Correzione z-index pannello ricerca)
    ===================================================== */
 
 :root{
@@ -46,7 +46,7 @@ a{color:inherit;text-decoration:none}
 .btn.primary.large{font-size:1.05rem;padding:.75rem 1.1rem;border-radius:14px}
 .btn.accent{background:linear-gradient(180deg,#A99DFF,#7F70FF);color:#111;border:1px solid rgba(0,0,0,.1);box-shadow:0 6px 16px rgba(138,123,255,.28)}
 
-/* MODIFICA #1: Bottone PLUS centrato sotto Ricerca personalizzata */
+/* Bottone PLUS centrato sotto Ricerca personalizzata */
 .search-plus-wrapper{
   display:flex;
   flex-direction:column;
@@ -266,11 +266,12 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ================= PANELS ================= */
+/* FIX BUG #1: z-index aumentato a 1100 per apparire sopra la topbar */
 .panel{
   position:fixed;inset:0;
   background:rgba(0,0,0,.85);
   backdrop-filter:blur(8px);
-  z-index:150;
+  z-index:1100;
   display:flex;align-items:center;justify-content:center;
   padding:1rem;
 }
@@ -442,7 +443,7 @@ a{color:inherit;text-decoration:none}
   padding-top:0;
 }
 
-/* MODIFICA #2: Pulsante X chiusura profilo */
+/* Pulsante X chiusura profilo */
 .profile-close{
   position:fixed;
   top:1rem;
@@ -496,7 +497,7 @@ a{color:inherit;text-decoration:none}
 .pp-meta{color:var(--muted);font-size:.98rem;margin:.15rem 0 .8rem 0}
 .pp-bio{margin:.5rem 0 1.2rem 0;line-height:1.5}
 
-/* MODIFICA #3: 4 azioni invece di 3 */
+/* 4 azioni invece di 3 */
 .pp-actions{
   display:grid;
   grid-template-columns:repeat(2,1fr);
