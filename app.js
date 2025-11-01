@@ -693,8 +693,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
-⚙️ FILE 3: app.js (PARTE 2/2 - FINALE)
-// Ricerca panel
   btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
