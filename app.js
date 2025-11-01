@@ -1,8 +1,6 @@
 /* =========================================================
-   PLUTOO – app.js FINALE
-   ✅ FIX #1: Reward swipe corretto (10, poi +5, no duplicati)
-   ✅ FIX #3: Piano mensile + annuale (UI completa)
-   ✅ FIX #4: Match con logo Plutoo animato
+   PLUTOO – app.js
+   ✅ FIX DEFINITIVO: Reward swipe (10, poi +5, zero duplicati)
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -94,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // FIX #1: Stato globale per reward swipe con soglie precise
+  // STATO GLOBALE con persistenza corretta
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
     plus: localStorage.getItem("plutoo_plus")==="yes",
@@ -352,7 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
-  // FIX #3: PLUTOO PLUS con selettore piano mensile/annuale
+  // PLUTOO PLUS con selettore piano
   btnPlus?.addEventListener("click", ()=> openPlusModal() );
   closePlus?.addEventListener("click", ()=> closePlusModal() );
   cancelPlus?.addEventListener("click", ()=> closePlusModal() );
@@ -583,7 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // FIX #1: Swipe Decks con reward corretto (10, poi +5, no duplicati)
+  // FIX DEFINITIVO: Swipe Decks con reward CORRETTO
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -616,8 +614,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 500);
     };
 
+    // FIX: Reset swipe handler per evitare duplicati
     card._sw = false;
     attachSwipe(card, dir=>{
+      // Match logic
       if (dir==="right"){
         const matchChance = Math.random();
         if (matchChance > 0.5){
@@ -627,15 +627,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // FIX #1: Reward DOPO swipe completo, con soglia precisa
-      checkSwipeReward();
+      // FIX: Incrementa contatore E controlla reward
+      handleSwipeComplete();
       
+      // Avanza alla prossima card
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
       setTimeout(()=>renderSwipe(mode), 10);
     });
 
-    if(yesBtn) yesBtn.onclick = ()=>simulateSwipe(card,"right");
-    if(noBtn) noBtn.onclick  = ()=>simulateSwipe(card,"left");
+    if(yesBtn){
+      yesBtn.onclick = null;
+      yesBtn.onclick = ()=>simulateSwipe(card,"right");
+    }
+    if(noBtn){
+      noBtn.onclick = null;
+      noBtn.onclick = ()=>simulateSwipe(card,"left");
+    }
   }
 
   function attachSwipe(card, cb){
@@ -643,11 +650,28 @@ document.addEventListener("DOMContentLoaded", () => {
     card._sw = true;
     let sx=0, dx=0, dragging=false;
     const start=(x)=>{ sx=x; dragging=true; card.style.transition="none"; };
-    const move =(x)=>{ if(!dragging) return; dx=x-sx; const rot=dx/18; card.style.transform=`translate3d(${dx}px,0,0) rotate(${rot}deg)`; };
-    const end =()=>{ if(!dragging) return; dragging=false; card.style.transition=""; const th=90;
-      if (dx>th){ card.classList.add("swipe-out-right"); setTimeout(()=>{ resetCard(card); cb("right"); }, 550); }
-      else if (dx<-th){ card.classList.add("swipe-out-left"); setTimeout(()=>{ resetCard(card); cb("left"); }, 550); }
-      else { resetCard(card); }
+    const move =(x)=>{ 
+      if(!dragging) return; 
+      dx=x-sx; 
+      const rot=dx/18; 
+      card.style.transform=`translate3d(${dx}px,0,0) rotate(${rot}deg)`; 
+    };
+    const end =()=>{ 
+      if(!dragging) return; 
+      dragging=false; 
+      card.style.transition=""; 
+      const th=90;
+      if (dx>th){ 
+        card.classList.add("swipe-out-right"); 
+        setTimeout(()=>{ resetCard(card); cb("right"); }, 550); 
+      }
+      else if (dx<-th){ 
+        card.classList.add("swipe-out-left"); 
+        setTimeout(()=>{ resetCard(card); cb("left"); }, 550); 
+      }
+      else { 
+        resetCard(card); 
+      }
       dx=0;
     };
     card.addEventListener("touchstart", e=>start(e.touches[0].clientX), {passive:true});
@@ -657,37 +681,50 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("mousemove", e=>move(e.clientX));
     window.addEventListener("mouseup", end);
   }
-  function resetCard(card){ card.classList.remove("swipe-out-right","swipe-out-left"); card.style.transform=""; }
+  
+  function resetCard(card){ 
+    card.classList.remove("swipe-out-right","swipe-out-left"); 
+    card.style.transform=""; 
+  }
+  
   function simulateSwipe(card, dir){
     card.classList.add(dir==="right"?"swipe-out-right":"swipe-out-left");
     setTimeout(()=>{ resetCard(card); }, 550);
   }
 
-  // FIX #4: Match animation con logo Plutoo (violet+gold pulse)
+  // Match animation
   function showMatchAnimation(){
     if (!matchOverlay) return;
-    
     matchOverlay.classList.remove("hidden");
-    
-    // Auto-dismiss dopo 1.2s
     setTimeout(()=>{
       matchOverlay.classList.add("hidden");
     }, 1200);
   }
 
-  // FIX #1: Logica reward swipe CORRETTA (10, poi +5, no duplicati)
-  function checkSwipeReward(){
+  // FIX DEFINITIVO: Handler swipe con logica corretta
+  function handleSwipeComplete(){
+    // Se Plus attivo, nessun video
     if (state.plus) return;
+    
+    // Se reward già aperto, blocca
     if (state.rewardOpen) return;
     
+    // Incrementa contatore
     state.swipeCount++;
     localStorage.setItem("swipes", String(state.swipeCount));
     
-    // LOGICA: 10, poi ogni +5 (15, 20, 25, 30...)
+    // Controlla se raggiungo la soglia
     if (state.swipeCount === state.nextRewardAt){
+      // Blocca trigger multipli
       state.rewardOpen = true;
+      
+      // Mostra video
       showRewardVideoMock("swipe", ()=>{
+        // Al termine del video:
+        // 1. Rimuovi lock
         state.rewardOpen = false;
+        
+        // 2. Calcola prossima soglia (+5)
         state.nextRewardAt += 5;
         localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
       });
@@ -1065,13 +1102,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function showRewardVideoMock(type, onClose){
     const msg = {
       it: {
-        swipe: "🎬 Reward Video Mock\n(10° swipe, poi ogni +5)\n\nTipo: Swipe Unlock",
+        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}/${state.nextRewardAt}\nProssimo video: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
         selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services"
       },
       en: {
-        swipe: "🎬 Reward Video Mock\n(10th swipe, then every +5)\n\nType: Swipe Unlock",
+        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}/${state.nextRewardAt}\nNext video: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
         selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services"
