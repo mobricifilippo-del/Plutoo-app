@@ -1,6 +1,7 @@
 /* =========================================================
    PLUTOO – app.js FINALE
-   ✅ Correzione: tutti 8 profili DOG visibili
+   ✅ FIX: Reward swipe corretto (10, poi +5)
+   ✅ VERIFICA: Monetizzazione completa e stabile
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -91,12 +92,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // Stato + history per navigazione
+  // FIX: Stato globale per reward swipe
   const state = {
     lang: (localStorage.getItem("lang") || autodetectLang()),
     plus: localStorage.getItem("plutoo_plus")==="yes",
     entered: localStorage.getItem("entered")==="1",
     swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
+    nextRewardAt: parseInt(localStorage.getItem("nextRewardAt")||"10"),
+    rewardOpen: false,
     matches: JSON.parse(localStorage.getItem("matches")||"{}"),
     chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent")||"{}"),
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
@@ -125,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     breeds: []
   };
 
-  // I18N con "canili nelle vicinanze"
+  // I18N
   const I18N = {
     it: {
       brand: "Plutoo",
@@ -281,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-  // FIX BUG #2: 8 PROFILI completi (tutte e 8 le immagini dog1.jpg-dog8.jpg)
+  // 8 PROFILI DOG
   const DOGS = [
     { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
     { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"play", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
@@ -293,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dog8.jpg", bio:"Dolce compagna.", mode:"play", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
   ];
 
-  // Razze (autocomplete ordinato A-Z)
+  // Razze
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
     if (Array.isArray(arr)) state.breeds = arr.sort();
   }).catch(()=>{ state.breeds = [
@@ -318,7 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }
 
-  // Entra con animazione POTENZIATA (2.5s)
   btnEnter?.addEventListener("click", ()=>{
     heroLogo?.classList.remove("heartbeat-violet");
     void heroLogo?.offsetWidth;
@@ -339,7 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
-  // Etico canili (solo Home)
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
   // 💎 PLUTOO PLUS
@@ -403,7 +404,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // setActiveView con gestione topbar (nascosta completamente in profilo)
   function setActiveView(name){
     if (state.currentView !== name && state.currentView !== "profile"){
       state.viewHistory.push(state.currentView);
@@ -441,7 +441,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  // Navigazione Indietro (UI + hardware Android)
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
   btnBackPlay?.addEventListener("click", ()=> goBack() );
@@ -476,7 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
     history.pushState({view: "app"}, "", "");
   }
 
-  // FIX BUG #2: Vicino a te mostra TUTTI gli 8 profili
+  // Vicino a te
   function renderNearby(){
     if(!nearGrid) return;
     
@@ -517,7 +516,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const fmtKm = n => `${n.toFixed(1)} km`;
 
-  // FIX BUG #2: Filtro distKm iniziale a 50km per mostrare tutti gli 8 profili
   function filteredDogs(){
     const f = state.filters;
     return DOGS
@@ -555,6 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
+  // FIX: Swipe Decks con reward corretto
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -589,8 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     card._sw = false;
     attachSwipe(card, dir=>{
-      checkSwipeReward();
-      
+      // FIX: Incrementa contatore DOPO swipe completo
       if (dir==="right"){
         const matchChance = Math.random();
         if (matchChance > 0.5){
@@ -599,6 +597,9 @@ document.addEventListener("DOMContentLoaded", () => {
           showMatchAnimation();
         }
       }
+      
+      // FIX: Reward swipe DOPO incremento
+      checkSwipeReward();
       
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
       setTimeout(()=>renderSwipe(mode), 10);
@@ -675,12 +676,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2500);
   }
 
+  // FIX: Logica reward swipe corretta (10, poi +5)
   function checkSwipeReward(){
     if (state.plus) return;
+    if (state.rewardOpen) return;
+    
     state.swipeCount++;
     localStorage.setItem("swipes", String(state.swipeCount));
-    if (state.swipeCount===10 || (state.swipeCount>10 && (state.swipeCount-10)%5===0)){
-      showRewardVideoMock("swipe");
+    
+    if (state.swipeCount >= state.nextRewardAt){
+      state.rewardOpen = true;
+      showRewardVideoMock("swipe", ()=>{
+        state.rewardOpen = false;
+        state.nextRewardAt += 5;
+        localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
+      });
     }
   }
 
@@ -758,6 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
+  // Profilo DOG
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
@@ -904,14 +915,21 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
+    
+    // MONETIZZAZIONE SELFIE: reward prima di sbloccare (una volta ogni 24h)
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
         if (!state.plus){
-          showRewardVideoMock("selfie");
+          showRewardVideoMock("selfie", ()=>{
+            state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+            localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+            openProfilePage(d);
+          });
+        } else {
+          state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+          localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+          openProfilePage(d);
         }
-        state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-        localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-        openProfilePage(d);
       }
     };
   };
@@ -931,6 +949,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
+  // MONETIZZAZIONE CHAT: reward al primo messaggio (con o senza match)
   function openChat(dog){
     const hasMatch = state.matches[dog.id] || false;
     const msgCount = state.chatMessagesSent[dog.id] || 0;
@@ -968,20 +987,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const msgCount = state.chatMessagesSent[dogId] || 0;
 
     if (!state.plus){
-      if (hasMatch){
-        if (msgCount === 0){
-          showRewardVideoMock("chat");
-        }
-      } else {
-        if (msgCount === 0){
-          showRewardVideoMock("chat");
-        } else {
-          alert(state.lang==="it" ? "Serve un match per continuare a chattare!" : "Match needed to continue chatting!");
-          return;
-        }
+      // MONETIZZAZIONE CHAT: reward al primo messaggio
+      if (msgCount === 0){
+        if (state.rewardOpen) return;
+        state.rewardOpen = true;
+        showRewardVideoMock("chat", ()=>{
+          state.rewardOpen = false;
+          sendChatMessage(text, dogId, hasMatch, msgCount);
+        });
+        return;
+      } else if (!hasMatch && msgCount >= 1){
+        alert(state.lang==="it" ? "Serve un match per continuare a chattare!" : "Match needed to continue chatting!");
+        return;
       }
     }
+    
+    sendChatMessage(text, dogId, hasMatch, msgCount);
+  });
 
+  function sendChatMessage(text, dogId, hasMatch, msgCount){
     const bubble = document.createElement("div");
     bubble.className="msg me";
     bubble.textContent=text;
@@ -996,13 +1020,23 @@ document.addEventListener("DOMContentLoaded", () => {
       chatInput.disabled = true;
       chatInput.placeholder = state.lang==="it" ? "Match necessario per continuare" : "Match needed to continue";
     }
-  });
+  }
 
+  // MONETIZZAZIONE LUOGHI PET: reward quando clicco su vets/groomers/shops
   function openMapsCategory(cat){
     if (!state.plus && ["vets","groomers","shops"].includes(cat)){
-      showRewardVideoMock("services");
+      if (state.rewardOpen) return;
+      state.rewardOpen = true;
+      showRewardVideoMock("services", ()=>{
+        state.rewardOpen = false;
+        openMapsQueryAfterReward(cat);
+      });
+      return;
     }
+    openMapsQueryAfterReward(cat);
+  }
 
+  function openMapsQueryAfterReward(cat){
     const map = {
       vets: state.lang==="it" ? "cliniche veterinarie vicino a me" : "veterinary clinics near me",
       groomers: state.lang==="it" ? "toelettature vicino a me" : "pet groomers near me",
@@ -1028,29 +1062,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Banner Bannerhome
   function showAdBanner(){
     if (!adBanner || state.plus) return;
     adBanner.textContent = "Banner Test AdMob • Bannerhome";
     adBanner.style.display = "";
   }
 
-  function showRewardVideoMock(type){
+  // FIX: Reward video con callback per chiusura corretta
+  function showRewardVideoMock(type, onClose){
     const msg = {
       it: {
-        swipe: "🎬 Reward Video Mock\n(ogni 10 swipe e +5)\n\nTipo: Swipe Unlock",
+        swipe: "🎬 Reward Video Mock\n(ogni 10 swipe, poi +5)\n\nTipo: Swipe Unlock",
         selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
-        chat: "🎬 Reward Video Mock\n(primo messaggio o senza match)\n\nTipo: Chat Unlock",
+        chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services"
       },
       en: {
-        swipe: "🎬 Reward Video Mock\n(every 10 swipes and +5)\n\nType: Swipe Unlock",
+        swipe: "🎬 Reward Video Mock\n(every 10 swipes, then +5)\n\nType: Swipe Unlock",
         selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
-        chat: "🎬 Reward Video Mock\n(first message or no match)\n\nType: Chat Unlock",
+        chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services"
       }
     };
     const text = msg[state.lang][type] || msg.it[type];
     alert(text);
+    if (onClose) onClose();
   }
 
   function init(){
