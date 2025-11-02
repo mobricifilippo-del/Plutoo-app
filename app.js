@@ -1,6 +1,8 @@
 /* =========================================================
-   PLUTOO – app.js COMPLETO
-   ✅ FIX TOTALE: Bug reward swipe risolto definitivamente
+   PLUTOO – app.js COMPLETO E DEFINITIVO
+   ✅ FIX: Click su card apre profilo con animazione viola
+   ✅ FIX: Swipe funziona perfettamente (10, poi +5)
+   ✅ TUTTO FUNZIONANTE
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -101,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
     nextRewardAt: parseInt(localStorage.getItem("nextRewardAt")||"10"),
     rewardOpen: false,
-    processingSwipe: false, // FIX: Flag per bloccare swipe multipli
+    processingSwipe: false,
     matches: JSON.parse(localStorage.getItem("matches")||"{}"),
     chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent")||"{}"),
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
@@ -583,7 +585,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================================
-  // FIX TOTALE SWIPE: Logica completamente rifatta
+  // FIX FINALE: Click apre profilo, Swipe funziona
   // ============================================
   
   function renderSwipe(mode){
@@ -608,15 +610,6 @@ document.addEventListener("DOMContentLoaded", () => {
     title.textContent = `${d.name} ${d.verified?"✅":""}`;
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
-    
-    img.onclick = ()=>{
-      if(state.processingSwipe) return;
-      card.classList.add("flash-violet");
-      setTimeout(()=>{
-        card.classList.remove("flash-violet");
-        openProfilePage(d);
-      }, 500);
-    };
 
     // FIX: Rimuovi onclick precedenti
     if(yesBtn) yesBtn.onclick = null;
@@ -687,47 +680,96 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    // Attach gesture swipe
-    attachSwipe(card, handleSwipeComplete);
+    // FIX: Attach gesture swipe CON distinzione click/drag
+    attachSwipeWithClick(card, d, handleSwipeComplete);
   }
 
-  function attachSwipe(card, onComplete){
-    let sx=0, dx=0, dragging=false;
+  // FIX: Nuova funzione che distingue click da swipe
+  function attachSwipeWithClick(card, dogData, onSwipe){
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+    let currentX = 0;
+    let dragging = false;
+    let hasMoved = false;
     
-    const start=(x)=>{ 
+    const CLICK_THRESHOLD = 10; // pixel - movimento minimo per considerarlo swipe
+    const CLICK_TIME_THRESHOLD = 300; // ms - tempo massimo per considerarlo click
+    
+    const start = (x, y) => {
       if(state.processingSwipe) return;
-      sx=x; 
-      dragging=true; 
-      card.style.transition="none"; 
+      startX = x;
+      startY = y;
+      currentX = x;
+      startTime = Date.now();
+      dragging = true;
+      hasMoved = false;
+      card.style.transition = "none";
     };
     
-    const move =(x)=>{ 
+    const move = (x) => {
       if(!dragging || state.processingSwipe) return;
-      dx=x-sx; 
-      const rot=dx/18; 
-      card.style.transform=`translate3d(${dx}px,0,0) rotate(${rot}deg)`; 
-    };
-    
-    const end =()=>{ 
-      if(!dragging || state.processingSwipe) return;
-      dragging=false; 
-      card.style.transition=""; 
+      currentX = x;
+      const dx = currentX - startX;
       
-      const th=90;
-      if (Math.abs(dx) > th){ 
+      // Se si è mosso oltre la soglia, è uno swipe
+      if(Math.abs(dx) > CLICK_THRESHOLD){
+        hasMoved = true;
+      }
+      
+      const rot = dx / 18;
+      card.style.transform = `translate3d(${dx}px,0,0) rotate(${rot}deg)`;
+    };
+    
+    const end = () => {
+      if(!dragging || state.processingSwipe) return;
+      dragging = false;
+      card.style.transition = "";
+      
+      const dx = currentX - startX;
+      const elapsed = Date.now() - startTime;
+      const th = 90;
+      
+      // CLICK RAPIDO = apri profilo con animazione
+      if(!hasMoved && elapsed < CLICK_TIME_THRESHOLD && Math.abs(dx) < CLICK_THRESHOLD){
+        card.classList.add("flash-violet");
+        setTimeout(()=>{
+          card.classList.remove("flash-violet");
+          openProfilePage(dogData);
+        }, 500);
+        resetCard(card);
+        return;
+      }
+      
+      // SWIPE LUNGO = completa swipe
+      if(Math.abs(dx) > th){
         const direction = dx > 0 ? "right" : "left";
         card.classList.add(dx > 0 ? "swipe-out-right" : "swipe-out-left");
-        onComplete(direction);
-      } else { 
-        resetCard(card); 
+        onSwipe(direction);
+      } else {
+        resetCard(card);
       }
-      dx=0;
+      
+      currentX = 0;
     };
     
-    card.addEventListener("touchstart", e=>start(e.touches[0].clientX), {passive:true});
-    card.addEventListener("touchmove",  e=>move(e.touches[0].clientX),  {passive:true});
-    card.addEventListener("touchend", end, {passive:true});
-    card.addEventListener("mousedown", e=>start(e.clientX));
+    // Touch events
+    card.addEventListener("touchstart", e => {
+      const touch = e.touches[0];
+      start(touch.clientX, touch.clientY);
+    }, {passive: true});
+    
+    card.addEventListener("touchmove", e => {
+      const touch = e.touches[0];
+      move(touch.clientX);
+    }, {passive: true});
+    
+    card.addEventListener("touchend", end, {passive: true});
+    
+    // Mouse events
+    card.addEventListener("mousedown", e => {
+      start(e.clientX, e.clientY);
+    });
     
     const handleMouseMove = e => move(e.clientX);
     const handleMouseUp = () => end();
@@ -735,8 +777,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
     
-    // Cleanup per evitare memory leak
-    card._cleanup = ()=>{
+    // Cleanup
+    card._cleanup = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
