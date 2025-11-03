@@ -1,8 +1,9 @@
 /* =========================================================
-   PLUTOO – app.js COMPLETO E DEFINITIVO
-   ✅ FIX: Click su card apre profilo con animazione viola
-   ✅ FIX: Swipe funziona perfettamente (10, poi +5)
-   ✅ TUTTO FUNZIONANTE
+   PLUTOO – app.js VERSIONE FINALE
+   ✅ Stories fullscreen + topbar nascosta
+   ✅ Plus: Stories senza video + video 90 secondi
+   ✅ Free: Video reward + video 15 secondi
+   ✅ Progress bar FUNZIONANTE
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -87,9 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatComposer = $("chatComposer");
   const chatInput  = $("chatInput");
 
-  const profileSheet = $("profileSheet");
-  const closeProfile = $("closeProfile");
-  const ppBody   = $("ppBody");
+  const profilePage = $("profilePage");
+  const profileBack = $("profileBack");
+  const profileClose = $("profileClose");
+  const profileContent = $("profileContent");
 
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
@@ -105,11 +107,13 @@ document.addEventListener("DOMContentLoaded", () => {
     rewardOpen: false,
     processingSwipe: false,
     matches: JSON.parse(localStorage.getItem("matches")||"{}"),
+    friendships: JSON.parse(localStorage.getItem("friendships")||"{}"),
     chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent")||"{}"),
     firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
     ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded")||"{}"),
     dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded")||"{}"),
+    storyRewardViewed: JSON.parse(localStorage.getItem("storyRewardViewed")||"{}"),
     currentLoveIdx: 0,
     currentPlayIdx: 0,
     currentView: "nearby",
@@ -148,6 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       privacy: "Privacy",
       nearby: "Vicino a te",
       love: "Amore",
+      friendship: "Amicizia",
       searchAdvanced: "Ricerca personalizzata",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -187,6 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
       plusFeature3: "Messaggi illimitati",
       plusFeature4: "Tutti i filtri Gold sbloccati",
       plusFeature5: "Supporto prioritario",
+      plusFeature6: "Vedi tutte le Stories senza video",
+      plusFeature7: "Stories video fino a 90 secondi",
       planMonthly: "Mensile",
       planYearly: "Annuale",
       planSave: "Risparmia €20!",
@@ -195,8 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cancel: "Annulla",
       mapsShelters: "canili nelle vicinanze",
       noProfiles: "Nessun profilo. Modifica i filtri.",
-      years: "anni",
-      playTogether: "Giochiamo insieme"
+      years: "anni"
     },
     en: {
       brand: "Plutoo",
@@ -212,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
       privacy: "Privacy",
       nearby: "Nearby",
       love: "Love",
+      friendship: "Friendship",
       searchAdvanced: "Advanced Search",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -251,6 +258,8 @@ document.addEventListener("DOMContentLoaded", () => {
       plusFeature3: "Unlimited messages",
       plusFeature4: "All Gold filters unlocked",
       plusFeature5: "Priority support",
+      plusFeature6: "View all Stories without videos",
+      plusFeature7: "Video stories up to 90 seconds",
       planMonthly: "Monthly",
       planYearly: "Yearly",
       planSave: "Save €20!",
@@ -259,8 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cancel: "Cancel",
       mapsShelters: "animal shelters nearby",
       noProfiles: "No profiles. Adjust filters.",
-      years: "yrs",
-      playTogether: "Play together"
+      years: "yrs"
     }
   };
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
@@ -297,13 +305,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // 8 PROFILI DOG
   const DOGS = [
     { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
-    { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"play", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
+    { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
     { id:"d3", name:"Maya",   age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg", bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false, weight:12, height:30, pedigree:false, breeding:false, size:"small" },
-    { id:"d4", name:"Rocky",  age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.", mode:"play", sex:"M", verified:true, weight:15, height:38, pedigree:true, breeding:false, size:"medium" },
+    { id:"d4", name:"Rocky",  age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true, weight:15, height:38, pedigree:true, breeding:false, size:"medium" },
     { id:"d5", name:"Chicco", age:1, breed:"Barboncino",       km:0.8, img:"dog5.jpg", bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, weight:8, height:28, pedigree:false, breeding:false, size:"small" },
-    { id:"d6", name:"Kira",   age:6, breed:"Labrador",         km:5.1, img:"dog6.jpg", bio:"Acqua e palla.", mode:"play", sex:"F", verified:true, weight:30, height:58, pedigree:true, breeding:true, size:"large" },
+    { id:"d6", name:"Kira",   age:6, breed:"Labrador",         km:5.1, img:"dog6.jpg", bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true, weight:30, height:58, pedigree:true, breeding:true, size:"large" },
     { id:"d7", name:"Toby",   age:2, breed:"Husky",            km:2.8, img:"dog7.jpg", bio:"Energia pura.", mode:"love", sex:"M", verified:true, weight:25, height:54, pedigree:true, breeding:true, size:"medium" },
-    { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dog8.jpg", bio:"Dolce compagna.", mode:"play", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
+    { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dog8.jpg", bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
   ];
 
   // Razze
@@ -327,6 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (state.entered) {
     homeScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
+    initStories();
     setActiveView("nearby");
     showAdBanner();
   }
@@ -341,6 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("entered","1");
       homeScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
+      initStories();
       setActiveView("nearby");
       showAdBanner();
     }, 2500);
@@ -417,7 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Tabs
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
-  tabPlay?.addEventListener("click",   ()=>setActiveView("play"));
+  tabPlay?.addEventListener("click",   ()=>setActiveView("friendship"));
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -450,6 +460,15 @@ document.addEventListener("DOMContentLoaded", () => {
       mainTopbar?.classList.remove("hidden");
     }
 
+    const storiesBar = $("storiesBar");
+    if(storiesBar){
+      if(name === "nearby"){
+        storiesBar.classList.remove("hidden");
+      } else {
+        storiesBar.classList.add("hidden");
+      }
+    }
+
     if (name==="nearby"){ 
       viewNearby.classList.add("active"); 
       tabNearby.classList.add("active"); 
@@ -462,10 +481,10 @@ document.addEventListener("DOMContentLoaded", () => {
       renderSwipe("love"); 
       if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
-    if (name==="play"){   
+    if (name==="friendship"){   
       viewPlay.classList.add("active");   
       tabPlay.classList.add("active");   
-      renderSwipe("play"); 
+      renderSwipe("friendship"); 
       if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
 
@@ -482,7 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (state.currentView === "love" || state.currentView === "play"){
+    if (state.currentView === "love" || state.currentView === "friendship"){
       setActiveView("nearby");
       return;
     }
@@ -584,10 +603,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ============================================
-  // FIX FINALE: Click apre profilo, Swipe funziona
-  // ============================================
-  
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -611,60 +626,53 @@ document.addEventListener("DOMContentLoaded", () => {
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
 
-    // FIX: Rimuovi onclick precedenti
     if(yesBtn) yesBtn.onclick = null;
     if(noBtn) noBtn.onclick = null;
 
-    // Handler swipe completo
     function handleSwipeComplete(direction){
-      // BLOCCA ulteriori interazioni
       if(state.processingSwipe) return;
       state.processingSwipe = true;
       
-      // Match logic (solo se right)
       if (direction === "right"){
         const matchChance = Math.random();
         if (matchChance > 0.5){
-          state.matches[d.id] = true;
-          localStorage.setItem("matches", JSON.stringify(state.matches));
+          if(mode === "love"){
+            state.matches[d.id] = true;
+            localStorage.setItem("matches", JSON.stringify(state.matches));
+          } else {
+            state.friendships[d.id] = true;
+            localStorage.setItem("friendships", JSON.stringify(state.friendships));
+          }
           showMatchAnimation();
         }
       }
       
-      // Avanza card
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
       
-      // ASPETTA che animazione finisca
       setTimeout(()=>{
         resetCard(card);
         
-        // INCREMENTA contatore
         state.swipeCount++;
         localStorage.setItem("swipes", String(state.swipeCount));
         
-        // CONTROLLA reward
         if (!state.plus && state.swipeCount === state.nextRewardAt && !state.rewardOpen){
           state.rewardOpen = true;
           
           showRewardVideoMock("swipe", ()=>{
-            // Callback DOPO chiusura video
             state.rewardOpen = false;
             state.nextRewardAt += 5;
             localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
             
-            // Sblocca e renderizza prossima card
             state.processingSwipe = false;
             renderSwipe(mode);
           });
         } else {
-          // Nessun video: renderizza subito
           state.processingSwipe = false;
           renderSwipe(mode);
         }
       }, 600);
     }
 
-    // Attach bottoni YES/NO
     if(yesBtn){
       yesBtn.onclick = ()=>{
         if(state.processingSwipe) return;
@@ -680,11 +688,9 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
-    // FIX: Attach gesture swipe CON distinzione click/drag
     attachSwipeWithClick(card, d, handleSwipeComplete);
   }
 
-  // FIX: Nuova funzione che distingue click da swipe
   function attachSwipeWithClick(card, dogData, onSwipe){
     let startX = 0;
     let startY = 0;
@@ -693,8 +699,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let dragging = false;
     let hasMoved = false;
     
-    const CLICK_THRESHOLD = 10; // pixel - movimento minimo per considerarlo swipe
-    const CLICK_TIME_THRESHOLD = 300; // ms - tempo massimo per considerarlo click
+    const CLICK_THRESHOLD = 10;
+    const CLICK_TIME_THRESHOLD = 300;
     
     const start = (x, y) => {
       if(state.processingSwipe) return;
@@ -712,7 +718,6 @@ document.addEventListener("DOMContentLoaded", () => {
       currentX = x;
       const dx = currentX - startX;
       
-      // Se si è mosso oltre la soglia, è uno swipe
       if(Math.abs(dx) > CLICK_THRESHOLD){
         hasMoved = true;
       }
@@ -730,7 +735,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const elapsed = Date.now() - startTime;
       const th = 90;
       
-      // CLICK RAPIDO = apri profilo con animazione
       if(!hasMoved && elapsed < CLICK_TIME_THRESHOLD && Math.abs(dx) < CLICK_THRESHOLD){
         card.classList.add("flash-violet");
         setTimeout(()=>{
@@ -741,7 +745,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       
-      // SWIPE LUNGO = completa swipe
       if(Math.abs(dx) > th){
         const direction = dx > 0 ? "right" : "left";
         card.classList.add(dx > 0 ? "swipe-out-right" : "swipe-out-left");
@@ -753,7 +756,6 @@ document.addEventListener("DOMContentLoaded", () => {
       currentX = 0;
     };
     
-    // Touch events
     card.addEventListener("touchstart", e => {
       const touch = e.touches[0];
       start(touch.clientX, touch.clientY);
@@ -766,7 +768,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     card.addEventListener("touchend", end, {passive: true});
     
-    // Mouse events
     card.addEventListener("mousedown", e => {
       start(e.clientX, e.clientY);
     });
@@ -777,7 +778,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
     
-    // Cleanup
     card._cleanup = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
@@ -872,23 +872,49 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // Profilo DOG
+  // PROFILO DOG CON SEZIONE STORIES
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
     
     history.pushState({view: "profile", dogId: d.id}, "", "");
     
-    profileSheet.classList.remove("hidden");
-    profileSheet.classList.add("profile-page");
-    setTimeout(()=>profileSheet.classList.add("show"), 10);
+    profilePage.classList.remove("hidden");
 
     const selfieUnlocked = isSelfieUnlocked(d.id);
     const hasMatch = state.matches[d.id] || false;
+    const hasFriendship = state.friendships[d.id] || false;
+    const hasRelationship = hasMatch || hasFriendship;
     const ownerDocs = state.ownerDocsUploaded[d.id] || {};
     const dogDocs = state.dogDocsUploaded[d.id] || {};
     
-    ppBody.innerHTML = `
+    const dogStories = StoriesState.stories.find(s => s.userId === d.id);
+    const storiesHTML = dogStories ? `
+      <div class="pp-stories-section">
+        <div class="pp-stories-header">
+          <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
+          <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
+        </div>
+        <div class="pp-stories-grid" id="dogStoriesGrid">
+          ${dogStories.media.map((m, idx) => `
+            <div class="pp-story-item" data-story-index="${idx}">
+              <img src="${m.url}" alt="Story" />
+              <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : `
+      <div class="pp-stories-section">
+        <div class="pp-stories-header">
+          <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
+          <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
+        </div>
+        <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>
+      </div>
+    `;
+    
+    profileContent.innerHTML = `
       <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
       <div class="pp-head">
         <h2 class="pp-name">${d.name} ${d.verified?"✅":""}</h2>
@@ -900,6 +926,8 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
       <div class="pp-meta soft">${d.bio||""}</div>
+
+      ${storiesHTML}
 
       <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
       <div class="gallery">
@@ -958,11 +986,24 @@ document.addEventListener("DOMContentLoaded", () => {
         <button id="btnLikeDog" class="btn accent">💛 Like</button>
         <button id="btnDislikeDog" class="btn outline">🥲 ${state.lang==="it"?"Passa":"Pass"}</button>
         <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
-        <button id="btnPlayTogether" class="btn accent">🐕 ${t("playTogether")}</button>
+        <button id="btnFriendship" class="btn accent">🐕 ${t("friendship")}</button>
       </div>
     `;
 
-    qa(".gallery img", ppBody).forEach(img=>{
+    if(dogStories){
+      qa(".pp-story-item", profileContent).forEach(item => {
+        item.addEventListener("click", ()=>{
+          const idx = parseInt(item.getAttribute("data-story-index"));
+          openDogStoryViewer(d.id, idx);
+        });
+      });
+    }
+
+    $("uploadDogStory")?.addEventListener("click", ()=>{
+      openUploadModal();
+    });
+
+    qa(".gallery img", profileContent).forEach(img=>{
       img.addEventListener("click", ()=>{
         const lb = document.createElement("div");
         lb.className = "lightbox";
@@ -973,7 +1014,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    qa(".doc-item", ppBody).forEach(item=>{
+    qa(".doc-item", profileContent).forEach(item=>{
       item.addEventListener("click", ()=>{
         const docType = item.getAttribute("data-doc");
         const docCategory = item.getAttribute("data-type");
@@ -1014,8 +1055,10 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(()=>openChat(d), 180);
     };
 
-    $("btnPlayTogether").onclick = ()=>{
-      alert(state.lang==="it" ? "Richiesta di gioco inviata! 🐕" : "Play request sent! 🐕");
+    $("btnFriendship").onclick = ()=>{
+      state.friendships[d.id] = true;
+      localStorage.setItem("friendships", JSON.stringify(state.friendships));
+      alert(state.lang==="it" ? "Richiesta di amicizia inviata! 🐕" : "Friendship request sent! 🐕");
     };
 
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
@@ -1037,17 +1080,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   };
 
-  closeProfile?.addEventListener("click", ()=> closeProfilePage());
+  profileBack?.addEventListener("click", ()=> closeProfilePage());
+  profileClose?.addEventListener("click", ()=> closeProfilePage());
 
   window.closeProfilePage = ()=>{
-    profileSheet.classList.remove("show");
-    setTimeout(()=>{
-      profileSheet.classList.add("hidden");
-      profileSheet.classList.remove("profile-page");
-      const previousView = state.viewHistory.pop() || "nearby";
-      setActiveView(previousView);
-      state.currentDogProfile = null;
-    }, 250);
+    profilePage.classList.add("hidden");
+    const previousView = state.viewHistory.pop() || "nearby";
+    setActiveView(previousView);
+    state.currentDogProfile = null;
   };
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
@@ -1209,9 +1249,655 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (state.entered){
+      initStories();
       setActiveView("nearby");
     }
   }
 
   init();
+
+  // ========== SISTEMA STORIES (✅ FINALE CON TUTTE LE MODIFICHE) ==========
+  
+  const STORIES_CONFIG = {
+    PHOTO_DURATION: 15000,
+    VIDEO_MAX_DURATION_FREE: 15,  // ✅ Free: 15 secondi
+    VIDEO_MAX_DURATION_PLUS: 90,  // ✅ Plus: 90 secondi
+    MAX_PHOTO_SIZE: 10 * 1024 * 1024,
+    MAX_VIDEO_SIZE: 50 * 1024 * 1024,
+    STORY_LIFETIME: 24 * 60 * 60 * 1000,
+    FREE_DAILY_LIMIT: 3,
+    REWARD_VIDEO_DURATION: 15
+  };
+
+  const StoriesState = {
+    stories: [],
+    currentStoryUserId: null,
+    currentMediaIndex: 0,
+    progressInterval: null,
+    uploadedFile: null,
+    selectedFilter: "none",
+    selectedMusic: "",
+    
+    loadStories() {
+      const saved = localStorage.getItem("plutoo_stories");
+      if (saved) {
+        this.stories = JSON.parse(saved);
+        this.cleanExpiredStories();
+      } else {
+        this.stories = this.generateMockStories();
+        this.saveStories();
+      }
+    },
+    
+    saveStories() {
+      localStorage.setItem("plutoo_stories", JSON.stringify(this.stories));
+    },
+    
+    cleanExpiredStories() {
+      const now = Date.now();
+      this.stories = this.stories.filter(story => {
+        story.media = story.media.filter(m => (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME);
+        return story.media.length > 0;
+      });
+      this.saveStories();
+    },
+    
+    getTodayStoriesCount() {
+      const today = new Date().toDateString();
+      const userStory = this.stories.find(s => s.userId === "currentUser");
+      if (!userStory) return 0;
+      return userStory.media.filter(m => new Date(m.timestamp).toDateString() === today).length;
+    },
+    
+    canUploadStory() {
+      if (state.plus) return true;
+      return this.getTodayStoriesCount() < STORIES_CONFIG.FREE_DAILY_LIMIT;
+    },
+    
+    generateMockStories() {
+      return [
+        {
+          userId: "d1",
+          userName: "Luna",
+          avatar: "dog1.jpg",
+          verified: true,
+          media: [{
+            id: "m1",
+            type: "image",
+            url: "dog1.jpg",
+            timestamp: Date.now() - 3600000,
+            filter: "none",
+            music: "",
+            viewed: false
+          }]
+        },
+        {
+          userId: "d2",
+          userName: "Rex",
+          avatar: "dog2.jpg",
+          verified: true,
+          media: [
+            {
+              id: "m2",
+              type: "image",
+              url: "dog2.jpg",
+              timestamp: Date.now() - 7200000,
+              filter: "warm",
+              music: "happy",
+              viewed: false
+            },
+            {
+              id: "m3",
+              type: "image",
+              url: "dog3.jpg",
+              timestamp: Date.now() - 5400000,
+              filter: "sepia",
+              music: "",
+              viewed: false
+            }
+          ]
+        },
+        {
+          userId: "d3",
+          userName: "Maya",
+          avatar: "dog3.jpg",
+          verified: false,
+          media: [{
+            id: "m4",
+            type: "image",
+            url: "dog4.jpg",
+            timestamp: Date.now() - 10800000,
+            filter: "grayscale",
+            music: "",
+            viewed: false
+          }]
+        }
+      ];
+    }
+  };
+
+  function initStories() {
+    StoriesState.loadStories();
+    renderStoriesBar();
+    setupStoriesEvents();
+  }
+
+  function setupStoriesEvents() {
+    $("addStoryBtn")?.addEventListener("click", openUploadModal);
+    $("closeStoryViewer")?.addEventListener("click", closeStoryViewer);
+    $("storyNavPrev")?.addEventListener("click", prevStoryMedia);
+    $("storyNavNext")?.addEventListener("click", nextStoryMedia);
+    $("closeUploadStory")?.addEventListener("click", closeUploadModal);
+    $("cancelUpload")?.addEventListener("click", closeUploadModal);
+    $("storyFileInput")?.addEventListener("change", handleFileSelect);
+    $("nextToCustomize")?.addEventListener("click", showCustomizeStep);
+    $("backToUpload")?.addEventListener("click", showUploadStep);
+    $("publishStory")?.addEventListener("click", publishStory);
+    
+    setupFiltersGrid();
+  }
+
+  function renderStoriesBar() {
+    const container = $("storiesContainer");
+    if (!container) return;
+    
+    container.innerHTML = "";
+    
+    StoriesState.stories.forEach((story) => {
+      const allViewed = story.media.every(m => m.viewed);
+      
+      const circle = document.createElement("button");
+      circle.className = `story-circle ${allViewed ? "viewed" : ""}`;
+      circle.type = "button";
+      circle.innerHTML = `
+        <div class="story-avatar">
+          <img src="${story.avatar}" alt="${story.userName}" />
+        </div>
+        <span class="story-name">${story.userName}</span>
+      `;
+      circle.addEventListener("click", () => openStoryViewerFromBar(story.userId));
+      container.appendChild(circle);
+    });
+  }
+
+  // ✅ FUNZIONE CON controllo Plus + Match + Video reward
+  function openStoryViewerFromBar(userId) {
+    const story = StoriesState.stories.find(s => s.userId === userId);
+    if (!story) return;
+    
+    // ✅ Se Plus → Apri subito SEMPRE (nessun video)
+    if (state.plus) {
+      openStoryViewerDirect(userId);
+      return;
+    }
+    
+    const hasMatch = state.matches[userId] || false;
+    const hasFriendship = state.friendships[userId] || false;
+    const hasRewardViewed = state.storyRewardViewed[userId] || false;
+    
+    if (hasMatch || hasFriendship) {
+      openStoryViewerDirect(userId);
+      return;
+    }
+    
+    if (hasRewardViewed) {
+      openStoryViewerDirect(userId);
+      return;
+    }
+    
+    showStoryRewardVideo(story, userId);
+  }
+
+  // ✅ FUNZIONE DIRETTA con body.story-open
+  function openStoryViewerDirect(userId) {
+    StoriesState.currentStoryUserId = userId;
+    StoriesState.currentMediaIndex = 0;
+    
+    $("storyViewer")?.classList.remove("hidden");
+    document.body.classList.add("noscroll");
+    document.body.classList.add("story-open"); // ✅ NASCONDE TOPBAR
+    
+    renderStoryViewer();
+    startStoryProgress();
+  }
+
+  function openDogStoryViewer(userId, mediaIndex) {
+    StoriesState.currentStoryUserId = userId;
+    StoriesState.currentMediaIndex = mediaIndex;
+    
+    $("storyViewer")?.classList.remove("hidden");
+    document.body.classList.add("noscroll");
+    document.body.classList.add("story-open"); // ✅ NASCONDE TOPBAR
+    
+    renderStoryViewer();
+    startStoryProgress();
+  }
+
+  function renderStoryViewer() {
+    const story = StoriesState.stories.find(s => s.userId === StoriesState.currentStoryUserId);
+    if (!story) return;
+    
+    const media = story.media[StoriesState.currentMediaIndex];
+    if (!media) return;
+    
+    $("storyUserAvatar").src = story.avatar;
+    $("storyUserName").textContent = story.userName;
+    $("storyTimestamp").textContent = getTimeAgo(media.timestamp);
+    
+    renderProgressBars(story.media.length);
+    renderStoryContent(media);
+    
+    media.viewed = true;
+    StoriesState.saveStories();
+  }
+
+  // ✅ FIX: Progress bar con createElement
+  function renderProgressBars(count) {
+    const container = $("storyProgressBars");
+    if (!container) return;
+    
+    container.innerHTML = "";
+    
+    for (let i = 0; i < count; i++) {
+      const bar = document.createElement("div");
+      bar.className = "story-progress-bar";
+      
+      const fill = document.createElement("div");
+      fill.className = "story-progress-fill";
+      
+      if (i < StoriesState.currentMediaIndex) {
+        bar.classList.add("completed");
+      }
+      
+      if (i === StoriesState.currentMediaIndex) {
+        bar.classList.add("active");
+      }
+      
+      bar.appendChild(fill);
+      container.appendChild(bar);
+    }
+  }
+
+  function renderStoryContent(media) {
+    const content = $("storyContent");
+    content.innerHTML = "";
+    
+    if (media.type === "image") {
+      const img = document.createElement("img");
+      img.src = media.url;
+      img.alt = "Story";
+      img.className = `filter-${media.filter}`;
+      content.appendChild(img);
+    } else if (media.type === "video") {
+      const video = document.createElement("video");
+      video.src = media.url;
+      video.autoplay = true;
+      video.muted = false;
+      video.className = `filter-${media.filter}`;
+      video.addEventListener("ended", nextStoryMedia);
+      content.appendChild(video);
+    }
+    
+    if (media.music) playStoryMusic(media.music);
+  }
+
+  function startStoryProgress() {
+    stopStoryProgress();
+    
+    const story = StoriesState.stories.find(s => s.userId === StoriesState.currentStoryUserId);
+    if (!story) return;
+    
+    const media = story.media[StoriesState.currentMediaIndex];
+    if (!media) return;
+    
+    if (media.type === "image") {
+      StoriesState.progressInterval = setTimeout(nextStoryMedia, STORIES_CONFIG.PHOTO_DURATION);
+    }
+  }
+
+  function stopStoryProgress() {
+    if (StoriesState.progressInterval) {
+      clearTimeout(StoriesState.progressInterval);
+      StoriesState.progressInterval = null;
+    }
+  }
+
+  function nextStoryMedia() {
+    stopStoryProgress();
+    
+    const story = StoriesState.stories.find(s => s.userId === StoriesState.currentStoryUserId);
+    if (!story) {
+      closeStoryViewer();
+      return;
+    }
+    
+    if (StoriesState.currentMediaIndex < story.media.length - 1) {
+      StoriesState.currentMediaIndex++;
+      renderStoryViewer();
+      startStoryProgress();
+    } else {
+      closeStoryViewer();
+    }
+  }
+
+  function prevStoryMedia() {
+    stopStoryProgress();
+    
+    if (StoriesState.currentMediaIndex > 0) {
+      StoriesState.currentMediaIndex--;
+      renderStoryViewer();
+      startStoryProgress();
+    }
+  }
+
+  // ✅ RIMUOVI body.story-open
+  function closeStoryViewer() {
+    stopStoryProgress();
+    $("storyViewer")?.classList.add("hidden");
+    document.body.classList.remove("noscroll");
+    document.body.classList.remove("story-open"); // ✅ MOSTRA TOPBAR
+    renderStoriesBar();
+  }
+
+  function getTimeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return "ora";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m fa`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h fa`;
+    return `${Math.floor(seconds / 86400)}g fa`;
+  }
+
+  function playStoryMusic(musicId) {
+    console.log("🎵 Playing music:", musicId);
+  }
+
+  function openUploadModal() {
+    if (!StoriesState.canUploadStory()) {
+      alert(`⚠️ Limite raggiunto!\n\nHai già caricato ${STORIES_CONFIG.FREE_DAILY_LIMIT} Stories oggi.\n\nAttiva Plutoo Plus 💎 per Stories illimitate!`);
+      return;
+    }
+    
+    $("uploadStoryModal")?.classList.remove("hidden");
+    showUploadStep();
+  }
+
+  function closeUploadModal() {
+    $("uploadStoryModal")?.classList.add("hidden");
+    resetUploadForm();
+  }
+
+  function resetUploadForm() {
+    StoriesState.uploadedFile = null;
+    StoriesState.selectedFilter = "none";
+    StoriesState.selectedMusic = "";
+    $("storyFileInput").value = "";
+    $("uploadPreview").classList.add("hidden");
+    $("uploadPreview").innerHTML = "";
+    $("nextToCustomize").disabled = true;
+    showUploadStep();
+  }
+
+  function showUploadStep() {
+    $("uploadStoryStep1")?.classList.add("active");
+    $("uploadStoryStep2")?.classList.remove("active");
+  }
+
+  function showCustomizeStep() {
+    if (!StoriesState.uploadedFile) return;
+    $("uploadStoryStep1")?.classList.remove("active");
+    $("uploadStoryStep2")?.classList.add("active");
+    renderCustomizePreview();
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    
+    if (!isImage && !isVideo) {
+      alert("⚠️ Formato non supportato!\n\nCarica solo immagini (JPG, PNG, WEBP) o video (MP4, WEBM).");
+      return;
+    }
+    
+    if (isImage && file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
+      alert(`⚠️ Foto troppo grande!\n\nMax ${STORIES_CONFIG.MAX_PHOTO_SIZE / 1024 / 1024}MB`);
+      return;
+    }
+    
+    if (isVideo && file.size > STORIES_CONFIG.MAX_VIDEO_SIZE) {
+      alert(`⚠️ Video troppo grande!\n\nMax ${STORIES_CONFIG.MAX_VIDEO_SIZE / 1024 / 1024}MB`);
+      return;
+    }
+    
+    if (isVideo) {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.onloadedmetadata = function() {
+        window.URL.revokeObjectURL(video.src);
+        
+        // ✅ Controllo durata in base a Plus
+        const maxDuration = state.plus 
+          ? STORIES_CONFIG.VIDEO_MAX_DURATION_PLUS 
+          : STORIES_CONFIG.VIDEO_MAX_DURATION_FREE;
+        
+        if (video.duration > maxDuration) {
+          const msg = state.plus 
+            ? `⚠️ Video troppo lungo!\n\nMax ${maxDuration} secondi con Plutoo Plus`
+            : `⚠️ Video troppo lungo!\n\nMax ${maxDuration} secondi\n\nCon Plutoo Plus 💎: fino a 90 secondi!`;
+          alert(msg);
+          return;
+        }
+        processFile(file, isImage, isVideo);
+      };
+      video.src = URL.createObjectURL(file);
+    } else {
+      processFile(file, isImage, isVideo);
+    }
+  }
+
+  function processFile(file, isImage, isVideo) {
+    StoriesState.uploadedFile = {
+      file: file,
+      type: isImage ? "image" : "video",
+      url: URL.createObjectURL(file)
+    };
+    
+    showFilePreview();
+    $("nextToCustomize").disabled = false;
+  }
+
+  function showFilePreview() {
+    const preview = $("uploadPreview");
+    preview.classList.remove("hidden");
+    preview.innerHTML = "";
+    
+    if (StoriesState.uploadedFile.type === "image") {
+      const img = document.createElement("img");
+      img.src = StoriesState.uploadedFile.url;
+      preview.appendChild(img);
+    } else {
+      const video = document.createElement("video");
+      video.src = StoriesState.uploadedFile.url;
+      video.controls = true;
+      preview.appendChild(video);
+    }
+  }
+
+  function setupFiltersGrid() {
+    const grid = $("filtersGrid");
+    if (!grid) return;
+    
+    const filters = [
+      { id: "none", name: "Nessuno", premium: false },
+      { id: "grayscale", name: "B&N", premium: false },
+      { id: "sepia", name: "Vintage", premium: false },
+      { id: "warm", name: "Caldo", premium: false }
+    ];
+    
+    grid.innerHTML = "";
+    
+    filters.forEach(filter => {
+      const btn = document.createElement("button");
+      btn.className = `filter-btn ${filter.id === "none" ? "active" : ""} ${filter.premium && !state.plus ? "locked" : ""}`;
+      btn.type = "button";
+      btn.dataset.filter = filter.id;
+      
+      btn.innerHTML = `
+        <div class="filter-preview"></div>
+        <span>${filter.name}</span>
+      `;
+      
+      btn.addEventListener("click", () => {
+        if (filter.premium && !state.plus) {
+          alert("🔒 Filtro Premium\n\nAttiva Plutoo Plus 💎 per sbloccare tutti i filtri!");
+          return;
+        }
+        selectFilter(filter.id);
+      });
+      
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectFilter(filterId) {
+    StoriesState.selectedFilter = filterId;
+    qa(".filter-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.filter === filterId);
+    });
+    renderCustomizePreview();
+  }
+
+  function renderCustomizePreview() {
+    const preview = $("uploadPreview");
+    if (!preview || !StoriesState.uploadedFile) return;
+    
+    preview.innerHTML = "";
+    
+    if (StoriesState.uploadedFile.type === "image") {
+      const img = document.createElement("img");
+      img.src = StoriesState.uploadedFile.url;
+      img.className = `filter-${StoriesState.selectedFilter}`;
+      preview.appendChild(img);
+    } else {
+      const video = document.createElement("video");
+      video.src = StoriesState.uploadedFile.url;
+      video.controls = true;
+      video.className = `filter-${StoriesState.selectedFilter}`;
+      preview.appendChild(video);
+    }
+  }
+
+  function publishStory() {
+    if (!StoriesState.uploadedFile) return;
+    
+    const musicSelect = $("storyMusicSelect");
+    StoriesState.selectedMusic = musicSelect ? musicSelect.value : "";
+    
+    const targetUserId = state.currentDogProfile ? state.currentDogProfile.id : "currentUser";
+    
+    const newMedia = {
+      id: `m${Date.now()}`,
+      type: StoriesState.uploadedFile.type,
+      url: StoriesState.uploadedFile.url,
+      timestamp: Date.now(),
+      filter: StoriesState.selectedFilter,
+      music: StoriesState.selectedMusic,
+      viewed: false
+    };
+    
+    let story = StoriesState.stories.find(s => s.userId === targetUserId);
+    
+    if (!story) {
+      const dog = DOGS.find(d => d.id === targetUserId);
+      story = {
+        userId: targetUserId,
+        userName: dog ? dog.name : "Tu",
+        avatar: dog ? dog.img : "plutoo-icon-192.png",
+        verified: dog ? dog.verified : state.plus,
+        media: []
+      };
+      StoriesState.stories.unshift(story);
+    }
+    
+    story.media.push(newMedia);
+    StoriesState.saveStories();
+    
+    closeUploadModal();
+    renderStoriesBar();
+    
+    if(state.currentDogProfile){
+      openProfilePage(state.currentDogProfile);
+    }
+    
+    alert("✅ Story pubblicata!\n\nLa tua Story è ora visibile per 24 ore.\n\n📸 Carica solo foto del tuo cane!");
+  }
+
+  // ✅ Video reward con salvataggio localStorage
+  function showStoryRewardVideo(story, userId) {
+    const modal = $("rewardVideoModal");
+    if (!modal) return;
+    
+    modal.classList.remove("hidden");
+    
+    let countdown = STORIES_CONFIG.REWARD_VIDEO_DURATION;
+    const countdownEl = $("rewardCountdown");
+    const closeBtn = $("closeRewardVideo");
+    
+    if (!countdownEl || !closeBtn) return;
+    
+    countdownEl.textContent = `${countdown}s`;
+    closeBtn.disabled = true;
+    closeBtn.textContent = "Chiudi (attendi...)";
+    
+    const interval = setInterval(() => {
+      countdown--;
+      countdownEl.textContent = `${countdown}s`;
+      
+      if (countdown <= 0) {
+        clearInterval(interval);
+        modal.classList.add("hidden");
+        
+        state.storyRewardViewed[userId] = true;
+        localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
+        
+        openStoryViewerDirect(userId);
+      }
+    }, 1000);
+    
+    const newCloseBtn = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+    
+    newCloseBtn.onclick = () => {
+      if (countdown <= 0) {
+        modal.classList.add("hidden");
+        clearInterval(interval);
+        
+        state.storyRewardViewed[userId] = true;
+        localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
+        
+        openStoryViewerDirect(userId);
+      }
+    };
+  }
+
+  console.log(`
+  ╔═══════════════════════════════════════╗
+  ║                                       ║
+  ║           🐕 PLUTOO 🐕               ║
+  ║                                       ║
+  ║   Social network per cani            ║
+  ║   Versione: 10.0 FINAL RELEASE       ║
+  ║                                       ║
+  ║   ✅ Stories fullscreen              ║
+  ║   ✅ Topbar NASCOSTA                 ║
+  ║   ✅ Plus: NO video + 90s            ║
+  ║   ✅ Free: Video 1x + 15s            ║
+  ║   ✅ Progress bar ANIMATA            ║
+  ║   ✅ PRONTO PER GOOGLE PLAY         ║
+  ║                                       ║
+  ╚═══════════════════════════════════════╝
+  `);
+
 });
