@@ -1,70 +1,55 @@
 # 🐾 Plutoo
 
-**Plutoo** è l’app pensata per connettere i proprietari di cani:  
-puoi scoprire altri DOG vicino a te, mettere “mi piace” (💛), fare match, aprire i profili, chattare e condividere le **Stories** come su Instagram.
+**Plutoo** è l’app che fa incontrare i nostri amici a quattro zampe per **accoppiamento e amicizia**.  
+Cerca la tua stessa razza, scopri profili compatibili **vicino a te o dove preferisci**, e condividi la tua passione con altri proprietari.
 
 ---
 
-## 🚀 Come provarla
-1. Scarica o clona il progetto  
-2. Apri il file `index.html` in un browser (consigliato **Chrome** o **Brave**)  
+## 💛 Funzionalità principali
 
-Non serve installare nulla: è una **web app PWA** pienamente funzionante.
-
----
-
-## 📁 Struttura del progetto
-- `index.html` → home e struttura principale  
-- `style.css` → grafica, tema viola/oro e layout responsive  
-- `app.js` → logica dell’app: profili, swipe, match, chat, stories, Plus, filtri e reward  
+- **Vicino a te** → scopri dogs compatibili nella tua zona  
+- **Amore** → swipe e match per accoppiamento  
+- **Social** → conosci nuovi amici a quattro zampe  
+- **Chat** → messaggia in modo semplice e sicuro  
+- **Filtri e razze** → trova dogs per razza, età, sesso e compatibilità  
+- **Badge verifica** → profili verificati con documenti reali  
+- **Servizi Pet** → veterinari, toelettature e negozi intorno a te  
+- **Plutoo Plus** → rimuove la pubblicità e sblocca funzioni Gold  
 
 ---
 
-## ✨ Funzionalità principali
-✅ Tema scuro elegante (viola profondo + accenti oro)  
-✅ Home con logo grande, bandierine 🇮🇹🇬🇧, login/registrazione  
-✅ Sezione **Vicino a te**: griglia 2xN con card dei DOG  
-✅ Sezione **Amore** (swipe) e **Amicizia** (nuova sezione)  
-✅ Sezione **Luoghi PET** con veterinari, toelettature, parchi, negozi, addestratori e pensioni  
-✅ Sezione **Ricerca personalizzata** con filtri base e filtri Gold (Plus)  
-✅ Sezione **Stories** (foto 15s, video fino a 90s, musica, filtri, pubbliche o private)  
-✅ Sistema **Plus**: rimuove pubblicità, sblocca filtri Gold e storie illimitate  
-✅ **Badge verifica** con documenti proprietario e vaccini DOG  
-✅ **Selfie blur**: si sblocca con reward o sempre visibile per utenti Plus  
-✅ **Reward video** per selfie, stories, servizi, messaggi, swipe  
-✅ **Banner sponsor** “Fido – il gelato per i tuoi amici a quattro zampe” in fondo pagina  
-✅ Messaggi solo dopo match o con reward (chat centrata nel profilo DOG)  
-✅ Animazioni fluide (viola + oro), layout fisso e stabile senza scroll involontari  
-✅ Tutto compatibile con Android WebView  
+## 🌍 Mission
+
+Plutoo nasce per favorire **incontri responsabili tra dogs compatibili**, promuovendo il **benessere, la socialità e l’accoppiamento consapevole**.  
+Non è un gioco: ogni profilo è pensato per rappresentare con cura il proprio compagno a quattro zampe.
 
 ---
 
-## 💎 Plutoo Plus
-- Nessuna pubblicità  
-- Nessun video reward  
-- Filtri Gold attivi  
-- Storie illimitate  
-- Swipe e messaggi liberi  
-- Accesso diretto ai luoghi PET  
+## 💼 Sponsor ufficiale
+
+**Fido – il gelato per i tuoi amici a quattro zampe**  
+[www.gelatofido.it](https://www.gelatofido.it)
 
 ---
 
-## 🧩 Tecnico
-- **PWA completa** con `manifest.json` e `service worker`  
-- Deploy su **Vercel** → [plutoo-official.vercel.app](https://plutoo-official.vercel.app)  
-- Build Android con **GitHub Actions** (JDK 17)  
-- Ads e Billing pronti per integrazione reale  
+## 📲 Link ufficiali
+
+- 🌐 [Sito web](https://plutoo-official.vercel.app)  
+- 📸 [Instagram](https://www.instagram.com/plutoo.app)  
+- 🎬 [TikTok](https://www.tiktok.com/@plutoo.app)  
+- 📘 [Facebook](https://www.facebook.com/PlutooApp)  
+- ▶️ [YouTube Shorts](https://www.youtube.com/@plutoo.app)
 
 ---
 
-## 🐕 Versione stabile
-**Release:** v1.0.0 (base completa e funzionante)  
-Tutte le modifiche future verranno aggiunte in nuove release (v1.1, v2, …).  
-Puoi sempre tornare a questa versione stabile se serve.
+## 📧 Contatti
+
+Email ufficiale: **plutoo.team@gmail.com**
 
 ---
 
-## ❤️ Nota
-Questa è la versione definitiva testata su Android e web.  
-Tutti i file (`index.html`, `style.css`, `app.js`) sono completi e sincronizzati.  
-L’app è pronta per la distribuzione e pubblicazione ufficiale.
+## ⚖️ Note legali
+
+Consulta la nostra  
+- [Privacy Policy](https://plutoo-official.vercel.app/privacy.html)  
+- [Termini di Servizio](https://plutoo-official.vercel.app/terms.html)
