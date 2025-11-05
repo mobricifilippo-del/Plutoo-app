@@ -10,7 +10,7 @@
       ]
     },
     {
-      "source": "/(.*)\\.(js|css|json|map)",
+      "source": "/(.*)\\.(js|css|json|map|png|jpg|jpeg|webp|svg)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, max-age=0" }
       ]
