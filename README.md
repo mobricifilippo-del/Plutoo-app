@@ -20,8 +20,7 @@ Cerca la tua stessa razza, scopri profili compatibili **vicino a te o dove prefe
 
 ## 🌍 Mission
 
-Plutoo nasce per favorire **incontri responsabili tra dogs compatibili**, promuovendo il **benessere, la socialità e l’accoppiamento consapevole**.  
-Non è un gioco: ogni profilo è pensato per rappresentare con cura il proprio compagno a quattro zampe.
+Plutoo nasce per favorire **incontri responsabili tra dogs compatibili**, promuovendo il **benessere, la socialità e l’accoppiamento consapevole**.
 
 ---
 
@@ -38,7 +37,7 @@ Non è un gioco: ogni profilo è pensato per rappresentare con cura il proprio c
 - 📸 [Instagram](https://www.instagram.com/plutoo.app)  
 - 🎬 [TikTok](https://www.tiktok.com/@plutoo.app)  
 - 📘 [Facebook](https://www.facebook.com/PlutooApp)  
-- ▶️ [YouTube Shorts](https://www.youtube.com/@plutoo.app)
+- ▶️ [YouTube Shorts](https://youtube.com/@plutooapp-y1j?si=b63bhO6_e8Dr2GZ4)
 
 ---
 
