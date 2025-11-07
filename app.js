@@ -4,6 +4,8 @@
    ✅ Plus: Stories senza video + video 90 secondi
    ✅ Free: Video reward + video 15 secondi
    ✅ Progress bar FUNZIONANTE
+   ✅ Chat profilo CORRETTA
+   ✅ Social icons con video reward
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -114,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded")||"{}"),
     dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded")||"{}"),
     storyRewardViewed: JSON.parse(localStorage.getItem("storyRewardViewed")||"{}"),
+    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed")||"{}"),
     currentLoveIdx: 0,
     currentPlayIdx: 0,
     currentView: "nearby",
@@ -145,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       enter: "Entra",
       sponsorTitle: "Sponsor ufficiale",
       sponsorCopy: "Fido, il gelato per i nostri amici a quattro zampe",
-      sponsorUrl: "https://www.fido.it/",
+      sponsorUrl: "https://www.gelatofido.it/",
       ethicsLine1: "Non abbandonare mai i tuoi amici",
       ethicsLine2: "(canili nelle vicinanze)",
       terms: "Termini",
@@ -211,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
       enter: "Enter",
       sponsorTitle: "Official Sponsor",
       sponsorCopy: "Fido, ice cream for our four-legged friends",
-      sponsorUrl: "https://www.fido.it/",
+      sponsorUrl: "https://www.gelatofido.it/",
       ethicsLine1: "Never abandon your friends",
       ethicsLine2: "(animal shelters nearby)",
       terms: "Terms",
@@ -302,17 +305,89 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-   // 8 PROFILI DOG
-const DOGS = [
-  { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dogs/dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
-  { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dogs/dog2.jpg", bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
-  { id:"d3", name:"Maya",   age:3, breed:"Bulldog Francese", km:2.1, img:"dogs/dog3.jpg", bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false, weight:12, height:30, pedigree:false, breeding:false, size:"small" },
-  { id:"d4", name:"Rocky",  age:5, breed:"Beagle",           km:4.0, img:"dogs/dog4.jpg", bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true, weight:15, height:38, pedigree:true, breeding:false, size:"medium" },
-  { id:"d5", name:"Chicco", age:1, breed:"Barboncino",       km:0.8, img:"dogs/dog5.jpg", bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, weight:8, height:28, pedigree:false, breeding:false, size:"small" },
-  { id:"d6", name:"Kira",   age:6, breed:"Labrador",         km:5.1, img:"dogs/dog6.jpg", bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true, weight:30, height:58, pedigree:true, breeding:true, size:"large" },
-  { id:"d7", name:"Toby",   age:2, breed:"Husky",            km:2.8, img:"dogs/dog7.jpg", bio:"Energia pura.", mode:"love", sex:"M", verified:true, weight:25, height:54, pedigree:true, breeding:true, size:"medium" },
-  { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dogs/dog8.jpg", bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
-];
+  // 8 PROFILI DOG CON SOCIAL
+  const DOGS = [
+    { 
+      id:"d1", name:"Luna", age:2, breed:"Golden Retriever", km:1.2, img:"dogs/dog1.jpg", 
+      bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, 
+      weight:28, height:55, pedigree:true, breeding:false, size:"medium",
+      social: {
+        facebook: { enabled: true, url: "https://facebook.com/luna.owner" },
+        instagram: { enabled: true, url: "https://instagram.com/luna_goldenretriever" },
+        tiktok: { enabled: false, url: "" }
+      }
+    },
+    { 
+      id:"d2", name:"Rex", age:4, breed:"Pastore Tedesco", km:3.4, img:"dogs/dog2.jpg", 
+      bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true, 
+      weight:35, height:62, pedigree:true, breeding:true, size:"large",
+      social: {
+        facebook: { enabled: false, url: "" },
+        instagram: { enabled: true, url: "https://instagram.com/rex_pastore" },
+        tiktok: { enabled: true, url: "https://tiktok.com/@rexdog" }
+      }
+    },
+    { 
+      id:"d3", name:"Maya", age:3, breed:"Bulldog Francese", km:2.1, img:"dogs/dog3.jpg", 
+      bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false, 
+      weight:12, height:30, pedigree:false, breeding:false, size:"small",
+      social: {
+        facebook: { enabled: true, url: "https://facebook.com/maya.owner" },
+        instagram: { enabled: true, url: "https://instagram.com/maya_frenchie" },
+        tiktok: { enabled: false, url: "" }
+      }
+    },
+    { 
+      id:"d4", name:"Rocky", age:5, breed:"Beagle", km:4.0, img:"dogs/dog4.jpg", 
+      bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true, 
+      weight:15, height:38, pedigree:true, breeding:false, size:"medium",
+      social: {
+        facebook: { enabled: false, url: "" },
+        instagram: { enabled: true, url: "https://instagram.com/rocky_beagle" },
+        tiktok: { enabled: true, url: "https://tiktok.com/@rockybeagle" }
+      }
+    },
+    { 
+      id:"d5", name:"Chicco", age:1, breed:"Barboncino", km:0.8, img:"dogs/dog5.jpg", 
+      bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, 
+      weight:8, height:28, pedigree:false, breeding:false, size:"small",
+      social: {
+        facebook: { enabled: true, url: "https://facebook.com/chicco.owner" },
+        instagram: { enabled: false, url: "" },
+        tiktok: { enabled: false, url: "" }
+      }
+    },
+    { 
+      id:"d6", name:"Kira", age:6, breed:"Labrador", km:5.1, img:"dogs/dog6.jpg", 
+      bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true, 
+      weight:30, height:58, pedigree:true, breeding:true, size:"large",
+      social: {
+        facebook: { enabled: true, url: "https://facebook.com/kira.owner" },
+        instagram: { enabled: true, url: "https://instagram.com/kira_labrador" },
+        tiktok: { enabled: true, url: "https://tiktok.com/@kiralab" }
+      }
+    },
+    { 
+      id:"d7", name:"Toby", age:2, breed:"Husky", km:2.8, img:"dogs/dog7.jpg", 
+      bio:"Energia pura.", mode:"love", sex:"M", verified:true, 
+      weight:25, height:54, pedigree:true, breeding:true, size:"medium",
+      social: {
+        facebook: { enabled: false, url: "" },
+        instagram: { enabled: true, url: "https://instagram.com/toby_husky" },
+        tiktok: { enabled: false, url: "" }
+      }
+    },
+    { 
+      id:"d8", name:"Bella", age:4, breed:"Cocker Spaniel", km:1.5, img:"dogs/dog8.jpg", 
+      bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false, 
+      weight:14, height:40, pedigree:false, breeding:false, size:"medium",
+      social: {
+        facebook: { enabled: true, url: "https://facebook.com/bella.owner" },
+        instagram: { enabled: true, url: "https://instagram.com/bella_cocker" },
+        tiktok: { enabled: true, url: "https://tiktok.com/@bellacocker" }
+      }
+    }
+  ];
 
   // Razze
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
@@ -357,7 +432,7 @@ const DOGS = [
   });
     
   // Sponsor UFFICIALE Fido
-  function openSponsor(){ window.open("https://www.fido.it/", "_blank", "noopener"); }
+  function openSponsor(){ window.open("https://www.gelatofido.it/", "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
@@ -438,12 +513,12 @@ const DOGS = [
   document.addEventListener("click",()=>tabLuoghi?.parentElement.classList.remove("open"));
 
   (luoghiMenu ? qa(".menu-item", luoghiMenu) : []).forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const cat = btn.getAttribute("data-cat");
-    tabLuoghi?.parentElement?.classList.remove("open");
-    openMapsCategory(cat);
+    btn.addEventListener("click", ()=>{
+      const cat = btn.getAttribute("data-cat");
+      tabLuoghi?.parentElement?.classList.remove("open");
+      openMapsCategory(cat);
+    });
   });
-});
 
   function setActiveView(name){
     if (state.currentView !== name && state.currentView !== "profile"){
@@ -872,7 +947,59 @@ const DOGS = [
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // PROFILO DOG CON SEZIONE STORIES
+  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION
+  function generateSocialSection(dog) {
+    if (!dog.social) return "";
+    
+    const enabledSocials = [];
+    
+    if (dog.social.facebook?.enabled && dog.social.facebook.url) {
+      enabledSocials.push({
+        name: "Facebook",
+        icon: "📘",
+        url: dog.social.facebook.url,
+        class: "social-fb"
+      });
+    }
+    
+    if (dog.social.instagram?.enabled && dog.social.instagram.url) {
+      enabledSocials.push({
+        name: "Instagram",
+        icon: "📷",
+        url: dog.social.instagram.url,
+        class: "social-ig"
+      });
+    }
+    
+    if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
+      enabledSocials.push({
+        name: "TikTok",
+        icon: "🎵",
+        url: dog.social.tiktok.url,
+        class: "social-tt"
+      });
+    }
+    
+    if (enabledSocials.length === 0) return "";
+    
+    return `
+      <div class="pp-social-section">
+        <h3 class="section-title">
+          ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
+        </h3>
+        <div class="social-icons">
+          ${enabledSocials.map(s => `
+            <button class="social-icon ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
+              <span class="social-emoji">${s.icon}</span>
+              <span class="social-name">${s.name}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // PROFILO DOG CON SEZIONE STORIES + SOCIAL
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
@@ -982,6 +1109,8 @@ const DOGS = [
         </div>
       </div>
 
+      ${generateSocialSection(d)}
+
       <div class="pp-actions">
         <button id="btnLikeDog" class="btn accent">💛 Like</button>
         <button id="btnDislikeDog" class="btn outline">🥲 ${state.lang==="it"?"Passa":"Pass"}</button>
@@ -1039,6 +1168,39 @@ const DOGS = [
       });
     });
 
+    // ✅ SOCIAL ICONS CON VIDEO REWARD
+    qa(".social-icon", profileContent).forEach(icon => {
+      icon.addEventListener("click", ()=>{
+        const url = icon.getAttribute("data-url");
+        const dogId = icon.getAttribute("data-dog-id");
+        const socialType = icon.getAttribute("data-social");
+        
+        if (!url) return;
+        
+        const rewardKey = `${dogId}_${socialType}`;
+        
+        if (state.plus) {
+          window.open(url, "_blank", "noopener");
+          return;
+        }
+        
+        if (state.socialRewardViewed[rewardKey]) {
+          window.open(url, "_blank", "noopener");
+          return;
+        }
+        
+        if (state.rewardOpen) return;
+        state.rewardOpen = true;
+        
+        showRewardVideoMock("social", ()=>{
+          state.rewardOpen = false;
+          state.socialRewardViewed[rewardKey] = true;
+          localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
+          window.open(url, "_blank", "noopener");
+        });
+      });
+    });
+
     $("btnLikeDog").onclick = ()=>{
       state.matches[d.id] = true;
       localStorage.setItem("matches", JSON.stringify(state.matches));
@@ -1050,9 +1212,9 @@ const DOGS = [
       closeProfilePage();
     };
 
+    // ✅ FIX CHAT: Apri chat DENTRO il profilo
     $("btnOpenChat").onclick = ()=>{
-      closeProfilePage();
-      setTimeout(()=>openChat(d), 180);
+      openChat(d);
     };
 
     $("btnFriendship").onclick = ()=>{
@@ -1214,13 +1376,15 @@ const DOGS = [
         swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nProssima soglia: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
         selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
-        services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services"
+        services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services",
+        social: "🎬 Reward Video Mock\n(apertura profilo social)\n\nTipo: Social Unlock"
       },
       en: {
         swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nNext threshold: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
         selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
-        services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services"
+        services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services",
+        social: "🎬 Reward Video Mock\n(opening social profile)\n\nType: Social Unlock"
       }
     };
     const text = msg[state.lang][type] || msg.it[type];
@@ -1260,8 +1424,8 @@ const DOGS = [
   
   const STORIES_CONFIG = {
     PHOTO_DURATION: 15000,
-    VIDEO_MAX_DURATION_FREE: 15,  // ✅ Free: 15 secondi
-    VIDEO_MAX_DURATION_PLUS: 90,  // ✅ Plus: 90 secondi
+    VIDEO_MAX_DURATION_FREE: 15,
+    VIDEO_MAX_DURATION_PLUS: 90,
     MAX_PHOTO_SIZE: 10 * 1024 * 1024,
     MAX_VIDEO_SIZE: 50 * 1024 * 1024,
     STORY_LIFETIME: 24 * 60 * 60 * 1000,
@@ -1315,66 +1479,67 @@ const DOGS = [
     },
     
     generateMockStories() {
-  return [
-    {
-      userId: "d1",
-      userName: "Luna",
-      avatar: "dogs/dog1.jpg",
-      verified: true,
-      media: [{
-        id: "m1",
-        type: "image",
-        url: "dogs/dog1.jpg",
-        timestamp: Date.now() - 3600000,
-        filter: "none",
-        music: "",
-        viewed: false
-      }]
-    },
-    {
-      userId: "d2",
-      userName: "Rex",
-      avatar: "dogs/dog2.jpg",
-      verified: true,
-      media: [
+      return [
         {
-          id: "m2",
-          type: "image",
-          url: "dogs/dog2.jpg",
-          timestamp: Date.now() - 7200000,
-          filter: "warm",
-          music: "happy",
-          viewed: false
+          userId: "d1",
+          userName: "Luna",
+          avatar: "dogs/dog1.jpg",
+          verified: true,
+          media: [{
+            id: "m1",
+            type: "image",
+            url: "dogs/dog1.jpg",
+            timestamp: Date.now() - 3600000,
+            filter: "none",
+            music: "",
+            viewed: false
+          }]
         },
         {
-          id: "m3",
-          type: "image",
-          url: "dogs/dog2.jpg",
-          timestamp: Date.now() - 5400000,
-          filter: "sepia",
-          music: "",
-          viewed: false
+          userId: "d2",
+          userName: "Rex",
+          avatar: "dogs/dog2.jpg",
+          verified: true,
+          media: [
+            {
+              id: "m2",
+              type: "image",
+              url: "dogs/dog2.jpg",
+              timestamp: Date.now() - 7200000,
+              filter: "warm",
+              music: "happy",
+              viewed: false
+            },
+            {
+              id: "m3",
+              type: "image",
+              url: "dogs/dog2.jpg",
+              timestamp: Date.now() - 5400000,
+              filter: "sepia",
+              music: "",
+              viewed: false
+            }
+          ]
+        },
+        {
+          userId: "d3",
+          userName: "Maya",
+          avatar: "dogs/dog3.jpg",
+          verified: false,
+          media: [{
+            id: "m4",
+            type: "image",
+            url: "dogs/dog3.jpg",
+            timestamp: Date.now() - 10800000,
+            filter: "grayscale",
+            music: "",
+            viewed: false
+          }]
         }
-      ]
-    },
-    {
-      userId: "d3",
-      userName: "Maya",
-      avatar: "dogs/dog3.jpg",
-      verified: false,
-      media: [{
-        id: "m4",
-        type: "image",
-        url: "dogs/dog3.jpg",
-        timestamp: Date.now() - 10800000,
-        filter: "grayscale",
-        music: "",
-        viewed: false
-      }]
+      ];
     }
-  ];
-}
   };
+
   function initStories() {
     StoriesState.loadStories();
     renderStoriesBar();
@@ -1419,12 +1584,10 @@ const DOGS = [
     });
   }
 
-  // ✅ FUNZIONE CON controllo Plus + Match + Video reward
   function openStoryViewerFromBar(userId) {
     const story = StoriesState.stories.find(s => s.userId === userId);
     if (!story) return;
     
-    // ✅ Se Plus → Apri subito SEMPRE (nessun video)
     if (state.plus) {
       openStoryViewerDirect(userId);
       return;
@@ -1447,14 +1610,13 @@ const DOGS = [
     showStoryRewardVideo(story, userId);
   }
 
-  // ✅ FUNZIONE DIRETTA con body.story-open
   function openStoryViewerDirect(userId) {
     StoriesState.currentStoryUserId = userId;
     StoriesState.currentMediaIndex = 0;
     
     $("storyViewer")?.classList.remove("hidden");
     document.body.classList.add("noscroll");
-    document.body.classList.add("story-open"); // ✅ NASCONDE TOPBAR
+    document.body.classList.add("story-open");
     
     renderStoryViewer();
     startStoryProgress();
@@ -1466,7 +1628,7 @@ const DOGS = [
     
     $("storyViewer")?.classList.remove("hidden");
     document.body.classList.add("noscroll");
-    document.body.classList.add("story-open"); // ✅ NASCONDE TOPBAR
+    document.body.classList.add("story-open");
     
     renderStoryViewer();
     startStoryProgress();
@@ -1490,7 +1652,6 @@ const DOGS = [
     StoriesState.saveStories();
   }
 
-  // ✅ FIX: Progress bar con createElement
   function renderProgressBars(count) {
     const container = $("storyProgressBars");
     if (!container) return;
@@ -1589,12 +1750,11 @@ const DOGS = [
     }
   }
 
-  // ✅ RIMUOVI body.story-open
   function closeStoryViewer() {
     stopStoryProgress();
     $("storyViewer")?.classList.add("hidden");
     document.body.classList.remove("noscroll");
-    document.body.classList.remove("story-open"); // ✅ MOSTRA TOPBAR
+    document.body.classList.remove("story-open");
     renderStoriesBar();
   }
 
@@ -1676,7 +1836,6 @@ const DOGS = [
       video.onloadedmetadata = function() {
         window.URL.revokeObjectURL(video.src);
         
-        // ✅ Controllo durata in base a Plus
         const maxDuration = state.plus 
           ? STORIES_CONFIG.VIDEO_MAX_DURATION_PLUS 
           : STORIES_CONFIG.VIDEO_MAX_DURATION_FREE;
@@ -1833,7 +1992,6 @@ const DOGS = [
     alert("✅ Story pubblicata!\n\nLa tua Story è ora visibile per 24 ore.\n\n📸 Carica solo foto del tuo cane!");
   }
 
-  // ✅ Video reward con salvataggio localStorage
   function showStoryRewardVideo(story, userId) {
     const modal = $("rewardVideoModal");
     if (!modal) return;
@@ -1887,13 +2045,13 @@ const DOGS = [
   ║           🐕 PLUTOO 🐕               ║
   ║                                       ║
   ║   Social network per cani            ║
-  ║   Versione: 10.0 FINAL RELEASE       ║
+  ║   Versione: 11.0 FINAL RELEASE       ║
   ║                                       ║
   ║   ✅ Stories fullscreen              ║
-  ║   ✅ Topbar NASCOSTA                 ║
+  ║   ✅ Chat profilo CORRETTA           ║
+  ║   ✅ Social icons + video reward     ║
   ║   ✅ Plus: NO video + 90s            ║
   ║   ✅ Free: Video 1x + 15s            ║
-  ║   ✅ Progress bar ANIMATA            ║
   ║   ✅ PRONTO PER GOOGLE PLAY         ║
   ║                                       ║
   ╚═══════════════════════════════════════╝
