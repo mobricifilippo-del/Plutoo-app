@@ -437,13 +437,13 @@ const DOGS = [
   });
   document.addEventListener("click",()=>tabLuoghi?.parentElement.classList.remove("open"));
 
-  qa(".menu-item", luoghiMenu).forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const cat = btn.getAttribute("data-cat");
-      tabLuoghi.parentElement.classList.remove("open");
-      openMapsCategory(cat);
-    });
+  (luoghiMenu ? qa(".menu-item", luoghiMenu) : []).forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const cat = btn.getAttribute("data-cat");
+    tabLuoghi?.parentElement?.classList.remove("open");
+    openMapsCategory(cat);
   });
+});
 
   function setActiveView(name){
     if (state.currentView !== name && state.currentView !== "profile"){
