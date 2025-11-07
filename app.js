@@ -302,17 +302,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-  // 8 PROFILI DOG
-  const DOGS = [
-    { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
-    { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dog2.jpg", bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
-    { id:"d3", name:"Maya",   age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg", bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false, weight:12, height:30, pedigree:false, breeding:false, size:"small" },
-    { id:"d4", name:"Rocky",  age:5, breed:"Beagle",           km:4.0, img:"dog4.jpg", bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true, weight:15, height:38, pedigree:true, breeding:false, size:"medium" },
-    { id:"d5", name:"Chicco", age:1, breed:"Barboncino",       km:0.8, img:"dog5.jpg", bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, weight:8, height:28, pedigree:false, breeding:false, size:"small" },
-    { id:"d6", name:"Kira",   age:6, breed:"Labrador",         km:5.1, img:"dog6.jpg", bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true, weight:30, height:58, pedigree:true, breeding:true, size:"large" },
-    { id:"d7", name:"Toby",   age:2, breed:"Husky",            km:2.8, img:"dog7.jpg", bio:"Energia pura.", mode:"love", sex:"M", verified:true, weight:25, height:54, pedigree:true, breeding:true, size:"medium" },
-    { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dog8.jpg", bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
-  ];
+   // 8 PROFILI DOG
+const DOGS = [
+  { id:"d1", name:"Luna",   age:2, breed:"Golden Retriever", km:1.2, img:"dogs/dog1.jpg", bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, weight:28, height:55, pedigree:true, breeding:false, size:"medium" },
+  { id:"d2", name:"Rex",    age:4, breed:"Pastore Tedesco",  km:3.4, img:"dogs/dog2.jpg", bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true, weight:35, height:62, pedigree:true, breeding:true, size:"large" },
+  { id:"d3", name:"Maya",   age:3, breed:"Bulldog Francese", km:2.1, img:"dogs/dog3.jpg", bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false, weight:12, height:30, pedigree:false, breeding:false, size:"small" },
+  { id:"d4", name:"Rocky",  age:5, breed:"Beagle",           km:4.0, img:"dogs/dog4.jpg", bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true, weight:15, height:38, pedigree:true, breeding:false, size:"medium" },
+  { id:"d5", name:"Chicco", age:1, breed:"Barboncino",       km:0.8, img:"dogs/dog5.jpg", bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, weight:8, height:28, pedigree:false, breeding:false, size:"small" },
+  { id:"d6", name:"Kira",   age:6, breed:"Labrador",         km:5.1, img:"dogs/dog6.jpg", bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true, weight:30, height:58, pedigree:true, breeding:true, size:"large" },
+  { id:"d7", name:"Toby",   age:2, breed:"Husky",            km:2.8, img:"dogs/dog7.jpg", bio:"Energia pura.", mode:"love", sex:"M", verified:true, weight:25, height:54, pedigree:true, breeding:true, size:"medium" },
+  { id:"d8", name:"Bella",  age:4, breed:"Cocker Spaniel",   km:1.5, img:"dogs/dog8.jpg", bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false, weight:14, height:40, pedigree:false, breeding:false, size:"medium" }
+];
 
   // Razze
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
@@ -1315,67 +1315,65 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     
     generateMockStories() {
-      return [
+  return [
+    {
+      userId: "d1",
+      userName: "Luna",
+      avatar: "dogs/dog1.jpg",
+      verified: true,
+      media: [{
+        id: "m1",
+        type: "image",
+        url: "dogs/dog1.jpg",
+        timestamp: Date.now() - 3600000,
+        filter: "none",
+        music: "",
+        viewed: false
+      }]
+    },
+    {
+      userId: "d2",
+      userName: "Rex",
+      avatar: "dogs/dog2.jpg",
+      verified: true,
+      media: [
         {
-          userId: "d1",
-          userName: "Luna",
-          avatar: "dog1.jpg",
-          verified: true,
-          media: [{
-            id: "m1",
-            type: "image",
-            url: "dog1.jpg",
-            timestamp: Date.now() - 3600000,
-            filter: "none",
-            music: "",
-            viewed: false
-          }]
+          id: "m2",
+          type: "image",
+          url: "dogs/dog2.jpg",
+          timestamp: Date.now() - 7200000,
+          filter: "warm",
+          music: "happy",
+          viewed: false
         },
         {
-          userId: "d2",
-          userName: "Rex",
-          avatar: "dog2.jpg",
-          verified: true,
-          media: [
-            {
-              id: "m2",
-              type: "image",
-              url: "dog2.jpg",
-              timestamp: Date.now() - 7200000,
-              filter: "warm",
-              music: "happy",
-              viewed: false
-            },
-            {
-              id: "m3",
-              type: "image",
-              url: "dog3.jpg",
-              timestamp: Date.now() - 5400000,
-              filter: "sepia",
-              music: "",
-              viewed: false
-            }
-          ]
-        },
-        {
-          userId: "d3",
-          userName: "Maya",
-          avatar: "dog3.jpg",
-          verified: false,
-          media: [{
-            id: "m4",
-            type: "image",
-            url: "dog4.jpg",
-            timestamp: Date.now() - 10800000,
-            filter: "grayscale",
-            music: "",
-            viewed: false
-          }]
+          id: "m3",
+          type: "image",
+          url: "dogs/dog2.jpg",
+          timestamp: Date.now() - 5400000,
+          filter: "sepia",
+          music: "",
+          viewed: false
         }
-      ];
+      ]
+    },
+    {
+      userId: "d3",
+      userName: "Maya",
+      avatar: "dogs/dog3.jpg",
+      verified: false,
+      media: [{
+        id: "m4",
+        type: "image",
+        url: "dogs/dog3.jpg",
+        timestamp: Date.now() - 10800000,
+        filter: "grayscale",
+        music: "",
+        viewed: false
+      }]
     }
-  };
-
+  ];
+}
   function initStories() {
     StoriesState.loadStories();
     renderStoriesBar();
