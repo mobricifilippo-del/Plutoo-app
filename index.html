@@ -212,7 +212,6 @@
       </form>
     </aside>
 
-    <!-- ✅ PROFILO PAGINA CON STORIES + BANNER ADMOB -->
     <section id="profilePage" class="profile-page hidden">
       <header class="profile-navbar">
         <button id="profileBack" class="btn tiny ghost" type="button">← Indietro</button>
@@ -220,7 +219,6 @@
         <button id="profileClose" class="btn tiny ghost" type="button">✕</button>
       </header>
       <div id="profileContent" class="profile-content"></div>
-      <!-- ✅ Banner AdMob fisso in fondo -->
       <div class="profile-ad-banner">
         <div class="ad-banner-profile">Banner AdMob • Monetizzazione</div>
       </div>
@@ -229,7 +227,7 @@
     <footer class="sponsor">
       <div class="sponsor-wrap">
         <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-        <a id="sponsorLinkApp" href="https://www.fido.it/" target="_blank" rel="noopener" aria-label="Apri sponsor Fido">
+        <a id="sponsorLinkApp" href="https://www.gelatofido.it/" target="_blank" rel="noopener" aria-label="Apri sponsor Fido">
           <img src="sponsor-logo.png" alt="Fido" class="sponsor-logo" />
         </a>
         <div class="sponsor-copy">Fido, il gelato per i nostri amici a quattro zampe</div>
@@ -490,7 +488,18 @@
       <img src="plutoo-icon-512.png" alt="Plutoo" class="match-logo" />
       <h2 class="match-title">È un Match!</h2>
     </div>
-    <!-- JS -->
-<script src="app.js" defer></script>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(reg => reg.unregister());
+      });
+      caches.keys().then(keys => {
+        keys.forEach(key => caches.delete(key));
+      });
+    }
+  </script>
+  <script src="app.js?v=12" defer></script>
 </body>
-</html> 
+</html>
