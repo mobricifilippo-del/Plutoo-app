@@ -13,6 +13,16 @@
   <link rel="icon" href="plutoo-icon-192.png" />
   <link rel="apple-touch-icon" href="plutoo-icon-512.png" />
 
+  <!-- ✅ PRELOAD IMMAGINI DA /dogs/ -->
+  <link rel="preload" href="dogs/dog1.jpg" as="image" />
+  <link rel="preload" href="dogs/dog2.jpg" as="image" />
+  <link rel="preload" href="dogs/dog3.jpg" as="image" />
+  <link rel="preload" href="dogs/dog4.jpg" as="image" />
+  <link rel="preload" href="dogs/dog5.jpg" as="image" />
+  <link rel="preload" href="dogs/dog6.jpg" as="image" />
+  <link rel="preload" href="dogs/dog7.jpg" as="image" />
+  <link rel="preload" href="dogs/dog8.jpg" as="image" />
+
   <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
   <noscript>Attiva JavaScript per usare Plutoo.</noscript>
@@ -137,7 +147,7 @@
         </div>
         <h2 id="loveTitle" class="visually-hidden">Amore</h2>
         <article id="loveCard" class="card swipe">
-          <img id="loveImg" class="card-img" src="dog1.jpg" alt="Foto dog" />
+          <img id="loveImg" class="card-img" src="dogs/dog1.jpg" alt="Foto dog" />
           <div class="card-info">
             <h3 id="loveTitleTxt">Nome · Età</h3>
             <p id="loveMeta" class="meta">Razza · Distanza</p>
@@ -156,7 +166,7 @@
         </div>
         <h2 id="playTitle" class="visually-hidden" data-i18n="friendship">Amicizia</h2>
         <article id="playCard" class="card swipe">
-          <img id="playImg" class="card-img" src="dog2.jpg" alt="Foto dog" />
+          <img id="playImg" class="card-img" src="dogs/dog2.jpg" alt="Foto dog" />
           <div class="card-info">
             <h3 id="playTitleTxt">Nome · Età</h3>
             <p id="playMeta" class="meta">Razza · Distanza</p>
@@ -368,7 +378,6 @@
           <li><span class="check">✓</span> <span data-i18n="plusFeature3">Messaggi illimitati</span></li>
           <li><span class="check">✓</span> <span data-i18n="plusFeature4">Tutti i filtri Gold sbloccati</span></li>
           <li><span class="check">✓</span> <span data-i18n="plusFeature5">Supporto prioritario</span></li>
-          <!-- ✅ NUOVE VOCI AGGIUNTE -->
           <li><span class="check">✓</span> <span data-i18n="plusFeature6">Vedi tutte le Stories senza video</span></li>
           <li><span class="check">✓</span> <span data-i18n="plusFeature7">Stories video fino a 90 secondi</span></li>
         </ul>
@@ -482,14 +491,3 @@
       <h2 class="match-title">È un Match!</h2>
     </div>
   </div>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-      });
-    }
-  </script>
-  <script src="app.js" defer></script>
-</body>
-</html>
