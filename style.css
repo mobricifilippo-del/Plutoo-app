@@ -2,8 +2,8 @@
    PLUTOO – VIOLET EDITION + STORIES + PROFILO COMPLETO
    ✅ FIX: Banner AdMob nel profilo
    ✅ FIX: Sezione Stories nel profilo
-   ✅ "Giochiamo insieme" → "Amicizia"
    ✅ FIX: Stories fullscreen + topbar nascosta
+   ✅ NEW: Social icons profilo DOG
    ===================================================== */
 
 :root{
@@ -449,6 +449,62 @@ a{color:inherit;text-decoration:none}
   border-radius:8px;
   font-size:.7rem;
   color:#fff;
+}
+
+/* ✅ SOCIAL PROFILI */
+.pp-social-section {
+  background: rgba(138, 123, 255, 0.06);
+  border: 1px solid rgba(138, 123, 255, 0.25);
+  border-radius: 12px;
+  padding: 0.9rem;
+  margin: 1.2rem 0;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.social-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: rgba(138, 123, 255, 0.1);
+  border: 2px solid rgba(138, 123, 255, 0.3);
+  transition: all 0.25s ease;
+  text-decoration: none;
+  min-width: 85px;
+  cursor: pointer;
+}
+
+.social-icon:hover,
+.social-icon:active {
+  background: linear-gradient(135deg, #E8CE7A, #CDA434);
+  border-color: #CDA434;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(205, 164, 52, 0.4);
+}
+
+.social-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.social-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.social-icon:hover .social-name,
+.social-icon:active .social-name {
+  color: #111;
 }
 
 .pp-docs-section{
