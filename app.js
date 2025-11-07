@@ -1374,6 +1374,7 @@ const DOGS = [
     }
   ];
 }
+  };
   function initStories() {
     StoriesState.loadStories();
     renderStoriesBar();
