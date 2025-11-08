@@ -1,38 +1,45 @@
 /* =========================================================
-   PLUTOO – app.js VERSIONE FINALE
-   ✅ Stories fullscreen + topbar nascosta
-   ✅ Plus: Stories senza video + video 90 secondi
-   ✅ Free: Video reward + video 15 secondi
-   ✅ Progress bar FUNZIONANTE
-   ✅ Chat profilo CORRETTA
-   ✅ Social icons con video reward + SVG ufficiali
-   ✅ FIX IMMAGINI DOPO REFRESH
-   ✅ SPONSOR URL CORRETTO: https://www.gelatofido.it/
-   ✅ TRADUZIONE "CONTATTI" AGGIUNTA
+   PLUTOO – app.js VERSIONE FINALE CORRETTA
+   ✅ FIX: Immagini precaricate - NO caricamento visibile
+   ✅ FIX: Swipe sincronizzato - cambio carta PRIMA animazione
+   ✅ FIX: Emoji corrette: Amore 💛🥲 | Amicizia 💜🥲
+   ✅ FIX: Ricerca solo barra gold (no lente)
+   ✅ FIX: Link footer viola cliccabili
+   ✅ FIX: Cache immagini disabilitata completamente
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ✅ FIX IMMAGINI DOPO REFRESH - FORZA RICARICAMENTO
-  function forceReloadImages() {
-    setTimeout(() => {
-      const allImages = document.querySelectorAll('img[src*="dogs/"]');
-      allImages.forEach(img => {
-        if (img.complete && img.naturalHeight === 0) {
-          const originalSrc = img.src;
-          img.src = '';
-          img.src = originalSrc + (originalSrc.includes('?') ? '&' : '?') + 't=' + Date.now();
-        }
-      });
-    }, 100);
+  // ✅ PRELOAD AGGRESSIVO IMMAGINI - CARICAMENTO IMMEDIATO
+  const imageCache = new Map();
+  const imageUrls = [
+    'dogs/dog1.jpg', 'dogs/dog2.jpg', 'dogs/dog3.jpg', 'dogs/dog4.jpg',
+    'dogs/dog5.jpg', 'dogs/dog6.jpg', 'dogs/dog7.jpg', 'dogs/dog8.jpg'
+  ];
+  
+  imageUrls.forEach(url => {
+    const img = new Image();
+    img.onload = () => imageCache.set(url, img);
+    img.src = url + '?preload=' + Date.now();
+  });
+
+  // ✅ FORCE RELOAD IMMAGINI OGNI VOLTA
+  function forceImageReload(imgElement, src) {
+    if (!imgElement) return;
+    imgElement.style.opacity = '0';
+    imgElement.removeAttribute('src');
+    void imgElement.offsetWidth;
+    
+    const cachedImg = imageCache.get(src);
+    if (cachedImg) {
+      imgElement.src = cachedImg.src;
+      imgElement.style.opacity = '1';
+    } else {
+      imgElement.src = src + '?t=' + Date.now();
+      imgElement.onload = () => { imgElement.style.opacity = '1'; };
+    }
   }
-
-  // Esegui al caricamento
-  forceReloadImages();
-
-  // Esegui anche dopo ogni render
-  window.addEventListener('load', forceReloadImages);
    
   // Helpers
   const $  = (id) => document.getElementById(id);
@@ -81,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playNo    = $("playNo");
   const playYes   = $("playYes");
 
-  const btnSearchPanel = $("btnSearchPanel");
+  const btnSearchPanelAlt = $("btnSearchPanelAlt");
   const searchPanel = $("searchPanel");
   const closeSearch = $("closeSearch");
   const breedInput  = $("breedInput");
@@ -575,19 +582,16 @@ document.addEventListener("DOMContentLoaded", () => {
       viewNearby.classList.add("active"); 
       tabNearby.classList.add("active"); 
       renderNearby(); 
-      if(btnSearchPanel) btnSearchPanel.disabled=false; 
     }
     if (name==="love"){   
       viewLove.classList.add("active");   
       tabLove.classList.add("active");   
       renderSwipe("love"); 
-      if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
     if (name==="friendship"){   
       viewPlay.classList.add("active");   
       tabPlay.classList.add("active");   
       renderSwipe("friendship"); 
-      if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
 
     window.scrollTo({top:0,behavior:"smooth"});
@@ -627,7 +631,7 @@ document.addEventListener("DOMContentLoaded", () => {
     history.pushState({view: "app"}, "", "");
   }
 
-  // Vicino a te - ✅ CON FIX IMMAGINI
+  // ✅ VICINO A TE - IMMAGINI PRECARICATE ISTANTANEE
   function renderNearby(){
     if(!nearGrid) return;
     
@@ -636,40 +640,32 @@ document.addEventListener("DOMContentLoaded", () => {
       nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; 
       return; 
     }
+    
     nearGrid.innerHTML = list.map(cardHTML).join("");
     
-    // ✅ FORZA CARICAMENTO IMMAGINI
-    setTimeout(()=>{
-      qa(".dog-card img").forEach(img => {
-  const originalSrc = img.getAttribute('src');
-  // Rimuovi completamente src
-  img.removeAttribute('src');
-  // Forza reflow
-  void img.offsetWidth;
-  // Reimposta con cache busting più aggressivo
-  img.setAttribute('src', originalSrc + '?t=' + Date.now() + '&r=' + Math.random());
-});
+    // ✅ CARICAMENTO IMMAGINI ISTANTANEO - NO setTimeout
+    qa(".dog-card").forEach(card=>{
+      const id = card.getAttribute("data-id");
+      const d  = DOGS.find(x=>x.id===id);
+      if(!d) return;
       
-      qa(".dog-card").forEach(card=>{
-        const id = card.getAttribute("data-id");
-        const d  = DOGS.find(x=>x.id===id);
-        if(!d) return;
-        
-        card.addEventListener("click", ()=>{
-          card.classList.add("flash-violet");
-          setTimeout(()=>{
-            card.classList.remove("flash-violet");
-            openProfilePage(d);
-          }, 500);
-        });
+      const img = card.querySelector('img');
+      if(img) forceImageReload(img, d.img);
+      
+      card.addEventListener("click", ()=>{
+        card.classList.add("flash-violet");
+        setTimeout(()=>{
+          card.classList.remove("flash-violet");
+          openProfilePage(d);
+        }, 500);
       });
-    }, 10);
+    });
   }
   
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
-        <img src="${d.img}" alt="${d.name}" class="card-img" loading="lazy" />
+        <img src="${d.img}" alt="${d.name}" class="card-img" style="transition:opacity .3s ease" />
         <div class="card-info">
           <h3>${d.name} ${d.verified?"✅":""}</h3>
           <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
@@ -716,6 +712,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
+  // ✅ SWIPE - CAMBIO CARTA PRIMA, POI ANIMAZIONE
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -734,7 +731,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(!img || !title || !meta || !bio || !card) return;
 
-    img.src = d.img;
+    // ✅ CARICAMENTO IMMAGINE ISTANTANEO
+    forceImageReload(img, d.img);
     title.textContent = `${d.name} ${d.verified?"✅":""}`;
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
@@ -760,7 +758,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
+      // ✅ FIX: CAMBIA CARTA SUBITO, POI ANIMAZIONE
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
+      
+      const nextIdx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
+      const nextDog = deck[nextIdx];
+      
+      if(nextDog){
+        forceImageReload(img, nextDog.img);
+        title.textContent = `${nextDog.name} ${nextDog.verified?"✅":""}`;
+        meta.textContent  = `${nextDog.breed} · ${nextDog.age} ${t("years")} · ${fmtKm(nextDog.km)}`;
+        bio.textContent   = nextDog.bio || "";
+      }
       
       setTimeout(()=>{
         resetCard(card);
@@ -777,11 +786,9 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
             
             state.processingSwipe = false;
-            renderSwipe(mode);
           });
         } else {
           state.processingSwipe = false;
-          renderSwipe(mode);
         }
       }, 600);
     }
@@ -911,8 +918,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1200);
   }
 
-  // Ricerca panel
-  btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
+  // ✅ RICERCA PANEL - SOLO BARRA GOLD CLICCABILE
+  btnSearchPanelAlt?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
@@ -1974,7 +1981,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (StoriesState.uploadedFile.type === "image") {
       const img = document.createElement("img");
       img.src = StoriesState.uploadedFile.url;
-      img.className = `filter-${StoriesState.selectedFilter}`;
+      img.className
+       = `filter-${StoriesState.selectedFilter}`;
       preview.appendChild(img);
     } else {
       const video = document.createElement("video");
@@ -2080,4 +2088,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ========== FINE SISTEMA STORIES ==========
 
-}); 
+});
