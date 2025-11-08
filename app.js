@@ -5,20 +5,32 @@
    ✅ Free: Video reward + video 15 secondi
    ✅ Progress bar FUNZIONANTE
    ✅ Chat profilo CORRETTA
-   ✅ Social icons con video reward
+   ✅ Social icons con video reward + SVG ufficiali
+   ✅ FIX IMMAGINI DOPO REFRESH
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
-   // Fix immagini dopo refresh
-if (performance.navigation.type === 1) {
-  const imgs = document.querySelectorAll('img[src^="dogs/"]');
-  imgs.forEach(img => {
-    const src = img.src;
-    img.src = '';
-    setTimeout(() => { img.src = src + '?t=' + Date.now(); }, 10);
-  });
-}
+
+  // ✅ FIX IMMAGINI DOPO REFRESH - FORZA RICARICAMENTO
+  function forceReloadImages() {
+    setTimeout(() => {
+      const allImages = document.querySelectorAll('img[src*="dogs/"]');
+      allImages.forEach(img => {
+        if (img.complete && img.naturalHeight === 0) {
+          const originalSrc = img.src;
+          img.src = '';
+          img.src = originalSrc + (originalSrc.includes('?') ? '&' : '?') + 't=' + Date.now();
+        }
+      });
+    }, 100);
+  }
+
+  // Esegui al caricamento
+  forceReloadImages();
+
+  // Esegui anche dopo ogni render
+  window.addEventListener('load', forceReloadImages);
    
   // Helpers
   const $  = (id) => document.getElementById(id);
@@ -609,7 +621,7 @@ if (performance.navigation.type === 1) {
     history.pushState({view: "app"}, "", "");
   }
 
-  // Vicino a te
+  // Vicino a te - ✅ CON FIX IMMAGINI
   function renderNearby(){
     if(!nearGrid) return;
     
@@ -620,7 +632,16 @@ if (performance.navigation.type === 1) {
     }
     nearGrid.innerHTML = list.map(cardHTML).join("");
     
+    // ✅ FORZA CARICAMENTO IMMAGINI
     setTimeout(()=>{
+      qa(".dog-card img").forEach(img => {
+        const src = img.getAttribute('src');
+        img.src = '';
+        setTimeout(() => {
+          img.src = src + (src.includes('?') ? '&' : '?') + 'cache=' + Date.now();
+        }, 10);
+      });
+      
       qa(".dog-card").forEach(card=>{
         const id = card.getAttribute("data-id");
         const d  = DOGS.find(x=>x.id===id);
@@ -956,57 +977,57 @@ if (performance.navigation.type === 1) {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION
+  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION CON SVG UFFICIALI
   function generateSocialSection(dog) {
-  if (!dog.social) return "";
-  
-  const enabledSocials = [];
-  
-  if (dog.social.facebook?.enabled && dog.social.facebook.url) {
-    enabledSocials.push({
-      name: "Facebook",
-      svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
-      url: dog.social.facebook.url,
-      class: "social-fb"
-    });
-  }
-  
-  if (dog.social.instagram?.enabled && dog.social.instagram.url) {
-    enabledSocials.push({
-      name: "Instagram",
-      svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
-      url: dog.social.instagram.url,
-      class: "social-ig"
-    });
-  }
-  
-  if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
-    enabledSocials.push({
-      name: "TikTok",
-      svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>',
-      url: dog.social.tiktok.url,
-      class: "social-tt"
-    });
-  }
-  
-  if (enabledSocials.length === 0) return "";
-  
-  return `
-    <div class="pp-social-section">
-      <h3 class="section-title">
-        ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
-      </h3>
-      <div class="social-icons">
-        ${enabledSocials.map(s => `
-          <button class="social-icon ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
-            <span class="social-svg">${s.svg}</span>
-            <span class="social-name">${s.name}</span>
-          </button>
-        `).join("")}
+    if (!dog.social) return "";
+    
+    const enabledSocials = [];
+    
+    if (dog.social.facebook?.enabled && dog.social.facebook.url) {
+      enabledSocials.push({
+        name: "Facebook",
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+        url: dog.social.facebook.url,
+        class: "social-fb"
+      });
+    }
+    
+    if (dog.social.instagram?.enabled && dog.social.instagram.url) {
+      enabledSocials.push({
+        name: "Instagram",
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
+        url: dog.social.instagram.url,
+        class: "social-ig"
+      });
+    }
+    
+    if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
+      enabledSocials.push({
+        name: "TikTok",
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>',
+        url: dog.social.tiktok.url,
+        class: "social-tt"
+      });
+    }
+    
+    if (enabledSocials.length === 0) return "";
+    
+    return `
+      <div class="pp-social-section">
+        <h3 class="section-title">
+          ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
+        </h3>
+        <div class="social-icons">
+          ${enabledSocials.map(s => `
+            <button class="social-icon ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
+              <span class="social-svg">${s.svg}</span>
+              <span class="social-name">${s.name}</span>
+            </button>
+          `).join("")}
+        </div>
       </div>
-    </div>
-  `;
-}
+    `;
+  }
 
   // PROFILO DOG CON SEZIONE STORIES + SOCIAL
   window.openProfilePage = (d)=>{
@@ -1981,11 +2002,13 @@ if (performance.navigation.type === 1) {
       story = {
         userId: targetUserId,
         userName: dog ? dog.name : "Tu",
-        avatar: dog ? dog.img : "plutoo-icon-192.png",
-        verified: dog ? dog.verified : state.plus,
+        avatar: dog ? dog.img : "plutoo-icon-192
+           ```javascript
+.png",
+        verified: dog ? dog.verified : false,
         media: []
       };
-      StoriesState.stories.unshift(story);
+      StoriesState.stories.push(story);
     }
     
     story.media.push(newMedia);
@@ -1994,76 +2017,61 @@ if (performance.navigation.type === 1) {
     closeUploadModal();
     renderStoriesBar();
     
-    if(state.currentDogProfile){
+    alert(state.lang === "it" 
+      ? "✅ Story pubblicata con successo!" 
+      : "✅ Story published successfully!");
+    
+    if (state.currentDogProfile) {
       openProfilePage(state.currentDogProfile);
     }
-    
-    alert("✅ Story pubblicata!\n\nLa tua Story è ora visibile per 24 ore.\n\n📸 Carica solo foto del tuo cane!");
   }
 
   function showStoryRewardVideo(story, userId) {
-    const modal = $("rewardVideoModal");
-    if (!modal) return;
+    const modal = document.createElement("div");
+    modal.id = "rewardVideoModal";
+    modal.className = "modal";
+    modal.innerHTML = `
+      <div class="modal-backdrop"></div>
+      <div class="modal-content reward-modal">
+        <button class="modal-close" id="closeRewardVideo">✕</button>
+        <div class="modal-body">
+          <h2 class="reward-title">${state.lang === "it" ? "🎬 Guarda il video per sbloccare" : "🎬 Watch video to unlock"}</h2>
+          <p class="reward-text">${state.lang === "it" 
+            ? `Guarda questo breve video per vedere le Stories di ${story.userName}` 
+            : `Watch this short video to view ${story.userName}'s Stories`}</p>
+          <div class="reward-video-box">
+            <div class="reward-placeholder">
+              <div>📺</div>
+              <div>${state.lang === "it" ? "Video Mock AdMob" : "AdMob Video Mock"}</div>
+              <div style="font-size:.8rem;margin-top:.5rem">${STORIES_CONFIG.REWARD_VIDEO_DURATION}s</div>
+            </div>
+          </div>
+          <button class="btn primary" id="skipRewardVideo" style="width:100%">${state.lang === "it" ? "Continua" : "Continue"}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
     
-    modal.classList.remove("hidden");
+    const closeBtn = modal.querySelector("#closeRewardVideo");
+    const skipBtn = modal.querySelector("#skipRewardVideo");
+    const backdrop = modal.querySelector(".modal-backdrop");
     
-    let countdown = STORIES_CONFIG.REWARD_VIDEO_DURATION;
-    const countdownEl = $("rewardCountdown");
-    const closeBtn = $("closeRewardVideo");
-    
-    if (!countdownEl || !closeBtn) return;
-    
-    countdownEl.textContent = `${countdown}s`;
-    closeBtn.disabled = true;
-    closeBtn.textContent = "Chiudi (attendi...)";
-    
-    const interval = setInterval(() => {
-      countdown--;
-      countdownEl.textContent = `${countdown}s`;
-      
-      if (countdown <= 0) {
-        clearInterval(interval);
-        modal.classList.add("hidden");
-        
-        state.storyRewardViewed[userId] = true;
-        localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
-        
-        openStoryViewerDirect(userId);
-      }
-    }, 1000);
-    
-    const newCloseBtn = closeBtn.cloneNode(true);
-    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-    
-    newCloseBtn.onclick = () => {
-      if (countdown <= 0) {
-        modal.classList.add("hidden");
-        clearInterval(interval);
-        
-        state.storyRewardViewed[userId] = true;
-        localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
-        
-        openStoryViewerDirect(userId);
-      }
+    const cleanup = () => {
+      modal.remove();
     };
+    
+    const complete = () => {
+      state.storyRewardViewed[userId] = true;
+      localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
+      cleanup();
+      openStoryViewerDirect(userId);
+    };
+    
+    closeBtn.addEventListener("click", cleanup);
+    backdrop.addEventListener("click", cleanup);
+    skipBtn.addEventListener("click", complete);
   }
 
-  console.log(`
-  ╔═══════════════════════════════════════╗
-  ║                                       ║
-  ║           🐕 PLUTOO 🐕               ║
-  ║                                       ║
-  ║   Social network per cani            ║
-  ║   Versione: 11.0 FINAL RELEASE       ║
-  ║                                       ║
-  ║   ✅ Stories fullscreen              ║
-  ║   ✅ Chat profilo CORRETTA           ║
-  ║   ✅ Social icons + video reward     ║
-  ║   ✅ Plus: NO video + 90s            ║
-  ║   ✅ Free: Video 1x + 15s            ║
-  ║   ✅ PRONTO PER GOOGLE PLAY         ║
-  ║                                       ║
-  ╚═══════════════════════════════════════╝
-  `);
+  // ========== FINE SISTEMA STORIES ==========
 
 });
