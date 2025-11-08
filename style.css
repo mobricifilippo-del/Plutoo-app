@@ -5,6 +5,8 @@
    ✅ FIX: Stories fullscreen + topbar nascosta
    ✅ FIX: Social icons con SVG ufficiali
    ✅ FIX: Colori link legali ripristinati
+   ✅ FIX: Emoji bottoni swipe corretti
+   ✅ FIX: Link footer viola visibili e cliccabili
    ===================================================== */
 
 :root{
@@ -67,12 +69,12 @@ a{color:inherit;text-decoration:none}
 }
 .plus-icon{font-size:1.1rem;line-height:1}
 
-/* Cerchi swipe */
+/* Cerchi swipe - ✅ EMOJI CORRETTE */
 .card-actions{display:flex;justify-content:center;gap:.85rem;padding:.65rem .85rem .9rem}
 .btn.no,.btn.yes{
   width:60px;height:60px;border-radius:999px;padding:0;
   display:inline-flex;align-items:center;justify-content:center;
-  font-size:1.25rem;line-height:1;background:transparent;
+  font-size:1.4rem;line-height:1;background:transparent;
   border:2px solid rgba(138,123,255,.45);
   box-shadow:0 0 20px rgba(138,123,255,.3) inset, 0 0 24px rgba(138,123,255,.2);
   color:var(--violet-glow);transition:all .2s ease;
@@ -113,14 +115,31 @@ a{color:inherit;text-decoration:none}
 .ethics-lines .l1{font-size:.92rem}
 .ethics-lines .l2{font-size:.82rem;opacity:.75}
 
-/* Link legali - HOME */
+/* Link legali - HOME - ✅ VISIBILI E CLICCABILI */
 .legal-links{margin-top:.7rem;font-size:.9rem}
-.legal-links a{color:var(--muted)}
-.legal-links a:hover{text-decoration:underline}
+.legal-links a{
+  color:var(--muted);
+  text-decoration:none;
+  transition:color .2s ease;
+  cursor:pointer;
+}
+.legal-links a:hover{
+  color:var(--text);
+  text-decoration:underline;
+}
 
-/* Link legali - APP */
-.legal-links.legal-purple a{color:var(--violet)}
-.legal-links.legal-purple a:hover{filter:brightness(1.2)}
+/* Link legali - APP - ✅ VIOLA VISIBILI E CLICCABILI */
+.legal-links.legal-purple a{
+  color:var(--violet);
+  text-decoration:none;
+  transition:all .2s ease;
+  cursor:pointer;
+}
+.legal-links.legal-purple a:hover{
+  color:var(--violet-glow);
+  filter:brightness(1.2);
+  text-decoration:underline;
+}
 
 /* ================= APP / NAVBAR ================= */
 .app{min-height:100vh;display:flex;flex-direction:column}
