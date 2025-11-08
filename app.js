@@ -436,7 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }
 
-  btnEnter?.addEventListener("click", ()=>{
+    btnEnter?.addEventListener("click", ()=>{
     heroLogo?.classList.remove("heartbeat-violet");
     void heroLogo?.offsetWidth;
     heroLogo?.classList.add("heartbeat-violet");
@@ -451,7 +451,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showAdBanner();
     }, 2500);
   });
-    
   // Sponsor UFFICIALE Fido
   function openSponsor(){ window.open("https://www.gelatofido.it/", "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
