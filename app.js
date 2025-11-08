@@ -1,45 +1,67 @@
 /* =========================================================
-   PLUTOO – app.js VERSIONE FINALE CORRETTA
-   ✅ FIX: Immagini precaricate - NO caricamento visibile
-   ✅ FIX: Swipe sincronizzato - cambio carta PRIMA animazione
-   ✅ FIX: Emoji corrette: Amore 💛🥲 | Amicizia 💜🥲
-   ✅ FIX: Ricerca solo barra gold (no lente)
-   ✅ FIX: Link footer viola cliccabili
-   ✅ FIX: Cache immagini disabilitata completamente
+   PLUTOO – app.js VERSIONE FINALE DEFINITIVA
+   ✅ FIX: Immagini mai in cache - sempre fresche
+   ✅ FIX: Stories preload immediato
+   ✅ FIX: Swipe sincronizzato perfetto
+   ✅ FIX: Link footer viola funzionanti
+   ✅ FIX: Logo sponsor locale o fallback
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ✅ PRELOAD AGGRESSIVO IMMAGINI - CARICAMENTO IMMEDIATO
+  // ✅ PRELOAD TOTALE + FORCE NO-CACHE DEFINITIVO
   const imageCache = new Map();
   const imageUrls = [
     'dogs/dog1.jpg', 'dogs/dog2.jpg', 'dogs/dog3.jpg', 'dogs/dog4.jpg',
     'dogs/dog5.jpg', 'dogs/dog6.jpg', 'dogs/dog7.jpg', 'dogs/dog8.jpg'
   ];
-  
+
+  // Preload immediato con no-cache
   imageUrls.forEach(url => {
     const img = new Image();
+    img.crossOrigin = "anonymous";
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(7);
+    img.src = url + '?nocache=' + timestamp + '&id=' + randomId;
     img.onload = () => imageCache.set(url, img);
-    img.src = url + '?preload=' + Date.now();
   });
 
-  // ✅ FORCE RELOAD IMMAGINI OGNI VOLTA
+  // ✅ FORCE RELOAD IMMAGINI - NO CACHE MAI
   function forceImageReload(imgElement, src) {
     if (!imgElement) return;
+    
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(7);
+    
     imgElement.style.opacity = '0';
+    imgElement.style.transition = 'opacity 0.3s ease';
     imgElement.removeAttribute('src');
     void imgElement.offsetWidth;
     
-    const cachedImg = imageCache.get(src);
-    if (cachedImg) {
-      imgElement.src = cachedImg.src;
+    const newSrc = src + '?nocache=' + timestamp + '&id=' + randomId;
+    
+    imgElement.onload = () => {
       imgElement.style.opacity = '1';
-    } else {
-      imgElement.src = src + '?t=' + Date.now();
-      imgElement.onload = () => { imgElement.style.opacity = '1'; };
-    }
+    };
+    
+    imgElement.onerror = () => {
+      console.error('Image load error:', src);
+      imgElement.style.opacity = '1';
+      imgElement.src = 'plutoo-icon-192.png';
+    };
+    
+    imgElement.src = newSrc;
   }
+
+  // Preload all'avvio
+  window.addEventListener('load', function() {
+    imageUrls.forEach(url => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = url + '?preload=' + Date.now();
+    });
+  });
    
   // Helpers
   const $  = (id) => document.getElementById(id);
@@ -1164,6 +1186,14 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // ✅ PRELOAD IMMAGINI PROFILO
+    const profileImgs = qa("img", profileContent);
+    profileImgs.forEach(img => {
+      if(img.src && img.src.includes('dogs/')) {
+        forceImageReload(img, img.src.split('?')[0]);
+      }
+    });
+
     if(dogStories){
       qa(".pp-story-item", profileContent).forEach(item => {
         item.addEventListener("click", ()=>{
@@ -1257,7 +1287,6 @@ document.addEventListener("DOMContentLoaded", () => {
       closeProfilePage();
     };
 
-    // ✅ FIX CHAT: Apri chat DENTRO il profilo
     $("btnOpenChat").onclick = ()=>{
       openChat(d);
     };
@@ -1465,7 +1494,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   init();
 
-  // ========== SISTEMA STORIES (✅ FINALE CON TUTTE LE MODIFICHE) ==========
+  // ========== SISTEMA STORIES (✅ FINALE CON PRELOAD) ==========
   
   const STORIES_CONFIG = {
     PHOTO_DURATION: 15000,
@@ -1606,6 +1635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupFiltersGrid();
   }
 
+  // ✅ RENDER STORIES BAR CON PRELOAD IMMAGINI
   function renderStoriesBar() {
     const container = $("storiesContainer");
     if (!container) return;
@@ -1624,6 +1654,11 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <span class="story-name">${story.userName}</span>
       `;
+      
+      // ✅ PRELOAD IMMAGINE STORY
+      const img = circle.querySelector('img');
+      if(img) forceImageReload(img, story.avatar);
+      
       circle.addEventListener("click", () => openStoryViewerFromBar(story.userId));
       container.appendChild(circle);
     });
@@ -1729,9 +1764,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (media.type === "image") {
       const img = document.createElement("img");
-      img.src = media.url;
       img.alt = "Story";
       img.className = `filter-${media.filter}`;
+      forceImageReload(img, media.url);
       content.appendChild(img);
     } else if (media.type === "video") {
       const video = document.createElement("video");
@@ -1885,7 +1920,8 @@ document.addEventListener("DOMContentLoaded", () => {
           ? STORIES_CONFIG.VIDEO_MAX_DURATION_PLUS 
           : STORIES_CONFIG.VIDEO_MAX_DURATION_FREE;
         
-        if (video.duration > maxDuration) {
+        if (
+video.duration > maxDuration) {
           const msg = state.plus 
             ? `⚠️ Video troppo lungo!\n\nMax ${maxDuration} secondi con Plutoo Plus`
             : `⚠️ Video troppo lungo!\n\nMax ${maxDuration} secondi\n\nCon Plutoo Plus 💎: fino a 90 secondi!`;
@@ -1981,8 +2017,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (StoriesState.uploadedFile.type === "image") {
       const img = document.createElement("img");
       img.src = StoriesState.uploadedFile.url;
-      img.className
-       = `filter-${StoriesState.selectedFilter}`;
+      img.className = `filter-${StoriesState.selectedFilter}`;
       preview.appendChild(img);
     } else {
       const video = document.createElement("video");
