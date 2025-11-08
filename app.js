@@ -10,6 +10,15 @@
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
+   // Fix immagini dopo refresh
+if (performance.navigation.type === 1) {
+  const imgs = document.querySelectorAll('img[src^="dogs/"]');
+  imgs.forEach(img => {
+    const src = img.src;
+    img.src = '';
+    setTimeout(() => { img.src = src + '?t=' + Date.now(); }, 10);
+  });
+}
    
   // Helpers
   const $  = (id) => document.getElementById(id);
