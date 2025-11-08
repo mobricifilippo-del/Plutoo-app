@@ -7,6 +7,8 @@
    ✅ Chat profilo CORRETTA
    ✅ Social icons con video reward + SVG ufficiali
    ✅ FIX IMMAGINI DOPO REFRESH
+   ✅ SPONSOR URL CORRETTO: https://www.gelatofido.it/
+   ✅ TRADUZIONE "CONTATTI" AGGIUNTA
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -174,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ethicsLine2: "(canili nelle vicinanze)",
       terms: "Termini",
       privacy: "Privacy",
+      contact: "Contatti",
       nearby: "Vicino a te",
       love: "Amore",
       friendship: "Amicizia",
@@ -240,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ethicsLine2: "(animal shelters nearby)",
       terms: "Terms",
       privacy: "Privacy",
+      contact: "Contact",
       nearby: "Nearby",
       love: "Love",
       friendship: "Friendship",
@@ -436,7 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }
 
-    btnEnter?.addEventListener("click", ()=>{
+  btnEnter?.addEventListener("click", ()=>{
     heroLogo?.classList.remove("heartbeat-violet");
     void heroLogo?.offsetWidth;
     heroLogo?.classList.add("heartbeat-violet");
@@ -451,8 +455,11 @@ document.addEventListener("DOMContentLoaded", () => {
       showAdBanner();
     }, 2500);
   });
+
   // Sponsor UFFICIALE Fido
-  function openSponsor(){ window.open("https://www.gelatofido.it/", "_blank", "noopener"); }
+  function openSponsor(){ 
+    window.open("https://www.gelatofido.it/", "_blank", "noopener"); 
+  }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
@@ -2001,9 +2008,7 @@ document.addEventListener("DOMContentLoaded", () => {
       story = {
         userId: targetUserId,
         userName: dog ? dog.name : "Tu",
-        avatar: dog ? dog.img : "plutoo-icon-192
-           ```javascript
-.png",
+        avatar: dog ? dog.img : "plutoo-icon-192.png",
         verified: dog ? dog.verified : false,
         media: []
       };
@@ -2073,4 +2078,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ========== FINE SISTEMA STORIES ==========
 
-});
+}); 
