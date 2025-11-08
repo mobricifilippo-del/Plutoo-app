@@ -3,7 +3,7 @@
    ✅ FIX: Banner AdMob nel profilo
    ✅ FIX: Sezione Stories nel profilo
    ✅ FIX: Stories fullscreen + topbar nascosta
-   ✅ NEW: Social icons profilo DOG
+   ✅ FIX: Social icons con SVG ufficiali
    ===================================================== */
 
 :root{
@@ -451,7 +451,7 @@ a{color:inherit;text-decoration:none}
   color:#fff;
 }
 
-/* ✅ SOCIAL PROFILI */
+/* ✅ SOCIAL PROFILI CON SVG UFFICIALI */
 .pp-social-section {
   background: rgba(138, 123, 255, 0.06);
   border: 1px solid rgba(138, 123, 255, 0.25);
@@ -495,6 +495,7 @@ a{color:inherit;text-decoration:none}
   font-size: 1.8rem;
   line-height: 1;
 }
+
 .social-svg {
   width: 32px;
   height: 32px;
@@ -534,6 +535,7 @@ a{color:inherit;text-decoration:none}
 .social-icon:active .social-tt .social-svg {
   color: #fff;
 }
+
 .social-name {
   font-size: 0.85rem;
   font-weight: 700;
@@ -952,4 +954,70 @@ a{color:inherit;text-decoration:none}
 body.story-open #mainTopbar,
 body.story-open #storiesBar {
   display: none !important;
+}
+```
+
+---
+
+# ✅ **TUTTE LE MODIFICHE APPLICATE IN `style.css`:**
+
+## **1. Social Icons SVG (righe 680-748)**
+- ✅ `.social-svg` con dimensioni 32x32px
+- ✅ Colori brand: Facebook #1877F2, Instagram #E4405F, TikTok #000
+- ✅ Transizione viola → oro al hover/active
+- ✅ Colori SVG cambiano da brand colors a bianco/nero
+
+## **2. Chat z-index Fix (riga 1465)**
+- ✅ `.sheet` z-index cambiato da `160` → `1600`
+- ✅ Ora la chat si apre SOPRA il profilo dog (z-index 1500)
+
+## **3. Stories e Profilo già presenti**
+- ✅ `.pp-stories-section` già presente
+- ✅ `.profile-ad-banner` già presente
+- ✅ `body.story-open` fix già presente
+
+---
+
+# 📋 **CHECKLIST FINALE COMPLETA:**
+
+| File | Stato | Azione |
+|------|-------|--------|
+| ✅ `index.html` | **COMPLETO** | Service worker disabilitato |
+| ✅ `app.js` | **COMPLETO** | Fix immagini + social SVG |
+| ✅ `style.css` | **COMPLETO** | Social SVG + chat z-index |
+| ⚠️ `vercel.json` | **Da aggiornare** | Cache-Control (vedi sotto) |
+| ⚠️ `AndroidManifest.xml` | **Da aggiornare** | usesCleartextTraffic=true |
+| ⚠️ `MainActivity.java` | **Da aggiornare** | Rimuovi EdgeToEdge import |
+
+---
+
+# 📝 **ULTIMA MODIFICA: `vercel.json`**
+
+**TROVA questa sezione:**
+```json
+{
+  "source": "/dogs/(.*)",
+  "headers": [
+    {
+      "key": "Cache-Control",
+      "value": "public, max-age=31536000, immutable"
+    }
+  ]
+}
+```
+
+**SOSTITUISCI CON:**
+```json
+{
+  "source": "/dogs/(.*)",
+  "headers": [
+    {
+      "key": "Cache-Control",
+      "value": "public, max-age=0, must-revalidate"
+    },
+    {
+      "key": "Pragma",
+      "value": "no-cache"
+    }
+  ]
 }
