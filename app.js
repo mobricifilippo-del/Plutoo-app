@@ -1,68 +1,12 @@
 /* =========================================================
-   PLUTOO – app.js VERSIONE FINALE DEFINITIVA
-   ✅ FIX: Immagini mai in cache - sempre fresche
-   ✅ FIX: Stories preload immediato
-   ✅ FIX: Swipe sincronizzato perfetto
-   ✅ FIX: Link footer viola funzionanti
-   ✅ FIX: Logo sponsor locale o fallback
+   PLUTOO – app.js VERSIONE PULITA SENZA PRELOAD
+   ✅ Immagini normali - nessun forcing
+   ✅ Cache browser normale
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ✅ PRELOAD TOTALE + FORCE NO-CACHE DEFINITIVO
-  const imageCache = new Map();
-  const imageUrls = [
-    'dogs/dog1.jpg', 'dogs/dog2.jpg', 'dogs/dog3.jpg', 'dogs/dog4.jpg',
-    'dogs/dog5.jpg', 'dogs/dog6.jpg', 'dogs/dog7.jpg', 'dogs/dog8.jpg'
-  ];
-
-  // Preload immediato con no-cache
-  imageUrls.forEach(url => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    const timestamp = Date.now();
-    const randomId = Math.random().toString(36).substring(7);
-    img.src = url + '?nocache=' + timestamp + '&id=' + randomId;
-    img.onload = () => imageCache.set(url, img);
-  });
-
-  // ✅ FORCE RELOAD IMMAGINI - NO CACHE MAI
-  function forceImageReload(imgElement, src) {
-    if (!imgElement) return;
-    
-    const timestamp = Date.now();
-    const randomId = Math.random().toString(36).substring(7);
-    
-    imgElement.style.opacity = '0';
-    imgElement.style.transition = 'opacity 0.3s ease';
-    imgElement.removeAttribute('src');
-    void imgElement.offsetWidth;
-    
-    const newSrc = src + '?nocache=' + timestamp + '&id=' + randomId;
-    
-    imgElement.onload = () => {
-      imgElement.style.opacity = '1';
-    };
-    
-    imgElement.onerror = () => {
-      console.error('Image load error:', src);
-      imgElement.style.opacity = '1';
-      imgElement.src = 'plutoo-icon-192.png';
-    };
-    
-    imgElement.src = newSrc;
-  }
-
-  // Preload all'avvio
-  window.addEventListener('load', function() {
-    imageUrls.forEach(url => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = url + '?preload=' + Date.now();
-    });
-  });
-   
   // Helpers
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
@@ -653,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
     history.pushState({view: "app"}, "", "");
   }
 
-  // ✅ VICINO A TE - IMMAGINI PRECARICATE ISTANTANEE
+  // VICINO A TE
   function renderNearby(){
     if(!nearGrid) return;
     
@@ -665,14 +609,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     nearGrid.innerHTML = list.map(cardHTML).join("");
     
-    // ✅ CARICAMENTO IMMAGINI ISTANTANEO - NO setTimeout
     qa(".dog-card").forEach(card=>{
       const id = card.getAttribute("data-id");
       const d  = DOGS.find(x=>x.id===id);
       if(!d) return;
-      
-      const img = card.querySelector('img');
-      if(img) forceImageReload(img, d.img);
       
       card.addEventListener("click", ()=>{
         card.classList.add("flash-violet");
@@ -687,7 +627,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
-        <img src="${d.img}" alt="${d.name}" class="card-img" style="transition:opacity .3s ease" />
+        <img src="${d.img}" alt="${d.name}" class="card-img" />
         <div class="card-info">
           <h3>${d.name} ${d.verified?"✅":""}</h3>
           <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
@@ -734,7 +674,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // ✅ SWIPE - CAMBIO CARTA PRIMA, POI ANIMAZIONE
+  // SWIPE
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -753,8 +693,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(!img || !title || !meta || !bio || !card) return;
 
-    // ✅ CARICAMENTO IMMAGINE ISTANTANEO
-    forceImageReload(img, d.img);
+    img.src = d.img;
     title.textContent = `${d.name} ${d.verified?"✅":""}`;
     meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
     bio.textContent   = d.bio || "";
@@ -780,14 +719,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      // ✅ FIX: CAMBIA CARTA SUBITO, POI ANIMAZIONE
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
       
       const nextIdx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
       const nextDog = deck[nextIdx];
       
       if(nextDog){
-        forceImageReload(img, nextDog.img);
+        img.src = nextDog.img;
         title.textContent = `${nextDog.name} ${nextDog.verified?"✅":""}`;
         meta.textContent  = `${nextDog.breed} · ${nextDog.age} ${t("years")} · ${fmtKm(nextDog.km)}`;
         bio.textContent   = nextDog.bio || "";
@@ -940,7 +878,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1200);
   }
 
-  // ✅ RICERCA PANEL - SOLO BARRA GOLD CLICCABILE
+  // RICERCA PANEL
   btnSearchPanelAlt?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
@@ -1014,7 +952,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION CON SVG UFFICIALI
+  // FUNZIONE GENERAZIONE SOCIAL SECTION
   function generateSocialSection(dog) {
     if (!dog.social) return "";
     
@@ -1066,7 +1004,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // PROFILO DOG CON SEZIONE STORIES + SOCIAL
+  // PROFILO DOG
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
@@ -1186,14 +1124,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    // ✅ PRELOAD IMMAGINI PROFILO
-    const profileImgs = qa("img", profileContent);
-    profileImgs.forEach(img => {
-      if(img.src && img.src.includes('dogs/')) {
-        forceImageReload(img, img.src.split('?')[0]);
-      }
-    });
-
     if(dogStories){
       qa(".pp-story-item", profileContent).forEach(item => {
         item.addEventListener("click", ()=>{
@@ -1243,7 +1173,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // ✅ SOCIAL ICONS CON VIDEO REWARD
     qa(".social-icon", profileContent).forEach(icon => {
       icon.addEventListener("click", ()=>{
         const url = icon.getAttribute("data-url");
@@ -1494,7 +1423,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   init();
 
-  // ========== SISTEMA STORIES (✅ FINALE CON PRELOAD) ==========
+  // ========== SISTEMA STORIES ==========
   
   const STORIES_CONFIG = {
     PHOTO_DURATION: 15000,
@@ -1635,7 +1564,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupFiltersGrid();
   }
 
-  // ✅ RENDER STORIES BAR CON PRELOAD IMMAGINI
   function renderStoriesBar() {
     const container = $("storiesContainer");
     if (!container) return;
@@ -1654,10 +1582,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <span class="story-name">${story.userName}</span>
       `;
-      
-      // ✅ PRELOAD IMMAGINE STORY
-      const img = circle.querySelector('img');
-      if(img) forceImageReload(img, story.avatar);
       
       circle.addEventListener("click", () => openStoryViewerFromBar(story.userId));
       container.appendChild(circle);
@@ -1764,9 +1688,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (media.type === "image") {
       const img = document.createElement("img");
+      img.src = media.url;
       img.alt = "Story";
       img.className = `filter-${media.filter}`;
-      forceImageReload(img, media.url);
       content.appendChild(img);
     } else if (media.type === "video") {
       const video = document.createElement("video");
@@ -1920,8 +1844,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ? STORIES_CONFIG.VIDEO_MAX_DURATION_PLUS 
           : STORIES_CONFIG.VIDEO_MAX_DURATION_FREE;
         
-        if (
-video.duration > maxDuration) {
+        if (video.duration > maxDuration) {
           const msg = state.plus 
             ? `⚠️ Video troppo lungo!\n\nMax ${maxDuration} secondi con Plutoo Plus`
             : `⚠️ Video troppo lungo!\n\nMax ${maxDuration} secondi\n\nCon Plutoo Plus 💎: fino a 90 secondi!`;
@@ -2076,7 +1999,8 @@ video.duration > maxDuration) {
   }
 
   function showStoryRewardVideo(story, userId) {
-    const modal = document.createElement("div");
+    const modal = document.createElement("
+div");
     modal.id = "rewardVideoModal";
     modal.className = "modal";
     modal.innerHTML = `
@@ -2123,4 +2047,4 @@ video.duration > maxDuration) {
 
   // ========== FINE SISTEMA STORIES ==========
 
-});
+});                      
