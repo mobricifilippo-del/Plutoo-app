@@ -27,11 +27,13 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('DOMContentLoaded', function() {
   const imageUrls = [
     'dogs/dog1.jpg', 'dogs/dog2.jpg', 'dogs/dog3.jpg', 'dogs/dog4.jpg',
-    'dogs/dog5.jpg', 'dogs/dog6.jpg', 'dogs/dog7.jpg', 'dogs/dog8.jpg'
+    'dogs/dog5.jpg', 'dogs/dog6.jpg', 'dogs/dog7.jpg', 'dogs/dog8.jpg',
+    'fido-logo.png'
   ];
   
   imageUrls.forEach(url => {
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.src = url + '?preload=' + Date.now();
   });
 });
@@ -77,10 +79,10 @@ window.addEventListener('DOMContentLoaded', function() {
   <div class="home-sponsor">
     <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
     <a href="https://www.gelatofido.it/" id="sponsorLink" class="sponsor-card" target="_blank" rel="noopener">
-      <img src="https://www.gelatofido.it/wp-content/uploads/2024/01/logo-fido.png" 
+      <img src="fido-logo.png" 
            alt="Fido Gelato" 
            class="sponsor-logo"
-           crossorigin="anonymous"
+           onerror="this.src='plutoo-icon-192.png'"
            loading="eager">
       <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
     </a>
@@ -93,10 +95,10 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
     </button>
 
-    <div class="legal-links">
-      <a href="https://plutoo-official.vercel.app/termini" target="_blank" data-i18n="terms">Termini</a> · 
-      <a href="https://plutoo-official.vercel.app/privacy" target="_blank" data-i18n="privacy">Privacy</a> · 
-      <a href="https://plutoo-official.vercel.app/contatti" target="_blank" data-i18n="contact">Contatti</a>
+    <div class="legal-links legal-purple">
+      <a href="#" onclick="alert('Termini e Condizioni - Plutoo\n\nQuesto è un placeholder. Inserisci qui i tuoi termini.'); return false;" data-i18n="terms">Termini</a> · 
+      <a href="#" onclick="alert('Privacy Policy - Plutoo\n\nQuesto è un placeholder. Inserisci qui la tua privacy policy.'); return false;" data-i18n="privacy">Privacy</a> · 
+      <a href="mailto:info@plutoo.app" data-i18n="contact">Contatti</a>
     </div>
   </div>
 </div>
@@ -207,19 +209,19 @@ window.addEventListener('DOMContentLoaded', function() {
     <div class="sponsor-wrap">
       <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
       <a href="https://www.gelatofido.it/" id="sponsorLinkApp" style="display:inline-block" target="_blank" rel="noopener">
-        <img src="https://www.gelatofido.it/wp-content/uploads/2024/01/logo-fido.png" 
+        <img src="fido-logo.png" 
              alt="Fido Gelato" 
              class="sponsor-logo"
-             crossorigin="anonymous"
+             onerror="this.src='plutoo-icon-192.png'"
              loading="eager">
       </a>
       <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
     </div>
     <div id="adBanner" class="ad-banner">Banner Test AdMob • Banner App</div>
     <div class="legal-links legal-purple" style="margin-top:.6rem">
-      <a href="https://plutoo-official.vercel.app/termini" target="_blank" data-i18n="terms">Termini</a> · 
-      <a href="https://plutoo-official.vercel.app/privacy" target="_blank" data-i18n="privacy">Privacy</a> · 
-      <a href="https://plutoo-official.vercel.app/contatti" target="_blank" data-i18n="contact">Contatti</a>
+      <a href="#" onclick="alert('Termini e Condizioni - Plutoo\n\nQuesto è un placeholder. Inserisci qui i tuoi termini.'); return false;" data-i18n="terms">Termini</a> · 
+      <a href="#" onclick="alert('Privacy Policy - Plutoo\n\nQuesto è un placeholder. Inserisci qui la tua privacy policy.'); return false;" data-i18n="privacy">Privacy</a> · 
+      <a href="mailto:info@plutoo.app" data-i18n="contact">Contatti</a>
     </div>
   </div>
 </div>
