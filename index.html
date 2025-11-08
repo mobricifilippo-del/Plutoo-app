@@ -22,6 +22,19 @@ if ('serviceWorker' in navigator) {
     }
   });
 }
+
+// ✅ PRELOAD IMMAGINI CRITICHE - CARICAMENTO IMMEDIATO
+window.addEventListener('DOMContentLoaded', function() {
+  const imageUrls = [
+    'dogs/dog1.jpg', 'dogs/dog2.jpg', 'dogs/dog3.jpg', 'dogs/dog4.jpg',
+    'dogs/dog5.jpg', 'dogs/dog6.jpg', 'dogs/dog7.jpg', 'dogs/dog8.jpg'
+  ];
+  
+  imageUrls.forEach(url => {
+    const img = new Image();
+    img.src = url + '?preload=' + Date.now();
+  });
+});
 </script>
 
 <!-- ==================== HOME SCREEN ==================== -->
@@ -63,8 +76,12 @@ if ('serviceWorker' in navigator) {
   <!-- Sponsor -->
   <div class="home-sponsor">
     <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-    <a href="#" id="sponsorLink" class="sponsor-card">
-      <img src="fido-logo.png" alt="Fido Gelato" class="sponsor-logo">
+    <a href="https://www.gelatofido.it/" id="sponsorLink" class="sponsor-card" target="_blank" rel="noopener">
+      <img src="https://www.gelatofido.it/wp-content/uploads/2024/01/logo-fido.png" 
+           alt="Fido Gelato" 
+           class="sponsor-logo"
+           crossorigin="anonymous"
+           loading="eager">
       <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
     </a>
     
@@ -77,8 +94,9 @@ if ('serviceWorker' in navigator) {
     </button>
 
     <div class="legal-links">
-      <a href="#" data-i18n="terms">Termini</a> · 
-      <a href="#" data-i18n="privacy">Privacy</a>
+      <a href="https://plutoo-official.vercel.app/termini" target="_blank" data-i18n="terms">Termini</a> · 
+      <a href="https://plutoo-official.vercel.app/privacy" target="_blank" data-i18n="privacy">Privacy</a> · 
+      <a href="https://plutoo-official.vercel.app/contatti" target="_blank" data-i18n="contact">Contatti</a>
     </div>
   </div>
 </div>
@@ -112,7 +130,6 @@ if ('serviceWorker' in navigator) {
     </div>
 
     <div class="right">
-      <button id="btnSearchPanel" class="btn small ghost">🔍</button>
       <button id="btnPlus" class="btn small plus-btn" aria-label="Plutoo Plus">
         <span class="plus-icon">💎</span>
         <span data-i18n="plusBtn">PLUS</span>
@@ -143,7 +160,6 @@ if ('serviceWorker' in navigator) {
       <div class="view-header">
         <div class="search-plus-wrapper">
           <button id="btnSearchPanelAlt" class="btn plus-btn">
-            <span>🔍</span>
             <span data-i18n="searchAdvanced">Ricerca personalizzata</span>
           </button>
         </div>
@@ -162,7 +178,7 @@ if ('serviceWorker' in navigator) {
           <p id="loveBio" class="bio"></p>
         </div>
         <div class="card-actions">
-          <button id="loveNo" class="btn no" aria-label="No">✕</button>
+          <button id="loveNo" class="btn no" aria-label="No">🥲</button>
           <button id="loveYes" class="btn yes" aria-label="Sì">💛</button>
         </div>
       </div>
@@ -179,8 +195,8 @@ if ('serviceWorker' in navigator) {
           <p id="playBio" class="bio"></p>
         </div>
         <div class="card-actions">
-          <button id="playNo" class="btn no" aria-label="No">✕</button>
-          <button id="playYes" class="btn yes" aria-label="Sì">🐕</button>
+          <button id="playNo" class="btn no" aria-label="No">🥲</button>
+          <button id="playYes" class="btn yes" aria-label="Sì">💜</button>
         </div>
       </div>
     </div>
@@ -190,15 +206,20 @@ if ('serviceWorker' in navigator) {
   <div class="sponsor">
     <div class="sponsor-wrap">
       <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
-      <a href="#" id="sponsorLinkApp" style="display:inline-block">
-        <img src="fido-logo.png" alt="Fido Gelato" class="sponsor-logo">
+      <a href="https://www.gelatofido.it/" id="sponsorLinkApp" style="display:inline-block" target="_blank" rel="noopener">
+        <img src="https://www.gelatofido.it/wp-content/uploads/2024/01/logo-fido.png" 
+             alt="Fido Gelato" 
+             class="sponsor-logo"
+             crossorigin="anonymous"
+             loading="eager">
       </a>
       <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
     </div>
     <div id="adBanner" class="ad-banner">Banner Test AdMob • Banner App</div>
     <div class="legal-links legal-purple" style="margin-top:.6rem">
-      <a href="#" data-i18n="terms">Termini</a> · 
-      <a href="#" data-i18n="privacy">Privacy</a>
+      <a href="https://plutoo-official.vercel.app/termini" target="_blank" data-i18n="terms">Termini</a> · 
+      <a href="https://plutoo-official.vercel.app/privacy" target="_blank" data-i18n="privacy">Privacy</a> · 
+      <a href="https://plutoo-official.vercel.app/contatti" target="_blank" data-i18n="contact">Contatti</a>
     </div>
   </div>
 </div>
@@ -505,6 +526,6 @@ if ('serviceWorker' in navigator) {
   </div>
 </div>
 
-<script src="app.js"defer></script>
+<script src="app.js"></script>
 </body>
 </html>
