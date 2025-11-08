@@ -495,7 +495,45 @@ a{color:inherit;text-decoration:none}
   font-size: 1.8rem;
   line-height: 1;
 }
+.social-svg {
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+  color: var(--violet-glow);
+  transition: color 0.25s ease;
+}
 
+.social-icon:hover .social-svg,
+.social-icon:active .social-svg {
+  color: #111;
+}
+
+.social-fb .social-svg {
+  color: #1877F2;
+}
+
+.social-ig .social-svg {
+  color: #E4405F;
+}
+
+.social-tt .social-svg {
+  color: #000;
+}
+
+.social-icon:hover .social-fb .social-svg,
+.social-icon:active .social-fb .social-svg {
+  color: #fff;
+}
+
+.social-icon:hover .social-ig .social-svg,
+.social-icon:active .social-ig .social-svg {
+  color: #fff;
+}
+
+.social-icon:hover .social-tt .social-svg,
+.social-icon:active .social-tt .social-svg {
+  color: #fff;
+}
 .social-name {
   font-size: 0.85rem;
   font-weight: 700;
