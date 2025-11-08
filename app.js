@@ -641,12 +641,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // ✅ FORZA CARICAMENTO IMMAGINI
     setTimeout(()=>{
       qa(".dog-card img").forEach(img => {
-        const src = img.getAttribute('src');
-        img.src = '';
-        setTimeout(() => {
-          img.src = src + (src.includes('?') ? '&' : '?') + 'cache=' + Date.now();
-        }, 10);
-      });
+  const originalSrc = img.getAttribute('src');
+  // Rimuovi completamente src
+  img.removeAttribute('src');
+  // Forza reflow
+  void img.offsetWidth;
+  // Reimposta con cache busting più aggressivo
+  img.setAttribute('src', originalSrc + '?t=' + Date.now() + '&r=' + Math.random());
+});
       
       qa(".dog-card").forEach(card=>{
         const id = card.getAttribute("data-id");
