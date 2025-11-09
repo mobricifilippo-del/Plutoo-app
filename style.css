@@ -1040,7 +1040,13 @@ body.story-open #storiesBar {
   height: 100%;
   display: block;
 }
-
+/* TikTok: evita il nero invisibile su sfondo scuro */
+.social-btn.social-tt { 
+  color: #ffffff; 
+}
+.social-btn.social-tt .social-icon svg path{
+  fill: currentColor !important;
+}
 .social-label {
   font-size: .85rem;
   font-weight: 700;
