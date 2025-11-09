@@ -638,9 +638,14 @@ document.addEventListener("DOMContentLoaded", () => {
           fetchpriority="low"
         />
         <div class="card-info">
+          <h3>${d.name} ${d.verified?"✅":""}</h3>
+          <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
+          <p class="bio">${d.bio||""}</p>
+        </div>
+      </article>`;
   }
   const fmtKm = n => `${n.toFixed(1)} km`;
-
+   
   function filteredDogs(){
     const f = state.filters;
     return DOGS
@@ -1156,11 +1161,6 @@ document.addEventListener("DOMContentLoaded", () => {
         lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
       });
     });
-
-    qa(".doc-item", profileContent).forEach(item=>{
-      item.addEventListener("click", ()=>{
-        const docType = item.getAttribute("data-doc");
-        const docCategory = item.getAttribute("data-type");
         
         // ✅ Handler per documenti
     qa(".doc-item", profileContent).forEach(item=>{
