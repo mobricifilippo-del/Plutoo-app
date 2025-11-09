@@ -629,13 +629,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
-        <img src="${d.img}" alt="${d.name}" class="card-img" loading="lazy" />
+        <img 
+          src="${d.img}" 
+          alt="${d.name}" 
+          class="card-img" 
+          loading="lazy" 
+          decoding="async"
+          fetchpriority="low"
+        />
         <div class="card-info">
-          <h3>${d.name} ${d.verified?"✅":""}</h3>
-          <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
-          <p class="bio">${d.bio||""}</p>
-        </div>
-      </article>`;
   }
   const fmtKm = n => `${n.toFixed(1)} km`;
 
@@ -872,8 +874,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Ricerca panel
-  btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
-  closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
+  if (btnSearchPanel) {
+    btnSearchPanel.addEventListener("click", (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      if (searchPanel) {
+        searchPanel.classList.remove("hidden");
+        searchPanel.style.display = "flex";
+      }
+    });
+  }
+  closeSearch?.addEventListener("click", ()=>{
+    if(searchPanel) {
+      searchPanel.classList.add("hidden");
+      searchPanel.style.display = "none";
+    }
+  });
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
   breedInput?.addEventListener("input", ()=>{
@@ -945,7 +961,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION
+  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION CON ICONE UFFICIALI
   function generateSocialSection(dog) {
     if (!dog.social) return "";
     
@@ -954,7 +970,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dog.social.facebook?.enabled && dog.social.facebook.url) {
       enabledSocials.push({
         name: "Facebook",
-        icon: "📘",
+        icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
         url: dog.social.facebook.url,
         class: "social-fb"
       });
@@ -963,7 +979,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dog.social.instagram?.enabled && dog.social.instagram.url) {
       enabledSocials.push({
         name: "Instagram",
-        icon: "📸",
+        icon: `<svg width="24" height="24" viewBox="0 0 24 24"><defs><linearGradient id="ig-grad-${dog.id}" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#FD5949;stop-opacity:1" /><stop offset="50%" style="stop-color:#D6249F;stop-opacity:1" /><stop offset="100%" style="stop-color:#285AEB;stop-opacity:1" /></linearGradient></defs><path fill="url(#ig-grad-${dog.id})" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`,
         url: dog.social.instagram.url,
         class: "social-ig"
       });
@@ -972,7 +988,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
       enabledSocials.push({
         name: "TikTok",
-        icon: "🎵",
+        icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#000000"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>`,
         url: dog.social.tiktok.url,
         class: "social-tt"
       });
@@ -985,13 +1001,12 @@ document.addEventListener("DOMContentLoaded", () => {
         <h4 class="section-title" style="margin-top:0;font-size:1rem">
           ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
         </h4>
-        <div class="pp-docs-grid">
+        <div class="pp-social-grid">
           ${enabledSocials.map(s => `
-            <div class="doc-item social-item" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
-              <div class="doc-icon">${s.icon}</div>
-              <div class="doc-label">${s.name}</div>
-              <div class="doc-status pending">${state.lang === "it" ? "Apri" : "Open"}</div>
-            </div>
+            <button class="social-btn ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
+              <div class="social-icon">${s.icon}</div>
+              <div class="social-label">${s.name}</div>
+            </button>
           `).join("")}
         </div>
       </div>
@@ -1147,40 +1162,67 @@ document.addEventListener("DOMContentLoaded", () => {
         const docType = item.getAttribute("data-doc");
         const docCategory = item.getAttribute("data-type");
         
-        // ✅ Social items handling
-        if(item.classList.contains("social-item")){
-          const url = item.getAttribute("data-url");
-          const dogId = item.getAttribute("data-dog-id");
-          const socialType = item.getAttribute("data-social");
+        // ✅ Handler per documenti
+    qa(".doc-item", profileContent).forEach(item=>{
+      item.addEventListener("click", ()=>{
+        const docType = item.getAttribute("data-doc");
+        const docCategory = item.getAttribute("data-type");
+        
+        if (docCategory === "owner"){
+          if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
+          state.ownerDocsUploaded[d.id].identity = true;
+          localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
           
-          if (!url) return;
-          
-          const rewardKey = `${dogId}_${socialType}`;
-          
-          // ✅ Plus: apri subito
-          if (state.plus) {
-            window.open(url, "_blank", "noopener");
-            return;
+          if (!d.verified){
+            d.verified = true;
+            alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
           }
-          
-          // ✅ Free: controlla se già visto reward
-          if (state.socialRewardViewed[rewardKey]) {
-            window.open(url, "_blank", "noopener");
-            return;
-          }
-          
-          // ✅ Free: mostra reward video
-          if (state.rewardOpen) return;
-          state.rewardOpen = true;
-          
-          showRewardVideoMock("social", ()=>{
-            state.rewardOpen = false;
-            state.socialRewardViewed[rewardKey] = true;
-            localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
-            window.open(url, "_blank", "noopener");
-          });
+        } else if (docCategory === "dog"){
+          if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
+          const docName = docType.replace("dog-", "");
+          state.dogDocsUploaded[d.id][docName] = true;
+          localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
+        }
+        
+        openProfilePage(d);
+      });
+    });
+
+    // ✅ Handler separato per social buttons
+    qa(".social-btn", profileContent).forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const url = btn.getAttribute("data-url");
+        const dogId = btn.getAttribute("data-dog-id");
+        const socialType = btn.getAttribute("data-social");
+        
+        if (!url) return;
+        
+        const rewardKey = `${dogId}_${socialType}`;
+        
+        // ✅ Plus: apri subito
+        if (state.plus) {
+          window.open(url, "_blank", "noopener");
           return;
         }
+        
+        // ✅ Free: controlla se già visto reward
+        if (state.socialRewardViewed[rewardKey]) {
+          window.open(url, "_blank", "noopener");
+          return;
+        }
+        
+        // ✅ Free: mostra reward video
+        if (state.rewardOpen) return;
+        state.rewardOpen = true;
+        
+        showRewardVideoMock("social", ()=>{
+          state.rewardOpen = false;
+          state.socialRewardViewed[rewardKey] = true;
+          localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
+          window.open(url, "_blank", "noopener");
+        });
+      });
+    });
         
         if (docCategory === "owner"){
           if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
