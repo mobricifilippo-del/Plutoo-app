@@ -1,7 +1,8 @@
 /* =========================================================
-   PLUTOO – app.js VERSIONE PULITA SENZA PRELOAD
-   ✅ Immagini normali - nessun forcing
-   ✅ Cache browser normale
+   PLUTOO – app.js VERSIONE PULITA DEFINITIVA
+   ✅ Immagini normali - caricamento veloce
+   ✅ Tutti gli eventi funzionanti
+   ✅ Stories complete
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
@@ -1999,8 +2000,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showStoryRewardVideo(story, userId) {
-    const modal = document.createElement("
-div");
+    const modal = document.createElement("div");
     modal.id = "rewardVideoModal";
     modal.className = "modal";
     modal.innerHTML = `
@@ -2047,4 +2047,4 @@ div");
 
   // ========== FINE SISTEMA STORIES ==========
 
-});                      
+});
