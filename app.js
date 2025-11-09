@@ -1,13 +1,14 @@
 /* =========================================================
-   PLUTOO – app.js VERSIONE PULITA DEFINITIVA
-   ✅ Immagini normali - caricamento veloce
-   ✅ Tutti gli eventi funzionanti
-   ✅ Stories complete
+   PLUTOO – app.js VERSIONE FINALE + SOCIAL PROPRIETARI
+   ✅ Path immagini ROOT (dog1.jpg)
+   ✅ Social proprietari (Facebook, Instagram, TikTok)
+   ✅ Reward video per social (utenti free)
+   ✅ Stories complete + Progress bar
    ========================================================= */
 document.getElementById('plutooSplash')?.remove();
 document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
-
+   
   // Helpers
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
@@ -55,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playNo    = $("playNo");
   const playYes   = $("playYes");
 
-  const btnSearchPanelAlt = $("btnSearchPanelAlt");
+  const btnSearchPanel = $("btnSearchPanel");
   const searchPanel = $("searchPanel");
   const closeSearch = $("closeSearch");
   const breedInput  = $("breedInput");
@@ -113,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded")||"{}"),
     dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded")||"{}"),
     storyRewardViewed: JSON.parse(localStorage.getItem("storyRewardViewed")||"{}"),
-    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed")||"{}"),
+    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed")||"{}"), // ✅ NUOVO
     currentLoveIdx: 0,
     currentPlayIdx: 0,
     currentView: "nearby",
@@ -145,12 +146,11 @@ document.addEventListener("DOMContentLoaded", () => {
       enter: "Entra",
       sponsorTitle: "Sponsor ufficiale",
       sponsorCopy: "Fido, il gelato per i nostri amici a quattro zampe",
-      sponsorUrl: "https://www.gelatofido.it/",
+      sponsorUrl: "https://www.fido.it/",
       ethicsLine1: "Non abbandonare mai i tuoi amici",
       ethicsLine2: "(canili nelle vicinanze)",
       terms: "Termini",
       privacy: "Privacy",
-      contact: "Contatti",
       nearby: "Vicino a te",
       love: "Amore",
       friendship: "Amicizia",
@@ -212,12 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
       enter: "Enter",
       sponsorTitle: "Official Sponsor",
       sponsorCopy: "Fido, ice cream for our four-legged friends",
-      sponsorUrl: "https://www.gelatofido.it/",
+      sponsorUrl: "https://www.fido.it/",
       ethicsLine1: "Never abandon your friends",
       ethicsLine2: "(animal shelters nearby)",
       terms: "Terms",
       privacy: "Privacy",
-      contact: "Contact",
       nearby: "Nearby",
       love: "Love",
       friendship: "Friendship",
@@ -304,20 +303,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-  // 8 PROFILI DOG CON SOCIAL
+  // ✅ 8 PROFILI DOG CON SOCIAL PROPRIETARI
   const DOGS = [
     { 
-      id:"d1", name:"Luna", age:2, breed:"Golden Retriever", km:1.2, img:"dogs/dog1.jpg", 
+      id:"d1", name:"Luna", age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg", 
       bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true, 
       weight:28, height:55, pedigree:true, breeding:false, size:"medium",
       social: {
         facebook: { enabled: true, url: "https://facebook.com/luna.owner" },
-        instagram: { enabled: true, url: "https://instagram.com/luna_goldenretriever" },
+        instagram: { enabled: true, url: "https://instagram.com/luna_golden" },
         tiktok: { enabled: false, url: "" }
       }
     },
     { 
-      id:"d2", name:"Rex", age:4, breed:"Pastore Tedesco", km:3.4, img:"dogs/dog2.jpg", 
+      id:"d2", name:"Rex", age:4, breed:"Pastore Tedesco", km:3.4, img:"dog2.jpg", 
       bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true, 
       weight:35, height:62, pedigree:true, breeding:true, size:"large",
       social: {
@@ -327,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
     { 
-      id:"d3", name:"Maya", age:3, breed:"Bulldog Francese", km:2.1, img:"dogs/dog3.jpg", 
+      id:"d3", name:"Maya", age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg", 
       bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false, 
       weight:12, height:30, pedigree:false, breeding:false, size:"small",
       social: {
@@ -337,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
     { 
-      id:"d4", name:"Rocky", age:5, breed:"Beagle", km:4.0, img:"dogs/dog4.jpg", 
+      id:"d4", name:"Rocky", age:5, breed:"Beagle", km:4.0, img:"dog4.jpg", 
       bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true, 
       weight:15, height:38, pedigree:true, breeding:false, size:"medium",
       social: {
@@ -347,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
     { 
-      id:"d5", name:"Chicco", age:1, breed:"Barboncino", km:0.8, img:"dogs/dog5.jpg", 
+      id:"d5", name:"Chicco", age:1, breed:"Barboncino", km:0.8, img:"dog5.jpg", 
       bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true, 
       weight:8, height:28, pedigree:false, breeding:false, size:"small",
       social: {
@@ -357,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
     { 
-      id:"d6", name:"Kira", age:6, breed:"Labrador", km:5.1, img:"dogs/dog6.jpg", 
+      id:"d6", name:"Kira", age:6, breed:"Labrador", km:5.1, img:"dog6.jpg", 
       bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true, 
       weight:30, height:58, pedigree:true, breeding:true, size:"large",
       social: {
@@ -367,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
     { 
-      id:"d7", name:"Toby", age:2, breed:"Husky", km:2.8, img:"dogs/dog7.jpg", 
+      id:"d7", name:"Toby", age:2, breed:"Husky", km:2.8, img:"dog7.jpg", 
       bio:"Energia pura.", mode:"love", sex:"M", verified:true, 
       weight:25, height:54, pedigree:true, breeding:true, size:"medium",
       social: {
@@ -377,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
     { 
-      id:"d8", name:"Bella", age:4, breed:"Cocker Spaniel", km:1.5, img:"dogs/dog8.jpg", 
+      id:"d8", name:"Bella", age:4, breed:"Cocker Spaniel", km:1.5, img:"dog8.jpg", 
       bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false, 
       weight:14, height:40, pedigree:false, breeding:false, size:"medium",
       social: {
@@ -429,11 +428,9 @@ document.addEventListener("DOMContentLoaded", () => {
       showAdBanner();
     }, 2500);
   });
-
+    
   // Sponsor UFFICIALE Fido
-  function openSponsor(){ 
-    window.open("https://www.gelatofido.it/", "_blank", "noopener"); 
-  }
+  function openSponsor(){ window.open("https://www.fido.it/", "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
@@ -513,10 +510,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.addEventListener("click",()=>tabLuoghi?.parentElement.classList.remove("open"));
 
-  (luoghiMenu ? qa(".menu-item", luoghiMenu) : []).forEach(btn=>{
+  qa(".menu-item", luoghiMenu).forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const cat = btn.getAttribute("data-cat");
-      tabLuoghi?.parentElement?.classList.remove("open");
+      tabLuoghi.parentElement.classList.remove("open");
       openMapsCategory(cat);
     });
   });
@@ -549,16 +546,19 @@ document.addEventListener("DOMContentLoaded", () => {
       viewNearby.classList.add("active"); 
       tabNearby.classList.add("active"); 
       renderNearby(); 
+      if(btnSearchPanel) btnSearchPanel.disabled=false; 
     }
     if (name==="love"){   
       viewLove.classList.add("active");   
       tabLove.classList.add("active");   
       renderSwipe("love"); 
+      if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
     if (name==="friendship"){   
       viewPlay.classList.add("active");   
       tabPlay.classList.add("active");   
       renderSwipe("friendship"); 
+      if(btnSearchPanel) btnSearchPanel.disabled=true; 
     }
 
     window.scrollTo({top:0,behavior:"smooth"});
@@ -598,7 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
     history.pushState({view: "app"}, "", "");
   }
 
-  // VICINO A TE
+  // Vicino a te
   function renderNearby(){
     if(!nearGrid) return;
     
@@ -607,28 +607,29 @@ document.addEventListener("DOMContentLoaded", () => {
       nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`; 
       return; 
     }
-    
     nearGrid.innerHTML = list.map(cardHTML).join("");
     
-    qa(".dog-card").forEach(card=>{
-      const id = card.getAttribute("data-id");
-      const d  = DOGS.find(x=>x.id===id);
-      if(!d) return;
-      
-      card.addEventListener("click", ()=>{
-        card.classList.add("flash-violet");
-        setTimeout(()=>{
-          card.classList.remove("flash-violet");
-          openProfilePage(d);
-        }, 500);
+    setTimeout(()=>{
+      qa(".dog-card").forEach(card=>{
+        const id = card.getAttribute("data-id");
+        const d  = DOGS.find(x=>x.id===id);
+        if(!d) return;
+        
+        card.addEventListener("click", ()=>{
+          card.classList.add("flash-violet");
+          setTimeout(()=>{
+            card.classList.remove("flash-violet");
+            openProfilePage(d);
+          }, 500);
+        });
       });
-    });
+    }, 10);
   }
   
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
-        <img src="${d.img}" alt="${d.name}" class="card-img" />
+        <img src="${d.img}" alt="${d.name}" class="card-img" loading="lazy" />
         <div class="card-info">
           <h3>${d.name} ${d.verified?"✅":""}</h3>
           <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
@@ -675,7 +676,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // SWIPE
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -722,16 +722,6 @@ document.addEventListener("DOMContentLoaded", () => {
       
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
       
-      const nextIdx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
-      const nextDog = deck[nextIdx];
-      
-      if(nextDog){
-        img.src = nextDog.img;
-        title.textContent = `${nextDog.name} ${nextDog.verified?"✅":""}`;
-        meta.textContent  = `${nextDog.breed} · ${nextDog.age} ${t("years")} · ${fmtKm(nextDog.km)}`;
-        bio.textContent   = nextDog.bio || "";
-      }
-      
       setTimeout(()=>{
         resetCard(card);
         
@@ -747,9 +737,11 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
             
             state.processingSwipe = false;
+            renderSwipe(mode);
           });
         } else {
           state.processingSwipe = false;
+          renderSwipe(mode);
         }
       }, 600);
     }
@@ -879,8 +871,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1200);
   }
 
-  // RICERCA PANEL
-  btnSearchPanelAlt?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
+  // Ricerca panel
+  btnSearchPanel?.addEventListener("click", ()=>searchPanel.classList.remove("hidden"));
   closeSearch?.addEventListener("click", ()=>searchPanel.classList.add("hidden"));
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
@@ -953,7 +945,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // FUNZIONE GENERAZIONE SOCIAL SECTION
+  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION
   function generateSocialSection(dog) {
     if (!dog.social) return "";
     
@@ -962,7 +954,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dog.social.facebook?.enabled && dog.social.facebook.url) {
       enabledSocials.push({
         name: "Facebook",
-        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+        icon: "📘",
         url: dog.social.facebook.url,
         class: "social-fb"
       });
@@ -971,7 +963,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dog.social.instagram?.enabled && dog.social.instagram.url) {
       enabledSocials.push({
         name: "Instagram",
-        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
+        icon: "📸",
         url: dog.social.instagram.url,
         class: "social-ig"
       });
@@ -980,7 +972,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
       enabledSocials.push({
         name: "TikTok",
-        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>',
+        icon: "🎵",
         url: dog.social.tiktok.url,
         class: "social-tt"
       });
@@ -989,23 +981,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (enabledSocials.length === 0) return "";
     
     return `
-      <div class="pp-social-section">
-        <h3 class="section-title">
+      <div class="pp-docs-section" style="margin-top:1.2rem">
+        <h4 class="section-title" style="margin-top:0;font-size:1rem">
           ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
-        </h3>
-        <div class="social-icons">
+        </h4>
+        <div class="pp-docs-grid">
           ${enabledSocials.map(s => `
-            <button class="social-icon ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
-              <span class="social-svg">${s.svg}</span>
-              <span class="social-name">${s.name}</span>
-            </button>
+            <div class="doc-item social-item" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
+              <div class="doc-icon">${s.icon}</div>
+              <div class="doc-label">${s.name}</div>
+              <div class="doc-status pending">${state.lang === "it" ? "Apri" : "Open"}</div>
+            </div>
           `).join("")}
         </div>
       </div>
     `;
   }
 
-  // PROFILO DOG
+  // PROFILO DOG CON SEZIONE STORIES + SOCIAL
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
@@ -1154,6 +1147,41 @@ document.addEventListener("DOMContentLoaded", () => {
         const docType = item.getAttribute("data-doc");
         const docCategory = item.getAttribute("data-type");
         
+        // ✅ Social items handling
+        if(item.classList.contains("social-item")){
+          const url = item.getAttribute("data-url");
+          const dogId = item.getAttribute("data-dog-id");
+          const socialType = item.getAttribute("data-social");
+          
+          if (!url) return;
+          
+          const rewardKey = `${dogId}_${socialType}`;
+          
+          // ✅ Plus: apri subito
+          if (state.plus) {
+            window.open(url, "_blank", "noopener");
+            return;
+          }
+          
+          // ✅ Free: controlla se già visto reward
+          if (state.socialRewardViewed[rewardKey]) {
+            window.open(url, "_blank", "noopener");
+            return;
+          }
+          
+          // ✅ Free: mostra reward video
+          if (state.rewardOpen) return;
+          state.rewardOpen = true;
+          
+          showRewardVideoMock("social", ()=>{
+            state.rewardOpen = false;
+            state.socialRewardViewed[rewardKey] = true;
+            localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
+            window.open(url, "_blank", "noopener");
+          });
+          return;
+        }
+        
         if (docCategory === "owner"){
           if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
           state.ownerDocsUploaded[d.id].identity = true;
@@ -1174,38 +1202,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    qa(".social-icon", profileContent).forEach(icon => {
-      icon.addEventListener("click", ()=>{
-        const url = icon.getAttribute("data-url");
-        const dogId = icon.getAttribute("data-dog-id");
-        const socialType = icon.getAttribute("data-social");
-        
-        if (!url) return;
-        
-        const rewardKey = `${dogId}_${socialType}`;
-        
-        if (state.plus) {
-          window.open(url, "_blank", "noopener");
-          return;
-        }
-        
-        if (state.socialRewardViewed[rewardKey]) {
-          window.open(url, "_blank", "noopener");
-          return;
-        }
-        
-        if (state.rewardOpen) return;
-        state.rewardOpen = true;
-        
-        showRewardVideoMock("social", ()=>{
-          state.rewardOpen = false;
-          state.socialRewardViewed[rewardKey] = true;
-          localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
-          window.open(url, "_blank", "noopener");
-        });
-      });
-    });
-
     $("btnLikeDog").onclick = ()=>{
       state.matches[d.id] = true;
       localStorage.setItem("matches", JSON.stringify(state.matches));
@@ -1218,7 +1214,8 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     $("btnOpenChat").onclick = ()=>{
-      openChat(d);
+      closeProfilePage();
+      setTimeout(()=>openChat(d), 180);
     };
 
     $("btnFriendship").onclick = ()=>{
@@ -1424,7 +1421,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   init();
 
-  // ========== SISTEMA STORIES ==========
+  // ========== SISTEMA STORIES (✅ FINALE CON TUTTE LE MODIFICHE) ==========
   
   const STORIES_CONFIG = {
     PHOTO_DURATION: 15000,
@@ -1487,12 +1484,12 @@ document.addEventListener("DOMContentLoaded", () => {
         {
           userId: "d1",
           userName: "Luna",
-          avatar: "dogs/dog1.jpg",
+          avatar: "dog1.jpg",
           verified: true,
           media: [{
             id: "m1",
             type: "image",
-            url: "dogs/dog1.jpg",
+            url: "dog1.jpg",
             timestamp: Date.now() - 3600000,
             filter: "none",
             music: "",
@@ -1502,13 +1499,13 @@ document.addEventListener("DOMContentLoaded", () => {
         {
           userId: "d2",
           userName: "Rex",
-          avatar: "dogs/dog2.jpg",
+          avatar: "dog2.jpg",
           verified: true,
           media: [
             {
               id: "m2",
               type: "image",
-              url: "dogs/dog2.jpg",
+              url: "dog2.jpg",
               timestamp: Date.now() - 7200000,
               filter: "warm",
               music: "happy",
@@ -1517,7 +1514,7 @@ document.addEventListener("DOMContentLoaded", () => {
             {
               id: "m3",
               type: "image",
-              url: "dogs/dog2.jpg",
+              url: "dog3.jpg",
               timestamp: Date.now() - 5400000,
               filter: "sepia",
               music: "",
@@ -1528,12 +1525,12 @@ document.addEventListener("DOMContentLoaded", () => {
         {
           userId: "d3",
           userName: "Maya",
-          avatar: "dogs/dog3.jpg",
+          avatar: "dog3.jpg",
           verified: false,
           media: [{
             id: "m4",
             type: "image",
-            url: "dogs/dog3.jpg",
+            url: "dog4.jpg",
             timestamp: Date.now() - 10800000,
             filter: "grayscale",
             music: "",
@@ -1583,7 +1580,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <span class="story-name">${story.userName}</span>
       `;
-      
       circle.addEventListener("click", () => openStoryViewerFromBar(story.userId));
       container.appendChild(circle);
     });
@@ -1978,10 +1974,10 @@ document.addEventListener("DOMContentLoaded", () => {
         userId: targetUserId,
         userName: dog ? dog.name : "Tu",
         avatar: dog ? dog.img : "plutoo-icon-192.png",
-        verified: dog ? dog.verified : false,
+        verified: dog ? dog.verified : state.plus,
         media: []
       };
-      StoriesState.stories.push(story);
+      StoriesState.stories.unshift(story);
     }
     
     story.media.push(newMedia);
@@ -1990,61 +1986,76 @@ document.addEventListener("DOMContentLoaded", () => {
     closeUploadModal();
     renderStoriesBar();
     
-    alert(state.lang === "it" 
-      ? "✅ Story pubblicata con successo!" 
-      : "✅ Story published successfully!");
-    
-    if (state.currentDogProfile) {
+    if(state.currentDogProfile){
       openProfilePage(state.currentDogProfile);
     }
+    
+    alert("✅ Story pubblicata!\n\nLa tua Story è ora visibile per 24 ore.\n\n📸 Carica solo foto del tuo cane!");
   }
 
   function showStoryRewardVideo(story, userId) {
-    const modal = document.createElement("div");
-    modal.id = "rewardVideoModal";
-    modal.className = "modal";
-    modal.innerHTML = `
-      <div class="modal-backdrop"></div>
-      <div class="modal-content reward-modal">
-        <button class="modal-close" id="closeRewardVideo">✕</button>
-        <div class="modal-body">
-          <h2 class="reward-title">${state.lang === "it" ? "🎬 Guarda il video per sbloccare" : "🎬 Watch video to unlock"}</h2>
-          <p class="reward-text">${state.lang === "it" 
-            ? `Guarda questo breve video per vedere le Stories di ${story.userName}` 
-            : `Watch this short video to view ${story.userName}'s Stories`}</p>
-          <div class="reward-video-box">
-            <div class="reward-placeholder">
-              <div>📺</div>
-              <div>${state.lang === "it" ? "Video Mock AdMob" : "AdMob Video Mock"}</div>
-              <div style="font-size:.8rem;margin-top:.5rem">${STORIES_CONFIG.REWARD_VIDEO_DURATION}s</div>
-            </div>
-          </div>
-          <button class="btn primary" id="skipRewardVideo" style="width:100%">${state.lang === "it" ? "Continua" : "Continue"}</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
+    const modal = $("rewardVideoModal");
+    if (!modal) return;
     
-    const closeBtn = modal.querySelector("#closeRewardVideo");
-    const skipBtn = modal.querySelector("#skipRewardVideo");
-    const backdrop = modal.querySelector(".modal-backdrop");
+    modal.classList.remove("hidden");
     
-    const cleanup = () => {
-      modal.remove();
+    let countdown = STORIES_CONFIG.REWARD_VIDEO_DURATION;
+    const countdownEl = $("rewardCountdown");
+    const closeBtn = $("closeRewardVideo");
+    
+    if (!countdownEl || !closeBtn) return;
+    
+    countdownEl.textContent = `${countdown}s`;
+    closeBtn.disabled = true;
+    closeBtn.textContent = "Chiudi (attendi...)";
+    
+    const interval = setInterval(() => {
+      countdown--;
+      countdownEl.textContent = `${countdown}s`;
+      
+      if (countdown <= 0) {
+        clearInterval(interval);
+        modal.classList.add("hidden");
+        
+        state.storyRewardViewed[userId] = true;
+        localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
+        
+        openStoryViewerDirect(userId);
+      }
+    }, 1000);
+    
+    const newCloseBtn = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+    
+    newCloseBtn.onclick = () => {
+      if (countdown <= 0) {
+        modal.classList.add("hidden");
+        clearInterval(interval);
+        
+        state.storyRewardViewed[userId] = true;
+        localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
+        
+        openStoryViewerDirect(userId);
+      }
     };
-    
-    const complete = () => {
-      state.storyRewardViewed[userId] = true;
-      localStorage.setItem("storyRewardViewed", JSON.stringify(state.storyRewardViewed));
-      cleanup();
-      openStoryViewerDirect(userId);
-    };
-    
-    closeBtn.addEventListener("click", cleanup);
-    backdrop.addEventListener("click", cleanup);
-    skipBtn.addEventListener("click", complete);
   }
 
-  // ========== FINE SISTEMA STORIES ==========
+  console.log(`
+  ╔═══════════════════════════════════════╗
+  ║                                       ║
+  ║           🐕 PLUTOO 🐕               ║
+  ║                                       ║
+  ║   Social network per cani            ║
+  ║   Versione: 11.0 SOCIAL RELEASE      ║
+  ║                                       ║
+  ║   ✅ Path immagini ROOT              ║
+  ║   ✅ Social proprietari ATTIVI       ║
+  ║   ✅ Reward video social FREE        ║
+  ║   ✅ Stories complete                ║
+  ║   ✅ Cache ottimizzata               ║
+  ║   ✅ PRONTO PER GOOGLE PLAY         ║
+  ║                                       ║
+  ╚═══════════════════════════════════════╝
+  `);
 
 });
