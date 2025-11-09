@@ -4,9 +4,8 @@
    ✅ Social proprietari (Facebook, Instagram, TikTok)
    ✅ Reward video per social (utenti free)
    ✅ Stories complete + Progress bar
+   ✅ FIX: Rimosso handler documenti duplicato
    ========================================================= */
-document.getElementById('plutooSplash')?.remove();
-document.getElementById('splash')?.remove();
 document.addEventListener("DOMContentLoaded", () => {
    
   // Helpers
@@ -114,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded")||"{}"),
     dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded")||"{}"),
     storyRewardViewed: JSON.parse(localStorage.getItem("storyRewardViewed")||"{}"),
-    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed")||"{}"), // ✅ NUOVO
+    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed")||"{}"),
     currentLoveIdx: 0,
     currentPlayIdx: 0,
     currentView: "nearby",
@@ -430,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
     
   // Sponsor UFFICIALE Fido
-  function openSponsor(){ window.open("https://www.fido.it/", "_blank", "noopener"); }
+  function openSponsor(){ window.open("https://www.gelatofido.it/", "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
@@ -1161,8 +1160,8 @@ document.addEventListener("DOMContentLoaded", () => {
         lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
       });
     });
-        
-        // ✅ Handler per documenti
+
+    // ✅ Handler per documenti
     qa(".doc-item", profileContent).forEach(item=>{
       item.addEventListener("click", ()=>{
         const docType = item.getAttribute("data-doc");
@@ -1199,19 +1198,16 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const rewardKey = `${dogId}_${socialType}`;
         
-        // ✅ Plus: apri subito
         if (state.plus) {
           window.open(url, "_blank", "noopener");
           return;
         }
         
-        // ✅ Free: controlla se già visto reward
         if (state.socialRewardViewed[rewardKey]) {
           window.open(url, "_blank", "noopener");
           return;
         }
         
-        // ✅ Free: mostra reward video
         if (state.rewardOpen) return;
         state.rewardOpen = true;
         
@@ -1221,26 +1217,6 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
           window.open(url, "_blank", "noopener");
         });
-      });
-    });
-        
-        if (docCategory === "owner"){
-          if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
-          state.ownerDocsUploaded[d.id].identity = true;
-          localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
-          
-          if (!d.verified){
-            d.verified = true;
-            alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
-          }
-        } else if (docCategory === "dog"){
-          if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
-          const docName = docType.replace("dog-", "");
-          state.dogDocsUploaded[d.id][docName] = true;
-          localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
-        }
-        
-        openProfilePage(d);
       });
     });
 
@@ -2026,7 +2002,9 @@ document.addEventListener("DOMContentLoaded", () => {
     StoriesState.saveStories();
     
     closeUploadModal();
-    renderStoriesBar();
+    renderStor
+     ```javascript
+iesBar();
     
     if(state.currentDogProfile){
       openProfilePage(state.currentDogProfile);
@@ -2088,13 +2066,13 @@ document.addEventListener("DOMContentLoaded", () => {
   ║           🐕 PLUTOO 🐕               ║
   ║                                       ║
   ║   Social network per cani            ║
-  ║   Versione: 11.0 SOCIAL RELEASE      ║
+  ║   Versione: 11.1 FIXED RELEASE       ║
   ║                                       ║
   ║   ✅ Path immagini ROOT              ║
+  ║   ✅ Handler documenti fix           ║
   ║   ✅ Social proprietari ATTIVI       ║
   ║   ✅ Reward video social FREE        ║
   ║   ✅ Stories complete                ║
-  ║   ✅ Cache ottimizzata               ║
   ║   ✅ PRONTO PER GOOGLE PLAY         ║
   ║                                       ║
   ╚═══════════════════════════════════════╝
