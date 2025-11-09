@@ -978,3 +978,93 @@ body.story-open #mainTopbar,
 body.story-open #storiesBar {
   display: none !important;
 }
+/* ================= SOCIAL BUTTONS UFFICIALI ================= */
+.pp-social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: .8rem;
+  margin-top: .8rem;
+}
+
+.social-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  background: rgba(138, 123, 255, .08);
+  border: 1px solid rgba(138, 123, 255, .25);
+  border-radius: 12px;
+  padding: 1rem .8rem;
+  cursor: pointer;
+  transition: all .2s ease;
+  min-height: 90px;
+}
+
+.social-btn:hover {
+  background: rgba(138, 123, 255, .15);
+  border-color: rgba(138, 123, 255, .4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(138, 123, 255, .2);
+}
+
+.social-btn.social-fb:hover {
+  background: rgba(24, 119, 242, .1);
+  border-color: #1877F2;
+  box-shadow: 0 4px 12px rgba(24, 119, 242, .25);
+}
+
+.social-btn.social-ig:hover {
+  background: rgba(214, 36, 159, .1);
+  border-color: #D6249F;
+  box-shadow: 0 4px 12px rgba(214, 36, 159, .25);
+}
+
+.social-btn.social-tt:hover {
+  background: rgba(0, 0, 0, .1);
+  border-color: #000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+
+.social-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.social-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.social-label {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .pp-social-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: .6rem;
+  }
+  
+  .social-btn {
+    padding: .8rem .5rem;
+    min-height: 80px;
+  }
+  
+  .social-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .social-label {
+    font-size: .8rem;
+  }
+}
