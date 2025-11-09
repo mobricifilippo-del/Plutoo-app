@@ -1047,7 +1047,27 @@ body.story-open #storiesBar {
 .social-btn.social-tt .social-icon svg path{
   fill: currentColor !important;
 }
-.social-label {
+   /* Facebook: colore brand + override del fill */
+.social-btn.social-fb {
+  color: #1877F2;
+}
+.social-btn.social-fb .social-icon svg path {
+  fill: currentColor !important;
+}
+/* All'hover passa a bianco per massima leggibilità */
+.social-btn.social-fb:hover .social-icon svg path {
+  fill: #ffffff !important;
+}
+/* Instagram: colore brand e hover */
+.social-btn.social-ig {
+  color: #E4405F;
+}
+.social-btn.social-ig .social-icon svg path {
+  fill: currentColor !important;
+}
+.social-btn.social-ig:hover .social-icon svg path {
+  fill: #ffffff !important;
+}
   font-size: .85rem;
   font-weight: 700;
   color: var(--text);
