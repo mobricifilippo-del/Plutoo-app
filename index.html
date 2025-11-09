@@ -10,18 +10,19 @@
   <link rel="apple-touch-icon" href="plutoo-icon-192.png">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ✅ PRELOAD CRITICO IMMAGINI -->
+  <link rel="preload" as="image" href="dogs/dog1.jpg">
+  <link rel="preload" as="image" href="dogs/dog2.jpg">
+  <link rel="preload" as="image" href="dogs/dog3.jpg">
+  <link rel="preload" as="image" href="dogs/dog4.jpg">
+  <link rel="preload" as="image" href="dogs/dog5.jpg">
+  <link rel="preload" as="image" href="dogs/dog6.jpg">
+  <link rel="preload" as="image" href="dogs/dog7.jpg">
+  <link rel="preload" as="image" href="dogs/dog8.jpg">
 </head>
 
 <body>
-<script>
-// ✅ Disabilita cache immagini aggressive e service worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for(let registration of registrations) {
-      registration.unregister();
-    }
-  });
-}
 <script>
 // Service worker cleanup
 if ('serviceWorker' in navigator) {
@@ -73,10 +74,9 @@ if ('serviceWorker' in navigator) {
   <div class="home-sponsor">
     <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
     <a href="https://www.gelatofido.it/" id="sponsorLink" class="sponsor-card" target="_blank" rel="noopener">
-      <img src="fido-logo.png" 
+      <img src="https://www.gelatofido.it/wp-content/uploads/2024/01/logo-fido.png" 
            alt="Fido Gelato" 
            class="sponsor-logo"
-           onerror="this.src='plutoo-icon-192.png'"
            loading="eager">
       <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
     </a>
@@ -203,10 +203,9 @@ if ('serviceWorker' in navigator) {
     <div class="sponsor-wrap">
       <div class="sponsor-title" data-i18n="sponsorTitle">Sponsor ufficiale</div>
       <a href="https://www.gelatofido.it/" id="sponsorLinkApp" style="display:inline-block" target="_blank" rel="noopener">
-        <img src="fido-logo.png" 
+        <img src="https://www.gelatofido.it/wp-content/uploads/2024/01/logo-fido.png" 
              alt="Fido Gelato" 
              class="sponsor-logo"
-             onerror="this.src='plutoo-icon-192.png'"
              loading="eager">
       </a>
       <div class="sponsor-copy" data-i18n="sponsorCopy">Fido, il gelato per i nostri amici a quattro zampe</div>
@@ -261,36 +260,27 @@ if ('serviceWorker' in navigator) {
 
         <div class="f switch f-gold">
           <label data-i18n="onlyVerified">Solo con badge verificato ✅</label>
-          <label class="switcher">
-            <input id="onlyVerified" type="checkbox" disabled>
-            <span class="track"></span>
-          </label>
-          <span class="lock-icon">🔒</span>
-        </div>
-
-        <div class="f-row">
-          <div class="f f-gold">
-            <label data-i18n="ageMin">Età minima (anni)</label>
-            <input id="ageMin" type="number" min="0" max="20" disabled>
-            <span class="lock-icon">🔒</span>
-          </div>
-          <div class="f f-gold">
-            <label data-i18n="ageMax">Età massima (anni)</label>
-            <input id="ageMax" type="number" min="0" max="20" disabled>
-            <span class="lock-icon">🔒</span>
-          </div>
+          <input id="onlyVerified" type="checkbox" disabled>
         </div>
 
         <div class="f f-gold">
-          <label data-i18n="weight">Peso minimo (kg)</label>
-          <input id="weightInput" type="number" min="1" max="100" disabled>
-          <span class="lock-icon">🔒</span>
+          <label data-i18n="ageMin">Età minima (anni)</label>
+          <input id="ageMin" type="number" min="0" max="20" placeholder="0" disabled>
         </div>
 
         <div class="f f-gold">
-          <label data-i18n="height">Altezza minima (cm)</label>
-          <input id="heightInput" type="number" min="10" max="100" disabled>
-          <span class="lock-icon">🔒</span>
+          <label data-i18n="ageMax">Età massima (anni)</label>
+          <input id="ageMax" type="number" min="0" max="20" placeholder="20" disabled>
+        </div>
+
+        <div class="f f-gold">
+          <label data-i18n="weight">Peso (kg)</label>
+          <input id="weightInput" type="number" min="0" placeholder="Min peso" disabled>
+        </div>
+
+        <div class="f f-gold">
+          <label data-i18n="height">Altezza (cm)</label>
+          <input id="heightInput" type="number" min="0" placeholder="Min altezza" disabled>
         </div>
 
         <div class="f f-gold">
@@ -300,7 +290,6 @@ if ('serviceWorker' in navigator) {
             <option value="yes" data-i18n="yes">Sì</option>
             <option value="no" data-i18n="no">No</option>
           </select>
-          <span class="lock-icon">🔒</span>
         </div>
 
         <div class="f f-gold">
@@ -310,7 +299,6 @@ if ('serviceWorker' in navigator) {
             <option value="yes" data-i18n="yes">Sì</option>
             <option value="no" data-i18n="no">No</option>
           </select>
-          <span class="lock-icon">🔒</span>
         </div>
 
         <div class="f f-gold">
@@ -321,15 +309,17 @@ if ('serviceWorker' in navigator) {
             <option value="medium" data-i18n="sizeMedium">Media</option>
             <option value="large" data-i18n="sizeLarge">Grande</option>
           </select>
-          <span class="lock-icon">🔒</span>
+        </div>
+
+        <div class="unlock-hint" data-i18n="unlockHint">
+          Vuoi sbloccare i filtri Gold? Attiva <strong>Plutoo Plus 💎</strong>
         </div>
       </fieldset>
 
-      <div class="panel-actions">
+      <div class="actions">
         <button id="applyFilters" type="button" class="btn primary" data-i18n="apply">Applica</button>
-        <button id="resetFilters" type="button" class="btn ghost" data-i18n="reset">Reset</button>
+        <button id="resetFilters" type="button" class="btn outline" data-i18n="reset">Reset</button>
       </div>
-      <p class="hint" data-i18n="unlockHint">Vuoi sbloccare i filtri Gold? Attiva <strong>Plutoo Plus 💎</strong></p>
     </form>
   </div>
 </div>
@@ -337,189 +327,152 @@ if ('serviceWorker' in navigator) {
 <!-- ==================== PLUTOO PLUS MODAL ==================== -->
 <div id="plusModal" class="modal hidden">
   <div class="modal-backdrop"></div>
-  <div class="modal-content">
-    <button id="closePlus" class="modal-close" aria-label="Chiudi">✕</button>
+  <div class="modal-content plus-modal">
+    <button id="closePlus" class="modal-close">✕</button>
     <div class="modal-body">
-      <div class="plus-icon-large">💎</div>
+      <div class="plus-icon-big">💎</div>
       <h2 data-i18n="plusTitle">Plutoo Plus</h2>
-      <p data-i18n="plusSubtitle">Sblocca tutte le funzionalità premium</p>
+      <p class="soft" data-i18n="plusSubtitle">Sblocca tutte le funzionalità premium</p>
       
       <ul class="plus-features">
-        <li><span class="check">✓</span><span data-i18n="plusFeature1">Nessuna pubblicità</span></li>
-        <li><span class="check">✓</span><span data-i18n="plusFeature2">Swipe illimitati</span></li>
-        <li><span class="check">✓</span><span data-i18n="plusFeature3">Messaggi illimitati</span></li>
-        <li><span class="check">✓</span><span data-i18n="plusFeature4">Tutti i filtri Gold sbloccati</span></li>
-        <li><span class="check">✓</span><span data-i18n="plusFeature5">Supporto prioritario</span></li>
-        <li><span class="check">✓</span><span data-i18n="plusFeature6">Vedi tutte le Stories senza video</span></li>
-        <li><span class="check">✓</span><span data-i18n="plusFeature7">Stories video fino a 90 secondi</span></li>
+        <li data-i18n="plusFeature1">✓ Nessuna pubblicità</li>
+        <li data-i18n="plusFeature2">✓ Swipe illimitati</li>
+        <li data-i18n="plusFeature3">✓ Messaggi illimitati</li>
+        <li data-i18n="plusFeature4">✓ Tutti i filtri Gold sbloccati</li>
+        <li data-i18n="plusFeature5">✓ Supporto prioritario</li>
+        <li data-i18n="plusFeature6">✓ Vedi tutte le Stories senza video</li>
+        <li data-i18n="plusFeature7">✓ Stories video fino a 90 secondi</li>
       </ul>
 
-      <div class="plus-plan-selector">
-        <button id="planMonthly" class="plan-btn active" type="button">
+      <div class="plan-selector">
+        <button id="planMonthly" class="plan-card active">
           <div class="plan-name" data-i18n="planMonthly">Mensile</div>
-          <div>
-            <span class="plan-price">€4.99</span>
-            <span class="plan-period" data-i18n="plusPeriod">/mese</span>
-          </div>
+          <div class="plan-price">€4.99<span data-i18n="plusPeriod">/mese</span></div>
         </button>
-
-        <button id="planYearly" class="plan-btn" type="button">
+        <button id="planYearly" class="plan-card">
           <div class="plan-name" data-i18n="planYearly">Annuale</div>
-          <div>
-            <span class="plan-price">€40</span>
-            <span class="plan-period">/anno</span>
-          </div>
+          <div class="plan-price">€40<span>/anno</span></div>
           <div class="plan-save" data-i18n="planSave">Risparmia €20!</div>
         </button>
       </div>
 
-      <button id="activatePlus" class="btn primary" data-i18n="activatePlus">Attiva Plutoo Plus</button>
+      <button id="activatePlus" class="btn primary xl" data-i18n="activatePlus">Attiva Plutoo Plus</button>
       <button id="cancelPlus" class="btn ghost" data-i18n="cancel">Annulla</button>
     </div>
   </div>
 </div>
 
-<!-- ==================== CHAT SHEET ==================== -->
-<div id="chatPane" class="sheet hidden">
-  <div class="sheet-header">
-    <div data-i18n="chat">Chat</div>
-    <button id="closeChat" class="icon close" aria-label="Chiudi">✕</button>
+<!-- ==================== CHAT PANE ==================== -->
+<div id="chatPane" class="chat-pane hidden">
+  <div class="chat-header">
+    <button id="closeChat" class="btn small ghost">←</button>
+    <span data-i18n="chat">Chat</span>
   </div>
-  <div class="sheet-body">
-    <div id="chatList" class="chat-list"></div>
-  </div>
-  <form id="chatComposer" class="composer">
+  <div id="chatList" class="chat-list"></div>
+  <form id="chatComposer" class="chat-composer">
     <input id="chatInput" type="text" data-i18n-placeholder="typeMessage" placeholder="Scrivi un messaggio…">
-    <button type="submit" class="btn accent small" data-i18n="send">Invia</button>
+    <button type="submit" class="btn primary" data-i18n="send">Invia</button>
   </form>
 </div>
 
-<!-- ==================== PROFILO DOG ==================== -->
+<!-- ==================== PROFILE PAGE ==================== -->
 <div id="profilePage" class="profile-page hidden">
-  <div class="profile-navbar">
+  <div class="profile-header">
     <button id="profileBack" class="btn small ghost">←</button>
-    <div class="profile-title" data-i18n="profile">Profilo</div>
+    <span data-i18n="profile">Profilo</span>
     <button id="profileClose" class="btn small ghost">✕</button>
   </div>
-  
-  <div id="profileContent" class="profile-content">
-    <!-- Contenuto dinamico generato da app.js -->
-  </div>
+  <div id="profileContent" class="profile-content"></div>
+</div>
 
-  <!-- ✅ BANNER ADMOB NEL PROFILO -->
-  <div class="profile-ad-banner">
-    <div class="ad-banner-profile">Banner AdMob • Profilo DOG</div>
+<!-- ==================== MATCH OVERLAY ==================== -->
+<div id="matchOverlay" class="match-overlay hidden">
+  <div class="match-content">
+    <div class="match-title">It's a Match! 💜</div>
+    <div class="match-hearts">💛 💜 💛</div>
   </div>
 </div>
 
 <!-- ==================== STORY VIEWER ==================== -->
 <div id="storyViewer" class="story-viewer hidden">
   <div class="story-header">
-    <div id="storyProgressBars" class="story-progress-bars"></div>
-    <div class="story-top-info">
+    <div class="story-user">
+      <img id="storyUserAvatar" src="" alt="" class="story-user-avatar">
       <div class="story-user-info">
-        <img id="storyUserAvatar" src="" alt="" class="story-user-avatar">
         <span id="storyUserName" class="story-user-name"></span>
         <span id="storyTimestamp" class="story-timestamp"></span>
       </div>
-      <button id="closeStoryViewer" class="story-close-btn" aria-label="Chiudi">✕</button>
     </div>
+    <button id="closeStoryViewer" class="story-close">✕</button>
   </div>
-
-  <div class="story-content-wrapper">
-    <button id="storyNavPrev" class="story-nav-prev" aria-label="Precedente"></button>
-    <div id="storyContent" class="story-content"></div>
-    <button id="storyNavNext" class="story-nav-next" aria-label="Successivo"></button>
-  </div>
+  
+  <div id="storyProgressBars" class="story-progress-bars"></div>
+  
+  <div id="storyContent" class="story-content"></div>
+  
+  <button id="storyNavPrev" class="story-nav story-nav-prev" aria-label="Previous">‹</button>
+  <button id="storyNavNext" class="story-nav story-nav-next" aria-label="Next">›</button>
 </div>
 
 <!-- ==================== UPLOAD STORY MODAL ==================== -->
 <div id="uploadStoryModal" class="modal hidden">
   <div class="modal-backdrop"></div>
-  <div class="modal-content story-upload-modal">
-    <button id="closeUploadStory" class="modal-close" aria-label="Chiudi">✕</button>
+  <div class="modal-content upload-story-modal">
+    <button id="closeUploadStory" class="modal-close">✕</button>
     
-    <h2 class="story-modal-title">📸 Carica una Story</h2>
-    
-    <!-- STEP 1: Upload -->
     <div id="uploadStoryStep1" class="upload-step active">
+      <h2>📸 Carica una Story</h2>
       <div class="upload-zone">
+        <input type="file" id="storyFileInput" accept="image/*,video/*" hidden>
         <label for="storyFileInput" class="upload-label">
           <div class="upload-icon">📤</div>
-          <div class="upload-text">Carica foto o video</div>
-          <div class="upload-hint">Max 10MB foto • Max 50MB video</div>
+          <div>Tocca per caricare foto o video</div>
+          <div class="upload-hint">Max 10MB foto, 50MB video</div>
         </label>
-        <input id="storyFileInput" type="file" accept="image/*,video/*" style="display:none">
       </div>
-      
       <div id="uploadPreview" class="upload-preview hidden"></div>
-      
-      <div class="story-actions">
-        <button id="cancelUpload" class="btn ghost" type="button">Annulla</button>
-        <button id="nextToCustomize" class="btn primary" type="button" disabled>Avanti →</button>
-      </div>
+      <button id="nextToCustomize" class="btn primary" disabled>Avanti →</button>
     </div>
-
-    <!-- STEP 2: Personalizza -->
+    
     <div id="uploadStoryStep2" class="upload-step">
-      <div class="story-customize">
-        
-        <div class="customize-section">
-          <h4 class="customize-title">🎨 Filtri</h4>
-          <div id="filtersGrid" class="filters-grid"></div>
-        </div>
-
-        <div class="customize-section">
-          <h4 class="customize-title">🎵 Musica</h4>
-          <select id="storyMusicSelect" class="story-select">
-            <option value="">Nessuna musica</option>
-            <option value="happy">Allegra</option>
-            <option value="calm">Rilassante</option>
-            <option value="epic">Epica</option>
-          </select>
-        </div>
-
-        <div class="customize-section">
-          <h4 class="customize-title">🔒 Privacy</h4>
-          <div class="privacy-options">
-            <label class="privacy-option">
-              <input type="radio" name="privacy" value="public" checked>
-              <div class="privacy-card">
-                <span class="privacy-icon">🌍</span>
-                <div class="privacy-info">
-                  <strong>Pubblica</strong>
-                  <span>Visibile a tutti</span>
-                </div>
-              </div>
-            </label>
-            <label class="privacy-option">
-              <input type="radio" name="privacy" value="friends">
-              <div class="privacy-card">
-                <span class="privacy-icon">👥</span>
-                <div class="privacy-info">
-                  <strong>Solo amici</strong>
-                  <span>Visibile ai tuoi match</span>
-                </div>
-              </div>
-            </label>
-          </div>
-        </div>
+      <h2>✨ Personalizza</h2>
+      <div id="uploadPreview" class="upload-preview"></div>
+      
+      <div class="customize-section">
+        <h3>Filtri</h3>
+        <div id="filtersGrid" class="filters-grid"></div>
       </div>
-
-      <div class="story-actions">
-        <button id="backToUpload" class="btn ghost" type="button">← Indietro</button>
-        <button id="publishStory" class="btn primary" type="button">Pubblica 🚀</button>
+      
+      <div class="customize-section">
+        <h3>Musica</h3>
+        <select id="storyMusicSelect" class="form-control">
+          <option value="">Nessuna musica</option>
+          <option value="happy">🎵 Happy</option>
+          <option value="chill">🎵 Chill</option>
+          <option value="energetic">🎵 Energetic</option>
+        </select>
+      </div>
+      
+      <div class="upload-actions">
+        <button id="backToUpload" class="btn outline">← Indietro</button>
+        <button id="publishStory" class="btn primary">Pubblica 🚀</button>
       </div>
     </div>
+    
+    <button id="cancelUpload" class="btn ghost">Annulla</button>
   </div>
 </div>
 
-<!-- ==================== MATCH OVERLAY ==================== -->
-<div id="matchOverlay" class="match-overlay hidden">
-  <div class="match-content">
-    <img src="plutoo-icon-512.png" alt="Match!" class="match-logo">
-    <h2 class="match-title">È un Match! 💛</h2>
-  </div>
+<!-- ✅ PRELOAD NASCOSTO IMMAGINI -->
+<div style="display:none" aria-hidden="true">
+  <img src="dogs/dog1.jpg" alt="">
+  <img src="dogs/dog2.jpg" alt="">
+  <img src="dogs/dog3.jpg" alt="">
+  <img src="dogs/dog4.jpg" alt="">
+  <img src="dogs/dog5.jpg" alt="">
+  <img src="dogs/dog6.jpg" alt="">
+  <img src="dogs/dog7.jpg" alt="">
+  <img src="dogs/dog8.jpg" alt="">
 </div>
 
 <script src="app.js"></script>
