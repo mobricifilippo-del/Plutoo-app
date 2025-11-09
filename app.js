@@ -2002,9 +2002,7 @@ document.addEventListener("DOMContentLoaded", () => {
     StoriesState.saveStories();
     
     closeUploadModal();
-    renderStor
-     ```javascript
-iesBar();
+    renderStoriesBar();
     
     if(state.currentDogProfile){
       openProfilePage(state.currentDogProfile);
