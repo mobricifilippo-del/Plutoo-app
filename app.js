@@ -425,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
       initStories();
       setActiveView("nearby");
       showAdBanner();
-    }, 2500);
+    }, 0);
   });
     
   // Sponsor UFFICIALE Fido
