@@ -632,7 +632,7 @@ document.addEventListener("DOMContentLoaded", () => {
   src="./${d.img}"
   alt="${d.name}"
   class="card-img"
-  loading="eager"
+  loading="lazy"
   decoding="async"
   fetchpriority="high"
   onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"
