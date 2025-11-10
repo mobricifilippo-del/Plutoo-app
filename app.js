@@ -965,57 +965,73 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION CON ICONE UFFICIALI
-  function generateSocialSection(dog) {
-    if (!dog.social) return "";
-    
-    const enabledSocials = [];
-    
-    if (dog.social.facebook?.enabled && dog.social.facebook.url) {
-      enabledSocials.push({
-        name: "Facebook",
-        icon: <svg class="social-svg" width="24" height="24" viewBox="0 0 24 24" fill="#1877F2">
-        url: dog.social.facebook.url,
-        class: "social-fb"
-      });
-    }
-    
-    if (dog.social.instagram?.enabled && dog.social.instagram.url) {
-      enabledSocials.push({
-        name: "Instagram",
-        icon: <svg class="social-svg" width="24" height="24" viewBox="0 0 24 24">
-        url: dog.social.instagram.url,
-        class: "social-ig"
-      });
-    }
-    
-    if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
-      enabledSocials.push({
-        name: "TikTok",
-        icon: <svg class="social-svg" width="24" height="24" viewBox="0 0 24 24" fill="#000000">
-        url: dog.social.tiktok.url,
-        class: "social-tt"
-      });
-    }
-    
-    if (enabledSocials.length === 0) return "";
-    
-    return `
-      <div class="pp-docs-section" style="margin-top:1.2rem">
-        <h4 class="section-title" style="margin-top:0;font-size:1rem">
-          ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
-        </h4>
-        <div class="pp-social-grid">
-          ${enabledSocials.map(s => `
-            <button class="social-btn ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
-              <div class="social-icon">${s.icon}</div>
-              <div class="social-label">${s.name}</div>
-            </button>
-          `).join("")}
-        </div>
-      </div>
-    `;
+  // ✅ FUNZIONE GENERAZIONE SOCIAL SECTION CON ICONE UFFICIALI (FIX SINTASSI)
+function generateSocialSection(dog) {
+  if (!dog.social) return "";
+
+  const enabled = [];
+
+  // Facebook
+  if (dog.social.facebook?.enabled && dog.social.facebook.url) {
+    enabled.push({
+      name: "Facebook",
+      url: dog.social.facebook.url,
+      class: "social-fb",
+      // fill via CSS → currentColor
+      icon: `
+        <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor"
+            d="M22.675 0H1.325C.594 0 0 .594 0 1.325v21.351C0 23.406.594 24 1.325 24h11.495v-9.294H9.847v-3.62h2.973V8.413c0-2.946 1.797-4.552 4.423-4.552 1.258 0 2.565.225 2.565.225v2.82h-1.445c-1.424 0-1.867.883-1.867 1.79v2.161h3.176l-.507 3.62h-2.669V24h5.236C23.406 24 24 23.406 24 22.676V1.325C24 .594 23.406 0 22.675 0z"/>
+        </svg>`
+    });
   }
+
+  // Instagram
+  if (dog.social.instagram?.enabled && dog.social.instagram.url) {
+    enabled.push({
+      name: "Instagram",
+      url: dog.social.instagram.url,
+      class: "social-ig",
+      icon: `
+        <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor"
+            d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.056 1.97.24 2.427.403a4.9 4.9 0 0 1 1.77 1.153 4.9 4.9 0 0 1 1.153 1.77c.163.456.347 1.256.403 2.426.058 1.267.07 1.647.07 4.851s-.012 3.584-.07 4.85c-.056 1.17-.24 1.97-.403 2.427a4.9 4.9 0 0 1-1.153 1.77 4.9 4.9 0 0 1-1.77 1.153c-.456.163-1.256.347-2.426.403-1.267.058-1.647.07-4.851.07s-3.584-.012-4.85-.07c-1.17-.056-1.97-.24-2.427-.403a4.9 4.9 0 0 1-1.77-1.153 4.9 4.9 0 0 1-1.153-1.77c-.163-.456-.347-1.256-.403-2.426C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.056-1.17.24-1.97.403-2.427a4.9 4.9 0 0 1 1.153-1.77 4.9 4.9 0 0 1 1.77-1.153c.456-.163 1.256-.347 2.426-.403C8.416 2.175 8.796 2.163 12 2.163zm0 1.8c-3.16 0-3.532.012-4.778.069-1.03.047-1.59.22-1.96.366-.493.191-.845.418-1.214.786-.368.369-.595.721-.786 1.214-.146.37-.319.93-.366 1.96-.057 1.246-.069 1.618-.069 4.778s.012 3.532.069 4.778c.047 1.03.22 1.59.366 1.96.191.493.418.845.786 1.214.369.368.721.595 1.214.786.37.146.93.319 1.96.366 1.246.057 1.618.069 4.778.069s3.532-.012 4.778-.069c1.03-.047 1.59-.22 1.96-.366.493-.191.845-.418 1.214-.786.368-.369.595-.721.786-1.214.146-.37.319-.93.366-1.96.057-1.246.069-1.618.069-4.778s-.012-3.532-.069-4.778c-.047-1.03-.22-1.59-.366-1.96a3.1 3.1 0 0 0-.786-1.214 3.1 3.1 0 0 0-1.214-.786c-.37-.146-.93-.319-1.96-.366-1.246-.057-1.618-.069-4.778-.069zm0 3.674a5.363 5.363 0 1 1 0 10.726 5.363 5.363 0 0 1 0-10.726zm0 1.8a3.563 3.563 0 1 0 0 7.126 3.563 3.563 0 0 0 0-7.126zM17.338 6.46a1.248 1.248 0 1 1 0 2.497 1.248 1.248 0 0 1 0-2.497z"/>
+        </svg>`
+    });
+  }
+
+  // TikTok
+  if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
+    enabled.push({
+      name: "TikTok",
+      url: dog.social.tiktok.url,
+      class: "social-tt",
+      icon: `
+        <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor"
+            d="M12.9 2h3.06c.25 1.28 1.12 2.41 2.3 3.08A6.7 6.7 0 0 0 20 5.7v3.08a8.6 8.6 0 0 1-3.67-1.06v6.68a5.8 5.8 0 1 1-5.8-5.8c.34 0 .67.03.99.1v3.05a2.77 2.77 0 1 0 1.86 2.61V2z"/>
+        </svg>`
+    });
+  }
+
+  if (!enabled.length) return "";
+
+  return `
+    <div class="pp-docs-section" style="margin-top:1.2rem">
+      <h4 class="section-title" style="margin-top:0;font-size:1rem">
+        ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
+      </h4>
+      <div class="pp-social-grid">
+        ${enabled.map(s => `
+          <button class="social-btn ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
+            <div class="social-icon">${s.icon}</div>
+            <div class="social-label">${s.name}</div>
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
 
   // PROFILO DOG CON SEZIONE STORIES + SOCIAL
   window.openProfilePage = (d)=>{
