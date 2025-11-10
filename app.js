@@ -413,11 +413,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   btnEnter?.addEventListener("click", ()=>{
-    heroLogo?.classList.remove("heartbeat-violet");
-    void heroLogo?.offsetWidth;
-    heroLogo?.classList.add("heartbeat-violet");
+  if(heroLogo){
+    heroLogo.classList.remove("heartbeat-violet");
+    void heroLogo.offsetWidth;
+    heroLogo.classList.add("heartbeat-violet");
+  }
 
-    setTimeout(()=>{
+  setTimeout(()=>{
       state.entered = true;
       localStorage.setItem("entered","1");
       homeScreen.classList.add("hidden");
@@ -1452,6 +1454,11 @@ function generateSocialSection(dog) {
 
   function init(){
     applyTranslations();
+     // ✅ Precarica prime 3 immagini per caricamento veloce
+  ['dog1.jpg', 'dog2.jpg', 'dog3.jpg'].forEach(img => {
+    const preload = new Image();
+    preload.src = `./${img}`;
+  });
     updatePlusUI();
 
     if(breedInput) breedInput.value = state.filters.breed;
