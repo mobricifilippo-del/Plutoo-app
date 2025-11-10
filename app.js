@@ -568,7 +568,6 @@ document.addEventListener("DOMContentLoaded", () => {
   btnBackPlay?.addEventListener("click", ()=> goBack() );
 
   function goBack(){
-  function goBack(){
   // 1) Viewer Stories aperto?
   const storyViewer = $("storyViewer");
   if (storyViewer && !storyViewer.classList.contains("hidden")){
