@@ -626,16 +626,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   
   function cardHTML(d){
-    return `
-      <article class="card dog-card" data-id="${d.id}">
-        <img 
-          src="${d.img}" 
-          alt="${d.name}" 
-          class="card-img" 
-          loading="lazy" 
-          decoding="async"
-          fetchpriority="low"
-        />
+  return `
+    <article class="card dog-card" data-id="${d.id}">
+      <img 
+        src="${d.img}" 
+        alt="${d.name}" 
+        class="card-img" 
+        loading="eager"          // ✅ EAGER
+        decoding="async"
+        fetchpriority="high"     // ✅ HIGH
+      />
         <div class="card-info">
           <h3>${d.name} ${d.verified?"✅":""}</h3>
           <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
