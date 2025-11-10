@@ -1098,10 +1098,11 @@ body.story-open #storiesBar {
 .social-btn.social-ig:hover .social-icon svg path {
   fill: #ffffff !important;
 }
-  font-size: .85rem;
-  font-weight: 700;
-  color: var(--text);
-  text-align: center;
+  .social-label{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--text);
+  text-align:center;
 }
 
 @media (max-width: 520px) {
