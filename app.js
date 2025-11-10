@@ -568,25 +568,62 @@ document.addEventListener("DOMContentLoaded", () => {
   btnBackPlay?.addEventListener("click", ()=> goBack() );
 
   function goBack(){
-    if (state.currentView === "profile"){
-      closeProfilePage();
-      return;
-    }
+  function goBack(){
+  // 1) Viewer Stories aperto?
+  const storyViewer = $("storyViewer");
+  if (storyViewer && !storyViewer.classList.contains("hidden")){
+    closeStoryViewer();
+    return;
+  }
 
-    if (state.currentView === "love" || state.currentView === "friendship"){
-      setActiveView("nearby");
-      return;
-    }
+  // 2) Modale Upload Story aperto?
+  const uploadStoryModal = $("uploadStoryModal");
+  if (uploadStoryModal && !uploadStoryModal.classList.contains("hidden")){
+    closeUploadModal();
+    return;
+  }
 
-    if (state.currentView === "nearby"){
-      if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
-        localStorage.removeItem("entered");
-        state.entered=false;
-        appScreen.classList.add("hidden");
-        homeScreen.classList.remove("hidden");
-      }
+  // 3) Modale Plus aperto?
+  if (plusModal && !plusModal.classList.contains("hidden")){
+    closePlusModal();
+    return;
+  }
+
+  // 4) Pannello Ricerca aperto?
+  if (searchPanel && !searchPanel.classList.contains("hidden")){
+    searchPanel.classList.add("hidden");
+    searchPanel.style.display = "none";
+    return;
+  }
+
+  // 5) Chat aperta?
+  if (chatPane && !chatPane.classList.contains("hidden") && chatPane.classList.contains("show")){
+    closeChatPane();
+    return;
+  }
+
+  // 6) Pagina profilo?
+  if (state.currentView === "profile"){
+    closeProfilePage();
+    return;
+  }
+
+  // 7) Deck → torna a Nearby
+  if (state.currentView === "love" || state.currentView === "friendship"){
+    setActiveView("nearby");
+    return;
+  }
+
+  // 8) Sei in Nearby → conferma ritorno Home
+  if (state.currentView === "nearby"){
+    if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
+      localStorage.removeItem("entered");
+      state.entered=false;
+      appScreen.classList.add("hidden");
+      homeScreen.classList.remove("hidden");
     }
   }
+}
 
   window.addEventListener("popstate", (e)=>{
     e.preventDefault();
