@@ -408,7 +408,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (state.entered) {
     homeScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
-    initStories();
     setActiveView("nearby");
     showAdBanner();
   }
@@ -1480,8 +1479,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (state.entered){
-      initStories();
       setActiveView("nearby");
+       // initStories() verrà chiamata DOPO il click su Entra
     }
   }
 
