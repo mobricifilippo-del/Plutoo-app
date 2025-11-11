@@ -116,50 +116,6 @@ if (state.entered) {
   appScreen?.classList.remove("hidden");
 }
 
-// STATO GLOBALE
-const state = {
-
-  // STATO GLOBALE
-  const state = {
-    lang: (localStorage.getItem("lang") || autodetectLang()),
-    plus: localStorage.getItem("plutoo_plus")==="yes",
-    plusPlan: localStorage.getItem("plusPlan") || "monthly",
-    entered: localStorage.getItem("entered")==="1",
-    swipeCount: parseInt(localStorage.getItem("swipes")||"0"),
-    nextRewardAt: parseInt(localStorage.getItem("nextRewardAt")||"10"),
-    rewardOpen: false,
-    processingSwipe: false,
-    matches: JSON.parse(localStorage.getItem("matches")||"{}"),
-    friendships: JSON.parse(localStorage.getItem("friendships")||"{}"),
-    chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent")||"{}"),
-    firstMsgRewardByDog: JSON.parse(localStorage.getItem("firstMsgRewardByDog")||"{}"),
-    selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog")||"{}"),
-    ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded")||"{}"),
-    dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded")||"{}"),
-    storyRewardViewed: JSON.parse(localStorage.getItem("storyRewardViewed")||"{}"),
-    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed")||"{}"),
-    currentLoveIdx: 0,
-    currentPlayIdx: 0,
-    currentView: "nearby",
-    viewHistory: [],
-    currentDogProfile: null,
-    filters: {
-      breed: localStorage.getItem("f_breed") || "",
-      distKm: parseInt(localStorage.getItem("f_distKm")||"50"),
-      verified: localStorage.getItem("f_verified")==="1",
-      sex: localStorage.getItem("f_sex") || "",
-      ageMin: localStorage.getItem("f_ageMin") || "",
-      ageMax: localStorage.getItem("f_ageMax") || "",
-      weight: localStorage.getItem("f_weight") || "",
-      height: localStorage.getItem("f_height") || "",
-      pedigree: localStorage.getItem("f_pedigree") || "",
-      breeding: localStorage.getItem("f_breeding") || "",
-      size: localStorage.getItem("f_size") || ""
-    },
-    geo: null,
-    breeds: []
-  };
-
   // I18N
   const I18N = {
     it: {
