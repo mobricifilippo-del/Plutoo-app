@@ -2004,7 +2004,15 @@ StoriesState.openedFrom = null;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h fa`;
     return `${Math.floor(seconds / 86400)}g fa`;
   }
-
+     
+// ✨ Flash ingresso bianco
+function triggerFlash(){
+  const el = document.getElementById("flashOverlay");
+  if(!el) return;
+  el.classList.add("active");
+  setTimeout(()=> el.classList.remove("active"), 900);
+}
+   
   function playStoryMusic(musicId) {
     console.log("🎵 Playing music:", musicId);
   }
@@ -2018,7 +2026,13 @@ StoriesState.openedFrom = null;
     $("uploadStoryModal")?.classList.remove("hidden");
     showUploadStep();
   }
-
+// Trigger flash all'ingresso (bottone Entra)
+document.body.addEventListener("click", (e)=>{
+  const enterBtn = e.target.closest('#btnEnter, .btn-enter, [data-enter]');
+  if(!enterBtn) return;
+  triggerFlash();
+});
+     
   function closeUploadModal() {
     $("uploadStoryModal")?.classList.add("hidden");
     resetUploadForm();
