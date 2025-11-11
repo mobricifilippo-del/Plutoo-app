@@ -1322,6 +1322,16 @@ qs("#storiesBar")?.addEventListener("click", (e) => {
   if (!dogId) return;
   openDogStoryViewer(dogId, 0);
 });
+     // PROFILE (e ovunque) STORIES — CLICK TO OPEN (delegato)
+// Evita doppio trigger: se il click è dentro #storiesBar (HOME) esco e lascia fare al listener già esistente
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#storiesBar")) return;              // HOME già gestita
+  const el = e.target.closest(".story-circle");             // qualsiasi cerchio story
+  if (!el || el.id === "addStoryBtn") return;               // ignora il + aggiungi
+  const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
+  if (!dogId) return;
+  openDogStoryViewer(dogId, 0);
+});
 /* ============== /STORIES VIEWER – OPEN/CLOSE SAFE ============== */
     $("btnLikeDog").onclick = ()=>{
       state.matches[d.id] = true;
