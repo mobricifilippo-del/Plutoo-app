@@ -10,6 +10,12 @@
   <link rel="icon" type="image/png" href="plutoo-icon-192.png">
   <link rel="apple-touch-icon" href="plutoo-icon-192.png">
   <link rel="manifest" href="manifest.json">
+  
+  <!-- ✅ PRELOAD IMMAGINI PER CARICAMENTO VELOCE -->
+  <link rel="preload" as="image" href="dog1.jpg">
+  <link rel="preload" as="image" href="dog2.jpg">
+  <link rel="preload" as="image" href="dog3.jpg">
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -79,13 +85,13 @@
         </div>
       </button>
 
-    <div class="legal-links legal-purple">
+      <div class="legal-links legal-purple">
         <a href="termini.html">Termini</a> · 
         <a href="privacy.html">Privacy</a> · 
         <a href="contatti.html">Contatti</a>
       </div>
     </div>
-  </div> 
+  </div>
 
   <!-- ==================== APP SCREEN ==================== -->
   <div id="appScreen" class="app hidden">
@@ -202,10 +208,10 @@
       </div>
       <div id="adBanner" class="ad-banner">Banner Test AdMob • Banner App</div>
       <div class="legal-links legal-purple">
-  <a href="termini.html">Termini</a> · 
-  <a href="privacy.html">Privacy</a> · 
-  <a href="contatti.html">Contatti</a>
-</div>
+        <a href="termini.html">Termini</a> · 
+        <a href="privacy.html">Privacy</a> · 
+        <a href="contatti.html">Contatti</a>
+      </div>
     </div>
   </div>
 
@@ -352,20 +358,20 @@
     </div>
   </div>
 
-  <!-- ==================== CHAT PANE ==================== -->
+  <!-- ==================== CHAT PANE (MODALE CENTRATA) ==================== -->
   <div id="chatPane" class="chat-pane hidden">
-  <div class="chat-pane-inner">
-    <div class="chat-header">
-      <button id="closeChat" class="btn small ghost">←</button>
-      <span data-i18n="chat">Chat</span>
+    <div class="chat-pane-inner">
+      <div class="chat-header">
+        <button id="closeChat" class="btn small ghost">←</button>
+        <span data-i18n="chat">Chat</span>
+      </div>
+      <div id="chatList" class="chat-list"></div>
+      <form id="chatComposer" class="chat-composer">
+        <input id="chatInput" type="text" data-i18n-placeholder="typeMessage" placeholder="Scrivi un messaggio…">
+        <button type="submit" class="btn primary" data-i18n="send">Invia</button>
+      </form>
     </div>
-    <div id="chatList" class="chat-list"></div>
-    <form id="chatComposer" class="chat-composer">
-      <input id="chatInput" type="text" data-i18n-placeholder="typeMessage" placeholder="Scrivi un messaggio…">
-      <button type="submit" class="btn primary" data-i18n="send">Invia</button>
-    </form>
   </div>
-</div>
 
   <!-- ==================== PROFILE PAGE ==================== -->
   <div id="profilePage" class="profile-page hidden">
