@@ -2012,7 +2012,17 @@ function triggerFlash(){
   el.classList.add("active");
   setTimeout(()=> el.classList.remove("active"), 900);
 }
-   
+   // 🎯 Collegamento bottone Entra → flash ingresso
+document.addEventListener("DOMContentLoaded", () => {
+  const enterBtn = document.getElementById("btnEnter");
+  if (enterBtn) {
+    enterBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      triggerFlash(); // effetto bianco
+      // qui entrerà la funzione showApp() o simile nel prossimo step
+    });
+  }
+});
   function playStoryMusic(musicId) {
     console.log("🎵 Playing music:", musicId);
   }
