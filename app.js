@@ -1271,8 +1271,11 @@ function openDogStoryViewer(dogId, startIndex = 0){
     <div class="story-header">
       <div class="story-top-info">
         <div class="story-user-info">
-          <img class="story-user-avatar" src="${state.dogs[dogId]?.img || 'plutoo-icon-192.png'}" alt="">
-          <div class="story-user-name">${state.dogs[dogId]?.name || 'Plutoo'}</div>
+         ${(() => {
+  const dog = DOGS.find(x => x.id === dogId);
+  return `<img class="story-user-avatar" src="${dog?.img || 'plutoo-icon-192.png'}" alt="">
+  <div class="story-user-name">${dog?.name || 'Plutoo'}</div>`;
+})()}
         </div>
         <button class="story-close-btn" aria-label="Chiudi">✕</button>
       </div>
@@ -1290,8 +1293,6 @@ function openDogStoryViewer(dogId, startIndex = 0){
   `;
   document.body.appendChild(v);
   document.body.classList.add("story-open");
-   const imgEl = v.querySelector(".story-content img");
-imgEl?.addEventListener("click", (e)=>{ e.stopPropagation(); show(idx + 1); });
    
    // NAVIGAZIONE STORIES (stato locale + render)
 const story = StoriesState.stories?.find(s => s.dogId === dogId);
