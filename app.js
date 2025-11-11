@@ -2026,12 +2026,16 @@ function triggerFlash(){
     $("uploadStoryModal")?.classList.remove("hidden");
     showUploadStep();
   }
-// Trigger flash all'ingresso (bottone Entra)
-document.body.addEventListener("click", (e)=>{
-  const enterBtn = e.target.closest('#btnEnter, .btn-enter, [data-enter]');
-  if(!enterBtn) return;
-  triggerFlash();
-});
+
+     // Collega direttamente il bottone Entra
+const _enterBtn = document.getElementById("btnEnter");
+if (_enterBtn) {
+  _enterBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    triggerFlash();          // 3A: flash bianco
+    // 3C: l’ingresso vero lo agganciamo nel prossimo step
+  });
+}
      
   function closeUploadModal() {
     $("uploadStoryModal")?.classList.add("hidden");
