@@ -1313,6 +1313,14 @@ function closeStoryViewer(){
 window.addEventListener("popstate", ()=>{
   if (state.storyOpen) closeStoryViewer();
 });
+     // HOME STORIES — CLICK TO OPEN
+qs("#storiesBar")?.addEventListener("click", (e) => {
+  const el = e.target.closest(".story-circle");
+  if (!el) return;
+  const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
+  if (!dogId) return;
+  openDogStoryViewer(dogId, 0);
+});
 /* ============== /STORIES VIEWER – OPEN/CLOSE SAFE ============== */
     $("btnLikeDog").onclick = ()=>{
       state.matches[d.id] = true;
