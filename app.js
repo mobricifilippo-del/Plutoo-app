@@ -1290,13 +1290,46 @@ function openDogStoryViewer(dogId, startIndex = 0){
   `;
   document.body.appendChild(v);
   document.body.classList.add("story-open");
+   // NAVIGAZIONE STORIES (stato locale + render)
+const story = StoriesState.stories?.find(s => s.dogId === dogId);
+let idx = startIndex || 0;
+
+const imgEl  = v.querySelector(".story-content img");
+const barsEl = v.querySelector(".story-progress-bars");
+
+function renderBars(count, activeIndex){
+  if (!barsEl || !count) return;
+  barsEl.innerHTML = Array.from({ length: count }, (_, k) =>
+    `<div class="story-progress-bar${k <= activeIndex ? ' active' : ''}${k < activeIndex ? ' completed' : ''}">
+       <div class="story-progress-fill"></div>
+     </div>`
+  ).join("");
+}
+
+function show(i){
+  if (!story || !story.media?.length) return;
+  idx = Math.max(0, Math.min(i, story.media.length - 1));
+  const nextUrl = story.media[idx]?.url;
+  if (nextUrl) imgEl.src = nextUrl;
+  renderBars(story.media.length, idx);
+  // aggiorna lo state della history (per tasto back)
+  try { history.replaceState({ story: true, dogId, idx }, "", location.href); } catch {}
+}
+
+// prima render
+show(idx);
 
   qs(".story-close-btn", v)?.addEventListener("click", closeStoryViewer);
   v.addEventListener("click", (e)=>{ if (e.target === v) closeStoryViewer(); });
 
-  qs(".story-nav-prev", v)?.addEventListener("click", (e)=>{ e.stopPropagation(); });
-  qs(".story-nav-next", v)?.addEventListener("click", (e)=>{ e.stopPropagation(); });
-}
+  qs(".story-nav-prev", v)?.addEventListener("click", (e) => { 
+  e.stopPropagation(); 
+  show(idx - 1); 
+});
+qs(".story-nav-next", v)?.addEventListener("click", (e) => { 
+  e.stopPropagation(); 
+  show(idx + 1); 
+});
 
 function closeStoryViewer(){
   const v = $(".story-viewer");
