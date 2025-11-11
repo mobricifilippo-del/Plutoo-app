@@ -1383,17 +1383,44 @@ document.addEventListener("click", (e) => {
   if (!dogId) return;
   openDogStoryViewer(dogId, 0);
 });
+
+   /* ============== STORIES VIEWER – OPEN/CLOSE SAFE ============== */
+const openDogStoryViewerFromProfile = (id) => {
+  try {
+    const dog = DOGS.find(d => d.id === id);
+    if (!dog) return;
+    const storyViewer = $("#storyViewer");
+    const storyContent = $("#storyContent");
+    const storyUserName = $("#storyUserName");
+    const storyUserAvatar = $("#storyUserAvatar");
+    const storyProgressBars = $("#storyProgressBars");
+
+    storyContent.innerHTML = "";
+    storyProgressBars.innerHTML = "";
+
+    const imgEl = document.createElement("img");
+    imgEl.src = dog.img || "";
+    imgEl.alt = dog.name || "";
+    imgEl.className = "story-media";
+    storyContent.appendChild(imgEl);
+
+    storyUserName.textContent = dog.name || "Dog";
+    storyUserAvatar.src = dog.img || "";
+
+    storyViewer.classList.remove("hidden");
+    storyViewer.style.display = "flex";
+
+    $("#closeStoryViewer").onclick = () => {
+      storyViewer.classList.add("hidden");
+      storyViewer.style.display = "none";
+      storyContent.innerHTML = "";
+      storyProgressBars.innerHTML = "";
+    };
+  } catch (err) {
+    console.error("Errore apertura Story:", err);
+  }
+};
 /* ============== /STORIES VIEWER – OPEN/CLOSE SAFE ============== */
-    $("btnLikeDog").onclick = ()=>{
-      state.matches[d.id] = true;
-      localStorage.setItem("matches", JSON.stringify(state.matches));
-      showMatchAnimation();
-      closeProfilePage();
-    };
-    
-    $("btnDislikeDog").onclick = ()=>{
-      closeProfilePage();
-    };
 
     // ✅ FIX 5: CHAT SI APRE NEL PROFILO (SENZA CHIUDERE)
     $("btnOpenChat").onclick = ()=>{
