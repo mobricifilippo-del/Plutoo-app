@@ -2168,18 +2168,3 @@ document.addEventListener("DOMContentLoaded", () => {
   `);
 
 });
-```
-
----
-
-**✅ MODIFICHE APPLICATE IN `app.js`:**
-
-1. ✅ **Riga 308:** Animazione logo con check `if(heroLogo)`
-2. ✅ **Riga 680:** Immagini senza `loading="lazy"`
-3. ✅ **Riga 1563:** Preload 3 immagini in `init()`
-4. ✅ **Riga 835:** Icone social con path hardcoded (#1877F2, #E4405F, #FFFFFF)
-5. ✅ **Riga 1035:** Chat si apre nel profilo (rimosso `closeProfilePage()`)
-6. ✅ **Riga 1086:** Chat modale con classe `.show`
-7. ✅ **Riga 1274:** Setup stories con chiusura immediata (click background + ESC)
-8. ✅ **Riga 1276:** Render stories bar con preventDefault
-9. ✅ **Riga 1385:** Close story viewer sicuro
