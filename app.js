@@ -1319,6 +1319,19 @@ function show(i){
   try { history.replaceState({ story: true, dogId, idx }, "", location.href); } catch {}
    scheduleAuto();
 }
+let storyTimer;
+function scheduleAuto(){
+  clearTimeout(storyTimer);
+  if (!story?.media?.length) return;
+  storyTimer = setTimeout(()=>{
+    if (!state.storyOpen) return;
+    if (idx >= story.media.length - 1) {
+      closeStoryViewer();
+    } else {
+      show(idx + 1);
+    }
+  }, 15000); // 15s
+}
 
 // prima render
 show(idx);
@@ -1828,7 +1841,8 @@ document.addEventListener("click", (e) => {
   function openStoryViewerDirect(userId) {
     StoriesState.currentStoryUserId = userId;
     StoriesState.currentMediaIndex = 0;
-    
+    StoriesState.openedFrom = "bar";
+     
     $("storyViewer")?.classList.remove("hidden");
     document.body.classList.add("noscroll");
     document.body.classList.add("story-open");
@@ -1840,6 +1854,7 @@ document.addEventListener("click", (e) => {
   function openDogStoryViewer(userId, mediaIndex) {
     StoriesState.currentStoryUserId = userId;
     StoriesState.currentMediaIndex = mediaIndex;
+     StoriesState.openedFrom = "profile";
     
     $("storyViewer")?.classList.remove("hidden");
     document.body.classList.add("noscroll");
@@ -1974,6 +1989,11 @@ document.addEventListener("click", (e) => {
     }
     document.body.classList.remove("noscroll");
     document.body.classList.remove("story-open");
+     // Se la story era stata aperta dal profilo, resta nel profilo
+if (StoriesState?.openedFrom === "profile") {
+  $("#profilePage")?.classList.remove("hidden");
+}
+StoriesState.openedFrom = null;
     renderStoriesBar();
   }
 
