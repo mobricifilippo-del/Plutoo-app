@@ -250,7 +250,7 @@ a{color:inherit;text-decoration:none}
   background:#000;display:flex;flex-direction:column;
 }
 .story-header{
-  position:absolute;top:0;left:0;right:0;z-index:901;padding:.8rem 1rem;
+  position:absolute;top:0;left:0;right:0;z-index:906;padding:.8rem 1rem;
   background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,transparent 100%);
 }
 .story-progress-bars{display:flex;gap:4px;margin-bottom:.7rem}
@@ -294,7 +294,7 @@ a{color:inherit;text-decoration:none}
 }
 .story-nav-prev,.story-nav-next{
   position:absolute;top:0;bottom:0;width:35%;background:transparent;
-  border:0;cursor:pointer;z-index:902;outline:none;
+  border:0;cursor:pointer;z-index:904;outline:none;
 }
 .story-nav-prev{left:0}
 .story-nav-next{right:0}
