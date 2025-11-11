@@ -1259,7 +1259,62 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
     });
+/* ============== STORIES VIEWER – OPEN/CLOSE SAFE ============== */
+function openDogStoryViewer(dogId, startIndex = 0){
+  if ($(".story-viewer")) return;
 
+  state.storyOpen = true;
+  history.pushState({ story: true, dogId, idx: startIndex }, "");
+
+  const v = document.createElement("div");
+  v.className = "story-viewer";
+  v.innerHTML = `
+    <div class="story-header">
+      <div class="story-top-info">
+        <div class="story-user-info">
+          <img class="story-user-avatar" src="${state.dogs[dogId]?.img || 'plutoo-icon-192.png'}" alt="">
+          <div class="story-user-name">${state.dogs[dogId]?.name || 'Plutoo'}</div>
+        </div>
+        <button class="story-close-btn" aria-label="Chiudi">✕</button>
+      </div>
+      <div class="story-progress-bars">
+        <div class="story-progress-bar active"><div class="story-progress-fill"></div></div>
+      </div>
+    </div>
+    <div class="story-content-wrapper">
+      <button class="story-nav-prev" aria-label="Prev"></button>
+      <div class="story-content">
+        <img src="${(StoriesState.stories?.find(s=>s.dogId===dogId)?.media?.[startIndex]?.url) || 'plutoo-icon-192.png'}" alt="">
+      </div>
+      <button class="story-nav-next" aria-label="Next"></button>
+    </div>
+  `;
+  document.body.appendChild(v);
+  document.body.classList.add("story-open");
+
+  qs(".story-close-btn", v)?.addEventListener("click", closeStoryViewer);
+  v.addEventListener("click", (e)=>{ if (e.target === v) closeStoryViewer(); });
+
+  qs(".story-nav-prev", v)?.addEventListener("click", (e)=>{ e.stopPropagation(); });
+  qs(".story-nav-next", v)?.addEventListener("click", (e)=>{ e.stopPropagation(); });
+}
+
+function closeStoryViewer(){
+  const v = $(".story-viewer");
+  if (v) v.remove();
+  document.body.classList.remove("story-open");
+  state.storyOpen = false;
+
+  if (history.state && history.state.story) {
+    try { history.replaceState({}, "", location.href); } catch {}
+    setTimeout(()=>{ try { history.back(); } catch {} }, 0);
+  }
+}
+
+window.addEventListener("popstate", ()=>{
+  if (state.storyOpen) closeStoryViewer();
+});
+/* ============== /STORIES VIEWER – OPEN/CLOSE SAFE ============== */
     $("btnLikeDog").onclick = ()=>{
       state.matches[d.id] = true;
       localStorage.setItem("matches", JSON.stringify(state.matches));
