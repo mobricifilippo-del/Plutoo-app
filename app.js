@@ -2012,17 +2012,7 @@ function triggerFlash(){
   el.classList.add("active");
   setTimeout(()=> el.classList.remove("active"), 900);
 }
-   // 🎯 Collegamento bottone Entra → flash ingresso
-document.addEventListener("DOMContentLoaded", () => {
-  const enterBtn = document.getElementById("btnEnter");
-  if (enterBtn) {
-    enterBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      triggerFlash(); // effetto bianco
-      // qui entrerà la funzione showApp() o simile nel prossimo step
-    });
-  }
-});
+   
   function playStoryMusic(musicId) {
     console.log("🎵 Playing music:", musicId);
   }
@@ -2035,21 +2025,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     $("uploadStoryModal")?.classList.remove("hidden");
     showUploadStep();
-  }
-
-     // Collega direttamente il bottone Entra
-const _enterBtn = document.getElementById("btnEnter");
-if (_enterBtn) {
-  _enterBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    triggerFlash();          // 3A: flash bianco
-    // 3C: l’ingresso vero lo agganciamo nel prossimo step
-  });
-}
-     
-  function closeUploadModal() {
-    $("uploadStoryModal")?.classList.add("hidden");
-    resetUploadForm();
   }
 
   function resetUploadForm() {
