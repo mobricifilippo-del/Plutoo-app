@@ -1062,3 +1062,19 @@ body.story-open #storiesBar {
   80%{transform:scale(1.06);filter:drop-shadow(0 13px 25px rgba(0,0,0,.55)) drop-shadow(0 0 40px rgba(138,123,255,.7)) drop-shadow(0 0 28px rgba(205,164,52,.6))}
   100%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(138,123,255,0)) drop-shadow(0 0 0 rgba(205,164,52,0))}
 }
+
+/* ✨ Animazione flash bianco ingresso */
+#flashOverlay {
+  position: fixed;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 1.2s ease-out;
+}
+
+#flashOverlay.active {
+  opacity: 1;
+  transition: opacity 0.4s ease-in;
+}
