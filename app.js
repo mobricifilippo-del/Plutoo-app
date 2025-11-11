@@ -1,12 +1,3 @@
-/* =========================================================
-   PLUTOO – app.js VERSIONE FINALE GOOGLE PLAY
-   ✅ FIX animazione logo
-   ✅ FIX immagini veloci (preload)
-   ✅ FIX stories chiusura immediata
-   ✅ FIX stories apertura nelle vicinanze
-   ✅ FIX icone social ufficiali visibili
-   ✅ FIX chat centrata nel profilo
-   ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
    
   // Helpers
