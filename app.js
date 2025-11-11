@@ -1290,6 +1290,9 @@ function openDogStoryViewer(dogId, startIndex = 0){
   `;
   document.body.appendChild(v);
   document.body.classList.add("story-open");
+   const imgEl = v.querySelector(".story-content img");
+imgEl?.addEventListener("click", (e)=>{ e.stopPropagation(); show(idx + 1); });
+   
    // NAVIGAZIONE STORIES (stato locale + render)
 const story = StoriesState.stories?.find(s => s.dogId === dogId);
 let idx = startIndex || 0;
@@ -1314,6 +1317,7 @@ function show(i){
   renderBars(story.media.length, idx);
   // aggiorna lo state della history (per tasto back)
   try { history.replaceState({ story: true, dogId, idx }, "", location.href); } catch {}
+   scheduleAuto();
 }
 
 // prima render
