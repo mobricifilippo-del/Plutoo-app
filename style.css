@@ -1,12 +1,8 @@
 /* =====================================================
    PLUTOO – VIOLET EDITION + STORIES + PROFILO COMPLETO
-   ✅ FIX: Banner AdMob nel profilo
-   ✅ FIX: Sezione Stories nel profilo
-   ✅ FIX: Stories fullscreen + topbar nascosta
-   ✅ FIX: Social icons con SVG ufficiali
-   ✅ FIX: Colori link legali ripristinati
-   ✅ FIX: Emoji bottoni swipe corretti
-   ✅ FIX: Link footer viola visibili e cliccabili
+   ✅ FIX: Chat modale centrata
+   ✅ FIX: Icone social visibili
+   ✅ FIX: Stories chiusura immediata
    ===================================================== */
 
 :root{
@@ -69,7 +65,7 @@ a{color:inherit;text-decoration:none}
 }
 .plus-icon{font-size:1.1rem;line-height:1}
 
-/* Cerchi swipe - ✅ EMOJI CORRETTE */
+/* Cerchi swipe */
 .card-actions{display:flex;justify-content:center;gap:.85rem;padding:.65rem .85rem .9rem}
 .btn.no,.btn.yes{
   width:60px;height:60px;border-radius:999px;padding:0;
@@ -84,37 +80,12 @@ a{color:inherit;text-decoration:none}
   box-shadow:0 0 28px rgba(138,123,255,.4) inset, 0 0 32px rgba(138,123,255,.3);
   transform:scale(1.05);
 }
-/* ================== CONTATTI ================== */
-.socials{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:14px;
-  margin:16px 0;
-}
-.socials a{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 14px;
-  border:1px solid #1d1d2a;
-  border-radius:14px;
-  background:#0f0f18;
-  text-decoration:none;
-  color:var(--text);
-  box-shadow:var(--shadow);
-}
-.socials a:hover{
-  background:#121225;
-  border-color:var(--gold);
-  color:var(--gold);
-}
-.socials span{font-weight:600}
-.socials svg{width:36px;height:36px;flex:0 0 36px}
-/* Utility visibility – FIX click home */
+
+/* Utility visibility */
 .hidden{display:none !important}
 .modal.hidden,.panel.hidden{display:none !important}
 .story-open .hidden{display:none !important}
+
 /* ================= HOME ================= */
 .home{min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:1.2rem}
 .home-top{display:flex;justify-content:center}
@@ -145,7 +116,7 @@ a{color:inherit;text-decoration:none}
 .ethics-lines .l1{font-size:.92rem}
 .ethics-lines .l2{font-size:.82rem;opacity:.75}
 
-/* Link legali - HOME - ✅ VISIBILI E CLICCABILI */
+/* Link legali - HOME */
 .legal-links{margin-top:.7rem;font-size:.9rem}
 .legal-links a{
   color:var(--muted);
@@ -158,7 +129,7 @@ a{color:inherit;text-decoration:none}
   text-decoration:underline;
 }
 
-/* Link legali - APP - ✅ VIOLA VISIBILI E CLICCABILI */
+/* Link legali - APP */
 .legal-links.legal-purple a{
   color:var(--violet);
   text-decoration:none;
@@ -334,6 +305,12 @@ a{color:inherit;text-decoration:none}
   border:1px solid rgba(138,123,255,.4);
 }
 
+/* ✅ FIX: NASCONDE TOPBAR QUANDO STORY APERTA */
+body.story-open #mainTopbar,
+body.story-open #storiesBar {
+  display: none !important;
+}
+
 /* ================= CONTENT ================= */
 .content{flex:1;padding:.9rem}
 .view{display:none}
@@ -402,7 +379,6 @@ a{color:inherit;text-decoration:none}
   padding:1rem;padding-bottom:72px;
 }
 
-/* ✅ BANNER ADMOB NEL PROFILO */
 .profile-ad-banner{
   position:sticky;bottom:0;left:0;right:0;
   background:rgba(12,12,18,.95);
@@ -455,7 +431,7 @@ a{color:inherit;text-decoration:none}
   color:var(--violet-glow);font-weight:900;margin:1.2rem 0 .6rem 0;font-size:1.15rem;
 }
 
-/* ✅ SEZIONE STORIES NEL PROFILO */
+/* SEZIONE STORIES NEL PROFILO */
 .pp-stories-section{
   background:rgba(138,123,255,.06);
   border:1px solid rgba(138,123,255,.25);
@@ -504,7 +480,7 @@ a{color:inherit;text-decoration:none}
   color:#fff;
 }
 
-/* ✅ SOCIAL PROFILI CON SVG UFFICIALI */
+/* ✅ FIX: ICONE SOCIAL UFFICIALI VISIBILI */
 .pp-social-section {
   background: rgba(138, 123, 255, 0.06);
   border: 1px solid rgba(138, 123, 255, 0.25);
@@ -513,91 +489,107 @@ a{color:inherit;text-decoration:none}
   margin: 1.2rem 0;
 }
 
-.social-icons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 0.8rem;
-  flex-wrap: wrap;
+.pp-social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: .8rem;
+  margin-top: .8rem;
 }
 
-.social-icon {
+.social-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.8rem 1rem;
+  justify-content: center;
+  gap: .5rem;
+  background: rgba(138, 123, 255, .08);
+  border: 1px solid rgba(138, 123, 255, .25);
   border-radius: 12px;
-  background: rgba(138, 123, 255, 0.1);
-  border: 2px solid rgba(138, 123, 255, 0.3);
-  transition: all 0.25s ease;
-  text-decoration: none;
-  min-width: 85px;
+  padding: 1rem .8rem;
   cursor: pointer;
+  transition: all .2s ease;
+  min-height: 90px;
 }
 
-.social-icon:hover,
-.social-icon:active {
-  background: linear-gradient(135deg, #E8CE7A, #CDA434);
-  border-color: #CDA434;
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(205, 164, 52, 0.4);
+.social-btn:hover {
+  background: rgba(138, 123, 255, .15);
+  border-color: rgba(138, 123, 255, .4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(138, 123, 255, .2);
 }
 
-.social-emoji {
-  font-size: 1.8rem;
-  line-height: 1;
+.social-btn.social-fb:hover {
+  background: rgba(24, 119, 242, .1);
+  border-color: #1877F2;
+  box-shadow: 0 4px 12px rgba(24, 119, 242, .25);
+}
+
+.social-btn.social-ig:hover {
+  background: rgba(228, 64, 95, .1);
+  border-color: #E4405F;
+  box-shadow: 0 4px 12px rgba(228, 64, 95, .25);
+}
+
+.social-btn.social-tt:hover {
+  background: rgba(255, 255, 255, .1);
+  border-color: #fff;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, .2);
+}
+
+.social-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .social-svg {
   width: 32px;
   height: 32px;
-  line-height: 1;
-  color: var(--violet-glow);
-  transition: color 0.25s ease;
+  display: block;
 }
 
-.social-icon:hover .social-svg,
-.social-icon:active .social-svg {
-  color: #111;
+/* ✅ Colori brand hardcoded per massima visibilità */
+.social-fb .social-svg path {
+  fill: #1877F2 !important;
 }
 
-.social-fb .social-svg {
-  color: #1877F2;
+.social-ig .social-svg path {
+  fill: #E4405F !important;
 }
 
-.social-ig .social-svg {
-  color: #E4405F;
+.social-tt .social-svg path {
+  fill: #FFFFFF !important;
 }
 
-.social-tt .social-svg {
-  color: #000;
+.social-label{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--text);
+  text-align:center;
 }
 
-.social-icon:hover .social-fb .social-svg,
-.social-icon:active .social-fb .social-svg {
-  color: #fff;
-}
-
-.social-icon:hover .social-ig .social-svg,
-.social-icon:active .social-ig .social-svg {
-  color: #fff;
-}
-
-.social-icon:hover .social-tt .social-svg,
-.social-icon:active .social-tt .social-svg {
-  color: #fff;
-}
-
-.social-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.social-icon:hover .social-name,
-.social-icon:active .social-name {
-  color: #111;
+@media (max-width: 520px) {
+  .pp-social-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: .6rem;
+  }
+  
+  .social-btn {
+    padding: .8rem .5rem;
+    min-height: 80px;
+  }
+  
+  .social-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .social-label {
+    font-size: .8rem;
+  }
 }
 
 .pp-docs-section{
@@ -881,7 +873,7 @@ a{color:inherit;text-decoration:none}
 .reward-placeholder{color:#B0B0B0;font-size:.9rem;text-align:center}
 .reward-placeholder div:first-child{font-size:2rem;margin-bottom:.5rem}
 
-/* ================= CHAT MODALE CENTRATA ================= */
+/* ✅ FIX: CHAT MODALE CENTRATA NEL PROFILO */
 .chat-pane{
   position:fixed;
   inset:0;
@@ -950,6 +942,22 @@ a{color:inherit;text-decoration:none}
   align-self:flex-end;
   background:#2d2540;
   border:1px solid rgba(138,123,255,.25);
+}
+
+.chat-composer input{
+  flex:1;
+  padding:.6rem .75rem;
+  border-radius:12px;
+  border:1px solid #2a2a3e;
+  background:#0f0f18;
+  color:var(--text);
+  font-size:.96rem;
+}
+
+.chat-composer input:focus{
+  outline:none;
+  border-color:var(--violet);
+  box-shadow:0 0 0 3px rgba(138,123,255,.2);
 }
 
 /* ================= SPONSOR / BANNER ================= */
@@ -1038,127 +1046,4 @@ a{color:inherit;text-decoration:none}
   80%{transform:scale(1.05);filter:drop-shadow(0 13px 25px rgba(0,0,0,.55)) drop-shadow(0 0 32px rgba(138,123,255,.6))}
   90%{transform:scale(1.02);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 20px rgba(138,123,255,.4))}
   100%{transform:scale(1);filter:drop-shadow(0 12px 24px rgba(0,0,0,.55)) drop-shadow(0 0 0 rgba(138,123,255,0))}
-}
-
-/* ✅ FIX STORIES FULLSCREEN - NASCONDE TOPBAR */
-body.story-open #mainTopbar,
-body.story-open #storiesBar {
-  display: none !important;
-}
-/* ================= SOCIAL BUTTONS UFFICIALI ================= */
-.pp-social-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: .8rem;
-  margin-top: .8rem;
-}
-
-.social-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  background: rgba(138, 123, 255, .08);
-  border: 1px solid rgba(138, 123, 255, .25);
-  border-radius: 12px;
-  padding: 1rem .8rem;
-  cursor: pointer;
-  transition: all .2s ease;
-  min-height: 90px;
-}
-
-.social-btn:hover {
-  background: rgba(138, 123, 255, .15);
-  border-color: rgba(138, 123, 255, .4);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(138, 123, 255, .2);
-}
-
-.social-btn.social-fb:hover {
-  background: rgba(24, 119, 242, .1);
-  border-color: #1877F2;
-  box-shadow: 0 4px 12px rgba(24, 119, 242, .25);
-}
-
-.social-btn.social-ig:hover {
-  background: rgba(214, 36, 159, .1);
-  border-color: #D6249F;
-  box-shadow: 0 4px 12px rgba(214, 36, 159, .25);
-}
-
-.social-btn.social-tt:hover {
-  background: rgba(0, 0, 0, .1);
-  border-color: #000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
-}
-
-.social-icon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.social-icon svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-/* TikTok: evita il nero invisibile su sfondo scuro */
-.social-btn.social-tt { 
-  color: #ffffff; 
-}
-.social-btn.social-tt .social-icon svg path{
-  fill: currentColor !important;
-}
-   /* Facebook: colore brand + override del fill */
-.social-btn.social-fb {
-  color: #1877F2;
-}
-.social-btn.social-fb .social-icon svg path {
-  fill: currentColor !important;
-}
-/* All'hover passa a bianco per massima leggibilità */
-.social-btn.social-fb:hover .social-icon svg path {
-  fill: #ffffff !important;
-}
-/* Instagram: colore brand e hover */
-.social-btn.social-ig {
-  color: #E4405F;
-}
-.social-btn.social-ig .social-icon svg path {
-  fill: currentColor !important;
-}
-.social-btn.social-ig:hover .social-icon svg path {
-  fill: #ffffff !important;
-}
-  .social-label{
-  font-size:.85rem;
-  font-weight:700;
-  color:var(--text);
-  text-align:center;
-}
-
-@media (max-width: 520px) {
-  .pp-social-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: .6rem;
-  }
-  
-  .social-btn {
-    padding: .8rem .5rem;
-    min-height: 80px;
-  }
-  
-  .social-icon {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .social-label {
-    font-size: .8rem;
-  }
 }
