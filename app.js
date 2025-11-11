@@ -94,7 +94,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileContent = $("profileContent");
 
   const adBanner = $("adBanner");
-  const matchOverlay = $("matchOverlay");
+   const matchOverlay = $("matchOverlay");
+
+// === EVENTI HOME: ENTRA ===
+btnEnter?.addEventListener("click", () => {
+  try { localStorage.setItem("entered", "1"); } catch(e){}
+  state.entered = true;
+  heroLogo?.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+  void heroLogo?.offsetWidth;
+  heroLogo?.classList.add("heartbeat-violet-wow");
+  setTimeout(() => {
+    homeScreen?.classList.add("hidden");
+    appScreen?.classList.remove("hidden");
+    document.body.classList.remove("story-open");
+  }, 900);
+});
+
+// === AUTO-ENTER SE GIÀ ENTRATO ===
+if (state.entered) {
+  homeScreen?.classList.add("hidden");
+  appScreen?.classList.remove("hidden");
+}
+
+// STATO GLOBALE
+const state = {
 
   // STATO GLOBALE
   const state = {
