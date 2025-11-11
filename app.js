@@ -412,24 +412,23 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }
 
-  // ✅ FIX 1: ANIMAZIONE LOGO CON CHECK
-  btnEnter?.addEventListener("click", ()=>{
-    if(heroLogo){
-      heroLogo.classList.remove("heartbeat-violet");
-      void heroLogo.offsetWidth;
-      heroLogo.classList.add("heartbeat-violet");
-    }
-
-    setTimeout(()=>{
-      state.entered = true;
-      localStorage.setItem("entered","1");
-      homeScreen.classList.add("hidden");
-      appScreen.classList.remove("hidden");
-      initStories();
-      setActiveView("nearby");
-      showAdBanner();
-    }, 0);
-  });
+  // ✳️ ANIMAZIONE LOGO WOW + ENTRA
+ btnEnter?.addEventListener("click", () => {
+  if (heroLogo) {
+    heroLogo.classList.remove("heartbeat-violet");
+    void heroLogo.offsetWidth; // reset animazione
+    heroLogo.classList.add("heartbeat-violet-wow");
+  }
+  setTimeout(() => {
+    state.entered = true;
+    localStorage.setItem("entered", "1");
+    homeScreen.classList.add("hidden");
+    appScreen.classList.remove("hidden");
+    initStories();
+    setActiveView("nearby");
+    showAdBanner();
+  }, 2000); // durata animazione WOW
+});
     
   // Sponsor UFFICIALE Fido
   function openSponsor(){ window.open("https://www.gelatofido.it/", "_blank", "noopener"); }
