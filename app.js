@@ -1907,16 +1907,6 @@ function showStoryRewardVideo(story, userId) {
     }
   }, 1000);
 }
-
-// ===== INIZIALIZZAZIONE COMPLETA =====
-
-function init() {
-  setupStoriesEvents();
-  renderStoriesBar();
-
-  console.log("%c🐾 Plutoo ready!", "color:#CDA434;font-size:14px");
-}
-
-document.addEventListener("DOMContentLoaded", init);
+  });
 
 // EOF                       
