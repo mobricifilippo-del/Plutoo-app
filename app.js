@@ -1,65 +1,79 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ========= SAFE STATE (robusto, con restore da localStorage) =========
-  const state = (() => {
-    const ls = (k, def) => {
-      try { const v = localStorage.getItem(k); return v !== null ? v : def; } catch { return def; }
-    };
-    const lso = (k, def) => {
-      try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; }
-    };
-    return {
-      // sessione
-      entered: ls("entered","0")==="1",
-      lang: ls("lang", (navigator.language||"it").toLowerCase().startsWith("en") ? "en":"it"),
-      plus: ls("plutoo_plus","no")==="yes",
-      plusPlan: ls("plusPlan","monthly"),
-      currentView: "nearby",
-      viewHistory: [],
-      // swipe & reward
-      swipeCount: parseInt(ls("swipes","0"))||0,
-      nextRewardAt: parseInt(ls("nextRewardAt","10"))||10,
-      rewardOpen: false,
-      processingSwipe: false,
-      currentLoveIdx: 0,
-      currentPlayIdx: 0,
-      // relazioni & chat
-      matches: lso("matches",{}),
-      friendships: lso("friendships",{}),
-      chatMessagesSent: lso("chatMessagesSent",{}),
-      // profilo & selfie
-      currentDogProfile: null,
-      selfieUntilByDog: lso("selfieUntilByDog",{}),
-      ownerDocsUploaded: lso("ownerDocsUploaded",{}),
-      dogDocsUploaded: lso("dogDocsUploaded",{}),
-      // stories gating
-      storyOpen: false,
-      storyRewardViewed: lso("storyRewardViewed",{}),
-      socialRewardViewed: lso("socialRewardViewed",{}),
-      // geo & filtri
-      geo: null,
-      breeds: [],
-      filters: {
-        breed: ls("f_breed",""),
-        distKm: parseInt(ls("f_distKm","50"))||50,
-        verified: ls("f_verified","0")==="1",
-        sex: ls("f_sex",""),
-        ageMin: ls("f_ageMin",""),
-        ageMax: ls("f_ageMax",""),
-        weight: ls("f_weight",""),
-        height: ls("f_height",""),
-        pedigree: ls("f_pedigree",""),
-        breeding: ls("f_breeding",""),
-        size: ls("f_size","")
-      }
-    };
-  })();
 
-  // Helpers
+  // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
   const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-  // DOM refs
+  // ============ Stato (caricato da localStorage dove possibile) ============
+  const state = {
+    // UX / navigazione
+    entered: localStorage.getItem("entered") === "1",
+    currentView: "nearby",
+    viewHistory: [],
+    processingSwipe: false,
+
+    // lingua
+    lang: localStorage.getItem("lang") || autodetectLang(),
+
+    // PLUS
+    plus: localStorage.getItem("plutoo_plus") === "yes",
+    plusPlan: localStorage.getItem("plusPlan") || "monthly",
+
+    // Filtri
+    filters: {
+      breed:        localStorage.getItem("f_breed") || "",
+      distKm:       parseInt(localStorage.getItem("f_distKm") || "50", 10),
+      verified:     localStorage.getItem("f_verified") === "1",
+      sex:          localStorage.getItem("f_sex") || "",
+      ageMin:       localStorage.getItem("f_ageMin") || "",
+      ageMax:       localStorage.getItem("f_ageMax") || "",
+      weight:       localStorage.getItem("f_weight") || "",
+      height:       localStorage.getItem("f_height") || "",
+      pedigree:     localStorage.getItem("f_pedigree") || "",
+      breeding:     localStorage.getItem("f_breeding") || "",
+      size:         localStorage.getItem("f_size") || "",
+    },
+
+    // Swipe & rewards
+    swipeCount: parseInt(localStorage.getItem("swipes") || "0", 10),
+    nextRewardAt: parseInt(localStorage.getItem("nextRewardAt") || "10", 10),
+    rewardOpen: false,
+
+    // Match / amicizie / chat
+    matches: JSON.parse(localStorage.getItem("matches") || "{}"),
+    friendships: JSON.parse(localStorage.getItem("friendships") || "{}"),
+    chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent") || "{}"),
+
+    // Selfie unlock (per DOG)
+    selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
+
+    // Rewards già visti per social/story
+    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed") || "{}"),
+    storyRewardViewed: JSON.parse(localStorage.getItem("storyRewardViewed") || "{}"),
+
+    // Dati caricati (docs)
+    ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded") || "{}"),
+    dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded") || "{}"),
+
+    // Stories
+    storyOpen: false,
+
+    // Indici deck
+    currentLoveIdx: 0,
+    currentPlayIdx: 0,
+
+    // Geo
+    geo: null,
+
+    // Razze
+    breeds: [],
+
+    // Profilo corrente
+    currentDogProfile: null,
+  };
+
+  // ============ DOM refs ============
   const homeScreen   = $("homeScreen");
   const appScreen    = $("appScreen");
   const heroLogo     = $("heroLogo");
@@ -141,27 +155,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // === EVENTI HOME: ENTRA ===
+  // ============ HOME: ENTRA (con animazione WOW) ============
   btnEnter?.addEventListener("click", () => {
     try { localStorage.setItem("entered", "1"); } catch(e){}
     state.entered = true;
+
+    // reset & avvio animazione wow violet
     heroLogo?.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
     void heroLogo?.offsetWidth;
     heroLogo?.classList.add("heartbeat-violet-wow");
+
     setTimeout(() => {
       homeScreen?.classList.add("hidden");
       appScreen?.classList.remove("hidden");
       document.body.classList.remove("story-open");
+      initStories();             // stories dopo ingresso
+      setActiveView("nearby");
+      showAdBanner();
     }, 900);
   });
 
-  // === AUTO-ENTER SE GIÀ ENTRATO ===
+  // Auto-restore nel caso fosse già entrato
   if (state.entered) {
     homeScreen?.classList.add("hidden");
     appScreen?.classList.remove("hidden");
   }
 
-  // I18N
+  // ============ I18N ============
   const I18N = {
     it: {
       brand: "Plutoo",
@@ -297,8 +317,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
+  function autodetectLang(){ return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; }
 
-  // Cambio lingua (persistente)
+  function applyTranslations(){
+    qa("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (I18N[state.lang] && I18N[state.lang][key]) {
+        el.textContent = I18N[state.lang][key];
+      }
+    });
+    qa("[data-i18n-placeholder]").forEach(el => {
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (I18N[state.lang] && I18N[state.lang][key]) {
+        el.placeholder = I18N[state.lang][key];
+      }
+    });
+  }
+
   $("langIT")?.addEventListener("click", ()=>{
     state.lang="it";
     localStorage.setItem("lang","it");
@@ -312,18 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(state.entered) renderNearby();
   });
 
-  function applyTranslations(){
-    qa("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      if (I18N[state.lang] && I18N[state.lang][key]) el.textContent = I18N[state.lang][key];
-    });
-    qa("[data-i18n-placeholder]").forEach(el => {
-      const key = el.getAttribute("data-i18n-placeholder");
-      if (I18N[state.lang] && I18N[state.lang][key]) el.placeholder = I18N[state.lang][key];
-    });
-  }
-
-  // ✅ 8 PROFILI DOG CON SOCIAL PROPRIETARI
+  // ============ Dati mock DOGS ============
   const DOGS = [
     { id:"d1", name:"Luna", age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg",
       bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true,
@@ -372,10 +396,10 @@ document.addEventListener("DOMContentLoaded", () => {
       weight:14, height:40, pedigree:false, breeding:false, size:"medium",
       social:{ facebook:{enabled:true,url:"https://facebook.com/bella.owner"},
                instagram:{enabled:true,url:"https://instagram.com/bella_cocker"},
-               tiktok:{enabled:true,url:"https://tiktok.com/@bellacocker"} } }
+               tiktok:{enabled:true,url:"https://tiktok.com/@bellacocker"} } },
   ];
 
-  // Razze (fallback se manca breeds.json)
+  // ============ Razze ============
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
     if (Array.isArray(arr)) state.breeds = arr.sort();
   }).catch(()=>{ state.breeds = [
@@ -384,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu"
   ].sort(); });
 
-  // Geo
+  // ============ Geolocalizzazione ============
   if (navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
       p=>{ state.geo = { lat:p.coords.latitude, lon:p.coords.longitude }; },
@@ -392,7 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // HOME ↔ APP
+  // ============ Restore in APP ============
   if (state.entered) {
     homeScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
@@ -400,32 +424,14 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }
 
-  // ✳️ ANIMAZIONE LOGO WOW + ENTRA
-  btnEnter?.addEventListener("click", () => {
-    if (heroLogo) {
-      heroLogo.classList.remove("heartbeat-violet");
-      void heroLogo.offsetWidth; // reset animazione
-      heroLogo.classList.add("heartbeat-violet-wow");
-    }
-    setTimeout(() => {
-      state.entered = true;
-      localStorage.setItem("entered", "1");
-      homeScreen.classList.add("hidden");
-      appScreen.classList.remove("hidden");
-      initStories();
-      setActiveView("nearby");
-      showAdBanner();
-    }, 2000); // durata animazione WOW
-  });
-
-  // Sponsor UFFICIALE Fido
+  // ============ Sponsor Ufficiale ============
   function openSponsor(){ window.open("https://www.gelatofido.it/", "_blank", "noopener"); }
   sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
   sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
 
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
-  // PLUTOO PLUS
+  // ============ PLUS ============
   btnPlus?.addEventListener("click", ()=> openPlusModal() );
   closePlus?.addEventListener("click", ()=> closePlusModal() );
   cancelPlus?.addEventListener("click", ()=> closePlusModal() );
@@ -458,24 +464,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openPlusModal(){ plusModal?.classList.remove("hidden"); updatePlanSelector(); }
   function closePlusModal(){ plusModal?.classList.add("hidden"); }
+
   function updatePlusUI(){
     const goldInputs = [onlyVerified, ageMin, ageMax, weightInput, heightInput, pedigreeFilter, breedingFilter, sizeFilter];
     goldInputs.forEach(inp => { if (inp) inp.disabled = !state.plus; });
     if (adBanner) adBanner.style.display = state.plus ? "none" : "";
   }
 
-  function handleGoldFieldClick(e){
-    if (!state.plus && e.target.closest(".f-gold")){
-      const input = e.target.closest(".f-gold").querySelector("input, select");
-      if (input && input.disabled){ openPlusModal(); }
-    }
-  }
-  searchPanel?.addEventListener("click", handleGoldFieldClick);
-
-  // Tabs
+  // ============ Tabs ============
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
-  tabLove  ?.addEventListener("click", ()=>setActiveView("love"));
-  tabPlay  ?.addEventListener("click", ()=>setActiveView("friendship"));
+  tabLove?.addEventListener("click",   ()=>setActiveView("love"));
+  tabPlay?.addEventListener("click",   ()=>setActiveView("friendship"));
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -507,8 +506,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const storiesBar = $("storiesBar");
     if(storiesBar){
-      if(name === "nearby") storiesBar.classList.remove("hidden");
-      else storiesBar.classList.add("hidden");
+      if(name === "nearby"){ storiesBar.classList.remove("hidden"); }
+      else { storiesBar.classList.add("hidden"); }
     }
 
     if (name==="nearby"){
@@ -538,29 +537,52 @@ document.addEventListener("DOMContentLoaded", () => {
   btnBackPlay?.addEventListener("click", ()=> goBack() );
 
   function goBack(){
+    // 1) Viewer Stories overlay?
     const storyViewer = $("storyViewer");
-    if (storyViewer && !storyViewer.classList.contains("hidden")){ closeStoryViewer(); return; }
+    if (storyViewer && !storyViewer.classList.contains("hidden")){
+      closeStoryViewer();
+      return;
+    }
 
+    // 2) Modale Upload Story?
     const uploadStoryModal = $("uploadStoryModal");
-    if (uploadStoryModal && !uploadStoryModal.classList.contains("hidden")){ closeUploadModal(); return; }
+    if (uploadStoryModal && !uploadStoryModal.classList.contains("hidden")){
+      closeUploadModal();
+      return;
+    }
 
-    if (plusModal && !plusModal.classList.contains("hidden")){ closePlusModal(); return; }
+    // 3) Modale Plus?
+    if (plusModal && !plusModal.classList.contains("hidden")){
+      closePlusModal();
+      return;
+    }
 
+    // 4) Pannello Ricerca?
     if (searchPanel && !searchPanel.classList.contains("hidden")){
       searchPanel.classList.add("hidden");
       searchPanel.style.display = "none";
       return;
     }
 
+    // 5) Chat aperta?
     if (chatPane && !chatPane.classList.contains("hidden") && chatPane.classList.contains("show")){
       closeChatPane();
       return;
     }
 
-    if (state.currentView === "profile"){ closeProfilePage(); return; }
+    // 6) Pagina profilo?
+    if (state.currentView === "profile"){
+      closeProfilePage();
+      return;
+    }
 
-    if (state.currentView === "love" || state.currentView === "friendship"){ setActiveView("nearby"); return; }
+    // 7) Deck → Nearby
+    if (state.currentView === "love" || state.currentView === "friendship"){
+      setActiveView("nearby");
+      return;
+    }
 
+    // 8) Sei in Nearby → conferma ritorno Home
     if (state.currentView === "nearby"){
       if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
         localStorage.removeItem("entered");
@@ -571,23 +593,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  window.addEventListener("popstate", (e)=>{ e.preventDefault(); goBack(); });
-  if (state.entered){ history.pushState({view: "app"}, "", ""); }
+  window.addEventListener("popstate", (e)=>{
+    e.preventDefault();
+    goBack();
+  });
 
-  // Vicino a te
+  if (state.entered){
+    history.pushState({view: "app"}, "", "");
+  }
+
+  // ============ Nearby ============
   function renderNearby(){
     if(!nearGrid) return;
+
     const list = filteredDogs();
     if (!list.length){
       nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
       return;
     }
     nearGrid.innerHTML = list.map(cardHTML).join("");
+
     setTimeout(()=>{
       qa(".dog-card").forEach(card=>{
         const id = card.getAttribute("data-id");
         const d  = DOGS.find(x=>x.id===id);
         if(!d) return;
+
         card.addEventListener("click", ()=>{
           card.classList.add("flash-violet");
           setTimeout(()=>{
@@ -599,7 +630,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 10);
   }
 
-  // Immagine card (no lazy per evitare “schermo nero” in WebView)
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
@@ -635,7 +665,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(d => { if (!state.plus || !f.size) return true; return d.size === f.size; });
   }
 
-  // ====== SWIPE DECK (Love / Friendship) ======
+  // ============ Swipe ============
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
     if(!deck.length) return;
@@ -684,15 +714,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setTimeout(()=>{
         resetCard(card);
+
         state.swipeCount++;
         localStorage.setItem("swipes", String(state.swipeCount));
 
         if (!state.plus && state.swipeCount === state.nextRewardAt && !state.rewardOpen){
           state.rewardOpen = true;
+
           showRewardVideoMock("swipe", ()=>{
             state.rewardOpen = false;
             state.nextRewardAt += 5;
             localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
+
             state.processingSwipe = false;
             renderSwipe(mode);
           });
@@ -722,30 +755,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function attachSwipeWithClick(card, dogData, onSwipe){
-    let startX = 0, startY = 0, startTime = 0, currentX = 0;
-    let dragging = false, hasMoved = false;
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+    let currentX = 0;
+    let dragging = false;
+    let hasMoved = false;
 
     const CLICK_THRESHOLD = 10;
     const CLICK_TIME_THRESHOLD = 300;
 
     const start = (x, y) => {
       if(state.processingSwipe) return;
-      startX = x; startY = y; currentX = x; startTime = Date.now();
-      dragging = true; hasMoved = false; card.style.transition = "none";
+      startX = x;
+      startY = y;
+      currentX = x;
+      startTime = Date.now();
+      dragging = true;
+      hasMoved = false;
+      card.style.transition = "none";
     };
 
     const move = (x) => {
       if(!dragging || state.processingSwipe) return;
       currentX = x;
       const dx = currentX - startX;
-      if(Math.abs(dx) > CLICK_THRESHOLD) hasMoved = true;
+
+      if(Math.abs(dx) > CLICK_THRESHOLD){
+        hasMoved = true;
+      }
+
       const rot = dx / 18;
       card.style.transform = `translate3d(${dx}px,0,0) rotate(${rot}deg)`;
     };
 
     const end = () => {
       if(!dragging || state.processingSwipe) return;
-      dragging = false; card.style.transition = "";
+      dragging = false;
+      card.style.transition = "";
+
       const dx = currentX - startX;
       const elapsed = Date.now() - startTime;
       const th = 90;
@@ -767,6 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         resetCard(card);
       }
+
       currentX = 0;
     };
 
@@ -783,6 +832,7 @@ document.addEventListener("DOMContentLoaded", () => {
     card.addEventListener("touchend", end, {passive: true});
 
     card.addEventListener("mousedown", e => { start(e.clientX, e.clientY); });
+
     const handleMouseMove = e => move(e.clientX);
     const handleMouseUp = () => end();
 
@@ -806,8 +856,8 @@ document.addEventListener("DOMContentLoaded", () => {
     matchOverlay.classList.remove("hidden");
     setTimeout(()=>{ matchOverlay.classList.add("hidden"); }, 1200);
   }
-   
-// Ricerca panel
+
+  // ============ Ricerca ============
   if (btnSearchPanel) {
     btnSearchPanel.addEventListener("click", (e)=>{
       e.preventDefault();
@@ -895,10 +945,12 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("f_size", state.filters.size||"");
   }
 
-  // ✅ Icone social ufficiali
+  // ============ Sezione Social nel profilo ============
   function generateSocialSection(dog) {
     if (!dog.social) return "";
     const enabled = [];
+
+    // Facebook
     if (dog.social.facebook?.enabled && dog.social.facebook.url) {
       enabled.push({
         name: "Facebook",
@@ -907,14 +959,18 @@ document.addEventListener("DOMContentLoaded", () => {
         icon: `<svg class="social-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`
       });
     }
+
+    // Instagram
     if (dog.social.instagram?.enabled && dog.social.instagram.url) {
       enabled.push({
         name: "Instagram",
         url: dog.social.instagram.url,
         class: "social-ig",
-        icon: `<svg class="social-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`
+        icon: `<svg class="social-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.59-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`
       });
     }
+
+    // TikTok
     if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
       enabled.push({
         name: "TikTok",
@@ -923,7 +979,9 @@ document.addEventListener("DOMContentLoaded", () => {
         icon: `<svg class="social-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#FFFFFF" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>`
       });
     }
+
     if (!enabled.length) return "";
+
     return `
       <div class="pp-docs-section" style="margin-top:1.2rem">
         <h4 class="section-title" style="margin-top:0;font-size:1rem">
@@ -941,11 +999,13 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // PROFILO DOG con Stories + Social
+  // ============ Profilo DOG (con Stories + Social) ============
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     setActiveView("profile");
+
     history.pushState({view: "profile", dogId: d.id}, "", "");
+
     profilePage.classList.remove("hidden");
 
     const selfieUnlocked = isSelfieUnlocked(d.id);
@@ -1013,6 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
 
       <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
+
       <div class="pp-docs-section">
         <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>
         <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>
@@ -1061,12 +1122,12 @@ document.addEventListener("DOMContentLoaded", () => {
       qa(".pp-story-item", profileContent).forEach(item => {
         item.addEventListener("click", ()=>{
           const idx = parseInt(item.getAttribute("data-story-index"));
-          openDogStoryViewer(d.id, idx);
+          openDogStoryViewer(d.id, idx);   // (uso viewer unificato più sotto)
         });
       });
     }
 
-    $("uploadDogStory")?.addEventListener("click", ()=>{ openUploadModal(); });
+    $("uploadDogStory")?.addEventListener("click", ()=> { openUploadModal(); });
 
     qa(".gallery img", profileContent).forEach(img=>{
       img.addEventListener("click", ()=>{
@@ -1088,6 +1149,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
           state.ownerDocsUploaded[d.id].identity = true;
           localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+
           if (!d.verified){
             d.verified = true;
             alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
@@ -1098,6 +1160,7 @@ document.addEventListener("DOMContentLoaded", () => {
           state.dogDocsUploaded[d.id][docName] = true;
           localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
         }
+
         openProfilePage(d);
       });
     });
@@ -1110,12 +1173,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!url) return;
 
         const rewardKey = `${dogId}_${socialType}`;
-        if (state.plus || state.socialRewardViewed[rewardKey]){
+
+        if (state.plus || state.socialRewardViewed[rewardKey]) {
           window.open(url, "_blank", "noopener");
           return;
         }
         if (state.rewardOpen) return;
         state.rewardOpen = true;
+
         showRewardVideoMock("social", ()=>{
           state.rewardOpen = false;
           state.socialRewardViewed[rewardKey] = true;
@@ -1125,8 +1190,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // Chat & azioni profilo
-    $("btnOpenChat").onclick = ()=>{ openChat(d); };
+    // Chat / amicizia / selfie
+    $("btnOpenChat").onclick = ()=> { openChat(d); };
     $("btnFriendship").onclick = ()=>{
       state.friendships[d.id] = true;
       localStorage.setItem("friendships", JSON.stringify(state.friendships));
@@ -1135,17 +1200,14 @@ document.addEventListener("DOMContentLoaded", () => {
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
-        if (!state.plus){
-          showRewardVideoMock("selfie", ()=>{
-            state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-            localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-            openProfilePage(d);
-          });
-        } else {
+        const unlock = ()=> {
           state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
           localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
           openProfilePage(d);
-        }
+        };
+        if (!state.plus){
+          showRewardVideoMock("selfie", unlock);
+        } else unlock();
       }
     };
   };
@@ -1162,123 +1224,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  /* ============== STORIES VIEWER – OVERLAY DINAMICO CON HISTORY ============== */
-  function openDogStoryViewer(dogId, startIndex = 0){
-    if ($(".story-viewer")) return;
-
-    state.storyOpen = true;
-    try { history.pushState({ story: true, dogId, idx: startIndex }, ""); } catch {}
-
-    const v = document.createElement("div");
-    v.className = "story-viewer";
-    v.innerHTML = `
-      <div class="story-header">
-        <div class="story-top-info">
-          <div class="story-user-info">
-            ${(() => {
-              const dog = DOGS.find(x => x.id === dogId);
-              return `<img class="story-user-avatar" src="${dog?.img || 'plutoo-icon-192.png'}" alt="">
-                      <div class="story-user-name">${dog?.name || 'Plutoo'}</div>`;
-            })()}
-          </div>
-          <button class="story-close-btn" aria-label="Chiudi">✕</button>
-        </div>
-        <div class="story-progress-bars"></div>
-      </div>
-      <div class="story-content-wrapper">
-        <button class="story-nav-prev" aria-label="Prev"></button>
-        <div class="story-content">
-          <img src="plutoo-icon-192.png" alt="">
-        </div>
-        <button class="story-nav-next" aria-label="Next"></button>
-      </div>
-    `;
-    document.body.appendChild(v);
-    document.body.classList.add("story-open");
-
-    const story = StoriesState.stories?.find(s => s.userId === dogId);
-    let idx = startIndex || 0;
-
-    const imgEl  = v.querySelector(".story-content img");
-    const barsEl = v.querySelector(".story-progress-bars");
-
-    function renderBars(count, activeIndex){
-      if (!barsEl || !count) return;
-      barsEl.innerHTML = Array.from({ length: count }, (_, k) =>
-        `<div class="story-progress-bar${k <= activeIndex ? ' active' : ''}${k < activeIndex ? ' completed' : ''}">
-           <div class="story-progress-fill"></div>
-         </div>`
-      ).join("");
-    }
-
-    function show(i){
-      if (!story || !story.media?.length) return;
-      idx = Math.max(0, Math.min(i, story.media.length - 1));
-      const nextUrl = story.media[idx]?.url;
-      if (nextUrl) imgEl.src = nextUrl;
-      renderBars(story.media.length, idx);
-      try { history.replaceState({ story: true, dogId, idx }, "", location.href); } catch {}
-      scheduleAuto();
-    }
-
-    let storyTimer;
-    function scheduleAuto(){
-      clearTimeout(storyTimer);
-      if (!story?.media?.length) return;
-      storyTimer = setTimeout(()=>{
-        if (!state.storyOpen) return;
-        if (idx >= story.media.length - 1) { closeStoryViewer(); }
-        else { show(idx + 1); }
-      }, 15000); // 15s per foto
-    }
-
-    // prima render
-    show(idx);
-
-    v.querySelector(".story-close-btn")?.addEventListener("click", closeStoryViewer);
-    v.addEventListener("click", (e)=>{ if (e.target === v) closeStoryViewer(); });
-
-    v.querySelector(".story-nav-prev")?.addEventListener("click", (e) => { e.stopPropagation(); show(idx - 1); });
-    v.querySelector(".story-nav-next")?.addEventListener("click", (e) => { e.stopPropagation(); show(idx + 1); });
-
-    function closeStoryViewer(){
-      const el = $(".story-viewer");
-      if (el) el.remove();
-      document.body.classList.remove("story-open");
-      state.storyOpen = false;
-
-      if (history.state && history.state.story) {
-        try { history.replaceState({}, "", location.href); } catch {}
-        setTimeout(()=>{ try { history.back(); } catch {} }, 0);
-      }
-    }
-
-    window.addEventListener("popstate", ()=>{
-      if (state.storyOpen) closeStoryViewer();
-    });
-  }
-
-  // HOME STORIES — click a cerchi
-  qs("#storiesBar")?.addEventListener("click", (e) => {
-    const el = e.target.closest(".story-circle");
-    if (el?.id === "addStoryBtn") return;
-    if (!el) return;
-    const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
-    if (!dogId) return;
-    openDogStoryViewer(dogId, 0);
-  });
-
-  // Delegato globale (evita doppio trigger con la barra home)
-  document.addEventListener("click", (e) => {
-    if (e.target.closest("#storiesBar")) return;
-    const el = e.target.closest(".story-circle");
-    if (!el || el.id === "addStoryBtn") return;
-    const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
-    if (!dogId) return;
-    openDogStoryViewer(dogId, 0);
-  });
-
-   /* ===================== CHAT (apre dentro il profilo) ===================== */
+  // ============ Chat ============
   function openChat(dog){
     const hasMatch = state.matches[dog.id] || false;
     const msgCount = state.chatMessagesSent[dog.id] || 0;
@@ -1316,7 +1262,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const msgCount = state.chatMessagesSent[dogId] || 0;
 
     if (!state.plus){
-      // Primo messaggio → reward
       if (msgCount === 0){
         if (state.rewardOpen) return;
         state.rewardOpen = true;
@@ -1325,9 +1270,7 @@ document.addEventListener("DOMContentLoaded", () => {
           sendChatMessage(text, dogId, hasMatch, msgCount);
         });
         return;
-      }
-      // Dopo il primo, serve match per continuare
-      if (!hasMatch && msgCount >= 1){
+      } else if (!hasMatch && msgCount >= 1){
         alert(state.lang==="it" ? "Serve un match per continuare a chattare!" : "Match needed to continue chatting!");
         return;
       }
@@ -1353,7 +1296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ===================== MAPS (Luoghi + Canili) ===================== */
+  // ============ Maps / servizi ============
   function openMapsCategory(cat){
     if (!state.plus && ["vets","groomers","shops"].includes(cat)){
       if (state.rewardOpen) return;
@@ -1369,20 +1312,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openMapsQueryAfterReward(cat){
     const map = {
-      vets:       state.lang==="it" ? "cliniche veterinarie vicino a me"       : "veterinary clinics near me",
-      groomers:   state.lang==="it" ? "toelettature vicino a me"               : "pet groomers near me",
-      shops:      state.lang==="it" ? "negozi per animali vicino a me"         : "pet shops near me",
-      trainers:   state.lang==="it" ? "addestratori cani vicino a me"          : "dog trainers near me",
-      kennels:    state.lang==="it" ? "pensioni per dogs vicino a me"          : "dog kennels near me",
-      parks:      state.lang==="it" ? "parchi vicino a me"                     : "parks near me"
+      vets: state.lang==="it" ? "cliniche veterinarie vicino a me" : "veterinary clinics near me",
+      groomers: state.lang==="it" ? "toelettature vicino a me" : "pet groomers near me",
+      shops: state.lang==="it" ? "negozi per animali vicino a me" : "pet shops near me",
+      trainers: state.lang==="it" ? "addestratori cani vicino a me" : "dog trainers near me",
+      kennels: state.lang==="it" ? "pensioni per dogs vicino a me" : "dog kennels near me",
+      parks: state.lang==="it" ? "parchi vicino a me" : "parks near me"
     };
     const q = map[cat] || (state.lang==="it" ? "servizi animali vicino a me" : "pet services near me");
     openMapsQuery(q);
   }
 
-  function openSheltersMaps(){
-    openMapsQuery(t("mapsShelters"));
-  }
+  function openSheltersMaps(){ openMapsQuery(t("mapsShelters")); }
 
   function openMapsQuery(q){
     if (state.geo){
@@ -1393,7 +1334,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ===================== ADS (banner + rewarded mock) ===================== */
+  // ============ Ads mock ============
   function showAdBanner(){
     if (!adBanner || state.plus) return;
     adBanner.textContent = "Banner Test AdMob • Bannerhome";
@@ -1403,18 +1344,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function showRewardVideoMock(type, onClose){
     const msg = {
       it: {
-        swipe:   `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nProssima soglia: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
-        selfie:  "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
-        chat:    "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
-        services:"🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services",
-        social:  "🎬 Reward Video Mock\n(apertura profilo social)\n\nTipo: Social Unlock"
+        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nProssima soglia: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
+        selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
+        chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
+        services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services",
+        social: "🎬 Reward Video Mock\n(apertura profilo social)\n\nTipo: Social Unlock"
       },
       en: {
-        swipe:   `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nNext threshold: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
-        selfie:  "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
-        chat:    "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
-        services:"🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services",
-        social:  "🎬 Reward Video Mock\n(opening social profile)\n\nType: Social Unlock"
+        swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nNext threshold: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
+        selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
+        chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
+        services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services",
+        social: "🎬 Reward Video Mock\n(opening social profile)\n\nType: Social Unlock"
       }
     };
     const text = msg[state.lang][type] || msg.it[type];
@@ -1422,23 +1363,560 @@ document.addEventListener("DOMContentLoaded", () => {
     if (onClose) onClose();
   }
 
-  /* ===================== LOG DI AVVIO ===================== */
-  console.log(`
-  ╔═══════════════════════════════════════╗
-  ║                                       ║
-  ║           🐕 PLUTOO 🐕               ║
-  ║                                       ║
-  ║   Social network per cani             ║
-  ║   Versione: 12.0 GOOGLE PLAY READY    ║
-  ║                                       ║
-  ║   ✅ Animazione logo fix              ║
-  ║   ✅ Immagini preload veloce          ║
-  ║   ✅ Stories apertura/chiusura fix    ║
-  ║   ✅ Icone social visibili            ║
-  ║   ✅ Chat centrata profilo            ║
-  ║   ✅ PRONTO PER PUBBLICAZIONE         ║
-  ║                                       ║
-  ╚═══════════════════════════════════════╝
-  `);
+  // ============ Init ============
+  function init(){
+    applyTranslations();
 
-});                       
+    // Preload immagini
+    ['dog1.jpg','dog2.jpg','dog3.jpg'].forEach(src=>{
+      const im = new Image(); im.src = `./${src}`;
+    });
+
+    updatePlusUI();
+
+    if(breedInput) breedInput.value = state.filters.breed;
+    if(distRange) distRange.value  = state.filters.distKm;
+    if(distLabel) distLabel.textContent = `${distRange.value} km`;
+    if(onlyVerified) onlyVerified.checked = !!state.filters.verified;
+    if(sexFilter) sexFilter.value  = state.filters.sex;
+
+    if (state.plus){
+      if (ageMin) ageMin.value = state.filters.ageMin;
+      if (ageMax) ageMax.value = state.filters.ageMax;
+      if (weightInput) weightInput.value = state.filters.weight;
+      if (heightInput) heightInput.value = state.filters.height;
+      if (pedigreeFilter) pedigreeFilter.value = state.filters.pedigree;
+      if (breedingFilter) breedingFilter.value = state.filters.breeding;
+      if (sizeFilter) sizeFilter.value = state.filters.size;
+    }
+
+    if (state.entered){
+      setActiveView("nearby");
+      // initStories() parte dopo ENTRA per effetto WOW
+    }
+  }
+  init();
+
+  // ============ STORIES – Config & State (inizio) ============
+  const STORIES_CONFIG = {
+    PHOTO_DURATION: 15000,
+    VIDEO_MAX_DURATION_FREE: 15,
+    VIDEO_MAX_DURATION_PLUS: 90,
+    MAX_PHOTO_SIZE: 10 * 1024 * 1024,
+    MAX_VIDEO_SIZE: 50 * 1024 * 1024,
+    STORY_LIFETIME: 24 * 60 * 60 * 1000,
+    FREE_DAILY_LIMIT: 3,
+    REWARD_VIDEO_DURATION: 15
+  };
+
+  const StoriesState = {
+    stories: [],
+    currentStoryUserId: null,
+    currentMediaIndex: 0,
+    progressInterval: null,
+    uploadedFile: null,
+    selectedFilter: "none",
+    selectedMusic: "",
+    openedFrom: null,
+
+    loadStories() {
+      const saved = localStorage.getItem("plutoo_stories");
+      if (saved) {
+        this.stories = JSON.parse(saved);
+        this.cleanExpiredStories();
+      } else {
+        this.stories = this.generateMockStories();
+        this.saveStories();
+      }
+    },
+    saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
+    cleanExpiredStories() {
+      const now = Date.now();
+      this.stories = this.stories.filter(story => {
+        story.media = story.media.filter(m => (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME);
+        return story.media.length > 0;
+      });
+      this.saveStories();
+    },
+    getTodayStoriesCount() {
+      const today = new Date().toDateString();
+      const userStory = this.stories.find(s => s.userId === "currentUser");
+      if (!userStory) return 0;
+      return userStory.media.filter(m => new Date(m.timestamp).toDateString() === today).length;
+    },
+    canUploadStory() { return state.plus || this.getTodayStoriesCount() < STORIES_CONFIG.FREE_DAILY_LIMIT; },
+    generateMockStories() {
+      return [
+        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true,
+          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false}] },
+        { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
+          media:[
+            {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false},
+            {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false}
+          ]},
+        { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
+          media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false}] }
+      ];
+    }
+  };
+
+  function initStories() {
+    StoriesState.loadStories();
+    renderStoriesBar();
+    setupStoriesEvents();
+  }
+
+   // ===== STORIES — eventi, bar, viewer, navigazione =====
+
+function setupStoriesEvents() {
+  $("addStoryBtn")?.addEventListener("click", openUploadModal);
+
+  const closeBtn = $("closeStoryViewer");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeStoryViewer();
+    });
+  }
+
+  $("storyNavPrev")?.addEventListener("click", prevStoryMedia);
+  $("storyNavNext")?.addEventListener("click", nextStoryMedia);
+
+  // Chiudi story cliccando sullo sfondo scuro
+  const viewer = $("storyViewer");
+  if (viewer) {
+    viewer.addEventListener("click", (e) => {
+      if (e.target === viewer) closeStoryViewer();
+    });
+  }
+
+  // ESC per chiudere
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const viewer = $("storyViewer");
+      if (viewer && !viewer.classList.contains("hidden")) {
+        closeStoryViewer();
+      }
+    }
+  });
+
+  $("closeUploadStory")?.addEventListener("click", closeUploadModal);
+  $("cancelUpload")?.addEventListener("click", closeUploadModal);
+  $("storyFileInput")?.addEventListener("change", handleFileSelect);
+  $("nextToCustomize")?.addEventListener("click", showCustomizeStep);
+  $("backToUpload")?.addEventListener("click", showUploadStep);
+  $("publishStory")?.addEventListener("click", publishStory);
+
+  setupFiltersGrid();
+}
+
+function renderStoriesBar() {
+  const container = $("storiesContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  StoriesState.stories.forEach((story) => {
+    const allViewed = story.media.every((m) => m.viewed);
+
+    const circle = document.createElement("button");
+    circle.className = `story-circle ${allViewed ? "viewed" : ""}`;
+    circle.type = "button";
+    circle.innerHTML = `
+      <div class="story-avatar">
+        <img src="${story.avatar}" alt="${story.userName}" />
+      </div>
+      <span class="story-name">${story.userName}</span>
+    `;
+
+    circle.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openStoryViewerFromBar(story.userId);
+    });
+
+    container.appendChild(circle);
+  });
+}
+
+function openStoryViewerFromBar(userId) {
+  const story = StoriesState.stories.find((s) => s.userId === userId);
+  if (!story) return;
+
+  if (state.plus) {
+    openStoryViewerDirect(userId);
+    return;
+  }
+
+  const hasMatch = state.matches[userId] || false;
+  const hasFriendship = state.friendships[userId] || false;
+  const hasRewardViewed = state.storyRewardViewed[userId] || false;
+
+  if (hasMatch || hasFriendship || hasRewardViewed) {
+    openStoryViewerDirect(userId);
+    return;
+  }
+
+  showStoryRewardVideo(story, userId);
+}
+
+function openStoryViewerDirect(userId) {
+  StoriesState.currentStoryUserId = userId;
+  StoriesState.currentMediaIndex = 0;
+  StoriesState.openedFrom = "bar";
+
+  $("storyViewer")?.classList.remove("hidden");
+  document.body.classList.add("noscroll");
+  document.body.classList.add("story-open");
+
+  renderStoryViewer();
+  startStoryProgress();
+}
+
+function openDogStoryViewer(userId, mediaIndex = 0) {
+  StoriesState.currentStoryUserId = userId;
+  StoriesState.currentMediaIndex = mediaIndex;
+  StoriesState.openedFrom = "profile";
+
+  $("storyViewer")?.classList.remove("hidden");
+  document.body.classList.add("noscroll");
+  document.body.classList.add("story-open");
+
+  renderStoryViewer();
+  startStoryProgress();
+}
+
+function renderStoryViewer() {
+  const story = StoriesState.stories.find(
+    (s) => s.userId === StoriesState.currentStoryUserId
+  );
+  if (!story) return;
+
+  const media = story.media[StoriesState.currentMediaIndex];
+  if (!media) return;
+
+  $("storyUserAvatar").src = story.avatar;
+  $("storyUserName").textContent = story.userName;
+  $("storyTimestamp").textContent = getTimeAgo(media.timestamp);
+
+  renderProgressBars(story.media.length);
+  renderStoryContent(media);
+
+  media.viewed = true;
+  StoriesState.saveStories();
+}
+
+function renderProgressBars(count) {
+  const container = $("storyProgressBars");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  for (let i = 0; i < count; i++) {
+    const bar = document.createElement("div");
+    bar.className = "story-progress-bar";
+
+    const fill = document.createElement("div");
+    fill.className = "story-progress-fill";
+
+    if (i < StoriesState.currentMediaIndex) {
+      bar.classList.add("completed");
+    }
+    if (i === StoriesState.currentMediaIndex) {
+      bar.classList.add("active");
+    }
+
+    bar.appendChild(fill);
+    container.appendChild(bar);
+  }
+}
+
+function renderStoryContent(media) {
+  const content = $("storyContent");
+  if (!content) return;
+  content.innerHTML = "";
+
+  if (media.type === "image") {
+    const img = document.createElement("img");
+    img.src = media.url;
+    img.alt = "Story";
+    img.className = `filter-${media.filter}`;
+    content.appendChild(img);
+  } else if (media.type === "video") {
+    const video = document.createElement("video");
+    video.src = media.url;
+    video.autoplay = true;
+    video.muted = false;
+    video.className = `filter-${media.filter}`;
+    video.addEventListener("ended", nextStoryMedia);
+    content.appendChild(video);
+  }
+
+  if (media.music) playStoryMusic(media.music);
+}
+
+function startStoryProgress() {
+  stopStoryProgress();
+
+  const story = StoriesState.stories.find(
+    (s) => s.userId === StoriesState.currentStoryUserId
+  );
+  if (!story) return;
+
+  const media = story.media[StoriesState.currentMediaIndex];
+  if (!media) return;
+
+  if (media.type === "image") {
+    StoriesState.progressInterval = setTimeout(
+      nextStoryMedia,
+      STORIES_CONFIG.PHOTO_DURATION
+    );
+  }
+}
+
+function stopStoryProgress() {
+  if (StoriesState.progressInterval) {
+    clearTimeout(StoriesState.progressInterval);
+    StoriesState.progressInterval = null;
+  }
+}
+
+function nextStoryMedia() {
+  stopStoryProgress();
+
+  const story = StoriesState.stories.find(
+    (s) => s.userId === StoriesState.currentStoryUserId
+  );
+  if (!story) {
+    closeStoryViewer();
+    return;
+  }
+
+  if (StoriesState.currentMediaIndex < story.media.length - 1) {
+    StoriesState.currentMediaIndex++;
+    renderStoryViewer();
+    startStoryProgress();
+  } else {
+    closeStoryViewer();
+  }
+}
+
+function prevStoryMedia() {
+  stopStoryProgress();
+
+  if (StoriesState.currentMediaIndex > 0) {
+    StoriesState.currentMediaIndex--;
+    renderStoryViewer();
+    startStoryProgress();
+  }
+}
+
+function closeStoryViewer() {
+  stopStoryProgress();
+  const viewer = $("storyViewer");
+  if (viewer) {
+    viewer.classList.add("hidden");
+  }
+  document.body.classList.remove("noscroll");
+  document.body.classList.remove("story-open");
+
+  // Se la story era stata aperta dal profilo, resta nel profilo
+  if (StoriesState?.openedFrom === "profile") {
+    $("profilePage")?.classList.remove("hidden");
+  }
+  StoriesState.openedFrom = null;
+
+  renderStoriesBar();
+}
+
+function getTimeAgo(timestamp) {
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  if (seconds < 60) return "ora";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m fa`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h fa`;
+  return `${Math.floor(seconds / 86400)}g fa`;
+}
+
+// Flash ingresso bianco (facoltativo)
+function triggerFlash() {
+  const el = document.getElementById("flashOverlay");
+  if (!el) return;
+  el.classList.add("active");
+  setTimeout(() => el.classList.remove("active"), 900);
+}
+
+function playStoryMusic(musicId) {
+  // Hook per player musicale in futuro
+  console.log("🎵 Playing music:", musicId);
+}
+
+// Deleghe aggiuntive per cerchi story in qualunque sezione (evita doppio trigger sulla home)
+document.addEventListener("click", (e) => {
+  if (e.target.closest("#storiesBar")) return; // la home ha già il suo listener
+  const el = e.target.closest(".story-circle");
+  if (!el || el.id === "addStoryBtn") return;
+  const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
+  if (!dogId) return;
+  openStoryViewerFromBar(dogId);
+});
+
+// Click su bar principale (se la struttura HTML usa id="storiesBar")
+$("storiesBar")?.addEventListener("click", (e) => {
+  const el = e.target.closest(".story-circle");
+  if (el?.id === "addStoryBtn") return;
+  if (!el) return;
+  const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
+  if (!dogId) return;
+  openStoryViewerFromBar(dogId);
+});
+
+   // ===== STORIES — upload, filtri, pubblicazione =====
+
+function openUploadModal() {
+  $("uploadStoryModal")?.classList.remove("hidden");
+  document.body.classList.add("noscroll");
+}
+
+function closeUploadModal() {
+  $("uploadStoryModal")?.classList.add("hidden");
+  document.body.classList.remove("noscroll");
+  $("storyFileInput").value = "";
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const preview = $("storyPreview");
+  preview.innerHTML = "";
+  const url = URL.createObjectURL(file);
+
+  if (file.type.startsWith("image/")) {
+    preview.innerHTML = `<img src="${url}" alt="Preview">`;
+    preview.dataset.type = "image";
+  } else if (file.type.startsWith("video/")) {
+    preview.innerHTML = `<video src="${url}" autoplay muted loop></video>`;
+    preview.dataset.type = "video";
+  } else {
+    preview.innerHTML = `<p>Formato non supportato</p>`;
+  }
+
+  $("nextToCustomize")?.classList.remove("hidden");
+}
+
+function showCustomizeStep() {
+  $("uploadStep").classList.add("hidden");
+  $("customizeStep").classList.remove("hidden");
+}
+
+function showUploadStep() {
+  $("customizeStep").classList.add("hidden");
+  $("uploadStep").classList.remove("hidden");
+}
+
+function setupFiltersGrid() {
+  const filters = ["none", "warm", "cool", "bw", "vintage"];
+  const grid = $("filtersGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  filters.forEach(f => {
+    const btn = document.createElement("button");
+    btn.className = `filter-btn ${f}`;
+    btn.textContent = f;
+    btn.addEventListener("click", () => {
+      $("storyPreview").dataset.filter = f;
+      $("storyPreview").className = f;
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function publishStory() {
+  const preview = $("storyPreview");
+  if (!preview) return;
+
+  const mediaType = preview.dataset.type || "image";
+  const filter = preview.dataset.filter || "none";
+  const el = preview.querySelector("img, video");
+  if (!el) return;
+
+  const media = {
+    type: mediaType,
+    url: el.src,
+    timestamp: Date.now(),
+    filter,
+    viewed: false,
+    music: ""
+  };
+
+  const myId = "me";
+  const existing = StoriesState.stories.find(s => s.userId === myId);
+  if (existing) {
+    existing.media.unshift(media);
+  } else {
+    StoriesState.stories.unshift({
+      userId: myId,
+      userName: "Me",
+      avatar: "assets/avatar_me.png",
+      media: [media]
+    });
+  }
+
+  StoriesState.saveStories();
+  closeUploadModal();
+  renderStoriesBar();
+  showToast("Story pubblicata!");
+}
+
+function showToast(msg) {
+  let toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add("show"), 10);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 2300);
+}
+
+// ===== MOCK VIDEO REWARD =====
+
+function showStoryRewardVideo(story, userId) {
+  if (state.rewardOpen) return;
+  state.rewardOpen = true;
+  const modal = document.createElement("div");
+  modal.className = "reward-video";
+  modal.innerHTML = `
+    <div class="reward-inner">
+      <p>${state.lang==="it"?"Guarda il video per aprire le stories":"Watch the video to unlock stories"}</p>
+      <div class="reward-spinner"></div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  let sec = 4;
+  const countdown = setInterval(() => {
+    sec--;
+    if (sec <= 0) {
+      clearInterval(countdown);
+      modal.remove();
+      state.rewardOpen = false;
+      state.storyRewardViewed[userId] = true;
+      openStoryViewerDirect(userId);
+    }
+  }, 1000);
+}
+
+// ===== INIZIALIZZAZIONE COMPLETA =====
+
+function init() {
+  setupStoriesEvents();
+  renderStoriesBar();
+
+  console.log("%c🐾 Plutoo ready!", "color:#CDA434;font-size:14px");
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+// EOF                       
