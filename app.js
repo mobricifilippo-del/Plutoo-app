@@ -869,7 +869,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   closeSearch?.addEventListener("click", ()=>{
-    if(searchPanel) {in 
+    if(searchPanel) {
       searchPanel.classList.add("hidden");
       searchPanel.style.display = "none";
     }
@@ -1550,8 +1550,7 @@ function openStoryViewerFromBar(userId) {
 
   const hasMatch = state.matches[userId] || false;
   const hasFriendship = state.friendships[userId] || false;
-  const hasRewardViewed =
-  (state.storyRewardViewed && state.storyRewardViewed[userId]) || false;
+  const hasRewardViewed = state.storyRewardViewed[userId] || false;
 
   if (hasMatch || hasFriendship || hasRewardViewed) {
     openStoryViewerDirect(userId);
@@ -1903,7 +1902,6 @@ function showStoryRewardVideo(story, userId) {
       clearInterval(countdown);
       modal.remove();
       state.rewardOpen = false;
-      state.storyRewardViewed = state.storyRewardViewed || {};
       state.storyRewardViewed[userId] = true;
       openStoryViewerDirect(userId);
     }
