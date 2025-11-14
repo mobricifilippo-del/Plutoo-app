@@ -676,20 +676,30 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   const fmtKm = n => `${n.toFixed(1)} km`;
 
   function filteredDogs(){
-    const f = state.filters;
-    return DOGS
-      .filter(d => !d.km || d.km <= (f.distKm || 999))
-      .filter(d => (!f.verified || !state.plus) ? true : d.verified)
-      .filter(d => (!f.sex) ? true : d.sex===f.sex)
-      .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
-      .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
-      .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
-      .filter(d => { if (!state.plus || !f.weight) return true; return d.weight >= parseInt(f.weight); })
-      .filter(d => { if (!state.plus || !f.height) return true; return d.height >= parseInt(f.height); })
-      .filter(d => { if (!state.plus || !f.pedigree) return true; return f.pedigree==="yes" ? d.pedigree : !d.pedigree; })
-      .filter(d => { if (!state.plus || !f.breeding) return true; return f.breeding==="yes" ? d.breeding : !d.breeding; })
-      .filter(d => { if (!state.plus || !f.size) return true; return d.size === f.size; });
-  }
+  const f = state.filters;
+  return DOGS
+    // distanza: se d.km non esiste, il DOG è comunque incluso
+    .filter(d => !d.km || d.km <= (f.distKm || 999))
+    .filter(d => (!f.verified || !state.plus) ? true : d.verified)
+    .filter(d => (!f.sex) ? true : d.sex === f.sex)
+    .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
+    .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
+    .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
+    .filter(d => { if (!state.plus || !f.weight) return true; return d.weight >= parseInt(f.weight); })
+    .filter(d => { if (!state.plus || !f.height) return true; return d.height >= parseInt(f.height); })
+    .filter(d => { 
+      if (!state.plus || !f.pedigree) return true; 
+      return f.pedigree === "yes" ? d.pedigree : true; 
+    })
+    .filter(d => { 
+      if (!state.plus || !f.breeding) return true; 
+      return f.breeding === "yes" ? d.breeding : true; 
+    })
+    .filter(d => { 
+      if (!state.plus || !f.size) return true; 
+      return d.size === f.size; 
+    });
+}
 
   // ============ Swipe ============
   function renderSwipe(mode){
