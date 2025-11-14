@@ -426,9 +426,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============ Sponsor Ufficiale ============
-  function openSponsor(){ window.open("https://www.gelatofido.it/", "_blank", "noopener"); }
-  sponsorLink?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
-  sponsorLinkApp?.addEventListener("click",(e)=>{ e.preventDefault(); openSponsor(); });
+function openSponsor(){
+  const url = "https://www.gelatofido.it/";
+
+  // Se hai Plus → niente reward
+  if (state.plus){
+    window.open(url, "_blank", "noopener");
+    return;
+  }
+
+  // Evita doppio click
+  if (state.rewardOpen) return;
+  state.rewardOpen = true;
+
+  showRewardVideoMock("sponsor", () => {
+    state.rewardOpen = false;
+    window.open(url, "_blank", "noopener");
+  });
+}
+
+sponsorLink?.addEventListener("click",(e)=>{
+  e.preventDefault();
+  openSponsor();
+});
+sponsorLinkApp?.addEventListener("click",(e)=>{
+  e.preventDefault();
+  openSponsor();
+});
 
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
@@ -719,9 +743,8 @@ document.addEventListener("DOMContentLoaded", () => {
         state.swipeCount++;
         localStorage.setItem("swipes", String(state.swipeCount));
 
-        if (!state.plus && state.swipeCount === state.nextRewardAt && !state.rewardOpen){
-          state.rewardOpen = true;
-
+        if (!state.plus && state.swipeCount >= state.nextRewardAt && !state.rewardOpen){
+        state.rewardOpen = true;
           showRewardVideoMock("swipe", ()=>{
             state.rewardOpen = false;
             state.nextRewardAt += 5;
