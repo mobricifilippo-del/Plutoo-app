@@ -155,14 +155,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // ============ AUTO-RESTORE SE GIÀ ENTRATO ============
+ // ============ Restore in APP ============
   if (state.entered) {
-    homeScreen?.classList.add("hidden");
-    appScreen?.classList.remove("hidden");
-    initStories();
-    setActiveView("nearby");
-    showAdBanner();
-  }
+    homeScreen.classList.add("hidden");
+    appScreen.classList.remove("hidden");
+    // NON chiamare initStories qui - viene chiamata in init()
+  } 
 
   // ============ BOTTONE ENTRA (con animazione WOW) ============
   if (btnEnter) {
@@ -1405,9 +1403,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (sizeFilter) sizeFilter.value = state.filters.size;
     }
 
+    // ✅ Chiama initStories solo se sei già entrato (auto-restore)
     if (state.entered){
+      initStories();
       setActiveView("nearby");
-      // initStories() parte dopo ENTRA per effetto WOW
+      showAdBanner();
     }
   }
   init();
