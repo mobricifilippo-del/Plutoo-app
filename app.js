@@ -1864,36 +1864,39 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   if (!file) return;
 
   const preview = $("storyPreview");
+  if (!preview) return;
+
   preview.innerHTML = "";
 
+  // 🔁 Convertiamo il file in Base64 invece di usare blob:
   const reader = new FileReader();
 
   reader.onload = function (event) {
-    const base64 = event.target.result; // data:image/...;base64,...
+    const url = event.target.result; // es: "data:image/jpeg;base64,...."
 
     if (file.type.startsWith("image/")) {
-      preview.innerHTML = `<img src="${base64}" />`;
+      preview.innerHTML = `<img src="${url}" alt="Story" />`;
       preview.dataset.type = "image";
     } else if (file.type.startsWith("video/")) {
-      preview.innerHTML = `<video src="${base64}" autoplay muted loop></video>`;
+      preview.innerHTML = `<video src="${url}" controls playsinline></video>`;
       preview.dataset.type = "video";
     } else {
-      preview.innerHTML = `<p>Formato non supportato</p>`;
+      preview.innerHTML = `<p>Formato non supportato. Carica solo foto o video.</p>`;
+      preview.dataset.type = "";
       return;
     }
 
-    // salva subito nella preview per il passaggio successivo
-    preview.dataset.base64 = base64;
-
+    // Mostra lo step successivo
     $("nextToCustomize")?.classList.remove("hidden");
   };
 
   reader.onerror = function () {
-    alert("Errore nel caricamento del file.");
+    alert("❌ Errore nel caricamento del file. Riprova con un file più piccolo.");
   };
 
+  // 👉 Qui avviene la vera magia: File → Base64
   reader.readAsDataURL(file);
-} 
+}
 
   function showCustomizeStep() {
     $("uploadStep").classList.add("hidden");
