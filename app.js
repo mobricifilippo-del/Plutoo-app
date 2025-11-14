@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+7document.addEventListener("DOMContentLoaded", () => {
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
@@ -1469,7 +1469,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 }
-
+  };
   function initStories() {
     StoriesState.loadStories();
     renderStoriesBar();
