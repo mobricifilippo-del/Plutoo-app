@@ -678,7 +678,7 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   function filteredDogs(){
     const f = state.filters;
     return DOGS
-      .filter(d => d.km <= (f.distKm||999))
+      .filter(d => !d.km || d.km <= (f.distKm || 999))
       .filter(d => (!f.verified || !state.plus) ? true : d.verified)
       .filter(d => (!f.sex) ? true : d.sex===f.sex)
       .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
