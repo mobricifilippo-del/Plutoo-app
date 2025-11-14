@@ -1434,9 +1434,9 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     }
 
     if (state.entered){
-      setActiveView("nearby");
-      // initStories() parte dopo ENTRA per effetto WOW
-    }
+  setActiveView(state.currentView || "nearby");
+  // initStories() parte dopo ENTRA per effetto WOW
+}
   }
   init();
 
