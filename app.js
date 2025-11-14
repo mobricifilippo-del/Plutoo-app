@@ -1,4 +1,4 @@
-7document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
@@ -155,36 +155,30 @@
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // ============ BOTTONE ENTRA (con animazione WOW) ============
-  if (btnEnter) {
-    btnEnter.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      console.log("🚀 ENTRA cliccato!");
-      
-      try { localStorage.setItem("entered", "1"); } catch(err){}
-      state.entered = true;
+  // ============ HOME: ENTRA (con animazione WOW) ============
+  btnEnter?.addEventListener("click", () => {
+    try { localStorage.setItem("entered", "1"); } catch(e){}
+    state.entered = true;
 
-      // Animazione logo
-      if (heroLogo) {
-        heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
-        void heroLogo.offsetWidth;
-        heroLogo.classList.add("heartbeat-violet-wow");
-      }
+    // reset & avvio animazione wow violet
+    heroLogo?.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+    void heroLogo?.offsetWidth;
+    heroLogo?.classList.add("heartbeat-violet-wow");
 
-      setTimeout(() => {
-        homeScreen?.classList.add("hidden");
-        appScreen?.classList.remove("hidden");
-        document.body.classList.remove("story-open");
-        initStories();
-        setActiveView("nearby");
-        showAdBanner();
-        console.log("✅ App caricata!");
-      }, 900);
-    });
-  } else {
-    console.error("❌ btnEnter NON trovato nel DOM!");
+    setTimeout(() => {
+      homeScreen?.classList.add("hidden");
+      appScreen?.classList.remove("hidden");
+      document.body.classList.remove("story-open");
+      initStories();             // stories dopo ingresso
+      setActiveView("nearby");
+      showAdBanner();
+    }, 900);
+  });
+
+  // Auto-restore nel caso fosse già entrato
+  if (state.entered) {
+    homeScreen?.classList.add("hidden");
+    appScreen?.classList.remove("hidden");
   }
 
   // ============ I18N ============
@@ -235,7 +229,7 @@
       sizeLarge: "Grande",
       apply: "Applica",
       reset: "Reset",
-      unlockHint: "Vuoi sbloccare i filtri Gold? Attiva Plutoo Plus 💎",
+      unlockHint: "Vuoi sbloccare i filtri Gold? Attiva <strong>Plutoo Plus 💎</strong>",
       plusTitle: "Plutoo Plus",
       plusSubtitle: "Sblocca tutte le funzionalità premium",
       plusFeature1: "Nessuna pubblicità",
@@ -1396,11 +1390,9 @@
       if (sizeFilter) sizeFilter.value = state.filters.size;
     }
 
-    // ✅ Chiama initStories solo se sei già entrato (auto-restore)
     if (state.entered){
-      initStories();
       setActiveView("nearby");
-      showAdBanner();
+      // initStories() parte dopo ENTRA per effetto WOW
     }
   }
   init();
@@ -1454,22 +1446,20 @@
     },
     canUploadStory() { return state.plus || this.getTodayStoriesCount() < STORIES_CONFIG.FREE_DAILY_LIMIT; },
     generateMockStories() {
-  return [
-    { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true,
-      media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false,privacy:"public"}]
-    },
-    { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
-      media:[
-        {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false,privacy:"public"},
-        {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false,privacy:"private"}
-      ]
-    },
-    { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
-      media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false,privacy:"private"}]
+      return [
+        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true,
+          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false}] },
+        { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
+          media:[
+            {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false},
+            {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false}
+          ]},
+        { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
+          media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false}] }
+      ];
     }
-  ];
-}
   };
+
   function initStories() {
     StoriesState.loadStories();
     renderStoriesBar();
@@ -1526,19 +1516,11 @@ function renderStoriesBar() {
 
   container.innerHTML = "";
 
-StoriesState.stories.forEach((story) => {
-  const hasMatch = state.matches[story.userId] || false;
-  const hasFriendship = state.friendships[story.userId] || false;
-  const hasPrivateStory = story.media.some(m => m.privacy === "private");
-  
-  if (hasPrivateStory && !hasMatch && !hasFriendship) {
-    return;
-  }
-  
-  const allViewed = story.media.every(m => m.viewed);
-  
-  const circle = document.createElement("button");
-  circle.className = `story-circle ${allViewed ? "viewed" : ""}`;  
+  StoriesState.stories.forEach((story) => {
+    const allViewed = story.media.every((m) => m.viewed);
+
+    const circle = document.createElement("button");
+    circle.className = `story-circle ${allViewed ? "viewed" : ""}`;
     circle.type = "button";
     circle.innerHTML = `
       <div class="story-avatar">
@@ -1548,45 +1530,33 @@ StoriesState.stories.forEach((story) => {
     `;
 
     circle.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  openStoryViewerFromBar(story.userId);
-}, { passive: false });
+      e.preventDefault();
+      e.stopPropagation();
+      openStoryViewerFromBar(story.userId);
+    });
 
     container.appendChild(circle);
   });
 }
 
 function openStoryViewerFromBar(userId) {
-  const story = StoriesState.stories.find(s => s.userId === userId);
+  const story = StoriesState.stories.find((s) => s.userId === userId);
   if (!story) return;
-  
-  const hasMatch = state.matches[userId] || false;
-  const hasFriendship = state.friendships[userId] || false;
-  const hasPrivateStory = story.media.some(m => m.privacy === "private");
-  
-  if (hasPrivateStory && !hasMatch && !hasFriendship) {
-    showToast(state.lang === "it" ? "🔒 Questa story è privata" : "🔒 This story is private");
-    return;
-  }
-  
+
   if (state.plus) {
     openStoryViewerDirect(userId);
     return;
   }
-  
-  if (hasMatch || hasFriendship) {
-    openStoryViewerDirect(userId);
-    return;
-  }
-  
+
+  const hasMatch = state.matches[userId] || false;
+  const hasFriendship = state.friendships[userId] || false;
   const hasRewardViewed = state.storyRewardViewed[userId] || false;
-  
-  if (hasRewardViewed) {
+
+  if (hasMatch || hasFriendship || hasRewardViewed) {
     openStoryViewerDirect(userId);
     return;
   }
-  
+
   showStoryRewardVideo(story, userId);
 }
 
@@ -1870,17 +1840,14 @@ function publishStory() {
   const el = preview.querySelector("img, video");
   if (!el) return;
 
-  const privacy = $("storyPrivacySelect") ? $("storyPrivacySelect").value : "public";
-
-const media = {
-  type: mediaType,
-  url: el.src,
-  timestamp: Date.now(),
-  filter,
-  viewed: false,
-  music: "",
-  privacy: privacy
-};
+  const media = {
+    type: mediaType,
+    url: el.src,
+    timestamp: Date.now(),
+    filter,
+    viewed: false,
+    music: ""
+  };
 
   const myId = "me";
   const existing = StoriesState.stories.find(s => s.userId === myId);
