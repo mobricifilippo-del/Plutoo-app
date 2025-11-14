@@ -678,7 +678,10 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
         </div>
       </article>`;
   }
-  const fmtKm = n => `${n.toFixed(1)} km`;
+  
+ function fmtKm(n){
+  return `${n.toFixed(1)} km`;
+}
 
   function filteredDogs(){
   const f = state.filters;
