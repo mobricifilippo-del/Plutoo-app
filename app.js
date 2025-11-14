@@ -445,6 +445,7 @@ function openSponsor(){
   });
 }
 
+
 sponsorLink?.addEventListener("click",(e)=>{
   e.preventDefault();
   openSponsor();
