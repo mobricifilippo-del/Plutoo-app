@@ -1859,26 +1859,41 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     $("storyFileInput").value = "";
   }
 
-  function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+ function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const preview = $("storyPreview");
-    preview.innerHTML = "";
-    const url = URL.createObjectURL(file);
+  const preview = $("storyPreview");
+  preview.innerHTML = "";
+
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    const base64 = event.target.result; // data:image/...;base64,...
 
     if (file.type.startsWith("image/")) {
-      preview.innerHTML = `<img src="${url}" alt="Preview">`;
+      preview.innerHTML = `<img src="${base64}" />`;
       preview.dataset.type = "image";
     } else if (file.type.startsWith("video/")) {
-      preview.innerHTML = `<video src="${url}" autoplay muted loop></video>`;
+      preview.innerHTML = `<video src="${base64}" autoplay muted loop></video>`;
       preview.dataset.type = "video";
     } else {
       preview.innerHTML = `<p>Formato non supportato</p>`;
+      return;
     }
 
+    // salva subito nella preview per il passaggio successivo
+    preview.dataset.base64 = base64;
+
     $("nextToCustomize")?.classList.remove("hidden");
-  }
+  };
+
+  reader.onerror = function () {
+    alert("Errore nel caricamento del file.");
+  };
+
+  reader.readAsDataURL(file);
+} 
 
   function showCustomizeStep() {
     $("uploadStep").classList.add("hidden");
