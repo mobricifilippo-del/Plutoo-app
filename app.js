@@ -1,3 +1,8 @@
+// DEBUG TEMPORANEO: mostra qualsiasi errore JS
+window.addEventListener("error", function (e) {
+  alert("JS ERROR: " + e.message);
+});
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // ============ Helpers ============
