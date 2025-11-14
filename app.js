@@ -48,9 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Selfie unlock (per DOG)
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
 
-    // Rewards già visti per social/story
+    // Rewards già visti per social
     socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed") || "{}"),
-    storyRewardViewed: JSON.parse(localStorage.getItem("storyRewardViewed") || "{}"),
 
     // Dati caricati (docs)
     ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded") || "{}"),
@@ -229,7 +228,8 @@ document.addEventListener("DOMContentLoaded", () => {
       sizeLarge: "Grande",
       apply: "Applica",
       reset: "Reset",
-      unlockHint: "Vuoi sbloccare i filtri Gold? Attiva <strong>Plutoo Plus 💎</strong>",
+      // 🔹 tolto <strong> dal testo
+      unlockHint: "Vuoi sbloccare i filtri Gold? Attiva Plutoo Plus 💎",
       plusTitle: "Plutoo Plus",
       plusSubtitle: "Sblocca tutte le funzionalità premium",
       plusFeature1: "Nessuna pubblicità",
@@ -295,7 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
       sizeLarge: "Large",
       apply: "Apply",
       reset: "Reset",
-      unlockHint: "Want to unlock Gold filters? Activate <strong>Plutoo Plus 💎</strong>",
+      // 🔹 tolto <strong> anche qui
+      unlockHint: "Want to unlock Gold filters? Activate Plutoo Plus 💎",
       plusTitle: "Plutoo Plus",
       plusSubtitle: "Unlock all premium features",
       plusFeature1: "No ads",
@@ -1122,7 +1123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       qa(".pp-story-item", profileContent).forEach(item => {
         item.addEventListener("click", ()=>{
           const idx = parseInt(item.getAttribute("data-story-index"));
-          openDogStoryViewer(d.id, idx);   // (uso viewer unificato più sotto)
+          openDogStoryViewer(d.id, idx);
         });
       });
     }
@@ -1448,17 +1449,24 @@ document.addEventListener("DOMContentLoaded", () => {
     generateMockStories() {
       return [
         { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true,
-          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false}] },
+          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false,privacy:"public"}] },
         { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
           media:[
-            {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false},
-            {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false}
+            {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false,privacy:"public"},
+            {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false,privacy:"private"}
           ]},
         { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
-          media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false}] }
+          media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false,privacy:"public"}] }
       ];
     }
   };
+
+  // 🔹 helper privacy: quali media sono visibili a questo utente per quello userId
+  function getVisibleMediaList(story) {
+    const hasMatch = !!state.matches[story.userId];
+    const hasFriendship = !!state.friendships[story.userId];
+    return story.media.filter(m => m.privacy !== "private" || hasMatch || hasFriendship);
+  }
 
   function initStories() {
     StoriesState.loadStories();
@@ -1466,447 +1474,448 @@ document.addEventListener("DOMContentLoaded", () => {
     setupStoriesEvents();
   }
 
-   // ===== STORIES — eventi, bar, viewer, navigazione =====
+  // ===== STORIES — eventi, bar, viewer, navigazione =====
 
-function setupStoriesEvents() {
-  $("addStoryBtn")?.addEventListener("click", openUploadModal);
+  function setupStoriesEvents() {
+    $("addStoryBtn")?.addEventListener("click", openUploadModal);
 
-  const closeBtn = $("closeStoryViewer");
-  if (closeBtn) {
-    closeBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      closeStoryViewer();
-    });
-  }
-
-  $("storyNavPrev")?.addEventListener("click", prevStoryMedia);
-  $("storyNavNext")?.addEventListener("click", nextStoryMedia);
-
-  // Chiudi story cliccando sullo sfondo scuro
-  const viewer = $("storyViewer");
-  if (viewer) {
-    viewer.addEventListener("click", (e) => {
-      if (e.target === viewer) closeStoryViewer();
-    });
-  }
-
-  // ESC per chiudere
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const viewer = $("storyViewer");
-      if (viewer && !viewer.classList.contains("hidden")) {
+    const closeBtn = $("closeStoryViewer");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
         closeStoryViewer();
+      });
+    }
+
+    $("storyNavPrev")?.addEventListener("click", prevStoryMedia);
+    $("storyNavNext")?.addEventListener("click", nextStoryMedia);
+
+    // Chiudi story cliccando sullo sfondo scuro
+    const viewer = $("storyViewer");
+    if (viewer) {
+      viewer.addEventListener("click", (e) => {
+        if (e.target === viewer) closeStoryViewer();
+      });
+    }
+
+    // ESC per chiudere
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const viewer = $("storyViewer");
+        if (viewer && !viewer.classList.contains("hidden")) {
+          closeStoryViewer();
+        }
       }
-    }
-  });
-
-  $("closeUploadStory")?.addEventListener("click", closeUploadModal);
-  $("cancelUpload")?.addEventListener("click", closeUploadModal);
-  $("storyFileInput")?.addEventListener("change", handleFileSelect);
-  $("nextToCustomize")?.addEventListener("click", showCustomizeStep);
-  $("backToUpload")?.addEventListener("click", showUploadStep);
-  $("publishStory")?.addEventListener("click", publishStory);
-
-  setupFiltersGrid();
-}
-
-function renderStoriesBar() {
-  const container = $("storiesContainer");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  StoriesState.stories.forEach((story) => {
-    const allViewed = story.media.every((m) => m.viewed);
-
-    const circle = document.createElement("button");
-    circle.className = `story-circle ${allViewed ? "viewed" : ""}`;
-    circle.type = "button";
-    circle.innerHTML = `
-      <div class="story-avatar">
-        <img src="${story.avatar}" alt="${story.userName}" />
-      </div>
-      <span class="story-name">${story.userName}</span>
-    `;
-
-    circle.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      openStoryViewerFromBar(story.userId);
     });
 
-    container.appendChild(circle);
-  });
-}
+    $("closeUploadStory")?.addEventListener("click", closeUploadModal);
+    $("cancelUpload")?.addEventListener("click", closeUploadModal);
+    $("storyFileInput")?.addEventListener("change", handleFileSelect);
+    $("nextToCustomize")?.addEventListener("click", showCustomizeStep);
+    $("backToUpload")?.addEventListener("click", showUploadStep);
+    $("publishStory")?.addEventListener("click", publishStory);
 
-function openStoryViewerFromBar(userId) {
-  const story = StoriesState.stories.find((s) => s.userId === userId);
-  if (!story) return;
-
-  if (state.plus) {
-    openStoryViewerDirect(userId);
-    return;
+    setupFiltersGrid();
   }
 
-  const hasMatch = state.matches[userId] || false;
-  const hasFriendship = state.friendships[userId] || false;
-  const hasRewardViewed = state.storyRewardViewed[userId] || false;
+  function renderStoriesBar() {
+    const container = $("storiesContainer");
+    if (!container) return;
 
-  if (hasMatch || hasFriendship || hasRewardViewed) {
-    openStoryViewerDirect(userId);
-    return;
+    container.innerHTML = "";
+
+    StoriesState.stories.forEach((story) => {
+      const visibleMedia = getVisibleMediaList(story);
+      if (!visibleMedia.length) return; // tutte private e niente match/amicizia → non mostrare cerchio
+
+      const allViewed = visibleMedia.every((m) => m.viewed);
+
+      const circle = document.createElement("button");
+      circle.className = `story-circle ${allViewed ? "viewed" : ""}`;
+      circle.type = "button";
+      circle.innerHTML = `
+        <div class="story-avatar">
+          <img src="${story.avatar}" alt="${story.userName}" />
+        </div>
+        <span class="story-name">${story.userName}</span>
+      `;
+
+      circle.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openStoryViewerFromBar(story.userId);
+      });
+
+      container.appendChild(circle);
+    });
   }
 
-  showStoryRewardVideo(story, userId);
-}
+  function openStoryViewerFromBar(userId) {
+    const story = StoriesState.stories.find((s) => s.userId === userId);
+    if (!story) return;
 
-function openStoryViewerDirect(userId) {
-  StoriesState.currentStoryUserId = userId;
-  StoriesState.currentMediaIndex = 0;
-  StoriesState.openedFrom = "bar";
-
-  $("storyViewer")?.classList.remove("hidden");
-  document.body.classList.add("noscroll");
-  document.body.classList.add("story-open");
-
-  renderStoryViewer();
-  startStoryProgress();
-}
-
-function openDogStoryViewer(userId, mediaIndex = 0) {
-  StoriesState.currentStoryUserId = userId;
-  StoriesState.currentMediaIndex = mediaIndex;
-  StoriesState.openedFrom = "profile";
-
-  $("storyViewer")?.classList.remove("hidden");
-  document.body.classList.add("noscroll");
-  document.body.classList.add("story-open");
-
-  renderStoryViewer();
-  startStoryProgress();
-}
-
-function renderStoryViewer() {
-  const story = StoriesState.stories.find(
-    (s) => s.userId === StoriesState.currentStoryUserId
-  );
-  if (!story) return;
-
-  const media = story.media[StoriesState.currentMediaIndex];
-  if (!media) return;
-
-  $("storyUserAvatar").src = story.avatar;
-  $("storyUserName").textContent = story.userName;
-  $("storyTimestamp").textContent = getTimeAgo(media.timestamp);
-
-  renderProgressBars(story.media.length);
-  renderStoryContent(media);
-
-  media.viewed = true;
-  StoriesState.saveStories();
-}
-
-function renderProgressBars(count) {
-  const container = $("storyProgressBars");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  for (let i = 0; i < count; i++) {
-    const bar = document.createElement("div");
-    bar.className = "story-progress-bar";
-
-    const fill = document.createElement("div");
-    fill.className = "story-progress-fill";
-
-    if (i < StoriesState.currentMediaIndex) {
-      bar.classList.add("completed");
-    }
-    if (i === StoriesState.currentMediaIndex) {
-      bar.classList.add("active");
+    const visibleMedia = getVisibleMediaList(story);
+    if (!visibleMedia.length) {
+      showToast(state.lang==="it" ? "🔒 Story privata: serve un match o amicizia" : "🔒 Private story: match or friendship required");
+      return;
     }
 
-    bar.appendChild(fill);
-    container.appendChild(bar);
-  }
-}
-
-function renderStoryContent(media) {
-  const content = $("storyContent");
-  if (!content) return;
-  content.innerHTML = "";
-
-  if (media.type === "image") {
-    const img = document.createElement("img");
-    img.src = media.url;
-    img.alt = "Story";
-    img.className = `filter-${media.filter}`;
-    content.appendChild(img);
-  } else if (media.type === "video") {
-    const video = document.createElement("video");
-    video.src = media.url;
-    video.autoplay = true;
-    video.muted = false;
-    video.className = `filter-${media.filter}`;
-    video.addEventListener("ended", nextStoryMedia);
-    content.appendChild(video);
+    // Nessun reward video: entra subito
+    openStoryViewerDirect(userId);
   }
 
-  if (media.music) playStoryMusic(media.music);
-}
+  function openStoryViewerDirect(userId) {
+    StoriesState.currentStoryUserId = userId;
+    StoriesState.currentMediaIndex = 0;
+    StoriesState.openedFrom = "bar";
 
-function startStoryProgress() {
-  stopStoryProgress();
+    $("storyViewer")?.classList.remove("hidden");
+    document.body.classList.add("noscroll");
+    document.body.classList.add("story-open");
 
-  const story = StoriesState.stories.find(
-    (s) => s.userId === StoriesState.currentStoryUserId
-  );
-  if (!story) return;
+    renderStoryViewer();
+    startStoryProgress();
+  }
 
-  const media = story.media[StoriesState.currentMediaIndex];
-  if (!media) return;
+  function openDogStoryViewer(userId, mediaIndex = 0) {
+    const story = StoriesState.stories.find((s) => s.userId === userId);
+    if (!story) return;
 
-  if (media.type === "image") {
-    StoriesState.progressInterval = setTimeout(
-      nextStoryMedia,
-      STORIES_CONFIG.PHOTO_DURATION
+    const visibleMedia = getVisibleMediaList(story);
+    if (!visibleMedia.length) {
+      showToast(state.lang==="it" ? "🔒 Story privata: serve un match o amicizia" : "🔒 Private story: match or friendship required");
+      return;
+    }
+
+    StoriesState.currentStoryUserId = userId;
+    StoriesState.currentMediaIndex = Math.min(mediaIndex, visibleMedia.length - 1);
+    StoriesState.openedFrom = "profile";
+
+    $("storyViewer")?.classList.remove("hidden");
+    document.body.classList.add("noscroll");
+    document.body.classList.add("story-open");
+
+    renderStoryViewer();
+    startStoryProgress();
+  }
+
+  function renderStoryViewer() {
+    const story = StoriesState.stories.find(
+      (s) => s.userId === StoriesState.currentStoryUserId
     );
-  }
-}
+    if (!story) return;
 
-function stopStoryProgress() {
-  if (StoriesState.progressInterval) {
-    clearTimeout(StoriesState.progressInterval);
-    StoriesState.progressInterval = null;
-  }
-}
-
-function nextStoryMedia() {
-  stopStoryProgress();
-
-  const story = StoriesState.stories.find(
-    (s) => s.userId === StoriesState.currentStoryUserId
-  );
-  if (!story) {
-    closeStoryViewer();
-    return;
-  }
-
-  if (StoriesState.currentMediaIndex < story.media.length - 1) {
-    StoriesState.currentMediaIndex++;
-    renderStoryViewer();
-    startStoryProgress();
-  } else {
-    closeStoryViewer();
-  }
-}
-
-function prevStoryMedia() {
-  stopStoryProgress();
-
-  if (StoriesState.currentMediaIndex > 0) {
-    StoriesState.currentMediaIndex--;
-    renderStoryViewer();
-    startStoryProgress();
-  }
-}
-
-function closeStoryViewer() {
-  stopStoryProgress();
-  const viewer = $("storyViewer");
-  if (viewer) {
-    viewer.classList.add("hidden");
-  }
-  document.body.classList.remove("noscroll");
-  document.body.classList.remove("story-open");
-
-  // Se la story era stata aperta dal profilo, resta nel profilo
-  if (StoriesState?.openedFrom === "profile") {
-    $("profilePage")?.classList.remove("hidden");
-  }
-  StoriesState.openedFrom = null;
-
-  renderStoriesBar();
-}
-
-function getTimeAgo(timestamp) {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  if (seconds < 60) return "ora";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m fa`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h fa`;
-  return `${Math.floor(seconds / 86400)}g fa`;
-}
-
-// Flash ingresso bianco (facoltativo)
-function triggerFlash() {
-  const el = document.getElementById("flashOverlay");
-  if (!el) return;
-  el.classList.add("active");
-  setTimeout(() => el.classList.remove("active"), 900);
-}
-
-function playStoryMusic(musicId) {
-  // Hook per player musicale in futuro
-  console.log("🎵 Playing music:", musicId);
-}
-
-// Deleghe aggiuntive per cerchi story in qualunque sezione (evita doppio trigger sulla home)
-document.addEventListener("click", (e) => {
-  if (e.target.closest("#storiesBar")) return; // la home ha già il suo listener
-  const el = e.target.closest(".story-circle");
-  if (!el || el.id === "addStoryBtn") return;
-  const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
-  if (!dogId) return;
-  openStoryViewerFromBar(dogId);
-});
-
-// Click su bar principale (se la struttura HTML usa id="storiesBar")
-$("storiesBar")?.addEventListener("click", (e) => {
-  const el = e.target.closest(".story-circle");
-  if (el?.id === "addStoryBtn") return;
-  if (!el) return;
-  const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
-  if (!dogId) return;
-  openStoryViewerFromBar(dogId);
-});
-
-   // ===== STORIES — upload, filtri, pubblicazione =====
-
-function openUploadModal() {
-  $("uploadStoryModal")?.classList.remove("hidden");
-  document.body.classList.add("noscroll");
-}
-
-function closeUploadModal() {
-  $("uploadStoryModal")?.classList.add("hidden");
-  document.body.classList.remove("noscroll");
-  $("storyFileInput").value = "";
-}
-
-function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const preview = $("storyPreview");
-  preview.innerHTML = "";
-  const url = URL.createObjectURL(file);
-
-  if (file.type.startsWith("image/")) {
-    preview.innerHTML = `<img src="${url}" alt="Preview">`;
-    preview.dataset.type = "image";
-  } else if (file.type.startsWith("video/")) {
-    preview.innerHTML = `<video src="${url}" autoplay muted loop></video>`;
-    preview.dataset.type = "video";
-  } else {
-    preview.innerHTML = `<p>Formato non supportato</p>`;
-  }
-
-  $("nextToCustomize")?.classList.remove("hidden");
-}
-
-function showCustomizeStep() {
-  $("uploadStep").classList.add("hidden");
-  $("customizeStep").classList.remove("hidden");
-}
-
-function showUploadStep() {
-  $("customizeStep").classList.add("hidden");
-  $("uploadStep").classList.remove("hidden");
-}
-
-function setupFiltersGrid() {
-  const filters = ["none", "warm", "cool", "bw", "vintage"];
-  const grid = $("filtersGrid");
-  if (!grid) return;
-  grid.innerHTML = "";
-  filters.forEach(f => {
-    const btn = document.createElement("button");
-    btn.className = `filter-btn ${f}`;
-    btn.textContent = f;
-    btn.addEventListener("click", () => {
-      $("storyPreview").dataset.filter = f;
-      $("storyPreview").className = f;
-    });
-    grid.appendChild(btn);
-  });
-}
-
-function publishStory() {
-  const preview = $("storyPreview");
-  if (!preview) return;
-
-  const mediaType = preview.dataset.type || "image";
-  const filter = preview.dataset.filter || "none";
-  const el = preview.querySelector("img, video");
-  if (!el) return;
-
-  const media = {
-    type: mediaType,
-    url: el.src,
-    timestamp: Date.now(),
-    filter,
-    viewed: false,
-    music: ""
-  };
-
-  const myId = "me";
-  const existing = StoriesState.stories.find(s => s.userId === myId);
-  if (existing) {
-    existing.media.unshift(media);
-  } else {
-    StoriesState.stories.unshift({
-      userId: myId,
-      userName: "Me",
-      avatar: "assets/avatar_me.png",
-      media: [media]
-    });
-  }
-
-  StoriesState.saveStories();
-  closeUploadModal();
-  renderStoriesBar();
-  showToast("Story pubblicata!");
-}
-
-function showToast(msg) {
-  let toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add("show"), 10);
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 300);
-  }, 2300);
-}
-
-// ===== MOCK VIDEO REWARD =====
-
-function showStoryRewardVideo(story, userId) {
-  if (state.rewardOpen) return;
-  state.rewardOpen = true;
-  const modal = document.createElement("div");
-  modal.className = "reward-video";
-  modal.innerHTML = `
-    <div class="reward-inner">
-      <p>${state.lang==="it"?"Guarda il video per aprire le stories":"Watch the video to unlock stories"}</p>
-      <div class="reward-spinner"></div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  let sec = 4;
-  const countdown = setInterval(() => {
-    sec--;
-    if (sec <= 0) {
-      clearInterval(countdown);
-      modal.remove();
-      state.rewardOpen = false;
-      state.storyRewardViewed[userId] = true;
-      openStoryViewerDirect(userId);
+    const visibleMedia = getVisibleMediaList(story);
+    if (!visibleMedia.length) {
+      closeStoryViewer();
+      return;
     }
-  }, 1000);
-}
+
+    const media = visibleMedia[StoriesState.currentMediaIndex];
+    if (!media) return;
+
+    $("storyUserAvatar").src = story.avatar;
+    $("storyUserName").textContent = story.userName;
+    $("storyTimestamp").textContent = getTimeAgo(media.timestamp);
+
+    renderProgressBars(visibleMedia.length);
+    renderStoryContent(media);
+
+    media.viewed = true;
+    StoriesState.saveStories();
+  }
+
+  function renderProgressBars(count) {
+    const container = $("storyProgressBars");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    for (let i = 0; i < count; i++) {
+      const bar = document.createElement("div");
+      bar.className = "story-progress-bar";
+
+      const fill = document.createElement("div");
+      fill.className = "story-progress-fill";
+
+      if (i < StoriesState.currentMediaIndex) {
+        bar.classList.add("completed");
+      }
+      if (i === StoriesState.currentMediaIndex) {
+        bar.classList.add("active");
+      }
+
+      bar.appendChild(fill);
+      container.appendChild(bar);
+    }
+  }
+
+  function renderStoryContent(media) {
+    const content = $("storyContent");
+    if (!content) return;
+    content.innerHTML = "";
+
+    if (media.type === "image") {
+      const img = document.createElement("img");
+      img.src = media.url;
+      img.alt = "Story";
+      img.className = `filter-${media.filter}`;
+      content.appendChild(img);
+    } else if (media.type === "video") {
+      const video = document.createElement("video");
+      video.src = media.url;
+      video.autoplay = true;
+      video.muted = false;
+      video.className = `filter-${media.filter}`;
+      video.addEventListener("ended", nextStoryMedia);
+      content.appendChild(video);
+    }
+
+    if (media.music) playStoryMusic(media.music);
+  }
+
+  function startStoryProgress() {
+    stopStoryProgress();
+
+    const story = StoriesState.stories.find(
+      (s) => s.userId === StoriesState.currentStoryUserId
+    );
+    if (!story) return;
+
+    const visibleMedia = getVisibleMediaList(story);
+    if (!visibleMedia.length) return;
+
+    const media = visibleMedia[StoriesState.currentMediaIndex];
+    if (!media) return;
+
+    if (media.type === "image") {
+      StoriesState.progressInterval = setTimeout(
+        nextStoryMedia,
+        STORIES_CONFIG.PHOTO_DURATION
+      );
+    }
+  }
+
+  function stopStoryProgress() {
+    if (StoriesState.progressInterval) {
+      clearTimeout(StoriesState.progressInterval);
+      StoriesState.progressInterval = null;
+    }
+  }
+
+  function nextStoryMedia() {
+    stopStoryProgress();
+
+    const story = StoriesState.stories.find(
+      (s) => s.userId === StoriesState.currentStoryUserId
+    );
+    if (!story) {
+      closeStoryViewer();
+      return;
+    }
+
+    const visibleMedia = getVisibleMediaList(story);
+    if (!visibleMedia.length) {
+      closeStoryViewer();
+      return;
+    }
+
+    if (StoriesState.currentMediaIndex < visibleMedia.length - 1) {
+      StoriesState.currentMediaIndex++;
+      renderStoryViewer();
+      startStoryProgress();
+    } else {
+      closeStoryViewer();
+    }
+  }
+
+  function prevStoryMedia() {
+    stopStoryProgress();
+
+    if (StoriesState.currentMediaIndex > 0) {
+      StoriesState.currentMediaIndex--;
+      renderStoryViewer();
+      startStoryProgress();
+    }
+  }
+
+  function closeStoryViewer() {
+    stopStoryProgress();
+    const viewer = $("storyViewer");
+    if (viewer) {
+      viewer.classList.add("hidden");
+    }
+    document.body.classList.remove("noscroll");
+    document.body.classList.remove("story-open");
+
+    // Se la story era stata aperta dal profilo, resta nel profilo
+    if (StoriesState?.openedFrom === "profile") {
+      $("profilePage")?.classList.remove("hidden");
+    }
+    StoriesState.openedFrom = null;
+
+    renderStoriesBar();
+  }
+
+  function getTimeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return "ora";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m fa`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h fa`;
+    return `${Math.floor(seconds / 86400)}g fa`;
+  }
+
+  // Flash ingresso bianco (facoltativo)
+  function triggerFlash() {
+    const el = document.getElementById("flashOverlay");
+    if (!el) return;
+    el.classList.add("active");
+    setTimeout(() => el.classList.remove("active"), 900);
+  }
+
+  function playStoryMusic(musicId) {
+    // Hook per player musicale in futuro
+    console.log("🎵 Playing music:", musicId);
+  }
+
+  // Deleghe aggiuntive per cerchi story in qualunque sezione
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#storiesBar")) return; // la home ha già il suo listener
+    const el = e.target.closest(".story-circle");
+    if (!el || el.id === "addStoryBtn") return;
+    const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
+    if (!dogId) return;
+    openStoryViewerFromBar(dogId);
   });
 
-// EOF                       
+  // Click su bar principale (se la struttura HTML usa id="storiesBar")
+  $("storiesBar")?.addEventListener("click", (e) => {
+    const el = e.target.closest(".story-circle");
+    if (el?.id === "addStoryBtn") return;
+    if (!el) return;
+    const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
+    if (!dogId) return;
+    openStoryViewerFromBar(dogId);
+  });
+
+  // ===== STORIES — upload, filtri, pubblicazione =====
+
+  function openUploadModal() {
+    if (!StoriesState.canUploadStory()) {
+      showToast(state.lang==="it"
+        ? "Limite giornaliero Stories raggiunto"
+        : "Daily stories limit reached");
+      return;
+    }
+    $("uploadStoryModal")?.classList.remove("hidden");
+    document.body.classList.add("noscroll");
+  }
+
+  function closeUploadModal() {
+    $("uploadStoryModal")?.classList.add("hidden");
+    document.body.classList.remove("noscroll");
+    $("storyFileInput").value = "";
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const preview = $("storyPreview");
+    preview.innerHTML = "";
+    const url = URL.createObjectURL(file);
+
+    if (file.type.startsWith("image/")) {
+      preview.innerHTML = `<img src="${url}" alt="Preview">`;
+      preview.dataset.type = "image";
+    } else if (file.type.startsWith("video/")) {
+      preview.innerHTML = `<video src="${url}" autoplay muted loop></video>`;
+      preview.dataset.type = "video";
+    } else {
+      preview.innerHTML = `<p>Formato non supportato</p>`;
+    }
+
+    $("nextToCustomize")?.classList.remove("hidden");
+  }
+
+  function showCustomizeStep() {
+    $("uploadStep").classList.add("hidden");
+    $("customizeStep").classList.remove("hidden");
+  }
+
+  function showUploadStep() {
+    $("customizeStep").classList.add("hidden");
+    $("uploadStep").classList.remove("hidden");
+  }
+
+  function setupFiltersGrid() {
+    const filters = ["none", "warm", "cool", "bw", "vintage"];
+    const grid = $("filtersGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    filters.forEach(f => {
+      const btn = document.createElement("button");
+      btn.className = `filter-btn ${f}`;
+      btn.textContent = f;
+      btn.addEventListener("click", () => {
+        $("storyPreview").dataset.filter = f;
+        $("storyPreview").className = f;
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  function publishStory() {
+    const preview = $("storyPreview");
+    if (!preview) return;
+
+    const mediaType = preview.dataset.type || "image";
+    const filter = preview.dataset.filter || "none";
+    const el = preview.querySelector("img, video");
+    if (!el) return;
+
+    // 🔹 privacy: prende valore da select se esiste, altrimenti public
+    const privacy = $("storyPrivacySelect") ? $("storyPrivacySelect").value : "public";
+
+    const media = {
+      type: mediaType,
+      url: el.src,
+      timestamp: Date.now(),
+      filter,
+      viewed: false,
+      music: "",
+      privacy
+    };
+
+    const myId = "me";
+    const existing = StoriesState.stories.find(s => s.userId === myId);
+    if (existing) {
+      existing.media.unshift(media);
+    } else {
+      StoriesState.stories.unshift({
+        userId: myId,
+        userName: "Me",
+        avatar: "assets/avatar_me.png",
+        media: [media]
+      });
+    }
+
+    StoriesState.saveStories();
+    closeUploadModal();
+    renderStoriesBar();
+    showToast("Story pubblicata!");
+  }
+
+  function showToast(msg) {
+    let toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add("show"), 10);
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    }, 2300);
+  }
+
+}); // EOF
