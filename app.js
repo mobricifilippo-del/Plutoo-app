@@ -155,30 +155,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
-  // ============ HOME: ENTRA (con animazione WOW) ============
-  btnEnter?.addEventListener("click", () => {
-    try { localStorage.setItem("entered", "1"); } catch(e){}
-    state.entered = true;
-
-    // reset & avvio animazione wow violet
-    heroLogo?.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
-    void heroLogo?.offsetWidth;
-    heroLogo?.classList.add("heartbeat-violet-wow");
-
-    setTimeout(() => {
-      homeScreen?.classList.add("hidden");
-      appScreen?.classList.remove("hidden");
-      document.body.classList.remove("story-open");
-      initStories();             // stories dopo ingresso
-      setActiveView("nearby");
-      showAdBanner();
-    }, 900);
-  });
-
-  // Auto-restore nel caso fosse già entrato
+  // ============ AUTO-RESTORE SE GIÀ ENTRATO ============
   if (state.entered) {
     homeScreen?.classList.add("hidden");
     appScreen?.classList.remove("hidden");
+    initStories();
+    setActiveView("nearby");
+    showAdBanner();
+  }
+
+  // ============ BOTTONE ENTRA (con animazione WOW) ============
+  if (btnEnter) {
+    btnEnter.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      console.log("🚀 ENTRA cliccato!");
+      
+      try { localStorage.setItem("entered", "1"); } catch(err){}
+      state.entered = true;
+
+      // Animazione logo
+      if (heroLogo) {
+        heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+        void heroLogo.offsetWidth;
+        heroLogo.classList.add("heartbeat-violet-wow");
+      }
+
+      setTimeout(() => {
+        homeScreen?.classList.add("hidden");
+        appScreen?.classList.remove("hidden");
+        document.body.classList.remove("story-open");
+        initStories();
+        setActiveView("nearby");
+        showAdBanner();
+        console.log("✅ App caricata!");
+      }, 900);
+    });
+  } else {
+    console.error("❌ btnEnter NON trovato nel DOM!");
   }
 
   // ============ I18N ============
