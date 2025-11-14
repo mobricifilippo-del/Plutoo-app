@@ -1866,35 +1866,62 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   const preview = $("storyPreview");
   if (!preview) return;
 
+  // pulizia iniziale
   preview.innerHTML = "";
+  preview.dataset.type = "";
+  preview.dataset.hasMedia = "false";
 
-  // 🔁 Convertiamo il file in Base64 invece di usare blob:
+  const isImage = file.type.startsWith("image/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isImage && !isVideo) {
+    alert("Formato non supportato. Usa solo foto o video.");
+    return;
+  }
+
+  // limiti dimensione (usiamo la config già esistente)
+  if (isImage && file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
+    alert("Foto troppo grande. Riduci la dimensione e riprova.");
+    return;
+  }
+  if (isVideo && file.size > STORIES_CONFIG.MAX_VIDEO_SIZE) {
+    alert("Video troppo grande. Riduci la durata/dimensione e riprova.");
+    return;
+  }
+
   const reader = new FileReader();
 
   reader.onload = function (event) {
-    const url = event.target.result; // es: "data:image/jpeg;base64,...."
+    const base64 = event.target.result; // data:image/...;base64,...
 
-    if (file.type.startsWith("image/")) {
-      preview.innerHTML = `<img src="${url}" alt="Story" />`;
+    // salviamo in stato in modo persistente
+    StoriesState.uploadedFile = {
+      type: isImage ? "image" : "video",
+      url: base64,
+      mime: file.type,
+      size: file.size
+    };
+
+    if (isImage) {
+      preview.innerHTML = `<img src="${base64}" alt="Story" />`;
       preview.dataset.type = "image";
-    } else if (file.type.startsWith("video/")) {
-      preview.innerHTML = `<video src="${url}" controls playsinline></video>`;
-      preview.dataset.type = "video";
     } else {
-      preview.innerHTML = `<p>Formato non supportato. Carica solo foto o video.</p>`;
-      preview.dataset.type = "";
-      return;
+      preview.innerHTML = `<video src="${base64}" controls playsinline muted></video>`;
+      preview.dataset.type = "video";
     }
 
-    // Mostra lo step successivo
+    preview.dataset.hasMedia = "true";
     $("nextToCustomize")?.classList.remove("hidden");
   };
 
   reader.onerror = function () {
-    alert("❌ Errore nel caricamento del file. Riprova con un file più piccolo.");
+    alert("Errore nel caricamento del file. Riprova.");
+    StoriesState.uploadedFile = null;
+    preview.innerHTML = "";
+    $("nextToCustomize")?.classList.add("hidden");
   };
 
-  // 👉 Qui avviene la vera magia: File → Base64
+  // avvia lettura → Base64
   reader.readAsDataURL(file);
 }
 
