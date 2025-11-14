@@ -155,13 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
- // ============ Restore in APP ============
-  if (state.entered) {
-    homeScreen.classList.add("hidden");
-    appScreen.classList.remove("hidden");
-    // NON chiamare initStories qui - viene chiamata in init()
-  } 
-
   // ============ BOTTONE ENTRA (con animazione WOW) ============
   if (btnEnter) {
     btnEnter.addEventListener("click", (e) => {
