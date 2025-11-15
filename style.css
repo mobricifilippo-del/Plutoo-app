@@ -738,7 +738,15 @@ body.story-open #storiesBar {
 .modal-body{text-align:center}
 .plus-icon-large{font-size:3.5rem;margin-bottom:.5rem}
 .modal-body h2{
-  color:var(--violet-glow);font-size:1.8rem;font-weight:900;margin:.3rem 0 .5rem;
+  color: var(--violet-glow);
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(138,123,255,.55),
+               0 0 20px rgba(205,164,52,.35);
+  margin-top: .2rem;
+  margin-bottom: .3rem;
+  letter-spacing: .5px;
+  transition: .3s ease;
 }
 .plus-title{
   text-align:center;
