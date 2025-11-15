@@ -426,7 +426,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (state.entered) {
     homeScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
-    setActiveView("nearby");
+   setActiveView(state.currentView || "nearby");
+    
+    // Se devo riaprire un profilo, lo riapro
+if (state.currentView === "profile") {
+    const savedId = localStorage.getItem("currentProfileDogId");
+    if (savedId) {
+        const dog = databaseDOGS.find(d => d.id == savedId);
+        if (dog) openProfilePage(dog);
+    }
+}
     showAdBanner();
   }
 
@@ -524,7 +533,7 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   });
 
   function setActiveView(name){
-    localStorage.setItem("lastView", name);
+    localStorage.setItem("currentView", name);
     if (state.currentView !== name && state.currentView !== "profile"){
       state.viewHistory.push(state.currentView);
     }
@@ -1046,6 +1055,8 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   // ============ Profilo DOG (con Stories + Social) ============
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
+    localStorage.setItem("currentProfileDogId", d.id);
+  setActiveView("profile");
     setActiveView("profile");
 
     history.pushState({view: "profile", dogId: d.id}, "", "");
