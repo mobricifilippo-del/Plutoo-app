@@ -432,7 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
 if (state.currentView === "profile") {
   const savedId = localStorage.getItem("currentProfileDogId");
   if (savedId) {
-    const dog = databaseDOGS.find(d => d.id == savedId);
+    const dog = DOGS.find(d => d.id == savedId);
     if (dog && window.openProfilePage) {
       window.openProfilePage(dog);
     }
