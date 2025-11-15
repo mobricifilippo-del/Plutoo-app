@@ -829,9 +829,10 @@ body.story-open #storiesBar {
   padding:1rem 1.1rem;
   cursor:pointer;
   transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-  display:flex;
+  display:inline-flex;
   flex-direction:column;
   align-items:flex-start;
+  width:48%;
   border-radius:18px;
   box-shadow:0 10px 26px rgba(0,0,0,.8);
   transform:scale(.96);
