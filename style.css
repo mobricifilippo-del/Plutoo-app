@@ -814,7 +814,7 @@ body.story-open #storiesBar {
 }
 .plus-features .check{color:var(--gold);font-size:1.2rem;font-weight:900}
 
-.plus-plan-selector{
+.plus-selector{
   display:flex;
   flex-direction:row;
   justify-content:center;
