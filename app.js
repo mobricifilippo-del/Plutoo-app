@@ -513,7 +513,11 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     closePlusModal();
     updatePlusUI();
     const price = state.plusPlan === "yearly" ? "€40/anno" : "€4.99/mese";
-    alert(state.lang==="it" ? `Plutoo Plus attivato! 💎\nPiano: ${price}` : `Plutoo Plus activated! 💎\nPlan: ${price}`);
+  alert(
+    state.lang === "it"
+      ? `Plutoo Plus attivato! 💎\nPiano scelto: ${price}`
+      : `Plutoo Plus activated! 💎\nSelected plan: ${price}`
+  );
   });
 
   function openPlusModal(){ plusModal?.classList.remove("hidden"); updatePlanSelector(); }
