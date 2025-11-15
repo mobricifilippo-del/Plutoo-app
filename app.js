@@ -422,24 +422,36 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // ============ Restore in APP ============
-  if (state.entered) {
-    homeScreen.classList.add("hidden");
-    appScreen.classList.remove("hidden");
-   setActiveView(state.currentView || "nearby");
-    
-    // Se devo riaprire un profilo, lo riapro
-if (state.currentView === "profile") {
-  const savedId = localStorage.getItem("currentProfileDogId");
-  if (savedId) {
-    const dog = DOGS.find(d => d.id == savedId);
-    if (dog && window.openProfilePage) {
-      window.openProfilePage(dog);
+  // =========== Restore in APP ===========
+if (state.entered) {
+  homeScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+
+  const viewToRestore = state.currentView || "nearby";
+
+  // Se ero su un profilo DOG, provo a riaprirlo
+  if (viewToRestore === "profile") {
+    const savedId = localStorage.getItem("currentProfileDogId");
+    if (savedId) {
+      const dog = DOGS.find(d => d.id == savedId);
+      if (dog && window.openProfilePage) {
+        // openProfilePage fa già setActiveView("profile")
+        window.openProfilePage(dog);
+      } else {
+        // se per qualsiasi motivo non riesco, torno a Nearby
+        setActiveView("nearby");
+      }
+    } else {
+      // nessun DOG salvato → torno a Nearby
+      setActiveView("nearby");
     }
+  } else {
+    // per tutte le altre viste ripristino quella salvata
+    setActiveView(viewToRestore);
   }
+
+  showAdBanner();
 }
-    showAdBanner();
-  }
 
   // ============ Sponsor Ufficiale ============
 function openSponsor(){
