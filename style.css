@@ -713,10 +713,20 @@ body.story-open #storiesBar {
   position:absolute;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);
 }
 .modal-content{
-  position:relative;z-index:1;background:var(--panel);border:2px solid var(--violet);
-  border-radius:20px;width:90%;max-width:440px;
-  box-shadow:0 16px 48px rgba(0,0,0,.7), inset 0 0 0 1px rgba(138,123,255,.25);
-  padding:1.5rem;max-height:90vh;overflow-y:auto;
+  position:relative;
+  z-index:1;
+  background:radial-gradient(circle at top,#181837 0%,#10101F 40%,#090910 100%);
+  border-radius:24px;
+  border:1px solid rgba(180,160,255,.7);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.85),
+    0 0 30px rgba(138,123,255,.55),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+  width:92%;
+  max-width:440px;
+  padding:1.4rem 1.4rem 1.6rem;
+  max-height:88vh;
+  overflow-y:auto;
 }
 .modal-close{
   position:absolute;top:.8rem;right:.8rem;background:transparent;border:0;
