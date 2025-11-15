@@ -1270,6 +1270,17 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
       localStorage.setItem("friendships", JSON.stringify(state.friendships));
       alert(state.lang==="it" ? "Richiesta di amicizia inviata! 🐕" : "Friendship request sent! 🐕");
     };
+    $("btnLikeDog")?.addEventListener("click", ()=>{
+  state.matches[d.id] = true;
+  localStorage.setItem("matches", JSON.stringify(state.matches));
+  showMatchAnimation();
+  alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
+});
+
+$("btnDislikeDog")?.addEventListener("click", ()=>{
+  alert(state.lang==="it" ? "Hai passato questo profilo 🥲" : "You passed this profile 🥲");
+  closeProfilePage();
+});
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
