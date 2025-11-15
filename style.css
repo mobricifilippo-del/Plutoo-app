@@ -823,28 +823,28 @@ body.story-open #storiesBar {
 
 .plan-card{
   appearance:none;
-  background:radial-gradient(circle at top,#1c1c32,#101018);
-  border:2px solid rgba(138,123,255,.35);
+  background:rgba(10,10,20,.95);
+  border:1px solid rgba(138,123,255,.45);
   padding:1rem 1.1rem;
   cursor:pointer;
-  transition:all .22s ease;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   display:flex;
   flex-direction:column;
   align-items:flex-start;
   border-radius:18px;
   box-shadow:0 10px 26px rgba(0,0,0,.8);
+  transform:scale(.96);
 }
 
 .plan-card:hover{
-  border-color:rgba(232,206,122,.65);
+  border-color:var(--violet-glow);
   box-shadow:0 14px 34px rgba(0,0,0,.9);
-  transform:translateY(-2px);
 }
 
 .plan-card.active{
   border-color:var(--gold);
-  box-shadow:0 0 0 2px rgba(232,206,122,.45),0 18px 40px rgba(0,0,0,.95);
-  background:linear-gradient(145deg,#221b4a,#0b0b14);
+  box-shadow:0 0 24px rgba(205,164,52,.8);
+  transform:scale(1.03);
 }
 
 .plan-name{
