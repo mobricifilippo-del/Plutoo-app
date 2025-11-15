@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const state = {
     // UX / navigazione
     entered: localStorage.getItem("entered") === "1",
-    currentView: "nearby",
+    currentView: localStorage.getItem("currentView") || "nearby",
     viewHistory: [],
     processingSwipe: false,
 
@@ -524,6 +524,7 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   });
 
   function setActiveView(name){
+    localStorage.setItem("lastView", name);
     if (state.currentView !== name && state.currentView !== "profile"){
       state.viewHistory.push(state.currentView);
     }
