@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
   const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
+  function autodetectLang(){ 
+  return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; 
+}
 
   // ============ Stato (caricato da localStorage dove possibile) ============
   const state = {
@@ -323,7 +326,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
-  function autodetectLang(){ return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; }
 
   function applyTranslations(){
     qa("[data-i18n]").forEach(el => {
