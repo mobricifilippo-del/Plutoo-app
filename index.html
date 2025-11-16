@@ -21,16 +21,6 @@
 <body>
   <!-- Flash overlay animazione ingresso -->
   <div id="flashOverlay"></div>
-  <script>
-  // Service worker cleanup
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-      for(let registration of registrations) {
-        registration.unregister();
-      }
-    });
-  }
-  </script>
 
   <!-- ==================== HOME SCREEN ==================== -->
   <div id="homeScreen" class="home">
