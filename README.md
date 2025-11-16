@@ -15,6 +15,8 @@ Cerca la tua stessa razza, scopri profili compatibili **vicino a te o dove prefe
 - **Badge verifica** → profili verificati con documenti reali  
 - **Servizi Pet** → veterinari, toelettature e negozi intorno a te  
 - **Plutoo Plus** → rimuove la pubblicità e sblocca funzioni Gold  
+- **Link ai social** → ogni profilo può includere Instagram, TikTok e Facebook  
+- **Geolocalizzazione approssimata** → usata per mostrare dogs nelle vicinanze  
 
 ---
 
