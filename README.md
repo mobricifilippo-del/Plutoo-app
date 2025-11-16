@@ -53,4 +53,4 @@ Email ufficiale: **plutoo.team@gmail.com**
 
 Consulta la nostra  
 - [Privacy Policy](https://plutoo-official.vercel.app/privacy.html)  
-- [Termini di Servizio](https://plutoo-official.vercel.app/terms.html)
+- [Termini di Servizio](https://plutoo-official.vercel.app/termini.html)
