@@ -171,11 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     heroLogo?.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
     void heroLogo?.offsetWidth;
     heroLogo?.classList.add("heartbeat-violet-wow");
-    // Nascondi il logo solo dopo che il flash è partito
-setTimeout(() => {
-  heroLogo.style.opacity = "0";
-  heroLogo.style.transition = "opacity 0.4s ease-out";
-}, 600);
 
    // Attiva flash bianco forte
 const flash = document.getElementById("whiteFlash");
