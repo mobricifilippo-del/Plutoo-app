@@ -572,11 +572,13 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     }
 
     if (name==="nearby"){
-      viewNearby.classList.add("active");
-      tabNearby.classList.add("active");
-      renderNearby();
-      if(btnSearchPanel) btnSearchPanel.disabled=false;
-    }
+  viewNearby.classList.add("active");
+  tabNearby.classList.add("active");
+  renderNearby();
+  renderStoriesBar();
+  if(btnSearchPanel) btnSearchPanel.disabled=false;
+}
+    
     if (name==="love"){
       viewLove.classList.add("active");
       tabLove.classList.add("active");
