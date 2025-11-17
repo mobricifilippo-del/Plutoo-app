@@ -172,21 +172,21 @@ document.addEventListener("DOMContentLoaded", () => {
     void heroLogo?.offsetWidth;
     heroLogo?.classList.add("heartbeat-violet-wow");
 
-    // Attiva flash bianco forte
+   // Attiva flash bianco forte
 const flash = document.getElementById("whiteFlash");
 if (flash) {
   flash.classList.add("active");
-  
-  setTimeout(() => {
-    flash.classList.remove("active");
-  }, 200);
 }
 
+// Nascondi subito la home durante il flash
 setTimeout(() => {
   homeScreen?.classList.add("hidden");
   appScreen?.classList.remove("hidden");
   document.body.classList.remove("story-open");
-  
+}, 300);
+
+// Inizializza l'app
+setTimeout(() => {
   // Inizializza stories solo se la funzione esiste
   if (typeof initStories === "function") {
     initStories();
@@ -195,7 +195,14 @@ setTimeout(() => {
   setActiveView(state.currentView);
   showAdBanner();
   console.log("✅ App caricata!");
-}, 900);
+}, 600);
+
+// Rimuovi il flash dopo che tutto è caricato
+setTimeout(() => {
+  if (flash) {
+    flash.classList.remove("active");
+  }
+}, 800); 
   });
 
   // Auto-restore nel caso fosse già entrato
