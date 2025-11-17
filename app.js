@@ -186,7 +186,12 @@ setTimeout(() => {
   homeScreen?.classList.add("hidden");
   appScreen?.classList.remove("hidden");
   document.body.classList.remove("story-open");
-  initStories();
+  
+  // Inizializza stories solo se la funzione esiste
+  if (typeof initStories === "function") {
+    initStories();
+  }
+  
   setActiveView(state.currentView);
   showAdBanner();
   console.log("✅ App caricata!");
