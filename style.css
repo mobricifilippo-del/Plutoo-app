@@ -1178,7 +1178,7 @@ body.story-open #storiesBar {
   opacity: 0;
   pointer-events: none;
   z-index: 9999;
-  transition: opacity 0.8s ease-out;
+  transition: opacity 1.2s ease-out;
 }
 
 #flashOverlay.active {
@@ -1198,7 +1198,7 @@ body.story-open #storiesBar {
   opacity: 0;
   transform: scale(1);
   pointer-events: none;
-  transition: opacity 1.2s ease-out;
+  transition: opacity 1.8s ease-out;
 }
 
 #whiteFlash.active {
