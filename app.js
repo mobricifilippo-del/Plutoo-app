@@ -172,14 +172,25 @@ document.addEventListener("DOMContentLoaded", () => {
     void heroLogo?.offsetWidth;
     heroLogo?.classList.add("heartbeat-violet-wow");
 
-    setTimeout(() => {
-      homeScreen?.classList.add("hidden");
-      appScreen?.classList.remove("hidden");
-      document.body.classList.remove("story-open");
-      initStories();             // stories dopo ingresso
-      setActiveView("nearby");
-      showAdBanner();
-    }, 900);
+    // Attiva flash bianco forte
+const flash = document.getElementById("whiteFlash");
+if (flash) {
+  flash.classList.add("active");
+  
+  setTimeout(() => {
+    flash.classList.remove("active");
+  }, 200);
+}
+
+setTimeout(() => {
+  homeScreen?.classList.add("hidden");
+  appScreen?.classList.remove("hidden");
+  document.body.classList.remove("story-open");
+  initStories();
+  setActiveView(state.currentView);
+  showAdBanner();
+  console.log("✅ App caricata!");
+}, 900);
   });
 
   // Auto-restore nel caso fosse già entrato
