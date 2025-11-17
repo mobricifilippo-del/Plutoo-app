@@ -1178,7 +1178,7 @@ body.story-open #storiesBar {
   opacity: 0;
   pointer-events: none;
   z-index: 9999;
-  transition: opacity 1.5s ease-out;
+  transition: opacity 0.8s ease-out;
 }
 
 #flashOverlay.active {
@@ -1193,7 +1193,7 @@ body.story-open #storiesBar {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, rgba(138,123,255,0.3) 0%, rgba(255,255,255,0.95) 50%, rgba(138,123,255,0.3) 100%);
+  background: radial-gradient(circle at center, rgba(255,255,255,0.95) 0%, rgba(138,123,255,0.4) 60%, rgba(138,123,255,0.2) 100%);
   z-index: 99999;
   opacity: 0;
   transform: scale(1);
