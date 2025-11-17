@@ -1196,6 +1196,7 @@ body.story-open #storiesBar {
   background: linear-gradient(135deg, rgba(138,123,255,0.3) 0%, rgba(255,255,255,0.95) 50%, rgba(138,123,255,0.3) 100%);
   z-index: 99999;
   opacity: 0;
+  transform: scale(1);
   pointer-events: none;
   transition: opacity 1.2s ease-out;
 }
