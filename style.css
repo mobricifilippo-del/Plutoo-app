@@ -1193,11 +1193,11 @@ body.story-open #storiesBar {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #ffffff;
+  background: linear-gradient(135deg, rgba(138,123,255,0.3) 0%, rgba(255,255,255,0.95) 50%, rgba(138,123,255,0.3) 100%);
   z-index: 99999;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1.6s ease-out;
+  transition: opacity 1.2s ease-out;
 }
 
 #whiteFlash.active {
