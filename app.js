@@ -202,7 +202,7 @@ setTimeout(() => {
   if (flash) {
     flash.classList.remove("active");
   }
-}, 1000); 
+}, 1800); 
   });
 
   // Auto-restore nel caso fosse già entrato
