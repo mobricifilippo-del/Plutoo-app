@@ -842,7 +842,7 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
             state.friendships[d.id] = true;
             localStorage.setItem("friendships", JSON.stringify(state.friendships));
           }
-          showMatchAnimation();
+          showMatchAnimation(d.name);
         }
       }
 
@@ -986,11 +986,21 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     if(card._cleanup) card._cleanup();
   }
 
-  function showMatchAnimation(){
-    if (!matchOverlay) return;
-    matchOverlay.classList.remove("hidden");
-    setTimeout(()=>{ matchOverlay.classList.add("hidden"); }, 1200);
+  function showMatchAnimation(dogName = ""){
+  const overlay = $("matchOverlay");
+  if (!overlay) return;
+  
+  const nameEl = $("matchDogName");
+  if (nameEl && dogName) {
+    nameEl.textContent = dogName;
   }
+  
+  overlay.classList.add("active");
+  
+  setTimeout(() => {
+    overlay.classList.remove("active");
+  }, 3000);
+}
 
   // ============ Ricerca ============
   if (btnSearchPanel) {
