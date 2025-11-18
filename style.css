@@ -1193,7 +1193,7 @@ body.story-open #storiesBar {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle at center, #ffffff 0%, #ffffff 40%, rgba(138,123,255,0.6) 80%, rgba(138,123,255,0.4) 100%);
+  background: radial-gradient(ellipse 150% 150% at center, #ffffff 0%, #ffffff 70%, rgba(138,123,255,0.3) 95%, rgba(138,123,255,0.2) 100%);
   z-index: 5000;
   opacity: 0;
   pointer-events: none;
