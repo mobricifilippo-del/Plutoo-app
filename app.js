@@ -225,16 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 3500);
 }); 
 
-  // Rimuovi logo dalla vista dopo dissolvenza
-  setTimeout(() => {
-    if (heroLogo) {
-      heroLogo.classList.remove("flash-mode", "fade-out", "heartbeat-violet-wow");
-      heroLogo.style.opacity = "";
-    }
-    console.log("✅ App caricata!");
-  }, 3500);
-});
-
   // Auto-restore nel caso fosse già entrato
   if (state.entered) {
     homeScreen?.classList.add("hidden");
