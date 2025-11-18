@@ -173,11 +173,21 @@ document.addEventListener("DOMContentLoaded", () => {
   state.entered = true;
 
    // 🐕 Abbaia!
-  const bark = document.getElementById("dogBark");
-  if (bark) {
-    bark.volume = 0.3;
-    bark.play().catch(e => console.log("Audio non disponibile"));
+const bark = document.getElementById("dogBark");
+if (bark) {
+  bark.volume = 0.3;
+  // Prova a far partire l'audio
+  const playPromise = bark.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      console.log("🐕 Audio partito!");
+    }).catch(error => {
+      console.error("❌ Audio bloccato dal browser:", error);
+      // Fallback: mostra messaggio
+      alert("🐕 Woof!");
+    });
   }
+}
 
   // Logo batte come un cuore (RESTA VISIBILE)
   if (heroLogo) {
