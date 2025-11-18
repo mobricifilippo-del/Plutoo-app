@@ -172,6 +172,13 @@ document.addEventListener("DOMContentLoaded", () => {
   try { localStorage.setItem("entered", "1"); } catch(err){}
   state.entered = true;
 
+   // 🐕 Abbaia!
+  const bark = document.getElementById("dogBark");
+  if (bark) {
+    bark.volume = 0.3;
+    bark.play().catch(e => console.log("Audio non disponibile"));
+  }
+
   // Logo batte come un cuore (RESTA VISIBILE)
   if (heroLogo) {
     heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
