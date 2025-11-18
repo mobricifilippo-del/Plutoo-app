@@ -163,47 +163,73 @@ document.addEventListener("DOMContentLoaded", () => {
   const matchOverlay = $("matchOverlay");
 
   // ============ HOME: ENTRA (con animazione WOW) ============
-  btnEnter?.addEventListener("click", () => {
-    try { localStorage.setItem("entered", "1"); } catch(e){}
-    state.entered = true;
-
-    // reset & avvio animazione wow violet
-    heroLogo?.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
-    void heroLogo?.offsetWidth;
-    heroLogo?.classList.add("heartbeat-violet-wow");
-
-   // Attiva flash bianco forte
-const flash = document.getElementById("whiteFlash");
-if (flash) {
-  flash.classList.add("active");
-}
-
-// Nascondi subito la home durante il flash
-setTimeout(() => {
-  homeScreen?.classList.add("hidden");
-  appScreen?.classList.remove("hidden");
-  document.body.classList.remove("story-open");
-}, 500);
-
-// Inizializza l'app
-setTimeout(() => {
-  // Inizializza stories solo se la funzione esiste
-  if (typeof initStories === "function") {
-    initStories();
-  }
+  btnEnter?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
   
-  setActiveView(state.currentView);
-  showAdBanner();
-  console.log("✅ App caricata!");
-}, 800);
+  console.log("🚀 ENTRA cliccato!");
+  
+  try { localStorage.setItem("entered", "1"); } catch(err){}
+  state.entered = true;
 
-// Rimuovi il flash dopo che tutto è caricato
-setTimeout(() => {
-  if (flash) {
-    flash.classList.remove("active");
+  // 🐕 ABBAIA!
+  const bark = document.getElementById("dogBark");
+  if (bark) {
+    bark.volume = 0.3; // Volume dolce
+    bark.play().catch(e => console.log("Audio non disponibile"));
   }
-}, 1800); 
-  });
+
+  // Logo fisso centrale con heartbeat
+  if (heroLogo) {
+    heroLogo.classList.add("flash-mode");
+    heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+    void heroLogo.offsetWidth;
+    heroLogo.classList.add("heartbeat-violet-wow");
+  }
+
+  // Nascondi subito la home
+  homeScreen?.classList.add("hidden");
+
+  // Attiva flash bianco dietro il logo
+  const flash = document.getElementById("whiteFlash");
+  if (flash) {
+    flash.classList.add("active");
+  }
+
+  // Mostra l'app sotto il flash (invisibile)
+  setTimeout(() => {
+    appScreen?.classList.remove("hidden");
+    document.body.classList.remove("story-open");
+  }, 100);
+
+  // Carica stories e contenuto
+  setTimeout(() => {
+    if (typeof initStories === "function") {
+      initStories();
+    }
+    setActiveView(state.currentView);
+    showAdBanner();
+  }, 500);
+
+  // Inizia dissolvenza logo + flash INSIEME
+  setTimeout(() => {
+    if (heroLogo) {
+      heroLogo.classList.add("fade-out");
+    }
+    if (flash) {
+      flash.classList.remove("active");
+    }
+  }, 2000);
+
+  // Rimuovi logo dalla vista dopo dissolvenza
+  setTimeout(() => {
+    if (heroLogo) {
+      heroLogo.classList.remove("flash-mode", "fade-out", "heartbeat-violet-wow");
+      heroLogo.style.opacity = "";
+    }
+    console.log("✅ App caricata!");
+  }, 3500);
+});
 
   // Auto-restore nel caso fosse già entrato
   if (state.entered) {
