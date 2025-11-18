@@ -1194,14 +1194,28 @@ body.story-open #storiesBar {
   width: 100vw;
   height: 100vh;
   background: radial-gradient(circle at center, rgba(255,255,255,0.95) 0%, rgba(138,123,255,0.4) 60%, rgba(138,123,255,0.2) 100%);
-  z-index: 99999;
+  z-index: 9998;
   opacity: 0;
-  transform: scale(1);
   pointer-events: none;
-  transition: opacity 1.8s ease-out;
+  transition: opacity 1.5s ease-out;
 }
 
 #whiteFlash.active {
   opacity: 1;
-  transition: opacity 0.2s ease-in;
+  transition: opacity 1.8s ease-out;
+}
+
+/* Logo durante flash */
+#heroLogo.flash-mode {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 9999 !important;
+  opacity: 1 !important;
+  transition: opacity 1.5s ease-out !important;
+}
+
+#heroLogo.flash-mode.fade-out {
+  opacity: 0 !important;
 }
