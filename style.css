@@ -1194,7 +1194,7 @@ body.story-open #storiesBar {
   width: 100vw;
   height: 100vh;
   background: radial-gradient(circle at center, rgba(255,255,255,0.95) 0%, rgba(138,123,255,0.4) 60%, rgba(138,123,255,0.2) 100%);
-  z-index: 9998;
+  z-index: 5000;
   opacity: 0;
   pointer-events: none;
   transition: opacity 1.5s ease-out;
@@ -1218,4 +1218,10 @@ body.story-open #storiesBar {
 
 #heroLogo.flash-mode.fade-out {
   opacity: 0 !important;
+}
+
+/* Logo sopra il flash */
+#heroLogo {
+  position: relative;
+  z-index: 10000 !important;
 }
