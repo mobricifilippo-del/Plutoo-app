@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const matchOverlay = $("matchOverlay");
 
   // ============ HOME: ENTRA (con animazione WOW) ============
-  btnEnter?.addEventListener("click", (e) => {
+ btnEnter?.addEventListener("click", (e) => {
   e.preventDefault();
   e.stopPropagation();
   
@@ -172,38 +172,24 @@ document.addEventListener("DOMContentLoaded", () => {
   try { localStorage.setItem("entered", "1"); } catch(err){}
   state.entered = true;
 
-  // 🐕 ABBAIA!
-  const bark = document.getElementById("dogBark");
-  if (bark) {
-    bark.volume = 0.3; // Volume dolce
-    bark.play().catch(e => console.log("Audio non disponibile"));
-  }
-
-  // Logo fisso centrale con heartbeat
+  // Logo batte come un cuore (RESTA VISIBILE)
   if (heroLogo) {
-    heroLogo.classList.add("flash-mode");
     heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
     void heroLogo.offsetWidth;
     heroLogo.classList.add("heartbeat-violet-wow");
   }
 
-  // Nascondi subito la home
-  homeScreen?.classList.add("hidden");
-
-  // Attiva flash bianco dietro il logo
+  // Flash parte da dietro il logo
   const flash = document.getElementById("whiteFlash");
   if (flash) {
     flash.classList.add("active");
   }
 
-  // Mostra l'app sotto il flash (invisibile)
+  // Prepara l'app sotto (invisibile)
   setTimeout(() => {
     appScreen?.classList.remove("hidden");
     document.body.classList.remove("story-open");
-  }, 100);
-
-  // Carica stories e contenuto
-  setTimeout(() => {
+    
     if (typeof initStories === "function") {
       initStories();
     }
@@ -211,15 +197,33 @@ document.addEventListener("DOMContentLoaded", () => {
     showAdBanner();
   }, 500);
 
-  // Inizia dissolvenza logo + flash INSIEME
+  // Logo + Flash si dissolvono INSIEME
   setTimeout(() => {
-    if (heroLogo) {
-      heroLogo.classList.add("fade-out");
-    }
+    // Nascondi la home (che era sotto il flash)
+    homeScreen?.classList.add("hidden");
+    
+    // Dissolvi il flash
     if (flash) {
       flash.classList.remove("active");
     }
+    
+    // Dissolvi il logo
+    if (heroLogo) {
+      heroLogo.style.transition = "opacity 1.5s ease-out";
+      heroLogo.style.opacity = "0";
+    }
   }, 2000);
+
+  // Pulisci dopo la dissolvenza
+  setTimeout(() => {
+    if (heroLogo) {
+      heroLogo.classList.remove("heartbeat-violet-wow");
+      heroLogo.style.opacity = "";
+      heroLogo.style.transition = "";
+    }
+    console.log("✅ App caricata!");
+  }, 3500);
+}); 
 
   // Rimuovi logo dalla vista dopo dissolvenza
   setTimeout(() => {
