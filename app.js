@@ -592,6 +592,21 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   // ============ Tabs ============
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
+  // Modale Messaggi
+$("btnMessages")?.addEventListener("click", ()=>{
+  $("messagesModal")?.classList.add("active");
+});
+
+$("btnCloseMessages")?.addEventListener("click", ()=>{
+  $("messagesModal")?.classList.remove("active");
+});
+
+// Click fuori dalla modale per chiudere
+$("messagesModal")?.addEventListener("click", (e)=>{
+  if(e.target.id === "messagesModal") {
+    $("messagesModal")?.classList.remove("active");
+  }
+});
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
