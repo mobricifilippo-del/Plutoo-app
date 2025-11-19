@@ -1618,6 +1618,10 @@ $("btnDislikeDog")?.addEventListener("click", ()=>{
         this.stories = this.generateMockStories();
         this.saveStories();
       }
+      // Mostra bottone Aggiungi solo se l'utente è loggato
+if(state.userDog && state.userDog.id) {
+  if($("addStoryBtn")) $("addStoryBtn").style.display = "block";
+}
     },
     saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
     cleanExpiredStories() {
