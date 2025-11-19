@@ -102,6 +102,7 @@
       <div class="tabs" role="tablist">
         <button id="tabNearby" class="tab active" role="tab" data-i18n="nearby">Vicino a te</button>
         <button id="tabLove" class="tab" role="tab" data-i18n="love">Accoppiamento</button>
+        <button id="tabPlay" class="tab" role="tab" data-i18n="friendship">Amicizia</button>
         <div class="tab dropdown" role="menuitem">
           <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">LuoghiPET 🐾 ▼</button>
           <div id="luoghiMenu" class="dropdown-menu" role="menu">
@@ -116,15 +117,12 @@
       </div>
 
       <div class="right">
-  <button id="btnPlus" class="btn small plus-btn" aria-label="Plutoo Plus">
-    <span class="plus-icon">💎</span>
-    <span data-i18n="plusBtn">PLUS</span>
-  </button>
-</div>
-<button id="btnMessages" class="btn small ghost" style="position:fixed;top:5rem;right:1rem;z-index:100;">💬</button>
+        <button id="btnPlus" class="btn small plus-btn" aria-label="Plutoo Plus">
+          <span class="plus-icon">💎</span>
+          <span data-i18n="plusBtn">PLUS</span>
+        </button>
+      </div>
     </div>
-  </div>
-</div>
 
     <!-- ✅ STORIES BAR -->
     <div id="storiesBar" class="stories-bar">
@@ -132,7 +130,7 @@
         <div class="stories-list" id="storiesContainer">
           <!-- Stories generate dinamicamente -->
         </div>
-        <button id="addStoryBtn" class="story-circle-add" style="display:none;">
+        <button id="addStoryBtn" class="story-circle add-story" type="button">
           <div class="story-avatar">
             <span class="add-icon">+</span>
           </div>
@@ -148,7 +146,7 @@
       <div id="viewNearby" class="view active">
         <div class="view-header">
           <div class="search-plus-wrapper">
-            <button id="btnSearchPanel" class="btn primary" style="display:none;">
+            <button id="btnSearchPanel" class="btn plus-btn">
               <span data-i18n="searchAdvanced">Ricerca personalizzata</span>
             </button>
           </div>
@@ -173,6 +171,24 @@
         </div>
       </div>
 
+      <!-- AMICIZIA -->
+      <div id="viewPlay" class="view">
+        <button id="btnBackPlay" class="btn small ghost" style="margin-bottom:.6rem">← Indietro</button>
+        <div id="playCard" class="card swipe">
+          <img id="playImg" src="" alt="" class="card-img">
+          <div class="card-info">
+            <h3 id="playTitleTxt"></h3>
+            <p id="playMeta" class="meta"></p>
+            <p id="playBio" class="bio"></p>
+          </div>
+          <div class="card-actions">
+            <button id="playNo" class="btn no" aria-label="No">🥲</button>
+            <button id="playYes" class="btn yes" aria-label="Sì">💜</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Match Animation -->
 <div id="matchOverlay" class="match-overlay">
   <div class="match-heart">💛</div>
@@ -181,24 +197,6 @@
     <p id="matchDogName"></p>
   </div>
 </div>
-     
-      <!-- MESSAGGI MODALE -->
-<div id="messagesModal" class="modal-overlay">
-  <div class="modal-messages">
-    <div class="modal-header">
-      <h2>💬 Messaggi</h2>
-      <button id="btnCloseMessages" class="btn small ghost">✕</button>
-    </div>
-    
-    <div id="messagesList" class="messages-list">
-      <div class="empty-state">
-        <p style="font-size:3rem;margin:0;">📭</p>
-        <p style="margin:0.5rem 0;">Nessun messaggio ancora</p>
-        <p class="soft" style="font-size:0.9rem;">I tuoi messaggi appariranno qui</p>
-      </div>
-    </div>
-  </div>
-</div> 
     
     <!-- Banner Sponsor -->
     <div class="sponsor">
