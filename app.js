@@ -264,6 +264,7 @@ if (bark) {
       privacy: "Privacy",
       nearby: "Vicino a te",
       love: "Accoppiamento",
+      friendship: "Amicizia",
       searchAdvanced: "Ricerca personalizzata",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -330,6 +331,7 @@ if (bark) {
       privacy: "Privacy",
       nearby: "Nearby",
       love: "breeding",
+      friendship: "Friendship",
       searchAdvanced: "Advanced Search",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -592,21 +594,7 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   // ============ Tabs ============
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
-  // Modale Messaggi
-$("btnMessages")?.addEventListener("click", ()=>{
-  $("messagesModal")?.classList.add("active");
-});
-
-$("btnCloseMessages")?.addEventListener("click", ()=>{
-  $("messagesModal")?.classList.remove("active");
-});
-
-// Click fuori dalla modale per chiudere
-$("messagesModal")?.addEventListener("click", (e)=>{
-  if(e.target.id === "messagesModal") {
-    $("messagesModal")?.classList.remove("active");
-  }
-});
+  tabPlay?.addEventListener("click",   ()=>setActiveView("friendship"));
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -657,12 +645,19 @@ $("messagesModal")?.addEventListener("click", (e)=>{
       renderSwipe("love");
       if(btnSearchPanel) btnSearchPanel.disabled=true;
     }
+    if (name==="friendship"){
+      viewPlay.classList.add("active");
+      tabPlay.classList.add("active");
+      renderSwipe("friendship");
+      if(btnSearchPanel) btnSearchPanel.disabled=true;
+    }
 
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
+  btnBackPlay?.addEventListener("click", ()=> goBack() );
 
   function goBack(){
     // 1) Viewer Stories overlay?
@@ -1195,7 +1190,7 @@ $("messagesModal")?.addEventListener("click", (e)=>{
     profileContent.innerHTML = `
       <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
       <div class="pp-head">
-        <h2 class="pp-name">${d.name} ${d.verified?'✅':''} <span style="font-size:0.85rem;color:var(--muted);font-weight:400;">• ${Math.floor(Math.random()*490)+10} followers</span></h2>
+        <h2 class="pp-name">${d.name} ${d.verified?"✅":""}</h2>
         <div class="pp-badges">
           <span class="badge">${d.breed}</span>
           <span class="badge">${d.age} ${t("years")}</span>
@@ -1203,9 +1198,6 @@ $("messagesModal")?.addEventListener("click", (e)=>{
           <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>
         </div>
       </div>
-      <button id="btnFollowDog" class="btn primary" style="margin:1rem 0;">
-  <span id="followBtnText">👥 Segui</span>
-</button>
       <div class="pp-meta soft">${d.bio||""}</div>
 
       ${storiesHTML}
@@ -1352,31 +1344,6 @@ $("messagesModal")?.addEventListener("click", (e)=>{
       localStorage.setItem("friendships", JSON.stringify(state.friendships));
       alert(state.lang==="it" ? "Richiesta di amicizia inviata! 🐕" : "Friendship request sent! 🐕");
     };
-    // Bottone Segui/Unfollow
-$("btnFollowDog")?.addEventListener("click", ()=>{
-  const followers = JSON.parse(localStorage.getItem("followers") || "{}");
-  const isFollowing = followers[d.id] || false;
-  
-  if (isFollowing) {
-    // Smetti di seguire
-    delete followers[d.id];
-    $("#followBtnText").textContent = "👥 Segui";
-    showToast(state.lang==="it" ? "Non segui più questo profilo" : "Unfollowed");
-  } else {
-    // Inizia a seguire
-    followers[d.id] = true;
-    $("#followBtnText").textContent = "✅ Seguito";
-    showToast(state.lang==="it" ? `Ora segui ${d.name}! 👥` : `Now following ${d.name}! 👥`);
-  }
-  
-  localStorage.setItem("followers", JSON.stringify(followers));
-});
-
-// Aggiorna testo bottone al caricamento
-const followers = JSON.parse(localStorage.getItem("followers") || "{}");
-if (followers[d.id]) {
-  $("#followBtnText").textContent = "✅ Seguito";
-}
     $("btnLikeDog")?.addEventListener("click", ()=>{
   state.matches[d.id] = true;
   localStorage.setItem("matches", JSON.stringify(state.matches));
@@ -1618,10 +1585,6 @@ $("btnDislikeDog")?.addEventListener("click", ()=>{
         this.stories = this.generateMockStories();
         this.saveStories();
       }
-      // Mostra bottone Aggiungi solo se l'utente è loggato
-if(state.userDog && state.userDog.id) {
-  if($("addStoryBtn")) $("addStoryBtn").style.display = "block";
-}
     },
     saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
     cleanExpiredStories() {
