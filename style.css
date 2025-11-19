@@ -149,7 +149,8 @@ a{color:inherit;text-decoration:none}
 .topbar .left,.topbar .right{display:flex;align-items:center;flex:0 0 auto;z-index:2;gap:.5rem}
 .topbar .right{
   flex-direction:column;
-  align-items:flex-end;
+  align-items:center;
+  margin-left:auto;
 }
 #btnMessages{
   margin-top:.45rem;
