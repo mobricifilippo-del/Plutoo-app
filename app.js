@@ -264,7 +264,6 @@ if (bark) {
       privacy: "Privacy",
       nearby: "Vicino a te",
       love: "Accoppiamento",
-      friendship: "Amicizia",
       searchAdvanced: "Ricerca personalizzata",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -331,7 +330,6 @@ if (bark) {
       privacy: "Privacy",
       nearby: "Nearby",
       love: "breeding",
-      friendship: "Friendship",
       searchAdvanced: "Advanced Search",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -594,7 +592,6 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   // ============ Tabs ============
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
-  tabPlay?.addEventListener("click",   ()=>setActiveView("friendship"));
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -645,19 +642,12 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
       renderSwipe("love");
       if(btnSearchPanel) btnSearchPanel.disabled=true;
     }
-    if (name==="friendship"){
-      viewPlay.classList.add("active");
-      tabPlay.classList.add("active");
-      renderSwipe("friendship");
-      if(btnSearchPanel) btnSearchPanel.disabled=true;
-    }
 
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
-  btnBackPlay?.addEventListener("click", ()=> goBack() );
 
   function goBack(){
     // 1) Viewer Stories overlay?
@@ -1259,9 +1249,7 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
 
       <div class="pp-actions">
         <button id="btnLikeDog" class="btn accent">💛 Like</button>
-        <button id="btnDislikeDog" class="btn outline">🥲 ${state.lang==="it"?"Passa":"Pass"}</button>
         <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
-        <button id="btnFriendship" class="btn accent">🐕 ${t("friendship")}</button>
       </div>
     `;
 
@@ -1339,22 +1327,13 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
 
     // Chat / amicizia / selfie
     $("btnOpenChat").onclick = ()=> { openChat(d); };
-    $("btnFriendship").onclick = ()=>{
-      state.friendships[d.id] = true;
-      localStorage.setItem("friendships", JSON.stringify(state.friendships));
-      alert(state.lang==="it" ? "Richiesta di amicizia inviata! 🐕" : "Friendship request sent! 🐕");
-    };
     $("btnLikeDog")?.addEventListener("click", ()=>{
   state.matches[d.id] = true;
   localStorage.setItem("matches", JSON.stringify(state.matches));
   showMatchAnimation();
   alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
 });
-
-$("btnDislikeDog")?.addEventListener("click", ()=>{
-  alert(state.lang==="it" ? "Hai passato questo profilo 🥲" : "You passed this profile 🥲");
-  closeProfilePage();
-});
+    
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
