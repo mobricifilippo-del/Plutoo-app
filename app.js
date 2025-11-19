@@ -264,7 +264,6 @@ if (bark) {
       privacy: "Privacy",
       nearby: "Vicino a te",
       love: "Accoppiamento",
-      friendship: "Amicizia",
       searchAdvanced: "Ricerca personalizzata",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -331,7 +330,6 @@ if (bark) {
       privacy: "Privacy",
       nearby: "Nearby",
       love: "breeding",
-      friendship: "Friendship",
       searchAdvanced: "Advanced Search",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -594,7 +592,6 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   // ============ Tabs ============
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
-  tabPlay?.addEventListener("click",   ()=>setActiveView("friendship"));
 
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -645,19 +642,12 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
       renderSwipe("love");
       if(btnSearchPanel) btnSearchPanel.disabled=true;
     }
-    if (name==="friendship"){
-      viewPlay.classList.add("active");
-      tabPlay.classList.add("active");
-      renderSwipe("friendship");
-      if(btnSearchPanel) btnSearchPanel.disabled=true;
-    }
 
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
-  btnBackPlay?.addEventListener("click", ()=> goBack() );
 
   function goBack(){
     // 1) Viewer Stories overlay?
