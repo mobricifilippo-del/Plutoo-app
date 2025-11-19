@@ -1195,7 +1195,7 @@ $("messagesModal")?.addEventListener("click", (e)=>{
     profileContent.innerHTML = `
       <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
       <div class="pp-head">
-        <h2 class="pp-name">${d.name} ${d.verified?'✅':''}</h2>
+        <h2 class="pp-name">${d.name} ${d.verified?'✅':''} <span style="font-size:0.85rem;color:var(--muted);font-weight:400;">• ${Math.floor(Math.random()*490)+10} followers</span></h2>
         <div class="pp-badges">
           <span class="badge">${d.breed}</span>
           <span class="badge">${d.age} ${t("years")}</span>
