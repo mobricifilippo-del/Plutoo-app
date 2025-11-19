@@ -305,12 +305,12 @@ body.story-open #storiesBar {
 }
 
 /* ================= CONTENT ================= */
-.content{flex:1;padding:.6rem}
+.content{flex:1;padding:0.6rem 0.6rem 0 0.6rem}
 .view{display:none}
 .view.active{display:block}
 .view-header{padding:0 0 .6rem 0}
 
-.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;padding:0.5rem 0}
 
 .card{
   background:var(--bg-alt);border:1px solid var(--violet);border-radius:16px;
