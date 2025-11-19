@@ -1188,6 +1188,9 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
           <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>
         </div>
       </div>
+      <button id="btnFollowDog" class="btn primary" style="margin:1rem 0;">
+  <span id="followBtnText">👥 Segui</span>
+</button>
       <div class="pp-meta soft">${d.bio||""}</div>
 
       ${storiesHTML}
@@ -1334,6 +1337,31 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
       localStorage.setItem("friendships", JSON.stringify(state.friendships));
       alert(state.lang==="it" ? "Richiesta di amicizia inviata! 🐕" : "Friendship request sent! 🐕");
     };
+    // Bottone Segui/Unfollow
+$("btnFollowDog")?.addEventListener("click", ()=>{
+  const followers = JSON.parse(localStorage.getItem("followers") || "{}");
+  const isFollowing = followers[d.id] || false;
+  
+  if (isFollowing) {
+    // Smetti di seguire
+    delete followers[d.id];
+    $("#followBtnText").textContent = "👥 Segui";
+    showToast(state.lang==="it" ? "Non segui più questo profilo" : "Unfollowed");
+  } else {
+    // Inizia a seguire
+    followers[d.id] = true;
+    $("#followBtnText").textContent = "✅ Seguito";
+    showToast(state.lang==="it" ? `Ora segui ${d.name}! 👥` : `Now following ${d.name}! 👥`);
+  }
+  
+  localStorage.setItem("followers", JSON.stringify(followers));
+});
+
+// Aggiorna testo bottone al caricamento
+const followers = JSON.parse(localStorage.getItem("followers") || "{}");
+if (followers[d.id]) {
+  $("#followBtnText").textContent = "✅ Seguito";
+}
     $("btnLikeDog")?.addEventListener("click", ()=>{
   state.matches[d.id] = true;
   localStorage.setItem("matches", JSON.stringify(state.matches));
