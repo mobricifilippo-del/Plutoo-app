@@ -173,7 +173,37 @@
         </div>
       </div>
     </div>
+    
+     <!-- MESSAGGI -->
+    <div id="viewMessages" class="view">
+      <div class="view-header messages-header">
+        <div class="messages-title-row">
+          <button id="btnBackMessages" class="btn small ghost" aria-label="Indietro">← Indietro</button>
+          <h2 class="messages-title">Messaggi</h2>
+        </div>
 
+        <div class="messages-tabs" role="tablist">
+          <button class="msg-tab active" data-tab="inbox" role="tab">In arrivo</button>
+          <button class="msg-tab" data-tab="sent" role="tab">Inviati</button>
+          <button class="msg-tab" data-tab="matches" role="tab">Match</button>
+          <button class="msg-tab" data-tab="spam" role="tab">Spam</button>
+        </div>
+      </div>
+
+      <div class="messages-body">
+        <div id="messagesInbox" class="messages-list active"></div>
+        <div id="messagesSent" class="messages-list"></div>
+        <div id="messagesMatches" class="messages-list"></div>
+        <div id="messagesSpam" class="messages-list"></div>
+      </div>
+
+      <div class="messages-footer legal-links legal-purple">
+        <a href="#terms">Termini</a> ·
+        <a href="#privacy">Privacy</a> ·
+        <a href="mailto:plutoo.team@gmail.com">Contatti</a>
+      </div>
+    </div>
+    
     <!-- Match Animation -->
 <div id="matchOverlay" class="match-overlay">
   <div class="match-heart">💛</div>
