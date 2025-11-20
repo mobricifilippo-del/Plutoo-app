@@ -647,8 +647,9 @@ msgTabs.forEach(tab => {
   state.currentView = name;
 
   // reset viste
-  [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => v?.classList.add("hidden"));
-  [tabNearby, tabLove, tabPlay].forEach(t => t?.classList.remove("active"));
+  [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => {
+  v?.classList.remove("active");
+});
 
   // topbar sempre visibile tranne profilo
   if (name === "profile"){
@@ -671,6 +672,12 @@ msgTabs.forEach(tab => {
     renderStoriesBar();
   }
 
+    if (name === "messages") {
+    if (viewMessages) {
+      viewMessages.classList.add("active");
+    }
+  }
+
   if (name === "love"){
     viewLove.classList.remove("hidden");
     tabLove.classList.add("active");
@@ -681,10 +688,6 @@ msgTabs.forEach(tab => {
     viewPlay.classList.remove("hidden");
     tabPlay.classList.add("active");
     renderSwipe("play");
-  }
-
-  if (name === "messages"){
-    viewMessages.classList.remove("hidden");
   }
 
   window.scrollTo({top:0, behavior:"smooth"});
