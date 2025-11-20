@@ -646,8 +646,9 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     }
     state.currentView = name;
 
-    [viewNearby, viewLove, viewPlay, viewMessages].forEach(view=>{
-    [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
+[tabNearby, tabLove, tabPlay].forEach(t => {
+  t?.classList.remove("active");
+});
 
     if (name === "profile"){ mainTopbar?.classList.add("hidden"); }
     else { mainTopbar?.classList.remove("hidden"); }
