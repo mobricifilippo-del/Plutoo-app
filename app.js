@@ -612,67 +612,83 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     });
   });
 
-  // ===== MESSAGGI – VISTA E TABS INTERNI =====
-  const btnMessages   = $("btnMessages");
-  const msgTabs       = $all(".msg-tab");
-  const messagesLists = $all(".messages-list");
+  // ===== MESSAGGI - VISTA E TABS INTERNI =====
+const btnMessages     = $("btnMessages");
+const msgTabs         = qa(".msg-tab");
+const messagesLists   = qa(".messages-list");
 
-  btnMessages?.addEventListener("click", () => {
-    setActiveView("messages");
-  });
+btnMessages?.addEventListener("click", () => {
+  setActiveView("messages");
+});
 
-  msgTabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      const target = tab.dataset.tab;
+msgTabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    const target = tab.dataset.tab;
 
-      msgTabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
+    msgTabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
 
-      messagesLists.forEach(list => {
-        list.classList.toggle(
-          "active",
-          list.id === `messages${target.charAt(0).toUpperCase()}${target.slice(1)}`
-        );
-      });
+    messagesLists.forEach(list => {
+      list.classList.toggle(
+        "active",
+        list.id === `messages${target.charAt(0).toUpperCase() + target.slice(1)}`
+      );
     });
   });
+});
   
   function setActiveView(name){
-    localStorage.setItem("currentView", name);
-    if (state.currentView !== name && state.currentView !== "profile"){
-      state.viewHistory.push(state.currentView);
-    }
-    state.currentView = name;
+  localStorage.setItem("currentView", name);
 
-    [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
-    [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
-
-    if (name === "profile"){ mainTopbar?.classList.add("hidden"); }
-    else { mainTopbar?.classList.remove("hidden"); }
-
-    const storiesBar = $("storiesBar");
-    if(storiesBar){
-      if(name === "nearby"){ storiesBar.classList.remove("hidden"); }
-      else { storiesBar.classList.add("hidden"); }
-    }
-
-    if (name==="nearby"){
-  viewNearby.classList.add("active");
-  tabNearby.classList.add("active");
-  renderNearby();
-  renderStoriesBar();
-  if(btnSearchPanel) btnSearchPanel.disabled=false;
-}
-    
-    if (name==="love"){
-      viewLove.classList.add("active");
-      tabLove.classList.add("active");
-      renderSwipe("love");
-      if(btnSearchPanel) btnSearchPanel.disabled=true;
-    }
-
-    window.scrollTo({top:0,behavior:"smooth"});
+  if (state.currentView !== name && state.currentView !== "home") {
+    state.viewHistory.push(state.currentView);
   }
+
+  state.currentView = name;
+
+  // reset viste
+  [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => v?.classList.add("hidden"));
+  [tabNearby, tabLove, tabPlay].forEach(t => t?.classList.remove("active"));
+
+  // topbar sempre visibile tranne profilo
+  if (name === "profile"){
+    mainTopbar?.classList.add("hidden");
+  } else {
+    mainTopbar?.classList.remove("hidden");
+  }
+
+  // stories bar
+  const storiesBar = $("storiesBar");
+  if (storiesBar){
+    storiesBar.classList.toggle("hidden", name !== "nearby");
+  }
+
+  // routing
+  if (name === "nearby"){
+    viewNearby.classList.remove("hidden");
+    tabNearby.classList.add("active");
+    renderNearby();
+    renderStoriesBar();
+  }
+
+  if (name === "love"){
+    viewLove.classList.remove("hidden");
+    tabLove.classList.add("active");
+    renderSwipe("love");
+  }
+
+  if (name === "play"){
+    viewPlay.classList.remove("hidden");
+    tabPlay.classList.add("active");
+    renderSwipe("play");
+  }
+
+  if (name === "messages"){
+    viewMessages.classList.remove("hidden");
+  }
+
+  window.scrollTo({top:0, behavior:"smooth"});
+}
 
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
