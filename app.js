@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const matchOverlay = $("matchOverlay");
 
   // ============ HOME: ENTRA (con animazione WOW) ============
- btnEnter?.addEventListener("click", (e) => {
+  btnEnter?.addEventListener("click", (e) => {
   e.preventDefault();
   e.stopPropagation();
   
