@@ -176,31 +176,55 @@
     
      <!-- MESSAGGI -->
     <div id="viewMessages" class="view">
-      <div class="view-header messages-header">
+      <div class="messages-header">
         <div class="messages-title-row">
-          <button id="btnBackMessages" class="btn small ghost" aria-label="Indietro">← Indietro</button>
-          <h2 class="messages-title">Messaggi</h2>
+          <h2 class="messages-title" data-i18n="messagesTitle">Messaggi</h2>
+          <div class="messages-counters">
+            <span id="followersCount" class="messages-counter">0 follower</span>
+            <span id="followingCount" class="messages-counter">0 seguiti</span>
+          </div>
         </div>
 
         <div class="messages-tabs" role="tablist">
-          <button class="msg-tab active" data-tab="inbox" role="tab">In arrivo</button>
-          <button class="msg-tab" data-tab="sent" role="tab">Inviati</button>
-          <button class="msg-tab" data-tab="matches" role="tab">Match</button>
-          <button class="msg-tab" data-tab="spam" role="tab">Spam</button>
+          <button class="msg-tab active" data-tab="tabMatches" role="tab" data-i18n="msgTabMatches">Match</button>
+          <button class="msg-tab" data-tab="tabInbox" role="tab" data-i18n="msgTabInbox">Ricevuti</button>
+          <button class="msg-tab" data-tab="tabSent" role="tab" data-i18n="msgTabSent">Inviati</button>
+          <button class="msg-tab" data-tab="tabSpam" role="tab" data-i18n="msgTabSpam">Spam</button>
         </div>
       </div>
 
       <div class="messages-body">
-        <div id="messagesInbox" class="messages-list active"></div>
-        <div id="messagesSent" class="messages-list"></div>
-        <div id="messagesMatches" class="messages-list"></div>
-        <div id="messagesSpam" class="messages-list"></div>
+        <div id="tabMatches" class="messages-list active">
+          <p class="empty-state" data-i18n="msgEmptyMatches">
+            Ancora nessun match. Inizia a mettere 💛 in Accoppiamento!
+          </p>
+        </div>
+
+        <div id="tabInbox" class="messages-list">
+          <p class="empty-state" data-i18n="msgEmptyInbox">
+            Nessun messaggio ricevuto.
+          </p>
+        </div>
+
+        <div id="tabSent" class="messages-list">
+          <p class="empty-state" data-i18n="msgEmptySent">
+            Nessun messaggio inviato.
+          </p>
+        </div>
+
+        <div id="tabSpam" class="messages-list">
+          <p class="empty-state" data-i18n="msgEmptySpam">
+            Nessun messaggio in spam.
+          </p>
+        </div>
       </div>
 
-      <div class="messages-footer legal-links legal-purple">
-        <a href="#terms">Termini</a> ·
-        <a href="#privacy">Privacy</a> ·
-        <a href="mailto:plutoo.team@gmail.com">Contatti</a>
+      <div class="messages-footer">
+        <span class="legal-links legal-purple">
+          <span data-i18n="footerTerms">Termini</span> •
+          <span data-i18n="footerPrivacy">Privacy</span> •
+          <span data-i18n="footerContact">Contatti</span>
+        </span>
       </div>
     </div>
     
