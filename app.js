@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const matchOverlay = $("matchOverlay");
 
   // ============ HOME: ENTRA (con animazione WOW) ============
-btnEnter?.addEventListener("click", (e) => {
+ btnEnter?.addEventListener("click", (e) => {
   e.preventDefault();
   e.stopPropagation();
   
@@ -612,16 +612,12 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
 
   // ===== MESSAGGI – VISTA E TABS INTERNI =====
   const btnMessages   = $("btnMessages");
-  const btnBackMessages = $("#btnBackMessages");
   const msgTabs       = $all(".msg-tab");
   const messagesLists = $all(".messages-list");
 
   btnMessages?.addEventListener("click", () => {
     setActiveView("messages");
   });
-  btnBackMessages?.addEventListener("click", () => {
-  setActiveView("nearby");
-});
 
   msgTabs.forEach(tab => {
     tab.addEventListener("click", () => {
@@ -646,9 +642,8 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     }
     state.currentView = name;
 
-[tabNearby, tabLove, tabPlay].forEach(t => {
-  t?.classList.remove("active");
-});
+    [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
+    [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
     if (name === "profile"){ mainTopbar?.classList.add("hidden"); }
     else { mainTopbar?.classList.remove("hidden"); }
@@ -1162,9 +1157,9 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
           `).join("")}
         </div>
       </div>
+    `;
   }
-  `;
-    
+
   // ============ Profilo DOG (con Stories + Social) ============
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
