@@ -101,11 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabLuoghi = $("tabLuoghi");
   const luoghiMenu = $("luoghiMenu");
 
-  const viewNearby   = $("viewNearby");
-  const viewLove     = $("viewLove");
-  const viewPlay     = $("viewPlay");
-  const viewMessages = $("viewMessages");
-  const nearGrid     = $("nearGrid");
+  const viewNearby = $("viewNearby");
+  const viewLove   = $("viewLove");
+  const viewPlay   = $("viewPlay");
+  const nearGrid   = $("nearGrid");
 
   const loveCard = $("loveCard");
   const loveImg  = $("loveImg");
@@ -610,31 +609,6 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     });
   });
 
-  // ===== MESSAGGI – VISTA E TABS INTERNI =====
-  const btnMessages   = $("btnMessages");
-  const msgTabs       = $all(".msg-tab");
-  const messagesLists = $all(".messages-list");
-
-  btnMessages?.addEventListener("click", () => {
-    setActiveView("messages");
-  });
-
-  msgTabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      const target = tab.dataset.tab;
-
-      msgTabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-
-      messagesLists.forEach(list => {
-        list.classList.toggle(
-          "active",
-          list.id === `messages${target.charAt(0).toUpperCase()}${target.slice(1)}`
-        );
-      });
-    });
-  });
-  
   function setActiveView(name){
     localStorage.setItem("currentView", name);
     if (state.currentView !== name && state.currentView !== "profile"){
