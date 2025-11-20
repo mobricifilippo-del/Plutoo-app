@@ -612,12 +612,16 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
 
   // ===== MESSAGGI – VISTA E TABS INTERNI =====
   const btnMessages   = $("btnMessages");
+  const btnBackMessages = $("#btnBackMessages");
   const msgTabs       = $all(".msg-tab");
   const messagesLists = $all(".messages-list");
 
   btnMessages?.addEventListener("click", () => {
     setActiveView("messages");
   });
+  btnBackMessages?.addEventListener("click", () => {
+  setActiveView("nearby");
+});
 
   msgTabs.forEach(tab => {
     tab.addEventListener("click", () => {
@@ -642,7 +646,7 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     }
     state.currentView = name;
 
-    [viewNearby, viewLove, viewPlay].forEach(v=>v?.classList.remove("active"));
+    [viewNearby, viewLove, viewPlay, viewMessages].forEach(view=>{
     [tabNearby, tabLove, tabPlay].forEach(t=>t?.classList.remove("active"));
 
     if (name === "profile"){ mainTopbar?.classList.add("hidden"); }
