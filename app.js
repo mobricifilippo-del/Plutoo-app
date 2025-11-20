@@ -646,48 +646,54 @@ msgTabs.forEach(tab => {
 
   state.currentView = name;
 
-  // reset viste
+ // reset viste
   [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => {
-  v?.classList.remove("active");
-});
+    if (!v) return;
+    v.classList.remove("active");
+    v.classList.add("hidden");
+  });
 
   // topbar sempre visibile tranne profilo
-  if (name === "profile"){
+  if (name === "profile") {
     mainTopbar?.classList.add("hidden");
   } else {
     mainTopbar?.classList.remove("hidden");
   }
 
-  // stories bar
+  // stories bar (solo in Nearby)
   const storiesBar = $("storiesBar");
-  if (storiesBar){
+  if (storiesBar) {
     storiesBar.classList.toggle("hidden", name !== "nearby");
   }
 
-  // routing
-  if (name === "nearby"){
-    viewNearby.classList.remove("hidden");
+  // ===== VICINO A TE =====
+  if (name === "nearby") {
+    if (viewNearby) {
+      viewNearby.classList.remove("hidden");
+      viewNearby.classList.add("active");
+    }
     tabNearby.classList.add("active");
     renderNearby();
     renderStoriesBar();
+    if (btnSearchPanel) btnSearchPanel.disabled = false;
   }
 
-    if (name === "messages") {
-    if (viewMessages) {
-      viewMessages.classList.add("active");
+  // ===== ACCOPPIAMENTO =====
+  if (name === "love") {
+    if (viewLove) {
+      viewLove.classList.remove("hidden");
+      viewLove.classList.add("active");
     }
-  }
-
-  if (name === "love"){
-    viewLove.classList.remove("hidden");
     tabLove.classList.add("active");
     renderSwipe("love");
   }
 
-  if (name === "play"){
-    viewPlay.classList.remove("hidden");
-    tabPlay.classList.add("active");
-    renderSwipe("play");
+  // ===== MESSAGGI =====
+  if (name === "messages") {
+    if (viewMessages) {
+      viewMessages.classList.remove("hidden");
+      viewMessages.classList.add("active");
+    }
   }
 
   window.scrollTo({top:0, behavior:"smooth"});
