@@ -1161,7 +1161,6 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
           `).join("")}
         </div>
       </div>
-    `;
   }
 
   // ============ Profilo DOG (con Stories + Social) ============
