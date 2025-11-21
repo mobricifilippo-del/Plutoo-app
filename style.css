@@ -1356,3 +1356,7 @@ body.story-open #storiesBar {
 .messages-footer .legal-links a {
   color: #b19aff;                 /* viola dell'app */
 }
+
+.hidden-empty {
+    display: none !important;
+}
