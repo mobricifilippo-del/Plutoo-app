@@ -176,22 +176,21 @@
     
      <!-- MESSAGGI -->
     <div id="viewMessages" class="view">
-      <div class="messages-header">
-        <div class="messages-title-row">
-          <h2 class="messages-title" data-i18n="messagesTitle">Messaggi</h2>
-          <div class="messages-counters">
-            <span id="followersCount" class="messages-counter">0 follower</span>
-            <span id="followingCount" class="messages-counter">0 seguiti</span>
-          </div>
-        </div>
+      <div class="messages-topbar">
 
-        <div class="messages-tabs" role="tablist">
-          <button class="msg-tab active" data-tab="tabMatches" role="tab" data-i18n="msgTabMatches">Match</button>
-          <button class="msg-tab" data-tab="tabInbox" role="tab" data-i18n="msgTabInbox">Ricevuti</button>
-          <button class="msg-tab" data-tab="tabSent" role="tab" data-i18n="msgTabSent">Inviati</button>
-          <button class="msg-tab" data-tab="tabSpam" role="tab" data-i18n="msgTabSpam">Spam</button>
-        </div>
-      </div>
+  <button id="btnMsgBack" class="btn back-btn" aria-label="Indietro">
+    <span class="back-icon">←</span>
+  </button>
+
+  <img src="img/logo.png" class="messages-logo" alt="Plutoo">
+
+  <div class="messages-top-tabs">
+    <button class="msg-top-tab" data-tab="tabInbox">Ricevuti</button>
+    <button class="msg-top-tab" data-tab="tabSent">Inviati</button>
+    <button class="msg-top-tab" data-tab="tabMatches">Match</button>
+    <button class="msg-top-tab" data-tab="tabRequests">Richieste</button>
+    <button class="msg-top-tab" data-tab="tabSpam">Spam</button>
+  </div>
 
       <div class="messages-body">
         <div id="tabMatches" class="messages-list active">
