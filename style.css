@@ -1308,21 +1308,23 @@ body.story-open #storiesBar {
 
 /* barra in alto con freccia, logo e tab */
 .messages-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  background: #050509;           /* stesso sfondo scuro del resto dell'app */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px;
+    height: 70px;              /* barra più grande */
+    background: #0d021a;       /* viola Plutoo */
+    border-bottom: 2px solid #000;
 }
 
-/* logo ben visibile, centrato verticalmente */
+/* logo ben visibile, un po' più grande */
 .messages-logo {
-  height: 40px;
-  flex-shrink: 0;
+    height: 40px;      /* prima era 32px */
+    flex-shrink: 0;
 }
 
 /* tab tipo Instagram, tutti in fila in alto */
