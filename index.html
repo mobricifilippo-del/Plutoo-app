@@ -175,65 +175,65 @@
     </div>
     
      <!-- MESSAGGI -->
-    <div id="viewMessages" class="view">
-      <div class="messages-topbar">
+      <div id="viewMessages" class="view">
+        <div class="messages-topbar">
+          <button id="btnMsgBack" class="btn back-btn">
+            <span class="back-icon">←</span>
+          </button>
 
-  <button id="btnMsgBack" class="btn back-btn" aria-label="Indietro">
-    <span class="back-icon">←</span>
-  </button>
+          <img src="plutoo-icon-192.png" class="messages-logo" alt="Plutoo">
 
-  <img src="plutoo-icon-192.png" class="messages-logo" alt="Plutoo">
+          <div class="messages-top-tabs">
+            <button class="msg-top-tab active" data-tab="tabInbox">Ricevuti</button>
+            <button class="msg-top-tab" data-tab="tabSent">Inviati</button>
+            <button class="msg-top-tab" data-tab="tabMatches">Match</button>
+            <button class="msg-top-tab" data-tab="tabRequests">Richieste</button>
+            <button class="msg-top-tab" data-tab="tabSpam">Spam</button>
+          </div>
+        </div>
 
-  <div class="messages-top-tabs">
-    <button class="msg-top-tab active" data-tab="tabInbox">Ricevuti</button>
-    <button class="msg-top-tab" data-tab="tabSent">Inviati</button>
-    <button class="msg-top-tab" data-tab="tabMatches">Match</button>
-    <button class="msg-top-tab" data-tab="tabRequests">Richieste</button>
-    <button class="msg-top-tab" data-tab="tabSpam">Spam</button>
-    </div> <!-- chiude .messages-top-tabs -->
-    </div> <!-- chiude .messages-topbar -->
-  </div>
+        <div class="messages-body">
+          <div id="tabInbox" class="messages-list active">
+            <p class="empty-state hidden-empty" data-i18n="msgEmptyInbox">
+              Nessun messaggio ricevuto.
+            </p>
+          </div>
 
-     <div class="messages-body">
-  <div id="tabInbox" class="messages-list active">
-    <p class="empty-state hidden-empty" data-i18n="msgEmptyInbox">
-      Nessun messaggio ricevuto.
-    </p>
-  </div>
+          <div id="tabSent" class="messages-list">
+            <p class="empty-state hidden-empty" data-i18n="msgEmptySent">
+              Nessun messaggio inviato.
+            </p>
+          </div>
 
-  <div id="tabSent" class="messages-list">
-    <p class="empty-state hidden-empty" data-i18n="msgEmptySent">
-      Nessun messaggio inviato.
-    </p>
-  </div>
+          <div id="tabMatches" class="messages-list">
+            <p class="empty-state hidden-empty" data-i18n="msgEmptyMatches">
+              Ancora nessun match. Inizia a mettere 💛 in Accoppiamento!
+            </p>
+          </div>
 
-  <div id="tabMatches" class="messages-list">
-    <p class="empty-state hidden-empty" data-i18n="msgEmptyMatches">
-      Ancora nessun match. Inizia a mettere 💛 in Accoppiamento!
-    </p>
-  </div>
+          <div id="tabRequests" class="messages-list">
+            <p class="empty-state hidden-empty" data-i18n="msgEmptyRequests">
+              Nessuna richiesta di messaggi.
+            </p>
+          </div>
 
-  <div id="tabRequests" class="messages-list">
-    <p class="empty-state hidden-empty" data-i18n="msgEmptyRequests">
-      Nessuna richiesta di messaggi.
-    </p>
-  </div>
+          <div id="tabSpam" class="messages-list">
+            <p class="empty-state hidden-empty" data-i18n="msgEmptySpam">
+              Nessun messaggio in spam.
+            </p>
+          </div>
+        </div>
 
-  <div id="tabSpam" class="messages-list">
-    <p class="empty-state hidden-empty" data-i18n="msgEmptySpam">
-      Nessun messaggio in spam.
-    </p>
-  </div>
+        <div class="messages-footer">
+          <span class="legal-links legal-purple">
+            <span data-i18n="footerTerms">Termini</span> ·
+            <span data-i18n="footerPrivacy">Privacy</span> ·
+            <span data-i18n="footerContact">Contatti</span>
+          </span>
+        </div>
+      </div>
+      <!-- fine MESSAGGI -->
 </div>
-
-<div class="messages-footer">
-  <span class="legal-links legal-purple">
-    <span data-i18n="footerTerms">Termini</span> •
-    <span data-i18n="footerPrivacy">Privacy</span> •
-    <span data-i18n="footerContact">Contatti</span>
-  </span>
-</div> 
-    </div>
     
     <!-- Banner Sponsor -->
     <div class="sponsor">
