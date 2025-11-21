@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const mainTopbar = $("mainTopbar");
   const btnBackLove = $("btnBackLove");
   const btnBackPlay = $("btnBackPlay");
-  const btnMsgBack  = $("btnMsgBack");
 
   const tabNearby = $("tabNearby");
   const tabLove   = $("tabLove");
