@@ -1304,43 +1304,43 @@ body.story-open #storiesBar {
 #viewMessages {
 display: flex;
 flex-direction: column;
-padding-top: 0;
-margin-top: 0;
-background: #0d021a !important;  /* viola Plutoo per TUTTA la pagina */
+height: 100vh;
+padding-top: 0 !important;
+margin-top: 0 !important;
+background: #0d021a !important;
+overflow: hidden;
 }
 
-/* barra in alto con freccia, logo e tab /
+/* barra messaggi ATTACCATA in alto */
 .messages-topbar {
 position: sticky;
 top: 0;
 z-index: 999;
 display: flex;
 align-items: center;
-justify-content: flex-start;
 gap: 16px;
 padding: 16px 20px;
-height: 85px;  / barra più grande /
-background: #0d021a;  / viola Plutoo */
+min-height: 85px;
+background: #0d021a;
 border-bottom: 2px solid rgba(177, 154, 255, 0.3);
 box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+flex-shrink: 0;
 }
 
-/* logo MOLTO più grande /
+/* logo MOLTO più grande con glow */
 .messages-logo {
-height: 52px;  / era 40px, ora 52px */
+height: 52px;
 width: 52px;
 flex-shrink: 0;
 filter: drop-shadow(0 0 10px rgba(177, 154, 255, 0.6));
 }
 
-/* tab tipo Instagram, tutti in fila in alto */
+/* tabs orizzontali */
 .messages-top-tabs {
 display: flex;
-justify-content: flex-start;
 gap: 10px;
-flex-wrap: nowrap;
-overflow-x: auto;
 flex: 1;
+overflow-x: auto;
 -webkit-overflow-scrolling: touch;
 scrollbar-width: none;
 }
@@ -1349,7 +1349,7 @@ scrollbar-width: none;
 display: none;
 }
 
-/* Singolo tab - più curato */
+/* singolo tab - curato */
 .msg-top-tab {
 background: rgba(255, 255, 255, 0.08);
 border: 1px solid rgba(255, 255, 255, 0.15);
@@ -1364,7 +1364,7 @@ transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 flex-shrink: 0;
 }
 
-/* Tab attivo - sfondo viola con glow */
+/* tab attivo - sfondo viola con glow */
 .msg-top-tab.active {
 background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
 color: white;
@@ -1375,21 +1375,22 @@ box-shadow:
 transform: translateY(-2px);
 }
 
-/* Hover sui tab non attivi */
+/* hover tab non attivi */
 .msg-top-tab:not(.active):hover {
 color: rgba(255, 255, 255, 0.9);
 background: rgba(255, 255, 255, 0.12);
 border-color: rgba(177, 154, 255, 0.4);
 }
 
-/* liste messaggi sotto l'header */
+/* corpo messaggi - scrollabile */
 .messages-body {
-padding: 16px 16px 24px;
 flex: 1;
 overflow-y: auto;
+padding: 16px;
+-webkit-overflow-scrolling: touch;
 }
 
-/* Lista messaggi */
+/* liste messaggi */
 .messages-list {
 display: none;
 }
@@ -1398,37 +1399,15 @@ display: none;
 display: block;
 }
 
-/* Stato vuoto */
+/* stato vuoto - nascosto */
+.empty-state.hidden-empty {
+display: none !important;
+}
+
 .empty-state {
 text-align: center;
 color: rgba(255, 255, 255, 0.5);
-padding: 50px 20px;
+padding: 40px 20px;
 font-size: 1rem;
 line-height: 1.6;
-}
-
-#viewMessages .empty-state {
-display: block !important;
-}
-
-/* link Termini / Privacy / Contatti in viola come le altre pagine /
-.messages-footer .legal-links,
-.messages-footer .legal-links a {
-color: #b19aff;  / viola dell'app */
-font-size: 0.9rem;
-opacity: 0.8;
-}
-
-.messages-footer .legal-links a:hover {
-opacity: 1;
-}
-
-.messages-footer {
-padding: 20px;
-text-align: center;
-border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.hidden-empty {
-display: none !important;
 }
