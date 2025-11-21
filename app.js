@@ -110,8 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewPlay     = $("viewPlay");
   const viewMessages = $("viewMessages");
   const msgTopTabs   = $all(".msg-top-tab");
-  const msgLists     = $all(".messages-list");
-  const nearGrid     = $("nearGrid");
+  const msgTopTabs   = qa(".msg-top-tab");
+  const msgLists     = qa(".messages-list");
 
   const loveCard = $("loveCard");
   const loveImg  = $("loveImg");
