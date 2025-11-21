@@ -1301,9 +1301,13 @@ body.story-open #storiesBar {
 
 /* ===== MESSAGGI - HEADER & FOOTER ===== */
 
+/* ===== MESSAGGI - HEADER & FOOTER ===== */
 #viewMessages {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+    margin-top: 0;
+    background: #0d021a;   /* viola Plutoo */
 }
 
 /* barra in alto con freccia, logo e tab */
