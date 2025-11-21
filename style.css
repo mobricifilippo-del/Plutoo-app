@@ -1328,6 +1328,7 @@ body.story-open #storiesBar {
 /* tab tipo Instagram, tutti in fila in alto */
 .messages-top-tabs {
   display: flex;
+  justify-content: flex-start;
   gap: 6px;
   flex-wrap: nowrap;
   overflow-x: auto;
