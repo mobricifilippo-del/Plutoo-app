@@ -109,8 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewLove     = $("viewLove");
   const viewPlay     = $("viewPlay");
   const viewMessages = $("viewMessages");
-  const msgTopTabs   = $all(".msg-top-tab");
-  const msgLists     = $all(".messages-list");
   const nearGrid     = $("nearGrid");
 
   const loveCard = $("loveCard");
@@ -616,29 +614,32 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     });
   });
 
-  // ===== MESSAGGI - VISTA E TABS INTERNI =====
-const btnMessages = $("#btnMessages");
+  // ===== MESSAGGI - VISTA E TABS INTERNI ====
+  const btnMessages = $("#btnMessages");
+  const msgTopTabs  = $all(".msg-top-tab");
+  const msgLists    = $all(".messages-list");
 
-btnMessages?.addEventListener("click", () => {
-  setActiveView("messages");
-});
+  // apertura vista Messaggi
+  btnMessages?.addEventListener("click", () => {
+    setActiveView("messages");
+  });
 
-// cambio tab interno dei messaggi
-msgTopTabs.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const targetId = btn.dataset.tab;
+  // cambio tab interno dei Messaggi (Ricevuti / Inviati / Match / Richieste / Spam)
+  msgTopTabs.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.tab;
 
-    // evidenzia il tab selezionato
-    msgTopTabs.forEach((b) => {
-      b.classList.toggle("active", b === btn);
-    });
+      // evidenzia il tab selezionato
+      msgTopTabs.forEach((b) => {
+        b.classList.toggle("active", b === btn);
+      });
 
-    // mostra solo la lista corrispondente
-    msgLists.forEach((list) => {
-      list.classList.toggle("active", list.id === targetId);
+      // mostra solo la lista corrispondente
+      msgLists.forEach((list) => {
+        list.classList.toggle("active", list.id === targetId);
+      });
     });
   });
-});
   
   function setActiveView(name){
   localStorage.setItem("currentView", name);
