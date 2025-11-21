@@ -1349,8 +1349,10 @@ body.story-open #storiesBar {
 #viewMessages{
     justify-content: flex-start;
     align-items: stretch;
-    background: #0d021a; /* viola Plutoo */
-    padding: 0 16px 24px; /* niente spazio sopra, solo laterale/sotto */
+    background: #0d021a !important;   /* viola Plutoo per TUTTA la pagina */
+    min-height: 100vh;                /* copre tutta l’altezza */
+    padding-top: 0 !important;        /* elimina spazio sopra */
+    margin-top: 0 !important;         /* elimina margini indesiderati */
 }
 
 /* link Termini / Privacy / Contatti in viola come le altre pagine */
