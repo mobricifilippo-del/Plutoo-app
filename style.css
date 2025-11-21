@@ -1340,6 +1340,17 @@ body.story-open #storiesBar {
   flex: 1;
 }
 
+#viewMessages .empty-state{
+    display:none;
+}
+
+/* Layout speciale per la pagina Messaggi */
+#viewMessages{
+    justify-content: flex-start;   /* niente centratura verticale */
+    align-items: stretch;          /* larghi quanto la view */
+    background: #120724;           /* viola tema Plutoo */
+}
+
 /* link Termini / Privacy / Contatti in viola come le altre pagine */
 .messages-footer .legal-links,
 .messages-footer .legal-links a {
