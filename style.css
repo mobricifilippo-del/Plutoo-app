@@ -1321,7 +1321,7 @@ body.story-open #storiesBar {
 
 /* logo ben visibile, centrato verticalmente */
 .messages-logo {
-  height: 32px;
+  height: 40px;
   flex-shrink: 0;
 }
 
@@ -1341,14 +1341,14 @@ body.story-open #storiesBar {
 }
 
 #viewMessages .empty-state{
-    display:none;
+    display:none !important;
 }
 
-/* Layout speciale per la pagina Messaggi */
 #viewMessages{
-    justify-content: flex-start;   /* niente centratura verticale */
-    align-items: stretch;          /* larghi quanto la view */
-    background: #120724;           /* viola tema Plutoo */
+    justify-content: flex-start;
+    align-items: stretch;
+    background: #0d021a; /* viola Plutoo */
+    padding: 0 16px 24px; /* niente spazio sopra, solo laterale/sotto */
 }
 
 /* link Termini / Privacy / Contatti in viola come le altre pagine */
