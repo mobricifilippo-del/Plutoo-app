@@ -1093,6 +1093,11 @@ body.story-open #storiesBar {
   color:var(--muted);font-size:.9rem;
 }
 
+/* Nasconde lo sponsor globale quando è attiva la Home */
+#viewHome.active ~ #globalSponsor {
+  display: none;
+}
+
 .lightbox{
   position:fixed;inset:0;background:rgba(0,0,0,.92);
   display:flex;align-items:center;justify-content:center;z-index:2000;
