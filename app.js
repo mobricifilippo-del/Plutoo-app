@@ -616,10 +616,29 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
 
   // ===== MESSAGGI - VISTA E TABS INTERNI ====
 const btnMessages = $("btnMessages");
+const msgTopTabs  = qa(".msg-top-tab");
+const msgLists    = qa(".messages-list");
 
-// apertura vista Messaggi (senza tab interni, per ora)
+// apertura vista Messaggi
 btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
+});
+
+// cambio tab interno dei Messaggi (Ricevuti/Inviati/Match/Richieste/Spam)
+msgTopTabs.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.tab;
+
+    // evidenzia il tab selezionato
+    msgTopTabs.forEach((b) => {
+      b.classList.toggle("active", b === btn);
+    });
+
+    // mostra solo la lista corrispondente
+    msgLists.forEach((list) => {
+      list.classList.toggle("active", list.id === targetId);
+    });
+  });
 });
   
   function setActiveView(name){
