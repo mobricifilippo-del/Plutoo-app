@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Profilo corrente
     currentDogProfile: null,
+    previousViewForMessages: "nearby",
   };
 
   // ============ DOM refs ============
@@ -96,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mainTopbar = $("mainTopbar");
   const btnBackLove = $("btnBackLove");
   const btnBackPlay = $("btnBackPlay");
+  const btnMsgBack  = $("#btnMsgBack");
 
   const tabNearby = $("tabNearby");
   const tabLove   = $("tabLove");
@@ -107,6 +109,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewLove     = $("viewLove");
   const viewPlay     = $("viewPlay");
   const viewMessages = $("viewMessages");
+  const msgTopTabs   = $all(".msg-top-tab");
+  const msgLists     = $all(".messages-list");
   const nearGrid     = $("nearGrid");
 
   const loveCard = $("loveCard");
@@ -613,26 +617,25 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   });
 
   // ===== MESSAGGI - VISTA E TABS INTERNI =====
-const btnMessages     = $("btnMessages");
-const msgTabs         = qa(".msg-tab");
-const messagesLists   = qa(".messages-list");
+const btnMessages = $("#btnMessages");
 
 btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
 });
 
-msgTabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-    const target = tab.dataset.tab;
+// cambio tab interno dei messaggi
+msgTopTabs.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.tab;
 
-    msgTabs.forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
+    // evidenzia il tab selezionato
+    msgTopTabs.forEach((b) => {
+      b.classList.toggle("active", b === btn);
+    });
 
-    messagesLists.forEach(list => {
-      list.classList.toggle(
-        "active",
-        list.id === `messages${target.charAt(0).toUpperCase() + target.slice(1)}`
-      );
+    // mostra solo la lista corrispondente
+    msgLists.forEach((list) => {
+      list.classList.toggle("active", list.id === targetId);
     });
   });
 });
@@ -640,8 +643,13 @@ msgTabs.forEach(tab => {
   function setActiveView(name){
   localStorage.setItem("currentView", name);
 
-  if (state.currentView !== name && state.currentView !== "home") {
+  if (state.currentView !== name && state.currentView){
     state.viewHistory.push(state.currentView);
+  }
+
+  // ricorda da dove siamo entrati nei messaggi
+  if (name === "messages" && state.currentView !== "messages"){
+    state.previousViewForMessages = state.currentView || "nearby";
   }
 
   state.currentView = name;
@@ -653,12 +661,12 @@ msgTabs.forEach(tab => {
     v.classList.add("hidden");
   });
 
-  // topbar sempre visibile tranne profilo
-  if (name === "profile") {
-    mainTopbar?.classList.add("hidden");
-  } else {
-    mainTopbar?.classList.remove("hidden");
-  }
+// topbar generale nascosta in profilo e messaggi
+if (name === "profile" || name === "messages") {
+  mainTopbar?.classList.add("hidden");
+} else {
+  mainTopbar?.classList.remove("hidden");
+}
 
   // stories bar (solo in Nearby)
   const storiesBar = $("storiesBar");
@@ -701,6 +709,10 @@ msgTabs.forEach(tab => {
 
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
+  btnMsgBack?.addEventListener("click", () => {
+  const prev = state.previousViewForMessages || "nearby";
+  setActiveView(prev);
+});
 
   function goBack(){
     // 1) Viewer Stories overlay?
