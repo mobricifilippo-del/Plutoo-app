@@ -616,8 +616,8 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
 
   // ===== MESSAGGI - VISTA E TABS INTERNI ====
   const btnMessages = $("#btnMessages");
-  const msgTopTabs  = $all(".msg-top-tab");
-  const msgLists    = $all(".messages-list");
+  const msgTopTabs  = qa(".msg-top-tab");
+  const msgLists    = qa(".messages-list");
 
   // apertura vista Messaggi
   btnMessages?.addEventListener("click", () => {
