@@ -1094,8 +1094,8 @@ body.story-open #storiesBar {
 }
 
 /* Nasconde lo sponsor globale quando è attiva la Home */
-#viewHome.active ~ #globalSponsor {
-  display: none;
+#appScreen.hidden ~ #globalSponsor {
+    display: none;
 }
 
 #homeScreen .legal-links {
