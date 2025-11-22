@@ -8,12 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
-  const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const qa = (s, r=document) => r ? Array.from(r.querySelectorAll(s)) : [];
   const $all = qa;
-  
-  function autodetectLang(){ 
-  return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it"; 
-}
+
+  function autodetectLang(){
+    return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
+  }
+
+  const CURRENT_USER_DOG_ID = "d1";
 
   // ============ Stato (caricato da localStorage dove possibile) ============
   const state = {
@@ -81,6 +83,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Profilo corrente
     currentDogProfile: null,
     previousViewForMessages: "nearby",
+
+    // Follow / seguiti (mock locale)
+    followersByDog: JSON.parse(localStorage.getItem("followersByDog") || "{}"),
+    followingByDog: JSON.parse(localStorage.getItem("followingByDog") || "{}"),
+
+    // Like foto profilo
+    photoLikesByDog: JSON.parse(localStorage.getItem("photoLikesByDog") || "{}"),
+
+    // Like stories (per media id)
+    storyLikesByMedia: JSON.parse(localStorage.getItem("storyLikesByMedia") || "{}"),
   };
 
   // ============ DOM refs ============
@@ -91,18 +103,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const sponsorLink  = $("sponsorLink");
   const sponsorLinkApp = $("sponsorLinkApp");
   const ethicsButton = $("ethicsButton");
-  const btnMsgBack  = $("btnMsgBack");   
+  const btnMsgBack   = $("btnMsgBack");
   const btnPlus      = $("btnPlus");
 
-  const mainTopbar = $("mainTopbar");
-  const btnBackLove = $("btnBackLove");
-  const btnBackPlay = $("btnBackPlay");
+  const mainTopbar   = $("mainTopbar");
+  const btnBack      = $("btnBack");
+  const btnBackLove  = $("btnBackLove");
 
-  const tabNearby = $("tabNearby");
-  const tabLove   = $("tabLove");
-  const tabPlay   = $("tabPlay");
-  const tabLuoghi = $("tabLuoghi");
-  const luoghiMenu = $("luoghiMenu");
+  const tabNearby    = $("tabNearby");
+  const tabLove      = $("tabLove");
+  const tabPlay      = $("tabPlay"); // (anche se la tab Giochiamo è stata rimossa dal layout, teniamo il ref)
+  const tabLuoghi    = $("tabLuoghi");
+  const luoghiMenu   = $("luoghiMenu");
 
   const viewNearby   = $("viewNearby");
   const viewLove     = $("viewLove");
@@ -110,21 +122,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewMessages = $("viewMessages");
   const nearGrid     = $("nearGrid");
 
-  const loveCard = $("loveCard");
-  const loveImg  = $("loveImg");
+  const loveCard     = $("loveCard");
+  const loveImg      = $("loveImg");
   const loveTitleTxt = $("loveTitleTxt");
-  const loveMeta = $("loveMeta");
-  const loveBio  = $("loveBio");
-  const loveNo   = $("loveNo");
-  const loveYes  = $("loveYes");
+  const loveMeta     = $("loveMeta");
+  const loveBio      = $("loveBio");
+  const loveNo       = $("loveNo");
+  const loveYes      = $("loveYes");
 
-  const playCard = $("playCard");
-  const playImg  = $("playImg");
+  const playCard     = $("playCard");
+  const playImg      = $("playImg");
   const playTitleTxt = $("playTitleTxt");
-  const playMeta  = $("playMeta");
-  const playBio   = $("playBio");
-  const playNo    = $("playNo");
-  const playYes   = $("playYes");
+  const playMeta     = $("playMeta");
+  const playBio      = $("playBio");
+  const playNo       = $("playNo");
+  const playYes      = $("playYes");
 
   const btnSearchPanel = $("btnSearchPanel");
   const searchPanel = $("searchPanel");
@@ -162,91 +174,80 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileBack = $("profileBack");
   const profileClose = $("profileClose");
   const profileContent = $("profileContent");
+  const profileLikeBtn = $("profileLikeBtn");
+
+  const followersOverlay = $("followersOverlay");
+  const followingOverlay = $("followingOverlay");
+  const followersList = $("followersList");
+  const followingList = $("followingList");
+
+  const storyLikeBtn = $("storyLikeBtn");
 
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
   // ============ HOME: ENTRA (con animazione WOW) ============
- btnEnter?.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  
-  console.log("🚀 ENTRA cliccato!");
-  
-  try { localStorage.setItem("entered", "1"); } catch(err){}
-  state.entered = true;
+  btnEnter?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-   // 🐕 Abbaia!
-const bark = document.getElementById("dogBark");
-if (bark) {
-  bark.volume = 0.3;
-  // Prova a far partire l'audio
-  const playPromise = bark.play();
-  if (playPromise !== undefined) {
-    playPromise.then(() => {
-      console.log("🐕 Audio partito!");
-    }).catch(error => {
-      console.error("❌ Audio bloccato dal browser:", error);
-      // Fallback: mostra messaggio
-      alert("🐕 Woof!");
-    });
-  }
-}
+    try { localStorage.setItem("entered", "1"); } catch(err){}
+    state.entered = true;
 
-  // Logo batte come un cuore (RESTA VISIBILE)
-  if (heroLogo) {
-    heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
-    void heroLogo.offsetWidth;
-    heroLogo.classList.add("heartbeat-violet-wow");
-  }
-
-  // Flash parte da dietro il logo
-  const flash = document.getElementById("whiteFlash");
-  if (flash) {
-    flash.classList.add("active");
-  }
-
-  // Prepara l'app sotto (invisibile)
-  setTimeout(() => {
-    appScreen?.classList.remove("hidden");
-    document.body.classList.remove("story-open");
-    
-    if (typeof initStories === "function") {
-      initStories();
+    const bark = document.getElementById("dogBark");
+    if (bark) {
+      bark.volume = 0.3;
+      const playPromise = bark.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          alert("🐕 Woof!");
+        });
+      }
     }
-    setActiveView(state.currentView);
-    showAdBanner();
-  }, 500);
 
-  // Logo + Flash si dissolvono INSIEME
-  setTimeout(() => {
-    // Nascondi la home (che era sotto il flash)
-    homeScreen?.classList.add("hidden");
-    
-    // Dissolvi il flash
+    if (heroLogo) {
+      heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+      void heroLogo.offsetWidth;
+      heroLogo.classList.add("heartbeat-violet-wow");
+    }
+
+    const flash = document.getElementById("whiteFlash");
     if (flash) {
-      flash.classList.remove("active");
+      flash.classList.add("active");
     }
-    
-    // Dissolvi il logo
-    if (heroLogo) {
-      heroLogo.style.transition = "opacity 1.5s ease-out";
-      heroLogo.style.opacity = "0";
-    }
-  }, 2000);
 
-  // Pulisci dopo la dissolvenza
-  setTimeout(() => {
-    if (heroLogo) {
-      heroLogo.classList.remove("heartbeat-violet-wow");
-      heroLogo.style.opacity = "";
-      heroLogo.style.transition = "";
-    }
-    console.log("✅ App caricata!");
-  }, 3500);
-}); 
+    setTimeout(() => {
+      appScreen?.classList.remove("hidden");
+      document.body.classList.remove("story-open");
 
-  // Auto-restore nel caso fosse già entrato
+      if (typeof initStories === "function") {
+        initStories();
+      }
+      setActiveView(state.currentView);
+      showAdBanner();
+    }, 500);
+
+    setTimeout(() => {
+      homeScreen?.classList.add("hidden");
+      const flash2 = document.getElementById("whiteFlash");
+      if (flash2) {
+        flash2.classList.remove("active");
+      }
+      if (heroLogo) {
+        heroLogo.style.transition = "opacity 1.5s ease-out";
+        heroLogo.style.opacity = "0";
+      }
+    }, 2000);
+
+    setTimeout(() => {
+      if (heroLogo) {
+        heroLogo.classList.remove("heartbeat-violet-wow");
+        heroLogo.style.opacity = "";
+        heroLogo.style.transition = "";
+      }
+    }, 3500);
+  });
+
   if (state.entered) {
     homeScreen?.classList.add("hidden");
     appScreen?.classList.remove("hidden");
@@ -299,7 +300,6 @@ if (bark) {
       sizeLarge: "Grande",
       apply: "Applica",
       reset: "Reset",
-      // 🔹 tolto <strong> dal testo
       unlockHint: "Vuoi sbloccare i filtri Gold? Attiva Plutoo Plus 💎",
       plusTitle: "Plutoo Plus",
       plusSubtitle: "Sblocca tutte le funzionalità premium",
@@ -333,7 +333,7 @@ if (bark) {
       terms: "Terms",
       privacy: "Privacy",
       nearby: "Nearby",
-      love: "breeding",
+      love: "Breeding",
       searchAdvanced: "Advanced Search",
       plusBtn: "PLUS",
       chat: "Chat",
@@ -365,7 +365,6 @@ if (bark) {
       sizeLarge: "Large",
       apply: "Apply",
       reset: "Reset",
-      // 🔹 tolto <strong> anche qui
       unlockHint: "Want to unlock Gold filters? Activate Plutoo Plus 💎",
       plusTitle: "Plutoo Plus",
       plusSubtitle: "Unlock all premium features",
@@ -387,6 +386,7 @@ if (bark) {
       years: "yrs"
     }
   };
+
   const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
 
   function applyTranslations(){
@@ -472,11 +472,13 @@ if (bark) {
   // ============ Razze ============
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
     if (Array.isArray(arr)) state.breeds = arr.sort();
-  }).catch(()=>{ state.breeds = [
-    "Barboncino","Bassotto","Beagle","Border Collie","Bulldog Francese",
-    "Carlino","Chihuahua","Cocker Spaniel","Golden Retriever","Husky",
-    "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu"
-  ].sort(); });
+  }).catch(()=>{
+    state.breeds = [
+      "Barboncino","Bassotto","Beagle","Border Collie","Bulldog Francese",
+      "Carlino","Chihuahua","Cocker Spaniel","Golden Retriever","Husky",
+      "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu"
+    ].sort();
+  });
 
   // ============ Geolocalizzazione ============
   if (navigator.geolocation){
@@ -487,65 +489,57 @@ if (bark) {
   }
 
   // =========== Restore in APP ===========
-if (state.entered) {
-  homeScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
+  if (state.entered) {
+    homeScreen.classList.add("hidden");
+    appScreen.classList.remove("hidden");
 
-  const viewToRestore = state.currentView || "nearby";
+    const viewToRestore = state.currentView || "nearby";
 
-  // Se ero su un profilo DOG, provo a riaprirlo
-  if (viewToRestore === "profile") {
-    const savedId = localStorage.getItem("currentProfileDogId");
-    if (savedId) {
-      const dog = DOGS.find(d => d.id == savedId);
-      if (dog && window.openProfilePage) {
-        // openProfilePage fa già setActiveView("profile")
-        window.openProfilePage(dog);
+    if (viewToRestore === "profile") {
+      const savedId = localStorage.getItem("currentProfileDogId");
+      if (savedId) {
+        const dog = DOGS.find(d => d.id == savedId);
+        if (dog && window.openProfilePage) {
+          window.openProfilePage(dog);
+        } else {
+          setActiveView("nearby");
+        }
       } else {
-        // se per qualsiasi motivo non riesco, torno a Nearby
         setActiveView("nearby");
       }
     } else {
-      // nessun DOG salvato → torno a Nearby
-      setActiveView("nearby");
+      setActiveView(viewToRestore);
     }
-  } else {
-    // per tutte le altre viste ripristino quella salvata
-    setActiveView(viewToRestore);
-  }
 
-  showAdBanner();
-}
+    showAdBanner();
+  }
 
   // ============ Sponsor Ufficiale ============
-function openSponsor(){
-  const url = "https://www.gelatofido.it/";
+  function openSponsor(){
+    const url = "https://www.gelatofido.it/";
 
-  // Se hai Plus → niente reward
-  if (state.plus){
-    window.open(url, "_blank", "noopener");
-    return;
+    if (state.plus){
+      window.open(url, "_blank", "noopener");
+      return;
+    }
+
+    if (state.rewardOpen) return;
+    state.rewardOpen = true;
+
+    showRewardVideoMock("sponsor", () => {
+      state.rewardOpen = false;
+      window.open(url, "_blank", "noopener");
+    });
   }
 
-  // Evita doppio click
-  if (state.rewardOpen) return;
-  state.rewardOpen = true;
-
-  showRewardVideoMock("sponsor", () => {
-    state.rewardOpen = false;
-    window.open(url, "_blank", "noopener");
+  sponsorLink?.addEventListener("click",(e)=>{
+    e.preventDefault();
+    openSponsor();
   });
-}
-
-
-sponsorLink?.addEventListener("click",(e)=>{
-  e.preventDefault();
-  openSponsor();
-});
-sponsorLinkApp?.addEventListener("click",(e)=>{
-  e.preventDefault();
-  openSponsor();
-});
+  sponsorLinkApp?.addEventListener("click",(e)=>{
+    e.preventDefault();
+    openSponsor();
+  });
 
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
@@ -577,11 +571,11 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
     closePlusModal();
     updatePlusUI();
     const price = state.plusPlan === "yearly" ? "€40/anno" : "€4.99/mese";
-  alert(
-    state.lang === "it"
-      ? `Plutoo Plus attivato! 💎\nPiano scelto: ${price}`
-      : `Plutoo Plus activated! 💎\nSelected plan: ${price}`
-  );
+    alert(
+      state.lang === "it"
+        ? `Plutoo Plus attivato! 💎\nPiano scelto: ${price}`
+        : `Plutoo Plus activated! 💎\nSelected plan: ${price}`
+    );
   });
 
   function openPlusModal(){ plusModal?.classList.remove("hidden"); updatePlanSelector(); }
@@ -614,153 +608,137 @@ sponsorLinkApp?.addEventListener("click",(e)=>{
   });
 
   // ===== MESSAGGI - VISTA E TABS INTERNI ====
-const btnMessages = $("btnMessages");
-const msgTopTabs  = qa(".msg-top-tab");
-const msgLists    = qa(".messages-list");
+  const btnMessages = $("btnMessages");
+  const msgTopTabs  = qa(".msg-top-tab");
+  const msgLists    = qa(".messages-list");
 
-// apertura vista Messaggi
-btnMessages?.addEventListener("click", () => {
-  setActiveView("messages");
-});
+  btnMessages?.addEventListener("click", () => {
+    setActiveView("messages");
+  });
 
-// cambio tab interno dei Messaggi (Ricevuti/Inviati/Match/Richieste/Spam)
-msgTopTabs.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const targetId = btn.dataset.tab;
+  msgTopTabs.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.tab;
 
-    // evidenzia il tab selezionato
-    msgTopTabs.forEach((b) => {
-      b.classList.toggle("active", b === btn);
-    });
+      msgTopTabs.forEach((b) => {
+        b.classList.toggle("active", b === btn);
+      });
 
-    // mostra solo la lista corrispondente
-    msgLists.forEach((list) => {
-      list.classList.toggle("active", list.id === targetId);
+      msgLists.forEach((list) => {
+        list.classList.toggle("active", list.id === targetId);
+      });
     });
   });
-});
-  
+
   function setActiveView(name){
-  localStorage.setItem("currentView", name);
+    localStorage.setItem("currentView", name);
 
-  if (state.currentView !== name && state.currentView){
-    state.viewHistory.push(state.currentView);
-  }
-
-  // ricorda da dove siamo entrati nei messaggi
-  if (name === "messages" && state.currentView !== "messages"){
-    state.previousViewForMessages = state.currentView || "nearby";
-  }
-
-  state.currentView = name;
-
- // reset viste
-  [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => {
-    if (!v) return;
-    v.classList.remove("active");
-    v.classList.add("hidden");
-  });
-
-// topbar generale nascosta in profilo e messaggi
-if (name === "profile" || name === "messages") {
-  mainTopbar?.classList.add("hidden");
-} else {
-  mainTopbar?.classList.remove("hidden");
-}
-
-  // stories bar (solo in Nearby)
-  const storiesBar = $("storiesBar");
-  if (storiesBar) {
-    storiesBar.classList.toggle("hidden", name !== "nearby");
-  }
-
-  // ===== VICINO A TE =====
-  if (name === "nearby") {
-    if (viewNearby) {
-      viewNearby.classList.remove("hidden");
-      viewNearby.classList.add("active");
+    if (state.currentView !== name && state.currentView){
+      state.viewHistory.push(state.currentView);
     }
-    tabNearby.classList.add("active");
-    renderNearby();
-    renderStoriesBar();
-    if (btnSearchPanel) btnSearchPanel.disabled = false;
-  }
 
-  // ===== ACCOPPIAMENTO =====
-  if (name === "love") {
-    if (viewLove) {
-      viewLove.classList.remove("hidden");
-      viewLove.classList.add("active");
+    if (name === "messages" && state.currentView !== "messages"){
+      state.previousViewForMessages = state.currentView || "nearby";
     }
-    tabLove.classList.add("active");
-    renderSwipe("love");
-  }
 
-  // ===== MESSAGGI =====
-  if (name === "messages") {
-    if (viewMessages) {
-      viewMessages.classList.remove("hidden");
-      viewMessages.classList.add("active");
+    state.currentView = name;
+
+    [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => {
+      if (!v) return;
+      v.classList.remove("active");
+      v.classList.add("hidden");
+    });
+
+    if (name === "profile" || name === "messages") {
+      mainTopbar?.classList.add("hidden");
+    } else {
+      mainTopbar?.classList.remove("hidden");
     }
-  }
 
-  window.scrollTo({top:0, behavior:"smooth"});
-}
+    const storiesBar = $("storiesBar");
+    if (storiesBar) {
+      storiesBar.classList.toggle("hidden", name !== "nearby");
+    }
+    tabNearby.classList.remove("active");
+  tabLove.classList.remove("active");
+  if (tabPlay) tabPlay.classList.remove("active");
+   
+    if (name === "nearby") {
+      if (viewNearby) {
+        viewNearby.classList.remove("hidden");
+        viewNearby.classList.add("active");
+      }
+      tabNearby.classList.add("active");
+      renderNearby();
+      renderStoriesBar();
+      if (btnSearchPanel) btnSearchPanel.disabled = false;
+    }
+
+    if (name === "love") {
+      if (viewLove) {
+        viewLove.classList.remove("hidden");
+        viewLove.classList.add("active");
+      }
+      tabLove.classList.add("active");
+      renderSwipe("love");
+    }
+
+    if (name === "messages") {
+      if (viewMessages) {
+        viewMessages.classList.remove("hidden");
+        viewMessages.classList.add("active");
+      }
+    }
+
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
 
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
   btnMsgBack?.addEventListener("click", () => {
-  const prev = state.previousViewForMessages || "nearby";
-  setActiveView(prev);
-});
+    const prev = state.previousViewForMessages || "nearby";
+    setActiveView(prev);
+  });
 
   function goBack(){
-    // 1) Viewer Stories overlay?
     const storyViewer = $("storyViewer");
     if (storyViewer && !storyViewer.classList.contains("hidden")){
       closeStoryViewer();
       return;
     }
 
-    // 2) Modale Upload Story?
     const uploadStoryModal = $("uploadStoryModal");
     if (uploadStoryModal && !uploadStoryModal.classList.contains("hidden")){
       closeUploadModal();
       return;
     }
 
-    // 3) Modale Plus?
     if (plusModal && !plusModal.classList.contains("hidden")){
       closePlusModal();
       return;
     }
 
-    // 4) Pannello Ricerca?
     if (searchPanel && !searchPanel.classList.contains("hidden")){
       searchPanel.classList.add("hidden");
       searchPanel.style.display = "none";
       return;
     }
 
-    // 5) Chat aperta?
     if (chatPane && !chatPane.classList.contains("hidden") && chatPane.classList.contains("show")){
       closeChatPane();
       return;
     }
 
-    // 6) Pagina profilo?
     if (state.currentView === "profile"){
       closeProfilePage();
       return;
     }
 
-    // 7) Deck → Nearby
     if (state.currentView === "love" || state.currentView === "friendship"){
       setActiveView("nearby");
       return;
     }
 
-    // 8) Sei in Nearby → conferma ritorno Home
     if (state.currentView === "nearby"){
       if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
         localStorage.removeItem("entered");
@@ -825,36 +803,35 @@ if (name === "profile" || name === "messages") {
         </div>
       </article>`;
   }
-  
- function fmtKm(n){
-  return `${n.toFixed(1)} km`;
-}
+
+  function fmtKm(n){
+    return `${n.toFixed(1)} km`;
+  }
 
   function filteredDogs(){
-  const f = state.filters;
-  return DOGS
-    // distanza: se d.km non esiste, il DOG è comunque incluso
-    .filter(d => !d.km || d.km <= (f.distKm || 999))
-    .filter(d => (!f.verified || !state.plus) ? true : d.verified)
-    .filter(d => (!f.sex) ? true : d.sex === f.sex)
-    .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
-    .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
-    .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
-    .filter(d => { if (!state.plus || !f.weight) return true; return d.weight >= parseInt(f.weight); })
-    .filter(d => { if (!state.plus || !f.height) return true; return d.height >= parseInt(f.height); })
-    .filter(d => { 
-      if (!state.plus || !f.pedigree) return true; 
-      return f.pedigree === "yes" ? d.pedigree : true; 
-    })
-    .filter(d => { 
-      if (!state.plus || !f.breeding) return true; 
-      return f.breeding === "yes" ? d.breeding : true; 
-    })
-    .filter(d => { 
-      if (!state.plus || !f.size) return true; 
-      return d.size === f.size; 
-    });
-}
+    const f = state.filters;
+    return DOGS
+      .filter(d => !d.km || d.km <= (f.distKm || 999))
+      .filter(d => (!f.verified || !state.plus) ? true : d.verified)
+      .filter(d => (!f.sex) ? true : d.sex === f.sex)
+      .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
+      .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
+      .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
+      .filter(d => { if (!state.plus || !f.weight) return true; return d.weight >= parseInt(f.weight); })
+      .filter(d => { if (!state.plus || !f.height) return true; return d.height >= parseInt(f.height); })
+      .filter(d => {
+        if (!state.plus || !f.pedigree) return true;
+        return f.pedigree === "yes" ? d.pedigree : true;
+      })
+      .filter(d => {
+        if (!state.plus || !f.breeding) return true;
+        return f.breeding === "yes" ? d.breeding : true;
+      })
+      .filter(d => {
+        if (!state.plus || !f.size) return true;
+        return d.size === f.size;
+      });
+  }
 
   // ============ Swipe ============
   function renderSwipe(mode){
@@ -910,7 +887,7 @@ if (name === "profile" || name === "messages") {
         localStorage.setItem("swipes", String(state.swipeCount));
 
         if (!state.plus && state.swipeCount >= state.nextRewardAt && !state.rewardOpen){
-        state.rewardOpen = true;
+          state.rewardOpen = true;
           showRewardVideoMock("swipe", ()=>{
             state.rewardOpen = false;
             state.nextRewardAt += 5;
@@ -1042,20 +1019,20 @@ if (name === "profile" || name === "messages") {
   }
 
   function showMatchAnimation(dogName = ""){
-  const overlay = $("matchOverlay");
-  if (!overlay) return;
-  
-  const nameEl = $("matchDogName");
-  if (nameEl && dogName) {
-    nameEl.textContent = dogName;
+    const overlay = $("matchOverlay");
+    if (!overlay) return;
+
+    const nameEl = $("matchDogName");
+    if (nameEl && dogName) {
+      nameEl.textContent = dogName;
+    }
+
+    overlay.classList.add("active");
+
+    setTimeout(() => {
+      overlay.classList.remove("active");
+    }, 3000);
   }
-  
-  overlay.classList.add("active");
-  
-  setTimeout(() => {
-    overlay.classList.remove("active");
-  }, 3000);
-}
 
   // ============ Ricerca ============
   if (btnSearchPanel) {
@@ -1150,7 +1127,6 @@ if (name === "profile" || name === "messages") {
     if (!dog.social) return "";
     const enabled = [];
 
-    // Facebook
     if (dog.social.facebook?.enabled && dog.social.facebook.url) {
       enabled.push({
         name: "Facebook",
@@ -1160,7 +1136,6 @@ if (name === "profile" || name === "messages") {
       });
     }
 
-    // Instagram
     if (dog.social.instagram?.enabled && dog.social.instagram.url) {
       enabled.push({
         name: "Instagram",
@@ -1170,7 +1145,6 @@ if (name === "profile" || name === "messages") {
       });
     }
 
-    // TikTok
     if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
       enabled.push({
         name: "TikTok",
@@ -1199,11 +1173,250 @@ if (name === "profile" || name === "messages") {
     `;
   }
 
-  // ============ Profilo DOG (con Stories + Social) ============
+  // ============ FOLLOW / SEGUI TI (mock locale) ============
+  function persistFollowState() {
+    localStorage.setItem("followersByDog", JSON.stringify(state.followersByDog || {}));
+    localStorage.setItem("followingByDog", JSON.stringify(state.followingByDog || {}));
+  }
+
+  function getFollowers(dogId) {
+    if (!dogId) return [];
+    const map = state.followersByDog || {};
+    const arr = map[dogId] || [];
+    return Array.isArray(arr) ? arr : [];
+  }
+
+  function getFollowing(dogId) {
+    const map = state.followingByDog || {};
+    const key = dogId || CURRENT_USER_DOG_ID;
+    const arr = map[key] || [];
+    return Array.isArray(arr) ? arr : [];
+  }
+
+  function followDog(targetDogId) {
+    if (!targetDogId || targetDogId === CURRENT_USER_DOG_ID) return;
+
+    if (!state.followersByDog[targetDogId]) state.followersByDog[targetDogId] = [];
+    if (!state.followingByDog[CURRENT_USER_DOG_ID]) state.followingByDog[CURRENT_USER_DOG_ID] = [];
+
+    const followers = state.followersByDog[targetDogId];
+    const following = state.followingByDog[CURRENT_USER_DOG_ID];
+
+    if (!followers.includes(CURRENT_USER_DOG_ID)) {
+      followers.push(CURRENT_USER_DOG_ID);
+    }
+    if (!following.includes(targetDogId)) {
+      following.push(targetDogId);
+    }
+
+    persistFollowState();
+    updateFollowerUI(targetDogDogOrId(targetDogId));
+  }
+
+  function unfollowDog(targetDogId) {
+    if (!targetDogId || targetDogId === CURRENT_USER_DOG_ID) return;
+
+    const followers = state.followersByDog[targetDogId] || [];
+    const following = state.followingByDog[CURRENT_USER_DOG_ID] || [];
+
+    state.followersByDog[targetDogId] = followers.filter(id => id !== CURRENT_USER_DOG_ID);
+    state.followingByDog[CURRENT_USER_DOG_ID] = following.filter(id => id !== targetDogId);
+
+    persistFollowState();
+    updateFollowerUI(targetDogDogOrId(targetDogId));
+  }
+
+  function targetDogDogOrId(dogOrId) {
+    if (!dogOrId) return state.currentDogProfile || null;
+    if (typeof dogOrId === "string") {
+      return DOGS.find(d => d.id === dogOrId) || state.currentDogProfile || null;
+    }
+    return dogOrId;
+  }
+
+  function updateFollowerUI(dogOrId) {
+    const dog = targetDogDogOrId(dogOrId);
+    if (!dog) return;
+
+    const followers = getFollowers(dog.id);
+    const following = getFollowing(dog.id);
+
+    const followersCountEl = $("followersCount");
+    const followingCountEl = $("followingCount");
+
+    if (followersCountEl) {
+      const count = followers.length;
+      if (state.lang === "it") {
+        followersCountEl.textContent = `${count} follower`;
+      } else {
+        followersCountEl.textContent = `${count} follower${count === 1 ? "" : "s"}`;
+      }
+      followersCountEl.dataset.dogId = dog.id;
+    }
+
+    if (followingCountEl) {
+      const count = following.length;
+      if (state.lang === "it") {
+        followingCountEl.textContent = `${count} seguiti`;
+      } else {
+        followingCountEl.textContent = `${count} following`;
+      }
+      followingCountEl.dataset.dogId = dog.id;
+    }
+  }
+
+  function openFollowersList(dogOrId) {
+    const dog = targetDogDogOrId(dogOrId);
+    if (!dog || !followersOverlay || !followersList) return;
+
+    const followers = getFollowers(dog.id);
+
+    if (!followers.length) {
+      followersList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun follower" : "No followers yet"}</p>`;
+    } else {
+      followersList.innerHTML = followers.map(id => {
+        const fDog = DOGS.find(x => x.id === id);
+        if (!fDog) return "";
+        return `
+          <div class="sheet-item">
+            <img class="sheet-avatar" src="${fDog.img}" alt="${fDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+            <div class="sheet-info">
+              <div class="sheet-name">${fDog.name} ${fDog.verified ? "✅" : ""}</div>
+              <div class="sheet-meta">${fDog.breed || ""}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    followersOverlay.classList.remove("hidden");
+    requestAnimationFrame(() => followersOverlay.classList.add("show"));
+  }
+
+  function openFollowingList(dogOrId) {
+    const dog = targetDogDogOrId(dogOrId);
+    if (!dog || !followingOverlay || !followingList) return;
+
+    const following = getFollowing(dog.id);
+
+    if (!following.length) {
+      followingList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun DOG seguito" : "No following yet"}</p>`;
+    } else {
+      followingList.innerHTML = following.map(id => {
+        const fDog = DOGS.find(x => x.id === id);
+        if (!fDog) return "";
+        return `
+          <div class="sheet-item">
+            <img class="sheet-avatar" src="${fDog.img}" alt="${fDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+            <div class="sheet-info">
+              <div class="sheet-name">${fDog.name} ${fDog.verified ? "✅" : ""}</div>
+              <div class="sheet-meta">${fDog.breed || ""}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    followingOverlay.classList.remove("hidden");
+    requestAnimationFrame(() => followingOverlay.classList.add("show"));
+  }
+
+  function closeFollowersOverlay() {
+    if (!followersOverlay) return;
+    followersOverlay.classList.remove("show");
+    setTimeout(() => followersOverlay.classList.add("hidden"), 200);
+  }
+
+  function closeFollowingOverlay() {
+    if (!followingOverlay) return;
+    followingOverlay.classList.remove("show");
+    setTimeout(() => followingOverlay.classList.add("hidden"), 200);
+  }
+
+  followersOverlay?.addEventListener("click", (e) => {
+    if (e.target === followersOverlay || e.target.classList.contains("sheet-close")) {
+      closeFollowersOverlay();
+    }
+  });
+
+  followingOverlay?.addEventListener("click", (e) => {
+    if (e.target === followingOverlay || e.target.classList.contains("sheet-close")) {
+      closeFollowingOverlay();
+    }
+  });
+
+  // ============ LIKE FOTO PROFILO ============
+  function isDogPhotoLiked(dogId) {
+    if (!dogId) return false;
+    return !!(state.photoLikesByDog && state.photoLikesByDog[dogId]);
+  }
+
+  function persistPhotoLikes() {
+    localStorage.setItem("photoLikesByDog", JSON.stringify(state.photoLikesByDog || {}));
+  }
+
+  function updatePhotoLikeUI(dogId) {
+  if (!profileLikeBtn || !dogId) return;
+  const liked = isDogPhotoLiked(dogId);
+  const count = liked ? 1 : 0;  // 0 se non likato, 1 se likato
+
+  profileLikeBtn.classList.toggle("liked", liked);
+
+  profileLikeBtn.classList.remove("heart-anim");
+  void profileLikeBtn.offsetWidth;
+  profileLikeBtn.classList.add("heart-anim");
+
+  profileLikeBtn.textContent = "❤️ " + count;
+}
+
+  function togglePhotoLike(dogId) {
+    if (!dogId) return;
+    if (!state.photoLikesByDog) state.photoLikesByDog = {};
+    if (isDogPhotoLiked(dogId)) {
+      delete state.photoLikesByDog[dogId];
+    } else {
+      state.photoLikesByDog[dogId] = true;
+    }
+    persistPhotoLikes();
+    updatePhotoLikeUI(dogId);
+  }
+
+  // ============ LIKE STORIES ============
+  function isStoryLiked(mediaId) {
+    if (!mediaId) return false;
+    return !!(state.storyLikesByMedia && state.storyLikesByMedia[mediaId]);
+  }
+
+  function persistStoryLikes() {
+    localStorage.setItem("storyLikesByMedia", JSON.stringify(state.storyLikesByMedia || {}));
+  }
+
+  function updateStoryLikeUI(mediaId) {
+  if (!storyLikeBtn || !mediaId) return;
+  const liked = isStoryLiked(mediaId);
+  storyLikeBtn.classList.toggle("liked", liked);
+    storyLikeBtn.classList.remove("heart-anim");
+void storyLikeBtn.offsetWidth;
+storyLikeBtn.classList.add("heart-anim");
+  storyLikeBtn.textContent = "❤️";
+}
+
+  function toggleStoryLike(mediaId) {
+    if (!mediaId) return;
+    if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
+    if (isStoryLiked(mediaId)) {
+      delete state.storyLikesByMedia[mediaId];
+    } else {
+      state.storyLikesByMedia[mediaId] = true;
+    }
+    persistStoryLikes();
+    updateStoryLikeUI(mediaId);
+  }
+
+  // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
   window.openProfilePage = (d)=>{
     state.currentDogProfile = d;
     localStorage.setItem("currentProfileDogId", d.id);
-  setActiveView("profile");
     setActiveView("profile");
 
     history.pushState({view: "profile", dogId: d.id}, "", "");
@@ -1211,8 +1424,6 @@ if (name === "profile" || name === "messages") {
     profilePage.classList.remove("hidden");
 
     const selfieUnlocked = isSelfieUnlocked(d.id);
-    const hasMatch = state.matches[d.id] || false;
-    const hasFriendship = state.friendships[d.id] || false;
     const ownerDocs = state.ownerDocsUploaded[d.id] || {};
     const dogDocs = state.dogDocsUploaded[d.id] || {};
 
@@ -1243,9 +1454,19 @@ if (name === "profile" || name === "messages") {
     `;
 
     profileContent.innerHTML = `
-      <div class="pp-hero"><img src="${d.img}" alt="${d.name}"></div>
+      <div class="pp-hero">
+        <img src="${d.img}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+      </div>
       <div class="pp-head">
-        <h2 class="pp-name">${d.name} ${d.verified?"✅":""}</h2>
+        <h2 class="pp-name">
+          <span class="pp-name-main">${d.name} ${d.verified?"✅":""}</span>
+          <button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>
+          <span class="pp-follow-stats">
+            <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
+            <span class="pp-follow-dot">·</span>
+            <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
+          </span>
+        </h2>
         <div class="pp-badges">
           <span class="badge">${d.breed}</span>
           <span class="badge">${d.age} ${t("years")}</span>
@@ -1318,6 +1539,45 @@ if (name === "profile" || name === "messages") {
       </div>
     `;
 
+    updateFollowerUI(d);
+    const followBtn = $("followBtn");
+    if (followBtn) {
+      const refreshFollowBtn = () => {
+        const myFollowing = getFollowing(); // lista dei cani che SEGUE il mio DOG
+        const isFollowing = myFollowing.includes(d.id);
+        if (state.lang === "it") {
+          followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
+        } else {
+          followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
+        }
+        followBtn.classList.toggle("is-following", isFollowing);
+      };
+
+      followBtn.onclick = () => {
+        const myFollowing = getFollowing();
+        const isFollowing = myFollowing.includes(d.id);
+        if (isFollowing) {
+          unfollowDog(d.id);
+        } else {
+          followDog(d.id);
+        }
+        refreshFollowBtn();
+      };
+
+      refreshFollowBtn();
+    }
+
+    const followersCountEl = $("followersCount");
+    const followingCountEl = $("followingCount");
+
+    followersCountEl?.addEventListener("click", () => openFollowersList(d.id));
+    followingCountEl?.addEventListener("click", () => openFollowingList(d.id));
+
+    if (profileLikeBtn) {
+      profileLikeBtn.onclick = () => togglePhotoLike(d.id);
+      updatePhotoLikeUI(d.id);
+    }
+
     if(dogStories){
       qa(".pp-story-item", profileContent).forEach(item => {
         item.addEventListener("click", ()=>{
@@ -1330,15 +1590,40 @@ if (name === "profile" || name === "messages") {
     $("uploadDogStory")?.addEventListener("click", ()=> { openUploadModal(); });
 
     qa(".gallery img", profileContent).forEach(img=>{
-      img.addEventListener("click", ()=>{
-        const lb = document.createElement("div");
-        lb.className = "lightbox";
-        lb.innerHTML = `<button class="close" aria-label="Chiudi">✕</button><img src="${img.src}" alt="">`;
-        document.body.appendChild(lb);
-        qs(".close", lb).onclick = ()=> lb.remove();
-        lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
+  img.addEventListener("click", ()=>{
+    const lb = document.createElement("div");
+    lb.className = "lightbox";
+    lb.innerHTML = `
+      <button class="close" aria-label="Chiudi">✕</button>
+      <div class="lightbox-inner">
+        <img src="${img.src}" alt="">
+        <button class="story-like-btn lightbox-like-btn" type="button">❤️ 0</button>
+      </div>`;
+    document.body.appendChild(lb);
+
+    const closeBtn = qs(".close", lb);
+    if (closeBtn) closeBtn.onclick = ()=> lb.remove();
+    lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
+
+    const likeBtn = qs(".lightbox-like-btn", lb);
+    if (likeBtn) {
+      const refresh = () => {
+        const liked = isDogPhotoLiked(d.id);
+        const count = liked ? 1 : 0;
+        likeBtn.textContent = "❤️ " + count;
+      };
+
+      likeBtn.addEventListener("click", (ev)=>{
+        ev.stopPropagation();
+        togglePhotoLike(d.id);
+        refresh();
+        updatePhotoLikeUI(d.id);
       });
-    });
+
+      refresh();
+    }
+  });
+});
 
     qa(".doc-item", profileContent).forEach(item=>{
       item.addEventListener("click", ()=>{
@@ -1390,15 +1675,14 @@ if (name === "profile" || name === "messages") {
       });
     });
 
-    // Chat / amicizia / selfie
     $("btnOpenChat").onclick = ()=> { openChat(d); };
     $("btnLikeDog")?.addEventListener("click", ()=>{
-  state.matches[d.id] = true;
-  localStorage.setItem("matches", JSON.stringify(state.matches));
-  showMatchAnimation();
-  alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
-});
-    
+      state.matches[d.id] = true;
+      localStorage.setItem("matches", JSON.stringify(state.matches));
+      showMatchAnimation();
+      alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
+    });
+
     $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
@@ -1550,17 +1834,19 @@ if (name === "profile" || name === "messages") {
         selfie: "🎬 Reward Video Mock\n(prima di vedere selfie)\n\nTipo: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services",
-        social: "🎬 Reward Video Mock\n(apertura profilo social)\n\nTipo: Social Unlock"
+        social: "🎬 Reward Video Mock\n(apertura profilo social)\n\nTipo: Social Unlock",
+        sponsor: "🎬 Reward Video Mock\n(Sponsor ufficiale)\n\nTipo: Sponsor"
       },
       en: {
         swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nNext threshold: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
         selfie: "🎬 Reward Video Mock\n(before viewing selfie)\n\nType: Selfie Unlock",
         chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services",
-        social: "🎬 Reward Video Mock\n(opening social profile)\n\nType: Social Unlock"
+        social: "🎬 Reward Video Mock\n(opening social profile)\n\nType: Social Unlock",
+        sponsor: "🎬 Reward Video Mock\n(Official sponsor)\n\nType: Sponsor"
       }
     };
-    const text = msg[state.lang][type] || msg.it[type];
+    const text = (msg[state.lang] && msg[state.lang][type]) || (msg.it && msg.it[type]) || "Ad";
     alert(text);
     if (onClose) onClose();
   }
@@ -1569,7 +1855,6 @@ if (name === "profile" || name === "messages") {
   function init(){
     applyTranslations();
 
-    // Preload immagini
     ['dog1.jpg','dog2.jpg','dog3.jpg'].forEach(src=>{
       const im = new Image(); im.src = `./${src}`;
     });
@@ -1593,12 +1878,12 @@ if (name === "profile" || name === "messages") {
     }
 
     if (state.entered){
-  // initStories() parte dopo ENTRA per effetto WOW
-}
+      // initStories parte dopo ENTRA per effetto WOW
+    }
   }
   init();
 
-  // ============ STORIES – Config & State (inizio) ============
+  // ============ STORIES – Config & State ============
   const STORIES_CONFIG = {
     PHOTO_DURATION: 15000,
     VIDEO_MAX_DURATION_FREE: 15,
@@ -1661,7 +1946,6 @@ if (name === "profile" || name === "messages") {
     }
   };
 
-  // 🔹 helper privacy: quali media sono visibili a questo utente per quello userId
   function getVisibleMediaList(story) {
     const hasMatch = !!state.matches[story.userId];
     const hasFriendship = !!state.friendships[story.userId];
@@ -1675,7 +1959,6 @@ if (name === "profile" || name === "messages") {
   }
 
   // ===== STORIES — eventi, bar, viewer, navigazione =====
-
   function setupStoriesEvents() {
     $("addStoryBtn")?.addEventListener("click", openUploadModal);
 
@@ -1690,7 +1973,6 @@ if (name === "profile" || name === "messages") {
     $("storyNavPrev")?.addEventListener("click", prevStoryMedia);
     $("storyNavNext")?.addEventListener("click", nextStoryMedia);
 
-    // Chiudi story cliccando sullo sfondo scuro
     const viewer = $("storyViewer");
     if (viewer) {
       viewer.addEventListener("click", (e) => {
@@ -1698,11 +1980,10 @@ if (name === "profile" || name === "messages") {
       });
     }
 
-    // ESC per chiudere
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        const viewer = $("storyViewer");
-        if (viewer && !viewer.classList.contains("hidden")) {
+        const v = $("storyViewer");
+        if (v && !v.classList.contains("hidden")) {
           closeStoryViewer();
         }
       }
@@ -1726,7 +2007,7 @@ if (name === "profile" || name === "messages") {
 
     StoriesState.stories.forEach((story) => {
       const visibleMedia = getVisibleMediaList(story);
-      if (!visibleMedia.length) return; // tutte private e niente match/amicizia → non mostrare cerchio
+      if (!visibleMedia.length) return;
 
       const allViewed = visibleMedia.every((m) => m.viewed);
 
@@ -1750,26 +2031,15 @@ if (name === "profile" || name === "messages") {
     });
   }
 
-  function openStoryViewerFromBar(userId) {
-    const story = StoriesState.stories.find((s) => s.userId === userId);
-    if (!story) return;
+  function openDogStoryViewer(dogId, mediaIndex) {
+    StoriesState.currentStoryUserId = dogId;
+    StoriesState.currentMediaIndex = mediaIndex || 0;
+    StoriesState.openedFrom = "profile";
 
-    const visibleMedia = getVisibleMediaList(story);
-    if (!visibleMedia.length) {
-      showToast(state.lang==="it" ? "🔒 Story privata: serve un match o amicizia" : "🔒 Private story: match or friendship required");
-      return;
+    const storyViewer = $("storyViewer");
+    if (storyViewer) {
+      storyViewer.classList.remove("hidden");
     }
-
-    // Nessun reward video: entra subito
-    openStoryViewerDirect(userId);
-  }
-
-  function openStoryViewerDirect(userId) {
-    StoriesState.currentStoryUserId = userId;
-    StoriesState.currentMediaIndex = 0;
-    StoriesState.openedFrom = "bar";
-
-    $("storyViewer")?.classList.remove("hidden");
     document.body.classList.add("noscroll");
     document.body.classList.add("story-open");
 
@@ -1777,19 +2047,10 @@ if (name === "profile" || name === "messages") {
     startStoryProgress();
   }
 
-  function openDogStoryViewer(userId, mediaIndex = 0) {
-    const story = StoriesState.stories.find((s) => s.userId === userId);
-    if (!story) return;
-
-    const visibleMedia = getVisibleMediaList(story);
-    if (!visibleMedia.length) {
-      showToast(state.lang==="it" ? "🔒 Story privata: serve un match o amicizia" : "🔒 Private story: match or friendship required");
-      return;
-    }
-
+  function openStoryViewerFromBar(userId) {
     StoriesState.currentStoryUserId = userId;
-    StoriesState.currentMediaIndex = Math.min(mediaIndex, visibleMedia.length - 1);
-    StoriesState.openedFrom = "profile";
+    StoriesState.currentMediaIndex = 0;
+    StoriesState.openedFrom = "bar";
 
     $("storyViewer")?.classList.remove("hidden");
     document.body.classList.add("noscroll");
@@ -1871,6 +2132,11 @@ if (name === "profile" || name === "messages") {
       content.appendChild(video);
     }
 
+    if (storyLikeBtn && media.id) {
+      storyLikeBtn.onclick = () => toggleStoryLike(media.id);
+      updateStoryLikeUI(media.id);
+    }
+
     if (media.music) playStoryMusic(media.music);
   }
 
@@ -1925,7 +2191,17 @@ if (name === "profile" || name === "messages") {
       renderStoryViewer();
       startStoryProgress();
     } else {
-      closeStoryViewer();
+      const currentIndex = StoriesState.stories.findIndex(
+        (s) => s.userId === StoriesState.currentStoryUserId
+      );
+      if (currentIndex < StoriesState.stories.length - 1) {
+        StoriesState.currentStoryUserId = StoriesState.stories[currentIndex + 1].userId;
+        StoriesState.currentMediaIndex = 0;
+        renderStoryViewer();
+        startStoryProgress();
+      } else {
+        closeStoryViewer();
+      }
     }
   }
 
@@ -1948,7 +2224,6 @@ if (name === "profile" || name === "messages") {
     document.body.classList.remove("noscroll");
     document.body.classList.remove("story-open");
 
-    // Se la story era stata aperta dal profilo, resta nel profilo
     if (StoriesState?.openedFrom === "profile") {
       $("profilePage")?.classList.remove("hidden");
     }
@@ -1965,7 +2240,6 @@ if (name === "profile" || name === "messages") {
     return `${Math.floor(seconds / 86400)}g fa`;
   }
 
-  // Flash ingresso bianco (facoltativo)
   function triggerFlash() {
     const el = document.getElementById("flashOverlay");
     if (!el) return;
@@ -1974,13 +2248,11 @@ if (name === "profile" || name === "messages") {
   }
 
   function playStoryMusic(musicId) {
-    // Hook per player musicale in futuro
     console.log("🎵 Playing music:", musicId);
   }
 
-  // Deleghe aggiuntive per cerchi story in qualunque sezione
   document.addEventListener("click", (e) => {
-    if (e.target.closest("#storiesBar")) return; // la home ha già il suo listener
+    if (e.target.closest("#storiesBar")) return;
     const el = e.target.closest(".story-circle");
     if (!el || el.id === "addStoryBtn") return;
     const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
@@ -1988,7 +2260,6 @@ if (name === "profile" || name === "messages") {
     openStoryViewerFromBar(dogId);
   });
 
-  // Click su bar principale (se la struttura HTML usa id="storiesBar")
   $("storiesBar")?.addEventListener("click", (e) => {
     const el = e.target.closest(".story-circle");
     if (el?.id === "addStoryBtn") return;
@@ -1999,7 +2270,6 @@ if (name === "profile" || name === "messages") {
   });
 
   // ===== STORIES — upload, filtri, pubblicazione =====
-
   function openUploadModal() {
     if (!StoriesState.canUploadStory()) {
       showToast(state.lang==="it"
@@ -2017,71 +2287,67 @@ if (name === "profile" || name === "messages") {
     $("storyFileInput").value = "";
   }
 
- function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const preview = $("storyPreview");
-  if (!preview) return;
+    const preview = $("storyPreview");
+    if (!preview) return;
 
-  // pulizia iniziale
-  preview.innerHTML = "";
-  preview.dataset.type = "";
-  preview.dataset.hasMedia = "false";
+    preview.innerHTML = "";
+    preview.dataset.type = "";
+    preview.dataset.hasMedia = "false";
 
-  const isImage = file.type.startsWith("image/");
-  const isVideo = file.type.startsWith("video/");
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
 
-  if (!isImage && !isVideo) {
-    alert("Formato non supportato. Usa solo foto o video.");
-    return;
-  }
-
-  // limiti dimensione (usiamo la config già esistente)
-  if (isImage && file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
-    alert("Foto troppo grande. Riduci la dimensione e riprova.");
-    return;
-  }
-  if (isVideo && file.size > STORIES_CONFIG.MAX_VIDEO_SIZE) {
-    alert("Video troppo grande. Riduci la durata/dimensione e riprova.");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = function (event) {
-    const base64 = event.target.result; // data:image/...;base64,...
-
-    // salviamo in stato in modo persistente
-    StoriesState.uploadedFile = {
-      type: isImage ? "image" : "video",
-      url: base64,
-      mime: file.type,
-      size: file.size
-    };
-
-    if (isImage) {
-      preview.innerHTML = `<img src="${base64}" alt="Story" />`;
-      preview.dataset.type = "image";
-    } else {
-      preview.innerHTML = `<video src="${base64}" controls playsinline muted></video>`;
-      preview.dataset.type = "video";
+    if (!isImage && !isVideo) {
+      alert("Formato non supportato. Usa solo foto o video.");
+      return;
     }
 
-    preview.dataset.hasMedia = "true";
-    $("nextToCustomize")?.classList.remove("hidden");
-  };
+    if (isImage && file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
+      alert("Foto troppo grande. Riduci la dimensione e riprova.");
+      return;
+    }
+    if (isVideo && file.size > STORIES_CONFIG.MAX_VIDEO_SIZE) {
+      alert("Video troppo grande. Riduci la durata/dimensione e riprova.");
+      return;
+    }
 
-  reader.onerror = function () {
-    alert("Errore nel caricamento del file. Riprova.");
-    StoriesState.uploadedFile = null;
-    preview.innerHTML = "";
-    $("nextToCustomize")?.classList.add("hidden");
-  };
+    const reader = new FileReader();
 
-  // avvia lettura → Base64
-  reader.readAsDataURL(file);
-}
+    reader.onload = function (event) {
+      const base64 = event.target.result;
+
+      StoriesState.uploadedFile = {
+        type: isImage ? "image" : "video",
+        url: base64,
+        mime: file.type,
+        size: file.size
+      };
+
+      if (isImage) {
+        preview.innerHTML = `<img src="${base64}" alt="Story" />`;
+        preview.dataset.type = "image";
+      } else {
+        preview.innerHTML = `<video src="${base64}" controls playsinline muted></video>`;
+        preview.dataset.type = "video";
+      }
+
+      preview.dataset.hasMedia = "true";
+      $("nextToCustomize")?.classList.remove("hidden");
+    };
+
+    reader.onerror = function () {
+      alert("Errore nel caricamento del file. Riprova.");
+      StoriesState.uploadedFile = null;
+      preview.innerHTML = "";
+      $("nextToCustomize")?.classList.add("hidden");
+    };
+
+    reader.readAsDataURL(file);
+  }
 
   function showCustomizeStep() {
     $("uploadStep").classList.add("hidden");
@@ -2094,73 +2360,80 @@ if (name === "profile" || name === "messages") {
   }
 
   function setupFiltersGrid() {
-    const filters = ["none", "warm", "cool", "bw", "vintage"];
-    const grid = $("filtersGrid");
-    if (!grid) return;
-    grid.innerHTML = "";
-    filters.forEach(f => {
-      const btn = document.createElement("button");
-      btn.className = `filter-btn ${f}`;
-      btn.textContent = f;
+    const filterButtons = qa(".filter-chip", $("filtersGrid"));
+    filterButtons.forEach(btn => {
       btn.addEventListener("click", () => {
-        $("storyPreview").dataset.filter = f;
-        $("storyPreview").className = f;
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        StoriesState.selectedFilter = btn.dataset.filter || "none";
       });
-      grid.appendChild(btn);
+    });
+
+    const musicButtons = qa(".music-chip", $("musicGrid"));
+    musicButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        musicButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        StoriesState.selectedMusic = btn.dataset.music || "";
+      });
     });
   }
 
   function publishStory() {
     const preview = $("storyPreview");
-    if (!preview) return;
-
-    const mediaType = preview.dataset.type || "image";
-    const filter = preview.dataset.filter || "none";
-    const el = preview.querySelector("img, video");
-    if (!el) return;
-
-    // 🔹 privacy: prende valore da select se esiste, altrimenti public
-    const privacy = $("storyPrivacySelect") ? $("storyPrivacySelect").value : "public";
-
-    const media = {
-      type: mediaType,
-      url: el.src,
-      timestamp: Date.now(),
-      filter,
-      viewed: false,
-      music: "",
-      privacy
-    };
-
-    const myId = "me";
-    const existing = StoriesState.stories.find(s => s.userId === myId);
-    if (existing) {
-      existing.media.unshift(media);
-    } else {
-      StoriesState.stories.unshift({
-        userId: myId,
-        userName: "Me",
-        avatar: "assets/avatar_me.png",
-        media: [media]
-      });
+    if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
+      alert(state.lang==="it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
+      return;
     }
 
+    const userId = "currentUser";
+    let userStory = StoriesState.stories.find(s => s.userId === userId);
+    if (!userStory) {
+      userStory = {
+        userId,
+        userName: "You",
+        avatar: "plutoo-icon-192.png",
+        verified: false,
+        media: []
+      };
+      StoriesState.stories.unshift(userStory);
+    }
+
+    const newMedia = {
+      id: `m_${Date.now()}`,
+      type: StoriesState.uploadedFile.type,
+      url: StoriesState.uploadedFile.url,
+      timestamp: Date.now(),
+      filter: StoriesState.selectedFilter || "none",
+      music: StoriesState.selectedMusic || "",
+      viewed: false,
+      privacy: "public"
+    };
+
+    userStory.media.push(newMedia);
     StoriesState.saveStories();
+
+    StoriesState.uploadedFile = null;
+    StoriesState.selectedFilter = "none";
+    StoriesState.selectedMusic = "";
+
     closeUploadModal();
     renderStoriesBar();
-    showToast("Story pubblicata!");
+
+    showToast(state.lang==="it" ? "Story pubblicata!" : "Story published!");
   }
 
   function showToast(msg) {
-    let toast = document.createElement("div");
-    toast.className = "toast";
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add("show"), 10);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 2300);
+    let el = $("toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "toast";
+      el.className = "toast";
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add("show");
+    setTimeout(()=>el.classList.remove("show"), 2000);
   }
 
-}); // EOF
+});
