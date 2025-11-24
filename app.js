@@ -590,7 +590,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============ Tabs ============
   tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
   tabLove?.addEventListener("click",   ()=>setActiveView("love"));
-
   tabLuoghi?.addEventListener("click",(e)=>{
     e.stopPropagation();
     const wrap = tabLuoghi.parentElement;
@@ -700,7 +699,13 @@ document.addEventListener("DOMContentLoaded", () => {
     setActiveView(prev);
   });
 
-  function goBack(){
+    function goBack(){
+    // Se è aperta la lightbox della galleria profilo, chiudila
+    const lb = document.querySelector(".lightbox");
+    if (lb) {
+      lb.remove();
+      return;
+    }
     const storyViewer = $("storyViewer");
     if (storyViewer && !storyViewer.classList.contains("hidden")){
       closeStoryViewer();
@@ -1426,6 +1431,9 @@ storyLikeBtn.classList.add("heart-anim");
     const selfieUnlocked = isSelfieUnlocked(d.id);
     const ownerDocs = state.ownerDocsUploaded[d.id] || {};
     const dogDocs = state.dogDocsUploaded[d.id] || {};
+    const selfieKey   = `selfieImage_${d.id}`;
+    const selfieStored = localStorage.getItem(selfieKey);
+    const selfieSrc    = selfieStored || d.img;
 
     const dogStories = StoriesState.stories.find(s => s.userId === d.id);
     const storiesHTML = dogStories ? `
@@ -1487,13 +1495,14 @@ storyLikeBtn.classList.add("heart-anim");
       </div>
 
       <h3 class="section-title">Selfie</h3>
-      <div class="selfie ${selfieUnlocked?'unlocked':''}">
-        <img class="img" src="${d.img}" alt="Selfie">
-        <div class="over">
-          <button id="unlockSelfie" class="btn accent small">${selfieUnlocked?(state.lang==="it"?"Sbloccato 24h":"Unlocked 24h"):(state.lang==="it"?"Sblocca selfie":"Unlock selfie")}</button>
-          <button id="uploadSelfie" class="btn accent small">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
-        </div>
-      </div>
+<div class="selfie ${selfieUnlocked?'unlocked':''}">
+  <img class="img" src="${selfieSrc}" alt="Selfie">
+  <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
+  <div class="over">
+    <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>
+    <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
+  </div>
+</div>
 
       <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
 
@@ -1683,7 +1692,38 @@ storyLikeBtn.classList.add("heart-anim");
       alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
     });
 
-    $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
+    $("uploadSelfie").onclick = () => {
+  const d = state.currentDogProfile;
+  if (!d) return;
+
+  const fileInput = $("selfieFileInput");
+  if (!fileInput) return;
+
+  // reset della selezione precedente
+  fileInput.value = "";
+
+  fileInput.onchange = () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl   = e.target.result;
+      const selfieKey = `selfieImage_${d.id}`;
+
+      // salva localmente
+      localStorage.setItem(selfieKey, dataUrl);
+
+      // aggiorna subito l’immagine in pagina
+      const img = qs(".selfie .img", profileContent);
+      if (img) img.src = dataUrl;
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  fileInput.click();
+};
     $("unlockSelfie").onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
         const unlock = ()=> {
