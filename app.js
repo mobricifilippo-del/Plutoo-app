@@ -1573,17 +1573,20 @@ storyLikeBtn.classList.add("heart-anim");
       </div>
     `;
 
-    // ==== GALLERIA PROFILO (max 5 foto, salvataggio locale) ====
-  (function () {
-    const maxPhotos = 5;
-    const dogId = d.id;
-    const storageKey = `gallery_${dogId}`;
+    // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
+(function () {
+  const maxPhotos = 5;
+  const dogId = d.id;
+  const storageKey = `gallery_${dogId}`;
 
-   // Gestione Galleria: bottone "+ Aggiungi"
-const galleryGrid = qs(".pp-gallery-grid", profileContent);
-const addGalleryPhotoBtn = qs(".add-photo", profileContent);
+  // Gestione Galleria: bottone "+ Aggiungi"
+  const galleryGrid = qs(".pp-gallery-grid", profileContent);
+  const addGalleryPhotoBtn = galleryGrid
+    ? Array.from(galleryGrid.querySelectorAll("button"))
+        .find(btn => (btn.textContent || "").toLowerCase().includes("aggiungi"))
+    : null;
 
-if (!galleryGrid || !addGalleryPhotoBtn) return;
+  if (!galleryGrid || !addGalleryPhotoBtn) return;
 
     // Carica immagini esistenti
     let images = [];
