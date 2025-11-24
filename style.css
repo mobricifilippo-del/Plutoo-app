@@ -1437,10 +1437,11 @@ border-color: rgba(177, 154, 255, 0.4);
 
 /* corpo messaggi - scrollabile */
 .messages-body {
-flex: 1;
-overflow-y: auto;
-padding: 16px;
--webkit-overflow-scrolling: touch;
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 /* liste messaggi */
