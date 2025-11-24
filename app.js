@@ -1579,10 +1579,11 @@ storyLikeBtn.classList.add("heart-anim");
     const dogId = d.id;
     const storageKey = `gallery_${dogId}`;
 
-    const galleryGrid = profileContent.querySelector(".pp-gallery-grid");
-    const addBtn = profileContent.querySelector(".add-photo");
+    // Gestione Galleria: bottone "+ Aggiungi"
+const galleryGrid = qs(".gallery", profileContent);
+const addGalleryPhotoBtn = qs(".add-photo", profileContent);
 
-    if (!galleryGrid || !addBtn) return;
+    if (!galleryGrid || !addGalleryPhotoBtn) return;
 
     // Carica immagini esistenti
     let images = [];
