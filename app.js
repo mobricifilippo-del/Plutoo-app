@@ -418,56 +418,56 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============ Dati mock DOGS ============
-  const DOGS = [
-    { id:"d1", name:"Luna", age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg",
-      bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true,
-      weight:28, height:55, pedigree:true, breeding:false, size:"medium",
-      social:{ facebook:{enabled:true,url:"https://facebook.com/luna.owner"},
-               instagram:{enabled:true,url:"https://instagram.com/luna_golden"},
-               tiktok:{enabled:false,url:""} } },
-    { id:"d2", name:"Rex", age:4, breed:"Pastore Tedesco", km:3.4, img:"dog2.jpg",
-      bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true,
-      weight:35, height:62, pedigree:true, breeding:true, size:"large",
-      social:{ facebook:{enabled:false,url:""},
-               instagram:{enabled:true,url:"https://instagram.com/rex_pastore"},
-               tiktok:{enabled:true,url:"https://tiktok.com/@rexdog"} } },
-    { id:"d3", name:"Maya", age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg",
-      bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false,
-      weight:12, height:30, pedigree:false, breeding:false, size:"small",
-      social:{ facebook:{enabled:true,url:"https://facebook.com/maya.owner"},
-               instagram:{enabled:true,url:"https://instagram.com/maya_frenchie"},
-               tiktok:{enabled:false,url:""} } },
-    { id:"d4", name:"Rocky", age:5, breed:"Beagle", km:4.0, img:"dog4.jpg",
-      bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true,
-      weight:15, height:38, pedigree:true, breeding:false, size:"medium",
-      social:{ facebook:{enabled:false,url:""},
-               instagram:{enabled:true,url:"https://instagram.com/rocky_beagle"},
-               tiktok:{enabled:true,url:"https://tiktok.com/@rockybeagle"} } },
-    { id:"d5", name:"Chicco", age:1, breed:"Barboncino", km:0.8, img:"dog5.jpg",
-      bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true,
-      weight:8, height:28, pedigree:false, breeding:false, size:"small",
-      social:{ facebook:{enabled:true,url:"https://facebook.com/chicco.owner"},
-               instagram:{enabled:false,url:""},
-               tiktok:{enabled:false,url:""} } },
-    { id:"d6", name:"Kira", age:6, breed:"Labrador", km:5.1, img:"dog6.jpg",
-      bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true,
-      weight:30, height:58, pedigree:true, breeding:true, size:"large",
-      social:{ facebook:{enabled:true,url:"https://facebook.com/kira.owner"},
-               instagram:{enabled:true,url:"https://instagram.com/kira_labrador"},
-               tiktok:{enabled:true,url:"https://tiktok.com/@kiralab"} } },
-    { id:"d7", name:"Toby", age:2, breed:"Husky", km:2.8, img:"dog7.jpg",
-      bio:"Energia pura.", mode:"love", sex:"M", verified:true,
-      weight:25, height:54, pedigree:true, breeding:true, size:"medium",
-      social:{ facebook:{enabled:false,url:""},
-               instagram:{enabled:true,url:"https://instagram.com/toby_husky"},
-               tiktok:{enabled:false,url:""} } },
-    { id:"d8", name:"Bella", age:4, breed:"Cocker Spaniel", km:1.5, img:"dog8.jpg",
-      bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false,
-      weight:14, height:40, pedigree:false, breeding:false, size:"medium",
-      social:{ facebook:{enabled:true,url:"https://facebook.com/bella.owner"},
-               instagram:{enabled:true,url:"https://instagram.com/bella_cocker"},
-               tiktok:{enabled:true,url:"https://tiktok.com/@bellacocker"} } },
-  ];
+const DOGS = [
+  { id:"d1", name:"Luna", age:2, breed:"Golden Retriever", km:1.2, img:"dog1.jpg",
+    bio:"Dolcissima e curiosa.", mode:"love", sex:"F", verified:true,
+    weight:28, height:55, pedigree:true, breeding:false, size:"medium",
+    social:{ facebook:{enabled:true,url:"https://facebook.com/"},
+             instagram:{enabled:true,url:"https://instagram.com/"},
+             tiktok:{enabled:false,url:""} } },
+  { id:"d2", name:"Rex", age:4, breed:"Pastore Tedesco", km:3.4, img:"dog2.jpg",
+    bio:"Fedele e giocherellone.", mode:"friendship", sex:"M", verified:true,
+    weight:35, height:62, pedigree:true, breeding:true, size:"large",
+    social:{ facebook:{enabled:false,url:""},
+             instagram:{enabled:true,url:"https://instagram.com/"},
+             tiktok:{enabled:true,url:"https://tiktok.com/"} } },
+  { id:"d3", name:"Maya", age:3, breed:"Bulldog Francese", km:2.1, img:"dog3.jpg",
+    bio:"Coccole e passeggiate.", mode:"love", sex:"F", verified:false,
+    weight:12, height:30, pedigree:false, breeding:false, size:"small",
+    social:{ facebook:{enabled:true,url:"https://facebook.com/"},
+             instagram:{enabled:true,url:"https://instagram.com/"},
+             tiktok:{enabled:false,url:""} } },
+  { id:"d4", name:"Rocky", age:5, breed:"Beagle", km:4.0, img:"dog4.jpg",
+    bio:"Sempre in movimento.", mode:"friendship", sex:"M", verified:true,
+    weight:15, height:38, pedigree:true, breeding:false, size:"medium",
+    social:{ facebook:{enabled:false,url:""},
+             instagram:{enabled:true,url:"https://instagram.com/"},
+             tiktok:{enabled:true,url:"https://tiktok.com/"} } },
+  { id:"d5", name:"Chicco", age:1, breed:"Barboncino", km:0.8, img:"dog5.jpg",
+    bio:"Piccolo fulmine.", mode:"love", sex:"M", verified:true,
+    weight:8, height:28, pedigree:false, breeding:false, size:"small",
+    social:{ facebook:{enabled:true,url:"https://facebook.com/"},
+             instagram:{enabled:false,url:""},
+             tiktok:{enabled:false,url:""} } },
+  { id:"d6", name:"Kira", age:6, breed:"Labrador", km:5.1, img:"dog6.jpg",
+    bio:"Acqua e palla.", mode:"friendship", sex:"F", verified:true,
+    weight:30, height:58, pedigree:true, breeding:true, size:"large",
+    social:{ facebook:{enabled:true,url:"https://facebook.com/"},
+             instagram:{enabled:true,url:"https://instagram.com/"},
+             tiktok:{enabled:true,url:"https://tiktok.com/"} } },
+  { id:"d7", name:"Toby", age:2, breed:"Husky", km:2.8, img:"dog7.jpg",
+    bio:"Energia pura.", mode:"love", sex:"M", verified:true,
+    weight:25, height:54, pedigree:true, breeding:true, size:"medium",
+    social:{ facebook:{enabled:false,url:""},
+             instagram:{enabled:true,url:"https://instagram.com/"},
+             tiktok:{enabled:false,url:""} } },
+  { id:"d8", name:"Bella", age:4, breed:"Cocker Spaniel", km:1.5, img:"dog8.jpg",
+    bio:"Dolce compagna.", mode:"friendship", sex:"F", verified:false,
+    weight:14, height:40, pedigree:false, breeding:false, size:"medium",
+    social:{ facebook:{enabled:true,url:"https://facebook.com/"},
+             instagram:{enabled:true,url:"https://instagram.com/"},
+             tiktok:{enabled:true,url:"https://tiktok.com/"} } },
+];
 
   // ============ Razze ============
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
@@ -606,10 +606,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ===== MESSAGGI - VISTA E TABS INTERNI ====
-  const btnMessages = $("btnMessages");
-  const msgTopTabs  = qa(".msg-top-tab");
-  const msgLists    = qa(".messages-list");
+  // ====== MESSAGGI - VISTA E TABS INTERN INTERNI ======
+ const btnMessages = $("btnMessages");
+ const msgTopTabs  = qa(".msg-top-tab");
+ const msgLists    = qa(".messages-list");
+
+// --- EMPTY STATES ---
+msgLists.forEach(list => {
+  const items = list.querySelectorAll(".msg-item");
+  if (!items.length) {
+    let text = "";
+    if (list.id === "msgReceived") text = "Nessun messaggio";
+    else if (list.id === "msgSent") text = "Nessun messaggio inviato";
+    else if (list.id === "msgMatch") text = "Nessun match";
+    else text = "Nessun elemento";
+
+    list.innerHTML = `
+      <div style="text-align:center;padding:40px 0;color:#bbb;font-size:1rem;">
+        ${text}
+      </div>
+    `;
+  }
+});
+
+  msgTopTabs.forEach(tab => {
 
   btnMessages?.addEventListener("click", () => {
     setActiveView("messages");
