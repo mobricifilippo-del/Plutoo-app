@@ -636,8 +636,6 @@ msgLists.forEach(list => {
   }
 });
 
-  msgTopTabs.forEach(tab => {
-
   btnMessages?.addEventListener("click", () => {
     setActiveView("messages");
   });
