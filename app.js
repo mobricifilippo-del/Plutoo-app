@@ -1573,6 +1573,86 @@ storyLikeBtn.classList.add("heart-anim");
       </div>
     `;
 
+    // ==== GALLERIA PROFILO (max 5 foto, salvataggio locale) ====
+  (function () {
+    const maxPhotos = 5;
+    const dogId = d.id;
+    const storageKey = `gallery_${dogId}`;
+
+    const galleryGrid = profileContent.querySelector(".pp-gallery-grid");
+    const addBtn = profileContent.querySelector(".add-photo");
+
+    if (!galleryGrid || !addBtn) return;
+
+    // Carica immagini esistenti
+    let images = [];
+    try {
+      const raw = localStorage.getItem(storageKey);
+      images = raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      images = [];
+    }
+
+    if (!Array.isArray(images)) images = [];
+
+    // Render iniziale
+    const renderGallery = () => {
+      galleryGrid.innerHTML = "";
+      images.slice(0, maxPhotos).forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.className = "pp-gallery-img";
+        img.onerror = () => {
+          img.src = "./plutoo-icon-192.png";
+        };
+        galleryGrid.appendChild(img);
+      });
+
+      // Mostra il pulsante "Aggiungi" solo se non hai raggiunto 5 foto
+      if (images.length < maxPhotos) {
+        galleryGrid.appendChild(addBtn);
+      }
+    };
+
+    renderGallery();
+
+    // Input file nascosto
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.multiple = true;
+    input.style.display = "none";
+    document.body.appendChild(input);
+
+    addBtn.addEventListener("click", () => {
+      input.value = "";
+      input.click();
+    });
+
+    input.addEventListener("change", () => {
+      const files = Array.from(input.files || []);
+      if (!files.length) return;
+
+      const remaining = maxPhotos - images.length;
+      const toAdd = files.slice(0, remaining);
+
+      let pending = toAdd.length;
+
+      toAdd.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          images.push(e.target.result);
+          pending--;
+          if (pending === 0) {
+            localStorage.setItem(storageKey, JSON.stringify(images));
+            renderGallery();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  })();
+
     updateFollowerUI(d);
     const followBtn = $("followBtn");
     if (followBtn) {
