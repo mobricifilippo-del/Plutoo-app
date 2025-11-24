@@ -1609,7 +1609,7 @@ storyLikeBtn.classList.add("heart-anim");
         img.onerror = () => {
           img.src = "./plutoo-icon-192.png";
         };
-        galleryGrid.appendChild(img);
+      galleryGrid.appendChild(addGalleryPhotoBtn);
       });
 
       // Mostra il pulsante "Aggiungi" solo se non hai raggiunto 5 foto
