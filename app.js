@@ -1583,7 +1583,7 @@ storyLikeBtn.classList.add("heart-anim");
 const galleryGrid = qs(".gallery", profileContent);
 const addGalleryPhotoBtn = qs(".add-photo", profileContent);
 
-    if (!galleryGrid || !addGalleryPhotoBtn) return;
+  if (!galleryGrid || !addGalleryPhotoBtn) return;
 
     // Carica immagini esistenti
     let images = [];
