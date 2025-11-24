@@ -1627,11 +1627,11 @@ const addGalleryPhotoBtn = galleryBlock
     input.multiple = true;
     input.style.display = "none";
     document.body.appendChild(input);
-
-    addBtn.addEventListener("click", () => {
-      input.value = "";
-      input.click();
-    });
+   // 🔥 Aggancia il click al bottone + Aggiungi
+addGalleryPhotoBtn.addEventListener("click", () => {
+  input.value = "";
+  input.click();
+});
 
     input.addEventListener("change", () => {
       const files = Array.from(input.files || []);
