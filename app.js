@@ -1650,7 +1650,7 @@ storyLikeBtn.classList.add("heart-anim");
       });
     });
 
-    qa(".social-btn", profileContent).forEach(btn=>{
+    $$(".social-btn", profileContent).forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const url = btn.getAttribute("data-url");
         const dogId = btn.getAttribute("data-dog-id");
