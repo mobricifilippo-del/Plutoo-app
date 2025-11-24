@@ -1711,8 +1711,6 @@ $("#unlockSelfie").onclick = () => {
     }
   }
 };
-    };
-  };
 
   profileBack?.addEventListener("click", ()=> closeProfilePage());
   profileClose?.addEventListener("click", ()=> closeProfilePage());
