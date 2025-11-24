@@ -2453,27 +2453,30 @@ $("#unlockSelfie").onclick = () => {
   }
   
 // ===== Gestione tasto "indietro" stile Instagram =====
-  window.addEventListener("popstate", (event) => {
+window.addEventListener("popstate", (event) => {
     // 1) Se è aperto il viewer Storie, lo chiudo e resto sulla pagina
     const storyViewer = $("storyViewer");
     if (storyViewer && !storyViewer.classList.contains("hidden") && typeof closeStoryViewer === "function") {
-      closeStoryViewer();
-      return;
+        closeStoryViewer();
+        return;
     }
 
     // 2) Se sono sulla pagina profilo DOG, torno alla vista precedente
     if (state.currentView === "profile" && typeof closeProfilePage === "function") {
-      closeProfilePage();
-      return;
+        closeProfilePage();
+        return;
     }
 
     // 3) Se nello state c'è una vista salvata, la ripristino
     if (event.state && event.state.view) {
-      setActiveView(event.state.view);
-      return;
+        setActiveView(event.state.view);
+        return;
     }
 
     // 4) Fallback di sicurezza: torno alla home "Vicino a te"
     setActiveView("nearby");
-  });
+});
+
+// 🚀 Avvia l'app (fondamentale, era questo che mancava)
+init();
 });
