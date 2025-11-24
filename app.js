@@ -1650,7 +1650,7 @@ storyLikeBtn.classList.add("heart-anim");
       });
     });
 
-    $$(".social-btn", profileContent).forEach(btn=>{
+    qa(".social-btn", profileContent).forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const url = btn.getAttribute("data-url");
         const dogId = btn.getAttribute("data-dog-id");
@@ -1683,34 +1683,20 @@ storyLikeBtn.classList.add("heart-anim");
       alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
     });
 
-    // Click su "Aggiungi Selfie"
-$("#uploadSelfie").onclick = () => {
-  alert(
-    state.lang === "it"
-      ? "Presto potrai caricare il selfie del tuo DOG direttamente da qui 🐶📸"
-      : "Soon you’ll be able to upload your DOG’s selfie directly from here 🐶📸"
-  );
-};
-
-// Click su "Sblocca Selfie"
-$("#unlockSelfie").onclick = () => {
-  if (!isSelfieUnlocked(d.id)) {
-    const unlock = () => {
-      state.selfieUntilByDog[d.id] = Date.now() + 24 * 60 * 60 * 1000;
-      localStorage.setItem(
-        "selfieUntilByDog",
-        JSON.stringify(state.selfieUntilByDog)
-      );
-      openProfilePage(d);
+    $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
+    $("unlockSelfie").onclick = ()=>{
+      if (!isSelfieUnlocked(d.id)){
+        const unlock = ()=> {
+          state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+          localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+          openProfilePage(d);
+        };
+        if (!state.plus){
+          showRewardVideoMock("selfie", unlock);
+        } else unlock();
+      }
     };
-
-    if (!state.plus) {
-      showRewardVideoMock("selfie", unlock);
-    } else {
-      unlock();
-    }
-  }
-};
+  };
 
   profileBack?.addEventListener("click", ()=> closeProfilePage());
   profileClose?.addEventListener("click", ()=> closeProfilePage());
@@ -2449,32 +2435,5 @@ $("#unlockSelfie").onclick = () => {
     el.classList.add("show");
     setTimeout(()=>el.classList.remove("show"), 2000);
   }
-  
-// ===== Gestione tasto "indietro" stile Instagram =====
-window.addEventListener("popstate", (event) => {
-    // 1) Se è aperto il viewer Storie, lo chiudo e resto sulla pagina
-    const storyViewer = $("storyViewer");
-    if (storyViewer && !storyViewer.classList.contains("hidden") && typeof closeStoryViewer === "function") {
-        closeStoryViewer();
-        return;
-    }
 
-    // 2) Se sono sulla pagina profilo DOG, torno alla vista precedente
-    if (state.currentView === "profile" && typeof closeProfilePage === "function") {
-        closeProfilePage();
-        return;
-    }
-
-    // 3) Se nello state c'è una vista salvata, la ripristino
-    if (event.state && event.state.view) {
-        setActiveView(event.state.view);
-        return;
-    }
-
-    // 4) Fallback di sicurezza: torno alla home "Vicino a te"
-    setActiveView("nearby");
 });
-
-// 🚀 Avvia l'app (fondamentale, era questo che mancava)
-init();
-}); // EOF
