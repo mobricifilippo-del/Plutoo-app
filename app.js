@@ -1683,18 +1683,34 @@ storyLikeBtn.classList.add("heart-anim");
       alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
     });
 
-    $("uploadSelfie").onclick = ()=> alert(state.lang==="it" ? "Upload selfie (mock)" : "Upload selfie (mock)");
-    $("unlockSelfie").onclick = ()=>{
-      if (!isSelfieUnlocked(d.id)){
-        const unlock = ()=> {
-          state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-          localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-          openProfilePage(d);
-        };
-        if (!state.plus){
-          showRewardVideoMock("selfie", unlock);
-        } else unlock();
-      }
+    // Click su "Aggiungi Selfie"
+$("#uploadSelfie").onclick = () => {
+  alert(
+    state.lang === "it"
+      ? "Presto potrai caricare il selfie del tuo DOG direttamente da qui 🐶📸"
+      : "Soon you’ll be able to upload your DOG’s selfie directly from here 🐶📸"
+  );
+};
+
+// Click su "Sblocca Selfie"
+$("#unlockSelfie").onclick = () => {
+  if (!isSelfieUnlocked(d.id)) {
+    const unlock = () => {
+      state.selfieUntilByDog[d.id] = Date.now() + 24 * 60 * 60 * 1000;
+      localStorage.setItem(
+        "selfieUntilByDog",
+        JSON.stringify(state.selfieUntilByDog)
+      );
+      openProfilePage(d);
+    };
+
+    if (!state.plus) {
+      showRewardVideoMock("selfie", unlock);
+    } else {
+      unlock();
+    }
+  }
+};
     };
   };
 
