@@ -391,6 +391,11 @@ body.story-open #storiesBar {
 .card.swipe{
   margin:0 auto;max-width:420px;touch-action:pan-y;user-select:none;position:relative;
 }
+.card.swipe .card-img{
+  height:260px;
+  object-fit:contain;
+  object-position:center;
+}
 .swipe-out-right{animation:swipeRight .55s ease-out forwards}
 .swipe-out-left{animation:swipeLeft .55s ease-out forwards}
 @keyframes swipeRight{to{transform:translate3d(150%,0,0) rotate(25deg);opacity:0}}
