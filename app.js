@@ -2479,4 +2479,4 @@ window.addEventListener("popstate", (event) => {
 
 // 🚀 Avvia l'app (fondamentale, era questo che mancava)
 init();
-});
+}); // EOF
