@@ -1575,47 +1575,52 @@ storyLikeBtn.classList.add("heart-anim");
 
 // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
 (function () {
-  if (typeof d === "undefined") return;
-  if (!profileContent) return;
-  
-    const maxPhotos = 5;
-    const dogId = d.id;
-    const storageKey = `gallery_${dogId}`;
+  // Se per qualche motivo d non c'è, esco
+  if (!d || !profileContent) return;
 
+  const maxPhotos = 5;
+  const dogId = d.id;
+  const storageKey = `gallery_${dogId}`;
+
+  // Prendo il contenitore .gallery e il bottone "+ Aggiungi"
   const galleryBlock = qs(".gallery", profileContent);
-const galleryGrid  = galleryBlock;
-if (!galleryGrid) return;
+  if (!galleryBlock) return;
 
-    // bottone "+ Aggiungi" già presente nell'HTML
-    const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
-    if (!addGalleryPhotoBtn) return;
+  const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
+  if (!addGalleryPhotoBtn) return;
 
-    // Carica immagini esistenti
-    let images = [];
-    try {
-        const raw = localStorage.getItem(storageKey);
-        images = raw ? JSON.parse(raw) : [];
-    } catch (e) {
-        images = [];
-    }
-    if (!Array.isArray(images)) images = [];
+  // Lo slot che contiene il bottone "+ Aggiungi"
+  const addSlot = addGalleryPhotoBtn.closest(".ph") || galleryBlock.lastElementChild;
 
-    // Input file nascosto (unico per questa galleria)
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.multiple = true;
-    input.style.display = "none";
-    document.body.appendChild(input);
+  // Carico eventuali immagini salvate
+  let images = [];
+  try {
+    const raw = localStorage.getItem(storageKey);
+    images = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    images = [];
+  }
+  if (!Array.isArray(images)) images = [];
 
-    // Render iniziale + pulsante "+ Aggiungi"
-    const renderGallery = () => {
-        galleryGrid.innerHTML = "";
+  // Input file nascosto
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.multiple = true;
+  input.style.display = "none";
+  document.body.appendChild(input);
 
-      // immagini salvate
-    images.slice(0, maxPhotos).forEach(src => {
+  // Render delle foto caricate (prima dello slot "+ Aggiungi")
+  const renderGallery = () => {
+    // Rimuovo solo le foto caricate in precedenza (marcate con data-upload="1")
+    Array.from(galleryBlock.querySelectorAll('.ph[data-upload="1"]')).forEach(ph => ph.remove());
+
+    const limit = Math.min(images.length, maxPhotos);
+    for (let i = 0; i < limit; i++) {
+      const src = images[i];
       const ph = document.createElement("div");
       ph.className = "ph";
+      ph.dataset.upload = "1";
 
       const img = document.createElement("img");
       img.src = src;
@@ -1625,57 +1630,51 @@ if (!galleryGrid) return;
       };
 
       ph.appendChild(img);
-      galleryGrid.appendChild(ph);
-    });
-
-    // slot "+ Aggiungi" se non ho ancora 5 foto
-    if (images.length < maxPhotos) {
-      const phAdd = document.createElement("div");
-      phAdd.className = "ph";
-      phAdd.appendChild(addGalleryPhotoBtn);
-      addGalleryPhotoBtn.disabled = false;
-      galleryGrid.appendChild(phAdd);
-    } else {
-      addGalleryPhotoBtn.disabled = true;
+      galleryBlock.insertBefore(ph, addSlot);
     }
 
-    // click sul bottone "+ Aggiungi" → apro il picker
-    addGalleryPhotoBtn.addEventListener("click", () => {
-        if (images.length >= maxPhotos) return;
-        input.value = "";
-        input.click();
+    // Se ho raggiunto il massimo, disabilito il bottone
+    addGalleryPhotoBtn.disabled = images.length >= maxPhotos;
+  };
+
+  // Click su "+ Aggiungi" → apro il picker
+  addGalleryPhotoBtn.addEventListener("click", () => {
+    if (images.length >= maxPhotos) return;
+    input.value = "";
+    input.click();
+  });
+
+  // Quando scelgo i file, li salvo e aggiorno la griglia
+  input.addEventListener("change", () => {
+    const files = Array.from(input.files || []);
+    if (!files.length) return;
+
+    const remaining = maxPhotos - images.length;
+    const toAdd = files.slice(0, remaining);
+    if (!toAdd.length) return;
+
+    let pending = toAdd.length;
+
+    toAdd.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        images.push(e.target.result);
+        pending--;
+        if (pending === 0) {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(images));
+          } catch (err) {
+            // se localStorage è pieno, semplicemente non salvo
+          }
+          renderGallery();
+        }
+      };
+      reader.readAsDataURL(file);
     });
+  });
 
-    // quando scelgo i file li salvo e aggiorno la griglia
-    input.addEventListener("change", () => {
-        const files = Array.from(input.files || []);
-        if (!files.length) return;
-
-        const remaining = maxPhotos - images.length;
-        const toAdd = files.slice(0, remaining);
-        if (!toAdd.length) return;
-
-        let pending = toAdd.length;
-
-        toAdd.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                images.push(e.target.result);
-                pending--;
-                if (pending === 0) {
-                    try {
-                        localStorage.setItem(storageKey, JSON.stringify(images));
-                    } catch (err) {
-                        // se localStorage è pieno, semplicemente non salvo
-                    }
-                    renderGallery();
-                }
-            };
-            reader.readAsDataURL(file);
-        });
-    });
-
-    renderGallery();
+  // Primo render (mostra eventuali foto già salvate)
+  renderGallery();
 })();
 
     updateFollowerUI(d);
