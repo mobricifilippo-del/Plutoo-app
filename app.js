@@ -899,6 +899,9 @@ msgLists.forEach(list => {
     if (direction === "right"){
   const matchChance = Math.random();
   if (matchChance > -1){
+    
+    showMatchAnimation(d.name, nextMatchColor);
+    
     if (mode === "love") {
       state.matches[d.id] = true;
       localStorage.setItem("matches", JSON.stringify(state.matches));
@@ -2610,6 +2613,35 @@ storyLikeBtn.classList.add("heart-anim");
     renderStoriesBar();
 
     showToast(state.lang==="it" ? "Story pubblicata!" : "Story published!");
+  }
+  function showMatchAnimation(dogName, color){
+  // overlay a tutto schermo
+  const overlay =
+    document.getElementById("matchOverlay") ||
+    document.querySelector(".match-overlay");
+
+  if (!overlay) return;
+
+  const heartEl = overlay.querySelector(".match-hearts");
+  const titleEl = overlay.querySelector(".match-title");
+
+  const currentColor = color || "💛";
+
+  // Cuore singolo con colore corrente
+  if (heartEl) heartEl.textContent = currentColor;
+
+  // Testo fisso
+  if (titleEl) titleEl.textContent = "It's a Match! 💜";
+
+  // Mostra overlay
+  overlay.classList.remove("hidden");
+  overlay.classList.add("active");
+
+  // Chiudi dopo 1.6 secondi
+  setTimeout(() => {
+    overlay.classList.remove("active");
+    overlay.classList.add("hidden");
+  }, 1600);
   }
 
   function showToast(msg) {
