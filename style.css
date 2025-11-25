@@ -393,7 +393,7 @@ body.story-open #storiesBar {
 }
 .card.swipe .card-img{
   height:260px;
-  object-fit:contain;
+  object-fit:cover;
   object-position:center;
 }
 .swipe-out-right{animation:swipeRight .55s ease-out forwards}
