@@ -2614,7 +2614,7 @@ storyLikeBtn.classList.add("heart-anim");
 
     showToast(state.lang==="it" ? "Story pubblicata!" : "Story published!");
   }
-. function showMatchAnimation(dogName){
+ function showMatchAnimation(dogName){
   // overlay a tutto schermo
   const overlay =
     document.getElementById("matchOverlay") ||
