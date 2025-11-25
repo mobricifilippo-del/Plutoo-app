@@ -1573,20 +1573,15 @@ storyLikeBtn.classList.add("heart-anim");
       </div>
     `;
 
-    <div class="pp-actions">
-            ...
-        </div>
-        `;
-
 // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
 (function () {
     const maxPhotos = 5;
     const dogId = d.id;
     const storageKey = `gallery_${dogId}`;
 
-    const galleryBlock = qs(".gallery", profileContent);
-    const galleryGrid  = qs(".pp-gallery-grid", profileContent);
-    if (!galleryBlock || !galleryGrid) return;
+  const galleryBlock = qs(".gallery", profileContent);
+const galleryGrid  = galleryBlock;
+if (!galleryGrid) return;
 
     // bottone "+ Aggiungi" già presente nell'HTML
     const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
@@ -1614,25 +1609,32 @@ storyLikeBtn.classList.add("heart-anim");
     const renderGallery = () => {
         galleryGrid.innerHTML = "";
 
-        // immagini salvate
-        images.slice(0, maxPhotos).forEach(src => {
-            const img = document.createElement("img");
-            img.src = src;
-            img.className = "pp-gallery-img";
-            img.onerror = () => {
-                img.src = "./plutoo-icon-192.png";
-            };
-            galleryGrid.appendChild(img);
-        });
+      // immagini salvate
+    images.slice(0, maxPhotos).forEach(src => {
+      const ph = document.createElement("div");
+      ph.className = "ph";
 
-        // slot "+ Aggiungi" se non ho ancora 5 foto
-        if (images.length < maxPhotos) {
-            galleryGrid.appendChild(addGalleryPhotoBtn);
-            addGalleryPhotoBtn.disabled = false;
-        } else {
-            addGalleryPhotoBtn.disabled = true;
-        }
-    };
+      const img = document.createElement("img");
+      img.src = src;
+      img.className = "pp-gallery-img";
+      img.onerror = () => {
+        img.src = "./plutoo-icon-192.png";
+      };
+
+      ph.appendChild(img);
+      galleryGrid.appendChild(ph);
+    });
+
+    // slot "+ Aggiungi" se non ho ancora 5 foto
+    if (images.length < maxPhotos) {
+      const phAdd = document.createElement("div");
+      phAdd.className = "ph";
+      phAdd.appendChild(addGalleryPhotoBtn);
+      addGalleryPhotoBtn.disabled = false;
+      galleryGrid.appendChild(phAdd);
+    } else {
+      addGalleryPhotoBtn.disabled = true;
+    }
 
     // click sul bottone "+ Aggiungi" → apro il picker
     addGalleryPhotoBtn.addEventListener("click", () => {
