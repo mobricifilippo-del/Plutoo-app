@@ -1306,6 +1306,17 @@ body.story-open #storiesBar {
 }
 
 .match-overlay.active {
+  /* Pulse like */
+.btn.yes.like-pulse{
+  animation: likePulse .45s ease-out;
+}
+
+@keyframes likePulse{
+  0%  { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  70% { transform: scale(0.95); }
+  100%{ transform: scale(1); }
+}
   opacity: 1;
   pointer-events: auto;
 }
