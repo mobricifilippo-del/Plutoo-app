@@ -2614,7 +2614,7 @@ storyLikeBtn.classList.add("heart-anim");
 
     showToast(state.lang==="it" ? "Story pubblicata!" : "Story published!");
   }
-  function showMatchAnimation(dogName, color){
+function showMatchAnimation(dogName){
   // overlay a tutto schermo
   const overlay =
     document.getElementById("matchOverlay") ||
@@ -2625,7 +2625,7 @@ storyLikeBtn.classList.add("heart-anim");
   const heartEl = overlay.querySelector(".match-hearts");
   const titleEl = overlay.querySelector(".match-title");
 
-  const currentColor = color || "💛";
+  const currentColor = "❤️‍🔥";
 
   // Cuore singolo con colore corrente
   if (heartEl) heartEl.textContent = currentColor;
