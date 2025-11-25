@@ -908,10 +908,10 @@ msgLists.forEach(list => {
     }
 
     // Cuore del match: usa il colore corrente e prepara il prossimo
-    showMatchAnimation(d.name, nextMatchColor);
-    matchCount++;
-    localStorage.setItem("matchCount", String(matchCount));
-    nextMatchColor = ["💛","❤️","💜","💚"][matchCount % 4];
+showMatchAnimation(d.name, nextMatchColor);
+state.matchCount++;
+localStorage.setItem("matchCount", String(state.matchCount));
+nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
   }
     }
 
