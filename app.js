@@ -899,6 +899,7 @@ msgLists.forEach(list => {
     if (direction === "right"){
   const matchChance = Math.random();
   if (matchChance > -1){
+    alert("MATCH con " + d.name);
     if (mode === "love") {
       state.matches[d.id] = true;
       localStorage.setItem("matches", JSON.stringify(state.matches));
