@@ -1675,8 +1675,6 @@ if (!galleryGrid) return;
     renderGallery();
 })();
 
-        updateFollowerUI(d);
-
     updateFollowerUI(d);
     const followBtn = $("followBtn");
     if (followBtn) {
