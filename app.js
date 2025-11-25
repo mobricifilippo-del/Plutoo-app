@@ -56,6 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
     matches: JSON.parse(localStorage.getItem("matches") || "{}"),
     friendships: JSON.parse(localStorage.getItem("friendships") || "{}"),
     chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent") || "{}"),
+    let matchCount = Number(localStorage.getItem("matchCount") || "0");
+  let nextMatchColor = ["💛","❤️","💜","💚"][ matchCount % 4 ];
 
     // Selfie unlock (per DOG)
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
@@ -894,19 +896,24 @@ msgLists.forEach(list => {
       if(state.processingSwipe) return;
       state.processingSwipe = true;
 
-      if (direction === "right"){
-        const matchChance = Math.random();
-        if (matchChance > 0.5){
-          if(mode === "love"){
-            state.matches[d.id] = true;
-            localStorage.setItem("matches", JSON.stringify(state.matches));
-          } else {
-            state.friendships[d.id] = true;
-            localStorage.setItem("friendships", JSON.stringify(state.friendships));
-          }
-          showMatchAnimation(d.name);
-        }
-      }
+    if (direction === "right"){
+  const matchChance = Math.random();
+  if (matchChance > 0.5){
+    if (mode === "love") {
+      state.matches[d.id] = true;
+      localStorage.setItem("matches", JSON.stringify(state.matches));
+    } else {
+      state.friendships[d.id] = true;
+      localStorage.setItem("friendships", JSON.stringify(state.friendships));
+    }
+
+    // Cuore del match: usa il colore corrente e prepara il prossimo
+    showMatchAnimation(d.name, nextMatchColor);
+    matchCount++;
+    localStorage.setItem("matchCount", String(matchCount));
+    nextMatchColor = ["💛","❤️","💜","💚"][matchCount % 4];
+  }
+    }
 
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
 
@@ -1048,21 +1055,34 @@ msgLists.forEach(list => {
     if(card._cleanup) card._cleanup();
   }
 
-  function showMatchAnimation(dogName = ""){
-    const overlay = $("matchOverlay");
-    if (!overlay) return;
+function showMatchAnimation(dogName, color){
+  // overlay a tutto schermo
+  const overlay =
+    document.getElementById("matchOverlay") ||
+    document.querySelector(".match-overlay");
+  if (!overlay) return;
 
-    const nameEl = $("matchDogName");
-    if (nameEl && dogName) {
-      nameEl.textContent = dogName;
-    }
+  const heartEl = overlay.querySelector(".match-heart");
+  const titleEl = overlay.querySelector(".match-text h2");
+  const subEl   = overlay.querySelector(".match-text p");
 
-    overlay.classList.add("active");
+  const currentColor = color || "💛";
 
-    setTimeout(() => {
-      overlay.classList.remove("active");
-    }, 3000);
-  }
+  // Cuore singolo con colore corrente
+  if (heartEl) heartEl.textContent = currentColor;
+
+  // Testo fisso (senza nome del DOG)
+  if (titleEl) titleEl.textContent = "Hai un match!";
+  if (subEl)   subEl.textContent   = "Vai nella sezione Messaggi per conoscerlo meglio.";
+
+  // Mostra overlay
+  overlay.classList.add("active");
+
+  // Chiudi dopo 1.6 secondi
+  setTimeout(() => {
+    overlay.classList.remove("active");
+  }, 1600);
+}
 
   // ============ Ricerca ============
   if (btnSearchPanel) {
