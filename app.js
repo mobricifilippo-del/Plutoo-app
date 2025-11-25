@@ -56,8 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     matches: JSON.parse(localStorage.getItem("matches") || "{}"),
     friendships: JSON.parse(localStorage.getItem("friendships") || "{}"),
     chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent") || "{}"),
-    let matchCount = Number(localStorage.getItem("matchCount") || "0");
-  let nextMatchColor = ["💛","❤️","💜","💚"][ matchCount % 4 ];
+    matchCount: Number(localStorage.getItem("matchCount") || "0"),
 
     // Selfie unlock (per DOG)
     selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
@@ -96,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Like stories (per media id)
     storyLikesByMedia: JSON.parse(localStorage.getItem("storyLikesByMedia") || "{}"),
   };
+  let nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
 
   // ============ DOM refs ============
   const homeScreen   = $("homeScreen");
