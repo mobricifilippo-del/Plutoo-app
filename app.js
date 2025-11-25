@@ -1575,6 +1575,9 @@ storyLikeBtn.classList.add("heart-anim");
 
 // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
 (function () {
+  if (typeof d === "undefined") return;
+  if (!profileContent) return;
+  
     const maxPhotos = 5;
     const dogId = d.id;
     const storageKey = `gallery_${dogId}`;
