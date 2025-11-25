@@ -29,10 +29,6 @@ window.addEventListener("popstate", () => {
     observer.observe(storyViewer, { attributes: true, attributeFilter: ["class"] });
   }
 
-  // ===== BACK BUTTON: chiudi Story Viewer invece di uscire =====
-  document.addEventListener("backbutton", (e) => {
-    const viewer = document.getElementById("storyViewer");
-
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
