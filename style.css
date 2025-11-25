@@ -1307,7 +1307,7 @@ body.story-open #storiesBar {
 
 .match-heart,
 .match-hearts {
-  font-size: 420px;
+  font-size: 380px;
   animation: heartPulse 0.8s ease-in-out 3;
   filter: drop-shadow(0 25px 55px rgba(255, 140, 0, 0.85));
 }
