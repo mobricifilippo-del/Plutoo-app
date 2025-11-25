@@ -1069,7 +1069,7 @@ function showMatchAnimation(dogName, color){
   const titleEl = overlay.querySelector(".match-text h2");
   const subEl   = overlay.querySelector(".match-text p");
 
-  const currentColor = color || "💛";
+  const currentColor = color || "❤️‍🔥";
 
   // Cuore singolo con colore corrente
   if (heartEl) heartEl.textContent = currentColor;
