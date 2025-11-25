@@ -1312,16 +1312,18 @@ body.story-open #storiesBar {
   filter: drop-shadow(0 25px 55px rgba(255, 140, 0, 0.85));
 }
 
+.match-text {
+  font-size: 42px;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 20px;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 140, 0, 0.9);
+}
+
 @keyframes heartPulse {
   0%, 100% { transform: scale(0.8); }
   50% { transform: scale(1.2); }
-}
-
-.match-text {
-  margin-top: 3rem;
-  text-align: center;
-  animation: textAppear 0.5s ease-out 1.5s forwards;
-  opacity: 0;
 }
 
 @keyframes textAppear {
@@ -1333,19 +1335,6 @@ body.story-open #storiesBar {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.match-text h2 {
-  font-size: 2.5rem;
-  color: var(--gold);
-  margin: 0 0 0.5rem 0;
-  font-weight: 800;
-}
-
-.match-text p {
-  font-size: 1.5rem;
-  color: var(--text);
-  margin: 0;
 }
 
 /* ===== MESSAGGI - HEADER & FOOTER ===== */
