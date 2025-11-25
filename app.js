@@ -5,6 +5,17 @@ window.addEventListener("error", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // ===== BACK BUTTON: chiudi Story Viewer invece di uscire =====
+  document.addEventListener("backbutton", (e) => {
+    const viewer = document.getElementById("storyViewer");
+
+    if (viewer && !viewer.classList.contains("hidden")) {
+      e.preventDefault();            
+      viewer.classList.add("hidden"); 
+      return;                        
+    }
+  }, false);
+
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
