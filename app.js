@@ -5,16 +5,33 @@ window.addEventListener("error", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // Quando viene premuto INDIETRO → controlla se una storia è aperta
+window.addEventListener("popstate", () => {
+  const viewer = document.getElementById("storyViewer");
+  if (viewer && !viewer.classList.contains("hidden")) {
+    viewer.classList.add("hidden");
+  }
+});
+  
+  const storyViewer = document.getElementById("storyViewer");
+  if (storyViewer) {
+    const observer = new MutationObserver(() => {
+      const isOpen = !storyViewer.classList.contains("hidden");
+      if (isOpen && !storyViewer.dataset.historyPushed) {
+        history.pushState({ storyOpen: true }, "", "");
+        storyViewer.dataset.historyPushed = "1";
+      }
+      if (!isOpen && storyViewer.dataset.historyPushed) {
+        storyViewer.dataset.historyPushed = "";
+      }
+    });
+
+    observer.observe(storyViewer, { attributes: true, attributeFilter: ["class"] });
+  }
+
   // ===== BACK BUTTON: chiudi Story Viewer invece di uscire =====
   document.addEventListener("backbutton", (e) => {
     const viewer = document.getElementById("storyViewer");
-
-    if (viewer && !viewer.classList.contains("hidden")) {
-      e.preventDefault();            
-      viewer.classList.add("hidden"); 
-      return;                        
-    }
-  }, false);
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
