@@ -1573,91 +1573,107 @@ storyLikeBtn.classList.add("heart-anim");
       </div>
     `;
 
-  // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
+    <div class="pp-actions">
+            ...
+        </div>
+        `;
+
+// ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
 (function () {
-  const maxPhotos = 5;
-  const dogId = d.id;
-  const storageKey = `gallery_${dogId}`;
+    const maxPhotos = 5;
+    const dogId = d.id;
+    const storageKey = `gallery_${dogId}`;
 
-  const galleryBlock = qs(".gallery", profileContent);
-  const galleryGrid = qs(".pp-gallery-grid", profileContent);
-  if (!galleryBlock || !galleryGrid) return;
+    const galleryBlock = qs(".gallery", profileContent);
+    const galleryGrid  = qs(".pp-gallery-grid", profileContent);
+    if (!galleryBlock || !galleryGrid) return;
 
-  // Carica immagini esistenti
-  let images = [];
-  try {
-    const raw = localStorage.getItem(storageKey);
-    images = raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    images = [];
-  }
-  if (!Array.isArray(images)) images = [];
+    // bottone "+ Aggiungi" già presente nell'HTML
+    const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
+    if (!addGalleryPhotoBtn) return;
 
-  // Input file nascosto (unico per questa galleria)
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.multiple = true;
-  input.style.display = "none";
-  document.body.appendChild(input);
+    // Carica immagini esistenti
+    let images = [];
+    try {
+        const raw = localStorage.getItem(storageKey);
+        images = raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        images = [];
+    }
+    if (!Array.isArray(images)) images = [];
 
-  // Render iniziale + pulsante "+ Aggiungi"
-  const renderGallery = () => {
-    galleryGrid.innerHTML = "";
+    // Input file nascosto (unico per questa galleria)
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.multiple = true;
+    input.style.display = "none";
+    document.body.appendChild(input);
 
-    images.slice(0, maxPhotos).forEach((src) => {
-      const img = document.createElement("img");
-      img.src = src;
-      img.className = "pp-gallery-img";
-      img.onerror = () => {
-        img.src = "./plutoo-icon-192.png";
-      };
-      galleryGrid.appendChild(img);
-    });
+    // Render iniziale + pulsante "+ Aggiungi"
+    const renderGallery = () => {
+        galleryGrid.innerHTML = "";
 
-    // Mostra il pulsante "Aggiungi" solo se non hai raggiunto 5 foto
-    if (images.length < maxPhotos) {
-      const addBtn = document.createElement("button");
-      addBtn.type = "button";
-      addBtn.className = "add-photo";
-      addBtn.textContent = "+ Aggiungi";
+        // immagini salvate
+        images.slice(0, maxPhotos).forEach(src => {
+            const img = document.createElement("img");
+            img.src = src;
+            img.className = "pp-gallery-img";
+            img.onerror = () => {
+                img.src = "./plutoo-icon-192.png";
+            };
+            galleryGrid.appendChild(img);
+        });
 
-      // 👉 QUI agganciamo il click al vero bottone visibile
-      addBtn.addEventListener("click", () => {
+        // slot "+ Aggiungi" se non ho ancora 5 foto
+        if (images.length < maxPhotos) {
+            galleryGrid.appendChild(addGalleryPhotoBtn);
+            addGalleryPhotoBtn.disabled = false;
+        } else {
+            addGalleryPhotoBtn.disabled = true;
+        }
+    };
+
+    // click sul bottone "+ Aggiungi" → apro il picker
+    addGalleryPhotoBtn.addEventListener("click", () => {
+        if (images.length >= maxPhotos) return;
         input.value = "";
         input.click();
-      });
-
-      galleryGrid.appendChild(addBtn);
-    }
-  };
-
-  renderGallery();
-
-  // Quando scelgo i file, li salvo e rendo di nuovo la galleria
-  input.addEventListener("change", () => {
-    const files = Array.from(input.files || []);
-    if (!files.length) return;
-
-    const remaining = maxPhotos - images.length;
-    const toAdd = files.slice(0, remaining);
-    let pending = toAdd.length;
-    if (!pending) return;
-
-    toAdd.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        images.push(e.target.result);
-        pending--;
-        if (pending === 0) {
-          localStorage.setItem(storageKey, JSON.stringify(images));
-          renderGallery();
-        }
-      };
-      reader.readAsDataURL(file);
     });
-  });
+
+    // quando scelgo i file li salvo e aggiorno la griglia
+    input.addEventListener("change", () => {
+        const files = Array.from(input.files || []);
+        if (!files.length) return;
+
+        const remaining = maxPhotos - images.length;
+        const toAdd = files.slice(0, remaining);
+        if (!toAdd.length) return;
+
+        let pending = toAdd.length;
+
+        toAdd.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = e => {
+                images.push(e.target.result);
+                pending--;
+                if (pending === 0) {
+                    try {
+                        localStorage.setItem(storageKey, JSON.stringify(images));
+                    } catch (err) {
+                        // se localStorage è pieno, semplicemente non salvo
+                    }
+                    renderGallery();
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    renderGallery();
 })();
+
+        updateFollowerUI(d);
 
     updateFollowerUI(d);
     const followBtn = $("followBtn");
