@@ -5,30 +5,6 @@ window.addEventListener("error", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Quando viene premuto INDIETRO → controlla se una storia è aperta
-window.addEventListener("popstate", () => {
-  const viewer = document.getElementById("storyViewer");
-  if (viewer && !viewer.classList.contains("hidden")) {
-    viewer.classList.add("hidden");
-  }
-});
-  
-  const storyViewer = document.getElementById("storyViewer");
-  if (storyViewer) {
-    const observer = new MutationObserver(() => {
-      const isOpen = !storyViewer.classList.contains("hidden");
-      if (isOpen && !storyViewer.dataset.historyPushed) {
-        history.pushState({ storyOpen: true }, "", "");
-        storyViewer.dataset.historyPushed = "1";
-      }
-      if (!isOpen && storyViewer.dataset.historyPushed) {
-        storyViewer.dataset.historyPushed = "";
-      }
-    });
-
-    observer.observe(storyViewer, { attributes: true, attributeFilter: ["class"] });
-  }
-
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
@@ -2681,4 +2657,18 @@ storyLikeBtn.classList.add("heart-anim");
     setTimeout(()=>el.classList.remove("show"), 2000);
   }
 
+  window.handleAndroidBack = function() {
+  const viewer = document.getElementById("storyViewer");
+
+  // Se la storia è aperta, chiudila e segnala ad Android che è gestito
+  if (viewer && !viewer.classList.contains("hidden")) {
+    viewer.classList.add("hidden");
+    return "HANDLED";
+  }
+
+  // Nessuna storia aperta → Android può gestire il back normalmente
+  return "NOT_HANDLED";
+};
+
+  init();
 });
