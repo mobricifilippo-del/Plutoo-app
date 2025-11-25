@@ -389,7 +389,7 @@ body.story-open #storiesBar {
 }
 
 .card.swipe{
-  margin:0 auto;max-width:420px;touch-action:pan-y;user-select:none;position:relative;
+  margin:0 auto;max-width:420px;touch-action:pan-x;user-select:none;position:relative;
 }
 .card.swipe .card-img{
   height:260px;
