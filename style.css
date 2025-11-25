@@ -1305,10 +1305,11 @@ body.story-open #storiesBar {
   pointer-events: auto;
 }
 
-.match-heart {
+.match-heart,
+.match-hearts {
   font-size: 420px;
   animation: heartPulse 0.8s ease-in-out 3;
- filter: drop-shadow(0 25px 55px rgba(255, 140, 0, 0.85));
+  filter: drop-shadow(0 25px 55px rgba(255, 140, 0, 0.85));
 }
 
 @keyframes heartPulse {
