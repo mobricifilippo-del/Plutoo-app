@@ -196,16 +196,17 @@ document.addEventListener("DOMContentLoaded", () => {
     try { localStorage.setItem("entered", "1"); } catch(err){}
     state.entered = true;
 
-    const bark = document.getElementById("dogBark");
-    if (bark) {
-      bark.volume = 0.3;
-      const playPromise = bark.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          alert("🐕 Woof!");
-        });
-      }
-    }
+  const bark = document.getElementById("dogBark");
+if (bark) {
+  bark.currentTime = 0;
+  bark.volume = 0.5;
+  const playPromise = bark.play();
+  if (playPromise && typeof playPromise.then === "function") {
+    playPromise.catch(() => {
+      // in produzione niente alert, al massimo in futuro un log silenzioso
+    });
+  }
+}
 
     if (heroLogo) {
       heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
@@ -1589,6 +1590,24 @@ storyLikeBtn.classList.add("heart-anim");
         <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
       </div>
     `;
+
+    // === PULSANTE "MODIFICA SOCIAL" SOLO PER IL TUO DOG ===
+    if (d.id === CURRENT_USER_DOG_ID) {
+      const btn = document.createElement("button");
+      btn.id = "editSocialBtn";
+      btn.className = "btn outline";
+      btn.style.marginTop = "1rem";
+      btn.textContent = "Modifica social";
+
+      btn.addEventListener("click", () => {
+        alert("Apertura pannello social (step 2)");
+      });
+
+      const contentEl = document.getElementById("profileContent");
+      if (contentEl) {
+        contentEl.appendChild(btn);
+      }
+    }
 
 // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
 (function () {
