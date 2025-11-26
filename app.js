@@ -1617,81 +1617,96 @@ storyLikeBtn.classList.add("heart-anim");
       </div>
     `;
 
-    // === PULSANTE "MODIFICA SOCIAL" SOLO PER IL TUO DOG ===
-    if (d.id === CURRENT_USER_DOG_ID) {
-      const btn = document.createElement("button");
-      btn.id = "editSocialBtn";
-      btn.className = "btn outline";
-      btn.style.marginTop = "1rem";
-      btn.textContent = "Modifica social";
+  // === PULSANTE "MODIFICA SOCIAL" SOLO PER IL TUO DOG ===
+if (d.id === CURRENT_USER_DOG_ID) {
+  const btn = document.createElement("button");
+  btn.id = "editSocialBtn";
+  btn.className = "btn outline";
+  btn.style.marginTop = "1rem";
+  btn.textContent = "Modifica social";
 
-      btn.addEventListener("click", () => {
-  const dogId = d.id;
-  const existing = (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) || {};
+  btn.addEventListener("click", () => {
 
-  // Facebook
-  let fb = prompt(
-    state.lang === "it"
-      ? "Inserisci il link Facebook del proprietario (lascia vuoto per nessun link):"
-      : "Enter owner Facebook link (leave empty for none):",
-    existing.facebook || ""
-  );
-  if (fb === null) fb = existing.facebook || "";
-  fb = fb.trim();
+    const dogId = d.id;
+    const existing =
+      (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) || {};
 
-  // Instagram
-  let ig = prompt(
-    state.lang === "it"
-      ? "Inserisci il link Instagram del proprietario:"
-      : "Enter owner Instagram link:",
-    existing.instagram || ""
-  );
-  if (ig === null) ig = existing.instagram || "";
-  ig = ig.trim();
+    // Facebook
+    let fb = prompt(
+      state.lang === "it"
+        ? "Inserisci il link Facebook del proprietario (lascia vuoto per nessun link):"
+        : "Enter owner Facebook link (leave empty for none):",
+      existing.facebook || ""
+    );
+    if (fb === null) fb = existing.facebook || "";
+    fb = fb.trim();
 
-  // TikTok
-  let tt = prompt(
-    state.lang === "it"
-      ? "Inserisci il link TikTok del proprietario:"
-      : "Enter owner TikTok link:",
-    existing.tiktok || ""
-  );
-  if (tt === null) tt = existing.tiktok || "";
-  tt = tt.trim();
+    // Instagram
+    let ig = prompt(
+      state.lang === "it"
+        ? "Inserisci il link Instagram del proprietario:"
+        : "Enter owner Instagram link:",
+      existing.instagram || ""
+    );
+    if (ig === null) ig = existing.instagram || "";
+    ig = ig.trim();
 
-  // Se tutto vuoto → rimuovo personalizzazione
-  if (!fb && !ig && !tt) {
-    if (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
-      delete state.ownerSocialByDog[dogId];
-    }
-  } else {
-    if (!state.ownerSocialByDog) state.ownerSocialByDog = {};
-    state.ownerSocialByDog[dogId] = {
-      facebook: fb || "",
-      instagram: ig || "",
-      tiktok: tt || ""
-    };
-  }
+    // TikTok
+    let tt = prompt(
+      state.lang === "it"
+        ? "Inserisci il link TikTok del proprietario:"
+        : "Enter owner TikTok link:",
+      existing.tiktok || ""
+    );
+    if (tt === null) tt = existing.tiktok || "";
+    tt = tt.trim();
 
-  try {
-    localStorage.setItem("ownerSocialByDog", JSON.stringify(state.ownerSocialByDog || {}));
-  } catch(e){}
-
-  const msg = state.lang === "it"
-    ? "Social aggiornati!"
-    : "Social updated!";
-  if (typeof showToast === "function") {
-    showToast(msg);
-  } else {
-    alert(msg);
-  }
-});
-
-      const contentEl = document.getElementById("profileContent");
-      if (contentEl) {
-        contentEl.appendChild(btn);
+    // 🔥 Se tutto vuoto → rimuovo social salvati
+    if (!fb && !ig && !tt) {
+      if (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
+        delete state.ownerSocialByDog[dogId];
       }
+    } else {
+      if (!state.ownerSocialByDog) state.ownerSocialByDog = {};
+      state.ownerSocialByDog[dogId] = {
+        facebook: fb || "",
+        instagram: ig || "",
+        tiktok: tt || ""
+      };
     }
+
+    // 🔄 Salvo su localStorage
+    try {
+      localStorage.setItem(
+        "ownerSocialByDog",
+        JSON.stringify(state.ownerSocialByDog || {})
+      );
+    } catch (e) {}
+
+    // Messaggio
+    const msg =
+      state.lang === "it" ? "Social aggiornati!" : "Social updated!";
+
+    if (typeof showToast === "function") {
+      showToast(msg);
+    } else {
+      alert(msg);
+    }
+
+    // 🔄 Ricarica SOLO la sezione social nel profilo
+    const updatedHTML = generateSocialSection(d);
+    const socialSection = document.querySelector(".pp-social-section");
+    if (socialSection && updatedHTML) {
+      socialSection.outerHTML = updatedHTML;
+    }
+
+  });
+
+  const contentEl = document.getElementById("profileContent");
+  if (contentEl) {
+    contentEl.appendChild(btn);
+  }
+}
 
 // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
 (function () {
