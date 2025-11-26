@@ -1606,3 +1606,22 @@ line-height: 1.6;
 .profile-like-btn{
   display: none !important;
 }
+
+/* ===== STORY VIEWER – BACK BUTTON PILL ===== */
+.story-back-btn {
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: .45rem .9rem;
+  border-radius: 18px;
+  font-size: .95rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.story-back-btn:hover {
+  background: rgba(0,0,0,0.75);
+  transform: scale(1.05);
+}
