@@ -88,8 +88,12 @@ document.getElementById("dogBark")?.play().then(()=>{}).catch(()=>{});
     previousViewForMessages: "nearby",
 
     // Follow / seguiti (mock locale)
-    followersByDog: JSON.parse(localStorage.getItem("followersByDog") || "{}"),
-    followingByDog: JSON.parse(localStorage.getItem("followingByDog") || "{}"),
+    followersByDog: 
+      JSON.parse(localStorage.getItem("followersByDog") || "{}"),
+    followingByDog: 
+      JSON.parse(localStorage.getItem("followingByDog") || "{}"),
+    ownerSocialByDog: 
+      JSON.parse(localStorage.getItem("ownerSocialByDog") || "{}"),
 
     // Like foto profilo
     photoLikesByDog: JSON.parse(localStorage.getItem("photoLikesByDog") || "{}"),
@@ -1843,30 +1847,45 @@ storyLikeBtn.classList.add("heart-anim");
       });
     });
 
-    qa(".social-btn", profileContent).forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const url = btn.getAttribute("data-url");
-        const dogId = btn.getAttribute("data-dog-id");
-        const socialType = btn.getAttribute("data-social");
-        if (!url) return;
+  qa(".social-btn", profileContent).forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const baseUrl   = btn.getAttribute("data-url");
+    const dogId     = btn.getAttribute("data-dog-id");
+    const socialKey = btn.getAttribute("data-social"); // "social-fb" / "social-ig" / "social-tt"
 
-        const rewardKey = `${dogId}_${socialType}`;
+    let finalUrl = baseUrl;
 
-        if (state.plus || state.socialRewardViewed[rewardKey]) {
-          window.open(url, "_blank", "noopener");
-          return;
-        }
-        if (state.rewardOpen) return;
-        state.rewardOpen = true;
+    // Se esistono URL personalizzati salvati per quel DOG, li usiamo al posto di quelli mock
+    if (dogId && state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
+      const ownerSocial = state.ownerSocialByDog[dogId];
+      if (socialKey === "social-fb" && ownerSocial.facebook) {
+        finalUrl = ownerSocial.facebook;
+      } else if (socialKey === "social-ig" && ownerSocial.instagram) {
+        finalUrl = ownerSocial.instagram;
+      } else if (socialKey === "social-tt" && ownerSocial.tiktok) {
+        finalUrl = ownerSocial.tiktok;
+      }
+    }
 
-        showRewardVideoMock("social", ()=>{
-          state.rewardOpen = false;
-          state.socialRewardViewed[rewardKey] = true;
-          localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
-          window.open(url, "_blank", "noopener");
-        });
-      });
+    if (!finalUrl) return;
+
+    const rewardKey = `${dogId}_${socialKey}`;
+
+    if (state.plus || state.socialRewardViewed[rewardKey]) {
+      window.open(finalUrl, "_blank", "noopener");
+      return;
+    }
+    if (state.rewardOpen) return;
+    state.rewardOpen = true;
+
+    showRewardVideoMock("social", ()=>{
+      state.rewardOpen = false;
+      state.socialRewardViewed[rewardKey] = true;
+      localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
+      window.open(finalUrl, "_blank", "noopener");
     });
+  });
+});
 
     $("btnOpenChat").onclick = ()=> { openChat(d); };
     $("btnLikeDog")?.addEventListener("click", ()=>{
