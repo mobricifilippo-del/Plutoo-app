@@ -1520,47 +1520,67 @@ line-height: 1.6;
   transform: scale(1.05);
 }
 
-/* === MATCH ANIMATION – IDENTICA ALL'EFFETTO ENTRA === */
+/* === MATCH FLASH – STILE COME ENTRA MA GIALLO === */
+
 .match-overlay{
-  position:fixed;
-  inset:0;
-  z-index:9000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  pointer-events:none;
-  opacity:0;
-  background:transparent;
-  transition: opacity 0.35s ease-out;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* come whiteFlash ma giallo/oro */
+  background: radial-gradient(
+    ellipse 150% 150% at center,
+    #fff9cc 0%,
+    #ffe066 40%,
+    #ffcf33 70%,
+    rgba(255,180,0,0.95) 90%,
+    rgba(255,140,0,0.9) 100%
+  );
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease-out;
 }
 
 .match-overlay.active{
-  opacity:1;
-  pointer-events:auto;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 1.8s ease-out;
 }
 
 .match-content{
-  text-align:center;
+  text-align: center;
 }
 
+/* solo il cuore grande al centro */
 .match-hearts,
 .match-heart{
-  font-size:220px; /* cuore leggermente più piccolo */
-  animation:heartMatchPulse 1.6s ease-in-out infinite;
-  filter:drop-shadow(0 25px 55px rgba(255,140,0,.9));
+  font-size: 220px;           /* leggermente più piccolo di prima */
+  animation: matchHeartPulse 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 25px 55px rgba(255,140,0,.9));
 }
 
-@keyframes heartMatchPulse{
-  0%   { transform:scale(.7); }
-  30%  { transform:scale(1.15); }
-  60%  { transform:scale(.95); }
-  100% { transform:scale(1); }
-}
-
+/* test "MATCH!" sotto il cuore */
 .match-text{
-  margin-top:1.2rem;
-  font-size:2.2rem;
-  font-weight:900;
-  color:#ffffff;
-  text-shadow:0 0 22px rgba(255,120,0,1);
+  margin-top: 1.2rem;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 0 22px rgba(255,120,0,1);
+}
+
+@keyframes matchHeartPulse{
+  0%   { transform: scale(0.7); opacity: 0; }
+  20%  { transform: scale(1.15); opacity: 1; }
+  50%  { transform: scale(0.95); }
+  80%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* se esiste ancora un titolo tipo "It's a Match! 💜", lo nascondiamo */
+.match-title{
+  display: none;
 }
