@@ -1303,26 +1303,78 @@ body.story-open #storiesBar {
   z-index: 10000 !important;
 }
 
-/* === MATCH ANIMATION === */
-.match-overlay {
+/* === MATCH ANIMATION – FLASH GIALLO COME ENTRA === */
+.match-overlay{
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.95) 0%, rgba(138,123,255,0.4) 60%, rgba(138,123,255,0.3) 100%);
-  z-index: 99999;
+  inset: 0;
+  z-index: 1400;
+  background: #FBD447; /* giallo caldo pieno */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease-out;
+  transition: opacity 0.35s ease;
 }
 
-.match-overlay.active {
-  /* Pulse like */
+.match-overlay.active{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.match-content{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+/* Titolo sopra al cuore */
+.match-title{
+  font-size: 2rem;
+  font-weight: 800;
+  color: #5A2A00;
+  text-shadow: 0 0 14px rgba(255,255,255,.85);
+}
+
+/* Cuore grande che pulsa */
+.match-heart,
+.match-hearts{
+  font-size: 380px;
+  animation: heartPulse 0.8s ease-in-out 3;
+  filter: drop-shadow(0 25px 55px rgba(255, 140, 0, 0.85));
+}
+
+/* Testo MATCH! sotto il cuore */
+.match-text{
+  font-size: 42px;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 20px;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 140, 0, 0.9);
+}
+
+@keyframes heartPulse{
+  0%, 100% { transform: scale(0.8); }
+  50%      { transform: scale(1.2); }
+}
+
+@keyframes textAppear{
+  from{
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse del bottone YES (se usato nello swipe) */
 .btn.yes.like-pulse{
   animation: likePulse .45s ease-out;
 }
@@ -1332,41 +1384,6 @@ body.story-open #storiesBar {
   40% { transform: scale(1.25); }
   70% { transform: scale(0.95); }
   100%{ transform: scale(1); }
-}
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.match-heart,
-.match-hearts {
-  font-size: 380px;
-  animation: heartPulse 0.8s ease-in-out 3;
-  filter: drop-shadow(0 25px 55px rgba(255, 140, 0, 0.85));
-}
-
-.match-text {
-  font-size: 42px;
-  font-weight: 800;
-  text-align: center;
-  margin-top: 20px;
-  color: #ffffff;
-  text-shadow: 0 0 12px rgba(255, 140, 0, 0.9);
-}
-
-@keyframes heartPulse {
-  0%, 100% { transform: scale(0.8); }
-  50% { transform: scale(1.2); }
-}
-
-@keyframes textAppear {
-  from { 
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* ===== MESSAGGI - HEADER & FOOTER ===== */
