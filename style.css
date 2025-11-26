@@ -1145,9 +1145,33 @@ body.story-open #storiesBar {
 }
 .sponsor-copy{color:var(--muted);font-size:.93rem}
 .ad-banner{
-  margin-top:.7rem;min-height:52px;border:1px dashed rgba(255,255,255,.12);
-  border-radius:12px;display:flex;align-items:center;justify-content:center;
-  color:var(--muted);font-size:.9rem;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1200;
+
+  height: 56px;
+  background: rgba(18,18,38,0.98);
+  border-top: 1px solid var(--line);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: .9rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Spazio sotto il contenuto per non farlo coprire dal banner */
+.app .content,
+.profile-page,
+.view,
+.messages-body,
+.grid-2,
+.card.swipe {
+  padding-bottom: 72px !important;
 }
 
 /* Nasconde lo sponsor globale quando è attiva la Home */
