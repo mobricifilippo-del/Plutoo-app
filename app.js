@@ -621,21 +621,15 @@ const DOGS = [
  const msgLists    = qa(".messages-list");
 
 // --- EMPTY STATES ---
-msgLists.forEach(list => {
+msgLists.forEach((list) => {
   const items = list.querySelectorAll(".msg-item");
-  if (!items.length) {
-    let text = "";
-    if (list.id === "msgReceived") text = "Nessun messaggio";
-    else if (list.id === "msgSent") text = "Nessun messaggio inviato";
-    else if (list.id === "msgMatch") text = "Nessun match";
-    else text = "Nessun elemento";
+  const emptyEl = list.querySelector(".empty-state");
 
-    list.innerHTML = `
-      <div style="text-align:center;padding:40px 0;color:#bbb;font-size:1rem;">
-        ${text}
-      </div>
-    `;
-  }
+  if (!emptyEl) return;
+
+  const hasItems = items.length > 0;
+  // se non ci sono messaggi → mostro il testo
+  emptyEl.classList.toggle("hidden-empty", hasItems);
 });
 
   btnMessages?.addEventListener("click", () => {
