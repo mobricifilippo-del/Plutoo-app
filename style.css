@@ -109,13 +109,15 @@ a{color:inherit;text-decoration:none}
 .ethics-lines .l1{font-size:.92rem}
 .ethics-lines .l2{font-size:.82rem;opacity:.75}
 
-/* Link legali - HOME */
+/* Link legali - generici (HOME + APP) */
 .legal-links{
-  margin-top:.7rem;
+  margin:1.2rem 0 .8rem;
   font-size:.9rem;
-  text-align:center;     /* centra i link */
-  width:100%;            /* li tiene in orizzontale e centrati */
-  display:block;         /* evita allineamenti strani */
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:.25rem;
+  text-align:center;
 }
 .legal-links a{
   color:var(--muted);
@@ -128,7 +130,7 @@ a{color:inherit;text-decoration:none}
   text-decoration:underline;
 }
 
-/* Link legali - APP */
+/* Link legali viola dentro l'app (dopo Entra) */
 .legal-links.legal-purple a{
   color:var(--violet);
   text-decoration:none;
@@ -1630,11 +1632,4 @@ line-height: 1.6;
 .story-back-btn:hover {
   background: rgba(0,0,0,0.75);
   transform: scale(1.05);
-}
-
-.legal-links {
-  width: 100%;
-  text-align: center;
-  display: block;
-  margin: 1.5rem 0;
 }
