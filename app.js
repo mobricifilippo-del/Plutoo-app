@@ -1060,33 +1060,45 @@ nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
     if(card._cleanup) card._cleanup();
   }
 
-function showMatchAnimation(dogName, color){
-  // overlay a tutto schermo
-  const overlay =
-    document.getElementById("matchOverlay") ||
-    document.querySelector(".match-overlay");
+function showMatchAnimation(dogName, color) {
+  const overlay = document.getElementById("matchOverlay") || document.querySelector(".match-overlay");
   if (!overlay) return;
 
   const heartEl = overlay.querySelector(".match-heart");
-  const titleEl = overlay.querySelector(".match-text h2");
-  const subEl   = overlay.querySelector(".match-text p");
+  const textBox = overlay.querySelector(".match-text");
 
-  const currentColor = color || "❤️‍🔥";
+  // Cuore leggermente più piccolo
+  if (heartEl) {
+    heartEl.style.fontSize = "180px";
+    heartEl.textContent = color || "❤️‍🔥";
+  }
 
-  // Cuore singolo con colore corrente
-  if (heartEl) heartEl.textContent = currentColor;
+  // Testo: SOLO “MATCH!”
+  if (textBox) textBox.textContent = "MATCH!";
 
-  // Testo fisso (senza nome del DOG)
-  if (titleEl) titleEl.textContent = "Hai un match!";
-  if (subEl)   subEl.textContent   = "Vai nella sezione Messaggi per conoscerlo meglio.";
-
-  // Mostra overlay
+  /*  
+     --- EFFETTO FLASH IDENTICO all’ENTRA ---
+     - durata 1.8s
+     - prima compare completamente
+     - poi si dissolve lentamente
+  */
+  overlay.style.transition = "opacity 1.5s ease-out";
   overlay.classList.add("active");
 
-  // Chiudi dopo 1.6 secondi
+  // fade-in iniziale
+  overlay.style.opacity = "1";
+
+  // dopo 1.8s inizia a sparire
+  setTimeout(() => {
+    overlay.style.opacity = "0";
+  }, 1800);
+
+  // dopo il fade-out nascondiamo tutto
   setTimeout(() => {
     overlay.classList.remove("active");
-  }, 1600);
+    overlay.style.transition = "";
+    overlay.style.opacity = "";
+  }, 3300);
 }
 
   // ============ Ricerca ============
