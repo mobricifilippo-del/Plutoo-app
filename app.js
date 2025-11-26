@@ -1780,28 +1780,45 @@ storyLikeBtn.classList.add("heart-anim");
   });
 });
 
+  // --- DOCS: apertura file picker + salvataggio stato ---
+    const docFileInput = document.createElement("input");
+    docFileInput.type = "file";
+    docFileInput.accept = "image/*,application/pdf";
+    docFileInput.style.display = "none";
+    profileContent.appendChild(docFileInput);
+
     qa(".doc-item", profileContent).forEach(item=>{
       item.addEventListener("click", ()=>{
         const docType = item.getAttribute("data-doc");
         const docCategory = item.getAttribute("data-type");
 
-        if (docCategory === "owner"){
-          if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
-          state.ownerDocsUploaded[d.id].identity = true;
-          localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+        // quando l'utente sceglie un file
+        docFileInput.onchange = () => {
+          const file = docFileInput.files && docFileInput.files[0];
+          if (!file) return;
 
-          if (!d.verified){
-            d.verified = true;
-            alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+          if (docCategory === "owner"){
+            if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
+            state.ownerDocsUploaded[d.id].identity = true;
+            localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+
+            if (!d.verified){
+              d.verified = true;
+              alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+            }
+          } else if (docCategory === "dog"){
+            if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
+            const docName = docType.replace("dog-", "");
+            state.dogDocsUploaded[d.id][docName] = true;
+            localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
           }
-        } else if (docCategory === "dog"){
-          if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
-          const docName = docType.replace("dog-", "");
-          state.dogDocsUploaded[d.id][docName] = true;
-          localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
-        }
 
-        openProfilePage(d);
+          // ricarico il profilo per aggiornare le etichette "Caricato"
+          openProfilePage(d);
+        };
+
+        // apro il selettore file
+        docFileInput.click();
       });
     });
 
