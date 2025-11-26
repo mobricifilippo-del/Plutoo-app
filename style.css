@@ -1538,7 +1538,7 @@ line-height: 1.6;
 .match-overlay.active {
   pointer-events: auto;
   opacity: 1;
-  animation: matchFlash 0.85s ease-out forwards;
+  animation: matchFlash 1.8s ease-out forwards;
 }
 
 @keyframes matchFlash {
