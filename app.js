@@ -485,7 +485,8 @@ const DOGS = [
     state.breeds = [
       "Barboncino","Bassotto","Beagle","Border Collie","Bulldog Francese",
       "Carlino","Chihuahua","Cocker Spaniel","Golden Retriever","Husky",
-      "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu"
+      "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu",
+      "Meticcio"
     ].sort();
   });
 
