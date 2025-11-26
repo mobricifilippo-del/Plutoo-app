@@ -5,6 +5,8 @@ window.addEventListener("error", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+document.getElementById("dogBark")?.play().then(()=>{}).catch(()=>{});
+
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
   const qs = (s, r=document) => r.querySelector(s);
