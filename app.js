@@ -1177,55 +1177,75 @@ function showMatchAnimation(dogName, color){
   }
 
   // ============ Sezione Social nel profilo ============
-  function generateSocialSection(dog) {
-    if (!dog.social) return "";
-    const enabled = [];
+function generateSocialSection(d) {
 
-    if (dog.social.facebook?.enabled && dog.social.facebook.url) {
-      enabled.push({
-        name: "Facebook",
-        url: dog.social.facebook.url,
-        class: "social-fb",
-        icon: `<svg class="social-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`
-      });
-    }
+  const saved = state.ownerSocialByDog?.[d.id] || {};
 
-    if (dog.social.instagram?.enabled && dog.social.instagram.url) {
-      enabled.push({
-        name: "Instagram",
-        url: dog.social.instagram.url,
-        class: "social-ig",
-        icon: `<svg class="social-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.59-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`
-      });
-    }
+  const links = {
+    facebook: saved.facebook && saved.facebook.trim() ? saved.facebook.trim() : null,
+    instagram: saved.instagram && saved.instagram.trim() ? saved.instagram.trim() : null,
+    tiktok: saved.tiktok && saved.tiktok.trim() ? saved.tiktok.trim() : null
+  };
 
-    if (dog.social.tiktok?.enabled && dog.social.tiktok.url) {
-      enabled.push({
-        name: "TikTok",
-        url: dog.social.tiktok.url,
-        class: "social-tt",
-        icon: `<svg class="social-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#FFFFFF" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>`
-      });
-    }
-
-    if (!enabled.length) return "";
-
+  // Nessun social → non mostrare niente
+  if (!links.facebook && !links.instagram && !links.tiktok) {
     return `
-      <div class="pp-docs-section" style="margin-top:1.2rem">
+      <div class="pp-social-section">
         <h4 class="section-title" style="margin-top:0;font-size:1rem">
-          ${state.lang === "it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
+          ${state.lang==="it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
         </h4>
-        <div class="pp-social-grid">
-          ${enabled.map(s => `
-            <button class="social-btn ${s.class}" data-url="${s.url}" data-dog-id="${dog.id}" data-social="${s.class}">
-              <div class="social-icon">${s.icon}</div>
-              <div class="social-label">${s.name}</div>
-            </button>
-          `).join("")}
-        </div>
+        <p style="color:var(--muted);font-size:.9rem;padding:1rem 0;text-align:center">
+          ${state.lang==="it"?"Nessun social aggiunto":"No social added"}
+        </p>
       </div>
     `;
   }
+
+  return `
+    <div class="pp-social-section">
+      <h4 class="section-title" style="margin-top:0;font-size:1rem">
+        ${state.lang==="it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
+      </h4>
+
+      <div class="pp-social-grid">
+
+        ${links.facebook ? `
+          <a class="social-btn social-fb" href="${links.facebook}" target="_blank">
+            <div class="social-icon">
+              <svg class="social-svg" viewBox="0 0 24 24">
+                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </div>
+            <span>Facebook</span>
+          </a>
+        ` : ""}
+
+        ${links.instagram ? `
+          <a class="social-btn social-ig" href="${links.instagram}" target="_blank">
+            <div class="social-icon">
+              <svg class="social-svg" viewBox="0 0 24 24">
+                <path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/>
+              </svg>
+            </div>
+            <span>Instagram</span>
+          </a>
+        ` : ""}
+
+        ${links.tiktok ? `
+          <a class="social-btn social-tt" href="${links.tiktok}" target="_blank">
+            <div class="social-icon">
+              <svg class="social-svg" viewBox="0 0 24 24">
+                <path fill="#FFFFFF" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+              </svg>
+            </div>
+            <span>TikTok</span>
+          </a>
+        ` : ""}
+
+      </div>
+    </div>
+  `;
+}
 
   // ============ FOLLOW / SEGUI TI (mock locale) ============
   function persistFollowState() {
@@ -1606,8 +1626,66 @@ storyLikeBtn.classList.add("heart-anim");
       btn.textContent = "Modifica social";
 
       btn.addEventListener("click", () => {
-        alert("Apertura pannello social (step 2)");
-      });
+  const dogId = d.id;
+  const existing = (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) || {};
+
+  // Facebook
+  let fb = prompt(
+    state.lang === "it"
+      ? "Inserisci il link Facebook del proprietario (lascia vuoto per nessun link):"
+      : "Enter owner Facebook link (leave empty for none):",
+    existing.facebook || ""
+  );
+  if (fb === null) fb = existing.facebook || "";
+  fb = fb.trim();
+
+  // Instagram
+  let ig = prompt(
+    state.lang === "it"
+      ? "Inserisci il link Instagram del proprietario:"
+      : "Enter owner Instagram link:",
+    existing.instagram || ""
+  );
+  if (ig === null) ig = existing.instagram || "";
+  ig = ig.trim();
+
+  // TikTok
+  let tt = prompt(
+    state.lang === "it"
+      ? "Inserisci il link TikTok del proprietario:"
+      : "Enter owner TikTok link:",
+    existing.tiktok || ""
+  );
+  if (tt === null) tt = existing.tiktok || "";
+  tt = tt.trim();
+
+  // Se tutto vuoto → rimuovo personalizzazione
+  if (!fb && !ig && !tt) {
+    if (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
+      delete state.ownerSocialByDog[dogId];
+    }
+  } else {
+    if (!state.ownerSocialByDog) state.ownerSocialByDog = {};
+    state.ownerSocialByDog[dogId] = {
+      facebook: fb || "",
+      instagram: ig || "",
+      tiktok: tt || ""
+    };
+  }
+
+  try {
+    localStorage.setItem("ownerSocialByDog", JSON.stringify(state.ownerSocialByDog || {}));
+  } catch(e){}
+
+  const msg = state.lang === "it"
+    ? "Social aggiornati!"
+    : "Social updated!";
+  if (typeof showToast === "function") {
+    showToast(msg);
+  } else {
+    alert(msg);
+  }
+});
 
       const contentEl = document.getElementById("profileContent");
       if (contentEl) {
