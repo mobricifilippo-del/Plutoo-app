@@ -5,6 +5,26 @@ window.addEventListener("error", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // Disabilita PWA/Service Worker dentro l'app Android (WebView)
+  const isAndroidWebView =
+    navigator.userAgent.includes("Android") &&
+    navigator.userAgent.includes("wv");
+
+  if (isAndroidWebView) {
+    // Stoppa eventuali service worker (evita doppia icona PWA)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then(regs => regs.forEach(reg => reg.unregister()))
+        .catch(() => {});
+    }
+
+    // Blocca il prompt di installazione PWA
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+    });
+  }
+
 document.getElementById("dogBark")?.play().then(()=>{}).catch(()=>{});
 
   // ============ Helpers ============
