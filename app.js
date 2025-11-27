@@ -1517,7 +1517,10 @@ storyLikeBtn.classList.add("heart-anim");
     const selfieStored = localStorage.getItem(selfieKey);
     const selfieSrc    = selfieStored || d.img;
 
-    const dogStories = StoriesState.stories.find(s => s.userId === d.id);
+    const dogStories =
+    window.StoriesState && Array.isArray(window.StoriesState.stories)
+    ? window.StoriesState.stories.find(s => s.userId === d.id)
+    : null;
     const storiesHTML = dogStories ? `
       <div class="pp-stories-section">
         <div class="pp-stories-header">
@@ -2294,6 +2297,8 @@ if (d.id === CURRENT_USER_DOG_ID) {
       ];
     }
   };
+  
+  window.StoriesState = StoriesState;
 
   function getVisibleMediaList(story) {
     const hasMatch = !!state.matches[story.userId];
