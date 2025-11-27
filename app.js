@@ -194,6 +194,72 @@ document.getElementById("dogBark")?.play().then(()=>{}).catch(()=>{});
   const adBanner = $("adBanner");
   const matchOverlay = $("matchOverlay");
 
+  
+  // ============ STORIES – Config & State ============
+  const STORIES_CONFIG = {
+    PHOTO_DURATION: 15000,
+    VIDEO_MAX_DURATION_FREE: 15,
+    VIDEO_MAX_DURATION_PLUS: 90,
+    MAX_PHOTO_SIZE: 10 * 1024 * 1024,
+    MAX_VIDEO_SIZE: 50 * 1024 * 1024,
+    STORY_LIFETIME: 24 * 60 * 60 * 1000,
+    FREE_DAILY_LIMIT: 3,
+    REWARD_VIDEO_DURATION: 15
+  };
+
+  const StoriesState = {
+    stories: [],
+    currentStoryUserId: null,
+    currentMediaIndex: 0,
+    progressInterval: null,
+    uploadedFile: null,
+    selectedFilter: "none",
+    selectedMusic: "",
+    openedFrom: null,
+
+    loadStories() {
+      const saved = localStorage.getItem("plutoo_stories");
+      if (saved) {
+        this.stories = JSON.parse(saved);
+        this.cleanExpiredStories();
+      } else {
+        this.stories = this.generateMockStories();
+        this.saveStories();
+      }
+    },
+    saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
+    cleanExpiredStories() {
+      const now = Date.now();
+      this.stories = this.stories.filter(story => {
+        story.media = story.media.filter(m => (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME);
+        return story.media.length > 0;
+      });
+      this.saveStories();
+    },
+    getTodayStoriesCount() {
+      const today = new Date().toDateString();
+      const userStory = this.stories.find(s => s.userId === "currentUser");
+      if (!userStory) return 0;
+      return userStory.media.filter(m => new Date(m.timestamp).toDateString() === today).length;
+    },
+    canUploadStory() { return state.plus || this.getTodayStoriesCount() < STORIES_CONFIG.FREE_DAILY_LIMIT; },
+    generateMockStories() {
+      return [
+        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true,
+          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false,privacy:"public"}] },
+        { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
+          media:[
+            {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false,privacy:"public"},
+            {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false,privacy:"private"}
+          ]},
+        { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
+          media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false,privacy:"public"}] }
+      ];
+    }
+  };
+  
+  window.StoriesState = StoriesState;
+
   // ============ HOME: ENTRA (con animazione WOW) ============
   btnEnter?.addEventListener("click", (e) => {
     e.preventDefault();
@@ -2234,71 +2300,6 @@ if (d.id === CURRENT_USER_DOG_ID) {
     }
   }
   init();
-
-  // ============ STORIES – Config & State ============
-  const STORIES_CONFIG = {
-    PHOTO_DURATION: 15000,
-    VIDEO_MAX_DURATION_FREE: 15,
-    VIDEO_MAX_DURATION_PLUS: 90,
-    MAX_PHOTO_SIZE: 10 * 1024 * 1024,
-    MAX_VIDEO_SIZE: 50 * 1024 * 1024,
-    STORY_LIFETIME: 24 * 60 * 60 * 1000,
-    FREE_DAILY_LIMIT: 3,
-    REWARD_VIDEO_DURATION: 15
-  };
-
-  const StoriesState = {
-    stories: [],
-    currentStoryUserId: null,
-    currentMediaIndex: 0,
-    progressInterval: null,
-    uploadedFile: null,
-    selectedFilter: "none",
-    selectedMusic: "",
-    openedFrom: null,
-
-    loadStories() {
-      const saved = localStorage.getItem("plutoo_stories");
-      if (saved) {
-        this.stories = JSON.parse(saved);
-        this.cleanExpiredStories();
-      } else {
-        this.stories = this.generateMockStories();
-        this.saveStories();
-      }
-    },
-    saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
-    cleanExpiredStories() {
-      const now = Date.now();
-      this.stories = this.stories.filter(story => {
-        story.media = story.media.filter(m => (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME);
-        return story.media.length > 0;
-      });
-      this.saveStories();
-    },
-    getTodayStoriesCount() {
-      const today = new Date().toDateString();
-      const userStory = this.stories.find(s => s.userId === "currentUser");
-      if (!userStory) return 0;
-      return userStory.media.filter(m => new Date(m.timestamp).toDateString() === today).length;
-    },
-    canUploadStory() { return state.plus || this.getTodayStoriesCount() < STORIES_CONFIG.FREE_DAILY_LIMIT; },
-    generateMockStories() {
-      return [
-        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true,
-          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false,privacy:"public"}] },
-        { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
-          media:[
-            {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false,privacy:"public"},
-            {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false,privacy:"private"}
-          ]},
-        { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
-          media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false,privacy:"public"}] }
-      ];
-    }
-  };
-  
-  window.StoriesState = StoriesState;
 
   function getVisibleMediaList(story) {
     const hasMatch = !!state.matches[story.userId];
