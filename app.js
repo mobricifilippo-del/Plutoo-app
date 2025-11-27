@@ -317,7 +317,6 @@ if (bark) {
         initStories();
       }
       setActiveView(state.currentView);
-      showAdBanner();
     }, 500);
 
     setTimeout(() => {
@@ -329,6 +328,7 @@ if (bark) {
       if (heroLogo) {
         heroLogo.style.transition = "opacity 1.5s ease-out";
         heroLogo.style.opacity = "0";
+        showAdBanner();
       }
     }, 2000);
 
