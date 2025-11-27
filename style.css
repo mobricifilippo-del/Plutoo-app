@@ -98,13 +98,13 @@ a{color:inherit;text-decoration:none}
 .hero-logo{width:300px;height:300px;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5))}
 @media (max-width:520px){.hero-logo{width:260px;height:260px}}
 
-.home-sponsor {text-align:center;padding:6rem;border-top:1px solid var(--line);margin-top:42px;  /* distanza perfetta dai canili */}
+.home-sponsor {text-align:center;padding:4rem;border-top:1px solid var(--line);margin-top:42px;  /* distanza perfetta dai canili */}
 .sponsor-title{font-weight:800;color:var(--gold);font-size:1.05rem;margin-bottom:.5rem}
-.sponsor-card{display:inline-flex;flex-direction:column;align-items:center;gap:.35rem;margin-top:.3rem;padding:.2rem .35rem;border-radius:10px;background:rgba(205,164,52,.08);box-shadow:0 6px 18px rgba(205,164,52,.12);transition:transform .2s,box-shadow .2s}
+.sponsor-card{display:inline-flex;flex-direction:column;align-items:center;gap:.35rem;margin-top:.3rem;padding:.35rem .2rem;border-radius:10px;background:rgba(205,164,52,.08);box-shadow:0 6px 18px rgba(205,164,52,.12);transition:transform .2s,box-shadow .2s}
 .sponsor-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(205,164,52,.25)}
 .sponsor-logo{width:58px;height:58px;object-fit:contain;border-radius:12px;background:#fff}
 .sponsor-copy{font-size:.95rem;color:var(--muted);margin-top:.2rem}
-.btn.ethics{display:inline-flex;align-items:center;gap:.45rem;margin-top:1rem;background:transparent;color:var(--muted);border:1px solid var(--line);padding:35rem .6rem;font-weight:700;border-radius:12px}
+.btn.ethics{display:inline-flex;align-items:center;gap:.45rem;margin-top:1rem;background:transparent;color:var(--muted);border:1px solid var(--line);padding:6rem .35rem;font-weight:700;border-radius:12px}
 .ethics-lines{display:flex;flex-direction:column;gap:.35rem;text-align:left}
 .ethics-lines .l1{font-size:.92rem}
 .ethics-lines .l2{font-size:.82rem;opacity:.75}
