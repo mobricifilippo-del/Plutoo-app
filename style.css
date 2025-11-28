@@ -13,7 +13,18 @@
 
 /* Base */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg-main);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;overflow-x:hidden}
+html,body{
+  margin:0;
+  background:var(--bg-main);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+body{
+  min-height:100vh;
+  overflow-y:auto;
+}
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 .hidden{display:none!important}
