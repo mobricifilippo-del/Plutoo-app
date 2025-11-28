@@ -754,6 +754,10 @@ msgLists.forEach((list) => {
     }
 
     state.currentView = name;
+    // 🔄 Mantieni allineato lo stato delle Stories
+  try {
+    StoriesState.loadStories();
+  } catch (e) {}
 
     [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => {
       if (!v) return;
