@@ -21,18 +21,14 @@ html,body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
   overflow-x:hidden;
   width:100%;
-  height:100%;
-}
-
-body{
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+  max-width:100vw;
 }
 
 body{
   min-height:100vh;
   overflow-y:auto;
 }
+
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 .hidden{display:none!important}
@@ -99,15 +95,12 @@ a{color:inherit;text-decoration:none}
 .story-open .hidden{display:none !important}
 
 /* ================= HOME ================= */
- .home{
+.home{
   min-height:100vh;
-  height:100%;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-  padding:1.2rem 1.2rem calc(env(safe-area-inset-bottom) + 1.2rem);
-  overflow-y:auto;
-  box-sizing:border-box;
+  padding:1.2rem;
 }
 .home-top{display:flex;justify-content:center}
 .home-bar{display:flex;align-items:center;gap:.8rem;width:100%}
@@ -1173,11 +1166,8 @@ body.story-open #storiesBar {
 }
 .sponsor-copy{color:var(--muted);font-size:.93rem}
 .ad-banner{
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: env(safe-area-inset-bottom, 0);
-  z-index: 2000;
+  position: relative;
+  width: 100%;
   height: 56px;
   background: rgba(18,18,38,0.98);
   border-top: 1px solid var(--line);
@@ -1187,17 +1177,7 @@ body.story-open #storiesBar {
   font-size: .9rem;
   color: var(--muted);
   text-align: center;
-  box-sizing: border-box;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-.app .content,
-.profile-page,
-.view,
-.messages-body,
-.grid-2,
-.card.swipe {
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0)) !important; /* MODIFICA */
+  margin-top: auto;
 }
 
 /* Nasconde lo sponsor globale quando è attiva la Home */
