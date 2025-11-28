@@ -1185,7 +1185,7 @@ body.story-open #storiesBar {
   font-size: .9rem;
   color: var(--muted);
   text-align: center;
-  margin-top: auto;
+  margin-top: 2.5rem;
 }
 
 /* Nasconde lo sponsor globale quando è attiva la Home */
