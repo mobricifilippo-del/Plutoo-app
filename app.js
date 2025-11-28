@@ -783,6 +783,7 @@ msgLists.forEach((list) => {
       tabNearby.classList.add("active");
       renderNearby();
       renderStoriesBar();
+      window.renderStories && window.renderStories();
       if (btnSearchPanel) btnSearchPanel.disabled = false;
     }
 
@@ -1157,15 +1158,8 @@ function showMatchAnimation(dogName, color) {
     heartEl.textContent = color || "❤️‍🔥";
   }
 
-  // Testo: SOLO “MATCH!”
   if (textBox) textBox.textContent = "MATCH!";
 
-  /*  
-     --- EFFETTO FLASH IDENTICO all’ENTRA ---
-     - durata 1.8s
-     - prima compare completamente
-     - poi si dissolve lentamente
-  */
   overlay.style.transition = "opacity 1.5s ease-out";
   overlay.classList.add("active");
 
