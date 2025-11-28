@@ -99,7 +99,7 @@ a{color:inherit;text-decoration:none}
   min-height:auto;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  margin-bottom: 80px;
   padding:1.2rem;
 }
 .home-top{display:flex;justify-content:center}
