@@ -1395,21 +1395,15 @@ line-height: 1.6;
   z-index: 1385;
 }
 
-/* Messaggi: banner + Termini/Privacy/Contatti fissi in basso */
-#viewMessages:not(.hidden) ~ #adBanner {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 2.2rem;  /* spazio sopra i link legali */
-  z-index: 1390;
-}
+/* Fix Android WebView: abbassa banner e link legali */
+@media (max-height: 780px) {
+  #viewMessages:not(.hidden) ~ #adBanner {
+    bottom: 1.4rem;   /* PRIMA ERA 2.2rem */
+  }
 
-#viewMessages:not(.hidden) ~ .legal-links {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1385;
+  #viewMessages:not(.hidden) ~ .legal-links {
+    bottom: 0;
+  }
 }
 
 /* ================= FOLLOWERS / FOLLOWING BOTTOM SHEET ================= */
