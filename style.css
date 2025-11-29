@@ -1395,6 +1395,23 @@ line-height: 1.6;
   z-index: 1385;
 }
 
+/* Messaggi: banner + Termini/Privacy/Contatti fissi in basso */
+#viewMessages:not(.hidden) ~ #adBanner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.2rem;  /* spazio sopra i link legali */
+  z-index: 1390;
+}
+
+#viewMessages:not(.hidden) ~ .legal-links {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1385;
+}
+
 /* ================= FOLLOWERS / FOLLOWING BOTTOM SHEET ================= */
 .bottom-sheet{
   position:fixed;
