@@ -96,10 +96,12 @@ a{color:inherit;text-decoration:none}
 
 /* ================= HOME ================= */
 .home{
-  min-height:100vh;
+  height:100vh;                 /* pagina alta quanto lo schermo */
   display:flex;
   flex-direction:column;
-  padding:1.2rem 1.2rem 7.5rem;
+  justify-content:space-between;/* sopra logo+Entra, sotto sponsor */
+  padding:1.2rem;
+  box-sizing:border-box;        /* così tutto rientra nei 100vh */
 }
 .home-top{display:flex;justify-content:center}
 .home-bar{display:flex;align-items:center;gap:.8rem;width:100%}
@@ -1162,16 +1164,10 @@ body.story-open #storiesBar {
 
 /* ================= SPONSOR / BANNER ================= */
 .sponsor{
-  position:fixed;
-  left:0;
-  bottom:0;
-  width:100%;
   padding:1rem;
-  padding-bottom: env(safe-area-inset-bottom);
   border-top:1px solid var(--line);
   background:rgba(18,18,38,.85);
   backdrop-filter:blur(10px);
-  z-index:900;
 }
 .sponsor-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem}
 .sponsor-title{font-weight:800;color:var(--gold);font-size:1.05rem}
