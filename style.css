@@ -445,7 +445,7 @@ body.story-open #storiesBar {
   background:var(--bg-main);
   display:flex;flex-direction:column;
   overflow:hidden;
-  margin-top: 1.2rem;
+  margin-top: 2rem;
 }
 
 .profile-navbar{
