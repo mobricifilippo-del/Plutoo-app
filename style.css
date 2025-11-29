@@ -1378,34 +1378,6 @@ font-size: 1rem;
 line-height: 1.6;
 }
 
-/* Messaggi: banner + link legali fissi in basso */
-#viewMessages:not(.hidden) ~ #adBanner {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 2.2rem;  /* spazio per Termini · Privacy · Contatti */
-  z-index: 1390;
-}
-
-#viewMessages:not(.hidden) ~ .legal-links {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1385;
-}
-
-/* Fix Android WebView: abbassa banner e link legali */
-@media (max-height: 780px) {
-  #viewMessages:not(.hidden) ~ #adBanner {
-    bottom: 1.4rem;   /* PRIMA ERA 2.2rem */
-  }
-
-  #viewMessages:not(.hidden) ~ .legal-links {
-    bottom: 0;
-  }
-}
-
 /* ================= FOLLOWERS / FOLLOWING BOTTOM SHEET ================= */
 .bottom-sheet{
   position:fixed;
