@@ -1253,7 +1253,7 @@ body.story-open #storiesBar {
 #viewMessages {
 display: flex;
 flex-direction: column;
-height: 100vh;
+height: 100%;
 padding-top: 0 !important;
 margin-top: 0 !important;
 background: #0d021a !important;
@@ -1342,18 +1342,6 @@ border-color: rgba(177, 154, 255, 0.4);
   height: 100%;
   overflow-y: auto;
   padding-bottom: 6rem; /* spazio per banner + link legali */
-}
-
-/* vista Messaggi: pagina ferma, solo il corpo scorre */
-#viewMessages{
-  position: fixed;
-  inset: 0;
-  z-index: 1400;
-  background: var(--bg-main);
-  display: flex;
-  flex-direction: column;
-  padding-top: 12px;   /* ABBASSA tutta la vista messaggi */
-  overflow: hidden;
 }
 
 /* liste messaggi */
