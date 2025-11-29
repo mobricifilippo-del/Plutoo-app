@@ -1339,12 +1339,14 @@ border-color: rgba(177, 154, 255, 0.4);
   padding: 0 1.2rem 0.5rem;
 }
 
+/* area che SCROLLA con le liste */
 .messages-scroll{
   height: 100%;
   overflow-y: auto;
-  padding-bottom: 1rem;
+  padding-bottom: 6rem; /* spazio per banner + link legali */
 }
 
+/* vista Messaggi: pagina ferma, solo il corpo interno scrolla */
 #viewMessages{
   position: fixed;
   inset: 0;
@@ -1352,6 +1354,7 @@ border-color: rgba(177, 154, 255, 0.4);
   background: var(--bg-main);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* liste messaggi */
@@ -1363,7 +1366,6 @@ display: none;
 display: block;
 }
 
-/* stato vuoto - nascosto */
 .empty-state.hidden-empty {
 display: none !important;
 }
@@ -1374,6 +1376,23 @@ color: rgba(255, 255, 255, 0.5);
 padding: 40px 20px;
 font-size: 1rem;
 line-height: 1.6;
+}
+
+/* Messaggi: banner + link legali fissi in basso */
+#viewMessages:not(.hidden) ~ #adBanner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.2rem;  /* spazio per Termini · Privacy · Contatti */
+  z-index: 1390;
+}
+
+#viewMessages:not(.hidden) ~ .legal-links {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1385;
 }
 
 /* ================= FOLLOWERS / FOLLOWING BOTTOM SHEET ================= */
