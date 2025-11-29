@@ -1167,6 +1167,7 @@ body.story-open #storiesBar {
   bottom:0;
   width:100%;
   padding:1rem;
+  padding-bottom: env(safe-area-inset-bottom);
   border-top:1px solid var(--line);
   background:rgba(18,18,38,.85);
   backdrop-filter:blur(10px);
@@ -1192,7 +1193,7 @@ body.story-open #storiesBar {
     font-size: .9rem;
     color: var(--muted);
     text-align: center;
-    margin-top: 2.5rem;   /* RIMETTI QUESTO */
+    margin-top: 2.5rem;
 }
 
 /* Nasconde lo sponsor globale quando è attiva la Home */
