@@ -440,10 +440,18 @@ body.story-open #storiesBar {
 
 /* ================= PROFILO DOG PAGINA DEDICATA ================= */
 .profile-page{
-  position:fixed;inset:0;z-index:1500;
+  position:fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-top: env(safe-area-inset-top, 0); /* AGGIUNTO - Spazio per status bar */
+  z-index:1500;
   background:var(--bg-main);
-  display:flex;flex-direction:column;
+  display:flex;
+  flex-direction:column;
   overflow:hidden;
+  box-sizing: border-box; /* AGGIUNTO */
 }
 
 .profile-navbar{
