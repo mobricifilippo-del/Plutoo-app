@@ -2178,6 +2178,7 @@ if (d.id === CURRENT_USER_DOG_ID) {
     chatPane.classList.remove("hidden");
     chatPane.classList.add("show");
     chatPane.dataset.dogId = dog.id;
+    state.currentChatUid = dog.uid;
     chatList.innerHTML = `<div class="msg">${state.lang==="it"?"Ciao":"Hi"} ${dog.name}! 🐾</div>`;
     chatInput.value="";
 
@@ -2226,41 +2227,39 @@ if (d.id === CURRENT_USER_DOG_ID) {
   });
 
   async function sendChatMessage(text, dogId, hasMatch, msgCount){
-    const bubble = document.createElement("div");
-    bubble.className="msg me";
-    bubble.textContent=text;
-    chatList.appendChild(bubble);
-    chatInput.value="";
-    chatList.scrollTop = chatList.scrollHeight;
-// --- Salvataggio messaggio su Firestore ---
-const chatId = [window.PLUTOO_UID, state.currentChatUid].sort().join("_");
-    if (!state.plus && state.rewardOpen) return;
-state.rewardOpen = true;
-const msgRef = doc(collection(db, "chats", chatId, "messages"));
-
-await setDoc(msgRef, {
+  const bubble = document.createElement("div");
+  bubble.className="msg me";
+  bubble.textContent=text;
+  chatList.appendChild(bubble);
+  chatInput.value="";
+  chatList.scrollTop = chatList.scrollHeight;
+  // --- Salvataggio messaggio su Firestore ---
+  const chatId = [window.PLUTOO_UID, state.currentChatUid].sort().join("_");
+  if (!state.plus && state.rewardOpen) return;
+  state.rewardOpen = true;
+  const msgRef = doc(collection(db, "chats", chatId, "messages"));
+  await setDoc(msgRef, {
     senderUid: window.PLUTOO_UID,
     receiverUid: state.currentChatUid,
     text: text,
     type: "text",
     createdAt: serverTimestamp(),
     isRead: false
-});
+  });
 
-// aggiorna metadati chat
-await setDoc(doc(db, "chats", chatId), {
+  // aggiorna metadati chat
+  await setDoc(doc(db, "chats", chatId), {
     members: [window.PLUTOO_UID, state.currentChatUid],
     lastMessageText: text,
     lastMessageAt: serverTimestamp(),
     lastSenderUid: window.PLUTOO_UID
-}, { merge: true });
-    state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
-    localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
-
-    if (!state.plus && !hasMatch && state.chatMessagesSent[dogId] >= 1){
-      chatInput.disabled = true;
-      chatInput.placeholder = state.lang==="it" ? "Match necessario per continuare" : "Match needed to continue";
-    }
+  }, { merge: true });
+  state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
+  localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+  if (!state.plus && !hasMatch && state.chatMessagesSent[dogId] >= 1){
+    chatInput.disabled = true;
+    chatInput.placeholder = state.lang==="it" ? "Match necessario per continuare" : "Match needed to continue";
+  }
   }
 
   // ============ Maps / servizi ============
