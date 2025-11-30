@@ -484,5 +484,25 @@
   <button id="cancelUpload" class="btn ghost">Annulla</button>
 </div>
 
+    <!-- Firebase SDK (CDN, compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAEqA_Cx0NkwGfEGVEPR1R-NrrfKdBT33w",
+    authDomain: "plutoo-prod.firebaseapp.com",
+    projectId: "plutoo-prod",
+    storageBucket: "plutoo-prod.firebasestorage.app",
+    messagingSenderId: "251835121058",
+    appId: "1:251835121058:web:ef75fff4baa3855578c6fb"
+  };
+
+  // Inizializza Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+
   </div>  <script src="app.js" defer></script></body>
 </html>
