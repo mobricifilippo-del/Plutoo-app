@@ -2232,7 +2232,26 @@ if (d.id === CURRENT_USER_DOG_ID) {
     chatList.appendChild(bubble);
     chatInput.value="";
     chatList.scrollTop = chatList.scrollHeight;
+// --- Salvataggio messaggio su Firestore ---
+const chatId = [window.PLUTOO_UID, state.currentChatUid].sort().join("_");
+const msgRef = doc(collection(db, "chats", chatId, "messages"));
 
+await setDoc(msgRef, {
+    senderUid: window.PLUTOO_UID,
+    receiverUid: state.currentChatUid,
+    text: text,
+    type: "text",
+    createdAt: serverTimestamp(),
+    isRead: false
+});
+
+// aggiorna metadati chat
+await setDoc(doc(db, "chats", chatId), {
+    members: [window.PLUTOO_UID, state.currentChatUid],
+    lastMessageText: text,
+    lastMessageAt: serverTimestamp(),
+    lastSenderUid: window.PLUTOO_UID
+}, { merge: true });
     state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
     localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
 
