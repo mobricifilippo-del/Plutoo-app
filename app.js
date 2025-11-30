@@ -2234,6 +2234,8 @@ if (d.id === CURRENT_USER_DOG_ID) {
     chatList.scrollTop = chatList.scrollHeight;
 // --- Salvataggio messaggio su Firestore ---
 const chatId = [window.PLUTOO_UID, state.currentChatUid].sort().join("_");
+    if (!state.plus && state.rewardOpen) return;
+state.rewardOpen = true;
 const msgRef = doc(collection(db, "chats", chatId, "messages"));
 
 await setDoc(msgRef, {
