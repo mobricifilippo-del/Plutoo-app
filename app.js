@@ -2225,7 +2225,7 @@ if (d.id === CURRENT_USER_DOG_ID) {
     sendChatMessage(text, dogId, hasMatch, msgCount);
   });
 
-  function sendChatMessage(text, dogId, hasMatch, msgCount){
+  async function sendChatMessage(text, dogId, hasMatch, msgCount){
     const bubble = document.createElement("div");
     bubble.className="msg me";
     bubble.textContent=text;
