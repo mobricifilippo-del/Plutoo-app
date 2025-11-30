@@ -5,6 +5,32 @@ window.addEventListener("error", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // Firebase handles (già inizializzato in index.html)
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  // Login anonimo automatico (se non ancora loggato)
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    auth.signInAnonymously().catch(err => {
+      console.error("Auth error:", err);
+    });
+  } else {
+    // Salva l'UID in window per il resto dell'app
+    window.PLUTOO_UID = user.uid;
+
+    // Primo test Firestore: salva/aggiorna documento utente
+    db.collection("users").doc(user.uid).set({
+      lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      userAgent: navigator.userAgent || null
+    }, { merge: true }).catch(err => {
+      console.error("Firestore user save error:", err);
+    });
+}
+});
+
   // Disabilita PWA/Service Worker dentro l'app Android (WebView)
   const isAndroidWebView =
     navigator.userAgent.includes("Android") &&
