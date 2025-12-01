@@ -744,24 +744,20 @@ const DOGS = [
   // Carica le liste messaggi da Firestore
 async function loadMessagesLists() {
   try {
-    if (!db || !msgLists) return;
-
-    // 1) Svuota tutte le liste e nasconde i testi "nessun messaggio..."
+    // Svuota tutte le liste e nasconde i testi "nessun messaggio..."
     msgLists.forEach((list) => {
-      // elimina eventuali righe vecchie
       list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-      // nasconde il messaggio vuoto
       const emptyEl = list.querySelector(".empty-state");
       if (emptyEl) emptyEl.classList.add("hidden-empty");
     });
 
-    // 2) Legge TUTTE le chat da Firestore, ordinate per data ultimo messaggio
-  const snap = await db
-  .collection("chats")
-  .where("members", "array-contains", selfUid)
-  .get();
+    // Legge TUTTE le chat, ordinate per ultimo messaggio
+    const snap = await db
+      .collection("chats")
+      .orderBy("lastMessageAt", "desc")
+      .get();
 
-    // 3) Se non c'è nessuna chat → ri-mostra i testi "nessun messaggio..."
+    // Nessuna chat → mostra "nessun messaggio"
     if (snap.empty) {
       msgLists.forEach((list) => {
         const emptyEl = list.querySelector(".empty-state");
@@ -770,10 +766,9 @@ async function loadMessagesLists() {
       return;
     }
 
-    // 4) Per ogni chat crea una riga semplice (testo + data)
+    // Crea le righe per tutte le liste (Inviati / Ricevuti / Match, ecc.)
     snap.forEach((docSnap) => {
       const data = docSnap.data() || {};
-
       const text = data.lastMessageText || "";
       const date =
         data.lastMessageAt && data.lastMessageAt.toDate
@@ -789,7 +784,7 @@ async function loadMessagesLists() {
         </div>
       `;
 
-      // Per ora: stessa riga in tutte le liste (Inviati, Match, ecc.)
+      // Per ora: stessa riga in tutte le liste
       msgLists.forEach((list) => {
         list.appendChild(row.cloneNode(true));
       });
@@ -798,6 +793,7 @@ async function loadMessagesLists() {
     console.error("Errore loadMessagesLists:", err);
   }
 }
+  
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
