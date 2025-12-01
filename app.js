@@ -814,10 +814,6 @@ msgLists.forEach((list) => {
   emptyEl.classList.toggle("hidden-empty", hasItems);
 });
 
-  btnMessages?.addEventListener("click", () => {
-    setActiveView("messages");
-  });
-
   msgTopTabs.forEach((btn) => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.tab;
