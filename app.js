@@ -2325,6 +2325,7 @@ try {
     lastSenderUid: selfUid,
     match: !!hasMatch,             // true se è una chat da match
     dogId: dogId                   // id del DOG collegato (se c'è)
+    members: [selfUid],
   }, { merge: true });
 
 } catch (err) {
