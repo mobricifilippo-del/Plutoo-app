@@ -794,6 +794,11 @@ const DOGS = [
     }
   }
 
+  btnMessages?.addEventListener("click", () => {
+  setActiveView("messages");
+  loadMessagesLists();
+});
+
 // --- EMPTY STATES ---
 msgLists.forEach((list) => {
   const items = list.querySelectorAll(".msg-item");
