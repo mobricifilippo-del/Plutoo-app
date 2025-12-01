@@ -10,13 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = firebase.firestore();
   const storage = firebase.storage();
 
-  const {
-    doc,
-    collection,
-    setDoc,
-    serverTimestamp
-} = firebase.firestore();
-
   // Login anonimo automatico (se non ancora loggato)
 auth.onAuthStateChanged(user => {
   if (!user) {
@@ -2319,13 +2312,13 @@ if (d.id === CURRENT_USER_DOG_ID) {
     });
 
     // aggiorna metadati chat
-await setDoc(doc(db, "chats", chatId), {
+await db.collection("chats").doc(chatId).set({
   members: [selfUid, receiverUid],
   lastMessageText: text,
-  lastMessageAt: serverTimestamp(),
+  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
   lastSenderUid: selfUid,
-  match: !!hasMatch,         // true se è una chat con match
-  dogId: dogId || null       // id del DOG collegato a questa chat
+  match: !!hasMatch,        // true se è una chat nata da match
+  dogId: dogId || null      // id del DOG collegato alla chat
 }, { merge: true });
 
   } catch (err) {
