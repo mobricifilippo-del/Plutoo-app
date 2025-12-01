@@ -755,43 +755,52 @@ const DOGS = [
         if (emptyEl) emptyEl.classList.add("hidden-empty");
       });
 
-      const snap = await db
-        .collection("chats")
-        .where("members", "array-contains", selfUid)
-        .orderBy("lastMessageAt", "desc")
-        .get();
+    const snap = await db
+  .collection("chats")
+  .where("members", "array-contains", selfUid)
+  .get();
 
-      // Nessuna chat → mostra "nessun messaggio" in tutte le liste
-      if (snap.empty) {
-        msgLists.forEach((list) => {
-          const emptyEl = list.querySelector(".empty-state");
-          if (emptyEl) emptyEl.classList.remove("hidden-empty");
-        });
-        return;
-      }
+// Metto i documenti in un array e li ordino lato client
+const chats = [];
+snap.forEach((docSnap) => {
+  chats.push({ id: docSnap.id, ...docSnap.data() });
+});
 
-      snap.forEach((docSnap) => {
-        const data = docSnap.data() || {};
-        const text = data.lastMessageText || "";
-        const date = data.lastMessageAt && data.lastMessageAt.toDate
-          ? data.lastMessageAt.toDate().toLocaleString()
-          : "";
+// Ordina per lastMessageAt decrescente (se manca, va in fondo)
+chats.sort((a, b) => {
+  const ta =
+    a.lastMessageAt && a.lastMessageAt.toMillis
+      ? a.lastMessageAt.toMillis()
+      : 0;
+  const tb =
+    b.lastMessageAt && b.lastMessageAt.toMillis
+      ? b.lastMessageAt.toMillis()
+      : 0;
+  return tb - ta;
+});
 
-        // creo una riga base
-        const row = document.createElement("div");
-        row.className = "msg-item";
-        row.innerHTML = `
-          <div class="msg-main">
-            <div class="msg-title">${text}</div>
-            <div class="msg-meta">${date}</div>
-          </div>
-        `;
+// Crea le righe per tutte le liste
+chats.forEach((data) => {
+  const text = data.lastMessageText || "";
+  const date =
+    data.lastMessageAt && data.lastMessageAt.toDate
+      ? data.lastMessageAt.toDate().toLocaleString()
+      : "";
 
-        // Per ora: stessa riga in tutte le liste (Inviati / Ricevuti / Match)
-        msgLists.forEach((list) => {
-          list.appendChild(row.cloneNode(true));
-        });
-      });
+  const row = document.createElement("div");
+  row.className = "msg-item";
+  row.innerHTML = `
+    <div class="msg-main">
+      <div class="msg-title">${text}</div>
+      <div class="msg-meta">${date}</div>
+    </div>
+  `;
+
+  msgLists.forEach((list) => {
+    list.appendChild(row.cloneNode(true));
+  });
+});
+      
     } catch (err) {
       console.error("Errore loadMessagesLists", err);
     }
