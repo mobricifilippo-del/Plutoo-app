@@ -10,6 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = firebase.firestore();
   const storage = firebase.storage();
 
+  const {
+    doc,
+    collection,
+    setDoc,
+    serverTimestamp
+} = firebase.firestore();
+
   // Login anonimo automatico (se non ancora loggato)
 auth.onAuthStateChanged(user => {
   if (!user) {
