@@ -2302,7 +2302,7 @@ if (d.id === CURRENT_USER_DOG_ID) {
     const chatDocRef = db.collection("chats").doc(chatId);
 
     // messaggio dentro sottocollezione "messages"
-    await chatDocRef.collection("messages").add({
+      await db.collection("chats").doc(chatId).set({
       senderUid: selfUid,
       receiverUid: receiverUid,
       text: text,
