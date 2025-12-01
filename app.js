@@ -2297,39 +2297,39 @@ if (d.id === CURRENT_USER_DOG_ID) {
   chatList.scrollTop = chatList.scrollHeight;
 
   // --- Salvataggio messaggio su Firestore ---
-  try {
-    const selfUid = window.PLUTOO_UID || "anon";
-    const receiverUid = state.currentChatUid || "unknown";
+try {
+  const selfUid     = window.PLUTOO_UID || "anon-" + (state.selfDog?.id || "unknown");
+  const receiverUid = state.currentChatUid || "unknown";
 
-    const chatId = [selfUid, receiverUid].sort().join("_");
+  // id della chat, ordinato per avere sempre la stessa chiave
+  const chatId = [selfUid, receiverUid].sort().join("_");
 
-    // riferimento alla chat
-    const chatDocRef = db.collection("chats").doc(chatId);
+  // riferimento alla chat
+  const chatDocRef = db.collection("chats").doc(chatId);
 
-    // messaggio dentro sottocollezione "messages"
-      await db.collection("chats").doc(chatId).set({
-      senderUid: selfUid,
-      receiverUid: receiverUid,
-      text: text,
-      type: "text",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      isRead: false
-    });
+  // messaggio dentro sottocollezione "messages"
+  await chatDocRef.collection("messages").add({
+    senderUid: selfUid,
+    receiverUid: receiverUid,
+    text: text,
+    type: "text",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    isRead: false
+  });
 
-    // aggiorna metadati chat
-await db.collection("chats").doc(chatId).set({
-  members: [selfUid, receiverUid],
-  lastMessageText: text,
-  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-  lastSenderUid: selfUid,
-  match: !!hasMatch,        // true se è una chat nata da match
-  dogId: dogId || null      // id del DOG collegato alla chat
-}, { merge: true });
+  // aggiorna metadati chat (usati dalla lista Messaggi)
+  await chatDocRef.set({
+    members: [selfUid, receiverUid],
+    lastMessageText: text,
+    lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+    lastSenderUid: selfUid,
+    match: !!state.matches?.[state.currentDogProfile?.id || ""] || false,
+    dogId: state.currentDogProfile?.id || null
+  }, { merge: true });
 
-  } catch (err) {
-    alert("Errore salvataggio chat: " + err.message);
-    console.error("Errore Firestore sendChatMessage:", err);
-  }
+} catch (err) {
+  console.error("Errore Firestore sendChatMessage:", err);
+}
 
   // contatore messaggi per le regole di blocco
   state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
