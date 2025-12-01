@@ -2248,26 +2248,31 @@ if (d.id === CURRENT_USER_DOG_ID) {
     const receiverUid = state.currentChatUid || "unknown";
 
     const chatId = [selfUid, receiverUid].sort().join("_");
-    const msgRef = doc(collection(db, "chats", chatId, "messages"));
 
-    await setDoc(msgRef, {
+    // riferimento alla chat
+    const chatDocRef = db.collection("chats").doc(chatId);
+
+    // messaggio dentro sottocollezione "messages"
+    await chatDocRef.collection("messages").add({
       senderUid: selfUid,
       receiverUid: receiverUid,
       text: text,
       type: "text",
-      createdAt: serverTimestamp(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       isRead: false
     });
 
     // aggiorna metadati chat
-    await setDoc(doc(db, "chats", chatId), {
+    await chatDocRef.set({
       members: [selfUid, receiverUid],
       lastMessageText: text,
-      lastMessageAt: serverTimestamp(),
+      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastSenderUid: selfUid
     }, { merge: true });
+
   } catch (err) {
     alert("Errore salvataggio chat: " + err.message);
+    console.error("Errore Firestore sendChatMessage:", err);
   }
 
   // contatore messaggi per le regole di blocco
