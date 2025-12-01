@@ -2237,29 +2237,30 @@ if (d.id === CURRENT_USER_DOG_ID) {
 
   // --- Salvataggio messaggio su Firestore ---
   try {
-    const chatId = [window.PLUTOO_UID, state.currentChatUid].sort().join("_");
+    const selfUid = window.PLUTOO_UID || "anon";
+    const receiverUid = state.currentChatUid || "unknown";
 
+    const chatId = [selfUid, receiverUid].sort().join("_");
     const msgRef = doc(collection(db, "chats", chatId, "messages"));
 
     await setDoc(msgRef, {
-      senderUid: window.PLUTOO_UID || "unknown",
-      receiverUid: state.currentChatUid || "unknown",
+      senderUid: selfUid,
+      receiverUid: receiverUid,
       text: text,
       type: "text",
-      createdAt: new Date(),      // niente serverTimestamp, così non esplode
+      createdAt: serverTimestamp(),
       isRead: false
     });
 
     // aggiorna metadati chat
     await setDoc(doc(db, "chats", chatId), {
-      members: [window.PLUTOO_UID || "unknown", state.currentChatUid || "unknown"],
+      members: [selfUid, receiverUid],
       lastMessageText: text,
-      lastMessageAt: new Date(),
-      lastSenderUid: window.PLUTOO_UID || "unknown"
+      lastMessageAt: serverTimestamp(),
+      lastSenderUid: selfUid
     }, { merge: true });
-
   } catch (err) {
-    console.error("Errore Firestore sendChatMessage:", err);
+    alert("Errore salvataggio chat: " + err.message);
   }
 
   // contatore messaggi per le regole di blocco
