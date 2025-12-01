@@ -742,70 +742,62 @@ const DOGS = [
  const msgLists    = qa(".messages-list");
 
   // Carica le liste messaggi da Firestore
-  async function loadMessagesLists() {
-    try {
-      if (!window.PLUTOO_UID || !db || !msgLists || !msgLists.length) return;
+async function loadMessagesLists() {
+  try {
+    if (!db || !msgLists) return;
 
-      const selfUid = window.PLUTOO_UID;
+    // 1) Svuota tutte le liste e nasconde i testi "nessun messaggio..."
+    msgLists.forEach((list) => {
+      // elimina eventuali righe vecchie
+      list.querySelectorAll(".msg-item").forEach((el) => el.remove());
+      // nasconde il messaggio vuoto
+      const emptyEl = list.querySelector(".empty-state");
+      if (emptyEl) emptyEl.classList.add("hidden-empty");
+    });
 
-      // Svuota tutte le liste e nasconde i testi vuoti
-      msgLists.forEach((list) => {
-        list.querySelectorAll(".msg-item").forEach(el => el.remove());
-        const emptyEl = list.querySelector(".empty-state");
-        if (emptyEl) emptyEl.classList.add("hidden-empty");
-      });
-
-    const snap = await db
+    // 2) Legge TUTTE le chat da Firestore, ordinate per data ultimo messaggio
+  const snap = await db
   .collection("chats")
   .where("members", "array-contains", selfUid)
   .get();
 
-// Metto i documenti in un array e li ordino lato client
-const chats = [];
-snap.forEach((docSnap) => {
-  chats.push({ id: docSnap.id, ...docSnap.data() });
-});
-
-// Ordina per lastMessageAt decrescente (se manca, va in fondo)
-chats.sort((a, b) => {
-  const ta =
-    a.lastMessageAt && a.lastMessageAt.toMillis
-      ? a.lastMessageAt.toMillis()
-      : 0;
-  const tb =
-    b.lastMessageAt && b.lastMessageAt.toMillis
-      ? b.lastMessageAt.toMillis()
-      : 0;
-  return tb - ta;
-});
-
-// Crea le righe per tutte le liste
-chats.forEach((data) => {
-  const text = data.lastMessageText || "";
-  const date =
-    data.lastMessageAt && data.lastMessageAt.toDate
-      ? data.lastMessageAt.toDate().toLocaleString()
-      : "";
-
-  const row = document.createElement("div");
-  row.className = "msg-item";
-  row.innerHTML = `
-    <div class="msg-main">
-      <div class="msg-title">${text}</div>
-      <div class="msg-meta">${date}</div>
-    </div>
-  `;
-
-  msgLists.forEach((list) => {
-    list.appendChild(row.cloneNode(true));
-  });
-});
-      
-    } catch (err) {
-      console.error("Errore loadMessagesLists", err);
+    // 3) Se non c'è nessuna chat → ri-mostra i testi "nessun messaggio..."
+    if (snap.empty) {
+      msgLists.forEach((list) => {
+        const emptyEl = list.querySelector(".empty-state");
+        if (emptyEl) emptyEl.classList.remove("hidden-empty");
+      });
+      return;
     }
-  }
 
+    // 4) Per ogni chat crea una riga semplice (testo + data)
+    snap.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+
+      const text = data.lastMessageText || "";
+      const date =
+        data.lastMessageAt && data.lastMessageAt.toDate
+          ? data.lastMessageAt.toDate().toLocaleString()
+          : "";
+
+      const row = document.createElement("div");
+      row.className = "msg-item";
+      row.innerHTML = `
+        <div class="msg-main">
+          <div class="msg-title">${text}</div>
+          <div class="msg-meta">${date}</div>
+        </div>
+      `;
+
+      // Per ora: stessa riga in tutte le liste (Inviati, Match, ecc.)
+      msgLists.forEach((list) => {
+        list.appendChild(row.cloneNode(true));
+      });
+    });
+  } catch (err) {
+    console.error("Errore loadMessagesLists:", err);
+  }
+}
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
@@ -813,13 +805,14 @@ chats.forEach((data) => {
 
 // --- EMPTY STATES ---
 msgLists.forEach((list) => {
-  const items = list.querySelectorAll(".msg-item");
+  const items   = list.querySelectorAll(".msg-item");
   const emptyEl = list.querySelector(".empty-state");
 
   if (!emptyEl) return;
 
   const hasItems = items.length > 0;
-  // se non ci sono messaggi → mostro il testo
+  // se NON ci sono messaggi → mostro il testo
+  // se ci sono messaggi → nascondo il testo
   emptyEl.classList.toggle("hidden-empty", hasItems);
 });
 
