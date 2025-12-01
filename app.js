@@ -745,6 +745,62 @@ const DOGS = [
  const msgTopTabs  = qa(".msg-top-tab");
  const msgLists    = qa(".messages-list");
 
+  // Carica le liste messaggi da Firestore
+  async function loadMessagesLists() {
+    try {
+      if (!window.PLUTOO_UID || !db || !msgLists || !msgLists.length) return;
+
+      const selfUid = window.PLUTOO_UID;
+
+      // Svuota tutte le liste e nasconde i testi vuoti
+      msgLists.forEach((list) => {
+        list.querySelectorAll(".msg-item").forEach(el => el.remove());
+        const emptyEl = list.querySelector(".empty-state");
+        if (emptyEl) emptyEl.classList.add("hidden-empty");
+      });
+
+      const snap = await db
+        .collection("chats")
+        .where("members", "array-contains", selfUid)
+        .orderBy("lastMessageAt", "desc")
+        .get();
+
+      // Nessuna chat → mostra "nessun messaggio" in tutte le liste
+      if (snap.empty) {
+        msgLists.forEach((list) => {
+          const emptyEl = list.querySelector(".empty-state");
+          if (emptyEl) emptyEl.classList.remove("hidden-empty");
+        });
+        return;
+      }
+
+      snap.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        const text = data.lastMessageText || "";
+        const date = data.lastMessageAt && data.lastMessageAt.toDate
+          ? data.lastMessageAt.toDate().toLocaleString()
+          : "";
+
+        // creo una riga base
+        const row = document.createElement("div");
+        row.className = "msg-item";
+        row.innerHTML = `
+          <div class="msg-main">
+            <div class="msg-title">${text}</div>
+            <div class="msg-meta">${date}</div>
+          </div>
+        `;
+
+        // Per ora: stessa riga in tutte le liste (Inviati / Ricevuti / Match)
+        msgLists.forEach((list) => {
+          list.appendChild(row.cloneNode(true));
+        });
+      });
+    } catch (err) {
+      console.error("Errore loadMessagesLists", err);
+    }
+  }
+
 // --- EMPTY STATES ---
 msgLists.forEach((list) => {
   const items = list.querySelectorAll(".msg-item");
@@ -2263,12 +2319,14 @@ if (d.id === CURRENT_USER_DOG_ID) {
     });
 
     // aggiorna metadati chat
-    await chatDocRef.set({
-      members: [selfUid, receiverUid],
-      lastMessageText: text,
-      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-      lastSenderUid: selfUid
-    }, { merge: true });
+await setDoc(doc(db, "chats", chatId), {
+  members: [selfUid, receiverUid],
+  lastMessageText: text,
+  lastMessageAt: serverTimestamp(),
+  lastSenderUid: selfUid,
+  match: !!hasMatch,         // true se è una chat con match
+  dogId: dogId || null       // id del DOG collegato a questa chat
+}, { merge: true });
 
   } catch (err) {
     alert("Errore salvataggio chat: " + err.message);
