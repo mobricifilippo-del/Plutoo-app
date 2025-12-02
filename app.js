@@ -741,24 +741,14 @@ const DOGS = [
  const msgTopTabs  = qa(".msg-top-tab");
  const msgLists    = qa(".messages-list");
 
-  // Carica le liste messaggi da Firestore
 async function loadMessagesLists() {
   try {
-    // Svuota tutte le liste e nasconde i testi "nessun messaggio..."
-    msgLists.forEach((list) => {
-      list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-      const emptyEl = list.querySelector(".empty-state");
-      if (emptyEl) emptyEl.classList.add("hidden-empty");
-    });
+    // 1. UID utente corrente
+    const selfUid = window.PLUTOO_UID || firebase.auth().currentUser?.uid;
 
-    // Legge TUTTE le chat, ordinate per ultimo messaggio
-    const snap = await db
-      .collection("chats")
-      .orderBy("lastMessageAt", "desc")
-      .get();
-
-    // Nessuna chat → mostra "nessun messaggio"
-    if (snap.empty) {
+    if (!selfUid) {
+      console.error("UID non disponibile per loadMessagesLists");
+      // Se non ho UID → mostro gli empty state
       msgLists.forEach((list) => {
         const emptyEl = list.querySelector(".empty-state");
         if (emptyEl) emptyEl.classList.remove("hidden-empty");
@@ -766,53 +756,96 @@ async function loadMessagesLists() {
       return;
     }
 
-    // Crea le righe per tutte le liste (Inviati / Ricevuti / Match, ecc.)
+    // 2. Svuoto tutte le liste (ricevuti / inviati / match / ecc.)
+    msgLists.forEach((list) => {
+      list.querySelectorAll(".msg-item").forEach((el) => el.remove());
+    });
+
+    // 3. Prendo le chat dove TU sei nei members
+    const snap = await db
+      .collection("chats")
+      .where("members", "array-contains", selfUid)
+      .orderBy("lastMessageAt", "desc")
+      .get();
+
+    console.log("Chat trovate:", snap.size);
+
+    const inboxList  = document.getElementById("tabInbox");    // Ricevuti
+    const sentList   = document.getElementById("tabSent");     // Inviati
+    const matchList  = document.getElementById("tabMatches");  // Match
+
+    if (!inboxList || !sentList || !matchList) {
+      console.error("Liste messaggi non trovate nel DOM");
+      return;
+    }
+
+    if (snap.empty) {
+      // Nessuna chat → mostro solo i testi "nessun messaggio..."
+      msgLists.forEach((list) => {
+        const emptyEl = list.querySelector(".empty-state");
+        if (emptyEl) emptyEl.classList.remove("hidden-empty");
+      });
+      return;
+    }
+
+    // 4. Creo le righe per ogni chat
     snap.forEach((docSnap) => {
       const data = docSnap.data() || {};
-      const text = data.lastMessageText || "";
-      const date =
-        data.lastMessageAt && data.lastMessageAt.toDate
-          ? data.lastMessageAt.toDate().toLocaleString()
-          : "";
+      const chatId = docSnap.id;
+      const text = data.lastMessageText || "(messaggio vuoto)";
+      const ts = data.lastMessageAt;
+      const senderUid = data.lastSenderUid;
+      const isMatch = !!data.match;
+
+      let dateStr = "";
+      if (ts && ts.toDate) {
+        dateStr = ts.toDate().toLocaleString();
+      }
 
       const row = document.createElement("div");
       row.className = "msg-item";
+      row.dataset.chatId = chatId;
       row.innerHTML = `
         <div class="msg-main">
           <div class="msg-title">${text}</div>
-          <div class="msg-meta">${date}</div>
+          <div class="msg-meta">${dateStr}</div>
         </div>
       `;
 
-      // Per ora: stessa riga in tutte le liste
-      msgLists.forEach((list) => {
-        list.appendChild(row.cloneNode(true));
-      });
+      // Se l'ultimo messaggio l'hai mandato tu → INVIATI, altrimenti RICEVUTI
+      if (senderUid === selfUid) {
+        sentList.appendChild(row.cloneNode(true));
+      } else {
+        inboxList.appendChild(row.cloneNode(true));
+      }
+
+      // Se è una chat di match → anche in tab Match
+      if (isMatch) {
+        matchList.appendChild(row.cloneNode(true));
+      }
     });
+
+    // 5. Aggiorno gli empty state DOPO aver popolato
+    msgLists.forEach((list) => {
+      const items = list.querySelectorAll(".msg-item");
+      const emptyEl = list.querySelector(".empty-state");
+      if (!emptyEl) return;
+
+      const hasItems = items.length > 0;
+      emptyEl.classList.toggle("hidden-empty", hasItems);
+    });
+
   } catch (err) {
     console.error("Errore loadMessagesLists:", err);
   }
 }
-  
+
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
 });
 
-// --- EMPTY STATES ---
-msgLists.forEach((list) => {
-  const items   = list.querySelectorAll(".msg-item");
-  const emptyEl = list.querySelector(".empty-state");
-
-  if (!emptyEl) return;
-
-  const hasItems = items.length > 0;
-  // se NON ci sono messaggi → mostro il testo
-  // se ci sono messaggi → nascondo il testo
-  emptyEl.classList.toggle("hidden-empty", hasItems);
-});
-
-  msgTopTabs.forEach((btn) => {
+msgTopTabs.forEach((btn) => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.tab;
 
