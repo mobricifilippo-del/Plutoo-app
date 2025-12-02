@@ -901,25 +901,91 @@ chats.forEach((data) => {
    });
  });
 
-      // Popolo SOLO la lista "Inviati"
-      chats.forEach((data) => {
-        const text = data.lastMessageText || "";
-        const date =
-          data.lastMessageAt && data.lastMessageAt.toDate
-            ? data.lastMessageAt.toDate().toLocaleString()
-            : "";
+      // Riferimenti liste
+    const inboxList   = document.getElementById("tabInbox");
+    const sentList    = document.getElementById("tabSent");
+    const matchesList = document.getElementById("tabMatches");
 
-        const row = document.createElement("div");
+    // Popolo Inbox / Inviati / Match
+    chats.forEach((data) => {
+      const isSent  = data.lastSenderUid === selfUid;
+      const isInbox = !isSent;
+      const isMatch = !!data.match;
+
+      // Trovo il DOG collegato alla chat (se c'è)
+      const dog =
+        (data.dogId && DOGS.find(d => String(d.id) === String(data.dogId))) ||
+        null;
+
+      const avatar =
+        (dog && (dog.photo || dog.img)) || "plutoo-icon-192.png";
+      const name =
+        (dog && dog.name) ||
+        (state.lang === "it" ? "Dog sconosciuto" : "Unknown dog");
+
+      const text =
+        data.lastMessageText ||
+        (state.lang === "it" ? "Nessun messaggio" : "No messages yet");
+
+      const date =
+        data.lastMessageAt && data.lastMessageAt.toDate
+          ? data.lastMessageAt.toDate().toLocaleString()
+          : "";
+
+      // RIGA BASE stile lista chat
+      const makeRow = (options = {}) => {
+        const row = document.createElement("button");
+        row.type = "button";
         row.className = "msg-item";
         row.innerHTML = `
-          <div class="msg-main">
-            <div class="msg-title">${text}</div>
-            <div class="msg-meta">${date}</div>
+          <div class="msg-avatar">
+            <img src="${avatar}" alt="${name}">
           </div>
+          <div class="msg-main">
+            <div class="msg-title">${name}</div>
+            ${
+              options.subtitle
+                ? `<div class="msg-sub">${options.subtitle}</div>`
+                : `<div class="msg-sub">${text}</div>`
+            }
+          </div>
+          ${
+            options.showDate
+              ? `<div class="msg-meta">${date}</div>`
+              : ""
+          }
         `;
 
-        sentList.appendChild(row);
-      });
+        if (dog) {
+          row.addEventListener("click", () => {
+            openChat(dog);
+          });
+        }
+
+        return row;
+      };
+
+      // INBOX: messaggi ricevuti (ultimo sender ≠ me)
+      if (isInbox && inboxList) {
+        inboxList.appendChild(
+          makeRow({ showDate: true })
+        );
+      }
+
+      // INVIATI: messaggi mandati da me
+      if (isSent && sentList) {
+        sentList.appendChild(
+          makeRow({ showDate: true })
+        );
+      }
+
+      // MATCH: SOLO icona + nome DOG, niente testo messaggio
+      if (isMatch && matchesList && dog) {
+        matchesList.appendChild(
+          makeRow({ subtitle: "Match 💜", showDate: false })
+        );
+      }
+    });
 
       // Aggiorno gli "empty state" di tutte le tab
       msgLists.forEach((list) => {
