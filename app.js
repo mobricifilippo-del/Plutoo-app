@@ -741,111 +741,89 @@ const DOGS = [
  const msgTopTabs  = qa(".msg-top-tab");
  const msgLists    = qa(".messages-list");
 
-async function loadMessagesLists() {
-  try {
-    // 1. UID utente corrente
-    const selfUid = window.PLUTOO_UID || firebase.auth().currentUser?.uid;
+  // Carica le liste messaggi da Firestore
+  async function loadMessagesLists() {
+    try {
+      if (!window.PLUTOO_UID || !db || !msgLists || !msgLists.length) return;
 
-    if (!selfUid) {
-      console.error("UID non disponibile per loadMessagesLists");
-      // Se non ho UID → mostro gli empty state
+      const selfUid = window.PLUTOO_UID;
+
+      // Svuota tutte le liste e nasconde i testi vuoti
       msgLists.forEach((list) => {
+        list.querySelectorAll(".msg-item").forEach(el => el.remove());
         const emptyEl = list.querySelector(".empty-state");
-        if (emptyEl) emptyEl.classList.remove("hidden-empty");
+        if (emptyEl) emptyEl.classList.add("hidden-empty");
       });
-      return;
-    }
 
-    // 2. Svuoto tutte le liste (ricevuti / inviati / match / ecc.)
-    msgLists.forEach((list) => {
-      list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-    });
-
-    // 3. Prendo le chat dove TU sei nei members
     const snap = await db
-      .collection("chats")
-      .where("members", "array-contains", selfUid)
-      .orderBy("lastMessageAt", "desc")
-      .get();
+  .collection("chats")
+  .where("members", "array-contains", selfUid)
+  .get();
 
-    console.log("Chat trovate:", snap.size);
+// Metto i documenti in un array e li ordino lato client
+const chats = [];
+snap.forEach((docSnap) => {
+  chats.push({ id: docSnap.id, ...docSnap.data() });
+});
 
-    const inboxList  = document.getElementById("tabInbox");    // Ricevuti
-    const sentList   = document.getElementById("tabSent");     // Inviati
-    const matchList  = document.getElementById("tabMatches");  // Match
+// Ordina per lastMessageAt decrescente (se manca, va in fondo)
+chats.sort((a, b) => {
+  const ta =
+    a.lastMessageAt && a.lastMessageAt.toMillis
+      ? a.lastMessageAt.toMillis()
+      : 0;
+  const tb =
+    b.lastMessageAt && b.lastMessageAt.toMillis
+      ? b.lastMessageAt.toMillis()
+      : 0;
+  return tb - ta;
+});
 
-    if (!inboxList || !sentList || !matchList) {
-      console.error("Liste messaggi non trovate nel DOM");
-      return;
+// Crea le righe per tutte le liste
+chats.forEach((data) => {
+  const text = data.lastMessageText || "";
+  const date =
+    data.lastMessageAt && data.lastMessageAt.toDate
+      ? data.lastMessageAt.toDate().toLocaleString()
+      : "";
+
+  const row = document.createElement("div");
+  row.className = "msg-item";
+  row.innerHTML = `
+    <div class="msg-main">
+      <div class="msg-title">${text}</div>
+      <div class="msg-meta">${date}</div>
+    </div>
+  `;
+
+  msgLists.forEach((list) => {
+    list.appendChild(row.cloneNode(true));
+  });
+});
+      
+    } catch (err) {
+      console.error("Errore loadMessagesLists", err);
     }
-
-    if (snap.empty) {
-      // Nessuna chat → mostro solo i testi "nessun messaggio..."
-      msgLists.forEach((list) => {
-        const emptyEl = list.querySelector(".empty-state");
-        if (emptyEl) emptyEl.classList.remove("hidden-empty");
-      });
-      return;
-    }
-
-    // 4. Creo le righe per ogni chat
-    snap.forEach((docSnap) => {
-      const data = docSnap.data() || {};
-      const chatId = docSnap.id;
-      const text = data.lastMessageText || "(messaggio vuoto)";
-      const ts = data.lastMessageAt;
-      const senderUid = data.lastSenderUid;
-      const isMatch = !!data.match;
-
-      let dateStr = "";
-      if (ts && ts.toDate) {
-        dateStr = ts.toDate().toLocaleString();
-      }
-
-      const row = document.createElement("div");
-      row.className = "msg-item";
-      row.dataset.chatId = chatId;
-      row.innerHTML = `
-        <div class="msg-main">
-          <div class="msg-title">${text}</div>
-          <div class="msg-meta">${dateStr}</div>
-        </div>
-      `;
-
-      // Se l'ultimo messaggio l'hai mandato tu → INVIATI, altrimenti RICEVUTI
-      if (senderUid === selfUid) {
-        sentList.appendChild(row.cloneNode(true));
-      } else {
-        inboxList.appendChild(row.cloneNode(true));
-      }
-
-      // Se è una chat di match → anche in tab Match
-      if (isMatch) {
-        matchList.appendChild(row.cloneNode(true));
-      }
-    });
-
-    // 5. Aggiorno gli empty state DOPO aver popolato
-    msgLists.forEach((list) => {
-      const items = list.querySelectorAll(".msg-item");
-      const emptyEl = list.querySelector(".empty-state");
-      if (!emptyEl) return;
-
-      const hasItems = items.length > 0;
-      emptyEl.classList.toggle("hidden-empty", hasItems);
-    });
-
-  } catch (err) {
-    console.error("Errore loadMessagesLists:", err);
   }
-}
 
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
 });
 
-msgTopTabs.forEach((btn) => {
+// --- EMPTY STATES ---
+msgLists.forEach((list) => {
+  const items = list.querySelectorAll(".msg-item");
+  const emptyEl = list.querySelector(".empty-state");
+
+  if (!emptyEl) return;
+
+  const hasItems = items.length > 0;
+  // se non ci sono messaggi → mostro il testo
+  emptyEl.classList.toggle("hidden-empty", hasItems);
+});
+
+  msgTopTabs.forEach((btn) => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.tab;
 
@@ -2347,14 +2325,14 @@ try {
   });
 
   // 2) Aggiorno / creo il documento "chat" per la lista Messaggi
-await db.collection("chats").doc(chatId).set({
-  members: [selfUid, receiverUid],
-  lastMessageText: text,
-  lastMessageAt: FieldValue.serverTimestamp(),
-  lastSenderUid: selfUid,
-  match: !!hasMatch,
-  dogId: dogId
-}, { merge: true });
+  await db.collection("chats").doc(chatId).set({
+    members: [selfUid, receiverUid],
+    lastMessageText: text,
+    lastMessageAt: FieldValue.serverTimestamp(),
+    lastSenderUid: selfUid,
+    match: !!hasMatch,             // true se è una chat da match
+    dogId: dogId                   // id del DOG collegato (se c'è)
+  }, { merge: true });
 
 } catch (err) {
   console.error("Errore Firestore sendChatMessage", err);
