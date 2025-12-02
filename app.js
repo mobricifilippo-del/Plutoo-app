@@ -741,71 +741,81 @@ const DOGS = [
  const msgTopTabs  = qa(".msg-top-tab");
  const msgLists    = qa(".messages-list");
 
-  // Carica le liste messaggi da Firestore
+  // Carica le liste messaggi da Firestore (solo tab "Inviati" per ora)
   async function loadMessagesLists() {
     try {
-      if (!window.PLUTOO_UID || !db || !msgLists || !msgLists.length) return;
+      if (!db || !msgLists || !msgLists.length) return;
 
-      const selfUid = window.PLUTOO_UID;
+      // stesso fallback usato quando invii il messaggio
+      const selfUid = window.PLUTOO_UID || "anonymous";
+      if (!selfUid) return;
 
-      // Svuota tutte le liste e nasconde i testi vuoti
+      const sentList = document.getElementById("tabSent");
+      if (!sentList) return;
+
+      // Pulisce tutte le liste e nasconde i testi "vuoto"
       msgLists.forEach((list) => {
-        list.querySelectorAll(".msg-item").forEach(el => el.remove());
+        list.querySelectorAll(".msg-item").forEach((el) => el.remove());
         const emptyEl = list.querySelector(".empty-state");
         if (emptyEl) emptyEl.classList.add("hidden-empty");
       });
 
-    const snap = await db
-  .collection("chats")
-  .where("members", "array-contains", selfUid)
-  .get();
+      // Legge le chat dove compare il mio UID
+      const snap = await db
+        .collection("chats")
+        .where("members", "array-contains", selfUid)
+        .get();
 
-// Metto i documenti in un array e li ordino lato client
-const chats = [];
-snap.forEach((docSnap) => {
-  chats.push({ id: docSnap.id, ...docSnap.data() });
-});
+      // Ordino le chat per data ultimo messaggio
+      const chats = [];
+      snap.forEach((docSnap) => {
+        chats.push({ id: docSnap.id, ...docSnap.data() });
+      });
 
-// Ordina per lastMessageAt decrescente (se manca, va in fondo)
-chats.sort((a, b) => {
-  const ta =
-    a.lastMessageAt && a.lastMessageAt.toMillis
-      ? a.lastMessageAt.toMillis()
-      : 0;
-  const tb =
-    b.lastMessageAt && b.lastMessageAt.toMillis
-      ? b.lastMessageAt.toMillis()
-      : 0;
-  return tb - ta;
-});
+      chats.sort((a, b) => {
+        const ta =
+          a.lastMessageAt && a.lastMessageAt.toMillis
+            ? a.lastMessageAt.toMillis()
+            : 0;
+        const tb =
+          b.lastMessageAt && b.lastMessageAt.toMillis
+            ? b.lastMessageAt.toMillis()
+            : 0;
+        return tb - ta;
+      });
 
-// Crea le righe per tutte le liste
-chats.forEach((data) => {
-  const text = data.lastMessageText || "";
-  const date =
-    data.lastMessageAt && data.lastMessageAt.toDate
-      ? data.lastMessageAt.toDate().toLocaleString()
-      : "";
+      // Popolo SOLO la lista "Inviati"
+      chats.forEach((data) => {
+        const text = data.lastMessageText || "";
+        const date =
+          data.lastMessageAt && data.lastMessageAt.toDate
+            ? data.lastMessageAt.toDate().toLocaleString()
+            : "";
 
-  const row = document.createElement("div");
-  row.className = "msg-item";
-  row.innerHTML = `
-    <div class="msg-main">
-      <div class="msg-title">${text}</div>
-      <div class="msg-meta">${date}</div>
-    </div>
-  `;
+        const row = document.createElement("div");
+        row.className = "msg-item";
+        row.innerHTML = `
+          <div class="msg-main">
+            <div class="msg-title">${text}</div>
+            <div class="msg-meta">${date}</div>
+          </div>
+        `;
 
-  msgLists.forEach((list) => {
-    list.appendChild(row.cloneNode(true));
-  });
-});
-      
+        sentList.appendChild(row);
+      });
+
+      // Aggiorno gli "empty state" di tutte le tab
+      msgLists.forEach((list) => {
+        const items = list.querySelectorAll(".msg-item");
+        const emptyEl = list.querySelector(".empty-state");
+        if (!emptyEl) return;
+        const hasItems = items.length > 0;
+        emptyEl.classList.toggle("hidden-empty", hasItems);
+      });
     } catch (err) {
       console.error("Errore loadMessagesLists", err);
     }
   }
-
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
