@@ -879,28 +879,6 @@ chats.forEach((data) => {
   }
 });
 
-      // --- CREA LE RIGHE PER LE LISTE MESSAGGI ---
- chats.forEach((data) => {
-   const text = data.lastMessageText || "";
-   const date =
-     data.lastMessageAt && data.lastMessageAt.toDate
-       ? data.lastMessageAt.toDate().toLocaleString()
-       : "";
-
-   const row = document.createElement("div");
-   row.className = "msg-item";
-   row.innerHTML = `
-     <div class="msg-main">
-       <div class="msg-title">${text}</div>
-       <div class="msg-meta">${date}</div>
-     </div>
-   `;
-
-   msgLists.forEach((list) => {
-     list.appendChild(row.cloneNode(true));
-   });
- });
-
       // Riferimenti liste
     const inboxList   = document.getElementById("tabInbox");
     const sentList    = document.getElementById("tabSent");
