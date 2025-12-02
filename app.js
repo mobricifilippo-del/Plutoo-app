@@ -743,13 +743,12 @@ const DOGS = [
 
 async function loadMessagesLists() {
   try {
-    // 1. UID dell'utente corrente
-    const selfUid =
-      window.PLUTOO_UID || firebase.auth().currentUser?.uid;
+    // 1. UID utente corrente
+    const selfUid = window.PLUTOO_UID || firebase.auth().currentUser?.uid;
 
     if (!selfUid) {
-      console.error("UID non disponibile in loadMessagesLists");
-      // Se non ho UID, mostro solo i testi "nessun messaggio"
+      console.error("UID non disponibile per loadMessagesLists");
+      // Se non ho UID → mostro gli empty state
       msgLists.forEach((list) => {
         const emptyEl = list.querySelector(".empty-state");
         if (emptyEl) emptyEl.classList.remove("hidden-empty");
@@ -757,18 +756,31 @@ async function loadMessagesLists() {
       return;
     }
 
-    // 2. Pulisco tutte le liste
+    // 2. Svuoto tutte le liste (ricevuti / inviati / match / ecc.)
     msgLists.forEach((list) => {
       list.querySelectorAll(".msg-item").forEach((el) => el.remove());
     });
 
-    // 3. Leggo tutte le chat dalla collection "chats"
-const snap = await db
-  .collection("chats")
-  .get();
+    // 3. Prendo le chat dove TU sei nei members
+    const snap = await db
+      .collection("chats")
+      .where("members", "array-contains", selfUid)
+      .orderBy("lastMessageAt", "desc")
+      .get();
 
-    // 4. Nessuna chat → mostro gli empty state
+    console.log("Chat trovate:", snap.size);
+
+    const inboxList  = document.getElementById("tabInbox");    // Ricevuti
+    const sentList   = document.getElementById("tabSent");     // Inviati
+    const matchList  = document.getElementById("tabMatches");  // Match
+
+    if (!inboxList || !sentList || !matchList) {
+      console.error("Liste messaggi non trovate nel DOM");
+      return;
+    }
+
     if (snap.empty) {
+      // Nessuna chat → mostro solo i testi "nessun messaggio..."
       msgLists.forEach((list) => {
         const emptyEl = list.querySelector(".empty-state");
         if (emptyEl) emptyEl.classList.remove("hidden-empty");
@@ -776,45 +788,23 @@ const snap = await db
       return;
     }
 
-    // 5. Metto i documenti in un array e li ordino per data
-    const chats = [];
+    // 4. Creo le righe per ogni chat
     snap.forEach((docSnap) => {
       const data = docSnap.data() || {};
-      chats.push({
-        id: docSnap.id,
-        ...data,
-      });
-    });
+      const chatId = docSnap.id;
+      const text = data.lastMessageText || "(messaggio vuoto)";
+      const ts = data.lastMessageAt;
+      const senderUid = data.lastSenderUid;
+      const isMatch = !!data.match;
 
-    chats.sort((a, b) => {
-      const ta =
-        a.lastMessageAt && a.lastMessageAt.toMillis
-          ? a.lastMessageAt.toMillis()
-          : 0;
-      const tb =
-        b.lastMessageAt && b.lastMessageAt.toMillis
-          ? b.lastMessageAt.toMillis()
-          : 0;
-      return tb - ta;
-    });
-
-    // 6. Riferimenti alle liste principali
-    const inboxList = document.getElementById("tabInbox"); // Ricevuti
-    const sentList = document.getElementById("tabSent"); // Inviati
-    const matchList = document.getElementById("tabMatches"); // Match
-
-    // 7. Creo le righe per ogni chat
-    chats.forEach((chat) => {
-      const text = chat.lastMessageText || "";
       let dateStr = "";
-
-      if (chat.lastMessageAt && chat.lastMessageAt.toDate) {
-        dateStr = chat.lastMessageAt.toDate().toLocaleString();
+      if (ts && ts.toDate) {
+        dateStr = ts.toDate().toLocaleString();
       }
 
       const row = document.createElement("div");
       row.className = "msg-item";
-      row.dataset.chatId = chat.id;
+      row.dataset.chatId = chatId;
       row.innerHTML = `
         <div class="msg-main">
           <div class="msg-title">${text}</div>
@@ -822,26 +812,20 @@ const snap = await db
         </div>
       `;
 
-      const isSentByMe = chat.lastSenderUid === selfUid;
-      const isMatch = !!chat.match;
-
-      // Ricevuti: ultimo messaggio NON è mio
-      if (inboxList && !isSentByMe) {
+      // Se l'ultimo messaggio l'hai mandato tu → INVIATI, altrimenti RICEVUTI
+      if (senderUid === selfUid) {
+        sentList.appendChild(row.cloneNode(true));
+      } else {
         inboxList.appendChild(row.cloneNode(true));
       }
 
-      // Inviati: ultimo messaggio è mio
-      if (sentList && isSentByMe) {
-        sentList.appendChild(row.cloneNode(true));
-      }
-
-      // Match: flag match true
-      if (matchList && isMatch) {
+      // Se è una chat di match → anche in tab Match
+      if (isMatch) {
         matchList.appendChild(row.cloneNode(true));
       }
     });
 
-    // 8. Aggiorno gli empty state DOPO aver popolato le liste
+    // 5. Aggiorno gli empty state DOPO aver popolato
     msgLists.forEach((list) => {
       const items = list.querySelectorAll(".msg-item");
       const emptyEl = list.querySelector(".empty-state");
@@ -850,14 +834,13 @@ const snap = await db
       const hasItems = items.length > 0;
       emptyEl.classList.toggle("hidden-empty", hasItems);
     });
+
   } catch (err) {
     console.error("Errore loadMessagesLists:", err);
-    // opzionale: piccolo alert, solo per debug
-    // alert("Errore caricamento messaggi: " + err.message);
   }
 }
 
- btnMessages?.addEventListener("click", () => {
+  btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
 });
