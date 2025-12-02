@@ -2347,15 +2347,14 @@ try {
   });
 
   // 2) Aggiorno / creo il documento "chat" per la lista Messaggi
-  await db.collection("chats").doc(chatId).set({
-    members: [selfUid, receiverUid],
-    lastMessageText: text,
-    lastMessageAt: FieldValue.serverTimestamp(),
-    lastSenderUid: selfUid,
-    match: !!hasMatch,             // true se è una chat da match
-    dogId: dogId                   // id del DOG collegato (se c'è)
-    members: [selfUid],
-  }, { merge: true });
+await db.collection("chats").doc(chatId).set({
+  members: [selfUid, receiverUid],
+  lastMessageText: text,
+  lastMessageAt: FieldValue.serverTimestamp(),
+  lastSenderUid: selfUid,
+  match: !!hasMatch,
+  dogId: dogId
+}, { merge: true });
 
 } catch (err) {
   console.error("Errore Firestore sendChatMessage", err);
