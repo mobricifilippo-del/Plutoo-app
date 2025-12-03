@@ -2281,13 +2281,24 @@ if (d.id === CURRENT_USER_DOG_ID) {
   function openChat(dog){
     const hasMatch = state.matches[dog.id] || false;
     const msgCount = state.chatMessagesSent[dog.id] || 0;
+    const previousDogId = chatPane.dataset.dogId || null;
 
     chatPane.classList.remove("hidden");
-    chatPane.classList.add("show");
-    chatPane.dataset.dogId = dog.id;
-    state.currentChatUid = dog.uid;
-    chatList.innerHTML = `<div class="msg">${state.lang==="it"?"Ciao":"Hi"} ${dog.name}! 🐾</div>`;
-    chatInput.value="";
+chatPane.classList.add("show");
+
+// se cambio DOG → resetto la chat e metto il messaggio di benvenuto
+// se apro di nuovo lo STESSO DOG → NON cancello i messaggi già presenti
+if (!previousDogId || previousDogId !== dog.id) {
+  chatList.innerHTML = "";
+  const hello = document.createElement("div");
+  hello.className = "msg";
+  hello.textContent = `${state.lang === "it" ? "Ciao" : "Hi"} ${dog.name}! 🐾`;
+  chatList.appendChild(hello);
+}
+
+chatPane.dataset.dogId = dog.id;
+state.currentChatUid = dog.uid;
+chatInput.value = "";
 
     if (!state.plus){
       if (!hasMatch && msgCount >= 1){
