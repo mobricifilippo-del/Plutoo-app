@@ -1143,6 +1143,7 @@ if (direction === "right"){
     localStorage.setItem("matchCount", String(state.matchCount));
     nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
 }
+  }
 
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
 
