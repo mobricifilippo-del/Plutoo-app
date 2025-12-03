@@ -167,11 +167,13 @@ auth.onAuthStateChanged(user => {
 
   const tabNearby    = $("tabNearby");
   const tabLove      = $("tabLove");
+  const tabPlay      = $("tabPlay"); // (anche se la tab Giochiamo è stata rimossa dal layout, teniamo il ref)
   const tabLuoghi    = $("tabLuoghi");
   const luoghiMenu   = $("luoghiMenu");
 
   const viewNearby   = $("viewNearby");
   const viewLove     = $("viewLove");
+  const viewPlay     = $("viewPlay");
   const viewMessages = $("viewMessages");
   const nearGrid     = $("nearGrid");
 
@@ -182,6 +184,14 @@ auth.onAuthStateChanged(user => {
   const loveBio      = $("loveBio");
   const loveNo       = $("loveNo");
   const loveYes      = $("loveYes");
+
+  const playCard     = $("playCard");
+  const playImg      = $("playImg");
+  const playTitleTxt = $("playTitleTxt");
+  const playMeta     = $("playMeta");
+  const playBio      = $("playBio");
+  const playNo       = $("playNo");
+  const playYes      = $("playYes");
 
   const btnSearchPanel = $("btnSearchPanel");
   const searchPanel = $("searchPanel");
@@ -1119,25 +1129,6 @@ msgLists.forEach((list) => {
     if (mode === "love") {
       state.matches[d.id] = true;
       localStorage.setItem("matches", JSON.stringify(state.matches));
-      
-      // 🔥 FIX: Scrivi match su Firestore
-      (async () => {
-        try {
-          const selfUid = window.PLUTOO_UID || "anonymous";
-          const dogUid = d.uid || `dog_${d.id}`;
-          const chatId = [selfUid, dogUid].sort().join("_");
-          
-          await db.collection("chats").doc(chatId).set({
-            members: [selfUid, dogUid],
-            match: true,
-            dogId: d.id,
-            lastMessageText: "",
-            lastMessageAt: FieldValue.serverTimestamp()
-          }, { merge: true });
-        } catch (err) {
-          console.error("Errore scrittura match Firestore:", err);
-        }
-      })();
     } else {
       state.friendships[d.id] = true;
       localStorage.setItem("friendships", JSON.stringify(state.friendships));
@@ -1300,7 +1291,7 @@ function showMatchAnimation(dogName, color) {
 
   // Cuore leggermente più piccolo
   if (heartEl) {
-    heartEl.style.fontSize = "160px";
+    heartEl.style.fontSize = "180px";
     heartEl.textContent = color || "❤️‍🔥";
   }
 
@@ -1852,30 +1843,7 @@ storyLikeBtn.classList.add("heart-anim");
       ${generateSocialSection(d)}
 
       <div class="pp-actions">
-        $("btnLikeDog")?.addEventListener("click", async ()=>{
-      state.matches[d.id] = true;
-      localStorage.setItem("matches", JSON.stringify(state.matches));
-      
-      // 🔥 FIX: Scrivi match su Firestore
-      try {
-        const selfUid = window.PLUTOO_UID || "anonymous";
-        const dogUid = d.uid || `dog_${d.id}`;
-        const chatId = [selfUid, dogUid].sort().join("_");
-        
-        await db.collection("chats").doc(chatId).set({
-          members: [selfUid, dogUid],
-          match: true,
-          dogId: d.id,
-          lastMessageText: "",
-          lastMessageAt: FieldValue.serverTimestamp()
-        }, { merge: true });
-      } catch (err) {
-        console.error("Errore scrittura match Firestore:", err);
-      }
-      
-      showMatchAnimation();
-      alert(state.lang==="it" ? "Like inviato! 💛" : "Like sent! 💛");
-    });
+        <button id="btnLikeDog" class="btn accent">💛 Like</button>
         <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
       </div>
     `;
@@ -2418,9 +2386,6 @@ try {
       ? "Match necessario per continuare"
       : "Match needed to continue";
   }
-  
-  // 🔥 FIX: Aggiorna lista messaggi dopo invio
-  loadMessagesLists();
  }
 
   // ============ Maps / servizi ============
