@@ -804,19 +804,14 @@ const DOGS = [
         sentList.appendChild(row);
       });
       const matchesList = document.getElementById("tabMatch");
-      const seenMatchDogIds = new Set();
       
 // POPOLA LA LISTA MATCH (solo icona + nome DOG)
 chats.forEach((data) => {
   if (!data.match) return;
 
   const dog = DOGS.find(d => String(d.id) === String(data.dogId));
-if (!dog) return;
-
-seenMatchDogIds.add(String(dog.id));
-
-const avatar = dog.img || "plutoo-icon-1.png";
-const name = dog.name || (state.lang === "it" ? "Dog" : "Dog");
+  const avatar = dog?.img || "plutoo-icon-1.png";
+  const name = dog?.name || (state.lang === "it" ? "Dog" : "Dog");
 
   if (!matchesList) return;
 
@@ -832,28 +827,8 @@ const name = dog.name || (state.lang === "it" ? "Dog" : "Dog");
   `;
 
   // CLIC → apre la chat
-      const localMatches = state.matches || {};
-Object.keys(localMatches).forEach((dogId) => {
-  if (!localMatches[dogId]) return;
-  if (seenMatchDogIds.has(String(dogId))) return;
-
-  const dog = DOGS.find(d => String(d.id) === String(dogId));
-  if (!dog || !matchesList) return;
-
-  const avatar = dog.img || "plutoo-icon-1.png";
-  const name = dog.name || (state.lang === "it" ? "Dog" : "Dog");
-
-  const row = document.createElement("div");
-  row.className = "msg-item match-only";
-  row.innerHTML = `
-    <div class="msg-avatar">
-      <img src="${avatar}" alt="${name}" />
-    </div>
-    <div class="msg-main">
-      <div class="msg-title">${name}</div>
-    </div>
-  `;
   row.addEventListener("click", () => openChat(dog));
+
   matchesList.appendChild(row);
 });
 
