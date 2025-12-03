@@ -1127,7 +1127,7 @@ msgLists.forEach((list) => {
     
   const dogKey = d.id || d.uid;
 
-if (direction === "right"){
+ if (direction === "right"){
     // Ogni swipe a destra crea SEMPRE un match/amicizia
     if (mode === "love") {
         state.matches[d.id] = true;
@@ -1142,8 +1142,7 @@ if (direction === "right"){
     state.matchCount++;
     localStorage.setItem("matchCount", String(state.matchCount));
     nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
-}
-  }
+ }
 
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
 
