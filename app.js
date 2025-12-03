@@ -2965,35 +2965,6 @@ try {
 
     showToast(state.lang==="it" ? "Story pubblicata!" : "Story published!");
   }
- function showMatchAnimation(dogName){
-  // overlay a tutto schermo
-  const overlay =
-    document.getElementById("matchOverlay") ||
-    document.querySelector(".match-overlay");
-
-  if (!overlay) return;
-
-  const heartEl = overlay.querySelector(".match-hearts");
-  const titleEl = overlay.querySelector(".match-title");
-
-  const currentColor = "❤️‍🔥";
-
-  // Cuore singolo con colore corrente
-  if (heartEl) heartEl.textContent = currentColor;
-
-  // Testo fisso
-  if (titleEl) titleEl.textContent = "It's a Match! 💜";
-
-  // Mostra overlay
-  overlay.classList.remove("hidden");
-  overlay.classList.add("active");
-
-  // Chiudi dopo 1.6 secondi
-  setTimeout(() => {
-    overlay.classList.remove("active");
-    overlay.classList.add("hidden");
-  }, 1600);
-}
 
   function showToast(msg) {
     let el = $("toast");
