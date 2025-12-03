@@ -805,8 +805,7 @@ const DOGS = [
       });
       const matchesList = document.getElementById("tabMatch");
       
-
-      // POPOLA LA LISTA MATCH (solo icona + nome DOG)
+// POPOLA LA LISTA MATCH (solo icona + nome DOG)
 chats.forEach((data) => {
   if (!data.match) return;
 
