@@ -803,6 +803,8 @@ const DOGS = [
 
         sentList.appendChild(row);
       });
+      const matchesList = document.getElementById("tabMatch");
+      
 
       // POPOLA LA LISTA MATCH (solo icona + nome DOG)
 chats.forEach((data) => {
