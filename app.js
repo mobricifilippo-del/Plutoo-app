@@ -1125,24 +1125,21 @@ msgLists.forEach((list) => {
     
     showMatchAnimation(d.name, nextMatchColor);
     
-  const dogKey = d.id || d.uid;
-
- if (direction === "right"){
-    // Ogni swipe a destra crea SEMPRE un match/amicizia
     if (mode === "love") {
-        state.matches[d.id] = true;
-        localStorage.setItem("matches", JSON.stringify(state.matches));
+      state.matches[d.id] = true;
+      localStorage.setItem("matches", JSON.stringify(state.matches));
     } else {
-        state.friendships[d.id] = true;
-        localStorage.setItem("friendships", JSON.stringify(state.friendships));
+      state.friendships[d.id] = true;
+      localStorage.setItem("friendships", JSON.stringify(state.friendships));
     }
 
-    // Cuore del match + contatore
-    showMatchAnimation(d.name, nextMatchColor);
-    state.matchCount++;
-    localStorage.setItem("matchCount", String(state.matchCount));
-    nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
- }
+    // Cuore del match: usa il colore corrente e prepara il prossimo
+showMatchAnimation(d.name, nextMatchColor);
+state.matchCount++;
+localStorage.setItem("matchCount", String(state.matchCount));
+nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
+  }
+    }
 
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
 
@@ -2288,6 +2285,7 @@ if (d.id === CURRENT_USER_DOG_ID) {
     chatPane.classList.add("show");
     chatPane.dataset.dogId = dog.id;
     state.currentChatUid = dog.uid;
+    chatList.innerHTML = `<div class="msg">${state.lang==="it"?"Ciao":"Hi"} ${dog.name}! 🐾</div>`;
     chatInput.value="";
 
     if (!state.plus){
