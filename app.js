@@ -803,34 +803,36 @@ const DOGS = [
 
         sentList.appendChild(row);
       });
+
       const matchesList = document.getElementById("tabMatch");
-      
+
 // POPOLA LA LISTA MATCH (solo icona + nome DOG)
-chats.forEach((data) => {
-  if (!data.match) return;
+// Considero tutte le chat come match (la chat nasce solo dopo il match)
+if (matchesList) {
+  chats.forEach((data) => {
+    const dog = DOGS.find((d) => String(d.id) === String(data.dogId));
+    if (!dog) return;
 
-  const dog = DOGS.find(d => String(d.id) === String(data.dogId));
-  const avatar = dog?.img || "plutoo-icon-1.png";
-  const name = dog?.name || (state.lang === "it" ? "Dog" : "Dog");
+    const avatar = dog.img || "plutoo-icon-1.png";
+    const name = dog.name || (state.lang === "it" ? "Dog" : "Dog");
 
-  if (!matchesList) return;
+    const row = document.createElement("div");
+    row.className = "msg-item match-only";
+    row.innerHTML = `
+      <div class="msg-avatar">
+        <img src="${avatar}" alt="${name}" />
+      </div>
+      <div class="msg-main">
+        <div class="msg-title">${name}</div>
+      </div>
+    `;
 
-  const row = document.createElement("div");
-  row.className = "msg-item match-only";
-  row.innerHTML = `
-    <div class="msg-avatar">
-      <img src="${avatar}" alt="${name}" />
-    </div>
-    <div class="msg-main">
-      <div class="msg-title">${name}</div>
-    </div>
-  `;
+    // CLIC → apre la chat
+    row.addEventListener("click", () => openChat(dog));
 
-  // CLIC → apre la chat
-  row.addEventListener("click", () => openChat(dog));
-
-  matchesList.appendChild(row);
-});
+    matchesList.appendChild(row);
+  });
+}
 
       // Aggiorno gli "empty state" di tutte le tab
       msgLists.forEach((list) => {
