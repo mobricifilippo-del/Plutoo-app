@@ -809,7 +809,7 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-    // Popolo la lista "Inviati" e la lista "Match"
+    // Popolo la lista "Inviati" e la lista "Match" usando lo stesso contenuto
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
@@ -840,22 +840,10 @@ const DOGS = [
 
         sentList.appendChild(row);
 
-        // ---------- Riga per tab "Match" (stessa base, solo nome DOG) ----------
+        // ---------- Riga per tab "Match" (clone 1:1 della riga di Inviati) ----------
         const matchRow = row.cloneNode(true);
 
-        // cambio il titolo: solo nome DOG
-        const titleEl = matchRow.querySelector(".msg-title");
-        if (titleEl) {
-          titleEl.textContent = dogNameBase;
-        }
-
-        // tolgo la riga della data, se presente
-        const metaEl = matchRow.querySelector(".msg-meta");
-        if (metaEl && metaEl.parentNode) {
-          metaEl.parentNode.removeChild(metaEl);
-        }
-
-        // riaggancio il click (il clone non porta l'handler JS)
+        // riaggancio il click, perché gli handler JS non vengono clonati
         matchRow.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
