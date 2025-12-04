@@ -749,8 +749,9 @@ const DOGS = [
       const selfUid = window.PLUTOO_UID || "anon";
       if (!selfUid) return;
 
-      const sentList = document.getElementById("messagesSentList");
-      const matchesList = document.getElementById("messagesMatchList");
+     // Uso gli ID reali definiti in index.html
+      const sentList = document.getElementById("tabSent");
+      const matchesList = document.getElementById("tabMatches");
       if (!sentList || !matchesList) return;
 
       // Pulisce tutte le liste e nasconde i messaggi vuoti
