@@ -809,13 +809,13 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-      // Popolo la lista "Inviati" e la lista "Match"
+    // Popolo la lista "Inviati" e la lista "Match"
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
         // Nome DOG di base (da chat o fallback)
-        let dogNameBase =
+        const dogNameBase =
           chat.dogName ||
           (state.lang === "en" ? "DOG" : "Dog");
 
@@ -840,32 +840,22 @@ const DOGS = [
 
         sentList.appendChild(row);
 
-        // ---------- Riga per tab "Match" (solo avatar + nome DOG) ----------
-        let matchName = dogNameBase;
-        let matchAvatar = chat.dogAvatar || "plutoo-icon-1.png";
+        // ---------- Riga per tab "Match" (stessa base, solo nome DOG) ----------
+        const matchRow = row.cloneNode(true);
 
-        // Se non ho avatar in chat, provo a recuperarlo dall'array DOGS
-        if (!chat.dogAvatar && Array.isArray(DOGS) && chat.dogId) {
-          const dog = DOGS.find(
-            (d) => String(d.id) === String(chat.dogId)
-          );
-          if (dog) {
-            if (dog.name) matchName = dog.name;
-            if (dog.img) matchAvatar = dog.img;
-          }
+        // cambio il titolo: solo nome DOG
+        const titleEl = matchRow.querySelector(".msg-title");
+        if (titleEl) {
+          titleEl.textContent = dogNameBase;
         }
 
-        const matchRow = document.createElement("div");
-        matchRow.className = "msg-item match-item";
-        matchRow.innerHTML = `
-          <div class="msg-avatar">
-            <img src="${matchAvatar}" alt="${matchName}" />
-          </div>
-          <div class="msg-main">
-            <div class="msg-title">${matchName}</div>
-          </div>
-        `;
+        // tolgo la riga della data, se presente
+        const metaEl = matchRow.querySelector(".msg-meta");
+        if (metaEl && metaEl.parentNode) {
+          metaEl.parentNode.removeChild(metaEl);
+        }
 
+        // riaggancio il click (il clone non porta l'handler JS)
         matchRow.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
