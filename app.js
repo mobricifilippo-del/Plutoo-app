@@ -744,25 +744,21 @@ const DOGS = [
   // Carica le liste messaggi da Firestore (solo quando apro la vista)
   async function loadMessagesLists() {
     try {
-      // msgLists è già definito sopra come qa(".messages-list")
       if (!db || !msgLists || !msgLists.length) return;
 
       const selfUid = window.PLUTOO_UID || "anon";
       if (!selfUid) return;
 
-      // Contenitori reali definiti in index.html
+     // Uso gli ID reali definiti in index.html
       const sentList = document.getElementById("tabSent");
       const matchesList = document.getElementById("tabMatches");
       if (!sentList || !matchesList) return;
 
-      // Pulisco tutte le liste e nascondo gli empty state
+      // Pulisce tutte le liste e nasconde i messaggi vuoti
       msgLists.forEach((list) => {
         list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-        const emptyEl = list.querySelector(".empty-state");
-        if (emptyEl) {
-          // di base li considero nascosti, poi li riaccendo se non ci sono chat
-          emptyEl.classList.add("hidden-empty");
-        }
+        const emptyEl = list.querySelector(".msg-empty");
+        if (emptyEl) emptyEl.classList.add("hidden-empty-messages");
       });
 
       // Legge le chat dove compare il mio UID
@@ -790,13 +786,12 @@ const DOGS = [
         });
       });
 
-      // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
+      // Nessuna chat → mostro gli "empty"
       if (!chats.length) {
         msgLists.forEach((list) => {
-          const emptyEl = list.querySelector(".empty-state");
-          if (emptyEl) {
-            emptyEl.classList.remove("hidden-empty");
-          }
+          const emptyEl = list.querySelector(".msg-empty");
+          if (!emptyEl) return;
+          emptyEl.classList.remove("hidden-empty-messages");
         });
         return;
       }
@@ -809,13 +804,13 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-    // Popolo la lista "Inviati" e la lista "Match"
+     // Popolo la lista "Inviati" E la lista "Match" usando lo STESSO contenuto
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Nome DOG di base (da chat o fallback)
-        const dogNameBase =
+        // Nome DOG preso dalla chat o fallback
+        let dogName =
           chat.dogName ||
           (state.lang === "en" ? "DOG" : "Dog");
 
@@ -824,12 +819,12 @@ const DOGS = [
           ? chat.lastMessageAt.toLocaleString()
           : "";
 
-        // ---------- Riga per tab "Inviati" ----------
+        // Riga per tab "Inviati"
         const row = document.createElement("div");
         row.className = "msg-item";
         row.innerHTML = `
           <div class="msg-main">
-            <div class="msg-title">${dogNameBase} – ${text}</div>
+            <div class="msg-title">${dogName} – ${text}</div>
             <div class="msg-meta">${dateText}</div>
           </div>
         `;
@@ -840,26 +835,11 @@ const DOGS = [
 
         sentList.appendChild(row);
 
-        // ---------- Riga per tab "Match" (stessa base, solo nome DOG) ----------
+        // CLONE della stessa riga per la tab "Match"
         const matchRow = row.cloneNode(true);
-
-        // cambio il titolo: solo nome DOG
-        const titleEl = matchRow.querySelector(".msg-title");
-        if (titleEl) {
-          titleEl.textContent = dogNameBase;
-        }
-
-        // tolgo la riga della data, se presente
-        const metaEl = matchRow.querySelector(".msg-meta");
-        if (metaEl && metaEl.parentNode) {
-          metaEl.parentNode.removeChild(metaEl);
-        }
-
-        // riaggancio il click (il clone non porta l'handler JS)
         matchRow.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
-
         matchesList.appendChild(matchRow);
       });
       
