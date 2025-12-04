@@ -801,10 +801,22 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-      // Popolo la lista "Inviati" (una riga per chat)
+     // Popolo la lista "Inviati" (una riga per chat)
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
+
+        // Provo a recuperare il DOG collegato alla chat
+        let dogName =
+          state.lang === "en" ? "DOG" : "Dog";
+        if (Array.isArray(DOGS) && chat.dogId) {
+          const dog = DOGS.find(
+            (d) => String(d.id) === String(chat.dogId)
+          );
+          if (dog && dog.name) {
+            dogName = dog.name;
+          }
+        }
 
         const text = chat.lastMessageText || "";
         const dateText = chat.lastMessageAt
@@ -815,7 +827,7 @@ const DOGS = [
         row.className = "msg-item";
         row.innerHTML = `
           <div class="msg-main">
-            <div class="msg-title">${text}</div>
+            <div class="msg-title">${dogName} – ${text}</div>
             <div class="msg-meta">${dateText}</div>
           </div>
         `;
@@ -831,35 +843,36 @@ const DOGS = [
       // Popola la lista MATCH (una riga per DOG con cui ho una chat)
       // Considero tutte le chat come match (la chat esiste = match attivo)
       chats.forEach((chat) => {
-        if (!chat.dogId) return;
+        const otherUid =
+          chat.members.find((uid) => uid !== selfUid) || null;
 
-        let dog = null;
-        if (Array.isArray(DOGS)) {
-          dog = DOGS.find(
+        // Provo a recuperare il DOG; se non c'è uso fallback
+        let dogName =
+          state.lang === "en" ? "DOG" : "Dog";
+        let dogAvatar = "plutoo-icon-1.png";
+
+        if (Array.isArray(DOGS) && chat.dogId) {
+          const dog = DOGS.find(
             (d) => String(d.id) === String(chat.dogId)
           );
+          if (dog) {
+            if (dog.name) dogName = dog.name;
+            if (dog.img) dogAvatar = dog.img;
+          }
         }
-
-        const avatar =
-          (dog && dog.img) || "plutoo-icon-1.png";
-        const name =
-          (dog && dog.name) ||
-          (state.lang === "en" ? "DOG" : "Dog");
 
         const row = document.createElement("div");
         row.className = "msg-item match-only";
         row.innerHTML = `
           <div class="msg-avatar">
-            <img src="${avatar}" alt="${name}" />
+            <img src="${dogAvatar}" alt="${dogName}" />
           </div>
           <div class="msg-main">
-            <div class="msg-title">${name}</div>
+            <div class="msg-title">${dogName}</div>
           </div>
         `;
 
         row.addEventListener("click", () => {
-          const otherUid =
-            chat.members.find((uid) => uid !== selfUid) || null;
           openChat(chat.id, chat.dogId, otherUid);
         });
 
