@@ -841,24 +841,21 @@ const DOGS = [
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Nome e avatar DOG presi dalla chat, con fallback
+        // Nome DOG preso dalla chat, con fallback semplice
         let dogName =
           chat.dogName ||
           (state.lang === "en" ? "DOG" : "Dog");
-        let dogAvatar =
-          chat.dogAvatar || "plutoo-icon-1.png";
 
         const row = document.createElement("div");
-        row.className = "msg-item match-only";
+        // uso SOLO "msg-item" per evitare che il CSS la nasconda
+        row.className = "msg-item";
         row.innerHTML = `
-          <div class="msg-avatar">
-            <img src="${dogAvatar}" alt="${dogName}" />
-          </div>
           <div class="msg-main">
             <div class="msg-title">${dogName}</div>
           </div>
         `;
 
+        // CLIC → apre la chat collegata
         row.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
