@@ -809,7 +809,7 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-    // Popolo la lista "Inviati" e la lista "Match" usando lo stesso contenuto
+    // Popolo la lista "Inviati" e la lista "Match"
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
@@ -829,10 +829,7 @@ const DOGS = [
         row.className = "msg-item";
         row.innerHTML = `
           <div class="msg-main">
-            <div class="msg-title">
-              <span class="msg-dog">${dogNameBase}</span>
-              <span class="msg-text">${text}</span>
-            </div>
+            <div class="msg-title">${dogNameBase} – ${text}</div>
             <div class="msg-meta">${dateText}</div>
           </div>
         `;
@@ -843,10 +840,22 @@ const DOGS = [
 
         sentList.appendChild(row);
 
-        // ---------- Riga per tab "Match" (clone 1:1 della riga di Inviati) ----------
+        // ---------- Riga per tab "Match" (stessa base, solo nome DOG) ----------
         const matchRow = row.cloneNode(true);
 
-        // riaggancio il click, perché gli handler JS non vengono clonati
+        // cambio il titolo: solo nome DOG
+        const titleEl = matchRow.querySelector(".msg-title");
+        if (titleEl) {
+          titleEl.textContent = dogNameBase;
+        }
+
+        // tolgo la riga della data, se presente
+        const metaEl = matchRow.querySelector(".msg-meta");
+        if (metaEl && metaEl.parentNode) {
+          metaEl.parentNode.removeChild(metaEl);
+        }
+
+        // riaggancio il click (il clone non porta l'handler JS)
         matchRow.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
