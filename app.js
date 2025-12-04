@@ -810,8 +810,11 @@ const DOGS = [
 // Considero tutte le chat come match (la chat nasce solo dopo il match)
 if (matchesList) {
   chats.forEach((data) => {
-    const dog = DOGS.find((d) => String(d.id) === String(data.dogId));
-    if (!dog) return;
+  if (!data.dogId) return;
+
+const dog = DOGS.find((d) => String(d.id) === 
+  String(data.dogId));
+if (!dog) return;
 
     const avatar = dog.img || "plutoo-icon-1.png";
     const name = dog.name || (state.lang === "it" ? "Dog" : "Dog");
