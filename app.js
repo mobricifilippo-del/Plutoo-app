@@ -829,7 +829,10 @@ const DOGS = [
         row.className = "msg-item";
         row.innerHTML = `
           <div class="msg-main">
-            <div class="msg-title">${dogNameBase} – ${text}</div>
+            <div class="msg-title">
+              <span class="msg-dog">${dogNameBase}</span>
+              <span class="msg-text">${text}</span>
+            </div>
             <div class="msg-meta">${dateText}</div>
           </div>
         `;
