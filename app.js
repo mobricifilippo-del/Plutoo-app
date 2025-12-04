@@ -744,21 +744,25 @@ const DOGS = [
   // Carica le liste messaggi da Firestore (solo quando apro la vista)
   async function loadMessagesLists() {
     try {
+      // msgLists è già definito sopra come qa(".messages-list")
       if (!db || !msgLists || !msgLists.length) return;
 
       const selfUid = window.PLUTOO_UID || "anon";
       if (!selfUid) return;
 
-     // Uso gli ID reali definiti in index.html
+      // Contenitori reali definiti in index.html
       const sentList = document.getElementById("tabSent");
       const matchesList = document.getElementById("tabMatches");
       if (!sentList || !matchesList) return;
 
-      // Pulisce tutte le liste e nasconde i messaggi vuoti
+      // Pulisco tutte le liste e nascondo gli empty state
       msgLists.forEach((list) => {
         list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-        const emptyEl = list.querySelector(".msg-empty");
-        if (emptyEl) emptyEl.classList.add("hidden-empty-messages");
+        const emptyEl = list.querySelector(".empty-state");
+        if (emptyEl) {
+          // di base li considero nascosti, poi li riaccendo se non ci sono chat
+          emptyEl.classList.add("hidden-empty");
+        }
       });
 
       // Legge le chat dove compare il mio UID
@@ -786,12 +790,13 @@ const DOGS = [
         });
       });
 
-      // Nessuna chat → mostro gli "empty"
+      // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
       if (!chats.length) {
         msgLists.forEach((list) => {
-          const emptyEl = list.querySelector(".msg-empty");
-          if (!emptyEl) return;
-          emptyEl.classList.remove("hidden-empty-messages");
+          const emptyEl = list.querySelector(".empty-state");
+          if (emptyEl) {
+            emptyEl.classList.remove("hidden-empty");
+          }
         });
         return;
       }
@@ -804,13 +809,13 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-     // Popolo la lista "Inviati" E la lista "Match" usando lo STESSO contenuto
+      // Popolo la lista "Inviati" E la lista "Match" usando lo STESSO contenuto
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
         // Nome DOG preso dalla chat o fallback
-        let dogName =
+        const dogName =
           chat.dogName ||
           (state.lang === "en" ? "DOG" : "Dog");
 
@@ -842,6 +847,20 @@ const DOGS = [
         });
         matchesList.appendChild(matchRow);
       });
+
+      // Aggiorno gli "empty state" in base alla presenza di msg-item
+      msgLists.forEach((list) => {
+        const items = list.querySelectorAll(".msg-item");
+        const emptyEl = list.querySelector(".empty-state");
+        if (!emptyEl) return;
+        const hasItems = items.length > 0;
+        // se ci sono item → nascondo il testo vuoto
+        emptyEl.classList.toggle("hidden-empty", hasItems);
+      });
+    } catch (err) {
+      console.error("Errore loadMessagesLists:", err);
+    }
+  }
       
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
