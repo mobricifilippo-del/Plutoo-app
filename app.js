@@ -741,23 +741,23 @@ const DOGS = [
  const msgTopTabs  = qa(".msg-top-tab");
  const msgLists    = qa(".messages-list");
 
-  // Carica le liste messaggi da Firestore (solo tab "Inviati" per ora)
+  // Carica le liste messaggi da Firestore (solo quando apro la vista)
   async function loadMessagesLists() {
     try {
       if (!db || !msgLists || !msgLists.length) return;
 
-      // stesso fallback usato quando invii il messaggio
-      const selfUid = window.PLUTOO_UID || "anonymous";
+      const selfUid = window.PLUTOO_UID || "anon";
       if (!selfUid) return;
 
-      const sentList = document.getElementById("tabSent");
-      if (!sentList) return;
+      const sentList = document.getElementById("messagesSentList");
+      const matchesList = document.getElementById("messagesMatchList");
+      if (!sentList || !matchesList) return;
 
-      // Pulisce tutte le liste e nasconde i testi "vuoto"
+      // Pulisce tutte le liste e nasconde i messaggi vuoti
       msgLists.forEach((list) => {
         list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-        const emptyEl = list.querySelector(".empty-state");
-        if (emptyEl) emptyEl.classList.add("hidden-empty");
+        const emptyEl = list.querySelector(".msg-empty");
+        if (emptyEl) emptyEl.classList.add("hidden-empty-messages");
       });
 
       // Legge le chat dove compare il mio UID
@@ -766,87 +766,116 @@ const DOGS = [
         .where("members", "array-contains", selfUid)
         .get();
 
-      // Ordino le chat per data ultimo messaggio
       const chats = [];
       snap.forEach((docSnap) => {
-        chats.push({ id: docSnap.id, ...docSnap.data() });
+        const data = docSnap.data() || {};
+        let lastAt = data.lastMessageAt || null;
+        if (lastAt && typeof lastAt.toDate === "function") {
+          lastAt = lastAt.toDate();
+        }
+
+        chats.push({
+          id: docSnap.id,
+          dogId: data.dogId || null,
+          members: Array.isArray(data.members) ? data.members : [],
+          lastMessageText: data.lastMessageText || "",
+          lastMessageAt: lastAt, // Date o null
+        });
       });
 
+      // Nessuna chat → mostro gli "empty"
+      if (!chats.length) {
+        msgLists.forEach((list) => {
+          const emptyEl = list.querySelector(".msg-empty");
+          if (!emptyEl) return;
+          emptyEl.classList.remove("hidden-empty-messages");
+        });
+        return;
+      }
+
+      // Ordino le chat per data ultimo messaggio (più recente in alto)
       chats.sort((a, b) => {
-        const ta =
-          a.lastMessageAt && a.lastMessageAt.toMillis
-            ? a.lastMessageAt.toMillis()
-            : 0;
-        const tb =
-          b.lastMessageAt && b.lastMessageAt.toMillis
-            ? b.lastMessageAt.toMillis()
-            : 0;
-        return tb - ta;
+        if (!a.lastMessageAt && !b.lastMessageAt) return 0;
+        if (!a.lastMessageAt) return 1;
+        if (!b.lastMessageAt) return -1;
+        return b.lastMessageAt - a.lastMessageAt;
       });
 
-      // Popolo SOLO la lista "Inviati"
-      chats.forEach((data) => {
-        const text = data.lastMessageText || "";
-        const date =
-          data.lastMessageAt && data.lastMessageAt.toDate
-            ? data.lastMessageAt.toDate().toLocaleString()
-            : "";
+      // Popolo la lista "Inviati" (una riga per chat)
+      chats.forEach((chat) => {
+        const otherUid =
+          chat.members.find((uid) => uid !== selfUid) || null;
+
+        const text = chat.lastMessageText || "";
+        const dateText = chat.lastMessageAt
+          ? chat.lastMessageAt.toLocaleString()
+          : "";
 
         const row = document.createElement("div");
         row.className = "msg-item";
         row.innerHTML = `
           <div class="msg-main">
             <div class="msg-title">${text}</div>
-            <div class="msg-meta">${date}</div>
+            <div class="msg-meta">${dateText}</div>
           </div>
         `;
+
+        // CLIC → apre la chat corretta
+        row.addEventListener("click", () => {
+          openChat(chat.id, chat.dogId, otherUid);
+        });
 
         sentList.appendChild(row);
       });
 
-      const matchesList = document.getElementById("tabMatch");
+      // Popola la lista MATCH (una riga per DOG con cui ho una chat)
+      // Considero tutte le chat come match (la chat esiste = match attivo)
+      chats.forEach((chat) => {
+        if (!chat.dogId) return;
 
-// POPOLA LA LISTA MATCH (solo icona + nome DOG)
-// Considero tutte le chat come match (la chat nasce solo dopo il match)
-if (matchesList) {
-  chats.forEach((data) => {
-  if (!data.dogId) return;
+        let dog = null;
+        if (Array.isArray(DOGS)) {
+          dog = DOGS.find(
+            (d) => String(d.id) === String(chat.dogId)
+          );
+        }
 
-const dog = DOGS.find((d) => String(d.id) === 
-  String(data.dogId));
-if (!dog) return;
+        const avatar =
+          (dog && dog.img) || "plutoo-icon-1.png";
+        const name =
+          (dog && dog.name) ||
+          (state.lang === "en" ? "DOG" : "Dog");
 
-    const avatar = dog.img || "plutoo-icon-1.png";
-    const name = dog.name || (state.lang === "it" ? "Dog" : "Dog");
+        const row = document.createElement("div");
+        row.className = "msg-item match-only";
+        row.innerHTML = `
+          <div class="msg-avatar">
+            <img src="${avatar}" alt="${name}" />
+          </div>
+          <div class="msg-main">
+            <div class="msg-title">${name}</div>
+          </div>
+        `;
 
-    const row = document.createElement("div");
-    row.className = "msg-item match-only";
-    row.innerHTML = `
-      <div class="msg-avatar">
-        <img src="${avatar}" alt="${name}" />
-      </div>
-      <div class="msg-main">
-        <div class="msg-title">${name}</div>
-      </div>
-    `;
+        row.addEventListener("click", () => {
+          const otherUid =
+            chat.members.find((uid) => uid !== selfUid) || null;
+          openChat(chat.id, chat.dogId, otherUid);
+        });
 
-    // CLIC → apre la chat
-    row.addEventListener("click", () => openChat(dog));
+        matchesList.appendChild(row);
+      });
 
-    matchesList.appendChild(row);
-  });
-}
-
-      // Aggiorno gli "empty state" di tutte le tab
+      // Aggiorno gli "empty state" di tutte le liste
       msgLists.forEach((list) => {
         const items = list.querySelectorAll(".msg-item");
-        const emptyEl = list.querySelector(".empty-state");
+        const emptyEl = list.querySelector(".msg-empty");
         if (!emptyEl) return;
         const hasItems = items.length > 0;
-        emptyEl.classList.toggle("hidden-empty", hasItems);
+        emptyEl.classList.toggle("hidden-empty-messages", hasItems);
       });
     } catch (err) {
-      console.error("Errore loadMessagesLists", err);
+      console.error("Errore loadMessagesLists:", err);
     }
   }
   btnMessages?.addEventListener("click", () => {
