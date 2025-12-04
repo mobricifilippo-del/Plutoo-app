@@ -809,13 +809,13 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-      // Popolo la lista "Inviati" E la lista "Match" usando lo STESSO contenuto
+      // Popolo la lista "Inviati" e la lista "Match"
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Nome DOG preso dalla chat o fallback
-        const dogName =
+        // Nome DOG di base (da chat o fallback)
+        let dogNameBase =
           chat.dogName ||
           (state.lang === "en" ? "DOG" : "Dog");
 
@@ -824,12 +824,12 @@ const DOGS = [
           ? chat.lastMessageAt.toLocaleString()
           : "";
 
-        // Riga per tab "Inviati"
+        // ---------- Riga per tab "Inviati" ----------
         const row = document.createElement("div");
         row.className = "msg-item";
         row.innerHTML = `
           <div class="msg-main">
-            <div class="msg-title">${dogName} – ${text}</div>
+            <div class="msg-title">${dogNameBase} – ${text}</div>
             <div class="msg-meta">${dateText}</div>
           </div>
         `;
@@ -840,27 +840,38 @@ const DOGS = [
 
         sentList.appendChild(row);
 
-        // CLONE della stessa riga per la tab "Match"
-        const matchRow = row.cloneNode(true);
+        // ---------- Riga per tab "Match" (solo avatar + nome DOG) ----------
+        let matchName = dogNameBase;
+        let matchAvatar = chat.dogAvatar || "plutoo-icon-1.png";
+
+        // Se non ho avatar in chat, provo a recuperarlo dall'array DOGS
+        if (!chat.dogAvatar && Array.isArray(DOGS) && chat.dogId) {
+          const dog = DOGS.find(
+            (d) => String(d.id) === String(chat.dogId)
+          );
+          if (dog) {
+            if (dog.name) matchName = dog.name;
+            if (dog.img) matchAvatar = dog.img;
+          }
+        }
+
+        const matchRow = document.createElement("div");
+        matchRow.className = "msg-item match-item";
+        matchRow.innerHTML = `
+          <div class="msg-avatar">
+            <img src="${matchAvatar}" alt="${matchName}" />
+          </div>
+          <div class="msg-main">
+            <div class="msg-title">${matchName}</div>
+          </div>
+        `;
+
         matchRow.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
+
         matchesList.appendChild(matchRow);
       });
-
-      // Aggiorno gli "empty state" in base alla presenza di msg-item
-      msgLists.forEach((list) => {
-        const items = list.querySelectorAll(".msg-item");
-        const emptyEl = list.querySelector(".empty-state");
-        if (!emptyEl) return;
-        const hasItems = items.length > 0;
-        // se ci sono item → nascondo il testo vuoto
-        emptyEl.classList.toggle("hidden-empty", hasItems);
-      });
-    } catch (err) {
-      console.error("Errore loadMessagesLists:", err);
-    }
-  }
       
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
