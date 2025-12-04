@@ -809,49 +809,64 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-    // Popolo la lista "Inviati" e la lista "Match" usando lo stesso contenuto
-      chats.forEach((chat) => {
-        const otherUid =
-          chat.members.find((uid) => uid !== selfUid) || null;
+    // Popolo le liste "Inviati" e "Match" con la stessa struttura
+      const matchesList = document.getElementById("tabMatches");
 
-        // Nome DOG di base (da chat o fallback)
-        const dogNameBase =
+      chats.forEach((chat) => {
+        if (!chat) return;
+
+        // UID dell'altro utente
+        const otherUid =
+          chat.members && Array.isArray(chat.members)
+            ? chat.members.find((uid) => uid !== selfUid) || null
+            : null;
+
+        // Nome DOG: da campo chat.dogName o fallback
+        const dogName =
           chat.dogName ||
           (state.lang === "en" ? "DOG" : "Dog");
 
         const text = chat.lastMessageText || "";
-        const dateText = chat.lastMessageAt
-          ? chat.lastMessageAt.toLocaleString()
-          : "";
+        const dateText =
+          chat.lastMessageAt &&
+          typeof chat.lastMessageAt.toDate === "function"
+            ? chat.lastMessageAt.toDate().toLocaleString()
+            : "";
 
-        // ---------- Riga per tab "Inviati" ----------
-        const row = document.createElement("div");
-        row.className = "msg-item";
-        row.innerHTML = `
-          <div class="msg-main">
-            <div class="msg-title">
-              <span class="msg-dog">${dogNameBase}</span>
-              <span class="msg-text">${text}</span>
-            </div>
+        // HTML base della riga messaggio
+        const baseRowHtml = `
+          <div class="msg-item">
+            <div class="msg-dog">${dogName}</div>
+            <div class="msg-text">${text}</div>
             <div class="msg-meta">${dateText}</div>
           </div>
         `;
 
-        row.addEventListener("click", () => {
-          openChat(chat.id, chat.dogId, otherUid);
-        });
+        // --- Riga per tab "Inviati" ---
+        if (sentList) {
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = baseRowHtml.trim();
+          const row = wrapper.firstChild;
 
-        sentList.appendChild(row);
+          row.addEventListener("click", () => {
+            openChat(chat.id, chat.dogId, otherUid);
+          });
 
-        // ---------- Riga per tab "Match" (clone 1:1 della riga di Inviati) ----------
-        const matchRow = row.cloneNode(true);
+          sentList.appendChild(row);
+        }
 
-        // riaggancio il click, perché gli handler JS non vengono clonati
-        matchRow.addEventListener("click", () => {
-          openChat(chat.id, chat.dogId, otherUid);
-        });
+        // --- Riga per tab "Match" ---
+        if (matchesList) {
+          const wrapper2 = document.createElement("div");
+          wrapper2.innerHTML = baseRowHtml.trim();
+          const matchRow = wrapper2.firstChild;
 
-        matchesList.appendChild(matchRow);
+          matchRow.addEventListener("click", () => {
+            openChat(chat.id, chat.dogId, otherUid);
+          });
+
+          matchesList.appendChild(matchRow);
+        }
       });
       
   btnMessages?.addEventListener("click", () => {
