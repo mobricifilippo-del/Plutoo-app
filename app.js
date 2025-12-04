@@ -803,12 +803,12 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-     // Popolo la lista "Inviati" (una riga per chat)
+     // Popolo la lista "Inviati" E la lista "Match" usando lo STESSO contenuto
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Nome DOG preso direttamente dalla chat (se presente)
+        // Nome DOG preso dalla chat o fallback
         let dogName =
           chat.dogName ||
           (state.lang === "en" ? "DOG" : "Dog");
@@ -818,6 +818,7 @@ const DOGS = [
           ? chat.lastMessageAt.toLocaleString()
           : "";
 
+        // Riga per tab "Inviati"
         const row = document.createElement("div");
         row.className = "msg-item";
         row.innerHTML = `
@@ -827,54 +828,20 @@ const DOGS = [
           </div>
         `;
 
-        // CLIC → apre la chat corretta
         row.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
 
         sentList.appendChild(row);
-      });
 
-    // Popola la lista MATCH (una riga per DOG con cui ho una chat)
-      // Considero tutte le chat come match (la chat esiste = match attivo)
-      chats.forEach((chat) => {
-        const otherUid =
-          chat.members.find((uid) => uid !== selfUid) || null;
-
-        // Nome DOG preso dalla chat, con fallback semplice
-        let dogName =
-          chat.dogName ||
-          (state.lang === "en" ? "DOG" : "Dog");
-
-        const row = document.createElement("div");
-        // uso SOLO "msg-item" per evitare che il CSS la nasconda
-        row.className = "msg-item";
-        row.innerHTML = `
-          <div class="msg-main">
-            <div class="msg-title">${dogName}</div>
-          </div>
-        `;
-
-        // CLIC → apre la chat collegata
-        row.addEventListener("click", () => {
+        // CLONE della stessa riga per la tab "Match"
+        const matchRow = row.cloneNode(true);
+        matchRow.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
-
-        matchesList.appendChild(row);
+        matchesList.appendChild(matchRow);
       });
-
-      // Aggiorno gli "empty state" di tutte le liste
-      msgLists.forEach((list) => {
-        const items = list.querySelectorAll(".msg-item");
-        const emptyEl = list.querySelector(".msg-empty");
-        if (!emptyEl) return;
-        const hasItems = items.length > 0;
-        emptyEl.classList.toggle("hidden-empty-messages", hasItems);
-      });
-    } catch (err) {
-      console.error("Errore loadMessagesLists:", err);
-    }
-  }
+      
   btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
