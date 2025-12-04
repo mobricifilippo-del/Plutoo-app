@@ -1354,6 +1354,16 @@ display: none;
 display: block;
 }
 
+/* Differenze tra tab Inviati e Match */
+#tabSent .msg-dog {
+  display: none;
+}
+
+#tabMatches .msg-text,
+#tabMatches .msg-meta {
+  display: none;
+}
+
 /* stato vuoto - nascosto */
 .empty-state.hidden-empty {
 display: none !important;
