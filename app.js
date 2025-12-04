@@ -780,6 +780,8 @@ const DOGS = [
           members: Array.isArray(data.members) ? data.members : [],
           lastMessageText: data.lastMessageText || "",
           lastMessageAt: lastAt, // Date o null
+          dogName: data.dogName || null,
+          dogAvatar: data.dogAvatar || null,
         });
       });
 
@@ -806,17 +808,10 @@ const DOGS = [
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Provo a recuperare il DOG collegato alla chat
+        // Nome DOG preso direttamente dalla chat (se presente)
         let dogName =
-          state.lang === "en" ? "DOG" : "Dog";
-        if (Array.isArray(DOGS) && chat.dogId) {
-          const dog = DOGS.find(
-            (d) => String(d.id) === String(chat.dogId)
-          );
-          if (dog && dog.name) {
-            dogName = dog.name;
-          }
-        }
+          chat.dogName ||
+          (state.lang === "en" ? "DOG" : "Dog");
 
         const text = chat.lastMessageText || "";
         const dateText = chat.lastMessageAt
@@ -840,26 +835,18 @@ const DOGS = [
         sentList.appendChild(row);
       });
 
-      // Popola la lista MATCH (una riga per DOG con cui ho una chat)
+    // Popola la lista MATCH (una riga per DOG con cui ho una chat)
       // Considero tutte le chat come match (la chat esiste = match attivo)
       chats.forEach((chat) => {
         const otherUid =
           chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Provo a recuperare il DOG; se non c'è uso fallback
+        // Nome e avatar DOG presi dalla chat, con fallback
         let dogName =
-          state.lang === "en" ? "DOG" : "Dog";
-        let dogAvatar = "plutoo-icon-1.png";
-
-        if (Array.isArray(DOGS) && chat.dogId) {
-          const dog = DOGS.find(
-            (d) => String(d.id) === String(chat.dogId)
-          );
-          if (dog) {
-            if (dog.name) dogName = dog.name;
-            if (dog.img) dogAvatar = dog.img;
-          }
-        }
+          chat.dogName ||
+          (state.lang === "en" ? "DOG" : "Dog");
+        let dogAvatar =
+          chat.dogAvatar || "plutoo-icon-1.png";
 
         const row = document.createElement("div");
         row.className = "msg-item match-only";
