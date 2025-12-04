@@ -809,61 +809,41 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-    // Popolo la lista "Inviati" e la lista "Match"
-      const matchesList = document.getElementById("tabMatches");
-      if (!sentList || !matchesList) return;
-
+    // Popolo la lista "Inviati" e la lista "Match" usando lo stesso contenuto
       chats.forEach((chat) => {
-        // Altro utente nella chat
         const otherUid =
-          Array.isArray(chat.members)
-            ? chat.members.find((uid) => uid !== selfUid) || null
-            : null;
+          chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Testo e data ultimo messaggio
-        const lastText = chat.lastMessageText || "";
-        const lastDate = chat.lastMessageAt && chat.lastMessageAt.toDate
-          ? chat.lastMessageAt.toDate().toLocaleString()
+        // Nome DOG di base (da chat o fallback)
+        const dogNameBase =
+          chat.dogName ||
+          (state.lang === "en" ? "DOG" : "Dog");
+
+        const text = chat.lastMessageText || "";
+        const dateText = chat.lastMessageAt
+          ? chat.lastMessageAt.toLocaleString()
           : "";
 
-        // Nome e avatar DOG (fallback se non presenti nel documento chat)
-        const dogName =
-          chat.dogName || (state.lang === "en" ? "DOG" : "Dog");
-        const dogAvatar =
-          chat.dogAvatar || "plutoo-icon-192.png";
-
-        // -------- Riga per tab "Inviati" --------
-        const sentRow = document.createElement("div");
-        sentRow.className = "msg-item";
-        sentRow.innerHTML = `
+        // ---------- Riga per tab "Inviati" ----------
+        const row = document.createElement("div");
+        row.className = "msg-item";
+        row.innerHTML = `
           <div class="msg-main">
-            <div class="msg-title">
-              <span class="msg-dog">${dogName}</span>
-              <span class="msg-text"> – ${lastText}</span>
-            </div>
-            <div class="msg-meta">${lastDate}</div>
+            <div class="msg-title">${dogNameBase} – ${text}</div>
+            <div class="msg-meta">${dateText}</div>
           </div>
         `;
 
-        sentRow.addEventListener("click", () => {
+        row.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
 
-        sentList.appendChild(sentRow);
+        sentList.appendChild(row);
 
-        // -------- Riga per tab "Match" --------
-        const matchRow = document.createElement("div");
-        matchRow.className = "msg-item";
-        matchRow.innerHTML = `
-          <div class="msg-avatar">
-            <img src="${dogAvatar}" alt="${dogName}" />
-          </div>
-          <div class="msg-main">
-            <div class="msg-dog">${dogName}</div>
-            <div class="msg-meta">${lastDate}</div>
-          </div>
-        `;
+        // ---------- Riga per tab "Match" (clone 1:1 della riga di Inviati) ----------
+        const matchRow = row.cloneNode(true);
 
+        // riaggancio il click, perché gli handler JS non vengono clonati
         matchRow.addEventListener("click", () => {
           openChat(chat.id, chat.dogId, otherUid);
         });
