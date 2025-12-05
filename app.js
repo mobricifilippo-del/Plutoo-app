@@ -838,15 +838,17 @@ const DOGS = [
           openChat(chat.id, chat.dogId, otherUid);
         });
 
-        sentList.appendChild(row);
+      // Riga per tab "Inviati" → tutte le chat
+  sentList.appendChild(row);
 
-        // CLONE della stessa riga per la tab "Match"
-        const matchRow = row.cloneNode(true);
-        matchRow.addEventListener("click", () => {
-          openChat(chat.id, chat.dogId, otherUid);
-        });
-        matchesList.appendChild(matchRow);
-      });
+  // Riga per tab "Match" → SOLO i DOG che risultano matchati nello stato locale
+  if (state.matches && chat.dogId && state.matches[chat.dogId]) {
+    const matchRow = row.cloneNode(true);
+    matchRow.addEventListener("click", () => {
+      openChat(chat.id, chat.dogId, otherUid, dogName, dogAvatar);
+    });
+    matchesList.appendChild(matchRow);
+  }
 
       // Aggiorno gli "empty state" in base alla presenza di msg-item
       msgLists.forEach((list) => {
