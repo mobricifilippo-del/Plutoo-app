@@ -2230,12 +2230,12 @@ if (d.id === CURRENT_USER_DOG_ID) {
 });
 
     // Azioni nel profilo DOG (chat + like/match)
-const openChatBtn = $("#btnOpenChat");
+const openChatBtn = $("btnOpenChat");
 if (openChatBtn) {
   openChatBtn.onclick = () => openChat(d);
 }
 
-const likeDogBtn = $("#btnLikeDog");
+const likeDogBtn = $("btnLikeDog");
 if (likeDogBtn) {
   likeDogBtn.addEventListener("click", () => {
     if (!d || !d.id) return;
