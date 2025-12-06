@@ -599,7 +599,7 @@ const DOGS = [
       "Barboncino","Bassotto","Beagle","Border Collie","Bulldog Francese",
       "Carlino","Chihuahua","Cocker Spaniel","Golden Retriever","Husky",
       "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu",
-      "Meticcio"
+      "Meticcio",
     ].sort();
   });
 
@@ -2250,9 +2250,7 @@ if (likeDogBtn) {
     showMatchAnimation(nameForMatch, nextMatchColor);
     state.matchCount++;
     localStorage.setItem("matchCount", String(state.matchCount));
-    nextMatchColor = ["💛", "💜", "💚"][state.matchCount % 4];
-
-    alert(state.lang === "it" ? "Like inviato! 💛" : "Like sent! 💛");
+    nextMatchColor = ["💛", "💚", "🩵","❤️"][state.matchCount % 4];
   });
 }
 
