@@ -2229,25 +2229,32 @@ if (d.id === CURRENT_USER_DOG_ID) {
   });
 });
 
-    $("#btnOpenChat").onclick = () => { openChat(d); };
+    // Azioni nel profilo DOG (chat + like/match)
+const openChatBtn = $("#btnOpenChat");
+if (openChatBtn) {
+  openChatBtn.onclick = () => openChat(d);
+}
 
-$("#btnLikeDog")?.addEventListener("click", () => {
-  if (!d || !d.id) return;
+const likeDogBtn = $("#btnLikeDog");
+if (likeDogBtn) {
+  likeDogBtn.addEventListener("click", () => {
+    if (!d || !d.id) return;
 
-  // segno il match come fa lo swipe LOVE
-  state.matches[d.id] = true;
-  localStorage.setItem("matches", JSON.stringify(state.matches));
+    // segno il match come nello swipe LOVE
+    state.matches[d.id] = true;
+    localStorage.setItem("matches", JSON.stringify(state.matches));
 
-  // stessa animazione del match dallo swipe
-  const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
-  showMatchAnimation(nameForMatch, nextMatchColor);
-  state.matchCount++;
-  localStorage.setItem("matchCount", String(state.matchCount));
-  nextMatchColor = ["💛", "💜", "💚"][state.matchCount % 4];
+    const nameForMatch =
+      d.name || (state.lang === "it" ? "Nuovo match" : "New match");
 
-  // messaggio di conferma
-  alert(state.lang === "it" ? "Like inviato! 💛" : "Like sent! 💛");
-});
+    showMatchAnimation(nameForMatch, nextMatchColor);
+    state.matchCount++;
+    localStorage.setItem("matchCount", String(state.matchCount));
+    nextMatchColor = ["💛", "💜", "💚"][state.matchCount % 4];
+
+    alert(state.lang === "it" ? "Like inviato! 💛" : "Like sent! 💛");
+  });
+}
 
     $("uploadSelfie").onclick = () => {
   const d = state.currentDogProfile;
