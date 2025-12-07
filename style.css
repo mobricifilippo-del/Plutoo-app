@@ -1564,13 +1564,13 @@ line-height: 1.6;
 
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1.5s ease-out;
+  transition: opacity 0.5s ease-out;
 }
 
 .match-overlay.active{
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 1.8s ease-out;
+  transition: opacity 0.6s ease-out;
 }
 
 .match-content{
@@ -1581,7 +1581,7 @@ line-height: 1.6;
 .match-hearts,
 .match-heart{
   font-size: 220px;           /* leggermente più piccolo di prima */
-  animation: matchHeartPulse 1.8s ease-in-out infinite;
+  animation: matchHeartPulse 0.9s ease-in-out infinite;
   filter: drop-shadow(0 25px 55px rgba(255,140,0,.9));
 }
 
