@@ -944,39 +944,6 @@ chats.forEach((chat) => {
     loadMessagesLists();
   });
 
-// --- EMPTY STATES ---
-msgLists.forEach((list) => {
-  const items = list.querySelectorAll(".msg-item");
-  const emptyEl = list.querySelector(".empty-state");
-
-  if (!emptyEl) return;
-
-  const hasItems = items.length > 0;
-  // se non ci sono messaggi → mostro il testo
-  emptyEl.classList.toggle("hidden-empty", hasItems);
-});
-
-  msgTopTabs.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const targetId = btn.dataset.tab;
-
-      msgTopTabs.forEach((b) => {
-        b.classList.toggle("active", b === btn);
-      });
-
-      msgLists.forEach((list) => {
-        list.classList.toggle("active", list.id === targetId);
-      });
-    });
-  });
-
-  function setActiveView(name){
-    localStorage.setItem("currentView", name);
-
-    if (state.currentView !== name && state.currentView){
-      state.viewHistory.push(state.currentView);
-    }
-
     if (name === "messages" && state.currentView !== "messages"){
       state.previousViewForMessages = state.currentView || "nearby";
     }
