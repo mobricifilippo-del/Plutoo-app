@@ -809,45 +809,62 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-      // Popolo la lista "Inviati" E la lista "Match" usando lo STESSO contenuto
-      chats.forEach((chat) => {
-        const otherUid =
-          chat.members.find((uid) => uid !== selfUid) || null;
+      // Popolo la lista "Inviati" e la lista "Match"
+chats.forEach((chat) => {
+  const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
 
-        // Nome DOG preso dalla chat o fallback
-        const dogName =
-          chat.dogName ||
-          (state.lang === "en" ? "DOG" : "Dog");
+  // Nome DOG preso dalla chat o fallback
+  const dogName =
+    chat.dogName ||
+    (state.lang === "en" ? "DOG" : "Dog");
 
-        const text = chat.lastMessageText || "";
-        const dateText = chat.lastMessageAt
-          ? chat.lastMessageAt.toLocaleString()
-          : "";
+  const text = chat.lastMessageText || "";
+  const dateText = chat.lastMessageAt
+    ? chat.lastMessageAt.toLocaleString()
+    : "";
 
-        // Riga per tab "Inviati"
-        const row = document.createElement("div");
-        row.className = "msg-item";
-        row.innerHTML = `
-          <div class="msg-main">
-            <div class="msg-title">${dogName} – ${text}</div>
-            <div class="msg-meta">${dateText}</div>
-          </div>
-        `;
+  // Riga per tab "Inviati" (mostro ultimo messaggio)
+  const row = document.createElement("div");
+  row.className = "msg-item";
+  row.innerHTML = `
+    <div class="msg-main">
+      <div class="msg-title">${dogName} - ${text}</div>
+      <div class="msg-meta">${dateText}</div>
+    </div>
+  `;
+  row.addEventListener("click", () => {
+  openChat({
+    id: chat.dogId,
+    uid: otherUid,
+    name: dogName,
+    avatar: chat.dogAvatar || null
+  });
+});
+  sentList.appendChild(row);
 
-        row.addEventListener("click", () => {
-          openChat(chat.id, chat.dogId, otherUid);
-        });
-
-        sentList.appendChild(row);
-
-        // CLONE della stessa riga per la tab "Match"
-        const matchRow = row.cloneNode(true);
-        matchRow.addEventListener("click", () => {
-          openChat(chat.id, chat.dogId, otherUid);
-        });
-        matchesList.appendChild(matchRow);
-      });
-
+  // Riga per tab "Match": SOLO DOG con match attivo
+  if (chat.match) {
+    const matchRow = document.createElement("div");
+    matchRow.className = "msg-item";
+    matchRow.innerHTML = `
+      <div class="msg-main">
+        <div class="msg-title">${dogName}</div>
+        <div class="msg-meta">${
+          state.lang === "it" ? "Match attivo" : "Active match"
+        }</div>
+      </div>
+    `;
+  matchRow.addEventListener("click", () => {
+  openChat({
+    id: chat.dogId,
+    uid: otherUid,
+    name: dogName,
+    avatar: chat.dogAvatar || null
+  });
+});
+    matchesList.appendChild(matchRow);
+  }
+});
       // Aggiorno gli "empty state" in base alla presenza di msg-item
       msgLists.forEach((list) => {
         const items = list.querySelectorAll(".msg-item");
