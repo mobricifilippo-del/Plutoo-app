@@ -2516,7 +2516,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
         const receiverUid = state.currentChatUid || "unknown";
 
         // id della chat deterministico (stessi 2 UID → stesso chatId)
-        const chatId = [selfUid, receiverUid].sort().join("_");
+      const pair = [selfUid, receiverUid].sort();
+const chatId = `${pair[0]}_${pair[1]}_${dogId || "unknownDog"}`;
 
         // Metadati DOG per la lista chat (se disponibili)
         const dogProfile = state.currentDogProfile || {};
