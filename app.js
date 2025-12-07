@@ -783,17 +783,6 @@ const DOGS = [
   match: !!data.match
 });
 
-        chats.push({
-          id: docSnap.id,
-          dogId: data.dogId || null,
-          members: Array.isArray(data.members) ? data.members : [],
-          lastMessageText: data.lastMessageText || "",
-          lastMessageAt: lastAt, // Date o null
-          dogName: data.dogName || null,
-          dogAvatar: data.dogAvatar || null,
-        });
-      });
-
       // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
       if (!chats.length) {
         msgLists.forEach((list) => {
