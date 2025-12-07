@@ -783,6 +783,17 @@ const DOGS = [
   match: !!data.match
 });
 
+        chats.push({
+          id: docSnap.id,
+          dogId: data.dogId || null,
+          members: Array.isArray(data.members) ? data.members : [],
+          lastMessageText: data.lastMessageText || "",
+          lastMessageAt: lastAt, // Date o null
+          dogName: data.dogName || null,
+          dogAvatar: data.dogAvatar || null,
+        });
+      });
+
       // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
       if (!chats.length) {
         msgLists.forEach((list) => {
@@ -806,143 +817,113 @@ const DOGS = [
 chats.forEach((chat) => {
   const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
 
-// Carica le liste messaggi da Firestore (solo quando apro la vista)
-  async function loadMessagesLists() {
-    try {
-      // msgLists è già definito sopra come querySelectorAll
-      if (!db || !msgLists || !msgLists.length) return;
+  // Nome DOG preso dalla chat o fallback
+  const dogName =
+    chat.dogName ||
+    (state.lang === "en" ? "DOG" : "Dog");
 
-      const selfUid = window.PLUTOO_UID || "anonymous";
-      if (!selfUid) return;
+  const text = chat.lastMessageText || "";
+  const dateText = chat.lastMessageAt
+    ? chat.lastMessageAt.toLocaleString()
+    : "";
 
-      // Contenitori reali definiti in index.html
-      const sentList = document.getElementById("sentList");
-      const matchesList = document.getElementById("matchesList");
-      if (!sentList || !matchesList) return;
+ // Riga per tab "Inviati": mostro SOLO le chat in cui l'ultimo messaggio è mio
+const isSentByMe = chat.lastSenderUid === selfUid;
 
-      // Pulisco tutte le liste e nascondo gli empty state
-      msgLists.forEach((list) => {
-        list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-        const emptyEl = list.querySelector(".empty-state");
-        if (emptyEl) {
-          emptyEl.classList.add("hidden-empty");
-        }
-      });
+if (isSentByMe) {
+  const row = document.createElement("div");
+  row.className = "msg-item";
+  row.innerHTML = `
+    <div class="msg-main">
+      <div class="msg-title">${dogName} - ${text}</div>
+      <div class="msg-meta">${dateText}</div>
+    </div>
+  `;
+  row.addEventListener("click", () => {
+    openChat({
+      id: chat.dogId,
+      uid: otherUid,
+      name: dogName,
+      avatar: chat.dogAvatar || null
+    });
+  });
+  sentList.appendChild(row);
+}
 
-      // Legge le chat dove compare il mio UID
-      const snap = await db
-        .collection("chats")
-        .where("members", "array-contains", selfUid)
-        .get();
-
-      const chats = [];
-      snap.forEach((docSnap) => {
-        const data = docSnap.data() || {};
-        let lastAt = data.lastMessageAt || null;
-        if (lastAt && typeof lastAt.toDate === "function") {
-          lastAt = lastAt.toDate();
-        }
-
-        chats.push({
-          id: docSnap.id,
-          dogId: data.dogId || null,
-          members: Array.isArray(data.members) ? data.members : [],
-          lastMessageText: data.lastMessageText || "",
-          lastMessageAt: lastAt, // Date o null
-          lastSenderUid: data.lastSenderUid || null,
-          match: !!data.match,
-          dogName: data.dogName || null,
-          dogAvatar: data.dogAvatar || null,
-        });
-      });
-
-      // Ordino le chat per data ultimo messaggio (più recente in alto)
-      chats.sort((a, b) => {
-        if (!a.lastMessageAt && !b.lastMessageAt) return 0;
-        if (!a.lastMessageAt) return 1;
-        if (!b.lastMessageAt) return -1;
-        return b.lastMessageAt - a.lastMessageAt;
-      });
-
-      // Popolo la lista "Inviati" e la lista "Match"
-      chats.forEach((chat) => {
-        const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
-
-        // Nome DOG preso dalla chat o fallback
-        const dogName =
-          chat.dogName || (state.lang === "en" ? "DOG" : "Dog");
-
-        const text = chat.lastMessageText || "";
-        const dateText = chat.lastMessageAt
-          ? chat.lastMessageAt.toLocaleString()
-          : "";
-
-        // RIGA PER TAB "Inviati": mostro SOLO le chat in cui l'ultimo messaggio è mio
-        const isSentByMe = chat.lastSenderUid === selfUid;
-        if (isSentByMe) {
-          const row = document.createElement("div");
-          row.className = "msg-item";
-          row.innerHTML = `
-            <div class="msg-main">
-              <div class="msg-title">${dogName} - ${text}</div>
-              <div class="msg-meta">${dateText}</div>
-            </div>
-          `;
-          row.addEventListener("click", () => {
-            openChat({
-              id: chat.dogId,
-              uid: otherUid,
-              name: dogName,
-              avatar: chat.dogAvatar || null,
-            });
-          });
-          sentList.appendChild(row);
-        }
-
-        // RIGA PER TAB "Match": SOLO DOG con match attivo
-        if (chat.match) {
-          const matchRow = document.createElement("div");
-          matchRow.className = "msg-item";
-          matchRow.innerHTML = `
-            <div class="msg-main">
-              <div class="msg-title">${dogName}</div>
-              <div class="msg-meta">${
-                state.lang === "it" ? "Match attivo" : "Active match"
-              }</div>
-            </div>
-          `;
-          matchRow.addEventListener("click", () => {
-            openChat({
-              id: chat.dogId,
-              uid: otherUid,
-              name: dogName,
-              avatar: chat.dogAvatar || null,
-            });
-          });
-          matchesList.appendChild(matchRow);
-        }
-      });
-
-      // --- EMPTY STATES ---
+  // Riga per tab "Match": SOLO DOG con match attivo
+  if (chat.match) {
+    const matchRow = document.createElement("div");
+    matchRow.className = "msg-item";
+    matchRow.innerHTML = `
+      <div class="msg-main">
+        <div class="msg-title">${dogName}</div>
+        <div class="msg-meta">${
+          state.lang === "it" ? "Match attivo" : "Active match"
+        }</div>
+      </div>
+    `;
+  matchRow.addEventListener("click", () => {
+  openChat({
+    id: chat.dogId,
+    uid: otherUid,
+    name: dogName,
+    avatar: chat.dogAvatar || null
+  });
+});
+    matchesList.appendChild(matchRow);
+  }
+});
+      // Aggiorno gli "empty state" in base alla presenza di msg-item
       msgLists.forEach((list) => {
         const items = list.querySelectorAll(".msg-item");
         const emptyEl = list.querySelector(".empty-state");
         if (!emptyEl) return;
-
         const hasItems = items.length > 0;
-        // se non ci sono messaggi → mostro il testo
+        // se ci sono item → nascondo il testo vuoto
         emptyEl.classList.toggle("hidden-empty", hasItems);
       });
     } catch (err) {
       console.error("Errore loadMessagesLists:", err);
     }
   }
-
-  // Click sul tab Messaggi: attivo la vista e carico le liste
+      
   btnMessages?.addEventListener("click", () => {
-    setActiveView("messages");
-    loadMessagesLists();
+  setActiveView("messages");
+  loadMessagesLists();
+});
+
+// --- EMPTY STATES ---
+msgLists.forEach((list) => {
+  const items = list.querySelectorAll(".msg-item");
+  const emptyEl = list.querySelector(".empty-state");
+
+  if (!emptyEl) return;
+
+  const hasItems = items.length > 0;
+  // se non ci sono messaggi → mostro il testo
+  emptyEl.classList.toggle("hidden-empty", hasItems);
+});
+
+  msgTopTabs.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.tab;
+
+      msgTopTabs.forEach((b) => {
+        b.classList.toggle("active", b === btn);
+      });
+
+      msgLists.forEach((list) => {
+        list.classList.toggle("active", list.id === targetId);
+      });
+    });
   });
+
+  function setActiveView(name){
+    localStorage.setItem("currentView", name);
+
+    if (state.currentView !== name && state.currentView){
+      state.viewHistory.push(state.currentView);
+    }
 
     if (name === "messages" && state.currentView !== "messages"){
       state.previousViewForMessages = state.currentView || "nearby";
