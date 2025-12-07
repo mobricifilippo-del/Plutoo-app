@@ -2436,6 +2436,7 @@ if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
     ? "Scrivi un messaggio…"
     : "Type a message…";
 }
+ }
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
