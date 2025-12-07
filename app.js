@@ -772,22 +772,23 @@ const DOGS = [
         .get();
 
       const chats = [];
-      snap.forEach((docSnap) => {
-        const data = docSnap.data() || {};
-        let lastAt = data.lastMessageAt || null;
-        if (lastAt && typeof lastAt.toDate === "function") {
-          lastAt = lastAt.toDate();
-        }
+  snap.forEach((docSnap) => {
+  const data = docSnap.data() || {};
+  let lastAt = data.lastMessageAt || null;
+  if (lastAt && typeof lastAt.toDate === "function") {
+    lastAt = lastAt.toDate();
+  }
 
   chats.push({
-  id: docSnap.id || null,
-  dogId: data.dogId || null,
-  members: Array.isArray(data.members) ? data.members : [],
-  lastMessageText: data.lastMessageText || "",
-  lastMessageAt: lastAt,              // Date o null
-  lastSenderUid: data.lastSenderUid || null,   // <─ NUOVO
-  dogName: data.dogName || null,
-  dogAvatar: data.dogAvatar || null,
+    id: docSnap.id || null,
+    dogId: data.dogId || null,
+    members: Array.isArray(data.members) ? data.members : [],
+    lastMessageText: data.lastMessageText || "",
+    lastMessageAt: lastAt,
+    lastSenderUid: data.lastSenderUid || null,
+    dogName: data.dogName || null,
+    dogAvatar: data.dogAvatar || null,
+  });
 });
 
       // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
