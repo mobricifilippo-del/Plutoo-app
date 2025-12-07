@@ -2422,12 +2422,10 @@ try {
 }
 
   // contatore messaggi per le regole di blocco
-  state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
-  localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
+localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
 
-  const nowHasMatch = !!state.matches[dogId];
-
-if (!state.plus && !nowHasMatch && state.chatMessagesSent[dogId] >= 1){
+if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
   chatInput.disabled = true;
   chatInput.placeholder = state.lang === "it"
     ? "Match necessario per continuare"
