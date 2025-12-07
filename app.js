@@ -771,13 +771,17 @@ const DOGS = [
         .where("members", "array-contains", selfUid)
         .get();
 
-      const chats = [];
-      snap.forEach((docSnap) => {
-        const data = docSnap.data() || {};
-        let lastAt = data.lastMessageAt || null;
-        if (lastAt && typeof lastAt.toDate === "function") {
-          lastAt = lastAt.toDate();
-        }
+      chats.push({
+  id: docSnap.id,
+  dogId: data.dogId || null,
+  members: Array.isArray(data.members) ? data.members : [],
+  lastMessageText: data.lastMessageText || "",
+  lastMessageAt: lastAt, // Date o null
+  dogName: data.dogName || null,
+  dogAvatar: data.dogAvatar || null,
+  lastSenderUid: data.lastSenderUid || null,
+  match: !!data.match
+});
 
         chats.push({
           id: docSnap.id,
@@ -823,7 +827,10 @@ chats.forEach((chat) => {
     ? chat.lastMessageAt.toLocaleString()
     : "";
 
-  // Riga per tab "Inviati" (mostro ultimo messaggio)
+ // Riga per tab "Inviati": mostro SOLO le chat in cui l'ultimo messaggio è mio
+const isSentByMe = chat.lastSenderUid === selfUid;
+
+if (isSentByMe) {
   const row = document.createElement("div");
   row.className = "msg-item";
   row.innerHTML = `
@@ -833,14 +840,15 @@ chats.forEach((chat) => {
     </div>
   `;
   row.addEventListener("click", () => {
-  openChat({
-    id: chat.dogId,
-    uid: otherUid,
-    name: dogName,
-    avatar: chat.dogAvatar || null
+    openChat({
+      id: chat.dogId,
+      uid: otherUid,
+      name: dogName,
+      avatar: chat.dogAvatar || null
+    });
   });
-});
   sentList.appendChild(row);
+}
 
   // Riga per tab "Match": SOLO DOG con match attivo
   if (chat.match) {
