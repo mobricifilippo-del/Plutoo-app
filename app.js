@@ -1331,6 +1331,7 @@ setTimeout(() => {
   overlay.style.transition = "";
   overlay.style.opacity = "";
 }, 1700);
+}
 
   // ============ Ricerca ============
   if (btnSearchPanel) {
