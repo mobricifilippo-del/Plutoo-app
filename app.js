@@ -1304,7 +1304,7 @@ function showMatchAnimation(dogName, color) {
   const overlay = document.getElementById("matchOverlay") || document.querySelector(".match-overlay");
   if (!overlay) return;
 
-  const heartEl = overlay.querySelector(".match-heart");
+  const heartEl = overlay.querySelector(".match-hearts");
   const textBox = overlay.querySelector(".match-text");
 
   if (heartEl) {
