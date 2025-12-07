@@ -2312,27 +2312,44 @@ if (likeDogBtn) {
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
   // ============ Chat ============
-  function openChat(dog){
-    const hasMatch = state.matches[dog.id] || false;
-    const msgCount = state.chatMessagesSent[dog.id] || 0;
-    const previousDogId = chatPane.dataset.dogId || null;
+    function openChat(dog){
+        // dogId unico usato per matches, chatMessagesSent, dataset e Firestore
+        const dogId = dog.id || dog.dogId || chatPane.dataset.dogId || null;
+        const hasMatch = dogId ? (state.matches[dogId] || false) : false;
+        const msgCount = dogId ? (state.chatMessagesSent[dogId] || 0) : 0;
+        const previousDogId = chatPane.dataset.dogId || null;
 
-    chatPane.classList.remove("hidden");
-chatPane.classList.add("show");
+        chatPane.classList.remove("hidden");
+        chatPane.classList.add("show");
 
-// se cambio DOG → resetto la chat e metto il messaggio di benvenuto
-// se apro di nuovo lo STESSO DOG → NON cancello i messaggi già presenti
-if (!previousDogId || previousDogId !== dog.id) {
-  chatList.innerHTML = "";
-  const hello = document.createElement("div");
-  hello.className = "msg";
-  hello.textContent = `${state.lang === "it" ? "Ciao" : "Hi"} ${dog.name}! 🐾`;
-  chatList.appendChild(hello);
-}
+        // se cambio DOG → resetto la chat e metto il messaggio di benvenuto
+        // se apro di nuovo lo STESSO DOG → NON cancello i messaggi già presenti
+        if (!previousDogId || previousDogId !== dogId) {
+            chatList.innerHTML = "";
+            const hello = document.createElement("div");
+            hello.className = "msg";
+            hello.textContent = `${state.lang === "it" ? "Ciao" : "Hi"} ${dog.name}! 🐾`;
+            chatList.appendChild(hello);
+        }
 
-chatPane.dataset.dogId = dog.id;
-state.currentChatUid = dog.uid;
-chatInput.value = "";
+        chatPane.dataset.dogId = dogId;
+        state.currentChatUid = dog.uid;
+        chatInput.value = "";
+
+        if (!state.plus){
+            if (!hasMatch && msgCount >= 1){
+                chatInput.disabled = true;
+                chatInput.placeholder = state.lang === "it"
+                    ? "Match necessario per continuare"
+                    : "Match needed to continue";
+            } else {
+                chatInput.disabled = false;
+                chatInput.placeholder = state.lang === "it"
+                    ? "Scrivi un messaggio…"
+                    : "Type a message…";
+            }
+        }
+    }
 
     if (!state.plus){
       if (!hasMatch && msgCount >= 1){
@@ -2391,7 +2408,6 @@ chatInput.value = "";
 try {
   const selfUid = window.PLUTOO_UID || "anonymous";
   const receiverUid = state.currentChatUid || "unknown";
-  const dogId = state.currentDogProfile?.id || null;
 
   // id della chat deterministico (stessi 2 UID → stesso chatId)
   const chatId = [selfUid, receiverUid].sort().join("_");
