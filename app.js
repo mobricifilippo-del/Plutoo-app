@@ -2413,7 +2413,7 @@ try {
     lastMessageText: text,
     lastMessageAt: FieldValue.serverTimestamp(),
     lastSenderUid: selfUid,
-    match: !!hasMatch,             // true se è una chat da match
+    match: !!(state.matches[dogId] || hasMatch),
     dogId: dogId                   // id del DOG collegato (se c'è)
   }, { merge: true });
 
@@ -2425,13 +2425,19 @@ try {
   state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
   localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
 
-  if (!state.plus && !hasMatch && state.chatMessagesSent[dogId] >= 1){
-    chatInput.disabled = true;
-    chatInput.placeholder = state.lang === "it"
-      ? "Match necessario per continuare"
-      : "Match needed to continue";
-  }
- }
+  const nowHasMatch = !!state.matches[dogId];
+
+if (!state.plus && !nowHasMatch && state.chatMessagesSent[dogId] >= 1){
+  chatInput.disabled = true;
+  chatInput.placeholder = state.lang === "it"
+    ? "Match necessario per continuare"
+    : "Match needed to continue";
+} else {
+  chatInput.disabled = false;
+  chatInput.placeholder = state.lang === "it"
+    ? "Scrivi un messaggio…"
+    : "Type a message…";
+}
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
