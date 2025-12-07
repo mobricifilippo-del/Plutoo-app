@@ -1309,8 +1309,8 @@ function showMatchAnimation(dogName, color) {
 
   // Cuore leggermente più piccolo
   if (heartEl) {
-    heartEl.style.fontSize = "180px";
-    heartEl.textContent = color || "❤️‍🔥";
+    heartEl.style.fontSize = "190px";
+    heartEl.textContent = color || "💛";
   }
 
   if (textBox) textBox.textContent = "MATCH!";
@@ -1324,14 +1324,14 @@ function showMatchAnimation(dogName, color) {
   // dopo 1.8s inizia a sparire
   setTimeout(() => {
     overlay.style.opacity = "0";
-  }, 1800);
+  }, 1000);
 
   // dopo il fade-out nascondiamo tutto
   setTimeout(() => {
     overlay.classList.remove("active");
     overlay.style.transition = "";
     overlay.style.opacity = "";
-  }, 3300);
+  }, 2100);
 }
 
   // ============ Ricerca ============
