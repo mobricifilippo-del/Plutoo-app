@@ -771,17 +771,13 @@ const DOGS = [
         .where("members", "array-contains", selfUid)
         .get();
 
-      chats.push({
-  id: docSnap.id,
-  dogId: data.dogId || null,
-  members: Array.isArray(data.members) ? data.members : [],
-  lastMessageText: data.lastMessageText || "",
-  lastMessageAt: lastAt, // Date o null
-  dogName: data.dogName || null,
-  dogAvatar: data.dogAvatar || null,
-  lastSenderUid: data.lastSenderUid || null,
-  match: !!data.match
-});
+      const chats = [];
+      snap.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        let lastAt = data.lastMessageAt || null;
+        if (lastAt && typeof lastAt.toDate === "function") {
+          lastAt = lastAt.toDate();
+        }
 
         chats.push({
           id: docSnap.id,
@@ -813,66 +809,45 @@ const DOGS = [
         return b.lastMessageAt - a.lastMessageAt;
       });
 
-      // Popolo la lista "Inviati" e la lista "Match"
-chats.forEach((chat) => {
-  const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
+      // Popolo la lista "Inviati" E la lista "Match" usando lo STESSO contenuto
+      chats.forEach((chat) => {
+        const otherUid =
+          chat.members.find((uid) => uid !== selfUid) || null;
 
-  // Nome DOG preso dalla chat o fallback
-  const dogName =
-    chat.dogName ||
-    (state.lang === "en" ? "DOG" : "Dog");
+        // Nome DOG preso dalla chat o fallback
+        const dogName =
+          chat.dogName ||
+          (state.lang === "en" ? "DOG" : "Dog");
 
-  const text = chat.lastMessageText || "";
-  const dateText = chat.lastMessageAt
-    ? chat.lastMessageAt.toLocaleString()
-    : "";
+        const text = chat.lastMessageText || "";
+        const dateText = chat.lastMessageAt
+          ? chat.lastMessageAt.toLocaleString()
+          : "";
 
- // Riga per tab "Inviati": mostro SOLO le chat in cui l'ultimo messaggio è mio
-const isSentByMe = chat.lastSenderUid === selfUid;
+        // Riga per tab "Inviati"
+        const row = document.createElement("div");
+        row.className = "msg-item";
+        row.innerHTML = `
+          <div class="msg-main">
+            <div class="msg-title">${dogName} – ${text}</div>
+            <div class="msg-meta">${dateText}</div>
+          </div>
+        `;
 
-if (isSentByMe) {
-  const row = document.createElement("div");
-  row.className = "msg-item";
-  row.innerHTML = `
-    <div class="msg-main">
-      <div class="msg-title">${dogName} - ${text}</div>
-      <div class="msg-meta">${dateText}</div>
-    </div>
-  `;
-  row.addEventListener("click", () => {
-    openChat({
-      id: chat.dogId,
-      uid: otherUid,
-      name: dogName,
-      avatar: chat.dogAvatar || null
-    });
-  });
-  sentList.appendChild(row);
-}
+        row.addEventListener("click", () => {
+          openChat(chat.id, chat.dogId, otherUid);
+        });
 
-  // Riga per tab "Match": SOLO DOG con match attivo
-  if (chat.match) {
-    const matchRow = document.createElement("div");
-    matchRow.className = "msg-item";
-    matchRow.innerHTML = `
-      <div class="msg-main">
-        <div class="msg-title">${dogName}</div>
-        <div class="msg-meta">${
-          state.lang === "it" ? "Match attivo" : "Active match"
-        }</div>
-      </div>
-    `;
-  matchRow.addEventListener("click", () => {
-  openChat({
-    id: chat.dogId,
-    uid: otherUid,
-    name: dogName,
-    avatar: chat.dogAvatar || null
-  });
-});
-    matchesList.appendChild(matchRow);
-  }
-});
+        sentList.appendChild(row);
+
+        // CLONE della stessa riga per la tab "Match"
+        const matchRow = row.cloneNode(true);
+        matchRow.addEventListener("click", () => {
+          openChat(chat.id, chat.dogId, otherUid);
+        });
+        matchesList.appendChild(matchRow);
+      });
+
       // Aggiorno gli "empty state" in base alla presenza di msg-item
       msgLists.forEach((list) => {
         const items = list.querySelectorAll(".msg-item");
@@ -2413,54 +2388,55 @@ chatInput.value = "";
   chatList.scrollTop = chatList.scrollHeight;
 
   // --- Salvataggio messaggio su Firestore ---
-  try {
-    const selfUid = window.PLUTOO_UID || "anonymous";
-    const receiverUid = state.currentChatUid || "unknown";
+try {
+  const selfUid = window.PLUTOO_UID || "anonymous";
+  const receiverUid = state.currentChatUid || "unknown";
+  const dogId = state.currentDogProfile?.id || null;
 
-    // id della chat deterministico (stessi 2 UID → stesso chatId)
-    const chatId = [selfUid, receiverUid].sort().join("_");
+  // id della chat deterministico (stessi 2 UID → stesso chatId)
+  const chatId = [selfUid, receiverUid].sort().join("_");
 
-    // 1) Salvo il messaggio singolo (collezione globale "messages")
-    await db.collection("messages").add({
-      chatId,
-      senderUid: selfUid,
-      receiverUid,
-      text,
-      type: "text",
-      createdAt: FieldValue.serverTimestamp(),
-      isRead: false
-    });
+  // 1) Salvo il messaggio singolo (collezione globale "messages")
+  await db.collection("messages").add({
+    chatId,
+    senderUid: selfUid,
+    receiverUid,
+    text,
+    type: "text",
+    createdAt: FieldValue.serverTimestamp(),
+    isRead: false
+  });
 
-    // 2) Aggiorno / creo il documento "chat" per la lista Messaggi
-    await db.collection("chats").doc(chatId).set({
-      members: [selfUid, receiverUid],
-      lastMessageText: text,
-      lastMessageAt: FieldValue.serverTimestamp(),
-      lastSenderUid: selfUid,
-      match: !!(state.matches[dogId] || hasMatch),
-      dogId: dogId // id del DOG collegato (se c'è)
-    }, { merge: true });
+  // 2) Aggiorno / creo il documento "chat" per la lista Messaggi
+  await db.collection("chats").doc(chatId).set({
+    members: [selfUid, receiverUid],
+    lastMessageText: text,
+    lastMessageAt: FieldValue.serverTimestamp(),
+    lastSenderUid: selfUid,
+    match: !!(state.matches[dogId] || hasMatch),
+    dogId: dogId                   // id del DOG collegato (se c'è)
+  }, { merge: true });
 
-  } catch (err) {
-    console.error("Errore Firestore sendChatMessage", err);
-  }
+} catch (err) {
+  console.error("Errore Firestore sendChatMessage", err);
+}
 
   // contatore messaggi per le regole di blocco
-  state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
-  localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
+localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
 
-  if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
-    chatInput.disabled = true;
-    chatInput.placeholder = state.lang === "it"
-      ? "Match necessario per continuare"
-      : "Match needed to continue";
-  } else {
-    chatInput.disabled = false;
-    chatInput.placeholder = state.lang === "it"
-      ? "Scrivi un messaggio…"
-      : "Type a message…";
-  }
+if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
+  chatInput.disabled = true;
+  chatInput.placeholder = state.lang === "it"
+    ? "Match necessario per continuare"
+    : "Match needed to continue";
+} else {
+  chatInput.disabled = false;
+  chatInput.placeholder = state.lang === "it"
+    ? "Scrivi un messaggio…"
+    : "Type a message…";
 }
+ }
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
