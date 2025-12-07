@@ -148,7 +148,7 @@ auth.onAuthStateChanged(user => {
     // Like stories (per media id)
     storyLikesByMedia: JSON.parse(localStorage.getItem("storyLikesByMedia") || "{}"),
   };
-  let nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
+ let nextMatchColor = ["🩵","🩷","💛","🧡","💚","💙","💜","💗","🫶","❤️"][state.matchCount % 10];
 
   // ============ DOM refs ============
   const homeScreen   = $("homeScreen");
@@ -1156,7 +1156,7 @@ msgLists.forEach((list) => {
 showMatchAnimation(d.name, nextMatchColor);
 state.matchCount++;
 localStorage.setItem("matchCount", String(state.matchCount));
-nextMatchColor = ["💛","❤️","💜","💚"][state.matchCount % 4];
+nextMatchColor = ["🩵","🩷","💛","🧡","💚","💙","💜","💗","🫶","❤️"][state.matchCount % 10];
   }
     }
 
