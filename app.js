@@ -1307,32 +1307,30 @@ function showMatchAnimation(dogName, color) {
   const heartEl = overlay.querySelector(".match-heart");
   const textBox = overlay.querySelector(".match-text");
 
-  // Cuore leggermente più piccolo
   if (heartEl) {
-    heartEl.style.fontSize = "190px";
-    heartEl.textContent = color || "💛";
-  }
-
-  if (textBox) textBox.textContent = "MATCH!";
-
-  overlay.style.transition = "opacity 1.5s ease-out";
-  overlay.classList.add("active");
-
-  // fade-in iniziale
-  overlay.style.opacity = "1";
-
-  // dopo 1.8s inizia a sparire
-  setTimeout(() => {
-    overlay.style.opacity = "0";
-  }, 1000);
-
-  // dopo il fade-out nascondiamo tutto
-  setTimeout(() => {
-    overlay.classList.remove("active");
-    overlay.style.transition = "";
-    overlay.style.opacity = "";
-  }, 2100);
+  heartEl.style.fontSize = "190px";
+  heartEl.textContent = color || "💛";
 }
+
+if (textBox) textBox.textContent = "MATCH!";
+
+overlay.style.transition = "opacity 0.8s ease-out";
+overlay.classList.add("active");
+
+// fade-in iniziale
+overlay.style.opacity = "1";
+
+// dopo 0.9s inizia a sparire
+setTimeout(() => {
+  overlay.style.opacity = "0";
+}, 900);
+
+// dopo il fade-out nascondiamo tutto
+setTimeout(() => {
+  overlay.classList.remove("active");
+  overlay.style.transition = "";
+  overlay.style.opacity = "";
+}, 1700);
 
   // ============ Ricerca ============
   if (btnSearchPanel) {
