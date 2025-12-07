@@ -2388,55 +2388,54 @@ chatInput.value = "";
   chatList.scrollTop = chatList.scrollHeight;
 
   // --- Salvataggio messaggio su Firestore ---
-try {
-  const selfUid = window.PLUTOO_UID || "anonymous";
-  const receiverUid = state.currentChatUid || "unknown";
-  const dogId = state.currentDogProfile?.id || null;
+  try {
+    const selfUid = window.PLUTOO_UID || "anonymous";
+    const receiverUid = state.currentChatUid || "unknown";
 
-  // id della chat deterministico (stessi 2 UID → stesso chatId)
-  const chatId = [selfUid, receiverUid].sort().join("_");
+    // id della chat deterministico (stessi 2 UID → stesso chatId)
+    const chatId = [selfUid, receiverUid].sort().join("_");
 
-  // 1) Salvo il messaggio singolo (collezione globale "messages")
-  await db.collection("messages").add({
-    chatId,
-    senderUid: selfUid,
-    receiverUid,
-    text,
-    type: "text",
-    createdAt: FieldValue.serverTimestamp(),
-    isRead: false
-  });
+    // 1) Salvo il messaggio singolo (collezione globale "messages")
+    await db.collection("messages").add({
+      chatId,
+      senderUid: selfUid,
+      receiverUid,
+      text,
+      type: "text",
+      createdAt: FieldValue.serverTimestamp(),
+      isRead: false
+    });
 
-  // 2) Aggiorno / creo il documento "chat" per la lista Messaggi
-  await db.collection("chats").doc(chatId).set({
-    members: [selfUid, receiverUid],
-    lastMessageText: text,
-    lastMessageAt: FieldValue.serverTimestamp(),
-    lastSenderUid: selfUid,
-    match: !!(state.matches[dogId] || hasMatch),
-    dogId: dogId                   // id del DOG collegato (se c'è)
-  }, { merge: true });
+    // 2) Aggiorno / creo il documento "chat" per la lista Messaggi
+    await db.collection("chats").doc(chatId).set({
+      members: [selfUid, receiverUid],
+      lastMessageText: text,
+      lastMessageAt: FieldValue.serverTimestamp(),
+      lastSenderUid: selfUid,
+      match: !!(state.matches[dogId] || hasMatch),
+      dogId: dogId // id del DOG collegato (se c'è)
+    }, { merge: true });
 
-} catch (err) {
-  console.error("Errore Firestore sendChatMessage", err);
-}
+  } catch (err) {
+    console.error("Errore Firestore sendChatMessage", err);
+  }
 
   // contatore messaggi per le regole di blocco
-state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
-localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+  state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
+  localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
 
-if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
-  chatInput.disabled = true;
-  chatInput.placeholder = state.lang === "it"
-    ? "Match necessario per continuare"
-    : "Match needed to continue";
-} else {
-  chatInput.disabled = false;
-  chatInput.placeholder = state.lang === "it"
-    ? "Scrivi un messaggio…"
-    : "Type a message…";
+  if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
+    chatInput.disabled = true;
+    chatInput.placeholder = state.lang === "it"
+      ? "Match necessario per continuare"
+      : "Match needed to continue";
+  } else {
+    chatInput.disabled = false;
+    chatInput.placeholder = state.lang === "it"
+      ? "Scrivi un messaggio…"
+      : "Type a message…";
+  }
 }
- }
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
