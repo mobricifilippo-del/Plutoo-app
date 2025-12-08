@@ -779,7 +779,7 @@ const DOGS = [
     lastAt = lastAt.toDate();
   }
 
-  chats.push({
+ chats.push({
     id: docSnap.id || null,
     dogId: data.dogId || null,
     members: Array.isArray(data.members) ? data.members : [],
@@ -788,7 +788,8 @@ const DOGS = [
     lastSenderUid: data.lastSenderUid || null,
     dogName: data.dogName || null,
     dogAvatar: data.dogAvatar || null,
-  });
+    match: !!data.match,
+});
 });
 
       // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
@@ -2499,22 +2500,24 @@ async function loadChatHistory(chatId, dog) {
 }
 
   // =========== Chat ===========
-function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
+function openChat(chatIdOrDog, maybeDogId, maybeOtherUid){
   if (!chatPane || !chatList || !chatInput) return;
 
   chatList.innerHTML = "";
 
   const selfUid = window.PLUTOO_UID || "anonymous";
 
-  let dog = null;
-  let dogId = "";
+  let dog    = null;
+  let dogId  = "";
   let otherUid = "";
   let chatId = "";
 
-  // Caso 1: openChat(dog) dal profilo
+  // Caso 1: openChat(dog) dal profilo / dallo swipe
   if (typeof chatIdOrDog === "object" && chatIdOrDog) {
-    dog = chatIdOrDog;
-    dogId = dog.id || dog.dogId || chatPane.dataset.dogId || "";
+    dog   = chatIdOrDog;
+    // dogId UNICO e coerente con lo swipe
+    dogId = dog.dogId || dog.id || "";
+
     otherUid =
       dog.uid ||
       dog.ownerUid ||
@@ -2522,62 +2525,47 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       state.currentChatUid ||
       "unknown";
 
-    // chatId deterministico come in sendChatMessage
-    const pair = [selfUid, otherUid].sort();
-    chatId = `${pair[0]}_${pair[1]}_${dogId}`;
+    // chatId deterministico: SEMPRE selfUid_dogId
+    chatId = `${selfUid}_${dogId}`;
   } else {
-    // Caso 2: openChat(chatId, dogId, otherUid) da lista Messaggi
-    chatId = chatIdOrDog || "";
-    dogId = maybeDogId || chatPane.dataset.dogId || "";
+    // Caso 2: openChat(chatId, dogId, otherUid) dalle liste
+    chatId   = chatIdOrDog || "";
+    dogId    = maybeDogId || "";
     otherUid = maybeOtherUid || state.currentChatUid || "unknown";
   }
 
-  const dogName =
-    (dog && dog.name) ||
-    (state.lang === "en" ? "DOG" : "Dog");
-
-  // Mostro il pannello chat
-  chatPane.classList.remove("hidden");
-  chatPane.classList.add("show");
-
-  // Metadati correnti
-  chatPane.dataset.dogId = dogId;
-  state.currentChatUid = otherUid;
-  state.currentDogId = dogId;
-  state.currentChatId = chatId;
-
-  // Carico la history da Firestore se ho un chatId
-  if (chatId) {
-    loadChatHistory(chatId, dog || { name: dogName });
-  } else {
-    // Nessun chatId ancora → messaggio di benvenuto
-    chatList.innerHTML = "";
-    const hello = document.createElement("div");
-    hello.className = "msg";
-    hello.textContent =
-      state.lang === "it"
-        ? `Ciao ${dogName}! 🐾`
-        : `Hi ${dogName}! 🐾`;
-    chatList.appendChild(hello);
+  if (!chatId || !dogId) {
+    console.error("openChat: chatId o dogId mancanti", {
+      chatId, dogId, chatIdOrDog, maybeDogId, maybeOtherUid
+    });
+    return;
   }
 
-  // Regole input: dopo 1 messaggio senza match blocco (se non Plus)
-  const hasMatch = state.matches[dogId] || false;
-  const msgCount = state.chatMessagesSent[dogId] || 0;
+  // Salvo nel dataset SEMPRE lo stesso dogId
+  chatPane.dataset.chatId = chatId;
+  chatPane.dataset.dogId  = dogId;
 
-  if (!state.plus && !hasMatch && msgCount >= 1) {
-    chatInput.disabled = true;
-    chatInput.placeholder =
-      state.lang === "it"
-        ? "Match necessario per continuare"
-        : "Match needed to continue";
-  } else {
-    chatInput.disabled = false;
-    chatInput.placeholder =
-      state.lang === "it"
-        ? "Scrivi un messaggio…"
-        : "Type a message…";
+  state.currentChatId    = chatId;
+  state.currentChatDogId = dogId;
+  state.currentChatUid   = otherUid;
+
+  // opzionale: se hai un header con il nome del DOG puoi aggiornarlo qui
+  const headerNameEl = document.getElementById("chatDogName");
+  if (headerNameEl && dog) {
+    headerNameEl.textContent = dog.name || dog.dogName || headerNameEl.textContent;
   }
+
+  // carico la history della chat
+  try {
+    loadChatHistory(chatId);
+  } catch (err) {
+    console.error("Errore loadChatHistory in openChat:", err);
+  }
+
+  // focus sulla input se possibile
+  try {
+    chatInput.focus();
+  } catch (_) {}
 }
 
   function closeChatPane(){
@@ -2634,12 +2622,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       state.currentDogId ||
       "unknown";
 
-    let chatId = state.currentChatId;
-    if (!chatId) {
-      const pair = [selfUid, receiverUid].sort();
-      chatId = `${pair[0]}_${pair[1]}_${safeDogId}`;
-      state.currentChatId = chatId;
-    }
+    let chatId = state.currentChatId || `${selfUid}_${safeDogId}`;
+    state.currentChatId = chatId;
 
     const dogProfile = state.currentDogProfile || {};
     const dogName   = dogProfile.name || null;
