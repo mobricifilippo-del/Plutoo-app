@@ -1250,6 +1250,34 @@ msgLists.forEach((list) => {
     const otherLikedYou = state.likesReceived?.[d.id] === true;
 
     if (otherLikedYou) {
+      const dogId = d.id || d.dogId || null;
+  if (dogId && window.db) {
+    try {
+      const selfUid   = window.PLUTOO_UID || "anonymous";
+      const dogName   = d.name  || "";
+      const dogAvatar = d.photo || d.avatar || "";
+
+      const chatId  = `${selfUid}_${dogId}`;
+      const chatRef = db.collection("chats").doc(chatId);
+      const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
+
+      const chatPayload = {
+        members: [selfUid],
+        dogId,
+        dogName,
+        dogAvatar,
+        match: true,
+        lastMessageText: "",
+        lastMessageAt: nowTs,
+        updatedAt: nowTs
+      };
+
+      chatRef.set(chatPayload, { merge: true }).catch(err => {
+        console.error("Errore set chat swipe match:", err);
+      });
+    } catch (err) {
+      console.error("Errore generale swipe match Firestore:", err);
+    }
       // MATCH!
       const nameForMatch = state.lang === "it" ? "Nuovo match" : "New match";
       showMatchAnimation(nameForMatch, nextMatchColor);
