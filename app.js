@@ -2283,6 +2283,38 @@ if (likeDogBtn) {
     // segno il match come nello swipe LOVE
     state.matches[d.id] = true;
     localStorage.setItem("matches", JSON.stringify(state.matches));
+  
+  // --- consolido il match da swipe in Firestore per la tab "Match" ---
+try {
+  const selfUid = window.PLUTOO_UID || "anonymous";
+  const dogId = d.id;
+  const dogName = d.name || "";
+  const dogAvatar = d.photo || d.avatar || "";
+
+  if (selfUid && dogId && window.db) {
+    const chatId = `${selfUid}_${dogId}`;
+    const chatRef = db.collection("chats").doc(chatId);
+
+    const nowTs = firebase.firestore.FieldValue.serverTimestamp();
+
+    const chatPayload = {
+      members: [selfUid],
+      dogId,
+      dogName,
+      dogAvatar,
+      match: true,
+      lastMessageText: "",
+      lastMessageAt: nowTs,
+      updatedAt: nowTs,
+    };
+
+    chatRef.set(chatPayload, { merge: true }).catch(err => {
+      console.error("Errore set chat swipe match:", err);
+    });
+  }
+} catch (err) {
+  console.error("Errore generale swipe match Firestore:", err);
+}
 
     const nameForMatch =
       d.name || (state.lang === "it" ? "Nuovo match" : "New match");
