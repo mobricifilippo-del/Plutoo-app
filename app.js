@@ -1149,66 +1149,38 @@ msgLists.forEach((list) => {
     if(noBtn) noBtn.onclick = null;
 
     function handleSwipeComplete(direction){
-  if (state.processingSwipe) return;
-  state.processingSwipe = true;
+      if(state.processingSwipe) return;
+      state.processingSwipe = true;
 
-  if (direction === "right") {
-    const matchChance = Math.random();
+    if (direction === "right"){
+  const matchChance = Math.random();
+  if (matchChance > -1){
 
-    if (matchChance > -1) {
-      // dogId unico per match/friendship
-      const dogId = d.id || d.dogId || null;
+  showMatchAnimation(d.name, nextMatchColor);
 
-      if (dogId) {
-        if (mode === "love") {
-          // segno il match in locale
-          state.matches[dogId] = true;
-          localStorage.setItem("matches", JSON.stringify(state.matches));
+            // dogId unico per match/friendship
+            const dogId = d.id || d.dogId || null;
 
-          // --- consolido il match da swipe in Firestore per la tab "Match" ---
-          try {
-            const selfUid   = window.PLUTOO_UID || "anonymous";
-            const dogName   = d.name || "";
-            const dogAvatar = d.photo || d.avatar || "";
-
-            if (selfUid && window.db) {
-              const chatId  = `${selfUid}_${dogId}`;
-              const chatRef = db.collection("chats").doc(chatId);
-              const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
-
-              const chatPayload = {
-                members: [selfUid],
-                dogId,
-                dogName,
-                dogAvatar,
-                match: true,
-                lastMessageText: "",
-                lastMessageAt: nowTs,
-                updatedAt: nowTs,
-              };
-
-              chatRef.set(chatPayload, { merge: true }).catch(err => {
-                console.error("Errore set chat swipe match:", err);
-              });
+            if (mode === "love") {
+                if (dogId) {
+                    state.matches[dogId] = true;
+                    localStorage.setItem("matches", JSON.stringify(state.matches));
+                }
+            } else {
+                if (dogId) {
+                    state.friendships[dogId] = true;
+                    localStorage.setItem("friendships", JSON.stringify(state.friendships));
+                }
             }
-          } catch (err) {
-            console.error("Errore generale swipe match Firestore:", err);
-          }
-        } else {
-          // modalità amicizia
-          state.friendships[dogId] = true;
-          localStorage.setItem("friendships", JSON.stringify(state.friendships));
-        }
-      }
 
-      // Cuore del match: 10 colori in rotazione
-      showMatchAnimation(d.name, nextMatchColor);
-      state.matchCount++;
-      localStorage.setItem("matchCount", String(state.matchCount));
-      nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💖","💕","💝","❤️"][state.matchCount % 10];
-    }
+            // Cuore del match: usa il colore corrente e prepara il prossimo
+            showMatchAnimation(d.name, nextMatchColor);
+            state.matchCount++;
+            localStorage.setItem("matchCount", String(state.matchCount));
+            nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💘","💖","❤️"][state.matchCount % 10];
   }
-}
+    }
+
       if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
 
       setTimeout(()=>{
