@@ -1165,6 +1165,35 @@ msgLists.forEach((list) => {
                 if (dogId) {
                     state.matches[dogId] = true;
                     localStorage.setItem("matches", JSON.stringify(state.matches));
+
+                  try {
+        const selfUid   = window.PLUTOO_UID || "anonymous";
+        const dogName   = d.name  || "";
+        const dogAvatar = d.photo || d.avatar || "";
+
+        if (selfUid && window.db) {
+          const chatId  = `${selfUid}_${dogId}`;
+          const chatRef = db.collection("chats").doc(chatId);
+          const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
+
+          const chatPayload = {
+            members: [selfUid],
+            dogId,
+            dogName,
+            dogAvatar,
+            match: true,
+            lastMessageText: "",
+            lastMessageAt: nowTs,
+            updatedAt: nowTs,
+          };
+
+          chatRef.set(chatPayload, { merge: true }).catch(err => {
+            console.error("Errore set chat swipe match:", err);
+          });
+        }
+      } catch (err) {
+        console.error("Errore generale swipe match Firestore:", err);
+      }
                 }
             } else {
                 if (dogId) {
