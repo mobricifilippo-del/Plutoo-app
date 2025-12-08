@@ -2531,61 +2531,69 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   chatList.scrollTop = chatList.scrollHeight;
 
   // --- Salvataggio messaggio su Firestore ---
-    try {
-        const selfUid = window.PLUTOO_UID || "anonymous";
-        const receiverUid = state.currentChatUid || "unknown";
+  try {
+    const selfUid    = window.PLUTOO_UID || "anonymous";
+    const receiverUid = state.currentChatUid || "unknown";
 
-        // id della chat deterministico (stessi 2 UID → stesso chatId)
+    const safeDogId =
+      dogId ||
+      chatPane.dataset.dogId ||
+      (state.currentDogProfile && state.currentDogProfile.id) ||
+      state.currentDogId ||
+      "unknown";
+
+    let chatId = state.currentChatId;
+    if (!chatId) {
       const pair = [selfUid, receiverUid].sort();
-const chatId = `${pair[0]}_${pair[1]}_${dogId || "unknownDog"}`;
-
-        // Metadati DOG per la lista chat (se disponibili)
-        const dogProfile = state.currentDogProfile || {};
-        const dogName = dogProfile.name || null;
-        const dogAvatar = dogProfile.img || dogProfile.photoUrl || null;
-
-        // 1) Salvo il messaggio singolo (collezione globale "messages")
-        await db.collection("messages").add({
-            chatId,
-            senderUid: selfUid,
-            receiverUid,
-            text,
-            type: "text",
-            createdAt: FieldValue.serverTimestamp(),
-            isRead: false
-        });
-
-        // 2) Aggiorno / creo il documento "chat" per la lista Messaggi
-        await db.collection("chats").doc(chatId).set({
-            members: [selfUid, receiverUid],          // coppia di membri
-            dogId: dogId || null,                     // id del DOG collegato
-            dogName: dogName,                         // nome DOG (se c'è)
-            dogAvatar: dogAvatar,                     // avatar DOG (se c'è)
-            lastMessageText: text,                    // ultimo messaggio
-            lastMessageAt: FieldValue.serverTimestamp(),
-            lastSenderUid: selfUid,
-            match: !!(state.matches[dogId] || hasMatch) // match consolidato
-        }, { merge: true });
-
-    } catch (err) {
-        console.error("Errore Firestore sendChatMessage", err);
+      chatId = `${pair[0]}_${pair[1]}_${safeDogId}`;
+      state.currentChatId = chatId;
     }
 
-  // contatore messaggi per le regole di blocco
-state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
-localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+    const dogProfile = state.currentDogProfile || {};
+    const dogName   = dogProfile.name || null;
+    const dogAvatar = dogProfile.img || dogProfile.photoUrl || null;
 
-if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
-  chatInput.disabled = true;
-  chatInput.placeholder = state.lang === "it"
-    ? "Match necessario per continuare"
-    : "Match needed to continue";
-} else {
-  chatInput.disabled = false;
-  chatInput.placeholder = state.lang === "it"
-    ? "Scrivi un messaggio…"
-    : "Type a message…";
-}
+    await db.collection("messages").add({
+      chatId,
+      senderUid: selfUid,
+      receiverUid,
+      text,
+      type: "text",
+      createdAt: FieldValue.serverTimestamp(),
+      isRead: false
+    });
+
+    await db.collection("chats").doc(chatId).set({
+      members: [selfUid, receiverUid],
+      dogId: safeDogId || null,
+      dogName: dogName,
+      dogAvatar: dogAvatar,
+      lastMessageText: text,
+      lastMessageAt: FieldValue.serverTimestamp(),
+      lastSenderUid: selfUid,
+      match: !!(state.matches[safeDogId] || hasMatch)
+    }, { merge: true });
+
+  } catch (err) {
+    console.error("Errore Firestore sendChatMessage", err);
+  }
+
+  const safeDogIdForCounter = dogId || chatPane.dataset.dogId || state.currentDogId || "unknown";
+
+  state.chatMessagesSent[safeDogIdForCounter] = (msgCount || 0) + 1;
+  localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+
+  if (!state.plus && !state.matches[safeDogIdForCounter] && state.chatMessagesSent[safeDogIdForCounter] >= 1){
+    chatInput.disabled = true;
+    chatInput.placeholder = state.lang === "it"
+      ? "Match necessario per continuare"
+      : "Match needed to continue";
+  } else {
+    chatInput.disabled = false;
+    chatInput.placeholder = state.lang === "it"
+      ? "Scrivi un messaggio…"
+      : "Type a message…";
+  }
  }
 
   // ============ Maps / servizi ============
