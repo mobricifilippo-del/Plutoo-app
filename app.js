@@ -1162,16 +1162,51 @@ msgLists.forEach((list) => {
             const dogId = d.id || d.dogId || null;
 
             if (mode === "love") {
-                if (dogId) {
-                    state.matches[dogId] = true;
-                    localStorage.setItem("matches", JSON.stringify(state.matches));
-                }
-            } else {
-                if (dogId) {
-                    state.friendships[dogId] = true;
-                    localStorage.setItem("friendships", JSON.stringify(state.friendships));
-                }
+                // dogId unico per match/friendship
+        const dogId = d.id || d.dogId || null;
+
+        if (mode === "love") {
+          if (dogId) {
+            // segno il match in locale
+            state.matches[dogId] = true;
+            localStorage.setItem("matches", JSON.stringify(state.matches));
+
+            // --- consolido il match da swipe in Firestore per la tab "Match" ---
+            try {
+              const selfUid = window.PLUTOO_UID || "anonymous";
+              const dogName = d.name || "";
+              const dogAvatar = d.photo || d.avatar || "";
+
+              if (selfUid && window.db) {
+                const chatId = `${selfUid}_${dogId}`;
+                const chatRef = db.collection("chats").doc(chatId);
+                const nowTs = firebase.firestore.FieldValue.serverTimestamp();
+
+                const chatPayload = {
+                  members: [selfUid],
+                  dogId,
+                  dogName,
+                  dogAvatar,
+                  match: true,
+                  lastMessageText: "",
+                  lastMessageAt: nowTs,
+                  updatedAt: nowTs,
+                };
+
+                chatRef.set(chatPayload, { merge: true }).catch(err => {
+                  console.error("Errore set chat swipe match:", err);
+                });
+              }
+            } catch (err) {
+              console.error("Errore generale swipe match Firestore:", err);
             }
+          }
+        } else {
+          if (dogId) {
+            state.friendships[dogId] = true;
+            localStorage.setItem("friendships", JSON.stringify(state.friendships));
+          }
+        }
 
             // Cuore del match: usa il colore corrente e prepara il prossimo
             showMatchAnimation(d.name, nextMatchColor);
