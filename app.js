@@ -1278,6 +1278,7 @@ msgLists.forEach((list) => {
     } catch (err) {
       console.error("Errore generale swipe match Firestore:", err);
     }
+  }
       // MATCH!
       const nameForMatch = state.lang === "it" ? "Nuovo match" : "New match";
       showMatchAnimation(nameForMatch, nextMatchColor);
