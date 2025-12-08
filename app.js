@@ -2412,6 +2412,8 @@ async function loadChatHistory(chatId, dog) {
 function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   if (!chatPane || !chatList || !chatInput) return;
 
+  chatList.innerHTML = "";
+
   const selfUid = window.PLUTOO_UID || "anonymous";
 
   let dog = null;
