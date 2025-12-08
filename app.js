@@ -1,4 +1,4 @@
-// DEBUG TEMPORANEO: mostra qualsiasi errore JS
+ // DEBUG TEMPORANEO: mostra qualsiasi errore JS
 window.addEventListener("error", function (e) {
   alert("JS ERROR: " + e.message);
 });
@@ -1171,7 +1171,7 @@ msgLists.forEach((list) => {
         const dogName   = d.name  || "";
         const dogAvatar = d.photo || d.avatar || "";
 
-        if (selfUid && window.db) {
+        if (selfUid && db) {
           const chatId  = `${selfUid}_${dogId}`;
           const chatRef = db.collection("chats").doc(chatId);
           const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
