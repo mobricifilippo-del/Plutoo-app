@@ -1167,47 +1167,63 @@ msgLists.forEach((list) => {
                     state.matches[dogId] = true;
                     localStorage.setItem("matches", JSON.stringify(state.matches));
 
-                  try {
-        const selfUid   = window.PLUTOO_UID || "anonymous";
-        const dogName   = d.name  || "";
-        const dogAvatar = d.photo || d.avatar || "";
+                 function ensureChatForMatch(d){
+  try {
+    if (!db || !d) return;
 
-        if (selfUid && db) {
-          const chatId  = `${selfUid}_${dogId}`;
-          const chatRef = db.collection("chats").doc(chatId);
-          const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
+    const selfUid = window.PLUTOO_UID || "anonymous";
+    const dogId   = d.id || d.dogId || null;
 
-          const chatPayload = {
-            members: [selfUid],
-            dogId,
-            dogName,
-            dogAvatar,
-            match: true,
-            lastMessageText: "",
-            lastMessageAt: nowTs,
-            updatedAt: nowTs,
-          };
+    if (!selfUid || !dogId) return;
 
-          chatRef.set(chatPayload, { merge: true }).catch(err => {
-            console.error("Errore set chat swipe match:", err);
-          });
-        }
-      } catch (err) {
-        console.error("Errore generale swipe match Firestore:", err);
-      }
-                }
-            } else {
-                if (dogId) {
-                    state.friendships[dogId] = true;
-                    localStorage.setItem("friendships", JSON.stringify(state.friendships));
-                }
-            }
+    const chatId  = `${selfUid}_${dogId}`;
+    const chatRef = db.collection("chats").doc(chatId);
+    const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
 
-            // Cuore del match: usa il colore corrente e prepara il prossimo
-            showMatchAnimation(d.name, nextMatchColor);
-            state.matchCount++;
-            localStorage.setItem("matchCount", String(state.matchCount));
-            nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💘","💖","❤️"][state.matchCount % 10];
+    const dogName = d.name || d.dogName || "";
+    const dogAvatar =
+      d.photo ||
+      d.avatar ||
+      d.img ||
+      d.photoUrl ||
+      "";
+
+    chatRef
+      .set(
+        {
+          members: [selfUid],
+          dogId,
+          dogName,
+          dogAvatar,
+          match: true,
+          lastMessageText: "",            // verrà sovrascritto al primo messaggio
+          lastMessageAt: nowTs,           // usato per data/ora in lista Match
+          lastSenderUid: null,
+          updatedAt: nowTs,
+        },
+        { merge: true }
+      )
+      .catch((err) => {
+        console.error("Errore ensureChatForMatch", err);
+      });
+  } catch (err) {
+    console.error("Errore generale ensureChatForMatch", err);
+  }
+                 }
+
+  ensureChatForMatch(d);
+  } else {
+  if (dogId) {
+  state.friendships[dogId] = true;
+  localStorage.setItem("friendships", JSON.stringify(state.friendships));
+   }
+   }
+
+  // Cuore del match: usa il colore corrente e prepara il prossimo
+    showMatchAnimation(d.name, nextMatchColor);
+    state.matchCount++;
+    localStorage.setItem("matchCount", String(state.matchCount));
+    nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💘","💖","❤️"][state.matchCount % 10];
   }
     }
 
