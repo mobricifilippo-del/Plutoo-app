@@ -1163,19 +1163,15 @@ async function ensureChatForMatch(d) {
   }
 }
 
- // Crea/aggiorna la chat di match per un DOG
-async function ensureChatForMatch(d) {
+// Crea/aggiorna la chat di match per un DOG
+function ensureChatForMatch(d) {
   try {
     if (!window.db || !d) return;
 
+    const db      = window.db;
     const selfUid = window.PLUTOO_UID || "anonymous";
     const dogId   = d.id || d.dogId || null;
-
-    if (!selfUid || !dogId) return;
-
-    const chatId  = `${selfUid}_${dogId}`;
-    const chatRef = db.collection("chats").doc(chatId);
-    const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
+    if (!dogId) return;
 
     const dogName   = d.name || d.dogName || "";
     const dogAvatar =
@@ -1185,22 +1181,33 @@ async function ensureChatForMatch(d) {
       d.photoUrl ||
       "";
 
-    await chatRef.set(
-      {
-        members: [selfUid],
-        dogId,
-        dogName,
-        dogAvatar,
-        match: true,
-        lastMessageText: "",
-        lastMessageAt: nowTs,   // usato per data/ora in lista Match
-        lastSenderUid: null,
-        updatedAt: nowTs,
-      },
-      { merge: true }
-    );
+    const chatId  = `${selfUid}_${dogId}`;
+    const chatRef = db.collection("chats").doc(chatId);
+    const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
+
+    // stato locale match
+    state.matches[dogId] = true;
+    try {
+      localStorage.setItem("matches", JSON.stringify(state.matches));
+    } catch (e) {}
+
+    const payload = {
+      members: [selfUid],
+      dogId,
+      dogName,
+      dogAvatar,
+      match: true,
+      lastMessageText: "",
+      lastMessageAt: nowTs,
+      lastSenderUid: null,
+      updatedAt: nowTs,
+    };
+
+    return chatRef.set(payload, { merge: true }).catch((err) => {
+      console.error("Errore ensureChatForMatch:", err);
+    });
   } catch (err) {
-    console.error("Errore ensureChatForMatch", err);
+    console.error("Errore generale ensureChatForMatch", err);
   }
 }
 
