@@ -1159,15 +1159,15 @@ msgLists.forEach((list) => {
 
   showMatchAnimation(d.name, nextMatchColor);
 
-            // dogId unico per match/friendship
-            const dogId = d.id || d.dogId || null;
+  // dogId unico per match/friendship
+   const dogId = d.id || d.dogId || null;
 
-            if (mode === "love") {
-                if (dogId) {
-                    state.matches[dogId] = true;
-                    localStorage.setItem("matches", JSON.stringify(state.matches));
+   if (mode === "love") {
+   if (dogId) {
+   state.matches[dogId] = true;
+   localStorage.setItem("matches", JSON.stringify(state.matches));
 
-                 function ensureChatForMatch(d){
+  const ensureChatForMatch = (d) => {
   try {
     if (!db || !d) return;
 
