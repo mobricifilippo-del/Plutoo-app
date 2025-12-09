@@ -1317,35 +1317,6 @@ async function ensureChatForMatch(d) {
         }
       }, 600);
     }
-
-    if (yesBtn) {
-  yesBtn.onclick = () => {
-    if (state.processingSwipe) return;
-
-    // animazione
-    card.classList.add("swipe-out-right");
-
-    // like del cane
-    state.matches[d.id] = true;
-    localStorage.setItem("matches", JSON.stringify(state.matches));
-
-    // verifica match reciproco
-    const otherLikedYou = state.likesReceived?.[d.id] === true;
-
-   if (otherLikedYou) {
-      ensureChatForMatch(d);
-   }
-      // MATCH!
-      const nameForMatch = state.lang === "it" ? "Nuovo match" : "New match";
-      showMatchAnimation(nameForMatch, nextMatchColor);
-      state.matchCount++;
-      localStorage.setItem("matchCount", String(state.matchCount));
-      nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
-    }
-
-    handleSwipeComplete("right");
-  };
-    }
     
     if(noBtn){
       noBtn.onclick = ()=>{
