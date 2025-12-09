@@ -1970,6 +1970,14 @@ storyLikeBtn.classList.add("heart-anim");
         <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
       </div>
     `;
+   const btnOpenChat = document.getElementById("btnOpenChat");
+if (btnOpenChat) {
+    btnOpenChat.addEventListener("click", () => {
+        // usa lo stesso DOG del profilo
+        if (!d) return;
+        openChat(d);
+    });
+}
 
   // === PULSANTE "MODIFICA SOCIAL" SOLO PER IL TUO DOG ===
 if (d.id === CURRENT_USER_DOG_ID) {
