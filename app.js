@@ -2586,14 +2586,14 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid){
 });
 
  async function sendChatMessage() {
-  if (!db || !chatInput || !currentChatId || !currentChatDogId) return;
+  if (!db || !chatInput || !state.currentChatId || !state.currentChatDogId) return;
 
   const text = (chatInput.value || "").trim();
   if (!text) return;
 
   const selfUid = window.PLUTOO_UID || "anonymous";
-  const dogId = currentChatDogId;
-  const chatId = currentChatId;
+  const dogId = state.currentChatDogId;
+  const chatId = state.currentChatId;
 
   const msgCount = state.chatMessagesSent[dogId] || 0;
 
@@ -2639,7 +2639,7 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid){
   } catch (err) {
     console.error("Errore Firestore sendChatMessage", err);
   }
- }
+}
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
