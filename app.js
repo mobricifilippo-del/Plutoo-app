@@ -1248,55 +1248,28 @@ function ensureChatForMatch(d) {
 
   showMatchAnimation(d.name, nextMatchColor);
 
-            // dogId unico per match/friendship
-            const dogId = d.id || d.dogId || null;
+    // dogId unico per match/friendship
+    const dogId = d.id || d.dogId || null;
 
-            if (mode === "love") {
-                if (dogId) {
-                    state.matches[dogId] = true;
-                    localStorage.setItem("matches", JSON.stringify(state.matches));
+ if (mode === "love") {
+  if (dogId) {
+    state.matches[dogId] = true;
+    localStorage.setItem("matches", JSON.stringify(state.matches));
 
-                  try {
-        const selfUid   = window.PLUTOO_UID || "anonymous";
-        const dogName   = d.name  || "";
-        const dogAvatar = d.photo || d.avatar || "";
+    ensureChatForMatch(d);
+  }
+} else {
+  if (dogId) {
+    state.friendships[dogId] = true;
+    localStorage.setItem("friendships", JSON.stringify(state.friendships));
+  }
+ }
 
-        if (selfUid && db) {
-          const chatId  = `${selfUid}_${dogId}`;
-          const chatRef = db.collection("chats").doc(chatId);
-          const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
-
-          const chatPayload = {
-            members: [selfUid],
-            dogId,
-            dogName,
-            dogAvatar,
-            match: true,
-            lastMessageText: "",
-            lastMessageAt: nowTs,
-            updatedAt: nowTs,
-          };
-
-          chatRef.set(chatPayload, { merge: true }).catch(err => {
-            console.error("Errore set chat swipe match:", err);
-          });
-        }
-      } catch (err) {
-        console.error("Errore generale swipe match Firestore:", err);
-      }
-                }
-            } else {
-                if (dogId) {
-                    state.friendships[dogId] = true;
-                    localStorage.setItem("friendships", JSON.stringify(state.friendships));
-                }
-            }
-
-            // Cuore del match: usa il colore corrente e prepara il prossimo
-            showMatchAnimation(d.name, nextMatchColor);
-            state.matchCount++;
-            localStorage.setItem("matchCount", String(state.matchCount));
-            nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💘","💖","❤️"][state.matchCount % 10];
+  // Cuore del match: usa il colore corrente e prepara il prossimo
+  showMatchAnimation(d.name, nextMatchColor);
+  state.matchCount++;
+  localStorage.setItem("matchCount", String(state.matchCount));
+   nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💘","💖","❤️"][state.matchCount % 10];
   }
     }
 
@@ -2607,101 +2580,64 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid){
   }
   closeChat?.addEventListener("click", closeChatPane);
 
-  chatComposer?.addEventListener("submit", (e)=>{
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text) return;
+ chatComposer?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  sendChatMessage();
+});
 
-    const dogId = chatPane.dataset.dogId || "unknown";
-    const hasMatch = state.matches[dogId] || false;
-    const msgCount = state.chatMessagesSent[dogId] || 0;
+ async function sendChatMessage() {
+  if (!db || !chatInput || !currentChatId || !currentChatDogId) return;
 
-    if (!state.plus){
-      if (msgCount === 0){
-        if (state.rewardOpen) return;
-        state.rewardOpen = true;
-        showRewardVideoMock("chat", ()=>{
-          state.rewardOpen = false;
-          sendChatMessage(text, dogId, hasMatch, msgCount);
-        });
-        return;
-      } else if (!hasMatch && msgCount >= 1){
-        alert(state.lang==="it" ? "Serve un match per continuare a chattare!" : "Match needed to continue chatting!");
-        return;
-      }
+  const text = (chatInput.value || "").trim();
+  if (!text) return;
+
+  const selfUid = window.PLUTOO_UID || "anonymous";
+  const dogId = currentChatDogId;
+  const chatId = currentChatId;
+
+  const msgCount = state.chatMessagesSent[dogId] || 0;
+
+  // Regola Plutoo: reward solo se niente match e primo messaggio
+  if (!state.plus && !state.matches[dogId] && msgCount === 0) {
+    if (!state.rewardOpen) {
+      state.rewardOpen = true;
+      showRewardVideoMock("chat", () => {
+        state.rewardOpen = false;
+      });
     }
+  }
 
-    sendChatMessage(text, dogId, hasMatch, msgCount);
-  });
-
- async function sendChatMessage(text, dogId, hasMatch, msgCount){
-  // bolla nella UI
-  const bubble = document.createElement("div");
-  bubble.className = "msg me";
-  bubble.textContent = text;
-  chatList.appendChild(bubble);
   chatInput.value = "";
-  chatList.scrollTop = chatList.scrollHeight;
 
-  // --- Salvataggio messaggio su Firestore ---
   try {
-    const selfUid    = window.PLUTOO_UID || "anonymous";
-    const receiverUid = state.currentChatUid || "unknown";
+    const nowTs = FieldValue.serverTimestamp();
+    const chatRef = db.collection("chats").doc(chatId);
 
-    const safeDogId =
-      dogId ||
-      chatPane.dataset.dogId ||
-      (state.currentDogProfile && state.currentDogProfile.id) ||
-      state.currentDogId ||
-      "unknown";
-
-    let chatId = state.currentChatId || `${selfUid}_${safeDogId}`;
-    state.currentChatId = chatId;
-
-    const dogProfile = state.currentDogProfile || {};
-    const dogName   = dogProfile.name || null;
-    const dogAvatar = dogProfile.img || dogProfile.photoUrl || null;
-
-    await db.collection("messages").add({
-      chatId,
-      senderUid: selfUid,
-      receiverUid,
+    // 1) aggiungo messaggio
+    await chatRef.collection("messages").add({
       text,
-      type: "text",
-      createdAt: FieldValue.serverTimestamp(),
-      isRead: false
+      senderUid: selfUid,
+      createdAt: nowTs,
     });
 
-    await db.collection("chats").doc(chatId).set({
-      members: [selfUid, receiverUid],
-      dogId: safeDogId || null,
-      dogName: dogName,
-      dogAvatar: dogAvatar,
+    // 2) aggiorno header chat
+    await chatRef.set({
       lastMessageText: text,
-      lastMessageAt: FieldValue.serverTimestamp(),
+      lastMessageAt: nowTs,
       lastSenderUid: selfUid,
-      match: !!(state.matches[safeDogId] || hasMatch)
+      dogId,
+      match: !!state.matches[dogId],
     }, { merge: true });
+
+    // contatore messaggi
+    state.chatMessagesSent[dogId] = msgCount + 1;
+    localStorage.setItem(
+      "chatMessagesSent",
+      JSON.stringify(state.chatMessagesSent)
+    );
 
   } catch (err) {
     console.error("Errore Firestore sendChatMessage", err);
-  }
-
-  const safeDogIdForCounter = dogId || chatPane.dataset.dogId || state.currentDogId || "unknown";
-
-  state.chatMessagesSent[safeDogIdForCounter] = (msgCount || 0) + 1;
-  localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
-
-  if (!state.plus && !state.matches[safeDogIdForCounter] && state.chatMessagesSent[safeDogIdForCounter] >= 1){
-    chatInput.disabled = true;
-    chatInput.placeholder = state.lang === "it"
-      ? "Match necessario per continuare"
-      : "Match needed to continue";
-  } else {
-    chatInput.disabled = false;
-    chatInput.placeholder = state.lang === "it"
-      ? "Scrivi un messaggio…"
-      : "Type a message…";
   }
  }
 
