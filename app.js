@@ -1122,95 +1122,6 @@ msgLists.forEach((list) => {
       });
   }
 
- // Crea/aggiorna la chat di match per un DOG
-async function ensureChatForMatch(d) {
-  try {
-    if (!window.db || !d) return;
-
-    const selfUid = window.PLUTOO_UID || "anonymous";
-    const dogId   = d.id || d.dogId || null;
-
-    if (!selfUid || !dogId) return;
-
-    const chatId  = `${selfUid}_${dogId}`;
-    const chatRef = db.collection("chats").doc(chatId);
-    const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
-
-    const dogName   = d.name || d.dogName || "";
-    const dogAvatar =
-      d.photo ||
-      d.avatar ||
-      d.img ||
-      d.photoUrl ||
-      "";
-
-    await chatRef.set(
-      {
-        members: [selfUid],
-        dogId,
-        dogName,
-        dogAvatar,
-        match: true,
-        lastMessageText: "",
-        lastMessageAt: nowTs,   // usato per data/ora in lista Match
-        lastSenderUid: null,
-        updatedAt: nowTs,
-      },
-      { merge: true }
-    );
-  } catch (err) {
-    console.error("Errore ensureChatForMatch", err);
-  }
-}
-
-// Crea/aggiorna la chat di match per un DOG
-function ensureChatForMatch(d) {
-  try {
-    if (!window.db || !d) return;
-
-    const db      = window.db;
-    const selfUid = window.PLUTOO_UID || "anonymous";
-    const dogId   = d.id || d.dogId || null;
-    if (!dogId) return;
-
-    const dogName   = d.name || d.dogName || "";
-    const dogAvatar =
-      d.photo ||
-      d.avatar ||
-      d.img ||
-      d.photoUrl ||
-      "";
-
-    const chatId  = `${selfUid}_${dogId}`;
-    const chatRef = db.collection("chats").doc(chatId);
-    const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
-
-    // stato locale match
-    state.matches[dogId] = true;
-    try {
-      localStorage.setItem("matches", JSON.stringify(state.matches));
-    } catch (e) {}
-
-    const payload = {
-      members: [selfUid],
-      dogId,
-      dogName,
-      dogAvatar,
-      match: true,
-      lastMessageText: "",
-      lastMessageAt: nowTs,
-      lastSenderUid: null,
-      updatedAt: nowTs,
-    };
-
-    return chatRef.set(payload, { merge: true }).catch((err) => {
-      console.error("Errore ensureChatForMatch:", err);
-    });
-  } catch (err) {
-    console.error("Errore generale ensureChatForMatch", err);
-  }
-}
-
   // ============ Swipe ============
   function renderSwipe(mode){
     const deck = DOGS.filter(d=>d.mode===mode);
@@ -1323,6 +1234,62 @@ function ensureChatForMatch(d) {
           renderSwipe(mode);
         }
       }, 600);
+    }
+
+    if (yesBtn) {
+  yesBtn.onclick = () => {
+    if (state.processingSwipe) return;
+
+    // animazione
+    card.classList.add("swipe-out-right");
+
+    // like del cane
+    state.matches[d.id] = true;
+    localStorage.setItem("matches", JSON.stringify(state.matches));
+
+    // verifica match reciproco
+    const otherLikedYou = state.likesReceived?.[d.id] === true;
+
+    if (otherLikedYou) {
+      const dogId = d.id || d.dogId || null;
+  if (dogId && window.db) {
+    try {
+      const selfUid   = window.PLUTOO_UID || "anonymous";
+      const dogName   = d.name  || "";
+      const dogAvatar = d.photo || d.avatar || "";
+
+      const chatId  = `${selfUid}_${dogId}`;
+      const chatRef = db.collection("chats").doc(chatId);
+      const nowTs   = firebase.firestore.FieldValue.serverTimestamp();
+
+      const chatPayload = {
+        members: [selfUid],
+        dogId,
+        dogName,
+        dogAvatar,
+        match: true,
+        lastMessageText: "",
+        lastMessageAt: nowTs,
+        updatedAt: nowTs
+      };
+
+      chatRef.set(chatPayload, { merge: true }).catch(err => {
+        console.error("Errore set chat swipe match:", err);
+      });
+    } catch (err) {
+      console.error("Errore generale swipe match Firestore:", err);
+    }
+  }
+      // MATCH!
+      const nameForMatch = state.lang === "it" ? "Nuovo match" : "New match";
+      showMatchAnimation(nameForMatch, nextMatchColor);
+      state.matchCount++;
+      localStorage.setItem("matchCount", String(state.matchCount));
+      nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
+    }
+
+    handleSwipeComplete("right");
+  };
     }
     
     if(noBtn){
