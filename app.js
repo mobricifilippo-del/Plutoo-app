@@ -1127,48 +1127,11 @@ msgLists.forEach((list) => {
       });
   }
 
- // Centralizza la creazione/aggiornamento della chat di match
-function ensureChatForMatch(d) {
-  try {
-    if (!d) return;
-
-    const dogId = d.dogId || d.id;
-    if (!dogId) return;
-
-    // Segna il match in stato + localStorage (idempotente)
-    state.matches[dogId] = true;
-    try {
-      localStorage.setItem("matches", JSON.stringify(state.matches));
-    } catch (e) {}
-
-    // Se Firebase non è pronto, mi fermo qui
-    if (!window.PLUTOO_UID || !db) return;
-
-    const selfUid   = window.PLUTOO_UID || "anonymous";
-    const dogName   = d.name  || d.dogName  || "";
-    const dogAvatar = d.photo || d.avatar   || d.img || "";
-
-    const chatId  = `${selfUid}_${dogId}`;
-    const chatRef = db.collection("chats").doc(chatId);
-    const nowTs   = FieldValue.serverTimestamp();
-
-    const payload = {
-      members: [selfUid],
-      dogId,
-      dogName,
-      dogAvatar,
-      match: true,
-      lastMessageText: "",
-      lastMessageAt: nowTs,
-      updatedAt: nowTs,
-    };
-
-    chatRef.set(payload, { merge: true }).catch(err => {
-      console.error("Errore ensureChatForMatch (set chat):", err);
-    });
-  } catch (err) {
-    console.error("Errore generale ensureChatForMatch:", err);
-  }
+ // LOGICA UNICA PER I MATCH (profilo + swipe)
+function ensureChatForMatch(dog) {
+  // Usiamo SEMPRE la stessa logica del match da swipe,
+  // così dogId, nome e avatar sono sempre coerenti.
+  handleMatchFromSwipe(dog);
 }
 
  // ============ Swipe ============
@@ -2507,83 +2470,88 @@ async function loadChatHistory(chatId, dog) {
   }
 }
 
-  // =========== Chat ===========
-  function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
-    if (!chatPane || !chatList || !chatInput) return;
+  function openChat(chatIdOrDog, maybeDogId, maybeOtherUid){
+  if (!chatPane || !chatList || !chatInput) return;
 
-    const selfUid = window.PLUTOO_UID || "anonymous";
+  // Pulisco la lista messaggi
+  chatList.innerHTML = "";
 
-    let dog      = null;
-    let dogId    = "";
-    let otherUid = "";
-    let chatId   = "";
+  const selfUid = window.PLUTOO_UID || "anonymous";
 
-    // Caso 1: openChat(dog) dal profilo / dallo swipe
-    if (typeof chatIdOrDog === "object" && chatIdOrDog) {
-      dog   = chatIdOrDog;
-      dogId = dog.dogId || dog.id || "";
+  let dog      = null;
+  let dogId    = "";
+  let otherUid = "";
+  let chatId   = "";
 
-      otherUid =
-        dog.uid ||
-        dog.ownerUid ||
-        maybeOtherUid ||
-        state.currentChatUid ||
-        "unknown";
+  // Caso 1: openChat(dog) (dal profilo o dallo swipe)
+  if (typeof chatIdOrDog === "object" && chatIdOrDog) {
+    dog   = chatIdOrDog;
+    // dogId UNICO, sempre lo stesso che usiamo per i match
+    dogId = dog.dogId || dog.id || "";
 
-      // chatId deterministico: SEMPRE selfUid_dogId
-      chatId = `${selfUid}_${dogId}`;
-    } else {
-      // Caso 2: openChat(chatId, dogId, otherUid) dalle liste
-      chatId   = chatIdOrDog || "";
-      dogId    = maybeDogId || "";
-      otherUid = maybeOtherUid || state.currentChatUid || "unknown";
-    }
+    otherUid =
+      dog.uid ||
+      dog.ownerUid ||
+      maybeOtherUid ||
+      state.currentChatUid ||
+      "unknown";
 
-    if (!chatId || !dogId) {
-      console.error("openChat: chatId o dogId mancanti", {
-        chatId,
-        dogId,
-        chatIdOrDog,
-        maybeDogId,
-        maybeOtherUid,
-      });
-      return;
-    }
-
-    // Salvo stato coerente ovunque
-    chatPane.dataset.chatId = chatId;
-    chatPane.dataset.dogId  = dogId;
-
-    state.currentChatId    = chatId;
-    state.currentChatDogId = dogId;
-    state.currentChatUid   = otherUid;
-
-    // Apro la vista MESSAGGI e mostro il pannello chat
-    setActiveView("messages");
-    chatPane.classList.remove("hidden");
-    chatPane.classList.add("show");
-
-    // Pulisco la lista e carico la history
-    chatList.innerHTML = "";
-
-    const headerNameEl = document.getElementById("chatDogName");
-    if (headerNameEl && dog) {
-      headerNameEl.textContent =
-        dog.name || dog.dogName || headerNameEl.textContent;
-    }
-
-    try {
-      // passo anche dog, così il "Ciao DOG! 🐾" usa il nome giusto se non ci sono messaggi
-      loadChatHistory(chatId, dog);
-    } catch (err) {
-      console.error("Errore loadChatHistory in openChat:", err);
-    }
-
-    // Focus sulla input (se possibile)
-    try {
-      chatInput.focus();
-    } catch (_) {}
+    // chatId deterministico: SEMPRE selfUid_dogId
+    chatId = `${selfUid}_${dogId}`;
+  } else {
+    // Caso 2: openChat(chatId, dogId, otherUid) dalle liste Messaggi/Match
+    chatId   = chatIdOrDog || "";
+    dogId    = maybeDogId || "";
+    otherUid = maybeOtherUid || state.currentChatUid || "unknown";
   }
+
+  if (!chatId || !dogId) {
+    console.error("openChat: chatId o dogId mancanti", {
+      chatId, dogId, chatIdOrDog, maybeDogId, maybeOtherUid
+    });
+    return;
+  }
+
+  // Salvo nel dataset SEMPRE lo stesso dogId/chatId
+  chatPane.dataset.chatId = chatId;
+  chatPane.dataset.dogId  = dogId;
+
+  state.currentChatId    = chatId;
+  state.currentChatDogId = dogId;
+  state.currentChatUid   = otherUid;
+
+  // Cambio vista: vado su "Messaggi" e mostro il pannello chat
+  setActiveView("messages");
+  chatPane.classList.remove("hidden");
+  chatPane.classList.add("show");
+
+  // Header della chat (se hai il titolo con il nome DOG)
+  const headerNameEl = document.getElementById("chatDogName");
+  if (headerNameEl) {
+    if (dog) {
+      headerNameEl.textContent = dog.name || dog.dogName || headerNameEl.textContent;
+    } else {
+      // fallback: se non ho l'oggetto dog, cerco nei DOGS
+      const d = DOGS.find(x => x.id === dogId);
+      if (d) {
+        headerNameEl.textContent = d.name || headerNameEl.textContent;
+      }
+    }
+  }
+
+  // Carico la history della chat da Firestore
+  try {
+    // loadChatHistory accetta (chatId, dog) → dog è opzionale
+    loadChatHistory(chatId, dog);
+  } catch (err) {
+    console.error("Errore loadChatHistory in openChat:", err);
+  }
+
+  // Provo a mettere il focus sulla input
+  try {
+    chatInput.focus();
+  } catch (_) {}
+}
 
  // ================== CHAT: STORICO MESSAGGI ==================
 function loadChatHistory(chatId, dog){
