@@ -1198,6 +1198,49 @@ function renderSwipe(mode){
   if(yesBtn) yesBtn.onclick = null;
   if(noBtn) noBtn.onclick = null;
 
+ // MATCH DA SWIPE — VERSIONE CORRETTA
+function handleMatchFromSwipe(d) {
+    try {
+        // 1️⃣ Normalizzazione ID del DOG (identico ovunque)
+        const dogId = d.dogId || d.id;
+        const dogName = d.name || d.dogName || "";
+        const dogAvatar = d.photo || d.avatar || "";
+
+        if (!dogId) {
+            console.error("Errore: dogId mancante nello swipe", d);
+            return;
+        }
+
+        // 2️⃣ Salvo match in memoria locale
+        state.matches[dogId] = true;
+        localStorage.setItem("matches", JSON.stringify(state.matches));
+
+        // 3️⃣ Crea ID deterministico della chat
+        const selfUid = window.PLUTOO_UID || "unknown";
+        const chatId = `${selfUid}_${dogId}`;
+
+        // 4️⃣ Salvo chat in Firestore (o aggiorno se esiste)
+        if (db && selfUid) {
+            const nowTs = firebase.firestore.FieldValue.serverTimestamp();
+            const chatRef = db.collection("chats").doc(chatId);
+
+            chatRef.set({
+                members: [selfUid],
+                dogId,
+                dogName,
+                dogAvatar,
+                match: true,
+                lastMessageText: "",
+                lastMessageAt: nowTs,
+                updatedAt: nowTs
+            }, { merge: true });
+        }
+
+    } catch (err) {
+        console.error("Errore handleMatchFromSwipe:", err);
+    }
+}
+
   function handleSwipeComplete(direction){
     if(state.processingSwipe) return;
     state.processingSwipe = true;
@@ -1205,7 +1248,7 @@ function renderSwipe(mode){
     if (direction === "right"){
       // LIKE → match diretto gestito da helper
       if (mode === "love") {
-        ensureChatForMatch(d);
+        handleMatchFromSwipe(d);
       } else {
         // modalità "friendship"
         const dogId = d.dogId || d.id || null;
