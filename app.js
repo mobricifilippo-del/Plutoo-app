@@ -2542,6 +2542,96 @@ async function loadChatHistory(chatId, dog) {
     } catch (_) {}
   }
 
+ // ================== CHAT: STORICO MESSAGGI ==================
+function loadChatHistory(chatId, dog){
+    try {
+        if (!db || !chatId) {
+            console.warn("loadChatHistory: db o chatId mancante", { chatId });
+            return;
+        }
+
+        // Contenitore messaggi: prova più ID / selector per essere compatibile
+        const container =
+            document.getElementById("chatMessagesList") ||
+            document.getElementById("chatMessages") ||
+            document.querySelector(".chat-messages");
+
+        if (!container) {
+            console.warn("loadChatHistory: contenitore messaggi non trovato");
+            return;
+        }
+
+        // Svuoto UNA volta all'inizio, non ad ogni messaggio
+        container.innerHTML = "";
+
+        db.collection("messages")
+            .where("chatId", "==", chatId)
+            .orderBy("createdAt", "asc")
+            .get()
+            .then((snapshot) => {
+                const frag = document.createDocumentFragment();
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const bubble = renderChatMessageBubble(data);
+                    if (bubble) {
+                        frag.appendChild(bubble);
+                    }
+                });
+
+                container.appendChild(frag);
+
+                // Scroll in basso alla fine del caricamento
+                try {
+                    container.scrollTop = container.scrollHeight || 999999;
+                } catch (_) {}
+            })
+            .catch((err) => {
+                console.error("Errore loadChatHistory:", err);
+            });
+    } catch (err) {
+        console.error("Errore generale loadChatHistory:", err);
+    }
+}
+
+// Helper per creare il singolo messaggio in chat
+function renderChatMessageBubble(msg){
+    try {
+        const selfUid =
+            window.PLUTOO_UID ||
+            state.selfUid ||
+            msg.currentUserUid ||
+            null;
+
+        const isMine =
+            (msg.senderUid && msg.senderUid === selfUid) ||
+            (msg.fromUid && msg.fromUid === selfUid) ||
+            (msg.senderId && msg.senderId === selfUid) ||
+            false;
+
+        const text =
+            msg.text ||
+            msg.message ||
+            msg.body ||
+            msg.content ||
+            "";
+
+        if (!text) return null;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "chat-message-bubble" + (isMine ? " mine" : " theirs");
+
+        const p = document.createElement("p");
+        p.textContent = text;
+
+        wrapper.appendChild(p);
+        return wrapper;
+    } catch (err) {
+        console.error("Errore renderChatMessageBubble:", err);
+        return null;
+    }
+}
+
   function closeChatPane(){
     chatPane.classList.remove("show");
     setTimeout(()=>chatPane.classList.add("hidden"), 250);
