@@ -1127,6 +1127,52 @@ msgLists.forEach((list) => {
       });
   }
 
+ function handleMatchFromSwipe(d) {
+    try {
+        // 1️⃣ Normalizzazione ID e dati del DOG
+        const dogId = d.dogId || d.id;
+        const dogName = d.name || d.dogName || "DOG";
+        const dogAvatar = d.photo || d.avatar || d.img || "";
+
+        if (!dogId) {
+            console.error("Errore: dogId mancante in handleMatchFromSwipe", d);
+            return;
+        }
+
+        // 2️⃣ Segno il match in memoria locale
+        state.matches[dogId] = true;
+        try {
+            localStorage.setItem("matches", JSON.stringify(state.matches));
+        } catch (_) {}
+
+        // 3️⃣ Creo ID deterministico della chat
+        const selfUid = window.PLUTOO_UID || "anonymous";
+        const chatId = `${selfUid}_${dogId}`;
+
+        // 4️⃣ Creo / aggiorno la chat in Firestore
+        if (db && selfUid) {
+            const nowTs = firebase.firestore.FieldValue.serverTimestamp();
+            const chatRef = db.collection("chats").doc(chatId);
+
+            chatRef.set(
+                {
+                    members: [selfUid],
+                    dogId,
+                    dogName,
+                    dogAvatar,
+                    match: true,
+                    lastMessageText: "",
+                    lastMessageAt: nowTs,
+                    updatedAt: nowTs,
+                },
+                { merge: true }
+            );
+        }
+    } catch (err) {
+        console.error("Errore handleMatchFromSwipe", err);
+    }
+ }
+
  // LOGICA UNICA PER I MATCH (profilo + swipe)
 function ensureChatForMatch(dog) {
   // Usiamo SEMPRE la stessa logica del match da swipe,
