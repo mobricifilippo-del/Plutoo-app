@@ -1441,7 +1441,7 @@ setTimeout(() => {
 }, 1700);
 }
 
-  // ============ Ricerca ============
+ // ============ Ricerca ============
   if (btnSearchPanel) {
     btnSearchPanel.addEventListener("click", (e)=>{
       e.preventDefault();
