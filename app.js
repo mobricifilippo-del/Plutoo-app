@@ -2355,7 +2355,6 @@ if (likeDogBtn) {
         } else unlock();
       }
     };
-  };
 
   profileBack?.addEventListener("click", ()=> closeProfilePage());
   profileClose?.addEventListener("click", ()=> closeProfilePage());
