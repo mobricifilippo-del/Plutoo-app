@@ -1123,217 +1123,200 @@ msgLists.forEach((list) => {
 
   // ============ Swipe ============
   function renderSwipe(mode){
-    const deck = DOGS.filter(d=>d.mode===mode);
-    if(!deck.length) return;
+  const deck = DOGS.filter(d=>d.mode===mode);
+  if(!deck.length) return;
 
-    const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
-    const d = deck[idx];
-    if(!d) return;
+  const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
+  const d = deck[idx];
+  if(!d) return;
 
-    const img   = mode==="love" ? loveImg : playImg;
-    const title = mode==="love" ? loveTitleTxt : playTitleTxt;
-    const meta  = mode==="love" ? loveMeta : playMeta;
-    const bio   = mode==="love" ? loveBio : playBio;
-    const card  = mode==="love" ? loveCard : playCard;
-    const yesBtn = mode==="love" ? loveYes : playYes;
-    const noBtn  = mode==="love" ? loveNo  : playNo;
+  const img   = mode==="love" ? loveImg : playImg;
+  const title = mode==="love" ? loveTitleTxt : playTitleTxt;
+  const meta  = mode==="love" ? loveMeta : playMeta;
+  const bio   = mode==="love" ? loveBio : playBio;
+  const card  = mode==="love" ? loveCard : playCard;
+  const yesBtn = mode==="love" ? loveYes : playYes;
+  const noBtn  = mode==="love" ? loveNo  : playNo;
 
-    if(!img || !title || !meta || !bio || !card) return;
+  if(!img || !title || !meta || !bio || !card) return;
 
-    img.src = d.img;
-    title.textContent = `${d.name} ${d.verified?"✅":""}`;
-    meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
-    bio.textContent   = d.bio || "";
+  img.src = d.img;
+  title.textContent = `${d.name} ${d.verified?"✅":""}`;
+  meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
+  bio.textContent   = d.bio || "";
 
-    if(yesBtn) yesBtn.onclick = null;
-    if(noBtn) noBtn.onclick = null;
+  if(yesBtn) yesBtn.onclick = null;
+  if(noBtn) noBtn.onclick = null;
 
-    function handleSwipeComplete(direction){
-      if(state.processingSwipe) return;
-      state.processingSwipe = true;
+  // ✅ FIX: Cleanup vecchi event listeners prima di riassegnarli
+  if(card._cleanup) card._cleanup();
+
+  function handleSwipeComplete(direction){
+    if(state.processingSwipe) return;
+    state.processingSwipe = true;
 
     if (direction === "right"){
-  const matchChance = Math.random();
-  if (matchChance > -1){
+      const dogId = d.id;
+      
+      // Salva match locale
+      if (mode === "love") {
+        state.matches[dogId] = true;
+        localStorage.setItem("matches", JSON.stringify(state.matches));
+      } else {
+        state.friendships[dogId] = true;
+        localStorage.setItem("friendships", JSON.stringify(state.friendships));
+      }
 
-  showMatchAnimation(d.name, nextMatchColor);
+      // ✅ CONSOLIDA MATCH SU FIRESTORE
+      ensureChatForMatch(d).catch(err => {
+        console.error("Errore ensureChatForMatch da swipe:", err);
+      });
 
-            // dogId unico per match/friendship
-            const dogId = d.id || d.dogId || null;
-
-            if (mode === "love") {
-                if (dogId) {
-                    state.matches[dogId] = true;
-                    localStorage.setItem("matches", JSON.stringify(state.matches));
-                }
-            } else {
-                if (dogId) {
-                    state.friendships[dogId] = true;
-                    localStorage.setItem("friendships", JSON.stringify(state.friendships));
-                }
-            }
-
-            // Cuore del match: usa il colore corrente e prepara il prossimo
-            showMatchAnimation(d.name, nextMatchColor);
-            state.matchCount++;
-            localStorage.setItem("matchCount", String(state.matchCount));
-            nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💘","💖","❤️"][state.matchCount % 10];
-  }
-    }
-
-      if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
-
-      setTimeout(()=>{
-        resetCard(card);
-
-        state.swipeCount++;
-        localStorage.setItem("swipes", String(state.swipeCount));
-
-        if (!state.plus && state.swipeCount >= state.nextRewardAt && !state.rewardOpen){
-          state.rewardOpen = true;
-          showRewardVideoMock("swipe", ()=>{
-            state.rewardOpen = false;
-            state.nextRewardAt += 5;
-            localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
-
-            state.processingSwipe = false;
-            renderSwipe(mode);
-          });
-        } else {
-          state.processingSwipe = false;
-          renderSwipe(mode);
-        }
-      }, 600);
-    }
-
-    if (yesBtn) {
-  yesBtn.onclick = () => {
-    if (state.processingSwipe) return;
-
-    // animazione
-    card.classList.add("swipe-out-right");
-
-    // like del cane
-    state.matches[d.id] = true;
-    localStorage.setItem("matches", JSON.stringify(state.matches));
-
-    // verifica match reciproco
-    const otherLikedYou = state.likesReceived?.[d.id] === true;
-
-    if (otherLikedYou) {
-      // MATCH!
-      const nameForMatch = state.lang === "it" ? "Nuovo match" : "New match";
-      showMatchAnimation(nameForMatch, nextMatchColor);
+      // Animazione match
+      showMatchAnimation(d.name, nextMatchColor);
       state.matchCount++;
       localStorage.setItem("matchCount", String(state.matchCount));
       nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
     }
 
-    handleSwipeComplete("right");
-  };
-    }
-    
-    if(noBtn){
-      noBtn.onclick = ()=>{
-        if(state.processingSwipe) return;
-        card.classList.add("swipe-out-left");
-        handleSwipeComplete("left");
-      };
-    }
+    if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
 
-    attachSwipeWithClick(card, d, handleSwipeComplete);
+    setTimeout(()=>{
+      resetCard(card);
+
+      state.swipeCount++;
+      localStorage.setItem("swipes", String(state.swipeCount));
+
+      if (!state.plus && state.swipeCount >= state.nextRewardAt && !state.rewardOpen){
+        state.rewardOpen = true;
+        showRewardVideoMock("swipe", ()=>{
+          state.rewardOpen = false;
+          state.nextRewardAt += 5;
+          localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
+
+          state.processingSwipe = false;
+          renderSwipe(mode);
+        });
+      } else {
+        state.processingSwipe = false;
+        renderSwipe(mode);
+      }
+    }, 600);
+  }
+
+  if (yesBtn) {
+    yesBtn.onclick = () => {
+      if (state.processingSwipe) return;
+      card.classList.add("swipe-out-right");
+      handleSwipeComplete("right");
+    };
+  }
+  
+  if(noBtn){
+    noBtn.onclick = ()=>{
+      if(state.processingSwipe) return;
+      card.classList.add("swipe-out-left");
+      handleSwipeComplete("left");
+    };
+  }
+
+  // ✅ FIX: Passa l'oggetto DOG CORRENTE, non una closure
+  attachSwipeWithClick(card, d, handleSwipeComplete);
   }
 
   function attachSwipeWithClick(card, dogData, onSwipe){
-    let startX = 0;
-    let startY = 0;
-    let startTime = 0;
-    let currentX = 0;
-    let dragging = false;
-    let hasMoved = false;
+  let startX = 0;
+  let startY = 0;
+  let startTime = 0;
+  let currentX = 0;
+  let dragging = false;
+  let hasMoved = false;
 
-    const CLICK_THRESHOLD = 10;
-    const CLICK_TIME_THRESHOLD = 300;
+  const CLICK_THRESHOLD = 10;
+  const CLICK_TIME_THRESHOLD = 300;
 
-    const start = (x, y) => {
-      if(state.processingSwipe) return;
-      startX = x;
-      startY = y;
-      currentX = x;
-      startTime = Date.now();
-      dragging = true;
-      hasMoved = false;
-      card.style.transition = "none";
-    };
+  const start = (x, y) => {
+    if(state.processingSwipe) return;
+    startX = x;
+    startY = y;
+    currentX = x;
+    startTime = Date.now();
+    dragging = true;
+    hasMoved = false;
+    card.style.transition = "none";
+  };
 
-    const move = (x) => {
-      if(!dragging || state.processingSwipe) return;
-      currentX = x;
-      const dx = currentX - startX;
+  const move = (x) => {
+    if(!dragging || state.processingSwipe) return;
+    currentX = x;
+    const dx = currentX - startX;
 
-      if(Math.abs(dx) > CLICK_THRESHOLD){
-        hasMoved = true;
-      }
+    if(Math.abs(dx) > CLICK_THRESHOLD){
+      hasMoved = true;
+    }
 
-      const rot = dx / 18;
-      card.style.transform = `translate3d(${dx}px,0,0) rotate(${rot}deg)`;
-    };
+    const rot = dx / 18;
+    card.style.transform = `translate3d(${dx}px,0,0) rotate(${rot}deg)`;
+  };
 
-    const end = () => {
-      if(!dragging || state.processingSwipe) return;
-      dragging = false;
-      card.style.transition = "";
+  const end = () => {
+    if(!dragging || state.processingSwipe) return;
+    dragging = false;
+    card.style.transition = "";
 
-      const dx = currentX - startX;
-      const elapsed = Date.now() - startTime;
-      const th = 90;
+    const dx = currentX - startX;
+    const elapsed = Date.now() - startTime;
+    const th = 90;
 
-      if(!hasMoved && elapsed < CLICK_TIME_THRESHOLD && Math.abs(dx) < CLICK_THRESHOLD){
-        card.classList.add("flash-violet");
-        setTimeout(()=>{
-          card.classList.remove("flash-violet");
-          openProfilePage(dogData);
-        }, 500);
-        resetCard(card);
-        return;
-      }
+    // ✅ FIX: Se è un click (non swipe), apri il profilo DEL DOG CORRENTE
+    if(!hasMoved && elapsed < CLICK_TIME_THRESHOLD && Math.abs(dx) < CLICK_THRESHOLD){
+      card.classList.add("flash-violet");
+      setTimeout(()=>{
+        card.classList.remove("flash-violet");
+        // ✅ Passa dogData che è l'oggetto DOG corrente passato alla funzione
+        openProfilePage(dogData);
+      }, 500);
+      resetCard(card);
+      return;
+    }
 
-      if(Math.abs(dx) > th){
-        const direction = dx > 0 ? "right" : "left";
-        card.classList.add(dx > 0 ? "swipe-out-right" : "swipe-out-left");
-        onSwipe(direction);
-      } else {
-        resetCard(card);
-      }
+    if(Math.abs(dx) > th){
+      const direction = dx > 0 ? "right" : "left";
+      card.classList.add(dx > 0 ? "swipe-out-right" : "swipe-out-left");
+      onSwipe(direction);
+    } else {
+      resetCard(card);
+    }
 
-      currentX = 0;
-    };
+    currentX = 0;
+  };
 
-    card.addEventListener("touchstart", e => {
-      const touch = e.touches[0];
-      start(touch.clientX, touch.clientY);
-    }, {passive: true});
+  card.addEventListener("touchstart", e => {
+    const touch = e.touches[0];
+    start(touch.clientX, touch.clientY);
+  }, {passive: true});
 
-    card.addEventListener("touchmove", e => {
-      const touch = e.touches[0];
-      move(touch.clientX);
-    }, {passive: true});
+  card.addEventListener("touchmove", e => {
+    const touch = e.touches[0];
+    move(touch.clientX);
+  }, {passive: true});
 
-    card.addEventListener("touchend", end, {passive: true});
+  card.addEventListener("touchend", end, {passive: true});
 
-    card.addEventListener("mousedown", e => { start(e.clientX, e.clientY); });
+  card.addEventListener("mousedown", e => { start(e.clientX, e.clientY); });
 
-    const handleMouseMove = e => move(e.clientX);
-    const handleMouseUp = () => end();
+  const handleMouseMove = e => move(e.clientX);
+  const handleMouseUp = () => end();
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+  window.addEventListener("mousemove", handleMouseMove);
+  window.addEventListener("mouseup", handleMouseUp);
 
-    card._cleanup = () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }
+  // ✅ Salva la funzione cleanup per rimuovere gli event listeners
+  card._cleanup = () => {
+    window.removeEventListener("mousemove", handleMouseMove);
+    window.removeEventListener("mouseup", handleMouseUp);
+  };
+}
 
   function resetCard(card){
     card.classList.remove("swipe-out-right","swipe-out-left");
@@ -1372,6 +1355,36 @@ setTimeout(() => {
   overlay.style.transition = "";
   overlay.style.opacity = "";
 }, 1700);
+}
+
+  // ✅ NUOVA FUNZIONE: Consolida match su Firestore (swipe + profilo)
+async function ensureChatForMatch(dog) {
+  if (!dog || !dog.id) return;
+  
+  try {
+    const selfUid = window.PLUTOO_UID || "anonymous";
+    const dogId = dog.id;
+    const dogName = dog.name || "";
+    const dogAvatar = dog.img || dog.avatar || "";
+
+    // chatId deterministico (stesso formato usato ovunque)
+    const chatId = `${selfUid}_${dogId}`;
+
+    const chatPayload = {
+      members: [selfUid],
+      dogId,
+      dogName,
+      dogAvatar,
+      match: true,
+      lastMessageText: "",
+      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+
+    await db.collection("chats").doc(chatId).set(chatPayload, { merge: true });
+  } catch (err) {
+    console.error("Errore ensureChatForMatch:", err);
+  }
 }
 
   // ============ Ricerca ============
@@ -2275,54 +2288,26 @@ if (openChatBtn) {
   openChatBtn.onclick = () => openChat(d);
 }
 
-const likeDogBtn = $("btnLikeDog");
+    const likeDogBtn = $("btnLikeDog");
 if (likeDogBtn) {
-  likeDogBtn.addEventListener("click", () => {
+  likeDogBtn.addEventListener("click", async () => {
     if (!d || !d.id) return;
 
-    // segno il match come nello swipe LOVE
+    // Salva match locale
     state.matches[d.id] = true;
     localStorage.setItem("matches", JSON.stringify(state.matches));
-  
-  // --- consolido il match da swipe in Firestore per la tab "Match" ---
-try {
-  const selfUid = window.PLUTOO_UID || "anonymous";
-  const dogId = d.id;
-  const dogName = d.name || "";
-  const dogAvatar = d.photo || d.avatar || "";
 
-  if (selfUid && dogId && window.db) {
-    const chatId = `${selfUid}_${dogId}`;
-    const chatRef = db.collection("chats").doc(chatId);
+    // CONSOLIDA MATCH SU FIRESTORE (stessa logica swipe)
+    await ensureChatForMatch(d);
 
-    const nowTs = firebase.firestore.FieldValue.serverTimestamp();
-
-    const chatPayload = {
-      members: [selfUid],
-      dogId,
-      dogName,
-      dogAvatar,
-      match: true,
-      lastMessageText: "",
-      lastMessageAt: nowTs,
-      updatedAt: nowTs,
-    };
-
-    chatRef.set(chatPayload, { merge: true }).catch(err => {
-      console.error("Errore set chat swipe match:", err);
-    });
-  }
-} catch (err) {
-  console.error("Errore generale swipe match Firestore:", err);
-}
-
-    const nameForMatch =
-      d.name || (state.lang === "it" ? "Nuovo match" : "New match");
-
+    const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
     showMatchAnimation(nameForMatch, nextMatchColor);
+
     state.matchCount++;
     localStorage.setItem("matchCount", String(state.matchCount));
-    nextMatchColor = ["💛", "💚", "🩵","❤️"][state.matchCount % 4];
+
+    // 🔟 10 cuori in rotazione, come nello swipe
+    nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
   });
 }
 
