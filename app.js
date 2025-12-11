@@ -2618,9 +2618,6 @@ async function loadChatHistory(chatId, dogName) {
   }
 }
 
-    sendChatMessage(text, dogId, hasMatch, msgCount);
-  });
-
  async function sendChatMessage(text, dogId, hasMatch, msgCount){
   // ✅ AGGIUNGI bolla nella UI
   const bubble = document.createElement("div");
