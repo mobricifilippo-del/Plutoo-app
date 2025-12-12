@@ -2369,123 +2369,52 @@ if (likeDogBtn) {
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // Carica i messaggi da Firestore per una chat specifica
-   async function loadMessagesLists() {
+  // Carica i messaggi da Firestore per una chat
+async function loadChatHistory(chatId, dogName) {
+  if (!db || !chatList || !chatId) return;
+
   try {
-    if (!db || !msgLists || !msgLists.length) return;
+    const selfUid = window.PLUTOO_UID || "anonymous";
 
-    const selfUid = window.PLUTOO_UID || "anon";
-    if (!selfUid) return;
-
-    const sentList = document.getElementById("tabSent");
-    const matchesList = document.getElementById("tabMatches");
-    if (!sentList || !matchesList) return;
-
-    // Pulisco le liste
-    msgLists.forEach((list) => {
-      list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-      const emptyEl = list.querySelector(".empty-state");
-      if (emptyEl) emptyEl.classList.add("hidden-empty");
-    });
-
-    // Leggo tutte le chat
     const snap = await db
-      .collection("chats")
-      .where("members", "array-contains", selfUid)
+      .collection("messages")
+      .where("chatId", "==", chatId)
+      .orderBy("createdAt", "asc")
       .get();
 
-    const chats = [];
-    snap.forEach((docSnap) => {
-      const data = docSnap.data() || {};
-      let lastAt = data.lastMessageAt || null;
-      if (lastAt && typeof lastAt.toDate === "function") {
-        lastAt = lastAt.toDate();
-      }
+    chatList.innerHTML = "";
 
-      chats.push({
-        id: docSnap.id,
-        dogId: data.dogId || null,
-        members: Array.isArray(data.members) ? data.members : [],
-        lastMessageText: data.lastMessageText || "",
-        lastMessageAt: lastAt,
-        lastSenderUid: data.lastSenderUid || null,
-        dogName: data.dogName || null,
-        dogAvatar: data.dogAvatar || null,
-        match: !!data.match
-      });
-    });
-
-    // Se non ci sono chat → empty state
-    if (!chats.length) {
-      msgLists.forEach((list) => {
-        const emptyEl = list.querySelector(".empty-state");
-        if (emptyEl) emptyEl.classList.remove("hidden-empty");
-      });
+    if (snap.empty) {
+      const hello = document.createElement("div");
+      hello.className = "msg";
+      hello.textContent =
+        state.lang === "it"
+          ? `Ciao ${dogName}! 🐾`
+          : `Hi ${dogName}! 🐾`;
+      chatList.appendChild(hello);
+      chatList.scrollTop = chatList.scrollHeight;
       return;
     }
 
-    // Ordino per data (dalla più recente alla più vecchia)
-    chats.sort((a, b) => {
-      if (!a.lastMessageAt && !b.lastMessageAt) return 0;
-      if (!a.lastMessageAt) return 1;
-      if (!b.lastMessageAt) return -1;
-      return b.lastMessageAt - a.lastMessageAt;
+    snap.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+      const text = data.text || "";
+      if (!text) return;
+
+      const bubble = document.createElement("div");
+      const senderUid = data.senderUid || "";
+      const isMe = senderUid === selfUid;
+
+      bubble.className = isMe ? "msg me" : "msg";
+      bubble.textContent = text;
+      chatList.appendChild(bubble);
     });
 
-    // ✅ POPOLO LE LISTE
-    chats.forEach((chat) => {
-      const dogId = chat.dogId || null;
-      const dogName = chat.dogName || (state.lang === "en" ? "DOG" : "Dog");
-      const text = chat.lastMessageText || "";
-      const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
-
-      // Tab "Inviati": solo chat dove l'ultimo messaggio è mio
-      const isSent = chat.lastSenderUid === selfUid;
-      if (isSent) {
-        const row = document.createElement("div");
-        row.className = "msg-item";
-        row.innerHTML = `
-          <div class="msg-main">
-            <div class="msg-title">${dogName} - ${text}</div>
-            <div class="msg-meta">${dateText}</div>
-          </div>
-        `;
-        row.addEventListener("click", () => {
-          openChat(chat.id, dogId, null);
-        });
-        sentList.appendChild(row);
-      }
-
-      // Tab "Match": TUTTI i DOG con match attivo
-      if (chat.match && dogId) {
-        const matchRow = document.createElement("div");
-        matchRow.className = "msg-item";
-        matchRow.innerHTML = `
-          <div class="msg-main">
-            <div class="msg-title">${dogName}</div>
-            <div class="msg-meta">${state.lang === "it" ? "Match attivo" : "Active match"}</div>
-          </div>
-        `;
-        matchRow.addEventListener("click", () => {
-          openChat(chat.id, dogId, null);
-        });
-        matchesList.appendChild(matchRow);
-      }
-    });
-
-    // Empty states finali
-    msgLists.forEach((list) => {
-      const items = list.querySelectorAll(".msg-item");
-      const emptyEl = list.querySelector(".empty-state");
-      if (!emptyEl) return;
-      const hasItems = items.length > 0;
-      emptyEl.classList.toggle("hidden-empty", hasItems);
-    });
-
+    chatList.scrollTop = chatList.scrollHeight;
   } catch (err) {
-    console.error("Errore loadMessagesLists:", err);
+    console.error("Errore loadChatHistory:", err);
   }
-   }
+}
 
   // =========== Chat ===========
 function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
@@ -2570,53 +2499,6 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
         return;
       }
     }
-
-    // Carica i messaggi da Firestore per una chat
-async function loadChatHistory(chatId, dogName) {
-  if (!db || !chatList || !chatId) return;
-
-  try {
-    const selfUid = window.PLUTOO_UID || "anonymous";
-
-    const snap = await db
-      .collection("messages")
-      .where("chatId", "==", chatId)
-      .orderBy("createdAt", "asc")
-      .get();
-
-    chatList.innerHTML = "";
-
-    if (snap.empty) {
-      const hello = document.createElement("div");
-      hello.className = "msg";
-      hello.textContent =
-        state.lang === "it"
-          ? `Ciao ${dogName}! 🐾`
-          : `Hi ${dogName}! 🐾`;
-      chatList.appendChild(hello);
-      chatList.scrollTop = chatList.scrollHeight;
-      return;
-    }
-
-    snap.forEach((docSnap) => {
-      const data = docSnap.data() || {};
-      const text = data.text || "";
-      if (!text) return;
-
-      const bubble = document.createElement("div");
-      const senderUid = data.senderUid || "";
-      const isMe = senderUid === selfUid;
-
-      bubble.className = isMe ? "msg me" : "msg";
-      bubble.textContent = text;
-      chatList.appendChild(bubble);
-    });
-
-    chatList.scrollTop = chatList.scrollHeight;
-  } catch (err) {
-    console.error("Errore loadChatHistory:", err);
-  }
-}
 
     sendChatMessage(text, dogId, hasMatch, msgCount);
   });
