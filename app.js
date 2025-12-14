@@ -2461,23 +2461,22 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   if (typeof chatIdOrDog === "object" && chatIdOrDog) {
     dog = chatIdOrDog;
     dogId = dog.id || "";
-    chatId = `${selfUid}_${dogId}`;
   } else {
-  // Caso 2: openChat(chatId, dogId, otherUid) da lista Messaggi
-  chatId = chatIdOrDog || "";
-  dogId = maybeDogId || "";
+    // Caso 2: openChat(chatId, dogId, otherUid) da lista Messaggi
+    chatId = chatIdOrDog || "";
+    dogId = maybeDogId || "";
 
-  // Se dogId non arriva, proviamo a ricavarlo da chatId (formato: selfUid_dogId)
-  if (!dogId && chatId && chatId.startsWith(selfUid + "_")) {
-    dogId = chatId.slice((selfUid + "_").length);
+    // Se dogId non arriva, ricavalo da chatId (formato: selfUid_dogId)
+    if (!dogId && chatId && chatId.startsWith(selfUid + "_")) {
+      dogId = chatId.slice((selfUid + "_").length);
+    }
   }
 
   // ChatId UNICO e deterministico: sempre selfUid_dogId
   chatId = `${selfUid}_${dogId}`;
 
-  dog = DOGS.find(d => d.id === dogId) || null;
-  }
-
+  // Trova DOG coerente (evita fallback strani)
+  dog = dog || (DOGS.find(d => d.id === dogId) || null);
   const dogName = (dog && dog.name) || (state.lang === "en" ? "DOG" : "Dog");
 
   // Mostra pannello chat
@@ -2487,26 +2486,55 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   // Salva metadati correnti
   chatPane.dataset.dogId = dogId;
   chatPane.dataset.chatId = chatId;
+  chatPane.dataset.hasMatch = "0";
   state.currentDogId = dogId;
   state.currentChatId = chatId;
 
-  // ✅ Carica history completa
+  // Carica history completa
   loadChatHistory(chatId, dogName);
 
-  // Regole input
-  const hasMatch = state.matches[dogId] || false;
-  const msgCount = state.chatMessagesSent[dogId] || 0;
+  // Funzione locale per applicare le regole input (UNA sola fonte: hasMatch vero/falso)
+  const applyChatRules = (hasMatchValue) => {
+    const msgCount = state.chatMessagesSent[dogId] || 0;
 
-  if (!state.plus && !hasMatch && msgCount >= 1) {
-    chatInput.disabled = true;
-    chatInput.placeholder = state.lang === "it"
-      ? "Match necessario per continuare"
-      : "Match needed to continue";
-  } else {
-    chatInput.disabled = false;
-    chatInput.placeholder = state.lang === "it"
-      ? "Scrivi un messaggio…"
-      : "Type a message…";
+    if (!state.plus && !hasMatchValue && msgCount >= 1) {
+      chatInput.disabled = true;
+      chatInput.placeholder = state.lang === "it"
+        ? "Match necessario per continuare"
+        : "Match needed to continue";
+    } else {
+      chatInput.disabled = false;
+      chatInput.placeholder = state.lang === "it"
+        ? "Scrivi un messaggio…"
+        : "Type a message…";
+    }
+  };
+
+  // 1) Applica subito una regola “provvisoria” (cache locale, se esiste)
+  const localHasMatch = !!(state.matches && state.matches[dogId]);
+  applyChatRules(localHasMatch);
+
+  // 2) Poi leggi la verità da Firestore e aggiorna input (questa è quella che conta)
+  if (window.db && dogId) {
+    window.db.collection("chats").doc(chatId).get()
+      .then((doc) => {
+        const data = doc && doc.exists ? (doc.data() || {}) : {};
+        const fsHasMatch = data.match === true;
+
+        chatPane.dataset.hasMatch = fsHasMatch ? "1" : "0";
+
+        // opzionale: aggiorna cache locale senza decidere nulla
+        if (state.matches) {
+          if (fsHasMatch) state.matches[dogId] = true;
+          localStorage.setItem("matches", JSON.stringify(state.matches));
+        }
+
+        applyChatRules(fsHasMatch);
+      })
+      .catch((err) => {
+        console.error("openChat -> read match failed:", err);
+        // se fallisce, restano valide le regole provvisorie
+      });
   }
 }
 
