@@ -1166,11 +1166,6 @@ msgLists.forEach((list) => {
         localStorage.setItem("friendships", JSON.stringify(state.friendships));
       }
 
-      // ✅ CONSOLIDA MATCH SU FIRESTORE
-      ensureChatForMatch(d).catch(err => {
-        console.error("Errore ensureChatForMatch da swipe:", err);
-      });
-
       // Animazione match
       showMatchAnimation(d.name, nextMatchColor);
       state.matchCount++;
