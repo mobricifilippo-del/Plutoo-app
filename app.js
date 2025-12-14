@@ -2365,22 +2365,47 @@ if (likeDogBtn) {
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
 
-  // Carica i messaggi da Firestore per una chat
+  // Carica i messaggi da Firestore per una chat (ROBUSTO: ordina lato JS)
 async function loadChatHistory(chatId, dogName) {
   if (!db || !chatList || !chatId) return;
 
   try {
     const selfUid = window.PLUTOO_UID || "anonymous";
 
+    // 1) Prendo TUTTI i messaggi della chat (senza orderBy per non “perdere” doc)
     const snap = await db
       .collection("messages")
       .where("chatId", "==", chatId)
-      .orderBy("createdAt", "asc")
       .get();
 
+    const msgs = [];
+
+    snap.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+      const text = (data.text || "").trim();
+      if (!text) return;
+
+      // createdAt può essere Timestamp, null, o mancante: lo normalizzo
+      let t = 0;
+      const ca = data.createdAt;
+      if (ca && typeof ca.toDate === "function") {
+        t = ca.toDate().getTime();
+      }
+
+      msgs.push({
+        text,
+        senderUid: data.senderUid || "",
+        t
+      });
+    });
+
+    // 2) Ordino per data crescente (chi non ha createdAt va in cima, ma resta visibile)
+    msgs.sort((a, b) => (a.t || 0) - (b.t || 0));
+
+    // 3) Render
     chatList.innerHTML = "";
 
-    if (snap.empty) {
+    if (!msgs.length) {
       const hello = document.createElement("div");
       hello.className = "msg";
       hello.textContent =
@@ -2392,17 +2417,11 @@ async function loadChatHistory(chatId, dogName) {
       return;
     }
 
-    snap.forEach((docSnap) => {
-      const data = docSnap.data() || {};
-      const text = data.text || "";
-      if (!text) return;
-
+    msgs.forEach((m) => {
       const bubble = document.createElement("div");
-      const senderUid = data.senderUid || "";
-      const isMe = senderUid === selfUid;
-
+      const isMe = (m.senderUid === selfUid);
       bubble.className = isMe ? "msg me" : "msg";
-      bubble.textContent = text;
+      bubble.textContent = m.text;
       chatList.appendChild(bubble);
     });
 
