@@ -2527,8 +2527,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
     sendChatMessage(text, dogId, hasMatch, msgCount);
   });
 
- async function sendChatMessage(text, dogId, hasMatch, msgCount){
-  // ✅ AGGIUNGI bolla nella UI
+ async function sendChatMessage(text, dogId, hasMatch, msgCount) {
+  // ✅ UI subito
   const bubble = document.createElement("div");
   bubble.className = "msg me";
   bubble.textContent = text;
@@ -2536,17 +2536,28 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   chatInput.value = "";
   chatList.scrollTop = chatList.scrollHeight;
 
-  // Salva su Firestore
   try {
     const selfUid = window.PLUTOO_UID || "anonymous";
-    const safeDogId = dogId || (chatPane?.dataset?.dogId || "");
-    const chatId = `${selfUid}_${safeDogId}`;
 
-    const dogProfile = state.currentDogProfile || DOGS.find(d => d.id === dogId) || {};
+    // ✅ Fonte UNICA: prima dataset (pinnata da openChat), poi parametro
+    const safeDogId =
+      (chatPane && chatPane.dataset && chatPane.dataset.dogId) ? chatPane.dataset.dogId : (dogId || "");
+
+    if (!safeDogId) {
+      console.error("sendChatMessage: dogId mancante -> NON salvo su Firestore");
+      return;
+    }
+
+    // ✅ chatId UNICO: prima dataset (pinnata da openChat), poi selfUid_safeDogId
+    const chatId =
+      (chatPane && chatPane.dataset && chatPane.dataset.chatId) ? chatPane.dataset.chatId : `${selfUid}_${safeDogId}`;
+
+    // ✅ Usa SEMPRE safeDogId (non dogId) per trovare profilo/meta e per contatori
+    const dogProfile = state.currentDogProfile || DOGS.find(d => d.id === safeDogId) || {};
     const dogName = dogProfile.name || null;
-    const dogAvatar = dogProfile.img || dogProfile.photoUrl || null;
+    const dogAvatar = dogProfile.img || dogProfile.avatar || dogProfile.photoUrl || null;
 
-    // 1) Salva messaggio singolo
+    // 1) Messaggio
     await db.collection("messages").add({
       chatId,
       senderUid: selfUid,
@@ -2556,39 +2567,38 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       isRead: false
     });
 
-    // 2) Aggiorna documento chat (SENZA toccare match)
+    // 2) Chat meta (NON tocco match)
     await db.collection("chats").doc(chatId).set({
       members: [selfUid],
-      dogId: dogId || null,
-      dogName: dogName,
-      dogAvatar: dogAvatar,
+      dogId: safeDogId,
+      dogName,
+      dogAvatar,
       lastMessageText: text,
       lastMessageAt: FieldValue.serverTimestamp(),
       lastSenderUid: selfUid
-      // ❌ NON scrivere "match" qui
     }, { merge: true });
+
+    // ✅ Contatore coerente
+    state.chatMessagesSent[safeDogId] = (state.chatMessagesSent[safeDogId] || 0) + 1;
+    localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+
+    // Regole input (usa hasMatch passato)
+    if (!state.plus && !hasMatch && state.chatMessagesSent[safeDogId] >= 1) {
+      chatInput.disabled = true;
+      chatInput.placeholder = state.lang === "it"
+        ? "Match necessario per continuare"
+        : "Match needed to continue";
+    } else {
+      chatInput.disabled = false;
+      chatInput.placeholder = state.lang === "it"
+        ? "Scrivi un messaggio…"
+        : "Type a message…";
+    }
 
   } catch (err) {
     console.error("Errore Firestore sendChatMessage", err);
   }
-
-  // Aggiorna contatore messaggi
-  state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
-  localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
-
-  // Regole input (usa hasMatch, non state.matches)
-  if (!state.plus && !hasMatch && state.chatMessagesSent[dogId] >= 1){
-    chatInput.disabled = true;
-    chatInput.placeholder = state.lang === "it"
-      ? "Match necessario per continuare"
-      : "Match needed to continue";
-  } else {
-    chatInput.disabled = false;
-    chatInput.placeholder = state.lang === "it"
-      ? "Scrivi un messaggio…"
-      : "Type a message…";
-  }
-}
+ }
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
