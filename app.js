@@ -788,6 +788,7 @@ const DOGS = [
     lastSenderUid: data.lastSenderUid || null,
     dogName: data.dogName || null,
     dogAvatar: data.dogAvatar || null,
+    match: !!data.match,
   });
 });
 
@@ -825,8 +826,8 @@ chats.forEach((chat) => {
         ? chat.lastMessageAt.toLocaleString()
         : "";
 
-    const isSent = (chat.lastSenderUid === selfUid) && !chat.match;
-    const hasMatch = !!chat.match;
+    const isSent = chat.lastSenderUid === selfUid;
+    const hasMatch = chat.match === true;
 
     // ---- TAB "Inviati": solo chat dove l'ultimo messaggio è mio ----
     if (isSent) {
