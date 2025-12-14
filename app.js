@@ -826,7 +826,10 @@ chats.forEach((chat) => {
         ? chat.lastMessageAt.toLocaleString()
         : "";
 
-    const isSent = chat.lastSenderUid === selfUid;
+    const isSent =
+  chat.lastSenderUid === selfUid &&
+  chat.lastMessageText &&
+  chat.lastMessageText.trim() !== "";
     const hasMatch = chat.match === true;
 
     // ---- TAB "Inviati": solo chat dove l'ultimo messaggio è mio ----
