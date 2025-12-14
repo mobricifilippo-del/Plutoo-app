@@ -2572,7 +2572,7 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   });
 
  async function sendChatMessage(text, dogId, hasMatch, msgCount) {
-  // ✅ UI subito
+  // UI subito
   const bubble = document.createElement("div");
   bubble.className = "msg me";
   bubble.textContent = text;
@@ -2583,23 +2583,27 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   try {
     const selfUid = window.PLUTOO_UID || "anonymous";
 
-    // ✅ Fonte UNICA: prima dataset (pinnata da openChat), poi parametro
     const safeDogId =
-      (chatPane && chatPane.dataset && chatPane.dataset.dogId) ? chatPane.dataset.dogId : (dogId || "");
+      (chatPane && chatPane.dataset && chatPane.dataset.dogId)
+        ? chatPane.dataset.dogId
+        : (dogId || "");
 
     if (!safeDogId) {
-      console.error("sendChatMessage: dogId mancante -> NON salvo su Firestore");
+      console.error("sendChatMessage: dogId mancante");
       return;
     }
 
-    // ✅ chatId UNICO: prima dataset (pinnata da openChat), poi selfUid_safeDogId
     const chatId =
-      (chatPane && chatPane.dataset && chatPane.dataset.chatId) ? chatPane.dataset.chatId : `${selfUid}_${safeDogId}`;
+      (chatPane && chatPane.dataset && chatPane.dataset.chatId)
+        ? chatPane.dataset.chatId
+        : `${selfUid}_${safeDogId}`;
 
-    // ✅ Usa SEMPRE safeDogId (non dogId) per trovare profilo/meta e per contatori
-    const dogProfile = state.currentDogProfile || DOGS.find(d => d.id === safeDogId) || {};
+    const dogProfile =
+      state.currentDogProfile || DOGS.find(d => d.id === safeDogId) || {};
+
     const dogName = dogProfile.name || null;
-    const dogAvatar = dogProfile.img || dogProfile.avatar || dogProfile.photoUrl || null;
+    const dogAvatar =
+      dogProfile.img || dogProfile.avatar || dogProfile.photoUrl || null;
 
     // 1) Messaggio
     await db.collection("messages").add({
@@ -2607,36 +2611,43 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       senderUid: selfUid,
       text,
       type: "text",
-      createdAt: FieldValue.serverTimestamp(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       isRead: false
     });
 
-    // 2) Chat meta (NON tocco match)
+    // 2) Meta chat (NON tocchiamo match)
     await db.collection("chats").doc(chatId).set({
       members: [selfUid],
       dogId: safeDogId,
       dogName,
       dogAvatar,
       lastMessageText: text,
-      lastMessageAt: FieldValue.serverTimestamp(),
+      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastSenderUid: selfUid
     }, { merge: true });
 
-    // ✅ Contatore coerente
-    state.chatMessagesSent[safeDogId] = (state.chatMessagesSent[safeDogId] || 0) + 1;
-    localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
+    // Contatore coerente
+    state.chatMessagesSent[safeDogId] =
+      (state.chatMessagesSent[safeDogId] || 0) + 1;
 
-    // Regole input (usa hasMatch passato)
+    localStorage.setItem(
+      "chatMessagesSent",
+      JSON.stringify(state.chatMessagesSent)
+    );
+
+    // Regole input
     if (!state.plus && !hasMatch && state.chatMessagesSent[safeDogId] >= 1) {
       chatInput.disabled = true;
-      chatInput.placeholder = state.lang === "it"
-        ? "Match necessario per continuare"
-        : "Match needed to continue";
+      chatInput.placeholder =
+        state.lang === "it"
+          ? "Match necessario per continuare"
+          : "Match needed to continue";
     } else {
       chatInput.disabled = false;
-      chatInput.placeholder = state.lang === "it"
-        ? "Scrivi un messaggio…"
-        : "Type a message…";
+      chatInput.placeholder =
+        state.lang === "it"
+          ? "Scrivi un messaggio…"
+          : "Type a message…";
     }
 
   } catch (err) {
