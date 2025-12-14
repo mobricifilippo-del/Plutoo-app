@@ -1151,7 +1151,7 @@ msgLists.forEach((list) => {
   // ✅ FIX: Cleanup vecchi event listeners prima di riassegnarli
   if(card._cleanup) card._cleanup();
 
-  function handleSwipeComplete(direction){
+  async function handleSwipeComplete(direction){
     if(state.processingSwipe) return;
     state.processingSwipe = true;
 
@@ -1162,10 +1162,18 @@ msgLists.forEach((list) => {
       if (mode === "love") {
         state.matches[dogId] = true;
         localStorage.setItem("matches", JSON.stringify(state.matches));
-        // ✅ CONSOLIDA MATCH SU FIRESTORE (serve per farlo comparire in tab Match)
-    if (typeof ensureChatForMatch === "function") {
-    ensureChatForMatch(d);
-   }
+    // ✅ CONSOLIDA MATCH SU FIRESTORE (PRIMA di tutto)
+if (typeof ensureChatForMatch === "function") {
+  try {
+    await ensureChatForMatch(d);
+  } catch (e) {
+    console.error("ensureChatForMatch FALLITA:", e);
+  }
+}
+
+// (cache locale opzionale, la lasciamo per ora)
+state.matches[dogId] = true;
+localStorage.setItem("matches", JSON.stringify(state.matches));
       } else {
         state.friendships[dogId] = true;
         localStorage.setItem("friendships", JSON.stringify(state.friendships));
@@ -1207,7 +1215,7 @@ msgLists.forEach((list) => {
     yesBtn.onclick = () => {
       if (state.processingSwipe) return;
       card.classList.add("swipe-out-right");
-      handleSwipeComplete("right");
+    void handleSwipeComplete("right");
     };
   }
   
@@ -1282,7 +1290,7 @@ msgLists.forEach((list) => {
     if(Math.abs(dx) > th){
       const direction = dx > 0 ? "right" : "left";
       card.classList.add(dx > 0 ? "swipe-out-right" : "swipe-out-left");
-      onSwipe(direction);
+      void onSwipe(direction);
     } else {
       resetCard(card);
     }
