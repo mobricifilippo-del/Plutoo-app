@@ -2516,7 +2516,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   // Salva su Firestore
   try {
     const selfUid = window.PLUTOO_UID || "anonymous";
-    const chatId = state.currentChatId || `${selfUid}_${dogId}`;
+    const safeDogId = dogId || (chatPane?.dataset?.dogId || "");
+    const chatId = `${selfUid}_${safeDogId}`;
 
     const dogProfile = state.currentDogProfile || DOGS.find(d => d.id === dogId) || {};
     const dogName = dogProfile.name || null;
