@@ -2334,7 +2334,7 @@ likeDogBtn.addEventListener("click", async () => {
   nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
 });
 
-    $("uploadSelfie").onclick = () => {
+  $("#uploadSelfie").onclick = () => {
   const d = state.currentDogProfile;
   if (!d) return;
 
