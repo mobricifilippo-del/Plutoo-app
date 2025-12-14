@@ -2530,7 +2530,7 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       isRead: false
     });
 
-    // 2) Aggiorna documento chat
+    // 2) Aggiorna documento chat (SENZA toccare match)
     await db.collection("chats").doc(chatId).set({
       members: [selfUid],
       dogId: dogId || null,
@@ -2538,8 +2538,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       dogAvatar: dogAvatar,
       lastMessageText: text,
       lastMessageAt: FieldValue.serverTimestamp(),
-      lastSenderUid: selfUid,
-      match: !!(state.matches[dogId] || hasMatch)
+      lastSenderUid: selfUid
+      // ❌ NON scrivere "match" qui
     }, { merge: true });
 
   } catch (err) {
@@ -2550,13 +2550,17 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   state.chatMessagesSent[dogId] = (msgCount || 0) + 1;
   localStorage.setItem("chatMessagesSent", JSON.stringify(state.chatMessagesSent));
 
-  // Regole input
-  if (!state.plus && !state.matches[dogId] && state.chatMessagesSent[dogId] >= 1){
+  // Regole input (usa hasMatch, non state.matches)
+  if (!state.plus && !hasMatch && state.chatMessagesSent[dogId] >= 1){
     chatInput.disabled = true;
-    chatInput.placeholder = state.lang === "it" ? "Match necessario per continuare" : "Match needed to continue";
+    chatInput.placeholder = state.lang === "it"
+      ? "Match necessario per continuare"
+      : "Match needed to continue";
   } else {
     chatInput.disabled = false;
-    chatInput.placeholder = state.lang === "it" ? "Scrivi un messaggio…" : "Type a message…";
+    chatInput.placeholder = state.lang === "it"
+      ? "Scrivi un messaggio…"
+      : "Type a message…";
   }
 }
 
