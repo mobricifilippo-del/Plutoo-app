@@ -2431,10 +2431,19 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
     dogId = dog.id || "";
     chatId = `${selfUid}_${dogId}`;
   } else {
-    // Caso 2: openChat(chatId, dogId, otherUid) da lista Messaggi
-    chatId = chatIdOrDog || "";
-    dogId = maybeDogId || "";
-    dog = DOGS.find(d => d.id === dogId) || null;
+  // Caso 2: openChat(chatId, dogId, otherUid) da lista Messaggi
+  chatId = chatIdOrDog || "";
+  dogId = maybeDogId || "";
+
+  // Se dogId non arriva, proviamo a ricavarlo da chatId (formato: selfUid_dogId)
+  if (!dogId && chatId && chatId.startsWith(selfUid + "_")) {
+    dogId = chatId.slice((selfUid + "_").length);
+  }
+
+  // ChatId UNICO e deterministico: sempre selfUid_dogId
+  chatId = `${selfUid}_${dogId}`;
+
+  dog = DOGS.find(d => d.id === dogId) || null;
   }
 
   const dogName = (dog && dog.name) || (state.lang === "en" ? "DOG" : "Dog");
