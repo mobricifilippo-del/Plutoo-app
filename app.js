@@ -1162,6 +1162,10 @@ msgLists.forEach((list) => {
       if (mode === "love") {
         state.matches[dogId] = true;
         localStorage.setItem("matches", JSON.stringify(state.matches));
+        // ✅ CONSOLIDA MATCH SU FIRESTORE (serve per farlo comparire in tab Match)
+    if (typeof ensureChatForMatch === "function") {
+    ensureChatForMatch(d);
+   }
       } else {
         state.friendships[dogId] = true;
         localStorage.setItem("friendships", JSON.stringify(state.friendships));
