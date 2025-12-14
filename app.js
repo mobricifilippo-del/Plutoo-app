@@ -2305,26 +2305,34 @@ const openChatBtn = $("btnOpenChat");
 if (openChatBtn) {
   openChatBtn.onclick = () => openChat(d);
 }
-
-    const likeDogBtn = $("btnLikeDog");
+const likeDogBtn = $("btnLikeDog");
 if (likeDogBtn) {
-  likeDogBtn.addEventListener("click", async () => {
-    if (!d || !d.id) return;
+  
+likeDogBtn.addEventListener("click", async () => {
+  if (!d || !d.id) return;
 
-    // Salva match locale
-    state.matches[d.id] = true;
-    localStorage.setItem("matches", JSON.stringify(state.matches));
+  // Salva match locale
+  state.matches[d.id] = true;
+  localStorage.setItem("matches", JSON.stringify(state.matches));
 
-    const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
-    showMatchAnimation(nameForMatch, nextMatchColor);
+  // ✅ CONSOLIDA MATCH SU FIRESTORE (come nello swipe)
+  if (typeof ensureChatForMatch === "function") {
+    try {
+      await ensureChatForMatch(d);
+    } catch (e) {
+      console.error("ensureChatForMatch PROFILO FALLITA:", e);
+    }
+  }
 
-    state.matchCount++;
-    localStorage.setItem("matchCount", String(state.matchCount));
+  const nameForMatch = d.name || (state.lang === "en" ? "DOG" : "Dog");
+  showMatchAnimation(nameForMatch, nextMatchColor);
 
-    // 🔟 10 cuori in rotazione, come nello swipe
-    nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
-  });
-}
+  state.matchCount++;
+  localStorage.setItem("matchCount", String(state.matchCount));
+
+  // 10 cuori in rotazione, come nello swipe
+  nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
+});
 
     $("uploadSelfie").onclick = () => {
   const d = state.currentDogProfile;
