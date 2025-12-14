@@ -2408,7 +2408,7 @@ async function loadChatHistory(chatId, dogName) {
 }
 
   // =========== Chat ===========
-  function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
+function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   if (!chatPane || !chatList || !chatInput) return;
 
   const selfUid = window.PLUTOO_UID || "anonymous";
@@ -2453,20 +2453,21 @@ async function loadChatHistory(chatId, dogName) {
   // ✅ Carica history completa
   loadChatHistory(chatId, dogName);
 
-// Regole input
-const hasMatch = state.matches[dogId] || false;
-const msgCount = state.chatMessagesSent[dogId] || 0;
+  // Regole input
+  const hasMatch = state.matches[dogId] || false;
+  const msgCount = state.chatMessagesSent[dogId] || 0;
 
-if (!state.plus && !hasMatch && msgCount >= 1) {
-  chatInput.disabled = true;
-  chatInput.placeholder = state.lang === "it"
-    ? "Match necessario per continuare"
-    : "Match needed to continue";
-} else {
-  chatInput.disabled = false;
-  chatInput.placeholder = state.lang === "it"
-    ? "Scrivi un messaggio…"
-    : "Type a message…";
+  if (!state.plus && !hasMatch && msgCount >= 1) {
+    chatInput.disabled = true;
+    chatInput.placeholder = state.lang === "it"
+      ? "Match necessario per continuare"
+      : "Match needed to continue";
+  } else {
+    chatInput.disabled = false;
+    chatInput.placeholder = state.lang === "it"
+      ? "Scrivi un messaggio…"
+      : "Type a message…";
+  }
 }
 
   function closeChatPane(){
