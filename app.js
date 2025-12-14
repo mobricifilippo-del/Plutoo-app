@@ -1170,10 +1170,6 @@ if (typeof ensureChatForMatch === "function") {
     console.error("ensureChatForMatch FALLITA:", e);
   }
 }
-
-// (cache locale opzionale, la lasciamo per ora)
-state.matches[dogId] = true;
-localStorage.setItem("matches", JSON.stringify(state.matches));
       } else {
         state.friendships[dogId] = true;
         localStorage.setItem("friendships", JSON.stringify(state.friendships));
