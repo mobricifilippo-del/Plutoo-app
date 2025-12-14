@@ -1227,7 +1227,7 @@ if (typeof ensureChatForMatch === "function") {
   attachSwipeWithClick(card, d, handleSwipeComplete);
   }
 
-  function attachSwipeWithClick(card, dogData, onSwipe){
+function attachSwipeWithClick(card, dogData, onSwipe){
   let startX = 0;
   let startY = 0;
   let startTime = 0;
@@ -1271,12 +1271,11 @@ if (typeof ensureChatForMatch === "function") {
     const elapsed = Date.now() - startTime;
     const th = 90;
 
-    // ✅ FIX: Se è un click (non swipe), apri il profilo DEL DOG CORRENTE
+    // ✅ Click: apri profilo DEL DOG corrente
     if(!hasMoved && elapsed < CLICK_TIME_THRESHOLD && Math.abs(dx) < CLICK_THRESHOLD){
       card.classList.add("flash-violet");
       setTimeout(()=>{
         card.classList.remove("flash-violet");
-        // ✅ Passa dogData che è l'oggetto DOG corrente passato alla funzione
         openProfilePage(dogData);
       }, 500);
       resetCard(card);
@@ -1294,28 +1293,41 @@ if (typeof ensureChatForMatch === "function") {
     currentX = 0;
   };
 
-  card.addEventListener("touchstart", e => {
+  // ✅ Handler nominati (necessari per removeEventListener)
+  const onTouchStart = (e) => {
     const touch = e.touches[0];
     start(touch.clientX, touch.clientY);
-  }, {passive: true});
+  };
 
-  card.addEventListener("touchmove", e => {
+  const onTouchMove = (e) => {
     const touch = e.touches[0];
     move(touch.clientX);
-  }, {passive: true});
+  };
 
-  card.addEventListener("touchend", end, {passive: true});
+  const onTouchEnd = () => end();
 
-  card.addEventListener("mousedown", e => { start(e.clientX, e.clientY); });
-
-  const handleMouseMove = e => move(e.clientX);
+  const onMouseDown = (e) => start(e.clientX, e.clientY);
+  const handleMouseMove = (e) => move(e.clientX);
   const handleMouseUp = () => end();
+
+  // ✅ Aggancio listener
+  card.addEventListener("touchstart", onTouchStart, {passive: true});
+  card.addEventListener("touchmove", onTouchMove, {passive: true});
+  card.addEventListener("touchend", onTouchEnd, {passive: true});
+
+  card.addEventListener("mousedown", onMouseDown);
 
   window.addEventListener("mousemove", handleMouseMove);
   window.addEventListener("mouseup", handleMouseUp);
 
-  // ✅ Salva la funzione cleanup per rimuovere gli event listeners
+  // ✅ Cleanup COMPLETO (touch + mouse + window)
   card._cleanup = () => {
+    card.removeEventListener("touchstart", onTouchStart);
+    card.removeEventListener("touchmove", onTouchMove);
+    card.removeEventListener("touchend", onTouchEnd);
+
+    card.removeEventListener("mousedown", onMouseDown);
+
     window.removeEventListener("mousemove", handleMouseMove);
     window.removeEventListener("mouseup", handleMouseUp);
   };
