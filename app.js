@@ -2291,9 +2291,6 @@ if (likeDogBtn) {
     state.matches[d.id] = true;
     localStorage.setItem("matches", JSON.stringify(state.matches));
 
-    // CONSOLIDA MATCH SU FIRESTORE (stessa logica swipe)
-    await ensureChatForMatch(d);
-
     const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
     showMatchAnimation(nameForMatch, nextMatchColor);
 
