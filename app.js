@@ -2556,32 +2556,37 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   }
   closeChat?.addEventListener("click", closeChatPane);
 
-  chatComposer?.addEventListener("submit", (e)=>{
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text) return;
+  chatComposer?.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-    const dogId = chatPane.dataset.dogId || "unknown";
-    const hasMatch = state.matches[dogId] || false;
-    const msgCount = state.chatMessagesSent[dogId] || 0;
+  const text = chatInput.value.trim();
+  if (!text) return;
 
-    if (!state.plus){
-      if (msgCount === 0){
-        if (state.rewardOpen) return;
-        state.rewardOpen = true;
-        showRewardVideoMock("chat", ()=>{
-          state.rewardOpen = false;
-          sendChatMessage(text, dogId, hasMatch, msgCount);
-        });
-        return;
-      } else if (!hasMatch && msgCount >= 1){
-        alert(state.lang==="it" ? "Serve un match per continuare a chattare!" : "Match needed to continue chatting!");
-        return;
-      }
+  const dogId = chatPane.dataset.dogId || "";
+  if (!dogId) return;
+
+  const hasMatch = chatPane.dataset.hasMatch === "1";
+  const msgCount = state.chatMessagesSent[dogId] || 0;
+
+  if (!state.plus) {
+    if (msgCount === 0) {
+      if (state.rewardOpen) return;
+      state.rewardOpen = true;
+      showRewardVideoMock("chat", () => {
+        state.rewardOpen = false;
+        sendChatMessage(text, dogId, hasMatch, msgCount);
+      });
+      return;
+    } else if (!hasMatch && msgCount >= 1) {
+      alert(state.lang === "it"
+        ? "Serve un match per continuare"
+        : "Match required to continue");
+      return;
     }
+  }
 
-    sendChatMessage(text, dogId, hasMatch, msgCount);
-  });
+  sendChatMessage(text, dogId, hasMatch, msgCount);
+});
 
  async function sendChatMessage(text, dogId, hasMatch, msgCount) {
   // UI subito
