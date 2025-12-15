@@ -2315,6 +2315,15 @@ likeDogBtn.addEventListener("click", async () => {
   state.matches[d.id] = true;
   localStorage.setItem("matches", JSON.stringify(state.matches));
 
+  // ✅ CONSOLIDA MATCH SU FIRESTORE (come nello swipe)
+  if (typeof ensureChatForMatch === "function") {
+    try {
+      await ensureChatForMatch(d);
+    } catch (e) {
+      console.error("ensureChatForMatch PROFILO FALLITA:", e);
+    }
+  }
+
   const nameForMatch = d.name || (state.lang === "en" ? "DOG" : "Dog");
   showMatchAnimation(nameForMatch, nextMatchColor);
 
@@ -2325,7 +2334,7 @@ likeDogBtn.addEventListener("click", async () => {
   nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
 });
 
-  $("uploadSelfie").onclick = () => {
+    $("uploadSelfie").onclick = () => {
   const d = state.currentDogProfile;
   if (!d) return;
 
