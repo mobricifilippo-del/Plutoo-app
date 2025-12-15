@@ -2565,7 +2565,7 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   const dogId = chatPane.dataset.dogId || "";
   if (!dogId) return;
 
-  const hasMatch = chatPane.dataset.hasMatch === "1";
+  const hasMatch = (chatPane.dataset.hasMatch === "1") || !!(state.matches && state.matches[dogId]);
   const msgCount = state.chatMessagesSent[dogId] || 0;
 
   if (!state.plus) {
