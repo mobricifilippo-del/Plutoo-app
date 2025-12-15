@@ -2306,22 +2306,31 @@ if (openChatBtn) {
   openChatBtn.onclick = () => openChat(d);
 }
 
-    const likeDogBtn = $("btnLikeDog");
+  const likeDogBtn = $("btnLikeDog");
 if (likeDogBtn) {
   likeDogBtn.addEventListener("click", async () => {
     if (!d || !d.id) return;
 
-    // Salva match locale
+    // 1) Match locale (cache UI)
     state.matches[d.id] = true;
     localStorage.setItem("matches", JSON.stringify(state.matches));
 
+    // 2) Match su Firestore (FONTE per la tab Match)
+    if (typeof ensureChatForMatch === "function") {
+      try {
+        await ensureChatForMatch(d);
+      } catch (e) {
+        console.error("ensureChatForMatch PROFILO FALLITA:", e);
+      }
+    }
+
+    // 3) Animazione
     const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
     showMatchAnimation(nameForMatch, nextMatchColor);
 
     state.matchCount++;
     localStorage.setItem("matchCount", String(state.matchCount));
 
-    // 🔟 10 cuori in rotazione, come nello swipe
     nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
   });
 }
