@@ -2751,6 +2751,33 @@ async function init(){
 
   updatePlusUI();
 
+  // ✅ STEP 1: Ripristina match da Firestore (dopo refresh)
+  (async () => {
+    try {
+      const selfUid = window.PLUTOO_UID || "anonymous";
+
+      if (window.db && selfUid) {
+        const snap = await window.db
+          .collection("chats")
+          .where("members", "array-contains", selfUid)
+          .get();
+
+        const restored = {};
+        snap.forEach((doc) => {
+          const data = doc.data() || {};
+          if (data.match === true && data.dogId) {
+            restored[data.dogId] = true;
+          }
+        });
+
+        state.matches = restored;
+        localStorage.setItem("matches", JSON.stringify(restored));
+      }
+    } catch (e) {
+      console.error("Init: restore matches from Firestore failed", e);
+    }
+  })();
+
   if(breedInput) breedInput.value = state.filters.breed;
   if(distRange) distRange.value  = state.filters.distKm;
   if(distLabel) distLabel.textContent = `${distRange.value} km`;
@@ -2765,31 +2792,6 @@ async function init(){
     if (pedigreeFilter) pedigreeFilter.value = state.filters.pedigree;
     if (breedingFilter) breedingFilter.value = state.filters.breeding;
     if (sizeFilter) sizeFilter.value = state.filters.size;
-  }
-
-  // ✅ STEP 1: Ripristina match da Firestore su ogni refresh (Firestore = verità)
-  try {
-    const selfUid = window.PLUTOO_UID || "anonymous";
-
-    if (window.db && selfUid) {
-      const snap = await window.db
-        .collection("chats")
-        .where("members", "array-contains", selfUid)
-        .get();
-
-      const restored = {};
-      snap.forEach((doc) => {
-        const data = doc.data() || {};
-        if (data.match === true && data.dogId) {
-          restored[data.dogId] = true;
-        }
-      });
-
-      state.matches = restored;
-      localStorage.setItem("matches", JSON.stringify(state.matches));
-    }
-  } catch (e) {
-    console.error("Init: restore matches from Firestore failed:", e);
   }
 
   if (state.entered){
