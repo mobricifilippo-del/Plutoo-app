@@ -9,6 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
+  
+  // ✅ STEP 2: Mantiene lo stesso UID anonimo anche dopo refresh
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+  console.error("Auth persistence error:", err);
+});
 
 // Helper per il timestamp server di Firestore (versione compat)
 const FieldValue = firebase.firestore.FieldValue;
