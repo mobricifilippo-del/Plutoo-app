@@ -2742,36 +2742,61 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   }
 
   // ============ Init ============
-  function init(){
-    applyTranslations();
+async function init(){
+  applyTranslations();
 
-    ['dog1.jpg','dog2.jpg','dog3.jpg'].forEach(src=>{
-      const im = new Image(); im.src = `./${src}`;
-    });
+  ['dog1.jpg','dog2.jpg','dog3.jpg'].forEach(src=>{
+    const im = new Image(); im.src = `./${src}`;
+  });
 
-    updatePlusUI();
+  updatePlusUI();
 
-    if(breedInput) breedInput.value = state.filters.breed;
-    if(distRange) distRange.value  = state.filters.distKm;
-    if(distLabel) distLabel.textContent = `${distRange.value} km`;
-    if(onlyVerified) onlyVerified.checked = !!state.filters.verified;
-    if(sexFilter) sexFilter.value  = state.filters.sex;
+  if(breedInput) breedInput.value = state.filters.breed;
+  if(distRange) distRange.value  = state.filters.distKm;
+  if(distLabel) distLabel.textContent = `${distRange.value} km`;
+  if(onlyVerified) onlyVerified.checked = !!state.filters.verified;
+  if(sexFilter) sexFilter.value  = state.filters.sex;
 
-    if (state.plus){
-      if (ageMin) ageMin.value = state.filters.ageMin;
-      if (ageMax) ageMax.value = state.filters.ageMax;
-      if (weightInput) weightInput.value = state.filters.weight;
-      if (heightInput) heightInput.value = state.filters.height;
-      if (pedigreeFilter) pedigreeFilter.value = state.filters.pedigree;
-      if (breedingFilter) breedingFilter.value = state.filters.breeding;
-      if (sizeFilter) sizeFilter.value = state.filters.size;
-    }
-
-    if (state.entered){
-      // initStories parte dopo ENTRA per effetto WOW
-    }
+  if (state.plus){
+    if (ageMin) ageMin.value = state.filters.ageMin;
+    if (ageMax) ageMax.value = state.filters.ageMax;
+    if (weightInput) weightInput.value = state.filters.weight;
+    if (heightInput) heightInput.value = state.filters.height;
+    if (pedigreeFilter) pedigreeFilter.value = state.filters.pedigree;
+    if (breedingFilter) breedingFilter.value = state.filters.breeding;
+    if (sizeFilter) sizeFilter.value = state.filters.size;
   }
-  init();
+
+  // ✅ STEP 1: Ripristina match da Firestore su ogni refresh (Firestore = verità)
+  try {
+    const selfUid = window.PLUTOO_UID || "anonymous";
+
+    if (window.db && selfUid) {
+      const snap = await window.db
+        .collection("chats")
+        .where("members", "array-contains", selfUid)
+        .get();
+
+      const restored = {};
+      snap.forEach((doc) => {
+        const data = doc.data() || {};
+        if (data.match === true && data.dogId) {
+          restored[data.dogId] = true;
+        }
+      });
+
+      state.matches = restored;
+      localStorage.setItem("matches", JSON.stringify(state.matches));
+    }
+  } catch (e) {
+    console.error("Init: restore matches from Firestore failed:", e);
+  }
+
+  if (state.entered){
+    // initStories parte dopo ENTRA per effetto WOW
+  }
+}
+init();
 
   function getVisibleMediaList(story) {
     const hasMatch = !!state.matches[story.userId];
