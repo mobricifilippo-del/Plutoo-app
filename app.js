@@ -28,6 +28,32 @@ auth.onAuthStateChanged(user => {
     // Salva l'UID in window per il resto dell'app
     window.PLUTOO_UID = user.uid;
 
+    // ✅ Ripristina match da Firestore SOLO quando l'UID è pronto
+(async () => {
+  try {
+    const selfUid = window.PLUTOO_UID;
+    if (!db || !selfUid) return;
+
+    const snap = await db
+      .collection("chats")
+      .where("members", "array-contains", selfUid)
+      .get();
+
+    const restored = {};
+    snap.forEach((doc) => {
+      const data = doc.data() || {};
+      if (data.match === true && data.dogId) {
+        restored[data.dogId] = true;
+      }
+    });
+
+    state.matches = restored;
+    localStorage.setItem("matches", JSON.stringify(restored));
+  } catch (e) {
+    console.error("restore matches after UID failed:", e);
+  }
+})();
+
     // Primo test Firestore: salva/aggiorna documento utente
     db.collection("users").doc(user.uid).set({
       lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -2755,33 +2781,6 @@ async function init(){
   });
 
   updatePlusUI();
-
-  // ✅ STEP 1: Ripristina match da Firestore (dopo refresh)
-  (async () => {
-    try {
-      const selfUid = window.PLUTOO_UID || "anonymous";
-
-      if (window.db && selfUid) {
-        const snap = await window.db
-          .collection("chats")
-          .where("members", "array-contains", selfUid)
-          .get();
-
-        const restored = {};
-        snap.forEach((doc) => {
-          const data = doc.data() || {};
-          if (data.match === true && data.dogId) {
-            restored[data.dogId] = true;
-          }
-        });
-
-        state.matches = restored;
-        localStorage.setItem("matches", JSON.stringify(restored));
-      }
-    } catch (e) {
-      console.error("Init: restore matches from Firestore failed", e);
-    }
-  })();
 
   if(breedInput) breedInput.value = state.filters.breed;
   if(distRange) distRange.value  = state.filters.distKm;
