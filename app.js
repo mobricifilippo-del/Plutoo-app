@@ -70,8 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { merge: true }).catch(err => {
       console.error("Firestore user save error:", err);
     });
-
-  });
 });
 
   // Disabilita PWA/Service Worker dentro l'app Android (WebView)
