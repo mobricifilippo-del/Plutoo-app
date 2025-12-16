@@ -2693,6 +2693,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       lastSenderUid: selfUid
     }, { merge: true });
 
+    if (typeof loadMessagesLists === "function") loadMessagesLists();
+
     // Contatore coerente
     state.chatMessagesSent[safeDogId] =
       (state.chatMessagesSent[safeDogId] || 0) + 1;
