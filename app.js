@@ -28,7 +28,7 @@ auth.onAuthStateChanged(user => {
     // Salva l'UID in window per il resto dell'app
     window.PLUTOO_UID = user.uid;
 
-    // ✅ Ripristina match da Firestore SOLO quando l'UID è pronto
+  // ✅ Ripristina match da Firestore SOLO (senza mai cancellare i match locali)
 (async () => {
   try {
     const selfUid = window.PLUTOO_UID;
@@ -47,8 +47,12 @@ auth.onAuthStateChanged(user => {
       }
     });
 
-    state.matches = restored;
-    localStorage.setItem("matches", JSON.stringify(restored));
+    // ✅ MERGE: Firestore aggiunge, ma NON può mai azzerare il locale
+    const current = state.matches && typeof state.matches === "object" ? state.matches : {};
+    const merged = { ...current, ...restored };
+
+    state.matches = merged;
+    localStorage.setItem("matches", JSON.stringify(merged));
   } catch (e) {
     console.error("restore matches after UID failed:", e);
   }
