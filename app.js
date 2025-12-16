@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("restore matches failed:", e);
     }
 
-    // Salva / aggiorna utente
+  // Salva / aggiorna utente
     db.collection("users").doc(user.uid).set({
       lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -70,7 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { merge: true }).catch(err => {
       console.error("Firestore user save error:", err);
     });
-});
+
+    // ✅ Se al refresh ero in "messages", ricarico la lista UNA volta
+    if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
+      loadMessagesLists();
+    }
+    });
 
   // Disabilita PWA/Service Worker dentro l'app Android (WebView)
   const isAndroidWebView =
