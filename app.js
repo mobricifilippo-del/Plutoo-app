@@ -892,7 +892,12 @@ chats.forEach((chat) => {
   const isSent = chat.lastSenderUid === selfUid && hasText;
 
   // ✅ Ricevuti: ultimo messaggio NON è mio (quindi “arrivato”)
-  const isInbox = chat.lastSenderUid && chat.lastSenderUid !== selfUid && hasText;
+  const isInbox =
+  chat.lastSenderUid &&
+  chat.lastSenderUid !== selfUid &&
+  hasText &&
+  !isRequest &&
+  !isSpam;
 
   // ✅ Match: match vero (lista DOG con match)
   const hasMatch = chat.match === true;
