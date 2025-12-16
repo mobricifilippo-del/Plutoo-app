@@ -891,7 +891,11 @@ chats.forEach((chat) => {
   // ✅ Inviati: ultimo messaggio è mio
   const isSent = chat.lastSenderUid === selfUid && hasText;
 
-  // ✅ Ricevuti: ultimo messaggio NON è mio (quindi “arrivato”)
+  // ✅ Richieste/Spam: solo se esistono flag su Firestore
+  const isSpam = chat.spam === true || chat.folder === "spam";
+  const isRequest = chat.folder === "requests";
+  
+ // ✅ Ricevuti: ultimo messaggio NON è mio (quindi “arrivato”)
   const isInbox =
   chat.lastSenderUid &&
   chat.lastSenderUid !== selfUid &&
@@ -901,10 +905,6 @@ chats.forEach((chat) => {
 
   // ✅ Match: match vero (lista DOG con match)
   const hasMatch = chat.match === true;
-
-  // ✅ Richieste/Spam: solo se esistono flag su Firestore
-  const isSpam = chat.spam === true || chat.folder === "spam";
-  const isRequest = chat.folder === "requests";
 
   if (isInbox) {
     inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid));
