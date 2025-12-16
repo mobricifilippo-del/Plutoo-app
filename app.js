@@ -5,60 +5,64 @@ window.addEventListener("error", function (e) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Firebase handles (già inizializzato in index.html)
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-  
-  // ✅ STEP 2: Mantiene lo stesso UID anonimo anche dopo refresh
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
-  console.error("Auth persistence error:", err);
-});
+  // Firebase handles
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
 
-// Helper per il timestamp server di Firestore (versione compat)
-const FieldValue = firebase.firestore.FieldValue;
+  // ✅ Mantiene lo stesso UID anonimo dopo refresh
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+    console.error("Auth persistence error:", err);
+  });
 
-  // Login anonimo automatico (se non ancora loggato)
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    auth.signInAnonymously().catch(err => {
-      console.error("Auth error:", err);
-    });
-  } else {
-    // Salva l'UID in window per il resto dell'app
+  // Login anonimo automatico
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      auth.signInAnonymously().catch(err => {
+        console.error("Auth error:", err);
+      });
+      return;
+    }
+
+    // 🔒 Evita boot multipli
+    if (window.__booted) return;
+    window.__booted = true;
+
+    // Salva UID globale
     window.PLUTOO_UID = user.uid;
 
-  // ✅ Ripristina match da Firestore SOLO (senza mai cancellare i match locali)
-(async () => {
-  try {
-    const selfUid = window.PLUTOO_UID;
-    if (!db || !selfUid) return;
+    // ✅ RIPRISTINO MATCH DA FIRESTORE (MERGE, MAI RESET)
+    try {
+      const selfUid = user.uid;
+      if (!db) return;
 
-    const snap = await db
-      .collection("chats")
-      .where("members", "array-contains", selfUid)
-      .get();
+      const snap = await db
+        .collection("chats")
+        .where("members", "array-contains", selfUid)
+        .get();
 
-    const restored = {};
-    snap.forEach((doc) => {
-      const data = doc.data() || {};
-      if (data.match === true && data.dogId) {
-        restored[data.dogId] = true;
-      }
-    });
+      const restored = {};
+      snap.forEach(doc => {
+        const data = doc.data() || {};
+        if (data.match === true && data.dogId) {
+          restored[data.dogId] = true;
+        }
+      });
 
-    // ✅ MERGE: Firestore aggiunge, ma NON può mai azzerare il locale
-    const current = state.matches && typeof state.matches === "object" ? state.matches : {};
-    const merged = { ...current, ...restored };
+      const current = state.matches && typeof state.matches === "object"
+        ? state.matches
+        : {};
 
-    state.matches = merged;
-    localStorage.setItem("matches", JSON.stringify(merged));
-  } catch (e) {
-    console.error("restore matches after UID failed:", e);
-  }
-})();
+      const merged = { ...current, ...restored };
 
-    // Primo test Firestore: salva/aggiorna documento utente
+      state.matches = merged;
+      localStorage.setItem("matches", JSON.stringify(merged));
+
+    } catch (e) {
+      console.error("restore matches failed:", e);
+    }
+
+    // Salva / aggiorna utente
     db.collection("users").doc(user.uid).set({
       lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -66,8 +70,6 @@ auth.onAuthStateChanged(user => {
     }, { merge: true }).catch(err => {
       console.error("Firestore user save error:", err);
     });
-}
-});
 
   // Disabilita PWA/Service Worker dentro l'app Android (WebView)
   const isAndroidWebView =
