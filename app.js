@@ -863,22 +863,29 @@ async function loadMessagesLists() {
       return b.lastMessageAt - a.lastMessageAt;
     });
 
-    const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab) => {
-      const row = document.createElement("div");
-      row.className = "msg-item";
-      row.innerHTML = `
-        <div class="msg-main">
-          <div class="msg-title">${titleText}</div>
-          <div class="msg-meta">${dateText}</div>
-        </div>
-      `;
-      row.addEventListener("click", () => {
-        // ✅ salvo da dove sto entrando (serve per decidere se segnare "letto" o no)
-        state._openChatFromTab = sourceTab || "";
-        openChat(chatId, dogId, otherUid);
-      });
-      return row;
-    };
+   const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab, dogAvatar) => {
+  const row = document.createElement("div");
+  row.className = "msg-item";
+
+  const avatar = dogAvatar
+    ? `<img src="${dogAvatar}" class="msg-avatar" alt="dog">`
+    : `<div class="msg-avatar placeholder">🐶</div>`;
+
+  row.innerHTML = `
+    ${avatar}
+    <div class="msg-main">
+      <div class="msg-title">${titleText}</div>
+      <div class="msg-meta">${dateText}</div>
+    </div>
+  `;
+
+  row.addEventListener("click", () => {
+    state._openChatFromTab = sourceTab || "";
+    openChat(chatId, dogId, otherUid);
+  });
+
+  return row;
+};
 
     chats.forEach((chat) => {
       const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
@@ -916,32 +923,27 @@ async function loadMessagesLists() {
         !hasMatch;
 
       if (isInbox) {
-        inboxList.appendChild(
-          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox")
+        inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", chat.dogAvatar)
         );
       }
 
       if (isSent) {
-        sentList.appendChild(
-          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "sent")
+      sentList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "sent", chat.dogAvatar)
         );
       }
 
       if (hasMatch && dogId) {
-        matchesList.appendChild(
-          makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches")
+        matchesList.appendChild(makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches", chat.dogAvatar)
         );
       }
 
       if (isRequest) {
-        requestsList.appendChild(
-          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests")
+      requestsList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests", chat.dogAvatar)
         );
       }
 
       if (isSpam) {
-        spamList.appendChild(
-          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam")
+        spamList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam", chat.dogAvatar)
         );
       }
     });
