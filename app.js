@@ -787,165 +787,178 @@ const msgLists    = qa(".messages-list");
 async function loadMessagesLists() { 
   try { 
     if (!db || !msgLists || !msgLists.length) return;
-                                          
-const selfUid = window.PLUTOO_UID;
-if (!selfUid) {
-  if (!window.__retryLoadMessagesOnce) {
-    window.__retryLoadMessagesOnce = true;
-    setTimeout(() => {
-      try { loadMessagesLists(); } catch (_) {}
-    }, 250);
-  }
-  return;
+
+    const selfUid = window.PLUTOO_UID;
+    if (!selfUid) {
+      if (!window.__retryLoadMessagesOnce) {
+        window.__retryLoadMessagesOnce = true;
+        setTimeout(() => {
+          try { loadMessagesLists(); } catch (_) {}
+        }, 250);
+      }
+      return;
+    }
+
+    // Contenitori reali definiti in index.html
+    const inboxList    = document.getElementById("tabInbox");
+    const sentList     = document.getElementById("tabSent");
+    const matchesList  = document.getElementById("tabMatches");
+    const requestsList = document.getElementById("tabRequests");
+    const spamList     = document.getElementById("tabSpam");
+    if (!inboxList || !sentList || !matchesList || !requestsList || !spamList) return;
+
+    // Pulisco tutte le liste e nascondo gli empty state
+    msgLists.forEach((list) => {
+      list.querySelectorAll(".msg-item").forEach((el) => el.remove());
+      const emptyEl = list.querySelector(".empty-state");
+      if (emptyEl) emptyEl.classList.add("hidden-empty");
+    });
+
+    // Legge le chat dove compare il mio UID
+    const snap = await db
+      .collection("chats")
+      .where("members", "array-contains", selfUid)
+      .get();
+
+    const chats = [];
+    snap.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+
+      let lastAt = data.lastMessageAt || null;
+      if (lastAt && typeof lastAt.toDate === "function") {
+        lastAt = lastAt.toDate();
+      }
+
+      chats.push({
+        id: docSnap.id || null,
+        dogId: data.dogId || null,
+        members: Array.isArray(data.members) ? data.members : [],
+        lastMessageText: (data.lastMessageText || ""),
+        lastMessageAt: lastAt,
+        lastSenderUid: data.lastSenderUid || null,
+        dogName: data.dogName || null,
+        dogAvatar: data.dogAvatar || null,
+        match: data.match === true,
+
+        // opzionali: se non esistono su Firestore -> null/false
+        folder: data.folder || null,     // es: "requests" | "spam"
+        spam: data.spam === true
+      });
+    });
+
+    // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
+    if (!chats.length) {
+      msgLists.forEach((list) => {
+        const emptyEl = list.querySelector(".empty-state");
+        if (emptyEl) emptyEl.classList.remove("hidden-empty");
+      });
+      return;
+    }
+
+    // Ordino per data ultimo messaggio (più recente in alto)
+    chats.sort((a, b) => {
+      if (!a.lastMessageAt && !b.lastMessageAt) return 0;
+      if (!a.lastMessageAt) return 1;
+      if (!b.lastMessageAt) return -1;
+      return b.lastMessageAt - a.lastMessageAt;
+    });
+
+    const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab) => {
+      const row = document.createElement("div");
+      row.className = "msg-item";
+      row.innerHTML = `
+        <div class="msg-main">
+          <div class="msg-title">${titleText}</div>
+          <div class="msg-meta">${dateText}</div>
+        </div>
+      `;
+      row.addEventListener("click", () => {
+        // ✅ salvo da dove sto entrando (serve per decidere se segnare "letto" o no)
+        state._openChatFromTab = sourceTab || "";
+        openChat(chatId, dogId, otherUid);
+      });
+      return row;
+    };
+
+    chats.forEach((chat) => {
+      const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
+      const dogId = chat.dogId || null;
+
+      const dogName = chat.dogName || (state.lang === "en" ? "DOG" : "Dog");
+      const text = (chat.lastMessageText || "").trim();
+      const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
+
+      const hasText = text !== "";
+
+      // ✅ Inviati: ultimo messaggio è mio
+      const isSent = chat.lastSenderUid === selfUid && hasText;
+
+      // ✅ Spam: priorità assoluta (se c'è flag spam)
+      const isSpam = chat.spam === true || chat.folder === "spam";
+
+      // ✅ Match: verità = Firestore match, con fallback alla cache locale (se esiste)
+      const hasMatch = (chat.match === true) || (state.matches && state.matches[dogId] === true);
+
+      // ✅ Ricevuti: se NON è mio, ha testo, NON è spam, e ho match
+      const isInbox =
+        chat.lastSenderUid &&
+        chat.lastSenderUid !== selfUid &&
+        hasText &&
+        !isSpam &&
+        hasMatch;
+
+      // ✅ Richieste: se NON è mio, ha testo, NON è spam, e NON ho match
+      const isRequest =
+        chat.lastSenderUid &&
+        chat.lastSenderUid !== selfUid &&
+        hasText &&
+        !isSpam &&
+        !hasMatch;
+
+      if (isInbox) {
+        inboxList.appendChild(
+          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox")
+        );
+      }
+
+      if (isSent) {
+        sentList.appendChild(
+          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "sent")
+        );
+      }
+
+      if (hasMatch && dogId) {
+        matchesList.appendChild(
+          makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches")
+        );
+      }
+
+      if (isRequest) {
+        requestsList.appendChild(
+          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests")
+        );
+      }
+
+      if (isSpam) {
+        spamList.appendChild(
+          makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam")
+        );
+      }
+    });
+
+    // Aggiorno gli "empty state" in base alla presenza di msg-item
+    msgLists.forEach((list) => {
+      const items = list.querySelectorAll(".msg-item");
+      const emptyEl = list.querySelector(".empty-state");
+      if (!emptyEl) return;
+      emptyEl.classList.toggle("hidden-empty", items.length > 0);
+    });
+
+  } catch (err) { 
+    console.error("Errore loadMessagesLists:", err); 
+  } 
 }
-
-// Contenitori reali definiti in index.html
-const inboxList    = document.getElementById("tabInbox");
-const sentList     = document.getElementById("tabSent");
-const matchesList  = document.getElementById("tabMatches");
-const requestsList = document.getElementById("tabRequests");
-const spamList     = document.getElementById("tabSpam");
-if (!inboxList || !sentList || !matchesList || !requestsList || !spamList) return;
-
-// Pulisco tutte le liste e nascondo gli empty state
-msgLists.forEach((list) => {
-  list.querySelectorAll(".msg-item").forEach((el) => el.remove());
-  const emptyEl = list.querySelector(".empty-state");
-  if (emptyEl) emptyEl.classList.add("hidden-empty");
-});
-
-// Legge le chat dove compare il mio UID
-const snap = await db
-  .collection("chats")
-  .where("members", "array-contains", selfUid)
-  .get();
-
-const chats = [];
-snap.forEach((docSnap) => {
-  const data = docSnap.data() || {};
-
-  let lastAt = data.lastMessageAt || null;
-  if (lastAt && typeof lastAt.toDate === "function") {
-    lastAt = lastAt.toDate();
-  }
-
-  chats.push({
-    id: docSnap.id || null,
-    dogId: data.dogId || null,
-    members: Array.isArray(data.members) ? data.members : [],
-    lastMessageText: (data.lastMessageText || ""),
-    lastMessageAt: lastAt,
-    lastSenderUid: data.lastSenderUid || null,
-    dogName: data.dogName || null,
-    dogAvatar: data.dogAvatar || null,
-    match: data.match === true,
-
-    // opzionali: se non esistono su Firestore -> null/false
-    folder: data.folder || null,     // es: "requests" | "spam"
-    spam: data.spam === true
-  });
-});
-
-// Se non ci sono chat → mostro i testi "vuoti" e mi fermo
-if (!chats.length) {
-  msgLists.forEach((list) => {
-    const emptyEl = list.querySelector(".empty-state");
-    if (emptyEl) emptyEl.classList.remove("hidden-empty");
-  });
-  return;
-}
-
-// Ordino per data ultimo messaggio (più recente in alto)
-chats.sort((a, b) => {
-  if (!a.lastMessageAt && !b.lastMessageAt) return 0;
-  if (!a.lastMessageAt) return 1;
-  if (!b.lastMessageAt) return -1;
-  return b.lastMessageAt - a.lastMessageAt;
-});
-
-const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab) => {
-  const row = document.createElement("div");
-  row.className = "msg-item";
-  row.innerHTML = `
-    <div class="msg-main">
-      <div class="msg-title">${titleText}</div>
-      <div class="msg-meta">${dateText}</div>
-    </div>
-  `;
-  row.addEventListener("click", () => {
-    // ✅ salvo da dove sto entrando (serve per decidere se segnare "letto" o no)
-    state._openChatFromTab = sourceTab || "";
-    openChat(chatId, dogId, otherUid);
-  });
-  return row;
-};
-
-chats.forEach((chat) => {
-  const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
-  const dogId = chat.dogId || null;
-
-  const dogName = chat.dogName || (state.lang === "en" ? "DOG" : "Dog");
-  const text = (chat.lastMessageText || "").trim();
-  const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
-
-  const hasText = text !== "";
-
-  // ✅ Inviati: ultimo messaggio è mio
-  const isSent = chat.lastSenderUid === selfUid && hasText;
-
-  // ✅ Spam: priorità assoluta (se c'è flag spam)
-const isSpam = chat.spam === true || chat.folder === "spam";
-
-// ✅ Match: verità = Firestore match, con fallback alla cache locale (se esiste)
-const hasMatch = (chat.match === true) || (state.matches && state.matches[dogId] === true);
-
-// ✅ Ricevuti: se NON è mio, ha testo, NON è spam, e ho match
-const isInbox =
-  chat.lastSenderUid &&
-  chat.lastSenderUid !== selfUid &&
-  hasText &&
-  !isSpam &&
-  hasMatch;
-
-// ✅ Richieste: se NON è mio, ha testo, NON è spam, e NON ho match
-const isRequest =
-  chat.lastSenderUid &&
-  chat.lastSenderUid !== selfUid &&
-  hasText &&
-  !isSpam &&
-  !hasMatch;
-
-  if (isInbox) {
-    inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox"));
-  }
-
-  if (isSent) {
-    sentList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid));
-  }
-
-  if (hasMatch && dogId) {
-    matchesList.appendChild(makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid));
-  }
-
-  if (isRequest) {
-   requestsList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests")); 
-  }
-
-  if (isSpam) {
-   spamList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam")); 
-  }
-});
-
-// Aggiorno gli "empty state" in base alla presenza di msg-item
-msgLists.forEach((list) => {
-  const items = list.querySelectorAll(".msg-item");
-  const emptyEl = list.querySelector(".empty-state");
-  if (!emptyEl) return;
-  emptyEl.classList.toggle("hidden-empty", items.length > 0);
-});
-
-} catch (err) { console.error("Errore loadMessagesLists:", err); } }
-
+  
 btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
   loadMessagesLists();
