@@ -1367,6 +1367,83 @@ font-size: 1rem;
 line-height: 1.6;
 }
 
+/* ===============================
+   INSTAGRAM-LIKE LIST (msg-item)
+   =============================== */
+
+/* riga chat */
+.msg-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 12px;
+  border-radius:18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  margin-bottom:10px;
+  cursor:pointer;
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+
+.msg-item:hover{
+  background: rgba(255,255,255,0.085);
+  border-color: rgba(177,154,255,0.28);
+}
+
+.msg-item:active{
+  transform: scale(0.99);
+}
+
+/* avatar “cane” (senza cambiare HTML) */
+.msg-item::before{
+  content:"🐶";
+  width:46px;
+  height:46px;
+  min-width:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background: radial-gradient(circle at 30% 30%, rgba(139,92,246,0.55), rgba(13,2,26,0.9));
+  border: 1px solid rgba(177,154,255,0.25);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+  font-size:20px;
+}
+
+/* blocco testo */
+.msg-main{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+/* titolo (nome + preview) */
+.msg-title{
+  color: rgba(255,255,255,0.92);
+  font-weight:800;
+  font-size: 0.98rem;
+  line-height:1.15;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+/* meta (data/ora) */
+.msg-meta{
+  color: rgba(255,255,255,0.55);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+/* separatore super leggero “tipo DM” */
+.messages-list{
+  padding-top: 6px;
+}
+
 /* ================= FOLLOWERS / FOLLOWING BOTTOM SHEET ================= */
 .bottom-sheet{
   position:fixed;
