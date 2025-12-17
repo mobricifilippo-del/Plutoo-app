@@ -874,8 +874,9 @@ async function loadMessagesLists() {
   row.innerHTML = `
     ${avatar}
     <div class="msg-main">
-      <div class="msg-title">${titleText}</div>
-      <div class="msg-meta">${dateText}</div>
+    <div class="msg-title">${dogName}</div>
+    <div class="msg-preview">${textPreview}</div>
+    <div class="msg-meta">${dateText}</div>
     </div>
   `;
 
