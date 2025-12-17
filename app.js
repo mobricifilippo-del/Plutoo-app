@@ -1503,8 +1503,9 @@ async function ensureChatForMatch(dog) {
   if (!v) return;
 
   const ALIAS = {
-    "meticcio": "Mixed Breed",
-    "mixed breed": "Mixed Breed"
+  "meticcio": "Meticcio",
+"mix breed": "Mixed Breed",
+"mixed breed": "Mixed Breed"
   };
 
   // Se l’utente digita un alias, lo trasformo in query canonica per suggerimenti
