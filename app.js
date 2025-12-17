@@ -1502,27 +1502,32 @@ async function ensureChatForMatch(dog) {
 
   if (!v) return;
 
-  const ALIAS = {
-  "meticcio": "Meticcio",
-"mix breed": "Mixed Breed",
-"mixed breed": "Mixed Breed"
-  };
+  // ✅ ALIAS: mostra IT/EN ma salva sempre canonical (Mixed Breed)
+const ALIAS = {
+  "meticcio":   { label: "Meticcio",   canonical: "Mixed Breed" },
+  "mix breed":  { label: "Mix Breed",  canonical: "Mixed Breed" },
+  "mixed breed":{ label: "Mixed Breed",canonical: "Mixed Breed" }
+};
 
-  // Se l’utente digita un alias, lo trasformo in query canonica per suggerimenti
-  const v2 = (ALIAS[v] || v);
+const aliasHit = ALIAS[v] || null;
 
-  const matches = state.breeds
-    .filter(b => (b||"").toLowerCase().startsWith(v2))
-    .slice(0,16);
+// query per cercare nella lista razze (che contiene "Mixed Breed")
+const query = ((aliasHit ? aliasHit.canonical : raw) || "").toLowerCase();
 
-  if (!matches.length) return;
+let matches = state.breeds
+  .filter(b => (b || "").toLowerCase().startsWith(query))
+  .slice(0, 16);
 
-  // Se la query era “meticcio”, mostro label “Meticcio” ma salvo canonical “Mixed Breed”
-  breedsList.innerHTML = matches.map(b=>{
-    const canonical = b;
-    const label = (v === "meticcio" && canonical === "Mixed Breed") ? "Meticcio" : canonical;
-    return `<div class="item" data-canonical="${canonical}" data-label="${label}">${label}</div>`;
-  }).join("");
+// se è un alias ESATTO, forzo 1 risultato con la label giusta
+if (aliasHit) matches = [aliasHit.canonical];
+
+if (!matches.length) return;
+
+breedsList.innerHTML = matches.map(b => {
+  const canonical = b;
+  const label = aliasHit ? aliasHit.label : b;
+  return `<div class="item" data-label="${label}" data-canonical="${canonical}">${label}</div>`;
+}).join("");
 
   breedsList.style.display = "block";
 
