@@ -1690,3 +1690,28 @@ line-height: 1.6;
 .match-title{
   display: none;
 }
+
+/* ===== AVATAR MESSAGGI (STILE INSTAGRAM) ===== */
+
+.msg-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.msg-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(138,123,255,0.4);
+  background: #1a1a2a;
+}
+
+/* sicurezza: se per errore arriva un'immagine enorme */
+.msg-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
