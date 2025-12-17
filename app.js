@@ -2705,14 +2705,20 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   sendChatMessage(text, dogId, hasMatch, msgCount);
 });
 
- async function sendChatMessage(text, dogId, hasMatch, msgCount) {
-  // UI subito
+async function sendChatMessage(text, dogId, hasMatch, msgCount) {
+  // UI subito (Instagram-style: testo + stato)
   const bubble = document.createElement("div");
   bubble.className = "msg me";
-  bubble.textContent = text;
+  bubble.innerHTML = `
+    <div class="msg-text"></div>
+    <div class="msg-status" data-status="sending">⏳</div>
+  `;
+  bubble.querySelector(".msg-text").textContent = text;
   chatList.appendChild(bubble);
   chatInput.value = "";
   chatList.scrollTop = chatList.scrollHeight;
+
+  const statusEl = bubble.querySelector(".msg-status");
 
   try {
     const selfUid = window.PLUTOO_UID || "anonymous";
@@ -2724,6 +2730,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
 
     if (!safeDogId) {
       console.error("sendChatMessage: dogId mancante");
+      statusEl.textContent = "⚠️";
+      statusEl.dataset.status = "error";
       return;
     }
 
@@ -2739,8 +2747,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
     const dogAvatar =
       dogProfile.img || dogProfile.avatar || dogProfile.photoUrl || null;
 
-    // 1) Messaggio
-    await db.collection("messages").add({
+    // 1) Messaggio (salvo ref per aggiornare ✓✓ quando diventa letto)
+    const msgRef = await db.collection("messages").add({
       chatId,
       senderUid: selfUid,
       text,
@@ -2749,9 +2757,24 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
       isRead: false
     });
 
+    // ✓ inviato
+    statusEl.textContent = "✓";
+    statusEl.dataset.status = "sent";
+
+    // Listener: quando isRead diventa true -> ✓✓
+    // (NB: lo diventerà true SOLO se l’altro apre da "Ricevuti", come hai deciso tu)
+    msgRef.onSnapshot((doc) => {
+      const m = doc && doc.exists ? (doc.data() || {}) : {};
+      if (m.isRead === true) {
+        statusEl.textContent = "✓✓";
+        statusEl.dataset.status = "read";
+      }
+    }, () => {});
+
     // 2) Meta chat (NON tocchiamo match)
     await db.collection("chats").doc(chatId).set({
-      members: [selfUid],
+      // IMPORTANTISSIMO: non sovrascrivo più members (così non perdo l’altro UID)
+      members: firebase.firestore.FieldValue.arrayUnion(selfUid),
       dogId: safeDogId,
       dogName,
       dogAvatar,
@@ -2788,8 +2811,14 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
 
   } catch (err) {
     console.error("Errore Firestore sendChatMessage", err);
+    // errore -> icona warning sulla bolla
+    try {
+      const statusEl = bubble.querySelector(".msg-status");
+      statusEl.textContent = "⚠️";
+      statusEl.dataset.status = "error";
+    } catch (_) {}
   }
- }
+}
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
