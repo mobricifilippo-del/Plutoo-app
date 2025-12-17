@@ -1488,20 +1488,50 @@ async function ensureChatForMatch(dog) {
       searchPanel.style.display = "none";
     }
   });
+  
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
   breedInput?.addEventListener("input", ()=>{
-    const v = (breedInput.value||"").trim().toLowerCase();
-    breedsList.innerHTML=""; breedsList.style.display="none";
-    if (!v) return;
-    const matches = state.breeds.filter(b=>b.toLowerCase().startsWith(v)).slice(0,16);
-    if (!matches.length) return;
-    breedsList.innerHTML = matches.map(b=>`<div class="item">${b}</div>`).join("");
-    breedsList.style.display = "block";
-    qa(".item",breedsList).forEach(it=>it.addEventListener("click",()=>{
-      breedInput.value = it.textContent; breedsList.style.display="none";
-    }));
-  });
+  const raw = (breedInput.value||"").trim();
+  const v = raw.toLowerCase();
+
+  // reset UI
+  breedsList.innerHTML=""; 
+  breedsList.style.display="none";
+  breedInput.dataset.canonical = "";
+
+  if (!v) return;
+
+  const ALIAS = {
+    "meticcio": "Mixed Breed",
+    "mixed breed": "Mixed Breed"
+  };
+
+  // Se l’utente digita un alias, lo trasformo in query canonica per suggerimenti
+  const v2 = (ALIAS[v] || v);
+
+  const matches = state.breeds
+    .filter(b => (b||"").toLowerCase().startsWith(v2))
+    .slice(0,16);
+
+  if (!matches.length) return;
+
+  // Se la query era “meticcio”, mostro label “Meticcio” ma salvo canonical “Mixed Breed”
+  breedsList.innerHTML = matches.map(b=>{
+    const canonical = b;
+    const label = (v === "meticcio" && canonical === "Mixed Breed") ? "Meticcio" : canonical;
+    return `<div class="item" data-canonical="${canonical}" data-label="${label}">${label}</div>`;
+  }).join("");
+
+  breedsList.style.display = "block";
+
+  qa(".item",breedsList).forEach(it=>it.addEventListener("click",()=>{
+    breedInput.value = it.getAttribute("data-label") || it.textContent;
+    breedInput.dataset.canonical = it.getAttribute("data-canonical") || it.textContent;
+    breedsList.style.display="none";
+  }));
+});
+  
   document.addEventListener("click",(e)=>{
     if (e.target!==breedInput && !breedsList.contains(e.target)) breedsList.style.display="none";
   });
@@ -1511,7 +1541,7 @@ async function ensureChatForMatch(dog) {
 
   applyFilters?.addEventListener("click",(e)=>{
     e.preventDefault();
-    state.filters.breed = (breedInput.value||"").trim();
+    state.filters.breed = (breedInput.dataset.canonical || breedInput.value || "").trim();
     state.filters.distKm = parseInt(distRange.value||"50");
     state.filters.sex = sexFilter.value || "";
     state.filters.verified = !!onlyVerified.checked;
