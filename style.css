@@ -1139,18 +1139,25 @@ body.story-open #storiesBar {
 }
 
 .msg{
-  background:#222238;
-  padding:.6rem .85rem;
-  border-radius:12px;
-  width:max-content;
-  max-width:85%;
+  background:#1f1f2e;
+  padding:.65rem .9rem;
+  border-radius:16px 16px 16px 6px; /* stile IG */
+  width:fit-content;
+  max-width:82%;
   font-size:.95rem;
+  line-height:1.35;
+  color:#fff;
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
 }
 
 .msg.me{
   align-self:flex-end;
-  background:#2d2540;
-  border:1px solid rgba(138,123,255,.25);
+  background:linear-gradient(135deg,#7C3AED,#8B5CF6);
+  border-radius:16px 16px 6px 16px; /* specchiato */
+  color:#fff;
+  box-shadow:
+    0 4px 14px rgba(139,92,246,.45),
+    inset 0 0 0 1px rgba(255,255,255,.12);
 }
 
 .chat-composer input{
