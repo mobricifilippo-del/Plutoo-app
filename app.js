@@ -2535,18 +2535,6 @@ async function loadChatHistory(chatId, dogName) {
     // 3) Render
     chatList.innerHTML = "";
 
-    if (!msgs.length) {
-      const hello = document.createElement("div");
-      hello.className = "msg";
-      hello.textContent =
-        state.lang === "it"
-          ? `Ciao ${dogName}! 🐾`
-          : `Hi ${dogName}! 🐾`;
-      chatList.appendChild(hello);
-      chatList.scrollTop = chatList.scrollHeight;
-      return;
-    }
-
     msgs.forEach((m) => {
       const bubble = document.createElement("div");
       const isMe = (m.senderUid === selfUid);
