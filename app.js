@@ -863,7 +863,7 @@ chats.sort((a, b) => {
   return b.lastMessageAt - a.lastMessageAt;
 });
 
-const makeRow = (titleText, dateText, chatId, dogId, otherUid) => {
+const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab) => {
   const row = document.createElement("div");
   row.className = "msg-item";
   row.innerHTML = `
@@ -873,6 +873,8 @@ const makeRow = (titleText, dateText, chatId, dogId, otherUid) => {
     </div>
   `;
   row.addEventListener("click", () => {
+    // ✅ salvo da dove sto entrando (serve per decidere se segnare "letto" o no)
+    state._openChatFromTab = sourceTab || "";
     openChat(chatId, dogId, otherUid);
   });
   return row;
@@ -914,7 +916,7 @@ const isRequest =
   !hasMatch;
 
   if (isInbox) {
-    inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid));
+    inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox"));
   }
 
   if (isSent) {
@@ -926,11 +928,11 @@ const isRequest =
   }
 
   if (isRequest) {
-    requestsList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid));
+   requestsList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests")); 
   }
 
   if (isSpam) {
-    spamList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid));
+   spamList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam")); 
   }
 });
 
