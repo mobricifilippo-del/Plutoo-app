@@ -2527,7 +2527,8 @@ async function loadChatHistory(chatId, dogName) {
       msgs.push({
         text,
         senderUid: data.senderUid || "",
-        t
+        t,
+        isRead: data.isRead === true
       });
     });
 
@@ -2538,10 +2539,25 @@ async function loadChatHistory(chatId, dogName) {
     chatList.innerHTML = "";
 
     msgs.forEach((m) => {
-      const bubble = document.createElement("div");
       const isMe = (m.senderUid === selfUid);
+
+      const bubble = document.createElement("div");
       bubble.className = isMe ? "msg me" : "msg";
-      bubble.textContent = m.text;
+
+      // testo
+      const txt = document.createElement("div");
+      txt.className = "msg-text";
+      txt.textContent = m.text;
+      bubble.appendChild(txt);
+
+      // ✅ spunta SOLO sui miei messaggi (IG style base)
+      if (isMe) {
+        const st = document.createElement("div");
+        st.className = "msg-status";
+        st.textContent = m.isRead ? "✓✓" : "✓";
+        bubble.appendChild(st);
+      }
+
       chatList.appendChild(bubble);
     });
 
