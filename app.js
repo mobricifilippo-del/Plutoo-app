@@ -869,7 +869,7 @@ async function loadMessagesLists() {
 
   const avatar = dogAvatar
     ? `<img src="${dogAvatar}" class="msg-avatar" alt="dog">`
-    : `<div class="msg-avatar placeholder">🐶</div>`;
+    : ``; // ❌ NIENTE icona finta
 
   row.innerHTML = `
     ${avatar}
