@@ -965,18 +965,40 @@ msgLists.forEach((list) => {
 });
 
   msgTopTabs.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const targetId = btn.dataset.tab;
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.tab;
 
-      msgTopTabs.forEach((b) => {
-        b.classList.toggle("active", b === btn);
-      });
+    // 🔒 MEMORIZZA DA QUALE TAB ARRIVO (logica DEFINITIVA)
+    switch (targetId) {
+      case "tabInbox":
+        state._openChatFromTab = "inbox";
+        break;
+      case "tabSent":
+        state._openChatFromTab = "sent";
+        break;
+      case "tabMatches":
+        state._openChatFromTab = "matches";
+        break;
+      case "tabRequests":
+        state._openChatFromTab = "requests";
+        break;
+      case "tabSpam":
+        state._openChatFromTab = "spam";
+        break;
+      default:
+        state._openChatFromTab = "";
+    }
 
-      msgLists.forEach((list) => {
-        list.classList.toggle("active", list.id === targetId);
-      });
+    // UI tabs
+    msgTopTabs.forEach((b) => {
+      b.classList.toggle("active", b === btn);
+    });
+
+    msgLists.forEach((list) => {
+      list.classList.toggle("active", list.id === targetId);
     });
   });
+});
 
   function setActiveView(name){
     localStorage.setItem("currentView", name);
