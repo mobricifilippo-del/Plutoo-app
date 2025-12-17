@@ -2597,6 +2597,31 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   // Carica history completa
   loadChatHistory(chatId, dogName);
 
+  // ✅ LETTO SOLO SE APRO DA "RICEVUTI"
+  const openedFrom = state._openChatFromTab || "";
+  state._openChatFromTab = ""; // reset (evita effetti strani al prossimo click)
+
+  const shouldMarkRead = (openedFrom === "inbox");
+
+  if (shouldMarkRead && window.db && chatId) {
+    // segna "letto" SOLO i messaggi ricevuti (non i miei), solo quelli non letti
+    window.db.collection("messages")
+      .where("chatId", "==", chatId)
+      .get()
+      .then((snap) => {
+        snap.forEach((docSnap) => {
+          const m = docSnap.data() || {};
+          if (m.senderUid && m.senderUid !== selfUid && m.isRead !== true) {
+            docSnap.ref.update({
+              isRead: true,
+              readAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(() => {});
+          }
+        });
+      })
+      .catch((e) => console.error("mark read failed:", e));
+  }
+
   // Funzione locale per applicare le regole input (UNA sola fonte: hasMatch vero/falso)
   const applyChatRules = (hasMatchValue) => {
     const msgCount = state.chatMessagesSent[dogId] || 0;
