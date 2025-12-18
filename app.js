@@ -1751,37 +1751,69 @@ function generateSocialSection(d) {
     return Array.isArray(arr) ? arr : [];
   }
 
-  function followDog(targetDogId) {
-    if (!targetDogId || targetDogId === CURRENT_USER_DOG_ID) return;
+  function followDog(targetDogOrId) {
+    const targetDogId = targetDogDogOrId(targetDogOrId);
+    if (!targetDogId) return;
 
-    if (!state.followersByDog[targetDogId]) state.followersByDog[targetDogId] = [];
-    if (!state.followingByDog[CURRENT_USER_DOG_ID]) state.followingByDog[CURRENT_USER_DOG_ID] = [];
-
-    const followers = state.followersByDog[targetDogId];
-    const following = state.followingByDog[CURRENT_USER_DOG_ID];
-
-    if (!followers.includes(CURRENT_USER_DOG_ID)) {
-      followers.push(CURRENT_USER_DOG_ID);
+    // followingByDog[currentDogId] = [dogId...]
+    state.followingByDog[CURRENT_USER_DOG_ID] = getFollowing(CURRENT_USER_DOG_ID);
+    if (!state.followingByDog[CURRENT_USER_DOG_ID].includes(targetDogId)) {
+      state.followingByDog[CURRENT_USER_DOG_ID].push(targetDogId);
     }
-    if (!following.includes(targetDogId)) {
-      following.push(targetDogId);
+
+    // followersByDog[targetDogId] = [currentDogId...]
+    state.followersByDog[targetDogId] = getFollowers(targetDogId);
+    if (!state.followersByDog[targetDogId].includes(CURRENT_USER_DOG_ID)) {
+      state.followersByDog[targetDogId].push(CURRENT_USER_DOG_ID);
     }
 
     persistFollowState();
-    updateFollowerUI(targetDogDogOrId(targetDogId));
+    updateFollowerUI(targetDogId);
+
+    // ✅ Firestore (source of truth): salva follow
+    try {
+      const selfUid = window.PLUTOO_UID;
+      if (!selfUid || !db) return;
+
+      const docId = `${CURRENT_USER_DOG_ID}_${targetDogId}`;
+      db.collection("followers").doc(docId).set({
+        followerUid: selfUid,
+        followerDogId: CURRENT_USER_DOG_ID,
+        targetDogId: targetDogId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch((e) => {
+        console.error("followDog Firestore:", e);
+      });
+    } catch (e) {
+      console.error("followDog Firestore:", e);
+    }
   }
 
-  function unfollowDog(targetDogId) {
-    if (!targetDogId || targetDogId === CURRENT_USER_DOG_ID) return;
+  function unfollowDog(targetDogOrId) {
+    const targetDogId = targetDogDogOrId(targetDogOrId);
+    if (!targetDogId) return;
 
-    const followers = state.followersByDog[targetDogId] || [];
-    const following = state.followingByDog[CURRENT_USER_DOG_ID] || [];
+    state.followingByDog[CURRENT_USER_DOG_ID] =
+      getFollowing(CURRENT_USER_DOG_ID).filter(id => id !== targetDogId);
 
-    state.followersByDog[targetDogId] = followers.filter(id => id !== CURRENT_USER_DOG_ID);
-    state.followingByDog[CURRENT_USER_DOG_ID] = following.filter(id => id !== targetDogId);
+    state.followersByDog[targetDogId] =
+      getFollowers(targetDogId).filter(id => id !== CURRENT_USER_DOG_ID);
 
     persistFollowState();
-    updateFollowerUI(targetDogDogOrId(targetDogId));
+    updateFollowerUI(targetDogId);
+
+    // ✅ Firestore (source of truth): rimuove follow
+    try {
+      const selfUid = window.PLUTOO_UID;
+      if (!selfUid || !db) return;
+
+      const docId = `${CURRENT_USER_DOG_ID}_${targetDogId}`;
+      db.collection("followers").doc(docId).delete().catch((e) => {
+        console.error("unfollowDog Firestore:", e);
+      });
+    } catch (e) {
+      console.error("unfollowDog Firestore:", e);
+    }
   }
 
   function targetDogDogOrId(dogOrId) {
