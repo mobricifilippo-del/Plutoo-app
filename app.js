@@ -1765,8 +1765,19 @@ function generateSocialSection(d) {
   const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
   if (!targetDogId) return;
 
-  // ✅ serve SEMPRE un dogId “mio” coerente
-  if (!CURRENT_USER_DOG_ID) return;
+  // ✅ dogId “mio” coerente (robusto): se manca, non fare crash e non “sembra morto”
+const selfDogId =
+  (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
+    ? String(CURRENT_USER_DOG_ID)
+    : "";
+
+if (!selfDogId) {
+  // production: feedback chiaro, niente crash silenzioso
+  if (typeof showToast === "function") {
+    showToast(state.lang === "it" ? "Seleziona prima il tuo DOG" : "Select your DOG first");
+  }
+  return;
+}
 
   // followingByDog[currentDogId] = [dogId...]
   state.followingByDog[CURRENT_USER_DOG_ID] = getFollowing(CURRENT_USER_DOG_ID);
@@ -1789,10 +1800,10 @@ function generateSocialSection(d) {
     const _db = window.db;
     if (!selfUid || !_db) return;
 
-    const docId = `${String(CURRENT_USER_DOG_ID)}_${String(targetDogId)}`;
-    _db.collection("followers").doc(docId).set({
-      followerUid: String(selfUid),
-      followerDogId: String(CURRENT_USER_DOG_ID),
+    const docId = `${String(selfDogId)}_${String(targetDogId)}`;
+_db.collection("followers").doc(docId).set({
+  followerUid: String(selfUid),
+  followerDogId: String(selfDogId),
       targetDogId: String(targetDogId),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }).catch((e) => {
@@ -1811,7 +1822,17 @@ function unfollowDog(targetDogOrId) {
   const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
   if (!targetDogId) return;
 
-  if (!CURRENT_USER_DOG_ID) return;
+  const selfDogId =
+  (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
+    ? String(CURRENT_USER_DOG_ID)
+    : "";
+
+if (!selfDogId) {
+  if (typeof showToast === "function") {
+    showToast(state.lang === "it" ? "Seleziona prima il tuo DOG" : "Select your DOG first");
+  }
+  return;
+}
 
   state.followingByDog[CURRENT_USER_DOG_ID] =
     getFollowing(CURRENT_USER_DOG_ID).filter(id => id !== targetDogId);
@@ -1828,7 +1849,7 @@ function unfollowDog(targetDogOrId) {
     const _db = window.db;
     if (!selfUid || !_db) return;
 
-    const docId = `${String(CURRENT_USER_DOG_ID)}_${String(targetDogId)}`;
+    const docId = `${String(selfDogId)}_${String(targetDogId)}`;
     _db.collection("followers").doc(docId).delete().catch((e) => {
       console.error("unfollowDog Firestore:", e);
     });
