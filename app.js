@@ -10,26 +10,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = firebase.firestore();
   const storage = firebase.storage();
 
-  // ✅ Mantiene lo stesso UID anonimo dopo refresh
+  // ✅ Persistenza Auth su device (no reset dopo refresh)
   auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
     console.error("Auth persistence error:", err);
   });
 
-  // Login anonimo automatico
+  // ✅ Stato Auth: NON fare anonimo automatico (login/registrazione reali)
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
-      auth.signInAnonymously().catch(err => {
-        console.error("Auth error:", err);
-      });
+      // Utente non autenticato: nessun boot app, UID nullo
+      window.PLUTOO_UID = null;
+      window.__booted = false;
       return;
     }
 
-    // 🔒 Evita boot multipli
-    if (window.__booted) return;
-    window.__booted = true;
-
-    // Salva UID globale
+    // ✅ Fonte di verità UID (sempre aggiornata)
+    const prevUid = window.PLUTOO_UID || null;
     window.PLUTOO_UID = user.uid;
+
+    // 🔒 Evita boot multipli SOLO se è lo stesso UID
+    if (window.__booted && prevUid === user.uid) return;
+    window.__booted = true;
 
     // ✅ RIPRISTINO MATCH DA FIRESTORE (MERGE, MAI RESET)
     try {
@@ -62,20 +63,31 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("restore matches failed:", e);
     }
 
-  // Salva / aggiorna utente
-    db.collection("users").doc(user.uid).set({
-      lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      userAgent: navigator.userAgent || null
-    }, { merge: true }).catch(err => {
+    // ✅ Salva / aggiorna utente: createdAt solo alla prima creazione
+    try {
+      const userRef = db.collection("users").doc(user.uid);
+      const docSnap = await userRef.get();
+
+      const payload = {
+        lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+        userAgent: navigator.userAgent || null
+      };
+
+      if (!docSnap.exists) {
+        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+
+      await userRef.set(payload, { merge: true });
+
+    } catch (err) {
       console.error("Firestore user save error:", err);
-    });
+    }
 
     // ✅ Se al refresh ero in "messages", ricarico la lista UNA volta
     if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
       loadMessagesLists();
     }
-    });
+  });
 
   // Disabilita PWA/Service Worker dentro l'app Android (WebView)
   const isAndroidWebView =
@@ -96,6 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
     });
   }
+
+});
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
