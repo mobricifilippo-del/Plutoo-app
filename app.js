@@ -1962,13 +1962,37 @@ function generateSocialSection(d) {
   function togglePhotoLike(dogId) {
     if (!dogId) return;
     if (!state.photoLikesByDog) state.photoLikesByDog = {};
-    if (isDogPhotoLiked(dogId)) {
+
+    const wasLiked = isDogPhotoLiked(dogId);
+
+    if (wasLiked) {
       delete state.photoLikesByDog[dogId];
     } else {
       state.photoLikesByDog[dogId] = true;
     }
+
     persistPhotoLikes();
     updatePhotoLikeUI(dogId);
+
+    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
+    try {
+      const uid = window.PLUTOO_UID;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!uid || !_db) return;
+
+      const ref = _db.collection("dogs").doc(String(dogId))
+        .collection("photoLikes").doc(String(uid));
+
+      if (wasLiked) {
+        ref.delete().catch(()=>{});
+      } else {
+        ref.set({
+          uid: String(uid),
+          dogId: String(dogId),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch(()=>{});
+      }
+    } catch (_) {}
   }
 
   // ============ LIKE STORIES ============
@@ -1994,13 +2018,37 @@ storyLikeBtn.classList.add("heart-anim");
   function toggleStoryLike(mediaId) {
     if (!mediaId) return;
     if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
-    if (isStoryLiked(mediaId)) {
+
+    const wasLiked = isStoryLiked(mediaId);
+
+    if (wasLiked) {
       delete state.storyLikesByMedia[mediaId];
     } else {
       state.storyLikesByMedia[mediaId] = true;
     }
+
     persistStoryLikes();
     updateStoryLikeUI(mediaId);
+
+    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
+    try {
+      const uid = window.PLUTOO_UID;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!uid || !_db) return;
+
+      const ref = _db.collection("stories").doc(String(mediaId))
+        .collection("likes").doc(String(uid));
+
+      if (wasLiked) {
+        ref.delete().catch(()=>{});
+      } else {
+        ref.set({
+          uid: String(uid),
+          mediaId: String(mediaId),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch(()=>{});
+      }
+    } catch (_) {}
   }
 
   // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
