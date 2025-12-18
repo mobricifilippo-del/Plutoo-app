@@ -1693,3 +1693,7 @@ line-height: 1.6;
   background: #1a1a2a;
 }
 
+/* visibilità tabs messaggi (OBBLIGATORIO) */
+.messages-list { display: none; }
+.messages-list.active { display: block; }
+
