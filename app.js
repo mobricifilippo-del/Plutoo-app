@@ -867,16 +867,27 @@ async function loadMessagesLists() {
   const row = document.createElement("div");
   row.className = "msg-item";
 
+  // avatar: se c’è lo metto, se non c’è non mostro nulla (niente icona finta)
   const avatar = dogAvatar
     ? `<img src="${dogAvatar}" class="msg-avatar" alt="dog">`
-    : ``; // ❌ NIENTE icona finta
+    : ``;
+
+  // separo "Nome - Messaggio" in modo robusto (se non c’è il trattino, preview vuota)
+  let nameLine = (titleText || "").trim();
+  let previewLine = "";
+  const sep = " - ";
+  if (nameLine.includes(sep)) {
+    const parts = nameLine.split(sep);
+    nameLine = (parts.shift() || "").trim();
+    previewLine = parts.join(sep).trim();
+  }
 
   row.innerHTML = `
     ${avatar}
     <div class="msg-main">
-    <div class="msg-title">${dogName}</div>
-    <div class="msg-preview">${textPreview}</div>
-    <div class="msg-meta">${dateText}</div>
+      <div class="msg-title">${nameLine}</div>
+      ${previewLine ? `<div class="msg-preview">${previewLine}</div>` : ``}
+      <div class="msg-meta">${dateText}</div>
     </div>
   `;
 
