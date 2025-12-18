@@ -1757,89 +1757,85 @@ function generateSocialSection(d) {
   }
 
   function followDog(targetDogOrId) {
-    // ✅ guard-rails (evita tasto “morto”)
-    if (!state.followingByDog) state.followingByDog = {};
-    if (!state.followersByDog) state.followersByDog = {};
-    if (!CURRENT_USER_DOG_ID) return;
+  // ✅ guard-rail: mappe sempre inizializzate (evita crash -> ENTRA morto / bottone morto)
+  if (!state.followersByDog || typeof state.followersByDog !== "object") state.followersByDog = {};
+  if (!state.followingByDog || typeof state.followingByDog !== "object") state.followingByDog = {};
 
-    const targetDog = targetDogDogOrId(targetDogOrId);
-    const targetDogId = (typeof targetDog === "string")
-      ? targetDog
-      : (targetDog && targetDog.id ? targetDog.id : null);
+  const targetDog = targetDogDogOrId(targetDogOrId);
+  const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
+  if (!targetDogId) return;
 
-    if (!targetDogId) return;
+  // ✅ serve SEMPRE un dogId “mio” coerente
+  if (!CURRENT_USER_DOG_ID) return;
 
-    // followingByDog[currentDogId] = [dogId...]
-    state.followingByDog[CURRENT_USER_DOG_ID] = getFollowing(CURRENT_USER_DOG_ID);
-    if (!state.followingByDog[CURRENT_USER_DOG_ID].includes(targetDogId)) {
-      state.followingByDog[CURRENT_USER_DOG_ID].push(targetDogId);
-    }
+  // followingByDog[currentDogId] = [dogId...]
+  state.followingByDog[CURRENT_USER_DOG_ID] = getFollowing(CURRENT_USER_DOG_ID);
+  if (!state.followingByDog[CURRENT_USER_DOG_ID].includes(targetDogId)) {
+    state.followingByDog[CURRENT_USER_DOG_ID].push(targetDogId);
+  }
 
-    // followersByDog[targetDogId] = [currentDogId...]
-    state.followersByDog[targetDogId] = getFollowers(targetDogId);
-    if (!state.followersByDog[targetDogId].includes(CURRENT_USER_DOG_ID)) {
-      state.followersByDog[targetDogId].push(CURRENT_USER_DOG_ID);
-    }
+  // followersByDog[targetDogId] = [currentDogId...]
+  state.followersByDog[targetDogId] = getFollowers(targetDogId);
+  if (!state.followersByDog[targetDogId].includes(CURRENT_USER_DOG_ID)) {
+    state.followersByDog[targetDogId].push(CURRENT_USER_DOG_ID);
+  }
 
-    persistFollowState();
-    updateFollowerUI(targetDogId);
+  persistFollowState();
+  updateFollowerUI(targetDogId);
 
-    // ✅ Firestore (source of truth): salva follow
-    try {
-      const selfUid = window.PLUTOO_UID;
-      const _db = (window.db || (typeof db !== "undefined" ? db : null));
-      if (!selfUid || !_db) return;
+  // ✅ Firestore (source of truth): salva follow
+  try {
+    const selfUid = window.PLUTOO_UID;
+    const _db = window.db;
+    if (!selfUid || !_db) return;
 
-      const docId = `${CURRENT_USER_DOG_ID}_${targetDogId}`;
-      _db.collection("followers").doc(docId).set({
-        followerUid: String(selfUid),
-        followerDogId: String(CURRENT_USER_DOG_ID),
-        targetDogId: String(targetDogId),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).catch((e) => {
-        console.error("followDog Firestore:", e);
-      });
-    } catch (e) {
+    const docId = `${String(CURRENT_USER_DOG_ID)}_${String(targetDogId)}`;
+    _db.collection("followers").doc(docId).set({
+      followerUid: String(selfUid),
+      followerDogId: String(CURRENT_USER_DOG_ID),
+      targetDogId: String(targetDogId),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).catch((e) => {
       console.error("followDog Firestore:", e);
-    }
+    });
+  } catch (e) {
+    console.error("followDog Firestore:", e);
   }
+}
 
-  function unfollowDog(targetDogOrId) {
-    // ✅ guard-rails
-    if (!state.followingByDog) state.followingByDog = {};
-    if (!state.followersByDog) state.followersByDog = {};
-    if (!CURRENT_USER_DOG_ID) return;
+function unfollowDog(targetDogOrId) {
+  if (!state.followersByDog || typeof state.followersByDog !== "object") state.followersByDog = {};
+  if (!state.followingByDog || typeof state.followingByDog !== "object") state.followingByDog = {};
 
-    const targetDog = targetDogDogOrId(targetDogOrId);
-    const targetDogId = (typeof targetDog === "string")
-      ? targetDog
-      : (targetDog && targetDog.id ? targetDog.id : null);
+  const targetDog = targetDogDogOrId(targetDogOrId);
+  const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
+  if (!targetDogId) return;
 
-    if (!targetDogId) return;
+  if (!CURRENT_USER_DOG_ID) return;
 
-    state.followingByDog[CURRENT_USER_DOG_ID] =
-      getFollowing(CURRENT_USER_DOG_ID).filter(id => id !== targetDogId);
+  state.followingByDog[CURRENT_USER_DOG_ID] =
+    getFollowing(CURRENT_USER_DOG_ID).filter(id => id !== targetDogId);
 
-    state.followersByDog[targetDogId] =
-      getFollowers(targetDogId).filter(id => id !== CURRENT_USER_DOG_ID);
+  state.followersByDog[targetDogId] =
+    getFollowers(targetDogId).filter(id => id !== CURRENT_USER_DOG_ID);
 
-    persistFollowState();
-    updateFollowerUI(targetDogId);
+  persistFollowState();
+  updateFollowerUI(targetDogId);
 
-    // ✅ Firestore (source of truth): rimuove follow
-    try {
-      const selfUid = window.PLUTOO_UID;
-      const _db = (window.db || (typeof db !== "undefined" ? db : null));
-      if (!selfUid || !_db) return;
+  // ✅ Firestore (source of truth): rimuove follow
+  try {
+    const selfUid = window.PLUTOO_UID;
+    const _db = window.db;
+    if (!selfUid || !_db) return;
 
-      const docId = `${CURRENT_USER_DOG_ID}_${targetDogId}`;
-      _db.collection("followers").doc(docId).delete().catch((e) => {
-        console.error("unfollowDog Firestore:", e);
-      });
-    } catch (e) {
+    const docId = `${String(CURRENT_USER_DOG_ID)}_${String(targetDogId)}`;
+    _db.collection("followers").doc(docId).delete().catch((e) => {
       console.error("unfollowDog Firestore:", e);
-    }
+    });
+  } catch (e) {
+    console.error("unfollowDog Firestore:", e);
   }
+}
 
   function targetDogDogOrId(dogOrId) {
     if (!dogOrId) return state.currentDogProfile || null;
