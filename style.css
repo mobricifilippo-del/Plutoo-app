@@ -1278,7 +1278,7 @@ position: sticky;
 top: 0;
 z-index: 999;
 display: flex;
-align-items:flex-start;
+align-items: center;
 gap: 16px;
 padding: 16px 20px;
 min-height: 85px;
@@ -1401,6 +1401,22 @@ line-height: 1.6;
   transform: scale(0.99);
 }
 
+/* avatar “cane” (senza cambiare HTML) */
+.msg-item::before{
+  content:"🐶";
+  width:46px;
+  height:46px;
+  min-width:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background: radial-gradient(circle at 30% 30%, rgba(139,92,246,0.55), rgba(13,2,26,0.9));
+  border: 1px solid rgba(177,154,255,0.25);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+  font-size:20px;
+}
+
 /* blocco testo */
 .msg-main{
   flex:1;
@@ -1415,8 +1431,8 @@ line-height: 1.6;
   color: rgba(255,255,255,0.92);
   font-weight:800;
   font-size: 0.98rem;
-  line-height:1.2;
-  margin-bottom:4px;
+  line-height:1.15;
+  white-space: nowrap;
   overflow:hidden;
   text-overflow: ellipsis;
 }
