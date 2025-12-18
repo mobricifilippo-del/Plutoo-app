@@ -1752,7 +1752,16 @@ function generateSocialSection(d) {
   }
 
   function followDog(targetDogOrId) {
-    const targetDogId = targetDogDogOrId(targetDogOrId);
+    // ✅ guard-rails (evita tasto “morto”)
+    if (!state.followingByDog) state.followingByDog = {};
+    if (!state.followersByDog) state.followersByDog = {};
+    if (!CURRENT_USER_DOG_ID) return;
+
+    const targetDog = targetDogDogOrId(targetDogOrId);
+    const targetDogId = (typeof targetDog === "string")
+      ? targetDog
+      : (targetDog && targetDog.id ? targetDog.id : null);
+
     if (!targetDogId) return;
 
     // followingByDog[currentDogId] = [dogId...]
@@ -1773,13 +1782,14 @@ function generateSocialSection(d) {
     // ✅ Firestore (source of truth): salva follow
     try {
       const selfUid = window.PLUTOO_UID;
-      if (!selfUid || !db) return;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!selfUid || !_db) return;
 
       const docId = `${CURRENT_USER_DOG_ID}_${targetDogId}`;
-      db.collection("followers").doc(docId).set({
-        followerUid: selfUid,
-        followerDogId: CURRENT_USER_DOG_ID,
-        targetDogId: targetDogId,
+      _db.collection("followers").doc(docId).set({
+        followerUid: String(selfUid),
+        followerDogId: String(CURRENT_USER_DOG_ID),
+        targetDogId: String(targetDogId),
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true }).catch((e) => {
         console.error("followDog Firestore:", e);
@@ -1790,7 +1800,16 @@ function generateSocialSection(d) {
   }
 
   function unfollowDog(targetDogOrId) {
-    const targetDogId = targetDogDogOrId(targetDogOrId);
+    // ✅ guard-rails
+    if (!state.followingByDog) state.followingByDog = {};
+    if (!state.followersByDog) state.followersByDog = {};
+    if (!CURRENT_USER_DOG_ID) return;
+
+    const targetDog = targetDogDogOrId(targetDogOrId);
+    const targetDogId = (typeof targetDog === "string")
+      ? targetDog
+      : (targetDog && targetDog.id ? targetDog.id : null);
+
     if (!targetDogId) return;
 
     state.followingByDog[CURRENT_USER_DOG_ID] =
@@ -1805,10 +1824,11 @@ function generateSocialSection(d) {
     // ✅ Firestore (source of truth): rimuove follow
     try {
       const selfUid = window.PLUTOO_UID;
-      if (!selfUid || !db) return;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!selfUid || !_db) return;
 
       const docId = `${CURRENT_USER_DOG_ID}_${targetDogId}`;
-      db.collection("followers").doc(docId).delete().catch((e) => {
+      _db.collection("followers").doc(docId).delete().catch((e) => {
         console.error("unfollowDog Firestore:", e);
       });
     } catch (e) {
@@ -1828,8 +1848,11 @@ function generateSocialSection(d) {
     const dog = targetDogDogOrId(dogOrId);
     if (!dog) return;
 
-    const followers = getFollowers(dog.id);
-    const following = getFollowing(dog.id);
+    const dogId = (typeof dog === "string") ? dog : dog.id;
+    if (!dogId) return;
+
+    const followers = getFollowers(dogId);
+    const following = getFollowing(dogId);
 
     const followersCountEl = $("followersCount");
     const followingCountEl = $("followingCount");
@@ -1841,7 +1864,7 @@ function generateSocialSection(d) {
       } else {
         followersCountEl.textContent = `${count} follower${count === 1 ? "" : "s"}`;
       }
-      followersCountEl.dataset.dogId = dog.id;
+      followersCountEl.dataset.dogId = dogId;
     }
 
     if (followingCountEl) {
@@ -1851,7 +1874,7 @@ function generateSocialSection(d) {
       } else {
         followingCountEl.textContent = `${count} following`;
       }
-      followingCountEl.dataset.dogId = dog.id;
+      followingCountEl.dataset.dogId = dogId;
     }
   }
 
@@ -1859,7 +1882,10 @@ function generateSocialSection(d) {
     const dog = targetDogDogOrId(dogOrId);
     if (!dog || !followersOverlay || !followersList) return;
 
-    const followers = getFollowers(dog.id);
+    const dogId = (typeof dog === "string") ? dog : dog.id;
+    if (!dogId) return;
+
+    const followers = getFollowers(dogId);
 
     if (!followers.length) {
       followersList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun follower" : "No followers yet"}</p>`;
@@ -1887,7 +1913,10 @@ function generateSocialSection(d) {
     const dog = targetDogDogOrId(dogOrId);
     if (!dog || !followingOverlay || !followingList) return;
 
-    const following = getFollowing(dog.id);
+    const dogId = (typeof dog === "string") ? dog : dog.id;
+    if (!dogId) return;
+
+    const following = getFollowing(dogId);
 
     if (!following.length) {
       followingList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun DOG seguito" : "No following yet"}</p>`;
