@@ -1780,16 +1780,16 @@ if (!selfDogId) {
 }
 
   // followingByDog[currentDogId] = [dogId...]
-  state.followingByDog[CURRENT_USER_DOG_ID] = getFollowing(CURRENT_USER_DOG_ID);
-  if (!state.followingByDog[CURRENT_USER_DOG_ID].includes(targetDogId)) {
-    state.followingByDog[CURRENT_USER_DOG_ID].push(targetDogId);
-  }
+  state.followingByDog[selfDogId] = getFollowing(selfDogId);
+if (!state.followingByDog[selfDogId].includes(String(targetDogId))) {
+  state.followingByDog[selfDogId].push(String(targetDogId));
+}
 
   // followersByDog[targetDogId] = [currentDogId...]
-  state.followersByDog[targetDogId] = getFollowers(targetDogId);
-  if (!state.followersByDog[targetDogId].includes(CURRENT_USER_DOG_ID)) {
-    state.followersByDog[targetDogId].push(CURRENT_USER_DOG_ID);
-  }
+  state.followersByDog[String(targetDogId)] = getFollowers(String(targetDogId));
+if (!state.followersByDog[String(targetDogId)].includes(selfDogId)) {
+  state.followersByDog[String(targetDogId)].push(selfDogId);
+}
 
   persistFollowState();
   updateFollowerUI(targetDogId);
@@ -1834,11 +1834,11 @@ if (!selfDogId) {
   return;
 }
 
-  state.followingByDog[CURRENT_USER_DOG_ID] =
-    getFollowing(CURRENT_USER_DOG_ID).filter(id => id !== targetDogId);
+  state.followingByDog[selfDogId] =
+  getFollowing(selfDogId).filter(id => String(id) !== String(targetDogId));
 
-  state.followersByDog[targetDogId] =
-    getFollowers(targetDogId).filter(id => id !== CURRENT_USER_DOG_ID);
+  state.followersByDog[String(targetDogId)] =
+  getFollowers(String(targetDogId)).filter(id => String(id) !== String(selfDogId));
 
   persistFollowState();
   updateFollowerUI(targetDogId);
