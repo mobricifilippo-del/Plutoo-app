@@ -2454,6 +2454,7 @@ if (followBtn) {
     if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
       console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
       refreshFollowBtn();
+      return;
     }
 
     const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
