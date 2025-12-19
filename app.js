@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
   const storage = firebase.storage();
+  window.db = db;
 
   // ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
   window.auth = auth;
