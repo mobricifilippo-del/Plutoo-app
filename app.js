@@ -2430,53 +2430,70 @@ if (d.id === CURRENT_USER_DOG_ID) {
   renderGallery();
 })();
 
-    updateFollowerUI(d);
-    const followBtn = $("followBtn");
-    if (followBtn) {
-      const refreshFollowBtn = () => {
-        const myFollowing = getFollowing(); // lista dei cani che SEGUE il mio DOG
-        const isFollowing = myFollowing.includes(d.id);
-        if (state.lang === "it") {
-          followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
-        } else {
-          followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
-        }
-        followBtn.classList.toggle("is-following", isFollowing);
-      };
+  updateFollowerUI(d);
 
-      followBtn.onclick = () => {
-        const myFollowing = getFollowing();
-        const isFollowing = myFollowing.includes(d.id);
-        if (isFollowing) {
-          unfollowDog(d.id);
-        } else {
-          followDog(d.id);
-        }
-        refreshFollowBtn();
-      };
+const followBtn = $("followBtn");
+if (followBtn) {
+  const refreshFollowBtn = () => {
+    // ✅ usa SEMPRE il mio dogId reale
+    const myFollowing = (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)
+      ? getFollowing(CURRENT_USER_DOG_ID)
+      : [];
+    const isFollowing = myFollowing.includes(d.id);
 
+    if (state.lang === "it") {
+      followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
+    } else {
+      followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
+    }
+    followBtn.classList.toggle("is-following", isFollowing);
+
+    // ✅ se non ho un dogId mio, il follow non può essere salvato
+    followBtn.disabled = !(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID);
+  };
+
+  followBtn.onclick = () => {
+    // ✅ blocca subito se manca il mio dogId (evita “sembra morto”)
+    if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
+      console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
       refreshFollowBtn();
+      return;
     }
 
-    const followersCountEl = $("followersCount");
-    const followingCountEl = $("followingCount");
+    const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
+    const isFollowing = myFollowing.includes(d.id);
 
-    followersCountEl?.addEventListener("click", () => openFollowersList(d.id));
-    followingCountEl?.addEventListener("click", () => openFollowingList(d.id));
-
-    if (profileLikeBtn) {
-      profileLikeBtn.onclick = () => togglePhotoLike(d.id);
-      updatePhotoLikeUI(d.id);
+    if (isFollowing) {
+      unfollowDog(d.id);
+    } else {
+      followDog(d.id);
     }
+    refreshFollowBtn();
+  };
 
-    if(dogStories){
-      qa(".pp-story-item", profileContent).forEach(item => {
-        item.addEventListener("click", ()=>{
-          const idx = parseInt(item.getAttribute("data-story-index"));
-          openDogStoryViewer(d.id, idx);
-        });
-      });
-    }
+  refreshFollowBtn();
+}
+
+const followersCountEl = $("followersCount");
+const followingCountEl = $("followingCount");
+
+// ✅ evita accumulo listeners ogni volta che apri il profilo
+if (followersCountEl) followersCountEl.onclick = () => openFollowersList(d.id);
+if (followingCountEl) followingCountEl.onclick = () => openFollowingList(d.id);
+
+if (profileLikeBtn) {
+  profileLikeBtn.onclick = () => togglePhotoLike(d.id);
+  updatePhotoLikeUI(d.id);
+}
+
+if (dogStories) {
+  qa(".pp-story-item", profileContent).forEach(item => {
+    item.addEventListener("click", () => {
+      const idx = parseInt(item.getAttribute("data-story-index"));
+      openDogStoryViewer(d.id, idx);
+    });
+  });
+}
 
     $("uploadDogStory")?.addEventListener("click", ()=> { openUploadModal(); });
 
