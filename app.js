@@ -2029,6 +2029,7 @@ function unfollowDog(targetDogOrId) {
     } catch (e) {
       console.error("togglePhotoLike Firestore:", e);
     }
+  }
 
   // ============ LIKE STORIES ============
   function isStoryLiked(mediaId) {
