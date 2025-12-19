@@ -2008,26 +2008,27 @@ function unfollowDog(targetDogOrId) {
     persistPhotoLikes();
     updatePhotoLikeUI(dogId);
 
-    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
+  // ✅ FIRESTORE (stessa logica MATCH/CHAT)
     try {
-      const uid = window.PLUTOO_UID;
-      const _db = (window.db || (typeof db !== "undefined" ? db : null));
-      if (!uid || !_db) return;
+      const uid = window.PLUTOO_UID || "anonymous";
+      if (!uid || !db) return;
 
-      const ref = _db.collection("dogs").doc(String(dogId))
+      const ref = db.collection("dogs").doc(String(dogId))
         .collection("photoLikes").doc(String(uid));
 
       if (wasLiked) {
-        ref.delete().catch(()=>{});
+        ref.delete().catch((e)=>console.error("photoLike delete:", e));
       } else {
         ref.set({
           uid: String(uid),
           dogId: String(dogId),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch(()=>{});
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch((e)=>console.error("photoLike set:", e));
       }
-    } catch (_) {}
-  }
+    } catch (e) {
+      console.error("togglePhotoLike Firestore:", e);
+    }
 
   // ============ LIKE STORIES ============
   function isStoryLiked(mediaId) {
@@ -2064,26 +2065,27 @@ storyLikeBtn.classList.add("heart-anim");
     persistStoryLikes();
     updateStoryLikeUI(mediaId);
 
-    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
+  // ✅ FIRESTORE (stessa logica MATCH/CHAT)
     try {
-      const uid = window.PLUTOO_UID;
-      const _db = (window.db || (typeof db !== "undefined" ? db : null));
-      if (!uid || !_db) return;
+      const uid = window.PLUTOO_UID || "anonymous";
+      if (!uid || !db) return;
 
-      const ref = _db.collection("stories").doc(String(mediaId))
+      const ref = db.collection("stories").doc(String(mediaId))
         .collection("likes").doc(String(uid));
 
       if (wasLiked) {
-        ref.delete().catch(()=>{});
+        ref.delete().catch((e)=>console.error("storyLike delete:", e));
       } else {
         ref.set({
           uid: String(uid),
           mediaId: String(mediaId),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch(()=>{});
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch((e)=>console.error("storyLike set:", e));
       }
-    } catch (_) {}
-  }
+    } catch (e) {
+      console.error("toggleStoryLike Firestore:", e);
+    }
 
   // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
   window.openProfilePage = (d)=>{
