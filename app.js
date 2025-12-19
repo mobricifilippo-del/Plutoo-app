@@ -3,6 +3,10 @@ window.addEventListener("error", function (e) {
   alert("JS ERROR: " + e.message);
 });
 
+window.addEventListener("unhandledrejection", function (e) {
+  console.error("UNHANDLED PROMISE REJECTION:", e.reason);
+});
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // Firebase handles
