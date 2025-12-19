@@ -3624,17 +3624,17 @@ init();
   }
 
   window.handleAndroidBack = function() {
-  const viewer = document.getElementById("storyViewer");
+    const viewer = document.getElementById("storyViewer");
 
-  // Se la storia è aperta, chiudila e segnala ad Android che è gestito
-  if (viewer && !viewer.classList.contains("hidden")) {
-    viewer.classList.add("hidden");
-    return "HANDLED";
-  }
+    // Se la storia è aperta, chiudila e segnala ad Android che è gestito
+    if (viewer && !viewer.classList.contains("hidden")) {
+      viewer.classList.add("hidden");
+      return "HANDLED";
+    }
 
-  // Nessuna storia aperta → Android può gestire il back normalmente
-  return "NOT_HANDLED";
-};
+    // Nessuna storia aperta → Android può gestire il back normalmente
+    return "NOT_HANDLED";
+  };
 
   init();
-    });
+});
