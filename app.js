@@ -2444,9 +2444,6 @@ if (followBtn) {
       followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
     }
     followBtn.classList.toggle("is-following", isFollowing);
-
-    // ✅ se non ho un dogId mio, il follow non può essere salvato
-    followBtn.disabled = !(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID);
   };
 
   followBtn.onclick = () => {
