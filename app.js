@@ -2091,6 +2091,7 @@ storyLikeBtn.classList.add("heart-anim");
     } catch (e) {
       console.error("toggleStoryLike Firestore:", e);
     }
+  }
 
   // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
   window.openProfilePage = (d)=>{
