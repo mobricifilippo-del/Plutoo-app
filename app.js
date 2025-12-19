@@ -1766,10 +1766,7 @@ function generateSocialSection(d) {
   if (!targetDogId) return;
 
   // ✅ dogId “mio” coerente (robusto): se manca, non fare crash e non “sembra morto”
-const selfDogId =
-  (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
-    ? String(CURRENT_USER_DOG_ID)
-    : "";
+const selfDogId = (window.PLUTOO_UID ? String(window.PLUTOO_UID) : "");
 
 if (!selfDogId) {
   // production: feedback chiaro, niente crash silenzioso
