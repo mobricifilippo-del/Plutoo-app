@@ -1868,6 +1868,18 @@ _db.collection("followers").doc(docId).set({
 }, { merge: true })
 .then(() => {
   console.log("FOLLOW Firestore OK:", docId);
+  // ✅ NOTIFICA (source of truth): follow
+const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
+_db.collection("notifications").doc(notifId).set({
+  type: "follow",
+  fromUid: String(selfUid),
+  fromDogId: String(selfDogId),
+  toDogId: String(targetDogId),
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  read: false
+}, { merge: true }).catch((e) => {
+  console.error("followDog notification Firestore:", e);
+});
   if (typeof showToast === "function") showToast("FOLLOW: salvato su Firestore ✅");
 })
 .catch((e) => {
@@ -1923,6 +1935,11 @@ if (!selfDogId) {
 
     const docId = `${String(selfDogId)}_${String(targetDogId)}`;
     _db.collection("followers").doc(docId).delete().catch((e) => {
+      // ✅ NOTIFICA: rimuovi follow
+const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
+_db.collection("notifications").doc(notifId).delete().catch((e) => {
+  console.error("unfollowDog notification delete:", e);
+});
       console.error("unfollowDog Firestore:", e);
     });
   } catch (e) {
