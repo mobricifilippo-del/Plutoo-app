@@ -396,7 +396,23 @@
       </div>
       <div id="followingList" class="sheet-list"></div>
     </div>
-  </div>  <!-- ==================== CHAT PANE (MODALE CENTRATA) ==================== -->  <div id="chatPane" class="chat-pane hidden">
+  </div> 
+
+  <!-- NOTIFICHE OVERLAY -->
+<div id="notifOverlay" class="sheet-overlay hidden" aria-hidden="true">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title">Notifiche</div>
+      <button type="button" class="sheet-close" aria-label="Chiudi">✕</button>
+    </div>
+
+    <div id="notifList" class="notif-list">
+      <p class="sheet-empty">Nessuna notifica</p>
+    </div>
+  </div>
+</div>
+  
+  <!-- ==================== CHAT PANE (MODALE CENTRATA) ==================== -->  <div id="chatPane" class="chat-pane hidden">
     <div class="chat-pane-inner">
       <div class="chat-header">
         <button id="closeChat" class="btn small ghost">←</button>
