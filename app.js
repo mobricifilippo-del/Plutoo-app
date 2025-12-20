@@ -853,6 +853,38 @@ const DOGS = [
 
 // ====== MESSAGGI - VISTA E TABS INTERN INTERNI ======
 const btnMessages = $("btnMessages");
+// 🔔 Notifiche (stessa logica del bottone Messaggi)
+const notifBtn = $("notifBtn");
+const notifOverlay = $("notifOverlay");
+
+if (notifBtn && notifOverlay) {
+  notifBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    notifOverlay.classList.remove("hidden");
+    requestAnimationFrame(() => notifOverlay.classList.add("show"));
+  }, { passive: false });
+}
+// chiudi notifiche: tap fuori / X
+const notifCloseBtn = notifOverlay?.querySelector(".sheet-close");
+
+if (notifCloseBtn && notifOverlay) {
+  notifCloseBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    notifOverlay.classList.remove("show");
+    setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+  });
+}
+
+if (notifOverlay) {
+  notifOverlay.addEventListener("click", (e) => {
+    if (e.target === notifOverlay) {
+      notifOverlay.classList.remove("show");
+      setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+    }
+  });
+}
 const msgTopTabs  = qa(".msg-top-tab");
 const msgLists    = qa(".messages-list");
 
