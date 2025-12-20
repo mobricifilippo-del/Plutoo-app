@@ -2447,12 +2447,6 @@ if (followBtn) {
   };
 
   followBtn.onclick = () => {
-    // ✅ blocca subito se manca il mio dogId (evita “sembra morto”)
-    if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
-      console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
-      refreshFollowBtn();
-      return;
-    }
 
     const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
     const isFollowing = myFollowing.includes(d.id);
