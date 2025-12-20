@@ -2075,37 +2075,40 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     }
   });
 
-/* ================= NOTIFICHE OVERLAY ================= */
-
+ // ================= NOTIFICHE (OPEN/CLOSE) =================
 const notifBtn = $("notifBtn");
 const notifOverlay = $("notifOverlay");
-const notifCloseBtn = notifOverlay?.querySelector(".sheet-close");
+const notifList = $("notifList");
+const notifDot = $("notifDot");
 
-// apri
-if (notifBtn && notifOverlay) {
-  notifBtn.addEventListener("click", () => {
-    notifOverlay.classList.remove("hidden");
-    requestAnimationFrame(() => notifOverlay.classList.add("show"));
-  });
+function openNotifOverlay() {
+  if (!notifOverlay) return;
+  notifOverlay.classList.remove("hidden");
+  requestAnimationFrame(() => notifOverlay.classList.add("show"));
 }
 
-// chiudi con X
-if (notifCloseBtn && notifOverlay) {
-  notifCloseBtn.addEventListener("click", () => {
-    notifOverlay.classList.remove("show");
-    setTimeout(() => notifOverlay.classList.add("hidden"), 200);
-  });
+function closeNotifOverlay() {
+  if (!notifOverlay) return;
+  notifOverlay.classList.remove("show");
+  setTimeout(() => notifOverlay.classList.add("hidden"), 200);
 }
 
-// chiudi cliccando fuori
-if (notifOverlay) {
-  notifOverlay.addEventListener("click", (e) => {
-    if (e.target === notifOverlay) {
-      notifOverlay.classList.remove("show");
-      setTimeout(() => notifOverlay.classList.add("hidden"), 200);
-    }
-  });
+// click icona 🔔
+if (notifBtn) {
+  notifBtn.onclick = () => {
+    openNotifOverlay();
+  };
 }
+
+// chiusura: tap fuori o bottone X
+notifOverlay?.addEventListener("click", (e) => {
+  if (
+    e.target === notifOverlay ||
+    (e.target && e.target.classList && e.target.classList.contains("sheet-close"))
+  ) {
+    closeNotifOverlay();
+  }
+});
 
   // ============ LIKE FOTO PROFILO ============
   function isDogPhotoLiked(dogId) {
