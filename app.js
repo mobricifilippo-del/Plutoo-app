@@ -1850,7 +1850,7 @@ if (!selfDogId) {
   // ✅ Firestore (source of truth): salva follow
   try {
   const selfUid = window.PLUTOO_UID;
-const _db = window.db;
+  const _db = (window.db || (typeof db !== "undefined" ? db : null));
 
 if (!selfUid || !_db) {
   console.error("FOLLOW Firestore SKIP:", { selfUid, hasDb: !!_db });
@@ -1911,7 +1911,7 @@ if (!selfDogId) {
   // ✅ Firestore (source of truth): rimuove follow
   try {
     const selfUid = window.PLUTOO_UID;
-    const _db = window.db;
+    const _db = (window.db || (typeof db !== "undefined" ? db : null));
     if (!selfUid || !_db) {
   alert(
     "FIRESTORE BLOCCATO:\n" +
