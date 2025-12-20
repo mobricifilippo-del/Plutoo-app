@@ -3,10 +3,6 @@ window.addEventListener("error", function (e) {
   alert("JS ERROR: " + e.message);
 });
 
-window.addEventListener("unhandledrejection", function (e) {
-  console.error("UNHANDLED PROMISE REJECTION:", e.reason);
-});
-
 document.addEventListener("DOMContentLoaded", () => {
 
   // Firebase handles
@@ -1762,7 +1758,7 @@ function generateSocialSection(d) {
   }
 
   function followDog(targetDogOrId) {
-  // ✅ guard-rail: mappe sempre inizializzate
+  // ✅ guard-rail: mappe sempre inizializzate (evita crash -> ENTRA morto / bottone morto)
   if (!state.followersByDog || typeof state.followersByDog !== "object") state.followersByDog = {};
   if (!state.followingByDog || typeof state.followingByDog !== "object") state.followingByDog = {};
 
@@ -1770,15 +1766,27 @@ function generateSocialSection(d) {
   const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
   if (!targetDogId) return;
 
-  // ✅ serve SEMPRE un dogId “mio” coerente
-  if (!CURRENT_USER_DOG_ID) return;
+  // ✅ dogId “mio” coerente (robusto): se manca, non fare crash e non “sembra morto”
+const selfDogId =
+  (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
+    ? String(CURRENT_USER_DOG_ID)
+    : "";
 
-  // ========== LOCAL (come prima) ==========
+if (!selfDogId) {
+  // production: feedback chiaro, niente crash silenzioso
+  if (typeof showToast === "function") {
+    showToast(state.lang === "it" ? "Seleziona prima il tuo DOG" : "Select your DOG first");
+  }
+  return;
+}
+
+  // followingByDog[currentDogId] = [dogId...]
   state.followingByDog[CURRENT_USER_DOG_ID] = getFollowing(CURRENT_USER_DOG_ID);
   if (!state.followingByDog[CURRENT_USER_DOG_ID].includes(targetDogId)) {
     state.followingByDog[CURRENT_USER_DOG_ID].push(targetDogId);
   }
 
+  // followersByDog[targetDogId] = [currentDogId...]
   state.followersByDog[targetDogId] = getFollowers(targetDogId);
   if (!state.followersByDog[targetDogId].includes(CURRENT_USER_DOG_ID)) {
     state.followersByDog[targetDogId].push(CURRENT_USER_DOG_ID);
@@ -1787,25 +1795,21 @@ function generateSocialSection(d) {
   persistFollowState();
   updateFollowerUI(targetDogId);
 
-  // ========== FIRESTORE (stessa logica MATCH/CHAT) ==========
+  // ✅ Firestore (source of truth): salva follow
   try {
-    const selfUid = window.PLUTOO_UID || "anonymous";
-    if (!db) return;
+    const selfUid = window.PLUTOO_UID;
+    const _db = window.db;
+    if (!selfUid || !_db) return;
 
-    // docId deterministico (come chatId): sempre uguale
-    const docId = `${selfUid}_${String(CURRENT_USER_DOG_ID)}_${String(targetDogId)}`;
-
-    const payload = {
-      followerUid: String(selfUid),
-      followerDogId: String(CURRENT_USER_DOG_ID),
+    const docId = `${String(selfDogId)}_${String(targetDogId)}`;
+_db.collection("followers").doc(docId).set({
+  followerUid: String(selfUid),
+  followerDogId: String(selfDogId),
       targetDogId: String(targetDogId),
-      active: true,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    db.collection("followers").doc(docId).set(payload, { merge: true })
-      .catch((e) => console.error("followDog Firestore:", e));
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).catch((e) => {
+      console.error("followDog Firestore:", e);
+    });
   } catch (e) {
     console.error("followDog Firestore:", e);
   }
@@ -1819,9 +1823,18 @@ function unfollowDog(targetDogOrId) {
   const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
   if (!targetDogId) return;
 
-  if (!CURRENT_USER_DOG_ID) return;
+  const selfDogId =
+  (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
+    ? String(CURRENT_USER_DOG_ID)
+    : "";
 
-  // ========== LOCAL (come prima) ==========
+if (!selfDogId) {
+  if (typeof showToast === "function") {
+    showToast(state.lang === "it" ? "Seleziona prima il tuo DOG" : "Select your DOG first");
+  }
+  return;
+}
+
   state.followingByDog[CURRENT_USER_DOG_ID] =
     getFollowing(CURRENT_USER_DOG_ID).filter(id => id !== targetDogId);
 
@@ -1831,15 +1844,16 @@ function unfollowDog(targetDogOrId) {
   persistFollowState();
   updateFollowerUI(targetDogId);
 
-  // ========== FIRESTORE (stessa logica MATCH/CHAT) ==========
+  // ✅ Firestore (source of truth): rimuove follow
   try {
-    const selfUid = window.PLUTOO_UID || "anonymous";
-    if (!db) return;
+    const selfUid = window.PLUTOO_UID;
+    const _db = window.db;
+    if (!selfUid || !_db) return;
 
-    const docId = `${selfUid}_${String(CURRENT_USER_DOG_ID)}_${String(targetDogId)}`;
-
-    db.collection("followers").doc(docId).delete()
-      .catch((e) => console.error("unfollowDog Firestore:", e));
+    const docId = `${String(selfDogId)}_${String(targetDogId)}`;
+    _db.collection("followers").doc(docId).delete().catch((e) => {
+      console.error("unfollowDog Firestore:", e);
+    });
   } catch (e) {
     console.error("unfollowDog Firestore:", e);
   }
@@ -2012,27 +2026,25 @@ function unfollowDog(targetDogOrId) {
     persistPhotoLikes();
     updatePhotoLikeUI(dogId);
 
-  // ✅ FIRESTORE (stessa logica MATCH/CHAT)
+    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
     try {
-      const uid = window.PLUTOO_UID || "anonymous";
-      if (!uid || !db) return;
+      const uid = window.PLUTOO_UID;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!uid || !_db) return;
 
-      const ref = db.collection("dogs").doc(String(dogId))
+      const ref = _db.collection("dogs").doc(String(dogId))
         .collection("photoLikes").doc(String(uid));
 
       if (wasLiked) {
-        ref.delete().catch((e)=>console.error("photoLike delete:", e));
+        ref.delete().catch(()=>{});
       } else {
         ref.set({
           uid: String(uid),
           dogId: String(dogId),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch((e)=>console.error("photoLike set:", e));
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch(()=>{});
       }
-    } catch (e) {
-      console.error("togglePhotoLike Firestore:", e);
-    }
+    } catch (_) {}
   }
 
   // ============ LIKE STORIES ============
@@ -2070,27 +2082,26 @@ storyLikeBtn.classList.add("heart-anim");
     persistStoryLikes();
     updateStoryLikeUI(mediaId);
 
-  // ✅ FIRESTORE (stessa logica MATCH/CHAT)
+    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
     try {
-      const uid = window.PLUTOO_UID || "anonymous";
-      if (!uid || !db) return;
+      const uid = window.PLUTOO_UID;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!uid || !_db) return;
 
-      const ref = db.collection("stories").doc(String(mediaId))
+      const ref = _db.collection("stories").doc(String(mediaId))
         .collection("likes").doc(String(uid));
 
       if (wasLiked) {
-        ref.delete().catch((e)=>console.error("storyLike delete:", e));
+        ref.delete().catch(()=>{});
       } else {
         ref.set({
           uid: String(uid),
           mediaId: String(mediaId),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch((e)=>console.error("storyLike set:", e));
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch(()=>{});
       }
-    } catch (e) {
-      console.error("toggleStoryLike Firestore:", e);
-    }
+    } catch (_) {}
+  }
 
   // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
   window.openProfilePage = (d)=>{
@@ -3629,17 +3640,16 @@ init();
   }
 
   window.handleAndroidBack = function() {
-    const viewer = document.getElementById("storyViewer");
+  const viewer = document.getElementById("storyViewer");
 
-    // Se la storia è aperta, chiudila e segnala ad Android che è gestito
-    if (viewer && !viewer.classList.contains("hidden")) {
-      viewer.classList.add("hidden");
-      return "HANDLED";
-    }
+  // Se la storia è aperta, chiudila e segnala ad Android che è gestito
+  if (viewer && !viewer.classList.contains("hidden")) {
+    viewer.classList.add("hidden");
+    return "HANDLED";
+  }
 
-    // Nessuna storia aperta → Android può gestire il back normalmente
-    return "NOT_HANDLED";
-  };
+  // Nessuna storia aperta → Android può gestire il back normalmente
+  return "NOT_HANDLED";
+};
 
   init();
-});
