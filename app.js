@@ -2075,6 +2075,38 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     }
   });
 
+/* ================= NOTIFICHE OVERLAY ================= */
+
+const notifBtn = $("notifBtn");
+const notifOverlay = $("notifOverlay");
+const notifCloseBtn = notifOverlay?.querySelector(".sheet-close");
+
+// apri
+if (notifBtn && notifOverlay) {
+  notifBtn.addEventListener("click", () => {
+    notifOverlay.classList.remove("hidden");
+    requestAnimationFrame(() => notifOverlay.classList.add("show"));
+  });
+}
+
+// chiudi con X
+if (notifCloseBtn && notifOverlay) {
+  notifCloseBtn.addEventListener("click", () => {
+    notifOverlay.classList.remove("show");
+    setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+  });
+}
+
+// chiudi cliccando fuori
+if (notifOverlay) {
+  notifOverlay.addEventListener("click", (e) => {
+    if (e.target === notifOverlay) {
+      notifOverlay.classList.remove("show");
+      setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+    }
+  });
+}
+
   // ============ LIKE FOTO PROFILO ============
   function isDogPhotoLiked(dogId) {
     if (!dogId) return false;
