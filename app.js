@@ -1,7 +1,59 @@
-// DEBUG TEMPORANEO: mostra qualsiasi errore JS
+/* ================= CRASH DEBUG SYSTEM (OBBLIGATORIO) ================= */
+
+// 1️⃣ Errori JS globali
 window.addEventListener("error", function (e) {
-  alert("JS ERROR: " + e.message);
+  alert(
+    "❌ JS ERROR\n\n" +
+    "Messaggio: " + e.message + "\n" +
+    "File: " + e.filename + "\n" +
+    "Linea: " + e.lineno + ":" + e.colno
+  );
 });
+
+// 2️⃣ Errori Promise / Firebase
+window.addEventListener("unhandledrejection", function (e) {
+  alert(
+    "❌ PROMISE ERROR\n\n" +
+    (e.reason && e.reason.message
+      ? e.reason.message
+      : JSON.stringify(e.reason))
+  );
+});
+
+// 3️⃣ Verifica Firestore sempre disponibile
+function assertFirestore() {
+  if (!window.db) {
+    alert("❌ FIRESTORE NON INIZIALIZZATO (window.db è undefined)");
+    return false;
+  }
+  return true;
+}
+
+// 4️⃣ Verifica UID sempre presente
+function assertUID() {
+  if (!window.PLUTOO_UID) {
+    alert("❌ UTENTE NON AUTENTICATO (PLUTOO_UID mancante)");
+    return false;
+  }
+  return true;
+}
+
+// 5️⃣ Wrapper sicuro per Firestore write
+async function safeFirestoreWrite(label, fn) {
+  if (!assertFirestore() || !assertUID()) {
+    alert("❌ BLOCCO WRITE: " + label);
+    return;
+  }
+  try {
+    await fn();
+  } catch (e) {
+    alert(
+      "❌ FIRESTORE WRITE ERROR\n\n" +
+      label + "\n\n" +
+      (e.message || JSON.stringify(e))
+    );
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -1860,7 +1912,14 @@ if (!selfDogId) {
   try {
     const selfUid = window.PLUTOO_UID;
     const _db = window.db;
-    if (!selfUid || !_db) return;
+    if (!selfUid || !_db) {
+  alert(
+    "FIRESTORE BLOCCATO:\n" +
+    "selfUid=" + selfUid + "\n" +
+    "db=" + _db
+  );
+  return;
+    }
 
     const docId = `${String(selfDogId)}_${String(targetDogId)}`;
     _db.collection("followers").doc(docId).delete().catch((e) => {
