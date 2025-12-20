@@ -864,16 +864,16 @@ if (notifBtn && notifOverlay) {
     notifOverlay.classList.remove("hidden");
     requestAnimationFrame(() => notifOverlay.classList.add("show"));
   }, { passive: false });
-}
-// chiudi notifiche: tap fuori / X
-const notifCloseBtn = notifOverlay?.querySelector(".sheet-close");
 
-if (notifCloseBtn && notifOverlay) {
-  notifCloseBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    notifOverlay.classList.remove("show");
-    setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+  // chiudi cliccando fuori o su X
+  notifOverlay.addEventListener("click", (e) => {
+    if (
+      e.target === notifOverlay ||
+      (e.target && e.target.classList && e.target.classList.contains("sheet-close"))
+    ) {
+      notifOverlay.classList.remove("show");
+      setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+    }
   });
 }
 
