@@ -2095,9 +2095,10 @@ function closeNotifOverlay() {
 
 // click icona 🔔
 if (notifBtn) {
-  notifBtn.onclick = () => {
+  notifBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // ⛔ fondamentale
     openNotifOverlay();
-  };
+  });
 }
 
 // chiusura: tap fuori o bottone X
