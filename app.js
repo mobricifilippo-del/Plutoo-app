@@ -1810,6 +1810,7 @@ function generateSocialSection(d) {
   }
 
   function followDog(targetDogOrId) {
+    alert("🚀 followDog CHIAMATA");
   // ✅ guard-rail: mappe sempre inizializzate (evita crash -> ENTRA morto / bottone morto)
   if (!state.followersByDog || typeof state.followersByDog !== "object") state.followersByDog = {};
   if (!state.followingByDog || typeof state.followingByDog !== "object") state.followingByDog = {};
