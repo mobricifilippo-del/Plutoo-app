@@ -1797,19 +1797,31 @@ if (!selfDogId) {
 
   // ✅ Firestore (source of truth): salva follow
   try {
-    const selfUid = window.PLUTOO_UID;
-    const _db = window.db;
-    if (!selfUid || !_db) return;
+  const selfUid = window.PLUTOO_UID;
+const _db = window.db;
 
-    const docId = `${String(selfDogId)}_${String(targetDogId)}`;
+if (!selfUid || !_db) {
+  console.error("FOLLOW Firestore SKIP:", { selfUid, hasDb: !!_db });
+  if (typeof showToast === "function") showToast("FOLLOW: Firestore SKIP (uid/db)");
+  return;
+}
+
+const docId = `${String(selfDogId)}_${String(targetDogId)}`;
+
 _db.collection("followers").doc(docId).set({
   followerUid: String(selfUid),
   followerDogId: String(selfDogId),
-      targetDogId: String(targetDogId),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).catch((e) => {
-      console.error("followDog Firestore:", e);
-    });
+  targetDogId: String(targetDogId),
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+}, { merge: true })
+.then(() => {
+  console.log("FOLLOW Firestore OK:", docId);
+  if (typeof showToast === "function") showToast("FOLLOW: salvato su Firestore ✅");
+})
+.catch((e) => {
+  console.error("followDog Firestore:", e);
+  if (typeof showToast === "function") showToast("FOLLOW: ERRORE Firestore ❌");
+});
   } catch (e) {
     console.error("followDog Firestore:", e);
   }
