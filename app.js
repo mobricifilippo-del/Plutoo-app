@@ -75,12 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ Stato Auth: NON fare anonimo automatico (login/registrazione reali)
   auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      // Utente non autenticato: nessun boot app, UID nullo
-      window.PLUTOO_UID = null;
-      window.__booted = false;
-      return;
-    }
+  if (!user) {
+  // ✅ Auto-login anonimo per avere sempre PLUTOO_UID e poter scrivere su Firestore
+  auth.signInAnonymously()
+    .catch((e) => alert("❌ AUTH ANON ERROR: " + (e && e.message ? e.message : e)));
+  return;
+  }
 
     // ✅ Fonte di verità UID (sempre aggiornata)
     const prevUid = window.PLUTOO_UID || null;
