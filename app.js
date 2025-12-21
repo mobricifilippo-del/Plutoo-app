@@ -859,11 +859,16 @@ const notifOverlay = $("notifOverlay");
 
 if (notifBtn && notifOverlay) {
   notifBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    notifOverlay.classList.remove("hidden");
-    requestAnimationFrame(() => notifOverlay.classList.add("show"));
-  }, { passive: false });
+  e.preventDefault();
+  e.stopPropagation();
+
+  notifOverlay.setAttribute("aria-hidden", "false");
+  notifOverlay.classList.remove("hidden");
+
+  requestAnimationFrame(() => {
+    notifOverlay.classList.add("show");
+  });
+}, { passive: false });
 
   // chiudi cliccando fuori o su X
   notifOverlay.addEventListener("click", (e) => {
@@ -872,7 +877,10 @@ if (notifBtn && notifOverlay) {
       (e.target && e.target.classList && e.target.classList.contains("sheet-close"))
     ) {
       notifOverlay.classList.remove("show");
-      setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+setTimeout(() => {
+  notifOverlay.classList.add("hidden");
+  notifOverlay.setAttribute("aria-hidden", "true");
+}, 200);
     }
   });
 }
