@@ -905,10 +905,15 @@ function __renderNotifs(items) {
     <div class="notif-time">${__fmtTime(n.createdAt)}</div>
   `;
 
-  // ✅ TAP sulla notifica
-  row.addEventListener("click", () => {
-  if (n.type === "follow" && n.fromDogId) {
-    openProfile("dog", String(n.fromDogId));
+  // ✅ TAP sulla notifica (SAFE: non deve mai crashare)
+row.addEventListener("click", () => {
+  try {
+    // In publish: se la funzione non esiste, non facciamo nulla (niente crash)
+    if (typeof openProfile === "function" && n.type === "follow" && n.fromDogId) {
+      openProfile("dog", String(n.fromDogId));
+    }
+  } catch (e) {
+    console.error("notif tap error:", e);
   }
 });
 
