@@ -948,12 +948,23 @@ function __renderNotifs(items) {
     <div class="notif-time">${__fmtTime(n.createdAt)}</div>
   `;
 
-// ✅ TAP sulla notifica: apri sempre il profilo del DOG che ha agito (fromDogId)
+// ✅ TAP sulla notifica: feedback visibile + apri profilo
 row.addEventListener("click", () => {
   try {
-    if (n && n.fromDogId) __openDogProfileById(String(n.fromDogId));
+    const id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+    if (typeof showToast === "function") showToast("NOTIF TAP: fromDogId=" + (id || "(vuoto)"));
+
+    if (!id) return;
+
+    // chiama la funzione async e mostra errore se fallisce
+    Promise.resolve(__openDogProfileById(id))
+      .catch((e) => {
+        console.error("__openDogProfileById promise:", e);
+        if (typeof showToast === "function") showToast("NOTIF: errore apertura profilo ❌");
+      });
   } catch (e) {
     console.error("notif tap error:", e);
+    if (typeof showToast === "function") showToast("NOTIF: crash tap ❌");
   }
 });
 
