@@ -560,6 +560,20 @@
       "</div>";
     document.body.appendChild(overlay);
 
+    window.onerror = function (msg, url, line, col, err) {
+  var text =
+    "MESSAGE: " + msg + "\n\n" +
+    "FILE: " + (url || "(unknown)") + "\n" +
+    "LINE: " + (line || "?") + "\n" +
+    "COL: " + (col || "?") + "\n\n" +
+    "STACK:\n" + (err && err.stack ? err.stack : "(no stack)");
+
+  var pre = document.getElementById("__crashText");
+  if (pre) pre.textContent = text;
+
+  return true;
+};
+
     document.getElementById("__crashClose").addEventListener("click", function () {
       overlay.style.display = "none";
     });
