@@ -962,7 +962,6 @@ function initNotificationsFeed() {
   __notifUnsub = db
     .collection("notifications")
     .where("toDogId", "==", String(toDogId))
-    .orderBy("createdAt", "desc")
     .limit(40)
     .onSnapshot((snap) => {
       const items = [];
@@ -977,6 +976,13 @@ function initNotificationsFeed() {
           createdAt: data.createdAt || null,
           read: data.read === true
         });
+      });
+
+      // ordine lato client (robusto anche se qualche doc non ha createdAt)
+      items.sort((a, b) => {
+        const ta = a && a.createdAt && typeof a.createdAt.toDate === "function" ? a.createdAt.toDate().getTime() : 0;
+        const tb = b && b.createdAt && typeof b.createdAt.toDate === "function" ? b.createdAt.toDate().getTime() : 0;
+        return tb - ta;
       });
 
       __notifLast = items;
