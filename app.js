@@ -95,10 +95,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const selfUid = user.uid;
       if (!db) return;
 
-      const snap = await db
-        .collection("chats")
-        .where("members", "array-contains", selfUid)
-        .get();
+      // 1) PRIMA prova dal dataset locale (più affidabile e immediato)
+try {
+  const localDogs = (Array.isArray(state?.dogs) && state.dogs.length) ? state.dogs
+    : (Array.isArray(window.DOGS) ? window.DOGS : []);
+
+  const found = localDogs.find(x => String(x.id) === String(dogId));
+  if (found && typeof window.openProfilePage === "function") {
+    window.openProfilePage(found);
+    return;
+  }
+} catch (_) {}
+
+// 2) FALLBACK: se non lo trova localmente, allora prova Firestore
+const snap = await _db.collection("dogs").doc(String(dogId)).get();
 
       const restored = {};
       snap.forEach(doc => {
