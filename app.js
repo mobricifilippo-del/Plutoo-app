@@ -911,7 +911,7 @@ function __renderNotifs(items) {
         if (!id) return;
 
         if (typeof __openDogProfileById === "function") {
-          Promise.resolve(__openDogProfileById(id)).catch(() => {});
+  __openDogProfileById(id).catch((e) => console.error("__openDogProfileById:", e));
         }
       } catch (_) {}
     });
