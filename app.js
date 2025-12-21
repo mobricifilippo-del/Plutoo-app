@@ -888,25 +888,32 @@ function __renderNotifs(items) {
   const frag = document.createDocumentFragment();
 
   items.forEach((n) => {
-    const row = document.createElement("div");
-    row.className = "notif-item" + (n.read ? "" : " unread");
+  const row = document.createElement("div");
+  row.className = "notif-item" + (n.read ? "" : " unread");
 
-    const main = (n.type === "follow")
-      ? "Nuovo FOLLOW"
-      : (n.type ? String(n.type) : "Notifica");
+  const main = (n.type === "follow")
+    ? "Nuovo FOLLOW"
+    : (n.type ? String(n.type) : "Notifica");
 
-    const sub = (n.fromDogId ? `Da DOG: ${n.fromDogId}` : "");
+  const sub = (n.fromDogId ? `Da DOG: ${n.fromDogId}` : "");
 
-    row.innerHTML = `
-      <div class="notif-txt">
-        <div class="notif-main">${main}</div>
-        ${sub ? `<div class="notif-sub">${sub}</div>` : ``}
-      </div>
-      <div class="notif-time">${__fmtTime(n.createdAt)}</div>
-    `;
+  row.innerHTML = `
+    <div class="notif-txt">
+      <div class="notif-main">${main}</div>
+      ${sub ? `<div class="notif-sub">${sub}</div>` : ``}
+    </div>
+    <div class="notif-time">${__fmtTime(n.createdAt)}</div>
+  `;
 
-    frag.appendChild(row);
+  // ✅ TAP sulla notifica
+  row.addEventListener("click", () => {
+    if (n.type === "follow" && n.fromDogId) {
+      openDogProfileById(String(n.fromDogId));
+    }
   });
+
+  frag.appendChild(row);
+});
 
   notifList.appendChild(frag);
 }
