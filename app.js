@@ -936,6 +936,56 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
   notifList.appendChild(frag);
 }
 
+// === Apri profilo DOG da id (usato dalle notifiche) ===
+// Production-ready: prima prova dataset locale, poi Firestore (docId o campo id/dogId).
+async function __openDogProfileById(dogId) {
+  try {
+    dogId = (dogId != null) ? String(dogId) : "";
+    if (!dogId) return;
+
+    // 1) PRIMA prova locale (più veloce e stabile)
+    const localDogs =
+      (Array.isArray(state?.dogs) && state.dogs.length) ? state.dogs :
+      (Array.isArray(window.DOGS) ? window.DOGS : []);
+
+    const found = localDogs.find(x => String(x?.id) === dogId);
+    if (found && typeof window.openProfilePage === "function") {
+      window.openProfilePage(found);
+      return;
+    }
+
+    // 2) FALLBACK Firestore
+    const _db = (window.db || (typeof db !== "undefined" ? db : null));
+    if (!_db) return;
+
+    // 2a) tenta docId === dogId
+    let snap = await _db.collection("dogs").doc(dogId).get();
+
+    // 2b) fallback: docId auto, ma campo id/dogId nel documento
+    if (!snap.exists) {
+      const q1 = await _db.collection("dogs").where("id", "==", dogId).limit(1).get();
+      if (!q1.empty) snap = q1.docs[0];
+    }
+    if (!snap.exists) {
+      const q2 = await _db.collection("dogs").where("dogId", "==", dogId).limit(1).get();
+      if (!q2.empty) snap = q2.docs[0];
+    }
+
+    if (!snap.exists) return;
+
+    const d = snap.data() || {};
+    if (typeof window.openProfilePage === "function") {
+      window.openProfilePage({
+        id: d.id || d.dogId || dogId,
+        name: d.name || "",
+        img: d.img || d.photo || d.avatar || "",
+        breed: d.breed || "",
+        ...d
+      });
+    }
+  } catch (_) {}
+}
+
 async function __markAllNotifsRead(toDogId) {
   try {
     if (typeof db === "undefined" || !db || !window.PLUTOO_UID) return;
