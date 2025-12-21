@@ -853,46 +853,179 @@ const DOGS = [
 
 // ====== MESSAGGI - VISTA E TABS INTERN INTERNI ======
 const btnMessages = $("btnMessages");
-// 🔔 Notifiche (stessa logica del bottone Messaggi)
+
+// 🔔 Notifiche (Firestore source of truth)
 const notifBtn = $("notifBtn");
 const notifOverlay = $("notifOverlay");
+const notifList = $("notifList");
+const notifDot = $("notifDot");
 
-if (notifBtn && notifOverlay) {
-  notifBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+let __notifUnsub = null;
+let __notifLast = []; // cache render
+let __notifInited = false;
 
-  notifOverlay.setAttribute("aria-hidden", "false");
-  notifOverlay.classList.remove("hidden");
+function __fmtTime(ts) {
+  try {
+    if (!ts) return "";
+    const d = (ts && typeof ts.toDate === "function") ? ts.toDate() : (ts instanceof Date ? ts : null);
+    return d ? d.toLocaleString() : "";
+  } catch (_) {
+    return "";
+  }
+}
 
-  requestAnimationFrame(() => {
-    notifOverlay.classList.add("show");
+function __renderNotifs(items) {
+  if (!notifList) return;
+
+  // svuota (manteniamo semplice e robusto)
+  notifList.innerHTML = "";
+
+  if (!items || !items.length) {
+    notifList.innerHTML = `<p class="sheet-empty">Nessuna notifica</p>`;
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+
+  items.forEach((n) => {
+    const row = document.createElement("div");
+    row.className = "notif-item" + (n.read ? "" : " unread");
+
+    const main = (n.type === "follow")
+      ? "Nuovo FOLLOW"
+      : (n.type ? String(n.type) : "Notifica");
+
+    const sub = (n.fromDogId ? `Da DOG: ${n.fromDogId}` : "");
+
+    row.innerHTML = `
+      <div class="notif-txt">
+        <div class="notif-main">${main}</div>
+        ${sub ? `<div class="notif-sub">${sub}</div>` : ``}
+      </div>
+      <div class="notif-time">${__fmtTime(n.createdAt)}</div>
+    `;
+
+    frag.appendChild(row);
   });
-}, { passive: false });
+
+  notifList.appendChild(frag);
+}
+
+async function __markAllNotifsRead(toDogId) {
+  try {
+    if (!window.db || !window.PLUTOO_UID) return;
+    if (!toDogId) return;
+
+    const snap = await db
+      .collection("notifications")
+      .where("toDogId", "==", String(toDogId))
+      .where("read", "==", false)
+      .limit(40)
+      .get();
+
+    if (snap.empty) return;
+
+    const batch = db.batch();
+    snap.forEach((docSnap) => {
+      batch.set(docSnap.ref, { read: true }, { merge: true });
+    });
+    await batch.commit();
+  } catch (e) {
+    console.error("markAllNotifsRead:", e);
+  }
+}
+
+function initNotificationsFeed() {
+  if (__notifInited) return;
+  __notifInited = true;
+
+  // dogId “verità” per le notifiche (stessa logica che usi nei follow)
+  const toDogId = (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
+    ? String(CURRENT_USER_DOG_ID)
+    : null;
+
+  if (!toDogId) return;
+
+  // aspetta Firebase db/uid (se non c’è ancora, ritenta una volta)
+  if (!window.db || !window.PLUTOO_UID) {
+    setTimeout(() => {
+      __notifInited = false;
+      initNotificationsFeed();
+    }, 350);
+    return;
+  }
+
+  // kill eventuale vecchio listener
+  try { if (typeof __notifUnsub === "function") __notifUnsub(); } catch (_) {}
+  __notifUnsub = null;
+
+  __notifUnsub = db
+    .collection("notifications")
+    .where("toDogId", "==", String(toDogId))
+    .orderBy("createdAt", "desc")
+    .limit(40)
+    .onSnapshot((snap) => {
+      const items = [];
+      snap.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        items.push({
+          id: docSnap.id,
+          type: data.type || "",
+          fromUid: data.fromUid || "",
+          fromDogId: data.fromDogId || "",
+          toDogId: data.toDogId || "",
+          createdAt: data.createdAt || null,
+          read: data.read === true
+        });
+      });
+
+      __notifLast = items;
+
+      const unreadCount = items.filter((x) => x && x.read !== true).length;
+      if (notifDot) notifDot.classList.toggle("hidden", unreadCount === 0);
+
+      // se overlay aperto, aggiorna live
+      if (notifOverlay && !notifOverlay.classList.contains("hidden")) {
+        __renderNotifs(items);
+      }
+    }, (e) => {
+      console.error("notifications onSnapshot:", e);
+    });
+}
+
+// Apri overlay
+if (notifBtn && notifOverlay) {
+  notifBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // inizializza feed appena serve (robusto per publish)
+    initNotificationsFeed();
+
+    notifOverlay.classList.remove("hidden");
+    requestAnimationFrame(() => notifOverlay.classList.add("show"));
+
+    // render immediato da cache
+    __renderNotifs(__notifLast);
+
+    // segna lette (source of truth)
+    const toDogId = (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
+      ? String(CURRENT_USER_DOG_ID)
+      : null;
+    if (toDogId) __markAllNotifsRead(toDogId);
+  }, { passive: false });
 
   // chiudi cliccando fuori o su X
   notifOverlay.addEventListener("click", (e) => {
-    if (
-      e.target === notifOverlay ||
-      (e.target && e.target.classList && e.target.classList.contains("sheet-close"))
-    ) {
-      notifOverlay.classList.remove("show");
-setTimeout(() => {
-  notifOverlay.classList.add("hidden");
-  notifOverlay.setAttribute("aria-hidden", "true");
-}, 200);
-    }
-  });
-}
-
-if (notifOverlay) {
-  notifOverlay.addEventListener("click", (e) => {
-    if (e.target === notifOverlay) {
+    const isBackdrop = (e.target === notifOverlay);
+    const isClose = (e.target && e.target.closest && e.target.closest(".sheet-close"));
+    if (isBackdrop || isClose) {
       notifOverlay.classList.remove("show");
       setTimeout(() => notifOverlay.classList.add("hidden"), 200);
     }
   });
 }
+
 const msgTopTabs  = qa(".msg-top-tab");
 const msgLists    = qa(".messages-list");
 
