@@ -913,7 +913,7 @@ function __renderNotifs(items) {
 
 async function __markAllNotifsRead(toDogId) {
   try {
-    if (!window.db || !window.PLUTOO_UID) return;
+    if (typeof db === "undefined" || !db || !window.PLUTOO_UID) return;
     if (!toDogId) return;
 
     const snap = await db
@@ -947,12 +947,12 @@ function initNotificationsFeed() {
   if (!toDogId) return;
 
   // aspetta Firebase db/uid (se non c’è ancora, ritenta una volta)
-  if (!window.db || !window.PLUTOO_UID) {
-    setTimeout(() => {
-      __notifInited = false;
-      initNotificationsFeed();
-    }, 350);
-    return;
+  if (typeof db === "undefined" || !db || !window.PLUTOO_UID) {
+  setTimeout(() => {
+    __notifInited = false;
+    initNotificationsFeed();
+  }, 350);
+  return;
   }
 
   // kill eventuale vecchio listener
