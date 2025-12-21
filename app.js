@@ -854,8 +854,8 @@ const DOGS = [
 // ====== MESSAGGI - VISTA E TABS INTERN INTERNI ======
 const btnMessages = $("btnMessages");
 // 🔔 Notifiche (stessa logica del bottone Messaggi)
-const notifBtn = $("notifBtn");
-const notifOverlay = $("notifOverlay");
+const notifBtn = $("#notifBtn");
+const notifOverlay = $("#notifOverlay");
 
 if (notifBtn && notifOverlay) {
   notifBtn.addEventListener("click", (e) => {
