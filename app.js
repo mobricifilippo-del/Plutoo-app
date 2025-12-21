@@ -877,7 +877,6 @@ function __fmtTime(ts) {
 function __renderNotifs(items) {
   if (!notifList) return;
 
-  // svuota (manteniamo semplice e robusto)
   notifList.innerHTML = "";
 
   if (!items || !items.length) {
@@ -888,25 +887,37 @@ function __renderNotifs(items) {
   const frag = document.createDocumentFragment();
 
   items.forEach((n) => {
-  const row = document.createElement("div");
-  row.className = "notif-item" + (n.read ? "" : " unread");
+    const row = document.createElement("div");
+    row.className = "notif-item" + (n.read ? "" : " unread");
 
-  const main = (n.type === "follow")
-    ? "Nuovo FOLLOW"
-    : (n.type ? String(n.type) : "Notifica");
+    const main = (n.type === "follow")
+      ? "Nuovo FOLLOW"
+      : (n.type ? String(n.type) : "Notifica");
 
-  const sub = (n.fromDogId ? `Da DOG: ${n.fromDogId}` : "");
+    const sub = (n.fromDogId ? `Da DOG: ${n.fromDogId}` : "");
 
-  row.innerHTML = `
-    <div class="notif-txt">
-      <div class="notif-main">${main}</div>
-      ${sub ? `<div class="notif-sub">${sub}</div>` : ``}
-    </div>
-    <div class="notif-time">${__fmtTime(n.createdAt)}</div>
-  `;
+    row.innerHTML = `
+      <div class="notif-txt">
+        <div class="notif-main">${main}</div>
+        ${sub ? `<div class="notif-sub">${sub}</div>` : ``}
+      </div>
+      <div class="notif-time">${__fmtTime(n.createdAt)}</div>
+    `;
 
-  frag.appendChild(row);
-});
+    // ✅ TAP: apri SEMPRE il profilo del DOG che ha generato la notifica
+    row.addEventListener("click", () => {
+      try {
+        const id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+        if (!id) return;
+
+        if (typeof __openDogProfileById === "function") {
+          Promise.resolve(__openDogProfileById(id)).catch(() => {});
+        }
+      } catch (_) {}
+    });
+
+    frag.appendChild(row);
+  });
 
   notifList.appendChild(frag);
 }
