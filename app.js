@@ -874,6 +874,50 @@ function __fmtTime(ts) {
   }
 }
 
+// ====== NOTIFICHE: apri profilo DOG da dogId (usa openProfilePage) ======
+function __openDogProfileById(dogId) {
+  try {
+    if (!dogId) return;
+
+    // 1) prova da una cache comune se esiste
+    if (window.DOGS && Array.isArray(window.DOGS)) {
+      const d = window.DOGS.find(x => String(x.id) === String(dogId));
+      if (d && typeof window.openProfilePage === "function") {
+        window.openProfilePage(d);
+        return;
+      }
+    }
+
+    // 2) prova da state se hai un array di dogs nel tuo state (molti build ce l’hanno)
+    if (window.state && Array.isArray(window.state.dogs)) {
+      const d = window.state.dogs.find(x => String(x.id) === String(dogId));
+      if (d && typeof window.openProfilePage === "function") {
+        window.openProfilePage(d);
+        return;
+      }
+    }
+
+    // 3) fallback: prova da localStorage se hai una cache (non rompe nulla)
+    try {
+      const raw = localStorage.getItem("plutoo_dogs_cache");
+      if (raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          const d = arr.find(x => String(x.id) === String(dogId));
+          if (d && typeof window.openProfilePage === "function") {
+            window.openProfilePage(d);
+            return;
+          }
+        }
+      }
+    } catch (_) {}
+
+    console.warn("NOTIF: dogId non trovato per aprire profilo:", dogId);
+  } catch (e) {
+    console.error("__openDogProfileById:", e);
+  }
+}
+
 function __renderNotifs(items) {
   if (!notifList) return;
 
@@ -905,13 +949,10 @@ function __renderNotifs(items) {
     <div class="notif-time">${__fmtTime(n.createdAt)}</div>
   `;
 
-  // ✅ TAP sulla notifica (SAFE: non deve mai crashare)
+// ✅ TAP sulla notifica: apri sempre il profilo del DOG che ha agito (fromDogId)
 row.addEventListener("click", () => {
   try {
-    // In publish: se la funzione non esiste, non facciamo nulla (niente crash)
-    if (typeof openProfile === "function" && n.type === "follow" && n.fromDogId) {
-      openProfile("dog", String(n.fromDogId));
-    }
+    if (n && n.fromDogId) __openDogProfileById(String(n.fromDogId));
   } catch (e) {
     console.error("notif tap error:", e);
   }
