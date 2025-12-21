@@ -914,11 +914,6 @@ function __renderNotifs(items) {
       <div class="notif-time">${__fmtTime(n.createdAt)}</div>
     `;
 
-// ✅ TAP: test VISIVO + apri profilo
-row.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-
   // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
   row.addEventListener("click", function () {
   try {
