@@ -943,12 +943,17 @@ async function __openDogProfileById(dogId) {
     dogId = (dogId != null) ? String(dogId) : "";
     if (!dogId) return;
 
-    // 1) PRIMA prova locale (più veloce e stabile)
-    const localDogs =
-      (Array.isArray(state?.dogs) && state.dogs.length) ? state.dogs :
-      (Array.isArray(window.DOGS) ? window.DOGS : []);
+    // 1) PRIMA prova locale (no ReferenceError se state non esiste)
+    var localDogs = [];
+    try {
+      if (typeof state !== "undefined" && state && Array.isArray(state.dogs) && state.dogs.length) {
+        localDogs = state.dogs;
+      } else if (Array.isArray(window.DOGS) && window.DOGS.length) {
+        localDogs = window.DOGS;
+      }
+    } catch (_) {}
 
-    const found = localDogs.find(x => String(x?.id) === dogId);
+    var found = localDogs.find(function (x) { return String(x && x.id) === dogId; });
     if (found && typeof window.openProfilePage === "function") {
       window.openProfilePage(found);
       return;
