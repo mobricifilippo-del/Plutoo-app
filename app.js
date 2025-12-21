@@ -905,23 +905,29 @@ function __renderNotifs(items) {
     <div class="notif-time">${__fmtTime(n.createdAt)}</div>
   `;
 
-  // ✅ TAP sulla notifica (SAFE: non deve mai crashare)
+  // ✅ TAP sulla notifica (SAFE: mai più ReferenceError)
 row.addEventListener("click", () => {
-  try {
-    // In publish: se la funzione non esiste, non facciamo nulla (niente crash)
-    if (typeof openProfile === "function" && n.type === "follow" && n.fromDogId) {
-      openProfile("dog", String(n.fromDogId));
+  if (n.type === "follow" && n.fromDogId) {
+    const id = String(n.fromDogId);
+
+    // prova ad aprire il profilo con una funzione esistente (senza crashare)
+    if (typeof openDogProfileById === "function") {
+      openDogProfileById(id);
+      return;
     }
-  } catch (e) {
-    console.error("notif tap error:", e);
+    if (typeof openProfile === "function") {
+      openProfile("dog", id);
+      return;
+    }
+    if (typeof openDogProfile === "function") {
+      // se hai una funzione che accetta un oggetto dog, la useremo nello step successivo
+      console.warn("openDogProfile(dog) disponibile, ma manca il lookup dog by id:", id);
+      return;
+    }
+
+    console.warn("Nessuna funzione profilo disponibile per aprire DOG:", id);
   }
 });
-
-  frag.appendChild(row);
-});
-
-  notifList.appendChild(frag);
-}
 
 async function __markAllNotifsRead(toDogId) {
   try {
