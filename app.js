@@ -920,24 +920,16 @@ row.addEventListener("click", (e) => {
   e.stopPropagation();
 
   // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
-  row.style.outline = "2px solid #a855f7";
-  row.style.background = "rgba(168,85,247,0.14)";
-  if (navigator && navigator.vibrate) { try { navigator.vibrate(30); } catch(_){} }
+  row.addEventListener("click", function () {
+  try {
+    var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+    if (!id) return;
 
- try {
-  let id = (n && n.fromDogId) ? String(n.fromDogId) : "";
-  if (!id) return;
-
-  // normalizza: "d1" → "1"
-  const normId = /^d\d+$/i.test(id) ? id.replace(/^d/i, "") : id;
-
-  if (typeof __openDogProfileById === "function") {
-    __openDogProfileById(normId).catch(() => {});
-  } else if (typeof window.openProfilePage === "function") {
-    const d = (window.DOGS || []).find(x => String(x.id) === normId);
-    if (d) window.openProfilePage(d);
-  }
-} catch (_) {}
+    if (typeof __openDogProfileById === "function") {
+      __openDogProfileById(id);
+    }
+  } catch (_) {}
+});
 
     frag.appendChild(row);
   });
