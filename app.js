@@ -907,10 +907,10 @@ function __renderNotifs(items) {
 
   // ✅ TAP sulla notifica
   row.addEventListener("click", () => {
-    if (n.type === "follow" && n.fromDogId) {
-      openDogProfileById(String(n.fromDogId));
-    }
-  });
+  if (n.type === "follow" && n.fromDogId) {
+    openProfile("dog", String(n.fromDogId));
+  }
+});
 
   frag.appendChild(row);
 });
