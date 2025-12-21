@@ -920,12 +920,15 @@ function __renderNotifs(items) {
 row.style.background = "rgba(168,85,247,0.12)";
 if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} }
     
-  var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+  try {
+    var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
     if (!id) return;
 
     if (typeof __openDogProfileById === "function") {
       __openDogProfileById(id);
     }
+  } catch (_) {}
+});
 
     frag.appendChild(row);
   });
@@ -936,6 +939,7 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
 // === Apri profilo DOG da id (usato dalle notifiche) ===
 // Production-ready: prima prova dataset locale, poi Firestore (docId o campo id/dogId).
 async function __openDogProfileById(dogId) {
+  try {
     dogId = (dogId != null) ? String(dogId) : "";
     if (!dogId) return;
 
@@ -984,7 +988,8 @@ async function __openDogProfileById(dogId) {
         ...d
       });
     }
-  }
+  } catch (_) {}
+}
 
 async function __markAllNotifsRead(toDogId) {
   try {
