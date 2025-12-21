@@ -874,49 +874,6 @@ function __fmtTime(ts) {
   }
 }
 
-// ====== NOTIFICHE: apri profilo DOG da dogId (Firestore source of truth) ======
-async function __openDogProfileById(dogId) {
-  try {
-    if (!dogId) return;
-
-    const _db = (window.db || (typeof db !== "undefined" ? db : null));
-    if (!_db) {
-      console.warn("NOTIF: db non pronto, impossibile aprire profilo:", dogId);
-      return;
-    }
-
-    // prova a leggere il profilo DOG da Firestore
-    const snap = await _db.collection("dogs").doc(String(dogId)).get();
-    if (!snap.exists) {
-      console.warn("NOTIF: doc dogs non esiste per dogId:", dogId);
-      return;
-    }
-
-    const data = snap.data() || {};
-    // normalizza un oggetto dog compatibile con openProfilePage(d)
-    const d = {
-      id: String(dogId),
-      name: data.name || data.dogName || "DOG",
-      img: data.img || data.avatar || data.photo || "./plutoo-icon-192.png",
-      breed: data.breed || data.race || "",
-      age: data.age || "",
-      km: data.km || data.distance || 0,
-      bio: data.bio || "",
-      sex: data.sex || data.gender || "M",
-      verified: data.verified === true
-    };
-
-    if (typeof window.openProfilePage === "function") {
-      window.openProfilePage(d);
-      return;
-    }
-
-    console.warn("NOTIF: openProfilePage non disponibile");
-  } catch (e) {
-    console.error("__openDogProfileById:", e);
-  }
-}
-
 function __renderNotifs(items) {
   if (!notifList) return;
 
@@ -947,26 +904,6 @@ function __renderNotifs(items) {
     </div>
     <div class="notif-time">${__fmtTime(n.createdAt)}</div>
   `;
-
-// ✅ TAP sulla notifica: feedback visibile + apri profilo
-row.addEventListener("click", () => {
-  try {
-    const id = (n && n.fromDogId) ? String(n.fromDogId) : "";
-    if (typeof showToast === "function") showToast("NOTIF TAP: fromDogId=" + (id || "(vuoto)"));
-
-    if (!id) return;
-
-    // chiama la funzione async e mostra errore se fallisce
-    Promise.resolve(__openDogProfileById(id))
-      .catch((e) => {
-        console.error("__openDogProfileById promise:", e);
-        if (typeof showToast === "function") showToast("NOTIF: errore apertura profilo ❌");
-      });
-  } catch (e) {
-    console.error("notif tap error:", e);
-    if (typeof showToast === "function") showToast("NOTIF: crash tap ❌");
-  }
-});
 
   frag.appendChild(row);
 });
