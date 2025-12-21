@@ -916,6 +916,9 @@ function __renderNotifs(items) {
 
   // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
   row.addEventListener("click", function () {
+  row.style.outline = "2px solid #a855f7";
+row.style.background = "rgba(168,85,247,0.12)";
+if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} }
   try {
     var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
     if (!id) return;
