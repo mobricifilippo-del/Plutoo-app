@@ -904,17 +904,32 @@ function __renderNotifs(items) {
       <div class="notif-time">${__fmtTime(n.createdAt)}</div>
     `;
 
-    // ✅ TAP: apri SEMPRE il profilo del DOG che ha generato la notifica
-    row.addEventListener("click", () => {
-      try {
-        const id = (n && n.fromDogId) ? String(n.fromDogId) : "";
-        if (!id) return;
+// ✅ TAP: test VISIVO + apri profilo
+row.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-        if (typeof __openDogProfileById === "function") {
-  __openDogProfileById(id).catch((e) => console.error("__openDogProfileById:", e));
-        }
-      } catch (_) {}
-    });
+  // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
+  row.style.outline = "2px solid #a855f7";
+  row.style.background = "rgba(168,85,247,0.14)";
+  if (navigator && navigator.vibrate) { try { navigator.vibrate(30); } catch(_){} }
+
+  try {
+    const id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+    if (!id) return;
+
+    if (typeof __openDogProfileById === "function") {
+      __openDogProfileById(id).catch((err) => console.error("__openDogProfileById:", err));
+    } else if (typeof window.openProfilePage === "function") {
+      // fallback: se hai già in memoria i dogs (alcune build)
+      // qui non crasha, semplicemente non apre se non trova
+      const d = (window.DOGS || []).find(x => String(x.id) === id);
+      if (d) window.openProfilePage(d);
+    }
+  } catch (err) {
+    console.error("notif tap error:", err);
+  }
+});
 
     frag.appendChild(row);
   });
