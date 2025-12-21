@@ -924,22 +924,20 @@ row.addEventListener("click", (e) => {
   row.style.background = "rgba(168,85,247,0.14)";
   if (navigator && navigator.vibrate) { try { navigator.vibrate(30); } catch(_){} }
 
-  try {
-    const id = (n && n.fromDogId) ? String(n.fromDogId) : "";
-    if (!id) return;
+ try {
+  let id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+  if (!id) return;
 
-    if (typeof __openDogProfileById === "function") {
-      __openDogProfileById(id).catch((err) => console.error("__openDogProfileById:", err));
-    } else if (typeof window.openProfilePage === "function") {
-      // fallback: se hai già in memoria i dogs (alcune build)
-      // qui non crasha, semplicemente non apre se non trova
-      const d = (window.DOGS || []).find(x => String(x.id) === id);
-      if (d) window.openProfilePage(d);
-    }
-  } catch (err) {
-    console.error("notif tap error:", err);
+  // normalizza: "d1" → "1"
+  const normId = /^d\d+$/i.test(id) ? id.replace(/^d/i, "") : id;
+
+  if (typeof __openDogProfileById === "function") {
+    __openDogProfileById(normId).catch(() => {});
+  } else if (typeof window.openProfilePage === "function") {
+    const d = (window.DOGS || []).find(x => String(x.id) === normId);
+    if (d) window.openProfilePage(d);
   }
-});
+} catch (_) {}
 
     frag.appendChild(row);
   });
