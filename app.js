@@ -937,23 +937,23 @@ async function __markAllNotifsRead(toDogId) {
 
 function initNotificationsFeed() {
   if (__notifInited) return;
-  __notifInited = true;
 
   // dogId “verità” per le notifiche (stessa logica che usi nei follow)
   const toDogId = (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
     ? String(CURRENT_USER_DOG_ID)
     : null;
 
-  if (!toDogId) return;
+  // se non ho dogId, non “blocco” l’init: esco pulito
+  if (!toDogId) { __notifInited = false; return; }
 
-  // aspetta Firebase db/uid (se non c’è ancora, ritenta una volta)
+  // aspetta Firebase db/uid: NON bloccare __notifInited finché non è pronto
   if (typeof db === "undefined" || !db || !window.PLUTOO_UID) {
-  setTimeout(() => {
     __notifInited = false;
-    initNotificationsFeed();
-  }, 350);
-  return;
+    setTimeout(() => { try { initNotificationsFeed(); } catch (_) {} }, 350);
+    return;
   }
+
+  __notifInited = true;
 
   // kill eventuale vecchio listener
   try { if (typeof __notifUnsub === "function") __notifUnsub(); } catch (_) {}
