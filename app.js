@@ -874,45 +874,44 @@ function __fmtTime(ts) {
   }
 }
 
-// ====== NOTIFICHE: apri profilo DOG da dogId (usa openProfilePage) ======
-function __openDogProfileById(dogId) {
+// ====== NOTIFICHE: apri profilo DOG da dogId (Firestore source of truth) ======
+async function __openDogProfileById(dogId) {
   try {
     if (!dogId) return;
 
-    // 1) prova da una cache comune se esiste
-    if (window.DOGS && Array.isArray(window.DOGS)) {
-      const d = window.DOGS.find(x => String(x.id) === String(dogId));
-      if (d && typeof window.openProfilePage === "function") {
-        window.openProfilePage(d);
-        return;
-      }
+    const _db = (window.db || (typeof db !== "undefined" ? db : null));
+    if (!_db) {
+      console.warn("NOTIF: db non pronto, impossibile aprire profilo:", dogId);
+      return;
     }
 
-    // 2) prova da state se hai un array di dogs nel tuo state (molti build ce l’hanno)
-    if (window.state && Array.isArray(window.state.dogs)) {
-      const d = window.state.dogs.find(x => String(x.id) === String(dogId));
-      if (d && typeof window.openProfilePage === "function") {
-        window.openProfilePage(d);
-        return;
-      }
+    // prova a leggere il profilo DOG da Firestore
+    const snap = await _db.collection("dogs").doc(String(dogId)).get();
+    if (!snap.exists) {
+      console.warn("NOTIF: doc dogs non esiste per dogId:", dogId);
+      return;
     }
 
-    // 3) fallback: prova da localStorage se hai una cache (non rompe nulla)
-    try {
-      const raw = localStorage.getItem("plutoo_dogs_cache");
-      if (raw) {
-        const arr = JSON.parse(raw);
-        if (Array.isArray(arr)) {
-          const d = arr.find(x => String(x.id) === String(dogId));
-          if (d && typeof window.openProfilePage === "function") {
-            window.openProfilePage(d);
-            return;
-          }
-        }
-      }
-    } catch (_) {}
+    const data = snap.data() || {};
+    // normalizza un oggetto dog compatibile con openProfilePage(d)
+    const d = {
+      id: String(dogId),
+      name: data.name || data.dogName || "DOG",
+      img: data.img || data.avatar || data.photo || "./plutoo-icon-192.png",
+      breed: data.breed || data.race || "",
+      age: data.age || "",
+      km: data.km || data.distance || 0,
+      bio: data.bio || "",
+      sex: data.sex || data.gender || "M",
+      verified: data.verified === true
+    };
 
-    console.warn("NOTIF: dogId non trovato per aprire profilo:", dogId);
+    if (typeof window.openProfilePage === "function") {
+      window.openProfilePage(d);
+      return;
+    }
+
+    console.warn("NOTIF: openProfilePage non disponibile");
   } catch (e) {
     console.error("__openDogProfileById:", e);
   }
