@@ -1217,6 +1217,10 @@ async function loadMessagesLists() {
     console.error("Errore loadMessagesLists:", err); 
   } 
 }
+
+// 🔔 Avvia feed notifiche appena possibile (robusto per publish)
+try { initNotificationsFeed(); } catch (e) { console.error("initNotificationsFeed:", e); }
+setTimeout(() => { try { initNotificationsFeed(); } catch (_) {} }, 900);
   
 btnMessages?.addEventListener("click", () => {
   setActiveView("messages");
