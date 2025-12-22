@@ -948,6 +948,7 @@ if (typeof __openDogProfileById === "function") {
 // === Apri profilo DOG da id (usato dalle notifiche) ===
 // Production-ready: prima prova dataset locale, poi Firestore (docId o campo id/dogId).
 async function __openDogProfileById(dogId) {
+  console.log("__openDogProfileById CALLED WITH:", dogId);
   try {
     dogId = (dogId != null) ? String(dogId) : "";
     if (!dogId) return;
