@@ -921,37 +921,33 @@ function __renderNotifs(items) {
     `;
 
  // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
-  row.addEventListener("click", function (e) {
+row.addEventListener("click", function (e) {
   e.stopPropagation();
-    
+
   row.style.outline = "2px solid #a855f7";
-row.style.background = "rgba(168,85,247,0.12)";
-if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} }
-    
+  row.style.background = "rgba(168,85,247,0.12)";
+  if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch (_) {} }
+
   try {
     var id = n ? String(n.fromDogId || n.followerDogId || n.actorDogId || n.dogId || "") : "";
     if (!id) return;
 
-    // apri profilo (async) e chiudi overlay SOLO se si apre davvero
-    try {
-    var id = n ? String(n.fromDogId || n.followerDogId || n.actorDogId || n.dogId || "") : "";
-    if (!id) return;
-
-    // apri profilo (async) e chiudi overlay SOLO se si apre davvero
     if (typeof __openDogProfileById === "function") {
-      Promise.resolve(__openDogProfileById(id)).then(function(opened){
-        if (opened) {
-          var no = document.getElementById("notifOverlay");
-          if (no) {
-            no.classList.remove("show");
-            no.setAttribute("aria-hidden", "true");
-            setTimeout(function(){ no.classList.add("hidden"); }, 200);
+      Promise.resolve(__openDogProfileById(id))
+        .then(function (opened) {
+          if (opened) {
+            var no = document.getElementById("notifOverlay");
+            if (no) {
+              no.classList.remove("show");
+              no.setAttribute("aria-hidden", "true");
+              setTimeout(function () { no.classList.add("hidden"); }, 200);
+            }
           }
-        }
-      }).catch(function(){});
+        })
+        .catch(function () {});
     }
   } catch (_) {}
-  }
+});
   
   frag.appendChild(row);
   });
