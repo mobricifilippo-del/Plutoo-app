@@ -932,13 +932,6 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
     var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
     if (!id) return;
 
-  // 🔒 chiudi overlay notifiche prima di aprire il profilo
-const notifOverlay = document.getElementById("notifOverlay");
-if (notifOverlay) {
-  notifOverlay.classList.add("hidden");
-  notifOverlay.setAttribute("aria-hidden", "true");
-}
-
 // 👉 ora apri il profilo DOG
 if (typeof __openDogProfileById === "function") {
   __openDogProfileById(id);
@@ -998,17 +991,18 @@ async function __openDogProfileById(dogId) {
     if (!snap.exists) return;
 
     const d = snap.data() || {};
-    if (typeof window.openProfilePage === "function") {
-      window.openProfilePage({ ... });
-      return true;
-        id: d.id || d.dogId || dogId,
-        name: d.name || "",
-        img: d.img || d.photo || d.avatar || "",
-        breed: d.breed || "",
-        ...d
-      });
-    }
-  return false;
+  if (typeof window.openProfilePage === "function") {
+  window.openProfilePage({
+    id: d.id || d.dogId || dogId,
+    name: d.name || "",
+    img: d.img || d.photo || d.avatar || "",
+    breed: d.breed || "",
+    ...d
+  });
+  return true;
+}
+
+return false;
   } catch (_) {}
 }
 
