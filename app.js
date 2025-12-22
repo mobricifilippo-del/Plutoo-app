@@ -1115,6 +1115,7 @@ if (notifBtn && notifOverlay) {
       : null;
     if (toDogId) __markAllNotifsRead(toDogId);
   }, { passive: false });
+}
 
 const msgTopTabs  = qa(".msg-top-tab");
 const msgLists    = qa(".messages-list");
