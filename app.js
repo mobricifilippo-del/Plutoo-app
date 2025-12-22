@@ -972,7 +972,7 @@ async function __openDogProfileById(dogId) {
     var found = localDogs.find(function (x) { return String(x && x.id) === dogId; });
     if (found && typeof window.openProfilePage === "function") {
       window.openProfilePage(found);
-      return;
+      return true;
     }
 
     // 2) FALLBACK Firestore
@@ -999,7 +999,8 @@ async function __openDogProfileById(dogId) {
 
     const d = snap.data() || {};
     if (typeof window.openProfilePage === "function") {
-      window.openProfilePage({
+      window.openProfilePage({ ... });
+      return true;
         id: d.id || d.dogId || dogId,
         name: d.name || "",
         img: d.img || d.photo || d.avatar || "",
@@ -1007,6 +1008,7 @@ async function __openDogProfileById(dogId) {
         ...d
       });
     }
+  return false;
   } catch (_) {}
 }
 
