@@ -953,8 +953,7 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
   } catch (_) {}
   }
   
-
-    frag.appendChild(row);
+  frag.appendChild(row);
   });
 
   notifList.appendChild(frag);
