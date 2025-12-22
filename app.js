@@ -1120,13 +1120,15 @@ if (notifBtn && notifOverlay) {
     if (toDogId) __markAllNotifsRead(toDogId);
   }, { passive: false });
 
-  // chiudi cliccando fuori o su X
-  notifOverlay.addEventListener("click", (e) => {
-    const isBackdrop = (e.target === notifOverlay);
-    const isClose = (e.target && e.target.closest && e.target.closest(".sheet-close"));
-    if (isBackdrop || isClose) {
-      notifOverlay.classList.remove("show");
-      setTimeout(() => notifOverlay.classList.add("hidden"), 200);
+  // 👉 ora apri il profilo DOG (e chiudi overlay solo se si apre davvero)
+if (typeof __openDogProfileById === "function") {
+  __openDogProfileById(id).then((opened) => {
+    if (opened) {
+      const no = document.getElementById("notifOverlay");
+      if (no) {
+        no.classList.remove("show");
+        setTimeout(() => no.classList.add("hidden"), 200);
+      }
     }
   });
 }
