@@ -933,6 +933,11 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
     if (!id) return;
 
     // apri profilo (async) e chiudi overlay SOLO se si apre davvero
+    try {
+    var id = n ? String(n.fromDogId || n.followerDogId || n.actorDogId || n.dogId || "") : "";
+    if (!id) return;
+
+    // apri profilo (async) e chiudi overlay SOLO se si apre davvero
     if (typeof __openDogProfileById === "function") {
       Promise.resolve(__openDogProfileById(id)).then(function(opened){
         if (opened) {
@@ -946,7 +951,6 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
       }).catch(function(){});
     }
   } catch (_) {}
-  }
   
 
     frag.appendChild(row);
