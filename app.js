@@ -1141,6 +1141,18 @@ if (notifBtn && notifOverlay) {
       : null;
     if (toDogId) __markAllNotifsRead(toDogId);
   }, { passive: false });
+  
+  // Chiudi overlay (tasto X)
+  const notifCloseBtn = notifOverlay.querySelector(".sheet-close");
+  if (notifCloseBtn) {
+    notifCloseBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      notifOverlay.classList.remove("show");
+      notifOverlay.setAttribute("aria-hidden", "true");
+      setTimeout(() => { notifOverlay.classList.add("hidden"); }, 200);
+    }, { passive: false });
+  }
 }
 
 const msgTopTabs  = qa(".msg-top-tab");
