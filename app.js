@@ -983,8 +983,11 @@ async function __openDogProfileById(dogId) {
         localDogs = window.DOGS;
       }
     } catch (_) {}
-
-    var found = localDogs.find(function (x) { return String(x && x.id) === dogId; });
+    
+    var found = localDogs.find(function (x) {
+  var xid = (x && (x.id != null ? x.id : x.dogId));
+  return String(xid) === dogId;
+});
    var _openProfile = (typeof window.openProfilePage === "function")
   ? window.openProfilePage
   : (typeof openProfilePage === "function" ? openProfilePage : null);
