@@ -993,7 +993,14 @@ async function __openDogProfileById(dogId) {
   : (typeof openProfilePage === "function" ? openProfilePage : null);
 
 if (found && _openProfile) {
-  _openProfile(found);
+  _openProfile({
+    id: String(found.id != null ? found.id : (found.dogId != null ? found.dogId : dogId)),
+    dogId: String(found.dogId != null ? found.dogId : (found.id != null ? found.id : dogId)),
+    name: found.name || found.dogName || "",
+    img: found.img || found.photo || found.avatar || "",
+    breed: found.breed || "",
+    ...found
+  });
   return true;
 }
 
