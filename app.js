@@ -985,9 +985,13 @@ async function __openDogProfileById(dogId) {
     } catch (_) {}
     
     var found = localDogs.find(function (x) {
-  var xid = (x && (x.id != null ? x.id : x.dogId));
-  return String(xid) === dogId;
+  if (!x) return false;
+  return (String(x.id || "") === dogId) || (String(x.dogId || "") === dogId);
 });
+
+// se trovato ma non ha id, normalizza (openProfilePage usa d.id)
+if (found && !found.id) found.id = dogId;
+    
    var _openProfile = (typeof window.openProfilePage === "function")
   ? window.openProfilePage
   : (typeof openProfilePage === "function" ? openProfilePage : null);
