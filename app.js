@@ -920,14 +920,14 @@ function __renderNotifs(items) {
 row.style.background = "rgba(168,85,247,0.12)";
 if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} }
     
-var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
-  if (!id) { console.warn("[NOTIF->PROFILE] missing fromDogId"); return; }
+  try {
+    var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+    if (!id) return;
 
-  if (typeof __openDogProfileById === "function") {
-    __openDogProfileById(id);
-  } else {
-    console.warn("[NOTIF->PROFILE] __openDogProfileById not a function");
-  }
+    if (typeof __openDogProfileById === "function") {
+      __openDogProfileById(id);
+    }
+  } catch (_) {}
 });
 
     frag.appendChild(row);
@@ -951,9 +951,7 @@ async function __openDogProfileById(dogId) {
       } else if (Array.isArray(window.DOGS) && window.DOGS.length) {
         localDogs = window.DOGS;
       }
-    } catch (e) {
-    console.error("[NOTIF->PROFILE] __openDogProfileById failed:", e);
-    }
+    } catch (_) {}
 
     var found = localDogs.find(function (x) { return String(x && x.id) === dogId; });
     if (found && typeof window.openProfilePage === "function") {
@@ -963,7 +961,7 @@ async function __openDogProfileById(dogId) {
 
     // 2) FALLBACK Firestore
     const _db = (window.db || (typeof db !== "undefined" ? db : null));
-    if (!_db) { console.warn("[NOTIF->PROFILE] no db (window.db/db missing)"); return; }
+    if (!_db) return;
 
     // 2a) tenta docId === dogId
     let snap = await _db.collection("dogs").doc(dogId).get();
@@ -978,16 +976,11 @@ async function __openDogProfileById(dogId) {
       if (!q2.empty) snap = q2.docs[0];
     }
 
-    if (!snap.exists) { console.warn("[NOTIF->PROFILE] dog not found in Firestore for", dogId); return; }
+    if (!snap.exists) return;
 
     const d = snap.data() || {};
-    if (typeof window.openProfilePage !== "function") {
-      console.warn("[NOTIF->PROFILE] openProfilePage not a function");
-      return;
-    }
-    console.log("[NOTIF->PROFILE] calling openProfilePage with dogId:", dogId);
-    window.openProfilePage({
-      
+    if (typeof window.openProfilePage === "function") {
+      window.openProfilePage({
         id: d.id || d.dogId || dogId,
         name: d.name || "",
         img: d.img || d.photo || d.avatar || "",
