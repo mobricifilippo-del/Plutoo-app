@@ -951,6 +951,7 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
       }).catch(function(){});
     }
   } catch (_) {}
+  }
   
 
     frag.appendChild(row);
