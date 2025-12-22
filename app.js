@@ -199,6 +199,12 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
     viewHistory: [],
     processingSwipe: false,
 
+    // ===== Profile / Docs / Selfie (required for profile open) =====
+ownerDocsUploaded: {},
+dogDocsUploaded: {},
+selfieUntilByDog: {},
+ownerSocialByDog: {},
+
     // lingua
     lang: localStorage.getItem("lang") || autodetectLang(),
 
