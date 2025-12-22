@@ -975,7 +975,10 @@ async function __openDogProfileById(dogId) {
 
     // 2) FALLBACK Firestore
     const _db = (window.db || (typeof db !== "undefined" ? db : null));
-    if (!_db) return;
+    if (!_db) {
+  alert("DB NON PRONTA");
+  return;
+    }
 
     // 2a) tenta docId === dogId
     let snap = await _db.collection("dogs").doc(dogId).get();
