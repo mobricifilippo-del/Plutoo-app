@@ -989,10 +989,14 @@ async function __openDogProfileById(dogId) {
     } catch (_) {}
 
     var found = localDogs.find(function (x) { return String(x && x.id) === dogId; });
-    if (found && typeof window.openProfilePage === "function") {
-      window.openProfilePage(found);
-      return true;
-    }
+   var _openProfile = (typeof window.openProfilePage === "function")
+  ? window.openProfilePage
+  : (typeof openProfilePage === "function" ? openProfilePage : null);
+
+if (found && _openProfile) {
+  _openProfile(found);
+  return true;
+}
 
     // 2) FALLBACK Firestore
     const _db = (window.db || (typeof db !== "undefined" ? db : null));
@@ -1017,8 +1021,12 @@ async function __openDogProfileById(dogId) {
     if (!snap.exists) return;
 
     const d = snap.data() || {};
-  if (typeof window.openProfilePage === "function") {
-  window.openProfilePage({
+  var _openProfile2 = (typeof window.openProfilePage === "function")
+  ? window.openProfilePage
+  : (typeof openProfilePage === "function" ? openProfilePage : null);
+
+if (_openProfile2) {
+  _openProfile2({
     id: d.id || d.dogId || dogId,
     name: d.name || "",
     img: d.img || d.photo || d.avatar || "",
