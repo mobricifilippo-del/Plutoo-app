@@ -1116,19 +1116,6 @@ if (notifBtn && notifOverlay) {
     if (toDogId) __markAllNotifsRead(toDogId);
   }, { passive: false });
 
-  // 👉 ora apri il profilo DOG (e chiudi overlay solo se si apre davvero)
-if (typeof __openDogProfileById === "function") {
-  __openDogProfileById(id).then((opened) => {
-    if (opened) {
-      const no = document.getElementById("notifOverlay");
-      if (no) {
-        no.classList.remove("show");
-        setTimeout(() => no.classList.add("hidden"), 200);
-      }
-    }
-  });
-}
-
 const msgTopTabs  = qa(".msg-top-tab");
 const msgLists    = qa(".messages-list");
 
