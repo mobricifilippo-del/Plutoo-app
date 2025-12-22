@@ -10,14 +10,26 @@ window.addEventListener("error", function (e) {
   );
 });
 
-// 2️⃣ Errori Promise / Firebase
+// 2️⃣ Errori Promise / Firebase (robusto: niente JSON.stringify che può crashare)
 window.addEventListener("unhandledrejection", function (e) {
-  alert(
-    "❌ PROMISE ERROR\n\n" +
-    (e.reason && e.reason.message
-      ? e.reason.message
-      : JSON.stringify(e.reason))
-  );
+  try {
+    const r = e && e.reason;
+
+    let msg = "";
+    if (r && typeof r === "object") {
+      if (r.message) msg += "Messaggio: " + r.message + "\n";
+      if (r.code) msg += "Code: " + r.code + "\n";
+      if (r.name) msg += "Name: " + r.name + "\n";
+      if (r.stack) msg += "\nSTACK:\n" + r.stack + "\n";
+      if (!msg) msg = "Reason object (non serializzabile)";
+    } else {
+      msg = String(r);
+    }
+
+    alert("❌ PROMISE ERROR\n\n" + msg);
+  } catch (_) {
+    alert("❌ PROMISE ERROR\n\n(Impossibile leggere e.reason)");
+  }
 });
 
 // 3️⃣ Verifica Firestore sempre disponibile
