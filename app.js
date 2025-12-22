@@ -929,7 +929,7 @@ row.style.background = "rgba(168,85,247,0.12)";
 if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} }
     
   try {
-    var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
+    var id = n ? String(n.fromDogId || n.followerDogId || n.actorDogId || n.dogId || "") : "";
     if (!id) return;
 
 // 👉 ora apri il profilo DOG
