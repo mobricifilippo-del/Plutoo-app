@@ -932,12 +932,22 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
     var id = n ? String(n.fromDogId || n.followerDogId || n.actorDogId || n.dogId || "") : "";
     if (!id) return;
 
-// 👉 ora apri il profilo DOG
-if (typeof __openDogProfileById === "function") {
-  __openDogProfileById(id);
-}
+    // apri profilo (async) e chiudi overlay SOLO se si apre davvero
+    if (typeof __openDogProfileById === "function") {
+      Promise.resolve(__openDogProfileById(id)).then(function(opened){
+        if (opened) {
+          var no = document.getElementById("notifOverlay");
+          if (no) {
+            no.classList.remove("show");
+            no.setAttribute("aria-hidden", "true");
+            setTimeout(function(){ no.classList.add("hidden"); }, 200);
+          }
+        }
+      }).catch(function(){});
+    }
   } catch (_) {}
-});
+  }
+  
 
     frag.appendChild(row);
   });
