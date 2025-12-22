@@ -930,9 +930,17 @@ if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch(_){} 
     var id = (n && n.fromDogId) ? String(n.fromDogId) : "";
     if (!id) return;
 
-    if (typeof __openDogProfileById === "function") {
-      __openDogProfileById(id);
-    }
+  // 🔒 chiudi overlay notifiche prima di aprire il profilo
+const notifOverlay = document.getElementById("notifOverlay");
+if (notifOverlay) {
+  notifOverlay.classList.add("hidden");
+  notifOverlay.setAttribute("aria-hidden", "true");
+}
+
+// 👉 ora apri il profilo DOG
+if (typeof __openDogProfileById === "function") {
+  __openDogProfileById(id);
+}
   } catch (_) {}
 });
 
