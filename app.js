@@ -922,7 +922,8 @@ function __renderNotifs(items) {
       ? "Nuovo FOLLOW"
       : (n.type ? String(n.type) : "Notifica");
 
-    const sub = (n.fromDogId ? `Da DOG: ${n.fromDogId}` : "");
+    const fromId = String(n.fromDogId || n.fromdogId || n.followerDogId || n.actorDogId || n.dogId || "").trim();
+    const sub = (fromId ? `Da DOG: ${fromId}` : "");
 
     row.innerHTML = `
       <div class="notif-txt">
