@@ -1094,10 +1094,12 @@ function initNotificationsFeed() {
   __notifUnsub = null;
 
   __notifUnsub = db
-    .collection("notifications")
-    .where("toDogId", "==", String(toDogId))
-    .limit(40)
-    .onSnapshot((snap) => {
+  .collection("notifications")
+  .where("toDogId", "==", String(toDogId))
+  .orderBy("createdAt", "desc")
+  .limit(40)
+  .onSnapshot((snap) => {
+    
       const items = [];
       snap.forEach((docSnap) => {
         const data = docSnap.data() || {};
