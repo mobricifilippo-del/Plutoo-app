@@ -941,7 +941,12 @@ row.addEventListener("click", function (e) {
   if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch (_) {} }
 
   try {
-    var id = n ? String(n.fromDogId || n.fromdogId || n.followerDogId || n.followerDogId || n.actorDogId || n.dogId || "") : "";
+    var id = n ? String(
+  n.fromDogId || n.fromdogId ||               // follower (campo giusto + variante minuscola)
+  n.followerDogId || n.actorDogId ||
+  n.toDogId || n.todogId ||                   // fallback target (campo giusto + variante minuscola)
+  n.dogId || ""
+) : "";
     if (!id) return;
 
     if (typeof __openDogProfileById === "function") {
