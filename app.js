@@ -942,7 +942,7 @@ row.addEventListener("click", function (e) {
   if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch (_) {} }
 
   try {
-    var id = n ? String(n.fromDogId || n.fromdogId || n.followerDogId || n.actorDogId || n.dogId || "") : "";
+    var id = String(n.fromDogId || "");
     if (!id) return;
 
     if (typeof __openDogProfileById === "function") {
