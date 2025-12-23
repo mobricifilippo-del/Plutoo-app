@@ -968,13 +968,20 @@ row.addEventListener("click", function (e) {
 }
 
 // === Apri profilo DOG da id (usato dalle notifiche) ===
-// Production-ready: prima prova dataset locale, poi Firestore (docId o campo id/dogId).
+// Definitivo: locale se valido, altrimenti Firestore (source of truth). Mai profilo "vuoto".
 async function __openDogProfileById(dogId) {
   try {
     dogId = (dogId != null) ? String(dogId) : "";
-    if (!dogId) return;
+    dogId = dogId.trim();
+    if (!dogId) return false;
 
-    // 1) PRIMA prova locale (no ReferenceError se state non esiste)
+    var _openProfile =
+      (typeof window.openProfilePage === "function") ? window.openProfilePage :
+      ((typeof openProfilePage === "function") ? openProfilePage : null);
+
+    if (!_openProfile) return false;
+
+    // 1) PROVA LOCALE (solo se troviamo un oggetto valido)
     var localDogs = [];
     try {
       if (typeof state !== "undefined" && state && Array.isArray(state.dogs) && state.dogs.length) {
@@ -983,54 +990,40 @@ async function __openDogProfileById(dogId) {
         localDogs = window.DOGS;
       }
     } catch (_) {}
-    
-    var found = localDogs.find(function (x) {
-  if (!x) return false;
-  return (String(x.id || "") === dogId) || (String(x.dogId || "") === dogId);
-});
 
-// se trovato ma non ha id, normalizza (openProfilePage usa d.id)
-if (found && !found.id) found.id = dogId;
-    
-   var _openProfile = (typeof window.openProfilePage === "function")
-  ? window.openProfilePage
-  : (typeof openProfilePage === "function" ? openProfilePage : null);
-
-if (found && _openProfile) {
-  _openProfile({
-    id: String(found.id != null ? found.id : (found.dogId != null ? found.dogId : dogId)),
-    dogId: String(found.dogId != null ? found.dogId : (found.id != null ? found.id : dogId)),
-    name: found.name || found.dogName || "",
-    img: found.img || found.photo || found.avatar || "",
-    breed: found.breed || "",
-    ...found
-  });
-  return true;
-}
-
-    // 🔥 FALLBACK DEFINITIVO: apri SEMPRE il profilo anche se non trovato
-if (_openProfile) {
-  _openProfile({
-    id: String(dogId),
-    name: "",
-    img: "",
-    breed: "",
-    bio: ""
-  });
-  return true;
-}
-
-    // 2) FALLBACK Firestore
-    const _db = (window.db || (typeof db !== "undefined" ? db : null));
-    if (!_db) {
-  alert("DB NON PRONTA");
-  return;
+    var found = null;
+    if (localDogs && localDogs.length) {
+      found = localDogs.find(function (x) {
+        if (!x) return false;
+        var xid = (x.id != null) ? String(x.id) : "";
+        var xdogId = (x.dogId != null) ? String(x.dogId) : "";
+        return (xid === dogId) || (xdogId === dogId);
+      }) || null;
     }
 
-    // 2a) tenta docId === dogId
+    if (found) {
+      var obj = Object.assign({}, found);
+
+      if (obj.id == null && obj.dogId != null) obj.id = obj.dogId;
+      obj.id = (obj.id != null) ? String(obj.id) : "";
+      if (!obj.id) obj.id = dogId;
+      obj.dogId = (obj.dogId != null) ? String(obj.dogId) : obj.id;
+
+      obj.name  = (obj.name != null ? String(obj.name) : (obj.dogName != null ? String(obj.dogName) : ""));
+      obj.img   = (obj.img  != null ? String(obj.img)  : (obj.photo != null ? String(obj.photo) : (obj.avatar != null ? String(obj.avatar) : "")));
+      obj.breed = (obj.breed != null ? String(obj.breed) : "");
+      obj.bio   = (obj.bio  != null ? String(obj.bio)  : "");
+
+      _openProfile(obj);
+      return true;
+    }
+
+    // 2) FIRESTORE (SOURCE OF TRUTH)
+    const _db = (window.db || (typeof db !== "undefined" ? db : null));
+    if (!_db) return false;
+
     let snap = await _db.collection("dogs").doc(dogId).get();
 
-    // 2b) fallback: docId auto, ma campo id/dogId nel documento
     if (!snap.exists) {
       const q1 = await _db.collection("dogs").where("id", "==", dogId).limit(1).get();
       if (!q1.empty) snap = q1.docs[0];
@@ -1040,26 +1033,27 @@ if (_openProfile) {
       if (!q2.empty) snap = q2.docs[0];
     }
 
-    if (!snap.exists) return;
+    if (!snap || !snap.exists) return false;
 
     const d = snap.data() || {};
-  var _openProfile2 = (typeof window.openProfilePage === "function")
-  ? window.openProfilePage
-  : (typeof openProfilePage === "function" ? openProfilePage : null);
+    var out = Object.assign({}, d);
 
-if (_openProfile2) {
-  _openProfile2({
-    id: d.id || d.dogId || dogId,
-    name: d.name || "",
-    img: d.img || d.photo || d.avatar || "",
-    breed: d.breed || "",
-    ...d
-  });
-  return true;
-}
+    out.id = (d.id != null ? String(d.id) : (d.dogId != null ? String(d.dogId) : dogId));
+    if (!out.id) out.id = dogId;
+    out.dogId = (d.dogId != null ? String(d.dogId) : out.id);
 
-return false;
-  } catch (_) {}
+    out.name  = (d.name != null ? String(d.name) : "");
+    out.img   = (d.img  != null ? String(d.img)  : (d.photo != null ? String(d.photo) : (d.avatar != null ? String(d.avatar) : "")));
+    out.breed = (d.breed != null ? String(d.breed) : "");
+    out.bio   = (d.bio  != null ? String(d.bio)  : "");
+
+    _openProfile(out);
+    return true;
+
+  } catch (e) {
+    console.error("__openDogProfileById error:", e);
+    return false;
+  }
 }
 
 async function __markAllNotifsRead(toDogId) {
