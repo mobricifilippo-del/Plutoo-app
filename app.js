@@ -968,98 +968,80 @@ row.addEventListener("click", function (e) {
 }
 
 // === Apri profilo DOG da id (usato dalle notifiche) ===
-// Production-ready: prima prova dataset locale, poi Firestore (docId o campo id/dogId).
+// Definitivo: 1) risolvi SEMPRE da DOGS (mock reale) 2) se esiste, arricchisci da Firestore dogs/{id}
 async function __openDogProfileById(dogId) {
   try {
     dogId = (dogId != null) ? String(dogId) : "";
-    if (!dogId) return;
+    dogId = dogId.trim();
+    if (!dogId) return false;
 
-    // 1) PRIMA prova locale (no ReferenceError se state non esiste)
-    var localDogs = [];
+    // openProfilePage (non la tocchiamo)
+    var _openProfile =
+      (typeof window.openProfilePage === "function") ? window.openProfilePage :
+      ((typeof openProfilePage === "function") ? openProfilePage : null);
+    if (!_openProfile) return false;
+
+    // 1) SOURCE OF TRUTH PER ORA: DOGS del file (mock)
+    // (Tu hai const DOGS = [...], quindi esiste qui nello scope)
+    var base = null;
     try {
-      if (typeof state !== "undefined" && state && Array.isArray(state.dogs) && state.dogs.length) {
-        localDogs = state.dogs;
-      } else if (Array.isArray(window.DOGS) && window.DOGS.length) {
-        localDogs = window.DOGS;
+      if (typeof DOGS !== "undefined" && Array.isArray(DOGS)) {
+        base = DOGS.find(d => d && String(d.id) === dogId) || null;
       }
     } catch (_) {}
-    
-    var found = localDogs.find(function (x) {
-  if (!x) return false;
-  return (String(x.id || "") === dogId) || (String(x.dogId || "") === dogId);
-});
 
-// se trovato ma non ha id, normalizza (openProfilePage usa d.id)
-if (found && !found.id) found.id = dogId;
-    
-   var _openProfile = (typeof window.openProfilePage === "function")
-  ? window.openProfilePage
-  : (typeof openProfilePage === "function" ? openProfilePage : null);
-
-if (found && _openProfile) {
-  _openProfile({
-    id: String(found.id != null ? found.id : (found.dogId != null ? found.dogId : dogId)),
-    dogId: String(found.dogId != null ? found.dogId : (found.id != null ? found.id : dogId)),
-    name: found.name || found.dogName || "",
-    img: found.img || found.photo || found.avatar || "",
-    breed: found.breed || "",
-    ...found
-  });
-  return true;
-}
-
-    // 🔥 FALLBACK DEFINITIVO: apri SEMPRE il profilo anche se non trovato
-if (_openProfile) {
-  _openProfile({
-    id: String(dogId),
-    name: "",
-    img: "",
-    breed: "",
-    bio: ""
-  });
-  return true;
-}
-
-    // 2) FALLBACK Firestore
-    const _db = (window.db || (typeof db !== "undefined" ? db : null));
-    if (!_db) {
-  alert("DB NON PRONTA");
-  return;
+    // fallback secondario: state.dogs o window.DOGS (se li usi altrove)
+    if (!base) {
+      try {
+        if (typeof state !== "undefined" && state && Array.isArray(state.dogs)) {
+          base = state.dogs.find(d => d && String(d.id) === dogId) || null;
+        }
+      } catch (_) {}
+    }
+    if (!base) {
+      try {
+        if (Array.isArray(window.DOGS)) {
+          base = window.DOGS.find(d => d && String(d.id) === dogId) || null;
+        }
+      } catch (_) {}
     }
 
-    // 2a) tenta docId === dogId
-    let snap = await _db.collection("dogs").doc(dogId).get();
+    // Se non esiste nemmeno nei mock, NON aprire profilo vuoto (evita nero)
+    if (!base) return false;
 
-    // 2b) fallback: docId auto, ma campo id/dogId nel documento
-    if (!snap.exists) {
-      const q1 = await _db.collection("dogs").where("id", "==", dogId).limit(1).get();
-      if (!q1.empty) snap = q1.docs[0];
+    // Oggetto coerente con il TUO modello
+    var dog = Object.assign({}, base);
+    dog.id = String(dog.id || dogId);
+    dog.name = (dog.name != null) ? String(dog.name) : "";
+    dog.img = (dog.img != null) ? String(dog.img) : "";
+    dog.breed = (dog.breed != null) ? String(dog.breed) : "";
+    dog.bio = (dog.bio != null) ? String(dog.bio) : "";
+
+    // 2) Firestore (source of truth quando ci saranno i profili reali)
+    // Se esiste dogs/{dogId}, sovrascrive SOLO i campi presenti nel doc
+    var _db = (window.db || (typeof db !== "undefined" ? db : null));
+    if (_db && typeof _db.collection === "function") {
+      try {
+        var snap = await _db.collection("dogs").doc(dogId).get();
+        if (snap && snap.exists) {
+          var fd = snap.data() || {};
+          // sovrascrivi SOLO campi noti del tuo modello (niente invenzioni)
+          if (fd.id != null) dog.id = String(fd.id);
+          if (fd.name != null) dog.name = String(fd.name);
+          if (fd.img != null) dog.img = String(fd.img);
+          if (fd.breed != null) dog.breed = String(fd.breed);
+          if (fd.bio != null) dog.bio = String(fd.bio);
+        }
+      } catch (_) {}
     }
-    if (!snap.exists) {
-      const q2 = await _db.collection("dogs").where("dogId", "==", dogId).limit(1).get();
-      if (!q2.empty) snap = q2.docs[0];
-    }
 
-    if (!snap.exists) return;
+    _openProfile(dog);
+    return true;
 
-    const d = snap.data() || {};
-  var _openProfile2 = (typeof window.openProfilePage === "function")
-  ? window.openProfilePage
-  : (typeof openProfilePage === "function" ? openProfilePage : null);
-
-if (_openProfile2) {
-  _openProfile2({
-    id: d.id || d.dogId || dogId,
-    name: d.name || "",
-    img: d.img || d.photo || d.avatar || "",
-    breed: d.breed || "",
-    ...d
-  });
-  return true;
-}
-
-return false;
-  } catch (_) {}
+  } catch (e) {
+    console.error("__openDogProfileById:", e);
+    return false;
+  }
 }
 
 async function __markAllNotifsRead(toDogId) {
