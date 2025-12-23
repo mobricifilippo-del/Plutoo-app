@@ -1008,6 +1008,18 @@ if (found && _openProfile) {
   return true;
 }
 
+    // 🔥 FALLBACK DEFINITIVO: apri SEMPRE il profilo anche se non trovato
+if (_openProfile) {
+  _openProfile({
+    id: String(dogId),
+    name: "",
+    img: "",
+    breed: "",
+    bio: ""
+  });
+  return true;
+}
+
     // 2) FALLBACK Firestore
     const _db = (window.db || (typeof db !== "undefined" ? db : null));
     if (!_db) {
