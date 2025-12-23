@@ -1131,7 +1131,7 @@ function initNotificationsFeed() {
         __renderNotifs(items);
       }
     }, (e) => {
-      console.error("notifications onSnapshot:", e);
+      alert("❌ NOTIFS onSnapshot\n" + (e && e.code ? ("code: " + e.code + "\n") : "") + (e && e.message ? ("msg: " + e.message) : String(e)));
     });
 }
 
