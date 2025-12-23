@@ -2529,6 +2529,30 @@ storyLikeBtn.classList.add("heart-anim");
 
   // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
   window.openProfilePage = (d)=>{
+
+    // ✅ GUARD-RAIL (anti crash da notifiche/fallback)
+    try {
+      if (!d || typeof d !== "object") d = {};
+      if (d.id == null && d.dogId != null) d.id = d.dogId;
+      d.id = (d.id != null) ? String(d.id) : "";
+      if (!d.id) return;
+
+      // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])
+      if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};
+      if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {};
+      if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {};
+      if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};
+
+      // campi minimi safe (evita undefined in template)
+      d.name  = (d.name  != null) ? String(d.name)  : "";
+      d.img   = (d.img   != null) ? String(d.img)   : "";
+      d.breed = (d.breed != null) ? String(d.breed) : "";
+      d.bio   = (d.bio   != null) ? String(d.bio)   : "";
+    } catch (e) {
+      console.error("openProfilePage guard-rail:", e);
+      return;
+    }
+    
     state.currentDogProfile = d;
     localStorage.setItem("currentProfileDogId", d.id);
     setActiveView("profile");
