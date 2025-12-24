@@ -1135,6 +1135,8 @@ function initNotificationsFeed() {
     });
 }
 
+setTimeout(() => { try { initNotificationsFeed(); } catch (_) {} }, 0);
+
 // Apri overlay
 if (notifBtn && notifOverlay) {
   notifBtn.addEventListener("click", async (e) => {
