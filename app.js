@@ -201,7 +201,7 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
     return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
   }
 
-  const CURRENT_USER_DOG_ID = "d1";
+  let CURRENT_USER_DOG_ID = String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "d1");
 
   // ============ Stato (caricato da localStorage dove possibile) ============
   const state = {
