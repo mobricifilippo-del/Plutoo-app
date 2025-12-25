@@ -1656,6 +1656,11 @@ line-height: 1.6;
   gap:.35rem;
 }
 
+.notif-btn .notif-icon{
+  color: #fff;
+  fill: #fff;
+}
+
 .notif-dot{
   position:absolute;
   top:6px;
