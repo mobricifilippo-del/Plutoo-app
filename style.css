@@ -1654,11 +1654,7 @@ line-height: 1.6;
   align-items:center;
   justify-content:center;
   gap:.35rem;
-}
-
-.notif-btn .notif-icon{
-  color: #fff;
-  fill: #fff;
+  color:#fff;
 }
 
 .notif-dot{
