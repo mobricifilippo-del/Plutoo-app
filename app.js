@@ -1142,6 +1142,7 @@ if (notifBtn && notifOverlay) {
   notifBtn.addEventListener("click", async (e) => {
     
     // UI immediata: nascondi pallino subito (Firestore aggiorna poi lo stato reale)
+    if (notifDot) notifDot.classList.remove("hidden"); // TEST MANUALE
 if (notifDot) notifDot.classList.add("hidden");
     e.preventDefault();
     e.stopPropagation();
@@ -4087,10 +4088,3 @@ init();
 };
 
   init();
-
-// === TEST MANUALE NOTIF (TEMP) ===
-window.__testNotifDot = function () {
-  if (typeof notifDot !== "undefined" && notifDot) {
-    notifDot.classList.remove("hidden");
-  }
-};
