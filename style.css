@@ -1698,16 +1698,17 @@ line-height: 1.6;
 
 .notif-dot{
   position:absolute;
-  top:6px;
-  right:6px;
+  top:-2px;
+  right:-2px;
   width:10px;
   height:10px;
   border-radius:50%;
-  background:var(--gold);
-  box-shadow:0 0 10px rgba(205,164,52,.65);
-  z-index: 9999;
+  background:#ff3b30;               /* ROSSO iOS */
+  box-shadow:0 0 8px rgba(255,59,48,.75);
+  z-index: 10001;
   pointer-events:none;
 }
+
 .notif-dot.hidden{ display:none !important; }
 
 .notif-content{ padding:.9rem 1.1rem 1rem; }
