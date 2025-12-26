@@ -1989,3 +1989,7 @@ line-height: 1.6;
   stroke-linecap: round !important;
   stroke-linejoin: round !important;
 }
+
+/* TEST FORZATO: mostra SEMPRE il pallino anche se ha class="hidden" */
+#notifDot.hidden{ display:block !important; }
+#notifDot{ background:#ff3b30 !important; }
