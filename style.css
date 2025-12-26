@@ -1657,16 +1657,22 @@ line-height: 1.6;
   color:#fff;
 }
 
+.notif-icon{ color:#fff !important; }
+.notif-btn .notif-icon{ filter:none !important; }
+
+
 .notif-dot{
-  position:absolute;
-  top:6px;
-  right:6px;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:var(--gold);
-  box-shadow:0 0 10px rgba(205,164,52,.65);
-}
+ position:absolute;
+ top:6px;
+ right:6px;
+ width:10px;
+ height:10px;
+ border-radius:50%;
+ background:var(--gold);
+ box-shadow:0 0 10px rgba(205,164,52,.65);
+ }
+.notif-dot{ z-index: 9999; }
+.notif-dot.hidden{ display:none !important; }
 
 .notif-content{ padding:.9rem 1.1rem 1rem; }
 
