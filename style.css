@@ -1956,3 +1956,19 @@ line-height: 1.6;
   background: #ff3b30 !important;
   box-shadow: 0 0 6px rgba(255,59,48,.7);
 }
+
+/* FORCE SVG COLORS (bell) */
+.notif-svg{ display:block; }
+
+.notif-fill{
+  fill:#fff !important;              /* interno bianco */
+  stroke:none !important;
+}
+
+.notif-stroke{
+  fill:none !important;
+  stroke: var(--gold) !important;    /* campanella gialla */
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
