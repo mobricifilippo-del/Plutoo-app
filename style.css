@@ -1666,6 +1666,24 @@ line-height: 1.6;
   overflow:visible;
 }
 
+/* SVG campanella: contorno oro + interno bianco (forzato) */
+.notif-svg{ display:block; }
+.notif-fill{ fill:#ffffff !important; }
+.notif-stroke{
+  fill:none !important;
+  stroke:var(--gold) !important;
+  stroke-width:1.9 !important;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+/* evita che vecchie regole testo/emoji interferiscano */
+.notif-icon{
+  color:inherit !important;
+  -webkit-text-fill-color:inherit !important;
+  filter:none !important;
+}
+
 .notif-icon{
   color:#fff !important;
   -webkit-text-fill-color:#fff !important;
