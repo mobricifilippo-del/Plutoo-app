@@ -1937,3 +1937,18 @@ line-height: 1.6;
   color:#111;
   border-color:#fff;
 }
+
+/* ===== NOTIFICA SVG (CAMPANELLA) ===== */
+
+.notif-svg {
+  display: block;
+}
+
+.notif-svg .notif-stroke {
+  fill: #ffffff;              /* INTERNO BIANCO */
+  stroke: var(--gold);        /* CONTORNO ORO */
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke fill;  /* IMPORTANTISSIMO */
+}
