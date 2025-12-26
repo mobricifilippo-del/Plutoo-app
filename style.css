@@ -1666,6 +1666,22 @@ line-height: 1.6;
   overflow:visible;
 }
 
+/* FIX pallino rosso (non tagliare + sempre sopra) */
+#notifBtn{
+  position:relative;
+  overflow:visible !important;
+}
+
+#notifBtn .notif-dot{
+  display:block;
+  opacity:1;
+  visibility:visible;
+  top:-4px;
+  right:-4px;
+  background:#ff3b30 !important;
+  z-index:99999 !important;
+}
+
 /* SVG campanella: contorno oro + interno bianco (forzato) */
 .notif-svg{ display:block; }
 .notif-fill{ fill:#ffffff !important; }
