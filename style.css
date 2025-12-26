@@ -1938,17 +1938,21 @@ line-height: 1.6;
   border-color:#fff;
 }
 
-/* ===== NOTIFICA SVG (CAMPANELLA) ===== */
+/* ===== NOTIFICHE TOPBAR – DEFINITIVO ===== */
 
-.notif-svg {
-  display: block;
+/* bottone bianco come Messaggi */
+#notifBtn {
+  background: #fff !important;
+  border-radius: 14px;
 }
 
-.notif-svg .notif-stroke {
-  fill: #ffffff;              /* INTERNO BIANCO */
-  stroke: var(--gold);        /* CONTORNO ORO */
-  stroke-width: 1.6;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  paint-order: stroke fill;  /* IMPORTANTISSIMO */
+/* campanella tutta GIALLA */
+#notifBtn svg {
+  fill: var(--gold) !important;
+}
+
+/* pallino ROSSO */
+#notifDot {
+  background: #ff3b30 !important;
+  box-shadow: 0 0 6px rgba(255,59,48,.7);
 }
