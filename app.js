@@ -4087,3 +4087,10 @@ init();
 };
 
   init();
+
+// === TEST MANUALE NOTIF (TEMP) ===
+window.__testNotifDot = function () {
+  if (typeof notifDot !== "undefined" && notifDot) {
+    notifDot.classList.remove("hidden");
+  }
+};
