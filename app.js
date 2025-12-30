@@ -937,9 +937,7 @@ function initMessagesBadge() {
 }
 
 // avvia subito (fa retry finché db/uid non sono pronti)
-document.addEventListener("DOMContentLoaded", () => {
-  try { initMessagesBadge(); } catch (_) {}
-});
+try { initMessagesBadge(); } catch (_) {}
 
 let __notifUnsub = null;
 let __notifLast = []; // cache render
