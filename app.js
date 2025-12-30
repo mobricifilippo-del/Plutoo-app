@@ -204,8 +204,7 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
       e.preventDefault();
     });
   }
-
-});
+})();
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
