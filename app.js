@@ -134,6 +134,7 @@ window.storage = storage;
           return;
         }
       } catch (_) {}
+    }
 
 // 2) FALLBACK: se non lo trova localmente, allora prova Firestore
 const snap = await _db.collection("dogs").doc(String(dogId)).get();
@@ -183,7 +184,7 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
     if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
       loadMessagesLists();
     }
-  });
+  })
 
   // Disabilita PWA/Service Worker dentro l'app Android (WebView)
   const isAndroidWebView =
@@ -204,7 +205,7 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
       e.preventDefault();
     });
   }
-})();
+}
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
