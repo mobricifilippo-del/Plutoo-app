@@ -888,6 +888,57 @@ const notifOverlay = $("notifOverlay");
 const notifList = $("notifList");
 const notifDot = $("notifDot");
 
+// 💬 Badge numerico Messaggi (solo non letti, NO notifiche push)
+const msgBadge = $("msgBadge");
+let __msgBadgeUnsub = null;
+let __msgBadgeInited = false;
+
+function initMessagesBadge() {
+  if (__msgBadgeInited) return;
+  if (!msgBadge) { __msgBadgeInited = false; return; }
+
+  // aspetta Firestore + UID (non bloccare, ritenta)
+  if (typeof db === "undefined" || !db || !window.PLUTOO_UID) {
+    __msgBadgeInited = false;
+    setTimeout(() => { try { initMessagesBadge(); } catch (_) {} }, 350);
+    return;
+  }
+
+  __msgBadgeInited = true;
+
+  // kill eventuale vecchio listener
+  try { if (typeof __msgBadgeUnsub === "function") __msgBadgeUnsub(); } catch (_) {}
+  __msgBadgeUnsub = null;
+
+  const selfUid = String(window.PLUTOO_UID || "");
+  const prefix = selfUid + "_"; // chatId = `${selfUid}_${dogId}`
+
+  __msgBadgeUnsub = db
+    .collection("messages")
+    .where("chatId", ">=", prefix)
+    .where("chatId", "<=", prefix + "\uf8ff")
+    .where("isRead", "==", false)
+    .onSnapshot((snap) => {
+      let count = 0;
+
+      snap.forEach((docSnap) => {
+        const m = docSnap.data() || {};
+        // conta SOLO i messaggi ricevuti (non quelli inviati da me)
+        if (m.senderUid && String(m.senderUid) !== selfUid) count++;
+      });
+
+      if (count > 99) msgBadge.textContent = "99+";
+      else msgBadge.textContent = String(count);
+
+      msgBadge.classList.toggle("hidden", count === 0);
+    }, (e) => {
+      console.error("msgBadge onSnapshot:", e);
+    });
+}
+
+// avvia subito (fa retry finché db/uid non sono pronti)
+try { initMessagesBadge(); } catch (_) {}
+
 let __notifUnsub = null;
 let __notifLast = []; // cache render
 let __notifInited = false;
