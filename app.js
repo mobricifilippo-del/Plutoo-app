@@ -70,29 +70,44 @@ async function safeFirestoreWrite(label, fn) {
 document.addEventListener("DOMContentLoaded", () => {
 
   // Firebase handles
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
-  window.db = db;
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+window.db = db;
 
-  // ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
-  window.auth = auth;
-  window.db = db;
-  window.storage = storage;
+// ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
+window.auth = auth;
+window.db = db;
+window.storage = storage;
 
-  // ✅ Persistenza Auth su device (no reset dopo refresh)
-  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+// ✅ Persistenza Auth su device (no reset dopo refresh)
+(async () => {
+  try {
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+  } catch (err) {
     console.error("Auth persistence error:", err);
-  });
-
-  // ✅ Stato Auth: NON fare anonimo automatico (login/registrazione reali)
-  auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-  // ✅ Auto-login anonimo per avere sempre PLUTOO_UID e poter scrivere su Firestore
-  auth.signInAnonymously()
-    .catch((e) => alert("❌ AUTH ANON ERROR: " + (e && e.message ? e.message : e)));
-  return;
   }
+
+  // ✅ Stato Auth: gestione corretta reidratazione
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      // ⛔ NON creare subito anonimo: aspetta reidratazione
+      if (window.__anonHydrateTimer) return;
+
+      window.__anonHydrateTimer = setTimeout(() => {
+        window.__anonHydrateTimer = null;
+
+        // se nel frattempo è comparso l’utente, NON creare anonimo
+        if (auth.currentUser) return;
+
+        auth.signInAnonymously()
+          .catch((e) =>
+            alert("❌ AUTH ANON ERROR: " + (e && e.message ? e.message : e))
+          );
+      }, 300);
+
+      return;
+    }
 
     // ✅ Fonte di verità UID (sempre aggiornata)
     const prevUid = window.PLUTOO_UID || null;
@@ -108,16 +123,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!db) return;
 
       // 1) PRIMA prova dal dataset locale (più affidabile e immediato)
-try {
-  const localDogs = (Array.isArray(state?.dogs) && state.dogs.length) ? state.dogs
-    : (Array.isArray(window.DOGS) ? window.DOGS : []);
+      try {
+        const localDogs = (Array.isArray(state?.dogs) && state.dogs.length)
+          ? state.dogs
+          : (Array.isArray(window.DOGS) ? window.DOGS : []);
 
-  const found = localDogs.find(x => String(x.id) === String(dogId));
-  if (found && typeof window.openProfilePage === "function") {
-    window.openProfilePage(found);
-    return;
-  }
-} catch (_) {}
+        const found = localDogs.find(x => String(x.id) === String(dogId));
+        if (found && typeof window.openProfilePage === "function") {
+          window.openProfilePage(found);
+          return;
+        }
+      } catch (_) {}
 
 // 2) FALLBACK: se non lo trova localmente, allora prova Firestore
 const snap = await _db.collection("dogs").doc(String(dogId)).get();
