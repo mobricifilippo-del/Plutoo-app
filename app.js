@@ -133,8 +133,7 @@ window.storage = storage;
           window.openProfilePage(found);
           return;
         }
-      } catch (_) {}
-    }
+      } catch (_)
 
 // 2) FALLBACK: se non lo trova localmente, allora prova Firestore
 const snap = await _db.collection("dogs").doc(String(dogId)).get();
