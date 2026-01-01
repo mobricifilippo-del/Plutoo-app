@@ -916,6 +916,53 @@ const DOGS = [
 // ====== MESSAGGI - VISTA E TABS INTERN INTERNI ======
 const btnMessages = $("btnMessages");
 
+// 🔴 Badge numerico MESSAGGI (Firestore source of truth)
+const msgBadge = $("msgBadge");
+let __msgBadgeUnsub = null;
+
+function __setMsgBadge(n) {
+  if (!msgBadge) return;
+  const c = Math.max(0, parseInt(n || 0, 10) || 0);
+  msgBadge.textContent = String(c);
+  msgBadge.classList.toggle("hidden", c === 0);
+}
+
+function initMessagesBadge() {
+  // aspetta UID + db
+  if (typeof db === "undefined" || !db || !window.PLUTOO_UID) {
+    setTimeout(() => { try { initMessagesBadge(); } catch (_) {} }, 350);
+    return;
+  }
+
+  // kill vecchio listener
+  try { if (typeof __msgBadgeUnsub === "function") __msgBadgeUnsub(); } catch (_) {}
+  __msgBadgeUnsub = null;
+
+  // chatId prefix = "<UID>_" (come nei tuoi screenshot)
+  const prefix = String(window.PLUTOO_UID) + "_";
+
+  __msgBadgeUnsub = db
+    .collection("messages")
+    .where("isRead", "==", false)
+    .orderBy("chatId")
+    .startAt(prefix)
+    .endAt(prefix + "\uf8ff")
+    .onSnapshot((snap) => {
+      let unread = 0;
+      snap.forEach((d) => {
+        const x = d.data() || {};
+        // conta solo messaggi "in arrivo" (non miei)
+        if (String(x.senderUid || "") !== String(window.PLUTOO_UID)) unread++;
+      });
+      __setMsgBadge(unread);
+    }, (e) => {
+      alert("❌ MSG BADGE onSnapshot\n" + (e && e.message ? e.message : String(e)));
+    });
+}
+
+// avvia subito
+setTimeout(() => { try { initMessagesBadge(); } catch (_) {} }, 0);
+
 // 🔔 Notifiche (Firestore source of truth)
 const notifBtn = $("notifBtn");
 const notifOverlay = $("notifOverlay");
