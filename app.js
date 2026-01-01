@@ -942,12 +942,11 @@ function initMessagesBadge() {
   const prefix = String(window.PLUTOO_UID) + "_";
 
   __msgBadgeUnsub = db
-    .collection("messages")
-    .where("isRead", "==", false)
-    .orderBy("chatId")
-    .startAt(prefix)
-    .endAt(prefix + "\uf8ff")
-    .onSnapshot((snap) => {
+  .collection("messages")
+  .orderBy("chatId")
+  .startAt(prefix)
+  .endAt(prefix + "\uf8ff")
+  .onSnapshot((snap) => {
       let unread = 0;
       snap.forEach((d) => {
         const x = d.data() || {};
