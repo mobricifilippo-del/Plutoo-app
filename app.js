@@ -85,12 +85,23 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Auth persistence error:", err);
   });
 
-  // ✅ Stato Auth: NON fare anonimo automatico (login/registrazione reali)
+  // ✅ Stato Auth: login test fisso (UID stabile)
   auth.onAuthStateChanged(async (user) => {
   if (!user) {
-  // ✅ Auto-login anonimo per avere sempre PLUTOO_UID e poter scrivere su Firestore
-  auth.signInAnonymously()
-    .catch((e) => alert("❌ AUTH ANON ERROR: " + (e && e.message ? e.message : e)));
+
+  // ✅ LOGIN TEST FISSO (UID stabile)
+  // ⚠️ SOSTITUISCI TU queste 2 righe NEL TUO FILE (NON in chat)
+  const TEST_EMAIL = "mobrici.filippo@live.com";
+  const TEST_PASS  = "Desiderio1";
+
+  // evita loop di login
+  if (window.__testLoginInProgress) return;
+  window.__testLoginInProgress = true;
+
+  auth.signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS)
+    .catch((e) => alert("❌ AUTH TEST LOGIN ERROR: " + (e && e.message ? e.message : e)))
+    .finally(() => { window.__testLoginInProgress = false; });
+
   return;
   }
 
