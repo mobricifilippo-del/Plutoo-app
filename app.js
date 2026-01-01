@@ -1158,7 +1158,10 @@ function initNotificationsFeed() {
       __notifLast = items;
 
       const unreadCount = items.filter((x) => x && x.read !== true).length;
-      if (notifDot) notifDot.classList.toggle("hidden", unreadCount === 0);
+if (notifDot) {
+  notifDot.textContent = unreadCount > 0 ? String(unreadCount) : "";
+  notifDot.classList.toggle("hidden", unreadCount === 0);
+}
 
       // se overlay aperto, aggiorna live
       if (notifOverlay && !notifOverlay.classList.contains("hidden")) {
