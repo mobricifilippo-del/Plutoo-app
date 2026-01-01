@@ -1,14 +1,34 @@
 /* ================= CRASH DEBUG SYSTEM (OBBLIGATORIO) ================= */
 
-// 1️⃣ Errori JS globali
+// 1️⃣ Errori JS globali (con STACK reale quando disponibile)
 window.addEventListener("error", function (e) {
-  alert(
-    "❌ JS ERROR\n\n" +
-    "Messaggio: " + e.message + "\n" +
-    "File: " + e.filename + "\n" +
-    "Linea: " + e.lineno + ":" + e.colno
-  );
-});
+  try {
+    const errObj = e && e.error ? e.error : null;
+
+    // errori di risorse (script/img/css) spesso NON hanno filename/line
+    const target = e && e.target ? e.target : null;
+    const resUrl =
+      target && (target.src || target.href)
+        ? (target.src || target.href)
+        : "";
+
+    const msg = (e && e.message) ? e.message : "(no message)";
+    const file = (e && e.filename) ? e.filename : (resUrl || "(no file)");
+    const line = (e && typeof e.lineno === "number") ? e.lineno : "-";
+    const col  = (e && typeof e.colno === "number") ? e.colno : "-";
+    const stack = (errObj && errObj.stack) ? ("\n\nSTACK:\n" + errObj.stack) : "";
+
+    alert(
+      "❌ JS ERROR\n\n" +
+      "Messaggio: " + msg + "\n" +
+      "File: " + file + "\n" +
+      "Linea: " + line + ":" + col +
+      stack
+    );
+  } catch (_) {
+    alert("❌ JS ERROR\n\n(Impossibile leggere dettagli errore)");
+  }
+}, true);
 
 // 2️⃣ Errori Promise / Firebase (robusto: niente JSON.stringify che può crashare)
 window.addEventListener("unhandledrejection", function (e) {
@@ -21,7 +41,7 @@ window.addEventListener("unhandledrejection", function (e) {
       if (r.code) msg += "Code: " + r.code + "\n";
       if (r.name) msg += "Name: " + r.name + "\n";
       if (r.stack) msg += "\nSTACK:\n" + r.stack + "\n";
-      if (!msg) msg = "Reason object (non serializzabile)";
+      if (!msg) msg = "Reason object (non leggibile)";
     } else {
       msg = String(r);
     }
@@ -59,10 +79,13 @@ async function safeFirestoreWrite(label, fn) {
   try {
     await fn();
   } catch (e) {
+    const emsg = (e && e.message) ? e.message : String(e);
+    const estack = (e && e.stack) ? ("\n\nSTACK:\n" + e.stack) : "";
     alert(
       "❌ FIRESTORE WRITE ERROR\n\n" +
       label + "\n\n" +
-      (e.message || JSON.stringify(e))
+      emsg +
+      estack
     );
   }
 }
