@@ -70,44 +70,29 @@ async function safeFirestoreWrite(label, fn) {
 document.addEventListener("DOMContentLoaded", () => {
 
   // Firebase handles
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
-window.db = db;
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+  window.db = db;
 
-// ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
-window.auth = auth;
-window.db = db;
-window.storage = storage;
+  // ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
+  window.auth = auth;
+  window.db = db;
+  window.storage = storage;
 
-// ✅ Persistenza Auth su device (no reset dopo refresh)
-(async () => {
-  try {
-    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  } catch (err) {
+  // ✅ Persistenza Auth su device (no reset dopo refresh)
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
     console.error("Auth persistence error:", err);
-  }
+  });
 
-  // ✅ Stato Auth: gestione corretta reidratazione
+  // ✅ Stato Auth: NON fare anonimo automatico (login/registrazione reali)
   auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      // ⛔ NON creare subito anonimo: aspetta reidratazione
-      if (window.__anonHydrateTimer) return;
-
-      window.__anonHydrateTimer = setTimeout(() => {
-        window.__anonHydrateTimer = null;
-
-        // se nel frattempo è comparso l’utente, NON creare anonimo
-        if (auth.currentUser) return;
-
-        auth.signInAnonymously()
-          .catch((e) =>
-            alert("❌ AUTH ANON ERROR: " + (e && e.message ? e.message : e))
-          );
-      }, 300);
-
-      return;
-    }
+  if (!user) {
+  // ✅ Auto-login anonimo per avere sempre PLUTOO_UID e poter scrivere su Firestore
+  auth.signInAnonymously()
+    .catch((e) => alert("❌ AUTH ANON ERROR: " + (e && e.message ? e.message : e)));
+  return;
+  }
 
     // ✅ Fonte di verità UID (sempre aggiornata)
     const prevUid = window.PLUTOO_UID || null;
@@ -123,17 +108,16 @@ window.storage = storage;
       if (!db) return;
 
       // 1) PRIMA prova dal dataset locale (più affidabile e immediato)
-      try {
-        const localDogs = (Array.isArray(state?.dogs) && state.dogs.length)
-          ? state.dogs
-          : (Array.isArray(window.DOGS) ? window.DOGS : []);
+try {
+  const localDogs = (Array.isArray(state?.dogs) && state.dogs.length) ? state.dogs
+    : (Array.isArray(window.DOGS) ? window.DOGS : []);
 
-        const found = localDogs.find(x => String(x.id) === String(dogId));
-        if (found && typeof window.openProfilePage === "function") {
-          window.openProfilePage(found);
-          return;
-        }
-      } catch (_)
+  const found = localDogs.find(x => String(x.id) === String(dogId));
+  if (found && typeof window.openProfilePage === "function") {
+    window.openProfilePage(found);
+    return;
+  }
+} catch (_) {}
 
 // 2) FALLBACK: se non lo trova localmente, allora prova Firestore
 const snap = await _db.collection("dogs").doc(String(dogId)).get();
@@ -183,7 +167,7 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
     if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
       loadMessagesLists();
     }
-  })
+  });
 
   // Disabilita PWA/Service Worker dentro l'app Android (WebView)
   const isAndroidWebView =
@@ -204,7 +188,8 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
       e.preventDefault();
     });
   }
-}
+
+});
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
@@ -902,57 +887,6 @@ const notifBtn = $("notifBtn");
 const notifOverlay = $("notifOverlay");
 const notifList = $("notifList");
 const notifDot = $("notifDot");
-
-// 💬 Badge numerico Messaggi (solo non letti, NO notifiche push)
-const msgBadge = $("msgBadge");
-let __msgBadgeUnsub = null;
-let __msgBadgeInited = false;
-
-function initMessagesBadge() {
-  if (__msgBadgeInited) return;
-  if (!msgBadge) { __msgBadgeInited = false; return; }
-
-  // aspetta Firestore + UID (non bloccare, ritenta)
-  if (typeof db === "undefined" || !db || !window.PLUTOO_UID) {
-    __msgBadgeInited = false;
-    setTimeout(() => { try { initMessagesBadge(); } catch (_) {} }, 350);
-    return;
-  }
-
-  __msgBadgeInited = true;
-
-  // kill eventuale vecchio listener
-  try { if (typeof __msgBadgeUnsub === "function") __msgBadgeUnsub(); } catch (_) {}
-  __msgBadgeUnsub = null;
-
-  const selfUid = String(window.PLUTOO_UID || "");
-  const prefix = selfUid + "_"; // chatId = `${selfUid}_${dogId}`
-
-  __msgBadgeUnsub = db
-    .collection("messages")
-    .where("chatId", ">=", prefix)
-    .where("chatId", "<=", prefix + "\uf8ff")
-    .where("isRead", "==", false)
-    .onSnapshot((snap) => {
-      let count = 0;
-
-      snap.forEach((docSnap) => {
-        const m = docSnap.data() || {};
-        // conta SOLO i messaggi ricevuti (non quelli inviati da me)
-        if (m.senderUid && String(m.senderUid) !== selfUid) count++;
-      });
-
-      if (count > 99) msgBadge.textContent = "99+";
-      else msgBadge.textContent = String(count);
-
-      msgBadge.classList.toggle("hidden", count === 0);
-    }, (e) => {
-      console.error("msgBadge onSnapshot:", e);
-    });
-}
-
-// avvia subito (fa retry finché db/uid non sono pronti)
-try { initMessagesBadge(); } catch (_) {}
 
 let __notifUnsub = null;
 let __notifLast = []; // cache render
