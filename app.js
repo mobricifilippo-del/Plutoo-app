@@ -1412,8 +1412,6 @@ if (!snap || snap.empty) {
 
       // ✅ Richieste: se NON è mio, ha testo, NON è spam, e NON ho match
       const isRequest =
-        chat.lastSenderUid &&
-        chat.lastSenderUid !== selfUid &&
         hasText &&
         !isSpam &&
         !hasMatch;
