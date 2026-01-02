@@ -1279,11 +1279,10 @@ async function loadMessagesLists() {
 
     // Contenitori reali definiti in index.html
     const inboxList    = document.getElementById("tabInbox");
-    const sentList     = document.getElementById("tabSent");
     const matchesList  = document.getElementById("tabMatches");
     const requestsList = document.getElementById("tabRequests");
     const spamList     = document.getElementById("tabSpam");
-    if (!inboxList || !sentList || !matchesList || !requestsList || !spamList) return;
+    if (!inboxList || !matchesList || !requestsList || !spamList) return;
 
     // Pulisco tutte le liste e nascondo gli empty state
     msgLists.forEach((list) => {
@@ -1421,11 +1420,6 @@ if (!snap || snap.empty) {
 
       if (isInbox) {
         inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", chat.dogAvatar)
-        );
-      }
-
-      if (isSent) {
-      sentList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "sent", chat.dogAvatar)
         );
       }
 
