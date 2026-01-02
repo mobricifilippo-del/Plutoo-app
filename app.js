@@ -3335,7 +3335,7 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   }
 
   // ChatId UNICO e deterministico: sempre selfUid_dogId
-  chatId = `${selfUid}_${dogId}`;
+  if (!chatId) chatId = `${selfUid}_${dogId}`;
 
   // Trova DOG coerente (evita fallback strani)
   dog = dog || (DOGS.find(d => d.id === dogId) || null);
