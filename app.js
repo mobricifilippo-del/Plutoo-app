@@ -3355,21 +3355,24 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   // Carica history completa
   loadChatHistory(chatId, dogName);
 
-  // ✅ LETTO SOLO SE APRO DA "RICEVUTI"
+  // ✅ LETTO quando apro la chat (serve per far scalare il badge)
   const openedFrom = state._openChatFromTab || "";
-  state._openChatFromTab = ""; // reset (evita effetti strani al prossimo click)
+  state._openChatFromTab = ""; // reset
 
-  const shouldMarkRead = (openedFrom === "inbox");
+  // segna letto se apro la chat da QUALSIASI tab (inbox/requests/matches)
+  // (così il numeretto scende appena entro davvero nella chat)
+  const shouldMarkRead = (openedFrom !== "sent");
 
   if (shouldMarkRead && window.db && chatId) {
     // segna "letto" SOLO i messaggi ricevuti (non i miei), solo quelli non letti
     window.db.collection("messages")
       .where("chatId", "==", chatId)
+      .where("isRead", "==", false)
       .get()
       .then((snap) => {
         snap.forEach((docSnap) => {
           const m = docSnap.data() || {};
-          if (m.senderUid && m.senderUid !== selfUid && m.isRead !== true) {
+          if (m.senderUid && m.senderUid !== selfUid) {
             docSnap.ref.update({
               isRead: true,
               readAt: firebase.firestore.FieldValue.serverTimestamp()
