@@ -1477,9 +1477,6 @@ msgLists.forEach((list) => {
       case "tabInbox":
         state._openChatFromTab = "inbox";
         break;
-      case "tabSent":
-        state._openChatFromTab = "sent";
-        break;
       case "tabMatches":
         state._openChatFromTab = "matches";
         break;
