@@ -1292,11 +1292,23 @@ async function loadMessagesLists() {
       if (emptyEl) emptyEl.classList.add("hidden-empty");
     });
 
-    // Legge le chat dove compare il mio UID
-    const snap = await db
-      .collection("chats")
-      .where("members", "array-contains", selfUid)
-      .get();
+    // Legge le chat dove compare il mio UID (fallback su chatId se members non è affidabile)
+const prefix = String(selfUid) + "_";
+
+let snap = await db
+  .collection("chats")
+  .where("members", "array-contains", selfUid)
+  .get();
+
+// Fallback: se members non è presente/corretto, uso chatId (che nei tuoi doc esiste)
+if (!snap || snap.empty) {
+  snap = await db
+    .collection("chats")
+    .orderBy("chatId")
+    .startAt(prefix)
+    .endAt(prefix + "\uf8ff")
+    .get();
+}
 
     const chats = [];
     snap.forEach((docSnap) => {
