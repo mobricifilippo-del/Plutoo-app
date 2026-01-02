@@ -3342,6 +3342,8 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   state.currentDogId = dogId;
   state.currentChatId = chatId;
 
+  chatList.innerHTML = "";
+
   // Carica history completa
   loadChatHistory(chatId, dogName);
 
