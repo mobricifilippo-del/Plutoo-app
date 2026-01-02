@@ -948,11 +948,17 @@ function initMessagesBadge() {
   .endAt(prefix + "\uf8ff")
   .onSnapshot((snap) => {
       let unread = 0;
-      snap.forEach((d) => {
-        const x = d.data() || {};
-        // conta solo messaggi "in arrivo" (non miei)
-        if (String(x.senderUid || "") !== String(window.PLUTOO_UID)) unread++;
-      });
+    snap.forEach((d) => {
+  const x = d.data() || {};
+  const myUid = String(window.PLUTOO_UID || "");
+  const sender = String(x.senderUid || "");
+
+  // se manca senderUid, NON lo considero unread (evita badge falso)
+  if (!sender) return;
+
+  // unread = solo messaggi NON miei e NON letti
+  if (sender !== myUid && x.isRead !== true) unread++;
+});
       __setMsgBadge(unread);
     }, (e) => {
       alert("❌ MSG BADGE onSnapshot\n" + (e && e.message ? e.message : String(e)));
