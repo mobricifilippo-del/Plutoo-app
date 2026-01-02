@@ -1286,6 +1286,7 @@ body.story-open #storiesBar {
   display:flex;
   flex-direction:column;
   gap:.55rem;
+  align-items: flex-start;
 }
 
 .chat-composer{
