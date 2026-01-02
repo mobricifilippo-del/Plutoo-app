@@ -1399,9 +1399,6 @@ if (!snap || snap.empty) {
 
       const hasText = text !== "";
 
-      // ✅ Inviati: ultimo messaggio è mio
-      const isSent = chat.lastSenderUid === selfUid && hasText;
-
       // ✅ Spam: priorità assoluta (se c'è flag spam)
       const isSpam = chat.spam === true || chat.folder === "spam";
 
@@ -1410,11 +1407,9 @@ if (!snap || snap.empty) {
 
       // ✅ Ricevuti: se NON è mio, ha testo, NON è spam, e ho match
       const isInbox =
-        chat.lastSenderUid &&
-        chat.lastSenderUid !== selfUid &&
-        hasText &&
-        !isSpam &&
-        hasMatch;
+      hasText &&
+      !isSpam &&
+      hasMatch;
 
       // ✅ Richieste: se NON è mio, ha testo, NON è spam, e NON ho match
       const isRequest =
