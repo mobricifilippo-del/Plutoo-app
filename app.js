@@ -3345,7 +3345,7 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
 
   // segna letto se apro la chat da QUALSIASI tab (inbox/requests/matches)
   // (così il numeretto scende appena entro davvero nella chat)
-  const shouldMarkRead = (openedFrom !== "sent");
+  const shouldMarkRead = true;
 
   if (shouldMarkRead && window.db && chatId) {
     // segna "letto" SOLO i messaggi ricevuti (non i miei), solo quelli non letti
