@@ -112,25 +112,24 @@ document.addEventListener("DOMContentLoaded", () => {
   auth.onAuthStateChanged(async (user) => {
   if (!user) {
 
-  // ✅ LOGIN TEST FISSO (UID stabile)
-  let TEST_EMAIL = localStorage.getItem("PLUTOO_TEST_EMAIL") || "";
-let TEST_PASS  = localStorage.getItem("PLUTOO_TEST_PASS") || "";
+  if (!user) {
+  const IS_DEV = (new URLSearchParams(location.search).get("v") === "DEV");
 
-if (!TEST_EMAIL || !TEST_PASS) {
-  TEST_EMAIL = prompt("TEST LOGIN EMAIL (una volta sola):") || "";
-  TEST_PASS  = prompt("TEST LOGIN PASSWORD (una volta sola):") || "";
-  localStorage.setItem("PLUTOO_TEST_EMAIL", TEST_EMAIL);
-  localStorage.setItem("PLUTOO_TEST_PASS", TEST_PASS);
-}
+  if (IS_DEV) {
+    const TEST_EMAIL = "mobrici.filippo@live.com";
+    const TEST_PASS  = "Desiderio1";
 
-  // evita loop di login
-  if (window.__testLoginInProgress) return;
-  window.__testLoginInProgress = true;
+    if (window.__testLoginInProgress) return;
+    window.__testLoginInProgress = true;
 
-  auth.signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS)
-    .catch((e) => alert("❌ AUTH TEST LOGIN ERROR: " + (e && e.message ? e.message : e)))
-    .finally(() => { window.__testLoginInProgress = false; });
+    auth.signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS)
+      .catch((e) => alert("❌ AUTH TEST LOGIN ERROR: " + (e?.message || e)))
+      .finally(() => { window.__testLoginInProgress = false; });
 
+    return;
+  }
+
+  // produzione: qui entrerà il vero login/registrazione
   return;
   }
 
