@@ -92,128 +92,143 @@ async function safeFirestoreWrite(label, fn) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
- // Firebase handles
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+  // Firebase handles
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+  window.db = db;
 
-window.auth = auth;
-window.db = db;
-window.storage = storage;
+  // ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
+  window.auth = auth;
+  window.db = db;
+  window.storage = storage;
 
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+  // ✅ Persistenza Auth su device (no reset dopo refresh)
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+    console.error("Auth persistence error:", err);
+  });
 
-// ==================== AUTH UI helpers ====================
-function hideEl(el){ if(el) el.classList.add("hidden"); }
-function showEl(el){ if(el) el.classList.remove("hidden"); }
+  // ✅ Stato Auth: login test fisso (UID stabile)
+  auth.onAuthStateChanged(async (user) => {
+  if (!user) {
 
-function authSetError(which, msg){
-  const box = which === "login" ? $("loginError") : $("registerError");
-  if(!box) return;
-  if(!msg){ hideEl(box); box.textContent=""; return; }
-  box.textContent = String(msg);
-  showEl(box);
+  // ✅ LOGIN TEST FISSO (UID stabile)
+  let TEST_EMAIL = localStorage.getItem("PLUTOO_TEST_EMAIL") || "";
+let TEST_PASS  = localStorage.getItem("PLUTOO_TEST_PASS") || "";
+
+if (!TEST_EMAIL || !TEST_PASS) {
+  TEST_EMAIL = prompt("TEST LOGIN EMAIL (una volta sola):") || "";
+  TEST_PASS  = prompt("TEST LOGIN PASSWORD (una volta sola):") || "";
+  localStorage.setItem("PLUTOO_TEST_EMAIL", TEST_EMAIL);
+  localStorage.setItem("PLUTOO_TEST_PASS", TEST_PASS);
 }
 
-function authShowSheet(mode){
-  hideEl($("authAlready"));
-  hideEl($("authLoginForm"));
-  hideEl($("authRegisterForm"));
-  authSetError("login","");
-  authSetError("register","");
+  // evita loop di login
+  if (window.__testLoginInProgress) return;
+  window.__testLoginInProgress = true;
 
-  const user = auth.currentUser;
-  if(user){
-    $("authAlreadyEmail").textContent = user.email || "";
-    showEl($("authAlready"));
-  }else{
-    if(mode==="register") showEl($("authRegisterForm"));
-    else showEl($("authLoginForm"));
+  auth.signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS)
+    .catch((e) => alert("❌ AUTH TEST LOGIN ERROR: " + (e && e.message ? e.message : e)))
+    .finally(() => { window.__testLoginInProgress = false; });
+
+  return;
   }
-  showEl($("authSheet"));
-}
 
-function authCloseSheet(){ hideEl($("authSheet")); }
+    // ✅ Fonte di verità UID (sempre aggiornata)
+    const prevUid = window.PLUTOO_UID || null;
+    window.PLUTOO_UID = user.uid;
 
-document.addEventListener("DOMContentLoaded", () => {
+    // 🔒 Evita boot multipli SOLO se è lo stesso UID
+    if (window.__booted && prevUid === user.uid) return;
+    window.__booted = true;
 
-  $("linkLogin")?.addEventListener("click", e => {
-    e.preventDefault(); authShowSheet("login");
-  });
+    // ✅ RIPRISTINO MATCH DA FIRESTORE (MERGE, MAI RESET)
+    try {
+      const selfUid = user.uid;
+      if (!db) return;
 
-  $("linkRegister")?.addEventListener("click", e => {
-    e.preventDefault(); authShowSheet("register");
-  });
+      // 1) PRIMA prova dal dataset locale (più affidabile e immediato)
+try {
+  const localDogs = (Array.isArray(state?.dogs) && state.dogs.length) ? state.dogs
+    : (Array.isArray(window.DOGS) ? window.DOGS : []);
 
-  $("authGoLogin")?.addEventListener("click", ()=>authShowSheet("login"));
-  $("authGoRegister")?.addEventListener("click", ()=>authShowSheet("register"));
-
-  $("authClose")?.addEventListener("click", authCloseSheet);
-  $("btnAlreadyClose")?.addEventListener("click", authCloseSheet);
-
-  $("authLoginForm")?.addEventListener("submit", async e=>{
-    e.preventDefault();
-    const email = $("loginEmail").value.trim();
-    const pass  = $("loginPass").value;
-    if(!email || !pass){ authSetError("login","Email e password"); return; }
-    try{
-      await auth.signInWithEmailAndPassword(email, pass);
-      authCloseSheet();
-    }catch(err){ authSetError("login", err.message); }
-  });
-
-  $("authRegisterForm")?.addEventListener("submit", async e=>{
-    e.preventDefault();
-    const email = $("regEmail").value.trim();
-    const p1 = $("regPass").value;
-    const p2 = $("regPass2").value;
-    if(!email||!p1||!p2){ authSetError("register","Campi obbligatori"); return; }
-    if(p1!==p2){ authSetError("register","Password diverse"); return; }
-    try{
-      await auth.createUserWithEmailAndPassword(email, p1);
-      authCloseSheet();
-    }catch(err){ authSetError("register", err.message); }
-  });
-
-  $("btnLogout")?.addEventListener("click", async ()=>{
-    await auth.signOut();
-    authCloseSheet();
-  });
-
-  $("btnEnter")?.addEventListener("click", e=>{
-    e.preventDefault();
-    if(!auth.currentUser){ authShowSheet("login"); return; }
-    if(typeof window.handleEnter==="function") window.handleEnter();
-  });
-
-});
-
-// ==================== AUTH STATE ====================
-auth.onAuthStateChanged(async user=>{
-  if(!user){
-    window.PLUTOO_UID = null;
-    window.__booted = false;
+  const found = localDogs.find(x => String(x.id) === String(dogId));
+  if (found && typeof window.openProfilePage === "function") {
+    window.openProfilePage(found);
     return;
   }
+} catch (_) {}
 
-  const prev = window.PLUTOO_UID || null;
-  window.PLUTOO_UID = user.uid;
-  if(window.__booted && prev===user.uid) return;
-  window.__booted = true;
+// 2) FALLBACK: se non lo trova localmente, allora prova Firestore
+const snap = await _db.collection("dogs").doc(String(dogId)).get();
 
-  try{
-    const ref = db.collection("users").doc(user.uid);
-    const snap = await ref.get();
-    const payload = {
-      lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
-      email: user.email || null,
-      userAgent: navigator.userAgent || null
-    };
-    if(!snap.exists){
-      payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      const restored = {};
+      snap.forEach(doc => {
+        const data = doc.data() || {};
+        if (data.match === true && data.dogId) {
+          restored[data.dogId] = true;
+        }
+      });
+
+      const current = state.matches && typeof state.matches === "object"
+        ? state.matches
+        : {};
+
+      const merged = { ...current, ...restored };
+
+      state.matches = merged;
+      localStorage.setItem("matches", JSON.stringify(merged));
+
+    } catch (e) {
+      console.error("restore matches failed:", e);
     }
-    await ref.set(payload,{merge:true});
-  }catch(_){}
+
+    // ✅ Salva / aggiorna utente: createdAt solo alla prima creazione
+    try {
+      const userRef = db.collection("users").doc(user.uid);
+      const docSnap = await userRef.get();
+
+      const payload = {
+        lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+        userAgent: navigator.userAgent || null
+      };
+
+      if (!docSnap.exists) {
+        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+
+      await userRef.set(payload, { merge: true });
+
+    } catch (err) {
+      console.error("Firestore user save error:", err);
+    }
+
+    // ✅ Se al refresh ero in "messages", ricarico la lista UNA volta
+    if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
+      loadMessagesLists();
+    }
+  });
+
+  // Disabilita PWA/Service Worker dentro l'app Android (WebView)
+  const isAndroidWebView =
+    navigator.userAgent.includes("Android") &&
+    navigator.userAgent.includes("wv");
+
+  if (isAndroidWebView) {
+    // Stoppa eventuali service worker (evita doppia icona PWA)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then(regs => regs.forEach(reg => reg.unregister()))
+        .catch(() => {});
+    }
+
+    // Blocca il prompt di installazione PWA
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+    });
+  }
+
 });
 
   // ============ Helpers ============
