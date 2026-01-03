@@ -113,9 +113,15 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!user) {
 
   // ✅ LOGIN TEST FISSO (UID stabile)
-  // ⚠️ SOSTITUISCI TU queste 2 righe NEL TUO FILE (NON in chat)
-  const TEST_EMAIL = "mobrici.filippo@live.com";
-  const TEST_PASS  = "Desiderio1";
+  let TEST_EMAIL = localStorage.getItem("PLUTOO_TEST_EMAIL") || "";
+let TEST_PASS  = localStorage.getItem("PLUTOO_TEST_PASS") || "";
+
+if (!TEST_EMAIL || !TEST_PASS) {
+  TEST_EMAIL = prompt("TEST LOGIN EMAIL (una volta sola):") || "";
+  TEST_PASS  = prompt("TEST LOGIN PASSWORD (una volta sola):") || "";
+  localStorage.setItem("PLUTOO_TEST_EMAIL", TEST_EMAIL);
+  localStorage.setItem("PLUTOO_TEST_PASS", TEST_PASS);
+}
 
   // evita loop di login
   if (window.__testLoginInProgress) return;
