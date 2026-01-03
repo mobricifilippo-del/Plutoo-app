@@ -645,5 +645,138 @@
 })();
     </script>
 
-  </div>  <script src="app.js" defer></script></body>
+  </div>  <script src="app.js" defer></script>
+
+  <!-- ==================== AUTH SHEET (LOGIN / REGISTER) ==================== -->
+<div id="authSheet" class="plutoo-auth hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="plutoo-auth__backdrop" data-auth-close="1"></div>
+
+  <div class="plutoo-auth__panel">
+    <div class="plutoo-auth__top">
+      <div class="plutoo-auth__title" id="authTitle">Account</div>
+      <button id="authClose" class="plutoo-auth__close" type="button" aria-label="Chiudi">✕</button>
+    </div>
+
+    <!-- Stato: già loggato -->
+    <div id="authAlready" class="plutoo-auth__section hidden">
+      <div class="plutoo-auth__hint">
+        Sei già loggato come:
+      </div>
+      <div id="authAlreadyEmail" class="plutoo-auth__email">—</div>
+
+      <div class="plutoo-auth__row">
+        <button id="btnLogout" class="plutoo-auth__btn plutoo-auth__btn--danger" type="button">Logout</button>
+        <button id="btnAlreadyClose" class="plutoo-auth__btn" type="button">Chiudi</button>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <form id="authLoginForm" class="plutoo-auth__section hidden" autocomplete="on">
+      <div class="plutoo-auth__hint">Accedi con email e password</div>
+
+      <label class="plutoo-auth__label" for="loginEmail">Email</label>
+      <input id="loginEmail" class="plutoo-auth__input" type="email" inputmode="email"
+             autocomplete="email" placeholder="nome@email.com" required>
+
+      <label class="plutoo-auth__label" for="loginPass">Password</label>
+      <input id="loginPass" class="plutoo-auth__input" type="password"
+             autocomplete="current-password" placeholder="Password" required>
+
+      <button id="btnDoLogin" class="plutoo-auth__btn plutoo-auth__btn--primary" type="submit">
+        Login
+      </button>
+
+      <div id="loginError" class="plutoo-auth__error hidden"></div>
+    </form>
+
+    <!-- REGISTER -->
+    <form id="authRegisterForm" class="plutoo-auth__section hidden" autocomplete="on">
+      <div class="plutoo-auth__hint">Crea un account con email e password</div>
+
+      <label class="plutoo-auth__label" for="regEmail">Email</label>
+      <input id="regEmail" class="plutoo-auth__input" type="email" inputmode="email"
+             autocomplete="email" placeholder="nome@email.com" required>
+
+      <label class="plutoo-auth__label" for="regPass">Password</label>
+      <input id="regPass" class="plutoo-auth__input" type="password"
+             autocomplete="new-password" placeholder="Password" required>
+
+      <label class="plutoo-auth__label" for="regPass2">Conferma password</label>
+      <input id="regPass2" class="plutoo-auth__input" type="password"
+             autocomplete="new-password" placeholder="Ripeti password" required>
+
+      <button id="btnDoRegister" class="plutoo-auth__btn plutoo-auth__btn--primary" type="submit">
+        Registrati
+      </button>
+
+      <div id="registerError" class="plutoo-auth__error hidden"></div>
+    </form>
+
+    <!-- Footer sheet: link rapido -->
+    <div class="plutoo-auth__footer">
+      <button id="authGoLogin" class="plutoo-auth__link" type="button">Vai a Login</button>
+      <span class="plutoo-auth__dot">•</span>
+      <button id="authGoRegister" class="plutoo-auth__link" type="button">Vai a Registrazione</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MINIMAL STYLES (solo se non hai già modali nel CSS) ==================== -->
+<style>
+  .hidden { display: none !important; }
+
+  .plutoo-auth { position: fixed; inset: 0; z-index: 9999; }
+  .plutoo-auth__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.65); }
+  .plutoo-auth__panel {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(420px, calc(100vw - 28px));
+    background: #0e0f14;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 18px;
+    box-shadow: 0 18px 60px rgba(0,0,0,.55);
+    padding: 16px;
+    color: #f2f2f2;
+  }
+  .plutoo-auth__top { display:flex; align-items:center; justify-content:space-between; gap: 10px; margin-bottom: 12px; }
+  .plutoo-auth__title { font-weight: 800; font-size: 18px; }
+  .plutoo-auth__close { background: transparent; color: #fff; border: 0; font-size: 18px; padding: 8px; }
+  .plutoo-auth__section { display: flex; flex-direction: column; gap: 10px; }
+  .plutoo-auth__hint { font-size: 13px; opacity: .85; }
+  .plutoo-auth__email { font-weight: 700; margin-top: -4px; }
+  .plutoo-auth__label { font-size: 12px; opacity: .8; margin-top: 6px; }
+  .plutoo-auth__input {
+    width: 100%; padding: 12px 12px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: #fff; outline: none;
+  }
+  .plutoo-auth__btn {
+    width: 100%; padding: 12px 12px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.10);
+    color: #fff; font-weight: 800;
+  }
+  .plutoo-auth__btn--primary { background: #6b4cff; border-color: rgba(255,255,255,.15); }
+  .plutoo-auth__btn--danger { background: rgba(255, 74, 92, .20); border-color: rgba(255, 74, 92, .35); }
+  .plutoo-auth__row { display:flex; gap: 10px; margin-top: 6px; }
+  .plutoo-auth__row .plutoo-auth__btn { width: 50%; }
+  .plutoo-auth__error {
+    font-size: 13px; color: #ff8080;
+    background: rgba(255, 0, 0, .10);
+    border: 1px solid rgba(255, 0, 0, .18);
+    padding: 10px 12px; border-radius: 12px;
+  }
+  .plutoo-auth__footer {
+    display:flex; align-items:center; justify-content:center;
+    gap: 10px; margin-top: 12px; opacity: .92;
+  }
+  .plutoo-auth__link {
+    background: transparent; border: 0; color: #cfc7ff; font-weight: 800;
+    padding: 6px 8px;
+  }
+  .plutoo-auth__dot { opacity: .5; }
+</style>
+
+</body>
 </html>
