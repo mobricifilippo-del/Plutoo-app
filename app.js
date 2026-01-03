@@ -104,7 +104,6 @@ window.storage = storage;
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
 
 // ==================== AUTH UI helpers ====================
-function $(id) { return document.getElementById(id); }
 function hideEl(el){ if(el) el.classList.add("hidden"); }
 function showEl(el){ if(el) el.classList.remove("hidden"); }
 
