@@ -111,8 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Stato Auth: login test fisso (UID stabile)
   auth.onAuthStateChanged(async (user) => {
   if (!user) {
-
-  if (!user) {
   const IS_DEV = (new URLSearchParams(location.search).get("v") === "DEV");
 
   if (IS_DEV) {
