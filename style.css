@@ -264,15 +264,27 @@ a{color:inherit;text-decoration:none}
 .home-top{display:flex;justify-content:center}
 .home-bar{display:flex;align-items:center;gap:.8rem;width:100%}
 .home-left{flex:0 0 auto}
-.home-center{flex:1 1 auto}
+.home-center{flex:.25 1 auto}
 .home-right{flex:0 0 auto;display:flex;align-items:center;gap:.6rem}
 .lang-flags{display:flex;gap:.35rem}
 .logo-row{display:flex;gap:.65rem;align-items:center}
 .logo-small{width:42px;height:42px;border-radius:10px}
 .brand{font-size:2rem;color:var(--gold);text-shadow:0 0 12px rgba(205,164,52,.45);margin:0}
 .auth-links{font-size:.93rem;margin-left:.3rem;display:flex;gap:.35rem;align-items:center}
-.auth-links a{color:var(--violet)}
-.auth-links a:hover{filter:brightness(1.2)}
+.auth-links a{
+  color:var(--violet);
+  text-decoration:none;
+  font-weight:800;
+  padding:.18rem .45rem;
+  border-radius:999px;
+  border:1px solid rgba(140,100,255,.28);
+  background:rgba(140,100,255,.08);
+}
+.auth-links a:hover{
+  filter:brightness(1.15);
+  border-color:rgba(140,100,255,.45);
+  background:rgba(140,100,255,.12);
+}
 
 .home-hero{flex:1;display:flex;flex-direction:column;align-items:center;gap:1rem;justify-content:flex-start;padding-top:5rem}
 .hero-logo{width:300px;height:300px;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5))}
