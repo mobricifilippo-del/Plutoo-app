@@ -2035,3 +2035,27 @@ line-height: 1.6;
   stroke-linejoin: round !important;
 }
 
+/* ===== FIX: AUTH SHEET sopra TUTTO (logo incluso) ===== */
+#authSheet.plutoo-auth{
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+}
+
+#authSheet .plutoo-auth__backdrop{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+#authSheet .plutoo-auth__panel{
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== FIX: evita che il logo “buca” i modali ===== */
+#heroLogo,
+.hero-logo{
+  position: relative;
+  z-index: 1;
+}
