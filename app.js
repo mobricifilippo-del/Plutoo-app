@@ -141,6 +141,7 @@ if (!TEST_EMAIL || !TEST_PASS) {
     // 🔒 Evita boot multipli SOLO se è lo stesso UID
     if (window.__booted && prevUid === user.uid) return;
     window.__booted = true;
+    init();
 
     // ✅ RIPRISTINO MATCH DA FIRESTORE (MERGE, MAI RESET)
     try {
