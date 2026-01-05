@@ -1616,14 +1616,12 @@ msgLists.forEach((list) => {
     }
 
     if (state.currentView === "nearby"){
-      if (confirm(state.lang==="it" ? "Tornare alla Home?" : "Return to Home?")){
         localStorage.removeItem("entered");
         state.entered=false;
         appScreen.classList.add("hidden");
         homeScreen.classList.remove("hidden");
       }
     }
-  }
 
   window.addEventListener("popstate", (e)=>{
     e.preventDefault();
