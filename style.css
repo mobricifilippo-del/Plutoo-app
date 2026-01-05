@@ -270,7 +270,7 @@ a{color:inherit;text-decoration:none}
 .logo-row{display:flex;gap:.65rem;align-items:center}
 .logo-small{width:42px;height:42px;border-radius:10px}
 .brand{font-size:2rem;color:var(--gold);text-shadow:0 0 12px rgba(205,164,52,.45);margin:0}
-.auth-links{font-size:.93rem;margin-left:.3rem}
+.auth-links{font-size:.93rem;margin-left:.3rem;display:flex;gap:.35rem;align-items:center}
 .auth-links a{color:var(--violet)}
 .auth-links a:hover{filter:brightness(1.2)}
 
