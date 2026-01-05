@@ -91,6 +91,43 @@ async function safeFirestoreWrite(label, fn) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const authSheet = document.getElementById("authSheet");
+const linkLogin = document.getElementById("linkLogin");
+const linkRegister = document.getElementById("linkRegister");
+const authClose = document.getElementById("authClose");
+const authGoLogin = document.getElementById("authGoLogin");
+const authGoRegister = document.getElementById("authGoRegister");
+const loginForm = document.getElementById("authLoginForm");
+const registerForm = document.getElementById("authRegisterForm");
+const authAlready = document.getElementById("authAlready");
+
+function openAuth(mode) {
+  authSheet.classList.remove("hidden");
+  loginForm.classList.add("hidden");
+  registerForm.classList.add("hidden");
+  authAlready.classList.add("hidden");
+
+  if (mode === "login") loginForm.classList.remove("hidden");
+  if (mode === "register") registerForm.classList.remove("hidden");
+}
+
+function closeAuth() {
+  authSheet.classList.add("hidden");
+}
+
+linkLogin.addEventListener("click", (e) => {
+  e.preventDefault();
+  openAuth("login");
+});
+
+linkRegister.addEventListener("click", (e) => {
+  e.preventDefault();
+  openAuth("register");
+});
+
+authGoLogin.addEventListener("click", () => openAuth("login"));
+authGoRegister.addEventListener("click", () => openAuth("register"));
+authClose.addEventListener("click", closeAuth);
 
   // Firebase handles
   const auth = firebase.auth();
