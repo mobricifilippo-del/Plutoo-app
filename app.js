@@ -3678,7 +3678,6 @@ async function init(){
     // initStories parte dopo ENTRA per effetto WOW
   }
 }
-init();
 
   function getVisibleMediaList(story) {
     const hasMatch = !!state.matches[story.userId];
