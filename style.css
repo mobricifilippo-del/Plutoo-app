@@ -2114,6 +2114,7 @@ line-height: 1.6;
   margin: 0 auto;
   max-width: 520px;
   width: 100%;
+  margin-top: -10vh;
 }
 
 /* ===== FIX: evita che il logo “buca” i modali ===== */
