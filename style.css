@@ -2077,10 +2077,12 @@ line-height: 1.6;
   z-index: 99999;
 
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 
-  padding: 16px;
+  padding-top: 18vh;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 /* ===== AUTH: apertura più lenta (1s) senza rompere il layout ===== */
@@ -2114,7 +2116,7 @@ line-height: 1.6;
   margin: 0 auto;
   max-width: 520px;
   width: 100%;
-  margin-top: -32vh;
+  margin-top: -18vh;
 }
 
 /* ===== FIX: evita che il logo “buca” i modali ===== */
