@@ -2075,14 +2075,6 @@ line-height: 1.6;
   position: fixed;
   inset: 0;
   z-index: 99999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 1s ease;
-}
-
-#authSheet.plutoo-auth:not(.hidden){
-  opacity: 1;
-  pointer-events: auto;
 }
 
 #authSheet .plutoo-auth__backdrop{
@@ -2094,12 +2086,6 @@ line-height: 1.6;
 #authSheet .plutoo-auth__panel{
   position: relative;
   z-index: 1;
-  transform: translateY(20px);
-  transition: transform 1s ease;
-}
-
-#authSheet.plutoo-auth:not(.hidden) .plutoo-auth__panel{
-  transform: translateY(0);
 }
 
 /* ===== FIX: evita che il logo “buca” i modali ===== */
