@@ -2072,7 +2072,27 @@ line-height: 1.6;
 
 /* ===== FIX: AUTH SHEET sopra TUTTO (logo incluso) ===== */
 #authSheet.plutoo-auth{
+  position: relative;
   z-index: 99999;
+}
+
+/* ===== AUTH: apertura più lenta (1s) senza rompere il layout ===== */
+#authSheet.plutoo-auth:not(.hidden) .plutoo-auth__backdrop{
+  animation: plutooAuthBackdropIn 1s ease both;
+}
+
+#authSheet.plutoo-auth:not(.hidden) .plutoo-auth__panel{
+  animation: plutooAuthPanelIn 1s ease both;
+}
+
+@keyframes plutooAuthBackdropIn{
+  from{ opacity: 0; }
+  to{ opacity: 1; }
+}
+
+@keyframes plutooAuthPanelIn{
+  from{ opacity: 0; transform: translateY(14px) scale(.98); }
+  to{ opacity: 1; transform: translateY(0) scale(1); }
 }
 
 #authSheet .plutoo-auth__backdrop{
