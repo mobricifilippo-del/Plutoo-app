@@ -2072,8 +2072,6 @@ line-height: 1.6;
 
 /* ===== FIX: AUTH SHEET sopra TUTTO (logo incluso) ===== */
 #authSheet.plutoo-auth{
-  position: fixed;
-  inset: 0;
   z-index: 99999;
 }
 
