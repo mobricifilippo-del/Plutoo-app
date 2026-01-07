@@ -283,15 +283,55 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 
 auth.onAuthStateChanged(async (user) => {
   try {
+    const linkLogin = document.getElementById("linkLogin");
+    const linkRegister = document.getElementById("linkRegister");
+
     if (!user) {
+      // ===== NON LOGGATO =====
       window.PLUTOO_UID = null;
       window.__booted = false;
+
+      if (linkLogin) {
+        linkLogin.textContent = state.lang === "it" ? "Login" : "Login";
+        linkLogin.onclick = (e) => {
+          e.preventDefault();
+          openAuth("login");
+        };
+      }
+
+      if (linkRegister) {
+        linkRegister.style.display = "";
+      }
+
       return;
     }
 
-    // ✅ Fonte di verità UID (sempre aggiornata)
-    const prevUid = window.PLUTOO_UID || null;
+    // ===== LOGGATO =====
     window.PLUTOO_UID = user.uid;
+
+    if (linkLogin) {
+      linkLogin.textContent = state.lang === "it" ? "Logout" : "Logout";
+      linkLogin.onclick = (e) => {
+        e.preventDefault();
+        auth.signOut();
+      };
+    }
+
+    if (linkRegister) {
+      linkRegister.style.display = "none";
+    }
+
+    // 🔒 evita boot multipli sullo stesso UID
+    if (window.__booted) return;
+    window.__booted = true;
+
+    // 🚀 avvio app
+    if (typeof init === "function") init();
+
+  } catch (e) {
+    console.error("onAuthStateChanged error:", e);
+  }
+});
 
     // 🔒 Evita boot multipli SOLO se è lo stesso UID
     if (window.__booted && prevUid === user.uid) return;
