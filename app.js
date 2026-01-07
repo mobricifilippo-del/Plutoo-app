@@ -170,6 +170,10 @@ openAuth = function(mode){
   _openAuth(mode);
 };
 
+// ✅ ESPONGO IN GLOBALE (serve fuori da DOMContentLoaded: onAuthStateChanged / onclick)
+window.openAuth = openAuth;
+window.closeAuth = closeAuth;
+
 // SUBMIT LOGIN
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
