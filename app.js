@@ -227,14 +227,41 @@ document.getElementById("btnLogout")?.addEventListener("click", async () => {
 
 document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
 
-// ENTRA: stile Facebook (se non loggato -> apri login)
-document.getElementById("btnEnter")?.addEventListener("click", (e) => {
+// ENTRA: gate finale stile Facebook
+const btnEnter = document.getElementById("btnEnter");
+
+function updateEnterState(){
+  if (!btnEnter) return;
+
+  const logged = !!(window.auth && window.auth.currentUser);
+
+  if (logged) {
+    btnEnter.disabled = false;
+    btnEnter.classList.remove("disabled");
+  } else {
+    btnEnter.disabled = true;
+    btnEnter.classList.add("disabled");
+  }
+}
+
+btnEnter?.addEventListener("click", (e) => {
   e.preventDefault();
-  if(!window.auth || !window.auth.currentUser){
+
+  // sicurezza extra
+  if (!window.auth || !window.auth.currentUser) {
     openAuth("login");
     return;
   }
-  if(typeof window.handleEnter === "function") window.handleEnter();
+
+  if (typeof window.handleEnter === "function") {
+    window.handleEnter();
+  }
+});
+
+// iniziale + ogni cambio auth
+updateEnterState();
+firebase.auth().onAuthStateChanged(() => {
+  updateEnterState();
 });
 
 }); // <-- CHIUDE document.addEventListener("DOMContentLoaded", ...)
