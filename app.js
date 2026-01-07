@@ -333,15 +333,6 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
-    // ✅ Se al refresh ero in "messages", ricarico la lista UNA volta
-    if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
-      loadMessagesLists();
-    }
-  } catch (e) {
-    console.error("onAuthStateChanged error:", e);
-  }
-});
-
 // Disabilita PWA/Service Worker dentro l'app Android (WebView)
 const isAndroidWebView =
   navigator.userAgent.includes("Android") && navigator.userAgent.includes("wv");
