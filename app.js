@@ -333,32 +333,6 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
-    // 🔒 Evita boot multipli SOLO se è lo stesso UID
-    if (window.__booted && prevUid === user.uid) return;
-    window.__booted = true;
-
-    // ✅ Boot app
-    if (typeof init === "function") init();
-
-    // ✅ Salva / aggiorna utente: createdAt solo alla prima creazione
-    try {
-      const userRef = db.collection("users").doc(user.uid);
-      const docSnap = await userRef.get();
-
-      const payload = {
-        lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
-        userAgent: navigator.userAgent || null,
-      };
-
-      if (!docSnap.exists) {
-        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-      }
-
-      await userRef.set(payload, { merge: true });
-    } catch (err) {
-      console.error("Firestore user save error:", err);
-    }
-
     // ✅ Se al refresh ero in "messages", ricarico la lista UNA volta
     if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
       loadMessagesLists();
