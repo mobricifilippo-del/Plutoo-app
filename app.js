@@ -130,27 +130,27 @@ authGoRegister.addEventListener("click", () => openAuth("register"));
 authClose.addEventListener("click", closeAuth);
 
   // Firebase handles
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
-  window.db = db;
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-  // ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
-  window.auth = auth;
-  window.db = db;
-  window.storage = storage;
+// ✅ Espongo handle Firebase in globale (serve a funzioni fuori scope: follow/like ecc.)
+window.auth = auth;
+window.db = db;
+window.storage = storage;
 
-  // ✅ Persistenza Auth su device (no reset dopo refresh)
-  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
-    console.error("Auth persistence error:", err);
-  });
-  
-  auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-  window.PLUTOO_UID = null;
-  window.__booted = false;
-  return;
-  }
+// ✅ Persistenza Auth su device (no reset dopo refresh)
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
+  console.error("Auth persistence error:", err);
+});
+
+auth.onAuthStateChanged(async (user) => {
+  try {
+    if (!user) {
+      window.PLUTOO_UID = null;
+      window.__booted = false;
+      return;
+    }
 
     // ✅ Fonte di verità UID (sempre aggiornata)
     const prevUid = window.PLUTOO_UID || null;
@@ -159,48 +159,9 @@ authClose.addEventListener("click", closeAuth);
     // 🔒 Evita boot multipli SOLO se è lo stesso UID
     if (window.__booted && prevUid === user.uid) return;
     window.__booted = true;
-    init();
 
-    // ✅ RIPRISTINO MATCH DA FIRESTORE (MERGE, MAI RESET)
-    try {
-      const selfUid = user.uid;
-      if (!db) return;
-
-      // 1) PRIMA prova dal dataset locale (più affidabile e immediato)
-try {
-  const localDogs = (Array.isArray(state?.dogs) && state.dogs.length) ? state.dogs
-    : (Array.isArray(window.DOGS) ? window.DOGS : []);
-
-  const found = localDogs.find(x => String(x.id) === String(dogId));
-  if (found && typeof window.openProfilePage === "function") {
-    window.openProfilePage(found);
-    return;
-  }
-} catch (_) {}
-
-// 2) FALLBACK: se non lo trova localmente, allora prova Firestore
-const snap = await _db.collection("dogs").doc(String(dogId)).get();
-
-      const restored = {};
-      snap.forEach(doc => {
-        const data = doc.data() || {};
-        if (data.match === true && data.dogId) {
-          restored[data.dogId] = true;
-        }
-      });
-
-      const current = state.matches && typeof state.matches === "object"
-        ? state.matches
-        : {};
-
-      const merged = { ...current, ...restored };
-
-      state.matches = merged;
-      localStorage.setItem("matches", JSON.stringify(merged));
-
-    } catch (e) {
-      console.error("restore matches failed:", e);
-    }
+    // ✅ Boot app
+    if (typeof init === "function") init();
 
     // ✅ Salva / aggiorna utente: createdAt solo alla prima creazione
     try {
@@ -209,7 +170,7 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
 
       const payload = {
         lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
-        userAgent: navigator.userAgent || null
+        userAgent: navigator.userAgent || null,
       };
 
       if (!docSnap.exists) {
@@ -217,7 +178,6 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
       }
 
       await userRef.set(payload, { merge: true });
-
     } catch (err) {
       console.error("Firestore user save error:", err);
     }
@@ -226,29 +186,29 @@ const snap = await _db.collection("dogs").doc(String(dogId)).get();
     if (state.currentView === "messages" && typeof loadMessagesLists === "function") {
       loadMessagesLists();
     }
-  });
+  } catch (e) {
+    console.error("onAuthStateChanged error:", e);
+  }
+});
 
-  // Disabilita PWA/Service Worker dentro l'app Android (WebView)
-  const isAndroidWebView =
-    navigator.userAgent.includes("Android") &&
-    navigator.userAgent.includes("wv");
+// Disabilita PWA/Service Worker dentro l'app Android (WebView)
+const isAndroidWebView =
+  navigator.userAgent.includes("Android") && navigator.userAgent.includes("wv");
 
-  if (isAndroidWebView) {
-    // Stoppa eventuali service worker (evita doppia icona PWA)
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .getRegistrations()
-        .then(regs => regs.forEach(reg => reg.unregister()))
-        .catch(() => {});
-    }
-
-    // Blocca il prompt di installazione PWA
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-    });
+if (isAndroidWebView) {
+  // Stoppa eventuali service worker (evita doppia icona PWA)
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((regs) => regs.forEach((reg) => reg.unregister()))
+      .catch(() => {});
   }
 
-});
+  // Blocca il prompt di installazione PWA
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+  });
+}
 
   // ============ Helpers ============
   const $  = (id) => document.getElementById(id);
