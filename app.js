@@ -129,6 +129,116 @@ authGoLogin.addEventListener("click", () => openAuth("login"));
 authGoRegister.addEventListener("click", () => openAuth("register"));
 authClose.addEventListener("click", closeAuth);
 
+// chiudi cliccando fuori (backdrop)
+authSheet.querySelector('[data-auth-close="1"]')?.addEventListener("click", closeAuth);
+
+// helper error box
+function setAuthError(which, msg){
+  const box = document.getElementById(which === "login" ? "loginError" : "registerError");
+  if(!box) return;
+  if(!msg){
+    box.textContent = "";
+    box.classList.add("hidden");
+    return;
+  }
+  box.textContent = String(msg);
+  box.classList.remove("hidden");
+}
+
+// mostra stato già loggato (se serve)
+function showAlready(){
+  const u = window.auth && window.auth.currentUser ? window.auth.currentUser : null;
+  if(!u) return false;
+  const emailEl = document.getElementById("authAlreadyEmail");
+  if(emailEl) emailEl.textContent = u.email || "";
+  loginForm.classList.add("hidden");
+  registerForm.classList.add("hidden");
+  authAlready.classList.remove("hidden");
+  return true;
+}
+
+// override openAuth: se già loggato, mostra "già loggato"
+const _openAuth = openAuth;
+openAuth = function(mode){
+  authSheet.classList.remove("hidden");
+  setAuthError("login", "");
+  setAuthError("register", "");
+
+  // se già loggato, mostro stato già loggato
+  if (showAlready()) return;
+
+  _openAuth(mode);
+};
+
+// SUBMIT LOGIN
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setAuthError("login", "");
+
+  const email = (document.getElementById("loginEmail")?.value || "").trim();
+  const pass  = (document.getElementById("loginPass")?.value || "");
+
+  if(!email || !pass){
+    setAuthError("login", "Email e password obbligatorie");
+    return;
+  }
+
+  try{
+    await window.auth.signInWithEmailAndPassword(email, pass);
+    closeAuth();
+  }catch(err){
+    setAuthError("login", err?.message || "Errore login");
+  }
+});
+
+// SUBMIT REGISTRAZIONE
+registerForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setAuthError("register", "");
+
+  const email = (document.getElementById("regEmail")?.value || "").trim();
+  const p1    = (document.getElementById("regPass")?.value || "");
+  const p2    = (document.getElementById("regPass2")?.value || "");
+
+  if(!email || !p1 || !p2){
+    setAuthError("register", "Compila tutti i campi");
+    return;
+  }
+  if(p1 !== p2){
+    setAuthError("register", "Le password non coincidono");
+    return;
+  }
+
+  try{
+    await window.auth.createUserWithEmailAndPassword(email, p1);
+    closeAuth();
+  }catch(err){
+    setAuthError("register", err?.message || "Errore registrazione");
+  }
+});
+
+// LOGOUT
+document.getElementById("btnLogout")?.addEventListener("click", async () => {
+  try{
+    await window.auth.signOut();
+    closeAuth();
+  }catch(_){}
+});
+
+document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
+
+// ENTRA: stile Facebook (se non loggato -> apri login)
+document.getElementById("btnEnter")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  if(!window.auth || !window.auth.currentUser){
+    openAuth("login");
+    return;
+  }
+  if(typeof window.handleEnter === "function") window.handleEnter();
+});
+
+}); // <-- CHIUDE document.addEventListener("DOMContentLoaded", ...)
+
   // Firebase handles
 const auth = firebase.auth();
 const db = firebase.firestore();
