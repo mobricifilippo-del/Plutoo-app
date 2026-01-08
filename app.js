@@ -145,16 +145,60 @@ document.addEventListener("DOMContentLoaded", () => {
     box.classList.remove("hidden");
   }
 
-  // ✅ FEEDBACK (toast) senza toccare altro
+  // ✅ FEEDBACK: toast SEMPRE visibile (non dipende da CSS o da state)
   function toast(msg) {
     try {
+      // se hai già showToast e funziona, usala
       if (typeof window.showToast === "function") {
-        window.showToast(msg);
+        window.showToast(String(msg));
         return;
       }
-      // fallback minimale se showToast non esiste
-      alert(msg);
     } catch (_) {}
+
+    try {
+      let el = document.getElementById("__plutooToast");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "__plutooToast";
+        el.style.position = "fixed";
+        el.style.left = "50%";
+        el.style.bottom = "22px";
+        el.style.transform = "translateX(-50%)";
+        el.style.zIndex = "999999";
+        el.style.maxWidth = "92vw";
+        el.style.padding = "10px 14px";
+        el.style.borderRadius = "14px";
+        el.style.background = "rgba(0,0,0,.82)";
+        el.style.color = "#fff";
+        el.style.fontWeight = "800";
+        el.style.fontSize = "14px";
+        el.style.letterSpacing = ".2px";
+        el.style.boxShadow = "0 10px 28px rgba(0,0,0,.45)";
+        el.style.opacity = "0";
+        el.style.transition = "opacity .18s ease, transform .18s ease";
+        document.body.appendChild(el);
+      }
+
+      el.textContent = String(msg);
+      el.style.opacity = "1";
+      el.style.transform = "translateX(-50%) translateY(0)";
+
+      clearTimeout(el.__t1);
+      clearTimeout(el.__t2);
+
+      el.__t1 = setTimeout(() => {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(-50%) translateY(6px)";
+      }, 1400);
+
+      el.__t2 = setTimeout(() => {
+        try { el.remove(); } catch (_) {}
+      }, 1750);
+
+    } catch (_) {
+      // ultimo fallback
+      try { alert(String(msg)); } catch (_) {}
+    }
   }
 
   // mostra stato già loggato (se serve)
@@ -202,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await window.auth.signInWithEmailAndPassword(email, pass);
       closeAuth();
-      toast(state?.lang === "en" ? "Login OK ✅" : "Login OK ✅");
+      toast("Login OK ✅");
     } catch (err) {
       setAuthError("login", err?.message || "Errore login");
     }
@@ -229,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await window.auth.createUserWithEmailAndPassword(email, p1);
       closeAuth();
-      toast(state?.lang === "en" ? "Account created ✅ Now press Enter" : "Registrazione completata ✅ Ora premi Entra");
+      toast("Registrazione completata ✅ Ora premi Entra");
     } catch (err) {
       setAuthError("register", err?.message || "Errore registrazione");
     }
@@ -240,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await window.auth.signOut();
       closeAuth();
-      toast(state?.lang === "en" ? "Logout OK ✅" : "Logout OK ✅");
+      toast("Logout OK ✅");
     } catch (_) {}
   });
 
