@@ -101,10 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.getElementById("authRegisterForm");
   const authAlready = document.getElementById("authAlready");
 
-  // ❌ NASCOSTI PER SEMPRE
-  if (authGoLogin) authGoLogin.style.display = "none";
-  if (authGoRegister) authGoRegister.style.display = "none";
-
   function openAuth(mode) {
     authSheet.classList.remove("hidden");
     loginForm.classList.add("hidden");
@@ -113,78 +109,122 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (mode === "login") loginForm.classList.remove("hidden");
     if (mode === "register") registerForm.classList.remove("hidden");
+
+    // ✅ nasconde eventuale separatore "•" rimasto nella tendina
+    try {
+      const nodes = authSheet.querySelectorAll("*");
+      nodes.forEach((el) => {
+        if (el && el.childElementCount === 0) {
+          const t = (el.textContent || "").trim();
+          if (t === "•") el.style.display = "none";
+        }
+      });
+    } catch (_) {}
   }
 
   function closeAuth() {
     authSheet.classList.add("hidden");
   }
 
-  linkLogin?.addEventListener("click", (e) => {
+  linkLogin.addEventListener("click", (e) => {
     e.preventDefault();
     openAuth("login");
   });
 
-  linkRegister?.addEventListener("click", (e) => {
+  linkRegister.addEventListener("click", (e) => {
     e.preventDefault();
     openAuth("register");
   });
 
-  authClose?.addEventListener("click", closeAuth);
+  authGoLogin.addEventListener("click", () => openAuth("login"));
+  authGoRegister.addEventListener("click", () => openAuth("register"));
+  authClose.addEventListener("click", closeAuth);
 
-  authSheet
-    .querySelector('[data-auth-close="1"]')
-    ?.addEventListener("click", closeAuth);
+  // chiudi cliccando fuori (backdrop)
+  authSheet.querySelector('[data-auth-close="1"]')?.addEventListener("click", closeAuth);
 
+  // helper error box (rosso SOLO per errori, GOLD per successi ✅)
   function setAuthError(which, msg) {
-    const box = document.getElementById(
-      which === "login" ? "loginError" : "registerError"
-    );
+    const box = document.getElementById(which === "login" ? "loginError" : "registerError");
     if (!box) return;
 
     if (!msg) {
       box.textContent = "";
       box.classList.add("hidden");
+      box.removeAttribute("role");
+      box.style.background = "";
+      box.style.border = "";
+      box.style.color = "";
       return;
     }
 
-    box.textContent = String(msg);
+    const text = String(msg);
+    const isSuccess = text.trim().startsWith("✅");
+
+    box.textContent = text;
     box.classList.remove("hidden");
+    box.setAttribute("role", "status");
+
+    if (isSuccess) {
+      // ✅ SUCCESSO: GOLD (oro) + ✅ verde già nell’icona
+      box.style.background = "rgba(205, 164, 52, 0.14)";
+      box.style.border = "1px solid rgba(205, 164, 52, 0.35)";
+      box.style.color = "#CDA434";
+    } else {
+      // ❌ ERRORE: rosso
+      box.style.background = "rgba(180, 30, 30, 0.18)";
+      box.style.border = "1px solid rgba(255, 90, 90, 0.35)";
+      box.style.color = "#ffd1d1";
+    }
   }
 
+  // mostra stato già loggato (se serve)
   function showAlready() {
-    const u =
-      window.auth && window.auth.currentUser ? window.auth.currentUser : null;
+    const u = window.auth && window.auth.currentUser ? window.auth.currentUser : null;
     if (!u) return false;
-
     const emailEl = document.getElementById("authAlreadyEmail");
     if (emailEl) emailEl.textContent = u.email || "";
-
     loginForm.classList.add("hidden");
     registerForm.classList.add("hidden");
     authAlready.classList.remove("hidden");
     return true;
   }
 
+  // override openAuth: se già loggato, mostra "già loggato"
   const _openAuth = openAuth;
   openAuth = function (mode) {
     authSheet.classList.remove("hidden");
     setAuthError("login", "");
     setAuthError("register", "");
 
+    // ✅ nasconde eventuale separatore "•" rimasto nella tendina
+    try {
+      const nodes = authSheet.querySelectorAll("*");
+      nodes.forEach((el) => {
+        if (el && el.childElementCount === 0) {
+          const t = (el.textContent || "").trim();
+          if (t === "•") el.style.display = "none";
+        }
+      });
+    } catch (_) {}
+
+    // se già loggato, mostro stato già loggato
     if (showAlready()) return;
+
     _openAuth(mode);
   };
 
+  // ✅ ESPONGO IN GLOBALE (serve fuori da DOMContentLoaded: onAuthStateChanged / onclick)
   window.openAuth = openAuth;
   window.closeAuth = closeAuth;
 
-  // LOGIN
-  loginForm?.addEventListener("submit", async (e) => {
+  // SUBMIT LOGIN
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("login", "");
 
-    const email = document.getElementById("loginEmail")?.value.trim();
-    const pass = document.getElementById("loginPass")?.value;
+    const email = (document.getElementById("loginEmail")?.value || "").trim();
+    const pass = (document.getElementById("loginPass")?.value || "");
 
     if (!email || !pass) {
       setAuthError("login", "Email e password obbligatorie");
@@ -193,27 +233,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       await window.auth.signInWithEmailAndPassword(email, pass);
+
+      // ✅ feedback GOLD + chiusura
       setAuthError("login", "✅ Login effettuato");
-      setTimeout(closeAuth, 800);
+      setTimeout(() => {
+        closeAuth();
+      }, 700);
     } catch (err) {
       setAuthError("login", err?.message || "Errore login");
     }
   });
 
-  // REGISTRAZIONE
-  registerForm?.addEventListener("submit", async (e) => {
+  // SUBMIT REGISTRAZIONE
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("register", "");
 
-    const email = document.getElementById("regEmail")?.value.trim();
-    const p1 = document.getElementById("regPass")?.value;
-    const p2 = document.getElementById("regPass2")?.value;
+    const email = (document.getElementById("regEmail")?.value || "").trim();
+    const p1 = (document.getElementById("regPass")?.value || "");
+    const p2 = (document.getElementById("regPass2")?.value || "");
 
     if (!email || !p1 || !p2) {
       setAuthError("register", "Compila tutti i campi");
       return;
     }
-
     if (p1 !== p2) {
       setAuthError("register", "Le password non coincidono");
       return;
@@ -221,14 +264,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       await window.auth.createUserWithEmailAndPassword(email, p1);
+
+      // ✅ feedback GOLD + chiusura
       setAuthError("register", "✅ Registrazione completata");
-      setTimeout(closeAuth, 900);
+      setTimeout(() => {
+        closeAuth();
+      }, 900);
     } catch (err) {
       setAuthError("register", err?.message || "Errore registrazione");
     }
   });
 
-  // LOGOUT
+  // LOGOUT (dentro pannello "già loggato")
   document.getElementById("btnLogout")?.addEventListener("click", async () => {
     try {
       await window.auth.signOut();
@@ -236,32 +283,45 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (_) {}
   });
 
-  document
-    .getElementById("btnAlreadyClose")
-    ?.addEventListener("click", closeAuth);
+  document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
 
-  // ENTRA
+  // ENTRA: gate finale stile Facebook
   const btnEnter = document.getElementById("btnEnter");
 
   function updateEnterState() {
     if (!btnEnter) return;
+
     const logged = !!(window.auth && window.auth.currentUser);
-    btnEnter.disabled = !logged;
-    btnEnter.classList.toggle("disabled", !logged);
+
+    if (logged) {
+      btnEnter.disabled = false;
+      btnEnter.classList.remove("disabled");
+    } else {
+      btnEnter.disabled = true;
+      btnEnter.classList.add("disabled");
+    }
   }
 
   btnEnter?.addEventListener("click", (e) => {
     e.preventDefault();
+
+    // sicurezza extra
     if (!window.auth || !window.auth.currentUser) {
       openAuth("login");
       return;
     }
-    if (typeof window.handleEnter === "function") window.handleEnter();
+
+    if (typeof window.handleEnter === "function") {
+      window.handleEnter();
+    }
   });
 
+  // iniziale + ogni cambio auth
   updateEnterState();
-  firebase.auth().onAuthStateChanged(updateEnterState);
-});
+  firebase.auth().onAuthStateChanged(() => {
+    updateEnterState();
+  });
+}); // <-- CHIUDE document.addEventListener("DOMContentLoaded", ...)
 
   // Firebase handles
 const auth = firebase.auth();
