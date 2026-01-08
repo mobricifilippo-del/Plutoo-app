@@ -274,41 +274,50 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
 
   // ENTRA: gate finale stile Facebook
-  const btnEnter = document.getElementById("btnEnter");
+const btnEnter = document.getElementById("btnEnter");
 
-  function updateEnterState() {
-    if (!btnEnter) return;
+function updateEnterState() {
+  if (!btnEnter) return;
 
-    const logged = !!(window.auth && window.auth.currentUser);
+  const logged = !!(window.auth && window.auth.currentUser);
 
-    if (logged) {
-      btnEnter.disabled = false;
-      btnEnter.classList.remove("disabled");
-    } else {
-      btnEnter.disabled = true;
-      btnEnter.classList.add("disabled");
-    }
+  if (logged) {
+    btnEnter.disabled = false;
+    btnEnter.classList.remove("disabled");
+
+    // ✨ FEEDBACK LOGIN: accendi ENTRA (oro) se non ancora cliccato
+    btnEnter.classList.add("enter-glow");
+  } else {
+    btnEnter.disabled = true;
+    btnEnter.classList.add("disabled");
+
+    // reset glow se logout
+    btnEnter.classList.remove("enter-glow");
+  }
+}
+
+btnEnter?.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  // sicurezza extra
+  if (!window.auth || !window.auth.currentUser) {
+    openAuth("login");
+    return;
   }
 
-  btnEnter?.addEventListener("click", (e) => {
-    e.preventDefault();
+  // ✨ rimuove il glow SOLO quando clicco ENTRA
+  btnEnter.classList.remove("enter-glow");
 
-    // sicurezza extra
-    if (!window.auth || !window.auth.currentUser) {
-      openAuth("login");
-      return;
-    }
+  if (typeof window.handleEnter === "function") {
+    window.handleEnter();
+  }
+});
 
-    if (typeof window.handleEnter === "function") {
-      window.handleEnter();
-    }
-  });
-
-  // iniziale + ogni cambio auth
+// iniziale + ogni cambio auth
+updateEnterState();
+firebase.auth().onAuthStateChanged(() => {
   updateEnterState();
-  firebase.auth().onAuthStateChanged(() => {
-    updateEnterState();
-  });
+});
 }); // <-- CHIUDE document.addEventListener("DOMContentLoaded", ...)
 
   // Firebase handles
