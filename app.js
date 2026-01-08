@@ -232,20 +232,24 @@ loginForm.addEventListener("submit", async (e) => {
     const code = err && err.code ? String(err.code) : "";
 
     setAuthError("login", err?.message || "Errore login");
+  }
+});
 
-      const ask = confirm("Password dimenticata? Vuoi ricevere l’email di recupero su:\n\n" + email);
-      if (ask) {
-        try {
-          await window.auth.sendPasswordResetEmail(email);
-          setAuthError("login", "✅ Email di recupero inviata");
-        } catch (e2) {
-          setAuthError("login", (e2 && e2.message) ? e2.message : "Errore recupero password");
-        }
-      }
-      return;
-    }
+// PASSWORD DIMENTICATA? -> invia email reset (Firebase)
+document.getElementById("btnForgotPass")?.addEventListener("click", async () => {
+  setAuthError("login", "");
 
-    setAuthError("login", err?.message || "Errore login");
+  const email = (document.getElementById("loginEmail")?.value || "").trim();
+  if (!email) {
+    setAuthError("login", "❌ Inserisci prima l’email");
+    return;
+  }
+
+  try {
+    await window.auth.sendPasswordResetEmail(email);
+    setAuthError("login", "✅ Email di recupero inviata");
+  } catch (err) {
+    setAuthError("login", err?.message || "Errore recupero password");
   }
 });
 
