@@ -231,9 +231,7 @@ loginForm.addEventListener("submit", async (e) => {
   } catch (err) {
     const code = err && err.code ? String(err.code) : "";
 
-    // 🔁 Recupero password (senza toccare HTML): su errore login propongo invio email reset
-    if (email && (code === "auth/wrong-password" || code === "auth/user-not-found" || code === "auth/invalid-credential")) {
-      setAuthError("login", "❌ Credenziali non valide");
+    setAuthError("login", err?.message || "Errore login");
 
       const ask = confirm("Password dimenticata? Vuoi ricevere l’email di recupero su:\n\n" + email);
       if (ask) {
