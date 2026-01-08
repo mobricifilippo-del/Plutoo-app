@@ -101,6 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.getElementById("authRegisterForm");
   const authAlready = document.getElementById("authAlready");
 
+  // ❌ NASCOSTI PER SEMPRE
+  if (authGoLogin) authGoLogin.style.display = "none";
+  if (authGoRegister) authGoRegister.style.display = "none";
+
   function openAuth(mode) {
     authSheet.classList.remove("hidden");
     loginForm.classList.add("hidden");
@@ -115,29 +119,45 @@ document.addEventListener("DOMContentLoaded", () => {
     authSheet.classList.add("hidden");
   }
 
-  // helper error box
-  function setAuthError(which, msg){
-    const box = document.getElementById(which === "login" ? "loginError" : "registerError");
-    if(!box) return;
-    if(!msg){
+  linkLogin?.addEventListener("click", (e) => {
+    e.preventDefault();
+    openAuth("login");
+  });
+
+  linkRegister?.addEventListener("click", (e) => {
+    e.preventDefault();
+    openAuth("register");
+  });
+
+  authClose?.addEventListener("click", closeAuth);
+
+  authSheet
+    .querySelector('[data-auth-close="1"]')
+    ?.addEventListener("click", closeAuth);
+
+  function setAuthError(which, msg) {
+    const box = document.getElementById(
+      which === "login" ? "loginError" : "registerError"
+    );
+    if (!box) return;
+
+    if (!msg) {
       box.textContent = "";
       box.classList.add("hidden");
       return;
     }
+
     box.textContent = String(msg);
     box.classList.remove("hidden");
   }
 
-  // mostra stato già loggato (se serve)
-  function showAlready(){
-    const u = (window.auth && window.auth.currentUser)
-      ? window.auth.currentUser
-      : (firebase && firebase.auth ? firebase.auth().currentUser : null);
-
-    if(!u) return false;
+  function showAlready() {
+    const u =
+      window.auth && window.auth.currentUser ? window.auth.currentUser : null;
+    if (!u) return false;
 
     const emailEl = document.getElementById("authAlreadyEmail");
-    if(emailEl) emailEl.textContent = u.email || "";
+    if (emailEl) emailEl.textContent = u.email || "";
 
     loginForm.classList.add("hidden");
     registerForm.classList.add("hidden");
@@ -145,9 +165,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-  // override openAuth: se già loggato, mostra "già loggato"
   const _openAuth = openAuth;
-  openAuth = function(mode){
+  openAuth = function (mode) {
     authSheet.classList.remove("hidden");
     setAuthError("login", "");
     setAuthError("register", "");
@@ -156,129 +175,93 @@ document.addEventListener("DOMContentLoaded", () => {
     _openAuth(mode);
   };
 
-  // ✅ ESPONGO IN GLOBALE (serve fuori da DOMContentLoaded: onAuthStateChanged / onclick)
   window.openAuth = openAuth;
   window.closeAuth = closeAuth;
 
-  // ✅ QUI NON USIAMO addEventListener (così onAuthStateChanged può aggiornare sempre)
-  if (linkLogin) {
-    linkLogin.onclick = (e) => {
-      e.preventDefault();
-      openAuth("login"); // se sei loggato -> showAlready()
-    };
-  }
-
-  if (linkRegister) {
-    linkRegister.onclick = (e) => {
-      e.preventDefault();
-      openAuth("register");
-    };
-  }
-
-  authGoLogin.addEventListener("click", () => openAuth("login"));
-  authGoRegister.addEventListener("click", () => openAuth("register"));
-  authClose.addEventListener("click", closeAuth);
-
-  // chiudi cliccando fuori (backdrop)
-  authSheet.querySelector('[data-auth-close="1"]')?.addEventListener("click", closeAuth);
-
-  // SUBMIT LOGIN
-  loginForm.addEventListener("submit", async (e) => {
+  // LOGIN
+  loginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("login", "");
 
-    const email = (document.getElementById("loginEmail")?.value || "").trim();
-    const pass  = (document.getElementById("loginPass")?.value || "");
+    const email = document.getElementById("loginEmail")?.value.trim();
+    const pass = document.getElementById("loginPass")?.value;
 
-    if(!email || !pass){
+    if (!email || !pass) {
       setAuthError("login", "Email e password obbligatorie");
       return;
     }
 
-    try{
+    try {
       await window.auth.signInWithEmailAndPassword(email, pass);
       setAuthError("login", "✅ Login effettuato");
-      setTimeout(() => { closeAuth(); }, 700);
-    }catch(err){
+      setTimeout(closeAuth, 800);
+    } catch (err) {
       setAuthError("login", err?.message || "Errore login");
     }
   });
 
-  // SUBMIT REGISTRAZIONE
-  registerForm.addEventListener("submit", async (e) => {
+  // REGISTRAZIONE
+  registerForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("register", "");
 
-    const email = (document.getElementById("regEmail")?.value || "").trim();
-    const p1    = (document.getElementById("regPass")?.value || "");
-    const p2    = (document.getElementById("regPass2")?.value || "");
+    const email = document.getElementById("regEmail")?.value.trim();
+    const p1 = document.getElementById("regPass")?.value;
+    const p2 = document.getElementById("regPass2")?.value;
 
-    if(!email || !p1 || !p2){
+    if (!email || !p1 || !p2) {
       setAuthError("register", "Compila tutti i campi");
       return;
     }
-    if(p1 !== p2){
+
+    if (p1 !== p2) {
       setAuthError("register", "Le password non coincidono");
       return;
     }
 
-    try{
+    try {
       await window.auth.createUserWithEmailAndPassword(email, p1);
       setAuthError("register", "✅ Registrazione completata");
-      setTimeout(() => { closeAuth(); }, 900);
-    }catch(err){
+      setTimeout(closeAuth, 900);
+    } catch (err) {
       setAuthError("register", err?.message || "Errore registrazione");
     }
   });
 
-  // LOGOUT (solo dal bottone rosso)
+  // LOGOUT
   document.getElementById("btnLogout")?.addEventListener("click", async () => {
-    try{
+    try {
       await window.auth.signOut();
-      const emailEl = document.getElementById("authAlreadyEmail");
-      if (emailEl) emailEl.textContent = "✅ Logout effettuato";
-      setTimeout(() => { closeAuth(); }, 700);
-    }catch(_){}
+      closeAuth();
+    } catch (_) {}
   });
 
-  document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
+  document
+    .getElementById("btnAlreadyClose")
+    ?.addEventListener("click", closeAuth);
 
-  // ENTRA: gate finale stile Facebook
+  // ENTRA
   const btnEnter = document.getElementById("btnEnter");
 
-  function updateEnterState(){
+  function updateEnterState() {
     if (!btnEnter) return;
-
     const logged = !!(window.auth && window.auth.currentUser);
-
-    if (logged) {
-      btnEnter.disabled = false;
-      btnEnter.classList.remove("disabled");
-    } else {
-      btnEnter.disabled = true;
-      btnEnter.classList.add("disabled");
-    }
+    btnEnter.disabled = !logged;
+    btnEnter.classList.toggle("disabled", !logged);
   }
 
   btnEnter?.addEventListener("click", (e) => {
     e.preventDefault();
-
     if (!window.auth || !window.auth.currentUser) {
       openAuth("login");
       return;
     }
-
-    if (typeof window.handleEnter === "function") {
-      window.handleEnter();
-    }
+    if (typeof window.handleEnter === "function") window.handleEnter();
   });
 
   updateEnterState();
-  firebase.auth().onAuthStateChanged(() => {
-    updateEnterState();
-  });
-
-}); // <-- CHIUDE document.addEventListener("DOMContentLoaded", ...)
+  firebase.auth().onAuthStateChanged(updateEnterState);
+});
 
   // Firebase handles
 const auth = firebase.auth();
