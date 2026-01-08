@@ -91,243 +91,175 @@ async function safeFirestoreWrite(label, fn) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const authSheet = document.getElementById("authSheet");
-  const linkLogin = document.getElementById("linkLogin");
-  const linkRegister = document.getElementById("linkRegister");
-  const authClose = document.getElementById("authClose");
-  const authGoLogin = document.getElementById("authGoLogin");
-  const authGoRegister = document.getElementById("authGoRegister");
-  const loginForm = document.getElementById("authLoginForm");
-  const registerForm = document.getElementById("authRegisterForm");
-  const authAlready = document.getElementById("authAlready");
 
-  function openAuth(mode) {
+  const authSheet     = document.getElementById("authSheet");
+  const linkLogin     = document.getElementById("linkLogin");
+  const linkRegister  = document.getElementById("linkRegister");
+  const authClose     = document.getElementById("authClose");
+  const authGoLogin   = document.getElementById("authGoLogin");
+  const authGoRegister= document.getElementById("authGoRegister");
+  const loginForm     = document.getElementById("authLoginForm");
+  const registerForm  = document.getElementById("authRegisterForm");
+  const authAlready   = document.getElementById("authAlready");
+  const btnEnter      = document.getElementById("btnEnter");
+
+  function openAuth(mode){
     authSheet.classList.remove("hidden");
     loginForm.classList.add("hidden");
     registerForm.classList.add("hidden");
     authAlready.classList.add("hidden");
 
-    if (mode === "login") loginForm.classList.remove("hidden");
+    if (mode === "login")    loginForm.classList.remove("hidden");
     if (mode === "register") registerForm.classList.remove("hidden");
   }
 
-  function closeAuth() {
+  function closeAuth(){
     authSheet.classList.add("hidden");
   }
 
-  linkLogin.addEventListener("click", (e) => {
+  window.openAuth  = openAuth;
+  window.closeAuth = closeAuth;
+
+  linkLogin?.addEventListener("click", (e) => {
     e.preventDefault();
     openAuth("login");
   });
 
-  linkRegister.addEventListener("click", (e) => {
+  linkRegister?.addEventListener("click", (e) => {
     e.preventDefault();
     openAuth("register");
   });
 
-  authGoLogin.addEventListener("click", () => openAuth("login"));
-  authGoRegister.addEventListener("click", () => openAuth("register"));
-  authClose.addEventListener("click", closeAuth);
+  authGoLogin?.addEventListener("click", () => openAuth("login"));
+  authGoRegister?.addEventListener("click", () => openAuth("register"));
+  authClose?.addEventListener("click", closeAuth);
+  authSheet.querySelector('[data-auth-close="1"]')
+    ?.addEventListener("click", closeAuth);
 
-  // chiudi cliccando fuori (backdrop)
-  authSheet.querySelector('[data-auth-close="1"]')?.addEventListener("click", closeAuth);
+  function setAuthError(which, msg){
+    const box = document.getElementById(
+      which === "login" ? "loginError" : "registerError"
+    );
+    if(!box) return;
 
-  // helper error box
-  function setAuthError(which, msg) {
-    const box = document.getElementById(which === "login" ? "loginError" : "registerError");
-    if (!box) return;
-    if (!msg) {
+    if(!msg){
       box.textContent = "";
       box.classList.add("hidden");
       return;
     }
-    box.textContent = String(msg);
+    box.textContent = msg;
     box.classList.remove("hidden");
   }
 
-  // ✅ FEEDBACK: toast SEMPRE visibile (non dipende da CSS o da state)
-  function toast(msg) {
-    try {
-      // se hai già showToast e funziona, usala
-      if (typeof window.showToast === "function") {
-        window.showToast(String(msg));
-        return;
-      }
-    } catch (_) {}
+  function showAlready(){
+    const u = window.auth?.currentUser;
+    if(!u) return false;
 
-    try {
-      let el = document.getElementById("__plutooToast");
-      if (!el) {
-        el = document.createElement("div");
-        el.id = "__plutooToast";
-        el.style.position = "fixed";
-        el.style.left = "50%";
-        el.style.bottom = "22px";
-        el.style.transform = "translateX(-50%)";
-        el.style.zIndex = "999999";
-        el.style.maxWidth = "92vw";
-        el.style.padding = "10px 14px";
-        el.style.borderRadius = "14px";
-        el.style.background = "rgba(0,0,0,.82)";
-        el.style.color = "#fff";
-        el.style.fontWeight = "800";
-        el.style.fontSize = "14px";
-        el.style.letterSpacing = ".2px";
-        el.style.boxShadow = "0 10px 28px rgba(0,0,0,.45)";
-        el.style.opacity = "0";
-        el.style.transition = "opacity .18s ease, transform .18s ease";
-        document.body.appendChild(el);
-      }
-
-      el.textContent = String(msg);
-      el.style.opacity = "1";
-      el.style.transform = "translateX(-50%) translateY(0)";
-
-      clearTimeout(el.__t1);
-      clearTimeout(el.__t2);
-
-      el.__t1 = setTimeout(() => {
-        el.style.opacity = "0";
-        el.style.transform = "translateX(-50%) translateY(6px)";
-      }, 1400);
-
-      el.__t2 = setTimeout(() => {
-        try { el.remove(); } catch (_) {}
-      }, 1750);
-
-    } catch (_) {
-      // ultimo fallback
-      try { alert(String(msg)); } catch (_) {}
-    }
-  }
-
-  // mostra stato già loggato (se serve)
-  function showAlready() {
-    const u = window.auth && window.auth.currentUser ? window.auth.currentUser : null;
-    if (!u) return false;
     const emailEl = document.getElementById("authAlreadyEmail");
-    if (emailEl) emailEl.textContent = u.email || "";
+    if(emailEl) emailEl.textContent = u.email || "";
+
     loginForm.classList.add("hidden");
     registerForm.classList.add("hidden");
     authAlready.classList.remove("hidden");
     return true;
   }
 
-  // override openAuth: se già loggato, mostra "già loggato"
   const _openAuth = openAuth;
-  openAuth = function (mode) {
+  openAuth = function(mode){
     authSheet.classList.remove("hidden");
     setAuthError("login", "");
     setAuthError("register", "");
 
-    // se già loggato, mostro stato già loggato
     if (showAlready()) return;
-
     _openAuth(mode);
   };
 
-  // ✅ ESPONGO IN GLOBALE (serve fuori da DOMContentLoaded: onAuthStateChanged / onclick)
-  window.openAuth = openAuth;
-  window.closeAuth = closeAuth;
-
-  // SUBMIT LOGIN
-  loginForm.addEventListener("submit", async (e) => {
+  // ===== LOGIN =====
+  loginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("login", "");
 
-    const email = (document.getElementById("loginEmail")?.value || "").trim();
-    const pass = (document.getElementById("loginPass")?.value || "");
+    const email = document.getElementById("loginEmail")?.value.trim();
+    const pass  = document.getElementById("loginPass")?.value;
 
-    if (!email || !pass) {
+    if(!email || !pass){
       setAuthError("login", "Email e password obbligatorie");
       return;
     }
 
-    try {
+    try{
       await window.auth.signInWithEmailAndPassword(email, pass);
-      closeAuth();
-      toast("Login OK ✅");
-    } catch (err) {
-      setAuthError("login", err?.message || "Errore login");
+      setAuthError("login", "✅ Login effettuato");
+      setTimeout(closeAuth, 700);
+    }catch(err){
+      setAuthError("login", err.message || "Errore login");
     }
   });
 
-  // SUBMIT REGISTRAZIONE
-  registerForm.addEventListener("submit", async (e) => {
+  // ===== REGISTRAZIONE =====
+  registerForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("register", "");
 
-    const email = (document.getElementById("regEmail")?.value || "").trim();
-    const p1 = (document.getElementById("regPass")?.value || "");
-    const p2 = (document.getElementById("regPass2")?.value || "");
+    const email = document.getElementById("regEmail")?.value.trim();
+    const p1    = document.getElementById("regPass")?.value;
+    const p2    = document.getElementById("regPass2")?.value;
 
-    if (!email || !p1 || !p2) {
+    if(!email || !p1 || !p2){
       setAuthError("register", "Compila tutti i campi");
       return;
     }
-    if (p1 !== p2) {
+    if(p1 !== p2){
       setAuthError("register", "Le password non coincidono");
       return;
     }
 
-    try {
+    try{
       await window.auth.createUserWithEmailAndPassword(email, p1);
-      closeAuth();
-      toast("Registrazione completata ✅ Ora premi Entra");
-    } catch (err) {
-      setAuthError("register", err?.message || "Errore registrazione");
+      setAuthError("register", "✅ Registrazione completata");
+      setTimeout(closeAuth, 900);
+    }catch(err){
+      setAuthError("register", err.message || "Errore registrazione");
     }
   });
 
-  // LOGOUT
+  // ===== LOGOUT =====
   document.getElementById("btnLogout")?.addEventListener("click", async () => {
-    try {
+    try{
       await window.auth.signOut();
-      closeAuth();
-      toast("Logout OK ✅");
-    } catch (_) {}
+      const emailEl = document.getElementById("authAlreadyEmail");
+      if(emailEl) emailEl.textContent = "✅ Logout effettuato";
+      setTimeout(closeAuth, 700);
+    }catch(_){}
   });
 
-  document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
+  document.getElementById("btnAlreadyClose")
+    ?.addEventListener("click", closeAuth);
 
-  // ENTRA: gate finale stile Facebook
-  const btnEnter = document.getElementById("btnEnter");
+  // ===== ENTRA (Facebook style) =====
+  function updateEnterState(){
+    const logged = !!window.auth?.currentUser;
+    if(!btnEnter) return;
 
-  function updateEnterState() {
-    if (!btnEnter) return;
-
-    const logged = !!(window.auth && window.auth.currentUser);
-
-    if (logged) {
-      btnEnter.disabled = false;
-      btnEnter.classList.remove("disabled");
-    } else {
-      btnEnter.disabled = true;
-      btnEnter.classList.add("disabled");
-    }
+    btnEnter.disabled = !logged;
+    btnEnter.classList.toggle("disabled", !logged);
   }
 
   btnEnter?.addEventListener("click", (e) => {
     e.preventDefault();
-
-    // sicurezza extra
-    if (!window.auth || !window.auth.currentUser) {
+    if(!window.auth?.currentUser){
       openAuth("login");
       return;
     }
-
-    if (typeof window.handleEnter === "function") {
+    if(typeof window.handleEnter === "function"){
       window.handleEnter();
     }
   });
 
-  // iniziale + ogni cambio auth
   updateEnterState();
-  firebase.auth().onAuthStateChanged(() => {
-    updateEnterState();
-  });
+  firebase.auth().onAuthStateChanged(updateEnterState);
 
-}); // <-- CHIUDE document.addEventListener("DOMContentLoaded", ...)
+});
 
   // Firebase handles
 const auth = firebase.auth();
