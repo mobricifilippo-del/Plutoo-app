@@ -296,10 +296,11 @@ auth.onAuthStateChanged(async (user) => {
       window.__booted = false;
 
       if (linkLogin) {
-        linkLogin.textContent = state.lang === "it" ? "Login" : "Login";
+        linkLogin.setAttribute("data-i18n", "login");
+        linkLogin.textContent = "Login";
         linkLogin.onclick = (e) => {
           e.preventDefault();
-          openAuth("login");
+          window.openAuth("login");
         };
       }
 
@@ -314,7 +315,8 @@ auth.onAuthStateChanged(async (user) => {
     window.PLUTOO_UID = user.uid;
 
     if (linkLogin) {
-      linkLogin.textContent = state.lang === "it" ? "Logout" : "Logout";
+      linkLogin.removeAttribute("data-i18n");
+      linkLogin.textContent = "Logout";
       linkLogin.onclick = (e) => {
         e.preventDefault();
         auth.signOut();
