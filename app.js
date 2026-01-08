@@ -317,9 +317,10 @@ auth.onAuthStateChanged(async (user) => {
     if (linkLogin) {
       linkLogin.removeAttribute("data-i18n");
       linkLogin.textContent = "Logout";
+      // ✅ NON fare logout qui: deve solo aprire la tendina account
       linkLogin.onclick = (e) => {
         e.preventDefault();
-        auth.signOut();
+        window.openAuth("login"); // mostrerà "già loggato" grazie al tuo override
       };
     }
 
