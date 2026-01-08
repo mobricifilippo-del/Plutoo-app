@@ -391,7 +391,7 @@ btnEnter?.addEventListener("click", async (e) => {
     flash.classList.add("active");
   }
 
-  const targetView = (window.PLUTOO_HAS_DOG === false) ? "profile" : (state.currentView || "nearby");
+ const targetView = state.currentView || "nearby";
 
   setTimeout(() => {
     appScreen?.classList.remove("hidden");
