@@ -91,68 +91,49 @@ async function safeFirestoreWrite(label, fn) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const authSheet = document.getElementById("authSheet");
+  const linkLogin = document.getElementById("linkLogin");
+  const linkRegister = document.getElementById("linkRegister");
+  const authClose = document.getElementById("authClose");
+  const authGoLogin = document.getElementById("authGoLogin");
+  const authGoRegister = document.getElementById("authGoRegister");
+  const loginForm = document.getElementById("authLoginForm");
+  const registerForm = document.getElementById("authRegisterForm");
+  const authAlready = document.getElementById("authAlready");
 
-  const authSheet     = document.getElementById("authSheet");
-  const linkLogin     = document.getElementById("linkLogin");
-  const linkRegister  = document.getElementById("linkRegister");
-  const authClose     = document.getElementById("authClose");
-  const authGoLogin   = document.getElementById("authGoLogin");
-  const authGoRegister= document.getElementById("authGoRegister");
-  const loginForm     = document.getElementById("authLoginForm");
-  const registerForm  = document.getElementById("authRegisterForm");
-  const authAlready   = document.getElementById("authAlready");
-  const btnEnter      = document.getElementById("btnEnter");
-
-  function openAuth(mode){
+  function openAuth(mode) {
     authSheet.classList.remove("hidden");
     loginForm.classList.add("hidden");
     registerForm.classList.add("hidden");
     authAlready.classList.add("hidden");
 
-    if (mode === "login")    loginForm.classList.remove("hidden");
+    if (mode === "login") loginForm.classList.remove("hidden");
     if (mode === "register") registerForm.classList.remove("hidden");
   }
 
-  function closeAuth(){
+  function closeAuth() {
     authSheet.classList.add("hidden");
   }
 
-  window.openAuth  = openAuth;
-  window.closeAuth = closeAuth;
-
-  linkLogin?.addEventListener("click", (e) => {
-    e.preventDefault();
-    openAuth("login");
-  });
-
-  linkRegister?.addEventListener("click", (e) => {
-    e.preventDefault();
-    openAuth("register");
-  });
-
-  authGoLogin?.addEventListener("click", () => openAuth("login"));
-  authGoRegister?.addEventListener("click", () => openAuth("register"));
-  authClose?.addEventListener("click", closeAuth);
-  authSheet.querySelector('[data-auth-close="1"]')
-    ?.addEventListener("click", closeAuth);
-
+  // helper error box
   function setAuthError(which, msg){
-    const box = document.getElementById(
-      which === "login" ? "loginError" : "registerError"
-    );
+    const box = document.getElementById(which === "login" ? "loginError" : "registerError");
     if(!box) return;
-
     if(!msg){
       box.textContent = "";
       box.classList.add("hidden");
       return;
     }
-    box.textContent = msg;
+    box.textContent = String(msg);
     box.classList.remove("hidden");
   }
 
+  // mostra stato già loggato (se serve)
   function showAlready(){
-    const u = window.auth?.currentUser;
+    const u = (window.auth && window.auth.currentUser)
+      ? window.auth.currentUser
+      : (firebase && firebase.auth ? firebase.auth().currentUser : null);
+
     if(!u) return false;
 
     const emailEl = document.getElementById("authAlreadyEmail");
@@ -164,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
+  // override openAuth: se già loggato, mostra "già loggato"
   const _openAuth = openAuth;
   openAuth = function(mode){
     authSheet.classList.remove("hidden");
@@ -174,13 +156,39 @@ document.addEventListener("DOMContentLoaded", () => {
     _openAuth(mode);
   };
 
-  // ===== LOGIN =====
-  loginForm?.addEventListener("submit", async (e) => {
+  // ✅ ESPONGO IN GLOBALE (serve fuori da DOMContentLoaded: onAuthStateChanged / onclick)
+  window.openAuth = openAuth;
+  window.closeAuth = closeAuth;
+
+  // ✅ QUI NON USIAMO addEventListener (così onAuthStateChanged può aggiornare sempre)
+  if (linkLogin) {
+    linkLogin.onclick = (e) => {
+      e.preventDefault();
+      openAuth("login"); // se sei loggato -> showAlready()
+    };
+  }
+
+  if (linkRegister) {
+    linkRegister.onclick = (e) => {
+      e.preventDefault();
+      openAuth("register");
+    };
+  }
+
+  authGoLogin.addEventListener("click", () => openAuth("login"));
+  authGoRegister.addEventListener("click", () => openAuth("register"));
+  authClose.addEventListener("click", closeAuth);
+
+  // chiudi cliccando fuori (backdrop)
+  authSheet.querySelector('[data-auth-close="1"]')?.addEventListener("click", closeAuth);
+
+  // SUBMIT LOGIN
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("login", "");
 
-    const email = document.getElementById("loginEmail")?.value.trim();
-    const pass  = document.getElementById("loginPass")?.value;
+    const email = (document.getElementById("loginEmail")?.value || "").trim();
+    const pass  = (document.getElementById("loginPass")?.value || "");
 
     if(!email || !pass){
       setAuthError("login", "Email e password obbligatorie");
@@ -190,20 +198,20 @@ document.addEventListener("DOMContentLoaded", () => {
     try{
       await window.auth.signInWithEmailAndPassword(email, pass);
       setAuthError("login", "✅ Login effettuato");
-      setTimeout(closeAuth, 700);
+      setTimeout(() => { closeAuth(); }, 700);
     }catch(err){
-      setAuthError("login", err.message || "Errore login");
+      setAuthError("login", err?.message || "Errore login");
     }
   });
 
-  // ===== REGISTRAZIONE =====
-  registerForm?.addEventListener("submit", async (e) => {
+  // SUBMIT REGISTRAZIONE
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     setAuthError("register", "");
 
-    const email = document.getElementById("regEmail")?.value.trim();
-    const p1    = document.getElementById("regPass")?.value;
-    const p2    = document.getElementById("regPass2")?.value;
+    const email = (document.getElementById("regEmail")?.value || "").trim();
+    const p1    = (document.getElementById("regPass")?.value || "");
+    const p2    = (document.getElementById("regPass2")?.value || "");
 
     if(!email || !p1 || !p2){
       setAuthError("register", "Compila tutti i campi");
@@ -217,49 +225,60 @@ document.addEventListener("DOMContentLoaded", () => {
     try{
       await window.auth.createUserWithEmailAndPassword(email, p1);
       setAuthError("register", "✅ Registrazione completata");
-      setTimeout(closeAuth, 900);
+      setTimeout(() => { closeAuth(); }, 900);
     }catch(err){
-      setAuthError("register", err.message || "Errore registrazione");
+      setAuthError("register", err?.message || "Errore registrazione");
     }
   });
 
-  // ===== LOGOUT =====
+  // LOGOUT (solo dal bottone rosso)
   document.getElementById("btnLogout")?.addEventListener("click", async () => {
     try{
       await window.auth.signOut();
       const emailEl = document.getElementById("authAlreadyEmail");
-      if(emailEl) emailEl.textContent = "✅ Logout effettuato";
-      setTimeout(closeAuth, 700);
+      if (emailEl) emailEl.textContent = "✅ Logout effettuato";
+      setTimeout(() => { closeAuth(); }, 700);
     }catch(_){}
   });
 
-  document.getElementById("btnAlreadyClose")
-    ?.addEventListener("click", closeAuth);
+  document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
 
-  // ===== ENTRA (Facebook style) =====
+  // ENTRA: gate finale stile Facebook
+  const btnEnter = document.getElementById("btnEnter");
+
   function updateEnterState(){
-    const logged = !!window.auth?.currentUser;
-    if(!btnEnter) return;
+    if (!btnEnter) return;
 
-    btnEnter.disabled = !logged;
-    btnEnter.classList.toggle("disabled", !logged);
+    const logged = !!(window.auth && window.auth.currentUser);
+
+    if (logged) {
+      btnEnter.disabled = false;
+      btnEnter.classList.remove("disabled");
+    } else {
+      btnEnter.disabled = true;
+      btnEnter.classList.add("disabled");
+    }
   }
 
   btnEnter?.addEventListener("click", (e) => {
     e.preventDefault();
-    if(!window.auth?.currentUser){
+
+    if (!window.auth || !window.auth.currentUser) {
       openAuth("login");
       return;
     }
-    if(typeof window.handleEnter === "function"){
+
+    if (typeof window.handleEnter === "function") {
       window.handleEnter();
     }
   });
 
   updateEnterState();
-  firebase.auth().onAuthStateChanged(updateEnterState);
+  firebase.auth().onAuthStateChanged(() => {
+    updateEnterState();
+  });
 
-});
+}); // <-- CHIUDE document.addEventListener("DOMContentLoaded", ...)
 
   // Firebase handles
 const auth = firebase.auth();
