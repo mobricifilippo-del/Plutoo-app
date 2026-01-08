@@ -1823,11 +1823,11 @@ msgLists.forEach((list) => {
     StoriesState.loadStories();
   } catch (e) {}
 
-    [viewNearby, viewLove, viewPlay, viewMessages].forEach(v => {
-      if (!v) return;
-      v.classList.remove("active");
-      v.classList.add("hidden");
-    });
+  [viewNearby, viewLove, viewPlay, viewMessages, profilePage].forEach(v => {
+  if (!v) return;
+  v.classList.remove("active");
+  v.classList.add("hidden");
+  });
 
     if (name === "profile" || name === "messages") {
       mainTopbar?.classList.add("hidden");
@@ -1862,6 +1862,13 @@ msgLists.forEach((list) => {
       }
       tabLove.classList.add("active");
       renderSwipe("love");
+    }
+
+    if (name === "profile") {
+  if (profilePage) {
+    profilePage.classList.remove("hidden");
+    profilePage.classList.add("active");
+  }
     }
 
     if (name === "messages") {
