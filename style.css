@@ -2125,3 +2125,16 @@ line-height: 1.6;
   position: relative;
   z-index: 1;
 }
+
+/* ===== FEEDBACK LOGIN: ENTRA che “brilla” finché non lo clicchi ===== */
+#btnEnter.enter-glow{
+  box-shadow: 0 0 18px rgba(205,164,52,.85), 0 0 38px rgba(205,164,52,.35);
+  border-color: rgba(205,164,52,.95);
+  animation: plutooGoldPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes plutooGoldPulse{
+  0%   { filter: brightness(1);   transform: translateZ(0) scale(1); }
+  50%  { filter: brightness(1.2); transform: translateZ(0) scale(1.02); }
+  100% { filter: brightness(1);   transform: translateZ(0) scale(1); }
+}
