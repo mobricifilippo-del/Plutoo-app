@@ -294,7 +294,7 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
 
   document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
 
-  // ENTRA: gate finale stile Facebook
+ // ENTRA: gate finale stile Facebook
 const btnEnter = document.getElementById("btnEnter");
 
 function updateEnterState() {
@@ -317,7 +317,7 @@ function updateEnterState() {
   }
 }
 
-btnEnter?.addEventListener("click", (e) => {
+btnEnter?.addEventListener("click", async (e) => {
   e.preventDefault();
 
   // sicurezza extra
@@ -328,6 +328,40 @@ btnEnter?.addEventListener("click", (e) => {
 
   // ✨ rimuove il glow SOLO quando clicco ENTRA
   btnEnter.classList.remove("enter-glow");
+
+  // ✅ DOG presence check (Firestore source of truth)
+  try {
+    const uid = window.auth.currentUser.uid; // = PLUTOO_UID
+    if (!uid || !window.db) throw new Error("Missing PLUTOO_UID or Firestore (window.db)");
+
+    const snap = await window.db
+      .collection("dogs")
+      .where("ownerUid", "==", uid)
+      .limit(1)
+      .get();
+
+    const hasDog = !snap.empty;
+    const dogId = hasDog ? (snap.docs[0]?.id || null) : null;
+
+    // Stato globale (runtime)
+    window.PLUTOO_HAS_DOG = hasDog;
+    window.PLUTOO_DOG_ID = dogId;
+
+    // Cache (non source of truth)
+    try {
+      localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
+      if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
+      else localStorage.removeItem("plutoo_dog_id");
+    } catch (_) {}
+  } catch (err) {
+    // fallback safe: segnala "DOG assente" e prosegue
+    window.PLUTOO_HAS_DOG = false;
+    window.PLUTOO_DOG_ID = null;
+    try {
+      localStorage.setItem("plutoo_has_dog", "0");
+      localStorage.removeItem("plutoo_dog_id");
+    } catch (_) {}
+  }
 
   if (typeof window.handleEnter === "function") {
     window.handleEnter();
