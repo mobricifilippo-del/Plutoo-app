@@ -101,6 +101,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.getElementById("authRegisterForm");
   const authAlready = document.getElementById("authAlready");
 
+  // ✅ NASCONDI DEFINITIVAMENTE "Vai a Login" / "Vai a Registrazione" + contenitore (sparisce anche il puntino)
+  try {
+    if (authGoLogin) authGoLogin.style.display = "none";
+    if (authGoRegister) authGoRegister.style.display = "none";
+    const navRow = (authGoLogin && authGoLogin.parentElement) ? authGoLogin.parentElement
+                 : (authGoRegister && authGoRegister.parentElement) ? authGoRegister.parentElement
+                 : null;
+    if (navRow) navRow.style.display = "none";
+  } catch (_) {}
+
   function openAuth(mode) {
     authSheet.classList.remove("hidden");
     loginForm.classList.add("hidden");
@@ -109,17 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (mode === "login") loginForm.classList.remove("hidden");
     if (mode === "register") registerForm.classList.remove("hidden");
-
-    // ✅ nasconde eventuale separatore "•" rimasto nella tendina
-    try {
-      const nodes = authSheet.querySelectorAll("*");
-      nodes.forEach((el) => {
-        if (el && el.childElementCount === 0) {
-          const t = (el.textContent || "").trim();
-          if (t === "•") el.style.display = "none";
-        }
-      });
-    } catch (_) {}
   }
 
   function closeAuth() {
@@ -136,8 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
     openAuth("register");
   });
 
-  authGoLogin.addEventListener("click", () => openAuth("login"));
-  authGoRegister.addEventListener("click", () => openAuth("register"));
+  authGoLogin?.addEventListener("click", () => openAuth("login"));
+  authGoRegister?.addEventListener("click", () => openAuth("register"));
   authClose.addEventListener("click", closeAuth);
 
   // chiudi cliccando fuori (backdrop)
@@ -166,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
     box.setAttribute("role", "status");
 
     if (isSuccess) {
-      // ✅ SUCCESSO: GOLD (oro) + ✅ verde già nell’icona
+      // ✅ SUCCESSO: GOLD
       box.style.background = "rgba(205, 164, 52, 0.14)";
       box.style.border = "1px solid rgba(205, 164, 52, 0.35)";
       box.style.color = "#CDA434";
@@ -196,17 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
     authSheet.classList.remove("hidden");
     setAuthError("login", "");
     setAuthError("register", "");
-
-    // ✅ nasconde eventuale separatore "•" rimasto nella tendina
-    try {
-      const nodes = authSheet.querySelectorAll("*");
-      nodes.forEach((el) => {
-        if (el && el.childElementCount === 0) {
-          const t = (el.textContent || "").trim();
-          if (t === "•") el.style.display = "none";
-        }
-      });
-    } catch (_) {}
 
     // se già loggato, mostro stato già loggato
     if (showAlready()) return;
