@@ -207,30 +207,49 @@ document.addEventListener("DOMContentLoaded", () => {
   window.closeAuth = closeAuth;
 
   // SUBMIT LOGIN
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    setAuthError("login", "");
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setAuthError("login", "");
 
-    const email = (document.getElementById("loginEmail")?.value || "").trim();
-    const pass = (document.getElementById("loginPass")?.value || "");
+  const email = (document.getElementById("loginEmail")?.value || "").trim();
+  const pass = (document.getElementById("loginPass")?.value || "");
 
-    if (!email || !pass) {
-      setAuthError("login", "Email e password obbligatorie");
+  if (!email || !pass) {
+    setAuthError("login", "Email e password obbligatorie");
+    return;
+  }
+
+  try {
+    await window.auth.signInWithEmailAndPassword(email, pass);
+
+    // ✅ feedback GOLD + chiusura
+    setAuthError("login", "✅ Login effettuato");
+    setTimeout(() => {
+      closeAuth();
+    }, 700);
+
+  } catch (err) {
+    const code = err && err.code ? String(err.code) : "";
+
+    // 🔁 Recupero password (senza toccare HTML): su errore login propongo invio email reset
+    if (email && (code === "auth/wrong-password" || code === "auth/user-not-found" || code === "auth/invalid-credential")) {
+      setAuthError("login", "❌ Credenziali non valide");
+
+      const ask = confirm("Password dimenticata? Vuoi ricevere l’email di recupero su:\n\n" + email);
+      if (ask) {
+        try {
+          await window.auth.sendPasswordResetEmail(email);
+          setAuthError("login", "✅ Email di recupero inviata");
+        } catch (e2) {
+          setAuthError("login", (e2 && e2.message) ? e2.message : "Errore recupero password");
+        }
+      }
       return;
     }
 
-    try {
-      await window.auth.signInWithEmailAndPassword(email, pass);
-
-      // ✅ feedback GOLD + chiusura
-      setAuthError("login", "✅ Login effettuato");
-      setTimeout(() => {
-        closeAuth();
-      }, 700);
-    } catch (err) {
-      setAuthError("login", err?.message || "Errore login");
-    }
-  });
+    setAuthError("login", err?.message || "Errore login");
+  }
+});
 
   // SUBMIT REGISTRAZIONE
   registerForm.addEventListener("submit", async (e) => {
