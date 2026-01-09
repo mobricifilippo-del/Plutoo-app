@@ -3060,6 +3060,86 @@ storyLikeBtn.classList.add("heart-anim");
       </div>
     `;
 
+    // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
+// Questo blocco NON sostituisce nulla, si aggancia al profilo già renderizzato
+(function attachRealDogProfileControls() {
+  try {
+    if (!window.auth || !window.auth.currentUser) return;
+    if (!d || !d.id) return;
+
+    const uid = window.auth.currentUser.uid;
+
+    // Caso 1️⃣: questo è IL MIO DOG → mostra pulsante CREA / MODIFICA PROFILO
+    if (typeof CURRENT_USER_DOG_ID === "string" && d.id === CURRENT_USER_DOG_ID) {
+      const btn = document.createElement("button");
+      btn.className = "btn accent";
+      btn.style.marginTop = "1rem";
+      btn.textContent = state.lang === "it"
+        ? "Salva / aggiorna profilo DOG"
+        : "Save / update DOG profile";
+
+      btn.addEventListener("click", async () => {
+        if (!window.db) return;
+
+        const payload = {
+          ownerUid: uid,
+          name: d.name || "",
+          breed: d.breed || "",
+          bio: d.bio || "",
+          img: d.img || "",
+          sex: d.sex || "",
+          age: d.age || "",
+          km: d.km || 0,
+          verified: !!d.verified,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+          await window.db
+            .collection("dogs")
+            .doc(d.id)
+            .set(payload, { merge: true });
+
+          showToast?.(
+            state.lang === "it"
+              ? "Profilo DOG salvato ✅"
+              : "DOG profile saved ✅"
+          );
+        } catch (e) {
+          console.error("SAVE DOG ERROR:", e);
+          alert("Errore nel salvataggio profilo DOG");
+        }
+      });
+
+      profileContent.appendChild(btn);
+      return;
+    }
+
+    // Caso 2️⃣: NON è il mio DOG → profilo SOLO LETTURA (demo / reali)
+    // disabilito azioni sensibili se non ho un DOG reale
+    if (!window.PLUTOO_HAS_DOG) {
+      const lock = document.createElement("div");
+      lock.className = "pp-lock-note";
+      lock.style.marginTop = "1rem";
+      lock.style.opacity = "0.8";
+      lock.innerHTML = state.lang === "it"
+        ? "🔒 Crea il tuo profilo DOG per interagire"
+        : "🔒 Create your DOG profile to interact";
+
+      profileContent.appendChild(lock);
+
+      const btnChat = document.getElementById("btnOpenChat");
+      const btnLike = document.getElementById("btnLikeDog");
+
+      if (btnChat) btnChat.disabled = true;
+      if (btnLike) btnLike.disabled = true;
+    }
+
+  } catch (e) {
+    console.error("attachRealDogProfileControls fatal:", e);
+  }
+})();
+
   // === PULSANTE "MODIFICA SOCIAL" SOLO PER IL TUO DOG ===
 if (d.id === CURRENT_USER_DOG_ID) {
   const btn = document.createElement("button");
