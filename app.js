@@ -3069,17 +3069,27 @@ storyLikeBtn.classList.add("heart-anim");
 
     const uid = window.auth.currentUser.uid;
 
-    // Caso 1️⃣: questo è IL MIO DOG → mostra pulsante CREA / MODIFICA PROFILO
+  // Caso 1️⃣: questo è IL MIO DOG → pulsante IMPOSTAZIONI PROFILO (publish-ready)
     if (typeof CURRENT_USER_DOG_ID === "string" && d.id === CURRENT_USER_DOG_ID) {
       const btn = document.createElement("button");
+      btn.id = "btnProfileSettings";
       btn.className = "btn accent";
       btn.style.marginTop = "1rem";
+      btn.type = "button";
       btn.textContent = state.lang === "it"
-        ? "Salva / aggiorna profilo DOG"
-        : "Save / update DOG profile";
+        ? "Impostazioni profilo"
+        : "Profile settings";
 
       btn.addEventListener("click", async () => {
-        if (!window.db) return;
+        // ✅ mai “click morto”: se Firebase non è pronto, te lo dico
+        if (!window.db || !window.firebase || !firebase.firestore || !firebase.firestore.FieldValue) {
+          const msg = state.lang === "it"
+            ? "Firebase non è pronto (db mancante). Riprova tra 2 secondi dopo il login."
+            : "Firebase not ready (db missing). Try again 2 seconds after login.";
+          if (typeof showToast === "function") showToast(msg);
+          else alert(msg);
+          return;
+        }
 
         const payload = {
           ownerUid: uid,
@@ -3100,14 +3110,18 @@ storyLikeBtn.classList.add("heart-anim");
             .doc(d.id)
             .set(payload, { merge: true });
 
-          showToast?.(
-            state.lang === "it"
-              ? "Profilo DOG salvato ✅"
-              : "DOG profile saved ✅"
-          );
+          const ok = state.lang === "it"
+            ? "Profilo aggiornato ✅"
+            : "Profile updated ✅";
+          if (typeof showToast === "function") showToast(ok);
+          else alert(ok);
         } catch (e) {
           console.error("SAVE DOG ERROR:", e);
-          alert("Errore nel salvataggio profilo DOG");
+          const err = state.lang === "it"
+            ? "Errore nel salvataggio profilo"
+            : "Error while saving profile";
+          if (typeof showToast === "function") showToast(err);
+          else alert(err);
         }
       });
 
