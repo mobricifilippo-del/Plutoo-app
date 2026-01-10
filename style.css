@@ -2168,3 +2168,90 @@ line-height: 1.6;
     filter: brightness(1);
   }
 }
+
+/* =========================
+   Plutoo — Profile Sheets (pp-sheet)
+   ========================= */
+
+.pp-sheet{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+}
+
+.pp-sheet.open{
+  display: block;
+}
+
+.pp-sheet__backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pp-sheet__panel{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 520px);
+  max-height: 82vh;
+  overflow: auto;
+
+  background: rgba(20, 20, 30, 0.98);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.55);
+  padding: 14px;
+}
+
+.pp-sheet__head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.pp-sheet__title{
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.pp-sheet__body{
+  display: block;
+}
+
+.pp-sheet__actions{
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.pp-field{
+  display: block;
+  margin: 10px 0;
+}
+
+.pp-field > span{
+  display: block;
+  font-size: .85rem;
+  opacity: .8;
+  margin-bottom: 6px;
+}
+
+.pp-field input,
+.pp-field textarea{
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: inherit;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.pp-field textarea{
+  resize: vertical;
+}
