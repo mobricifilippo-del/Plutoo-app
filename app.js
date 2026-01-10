@@ -3054,15 +3054,13 @@ storyLikeBtn.classList.add("heart-anim");
 
       ${generateSocialSection(d)}
 
-      <div class="pp-actions">
-        <button id="btnLikeDog" class="btn accent">💛 Like</button>
-        <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
-      </div>
+    <div class="pp-actions">
+  <button id="btnLikeDog" class="btn accent">💛 Like</button>
+  <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
 
-      <div class="pp-actions">
-  <button id="btnProfileSettings" class="btn primary">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
+  <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
   <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
-     </div>
+</div>
     `;
 
     // ==========================
