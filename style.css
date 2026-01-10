@@ -2255,3 +2255,120 @@ line-height: 1.6;
 .pp-field textarea{
   resize: vertical;
 }
+
+/* =========================
+   PP SHEET (modali centrali) — Plutoo style
+   ========================= */
+
+.pp-sheet{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+}
+
+.pp-sheet.open{
+  display: block;
+}
+
+.pp-sheet__backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.pp-sheet__panel{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 520px);
+  max-height: 82vh;
+  overflow: hidden;
+
+  background: rgba(18, 18, 26, 0.98);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.65);
+}
+
+.pp-sheet__head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.pp-sheet__title{
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.pp-sheet__body{
+  padding: 14px;
+  overflow: auto;
+  max-height: calc(82vh - 64px);
+}
+
+.pp-field{
+  display: block;
+  margin-bottom: 12px;
+}
+
+.pp-field > span{
+  display: block;
+  font-size: .86rem;
+  color: rgba(255,255,255,.78);
+  margin-bottom: 6px;
+}
+
+.pp-field input,
+.pp-field textarea{
+  width: 100%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.92);
+  border-radius: 14px;
+  padding: 12px 12px;
+  outline: none;
+}
+
+.pp-field input:focus,
+.pp-field textarea:focus{
+  border-color: rgba(150, 120, 255, .55);
+  box-shadow: 0 0 0 3px rgba(150, 120, 255, .18);
+}
+
+.pp-sheet__actions{
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 10px;
+}
+
+.pp-sheet__actions .btn{
+  min-width: 120px;
+}
+
+/* X coerente e “pulita” */
+.pp-sheet__head .btn.small{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.pp-sheet__head .btn.small:active{
+  transform: scale(.98);
+}
+
