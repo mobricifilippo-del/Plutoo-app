@@ -3065,6 +3065,284 @@ storyLikeBtn.classList.add("heart-anim");
      </div>
     `;
 
+    // ==========================
+  // PASSAGGIO 2 — CLICK HANDLER DEFINITIVI (idempotenti, zero prompt/alert)
+  // btnProfileSettings + btnEditSocial
+  // ==========================
+  (function bindProfilePrimaryButtons() {
+    try {
+      if (!d || !d.id) return;
+
+      const btnProfileSettings = document.getElementById("btnProfileSettings");
+      const btnEditSocial = document.getElementById("btnEditSocial");
+
+      // --- HELPERS MODAL (una sola istanza, riutilizzata) ---
+      const ensureModal = (id, html) => {
+        let el = document.getElementById(id);
+        if (el) return el;
+        const wrap = document.createElement("div");
+        wrap.id = id;
+        wrap.innerHTML = html;
+        document.body.appendChild(wrap);
+        return wrap;
+      };
+
+      const openModal = (rootId) => {
+        const root = document.getElementById(rootId);
+        if (!root) return;
+        root.classList.add("open");
+        const overlay = root.querySelector(".pp-modal-overlay");
+        if (overlay) overlay.onclick = () => closeModal(rootId);
+        const closeBtn = root.querySelector("[data-close]");
+        if (closeBtn) closeBtn.onclick = () => closeModal(rootId);
+      };
+
+      const closeModal = (rootId) => {
+        const root = document.getElementById(rootId);
+        if (!root) return;
+        root.classList.remove("open");
+      };
+
+      const toast = (msg) => {
+        try { if (typeof showToast === "function") showToast(msg); } catch (e) {}
+      };
+
+      // ==========================
+      // 1) IMPOSTAZIONI PROFILO (solo mio DOG)
+      // ==========================
+      if (btnProfileSettings) {
+        // idempotente: onclick sovrascrive sempre, niente duplicazioni
+        btnProfileSettings.onclick = () => {
+          // se non è il mio dog, non apro impostazioni (evita bug/abusi)
+          if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID) || d.id !== CURRENT_USER_DOG_ID) {
+            toast(state.lang === "it" ? "Impostazioni disponibili solo per il tuo DOG." : "Settings only for your DOG.");
+            return;
+          }
+
+          // crea (una sola volta) la modale impostazioni
+          ensureModal(
+            "ppProfileSettingsModal",
+            `
+            <div class="pp-modal-overlay"></div>
+            <div class="pp-modal-card" role="dialog" aria-modal="true" aria-label="Profile settings">
+              <div class="pp-modal-head">
+                <div class="pp-modal-title">${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}</div>
+                <button type="button" class="pp-modal-x" data-close aria-label="Close">✕</button>
+              </div>
+
+              <div class="pp-modal-body">
+                <label class="pp-field">
+                  <span>${state.lang==="it" ? "Nome DOG" : "DOG name"}</span>
+                  <input id="pps_name" type="text" maxlength="30">
+                </label>
+
+                <label class="pp-field">
+                  <span>${state.lang==="it" ? "Razza" : "Breed"}</span>
+                  <input id="pps_breed" type="text" maxlength="40">
+                </label>
+
+                <label class="pp-field">
+                  <span>${state.lang==="it" ? "Bio" : "Bio"}</span>
+                  <textarea id="pps_bio" rows="3" maxlength="220"></textarea>
+                </label>
+
+                <label class="pp-field">
+                  <span>${state.lang==="it" ? "Sesso (M/F)" : "Sex (M/F)"}</span>
+                  <input id="pps_sex" type="text" maxlength="1">
+                </label>
+
+                <label class="pp-field">
+                  <span>${state.lang==="it" ? "Età" : "Age"}</span>
+                  <input id="pps_age" type="number" min="0" max="30">
+                </label>
+
+                <label class="pp-field">
+                  <span>${state.lang==="it" ? "Distanza (km)" : "Distance (km)"}</span>
+                  <input id="pps_km" type="number" min="0" max="999">
+                </label>
+
+                <div class="pp-modal-note">
+                  ${state.lang==="it"
+                    ? "Salvataggio definitivo: Firestore (se sei loggato)."
+                    : "Definitive save: Firestore (if logged in)."}
+                </div>
+              </div>
+
+              <div class="pp-modal-actions">
+                <button type="button" class="btn outline" data-close>${state.lang==="it" ? "Annulla" : "Cancel"}</button>
+                <button type="button" class="btn accent" id="pps_save">${state.lang==="it" ? "Salva" : "Save"}</button>
+              </div>
+            </div>
+            `
+          );
+
+          // prefill campi ogni volta (fonte: d attuale)
+          const setVal = (id, v) => {
+            const el = document.getElementById(id);
+            if (el) el.value = (v == null ? "" : String(v));
+          };
+          setVal("pps_name", d.name);
+          setVal("pps_breed", d.breed);
+          setVal("pps_bio", d.bio);
+          setVal("pps_sex", d.sex);
+          setVal("pps_age", d.age);
+          setVal("pps_km", d.km);
+
+          const saveBtn = document.getElementById("pps_save");
+          if (saveBtn) {
+            saveBtn.onclick = async () => {
+              // valida in modo minimale (production-safe)
+              const name = (document.getElementById("pps_name")?.value || "").trim();
+              if (!name) { toast(state.lang==="it" ? "Nome DOG obbligatorio." : "DOG name is required."); return; }
+
+              const payload = {
+                ownerUid: (window.auth && window.auth.currentUser) ? window.auth.currentUser.uid : null,
+                name,
+                breed: (document.getElementById("pps_breed")?.value || "").trim(),
+                bio: (document.getElementById("pps_bio")?.value || "").trim(),
+                sex: ((document.getElementById("pps_sex")?.value || "").trim().toUpperCase().slice(0,1) === "F") ? "F" : "M",
+                age: Number(document.getElementById("pps_age")?.value || 0) || 0,
+                km: Number(document.getElementById("pps_km")?.value || 0) || 0,
+                img: d.img || "",
+                verified: !!d.verified,
+                updatedAt: (window.firebase && firebase.firestore && firebase.firestore.FieldValue)
+                  ? firebase.firestore.FieldValue.serverTimestamp()
+                  : Date.now()
+              };
+
+              // source of truth: Firestore (se disponibile e loggato)
+              if (!window.db || !window.auth || !window.auth.currentUser) {
+                toast(state.lang==="it" ? "Devi essere loggato per salvare." : "You must be logged in to save.");
+                return;
+              }
+
+              try {
+                await window.db.collection("dogs").doc(d.id).set(payload, { merge: true });
+
+                // aggiorno anche l’oggetto d in memoria (UI coerente subito)
+                d.name = payload.name;
+                d.breed = payload.breed;
+                d.bio = payload.bio;
+                d.sex = payload.sex;
+                d.age = payload.age;
+                d.km = payload.km;
+
+                closeModal("ppProfileSettingsModal");
+                toast(state.lang==="it" ? "Profilo salvato ✅" : "Profile saved ✅");
+
+                // ricarico il profilo per vedere subito i dati aggiornati
+                openProfilePage(d);
+              } catch (e) {
+                console.error("PROFILE SETTINGS SAVE ERROR:", e);
+                toast(state.lang==="it" ? "Errore salvataggio profilo." : "Profile save error.");
+              }
+            };
+          }
+
+          openModal("ppProfileSettingsModal");
+        };
+      }
+
+      // ==========================
+      // 2) MODIFICA SOCIAL (zero prompt/alert) — solo mio DOG
+      // ==========================
+      if (btnEditSocial) {
+        btnEditSocial.onclick = () => {
+          if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID) || d.id !== CURRENT_USER_DOG_ID) {
+            toast(state.lang === "it" ? "Puoi modificare i social solo del tuo DOG." : "You can edit socials only for your DOG.");
+            return;
+          }
+
+          ensureModal(
+            "ppEditSocialModal",
+            `
+            <div class="pp-modal-overlay"></div>
+            <div class="pp-modal-card" role="dialog" aria-modal="true" aria-label="Edit socials">
+              <div class="pp-modal-head">
+                <div class="pp-modal-title">${state.lang==="it" ? "Modifica social" : "Edit socials"}</div>
+                <button type="button" class="pp-modal-x" data-close aria-label="Close">✕</button>
+              </div>
+
+              <div class="pp-modal-body">
+                <label class="pp-field">
+                  <span>Facebook</span>
+                  <input id="pps_fb" type="url" placeholder="https://facebook.com/...">
+                </label>
+                <label class="pp-field">
+                  <span>Instagram</span>
+                  <input id="pps_ig" type="url" placeholder="https://instagram.com/...">
+                </label>
+                <label class="pp-field">
+                  <span>TikTok</span>
+                  <input id="pps_tt" type="url" placeholder="https://tiktok.com/@...">
+                </label>
+                <div class="pp-modal-note">
+                  ${state.lang==="it"
+                    ? "Se lasci tutto vuoto, i social verranno rimossi."
+                    : "If you leave everything empty, socials will be removed."}
+                </div>
+              </div>
+
+              <div class="pp-modal-actions">
+                <button type="button" class="btn outline" data-close>${state.lang==="it" ? "Annulla" : "Cancel"}</button>
+                <button type="button" class="btn accent" id="pps_social_save">${state.lang==="it" ? "Salva" : "Save"}</button>
+              </div>
+            </div>
+            `
+          );
+
+          const dogId = d.id;
+          const existing = (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) || {};
+
+          const setVal = (id, v) => {
+            const el = document.getElementById(id);
+            if (el) el.value = (v == null ? "" : String(v));
+          };
+          setVal("pps_fb", existing.facebook || "");
+          setVal("pps_ig", existing.instagram || "");
+          setVal("pps_tt", existing.tiktok || "");
+
+          const saveBtn = document.getElementById("pps_social_save");
+          if (saveBtn) {
+            saveBtn.onclick = () => {
+              const fb = (document.getElementById("pps_fb")?.value || "").trim();
+              const ig = (document.getElementById("pps_ig")?.value || "").trim();
+              const tt = (document.getElementById("pps_tt")?.value || "").trim();
+
+              if (!fb && !ig && !tt) {
+                if (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
+                  delete state.ownerSocialByDog[dogId];
+                }
+              } else {
+                if (!state.ownerSocialByDog) state.ownerSocialByDog = {};
+                state.ownerSocialByDog[dogId] = { facebook: fb, instagram: ig, tiktok: tt };
+              }
+
+              try {
+                localStorage.setItem("ownerSocialByDog", JSON.stringify(state.ownerSocialByDog || {}));
+              } catch (e) {}
+
+              // aggiorno SOLO la sezione social nel profilo + richiudo
+              try {
+                const updatedHTML = generateSocialSection(d);
+                const socialSection = document.querySelector(".pp-social-section");
+                if (socialSection && updatedHTML) socialSection.outerHTML = updatedHTML;
+              } catch (e) {}
+
+              closeModal("ppEditSocialModal");
+              toast(state.lang==="it" ? "Social aggiornati ✅" : "Social updated ✅");
+            };
+          }
+
+          openModal("ppEditSocialModal");
+        };
+      }
+
+    } catch (e) {
+      console.error("bindProfilePrimaryButtons fatal:", e);
+    }
+  })();
+
     // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON sostituisce nulla, si aggancia al profilo già renderizzato
 (function attachRealDogProfileControls() {
