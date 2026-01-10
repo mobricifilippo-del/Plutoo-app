@@ -4646,28 +4646,34 @@ async function init(){
     showToast(state.lang==="it" ? "Story pubblicata!" : "Story published!");
   }
 
-  function showToast(msg) {
-    let el = $("toast");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "toast";
-      el.className = "toast";
-      document.body.appendChild(el);
-    }
-    el.textContent = msg;
+  function showToast(msg, type = "success") {
+  let el = document.getElementById("toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "toast";
+    el.className = "toast";
+    document.body.appendChild(el);
+  }
+
+  // reset stato
+  el.className = "toast";
+  el.textContent = msg;
+
+  // tipo feedback
+  if (type === "error") {
+    el.classList.add("toast-error");
+  } else {
+    el.classList.add("toast-success");
+  }
+
+  // mostra
+  requestAnimationFrame(() => {
     el.classList.add("show");
-    setTimeout(()=>el.classList.remove("show"), 2000);
+  });
+
+  // auto hide
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    el.classList.remove("show");
+  }, 2200);
   }
-
-  window.handleAndroidBack = function() {
-  const viewer = document.getElementById("storyViewer");
-
-  // Se la storia è aperta, chiudila e segnala ad Android che è gestito
-  if (viewer && !viewer.classList.contains("hidden")) {
-    viewer.classList.add("hidden");
-    return "HANDLED";
-  }
-
-  // Nessuna storia aperta → Android può gestire il back normalmente
-  return "NOT_HANDLED";
-};
