@@ -3341,55 +3341,15 @@ storyLikeBtn.classList.add("heart-anim");
     }
   })();
 
-    // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
+// ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON sostituisce nulla, si aggancia al profilo già renderizzato
 (function attachRealDogProfileControls() {
   try {
     if (!window.auth || !window.auth.currentUser) return;
     if (!d || !d.id) return;
 
-    const uid = window.auth.currentUser.uid;
-
-        const payload = {
-          ownerUid: uid,
-          name: d.name || "",
-          breed: d.breed || "",
-          bio: d.bio || "",
-          img: d.img || "",
-          sex: d.sex || "",
-          age: d.age || "",
-          km: d.km || 0,
-          verified: !!d.verified,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        try {
-          await window.db
-            .collection("dogs")
-            .doc(d.id)
-            .set(payload, { merge: true });
-
-          const ok = state.lang === "it"
-            ? "Profilo aggiornato ✅"
-            : "Profile updated ✅";
-          if (typeof showToast === "function") showToast(ok);
-          else alert(ok);
-        } catch (e) {
-          console.error("SAVE DOG ERROR:", e);
-          const err = state.lang === "it"
-            ? "Errore nel salvataggio profilo"
-            : "Error while saving profile";
-          if (typeof showToast === "function") showToast(err);
-          else alert(err);
-        }
-      });
-
-      profileContent.appendChild(btn);
-      return;
-    }
-
-    // Caso 2️⃣: NON è il mio DOG → profilo SOLO LETTURA (demo / reali)
-    // disabilito azioni sensibili se non ho un DOG reale
+    // Caso: NON ho ancora un DOG reale → profilo SOLO LETTURA
+    // (blocca azioni sensibili in modo definitivo e sicuro)
     if (!window.PLUTOO_HAS_DOG) {
       const lock = document.createElement("div");
       lock.className = "pp-lock-note";
