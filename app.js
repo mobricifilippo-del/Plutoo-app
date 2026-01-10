@@ -3350,28 +3350,6 @@ storyLikeBtn.classList.add("heart-anim");
 
     const uid = window.auth.currentUser.uid;
 
-  // Caso 1️⃣: questo è IL MIO DOG → pulsante IMPOSTAZIONI PROFILO (publish-ready)
-    if (typeof CURRENT_USER_DOG_ID === "string" && d.id === CURRENT_USER_DOG_ID) {
-      const btn = document.createElement("button");
-      btn.id = "btnProfileSettings";
-      btn.className = "btn accent";
-      btn.style.marginTop = "1rem";
-      btn.type = "button";
-      btn.textContent = state.lang === "it"
-        ? "Impostazioni profilo"
-        : "Profile settings";
-
-      btn.addEventListener("click", async () => {
-        // ✅ mai “click morto”: se Firebase non è pronto, te lo dico
-        if (!window.db || !window.firebase || !firebase.firestore || !firebase.firestore.FieldValue) {
-          const msg = state.lang === "it"
-            ? "Firebase non è pronto (db mancante). Riprova tra 2 secondi dopo il login."
-            : "Firebase not ready (db missing). Try again 2 seconds after login.";
-          if (typeof showToast === "function") showToast(msg);
-          else alert(msg);
-          return;
-        }
-
         const payload = {
           ownerUid: uid,
           name: d.name || "",
@@ -3434,97 +3412,6 @@ storyLikeBtn.classList.add("heart-anim");
     console.error("attachRealDogProfileControls fatal:", e);
   }
 })();
-
-  // === PULSANTE "MODIFICA SOCIAL" SOLO PER IL TUO DOG ===
-if (d.id === CURRENT_USER_DOG_ID) {
-  const btn = document.createElement("button");
-  btn.id = "editSocialBtn";
-  btn.className = "btn outline";
-  btn.style.marginTop = "1rem";
-  btn.textContent = "Modifica social";
-
-  btn.addEventListener("click", () => {
-
-    const dogId = d.id;
-    const existing =
-      (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) || {};
-
-    // Facebook
-    let fb = prompt(
-      state.lang === "it"
-        ? "Inserisci il link Facebook del proprietario (lascia vuoto per nessun link):"
-        : "Enter owner Facebook link (leave empty for none):",
-      existing.facebook || ""
-    );
-    if (fb === null) fb = existing.facebook || "";
-    fb = fb.trim();
-
-    // Instagram
-    let ig = prompt(
-      state.lang === "it"
-        ? "Inserisci il link Instagram del proprietario:"
-        : "Enter owner Instagram link:",
-      existing.instagram || ""
-    );
-    if (ig === null) ig = existing.instagram || "";
-    ig = ig.trim();
-
-    // TikTok
-    let tt = prompt(
-      state.lang === "it"
-        ? "Inserisci il link TikTok del proprietario:"
-        : "Enter owner TikTok link:",
-      existing.tiktok || ""
-    );
-    if (tt === null) tt = existing.tiktok || "";
-    tt = tt.trim();
-
-    // 🔥 Se tutto vuoto → rimuovo social salvati
-    if (!fb && !ig && !tt) {
-      if (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
-        delete state.ownerSocialByDog[dogId];
-      }
-    } else {
-      if (!state.ownerSocialByDog) state.ownerSocialByDog = {};
-      state.ownerSocialByDog[dogId] = {
-        facebook: fb || "",
-        instagram: ig || "",
-        tiktok: tt || ""
-      };
-    }
-
-    // 🔄 Salvo su localStorage
-    try {
-      localStorage.setItem(
-        "ownerSocialByDog",
-        JSON.stringify(state.ownerSocialByDog || {})
-      );
-    } catch (e) {}
-
-    // Messaggio
-    const msg =
-      state.lang === "it" ? "Social aggiornati!" : "Social updated!";
-
-    if (typeof showToast === "function") {
-      showToast(msg);
-    } else {
-      alert(msg);
-    }
-
-    // 🔄 Ricarica SOLO la sezione social nel profilo
-    const updatedHTML = generateSocialSection(d);
-    const socialSection = document.querySelector(".pp-social-section");
-    if (socialSection && updatedHTML) {
-      socialSection.outerHTML = updatedHTML;
-    }
-
-  });
-
-  const contentEl = document.getElementById("profileContent");
-  if (contentEl) {
-    contentEl.appendChild(btn);
-  }
-}
 
 // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
 (function () {
