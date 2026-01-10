@@ -3063,51 +3063,255 @@ storyLikeBtn.classList.add("heart-anim");
 </div>
     `;
 
-    // ==========================
-  // PASSAGGIO 2 — CLICK HANDLER DEFINITIVI (idempotenti, zero prompt/alert)
-  // btnProfileSettings + btnEditSocial
-  // ==========================
-  (function bindProfilePrimaryButtons() {
-    try {
-      if (!d || !d.id) return;
+  // ================= PASSAGGIO 2 — Click handler definitivo (idempotente, zero prompt) =================
+(function bindProfileActionButtonsOnce() {
+  try {
+    if (!profileContent) return;
 
-      const btnProfileSettings = document.getElementById("btnProfileSettings");
-      const btnEditSocial = document.getElementById("btnEditSocial");
+    const btnProfileSettings = document.getElementById("btnProfileSettings");
+    const btnEditSocial = document.getElementById("btnEditSocial");
 
-      // --- HELPERS MODAL (una sola istanza, riutilizzata) ---
-      const ensureModal = (id, html) => {
-        let el = document.getElementById(id);
-        if (el) return el;
-        const wrap = document.createElement("div");
-        wrap.id = id;
-        wrap.innerHTML = html;
-        document.body.appendChild(wrap);
-        return wrap;
-      };
+    // Idempotenza: non rilegare se già fatto
+    if (btnProfileSettings && btnProfileSettings.dataset.bound === "1") {
+      // già bindato
+    } else if (btnProfileSettings) {
+      btnProfileSettings.dataset.bound = "1";
+      btnProfileSettings.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
 
-      const openModal = (rootId) => {
-        const root = document.getElementById(rootId);
-        if (!root) return;
-        root.classList.add("open");
-        const overlay = root.querySelector(".pp-modal-overlay");
-        if (overlay) overlay.onclick = () => closeModal(rootId);
-        const closeBtn = root.querySelector("[data-close]");
-        if (closeBtn) closeBtn.onclick = () => closeModal(rootId);
-      };
+        // Solo il mio DOG può aprire impostazioni
+        if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID) || d.id !== CURRENT_USER_DOG_ID) {
+          const msg = state.lang === "it" ? "Solo il tuo DOG può modificare le impostazioni." : "Only your DOG can edit settings.";
+          if (typeof showToast === "function") showToast(msg);
+          return;
+        }
 
-      const closeModal = (rootId) => {
-        const root = document.getElementById(rootId);
-        if (!root) return;
-        root.classList.remove("open");
-      };
+        // Crea/mostra pannello impostazioni (una sola istanza)
+        const existing = document.getElementById("profileSettingsSheet");
+        if (existing) {
+          existing.classList.add("open");
+          return;
+        }
 
-      const toast = (msg) => {
-        try { if (typeof showToast === "function") showToast(msg); } catch (e) {}
-      };
+        const sheet = document.createElement("div");
+        sheet.id = "profileSettingsSheet";
+        sheet.className = "pp-sheet";
+        sheet.innerHTML = `
+          <div class="pp-sheet__backdrop" id="psBackdrop"></div>
+          <div class="pp-sheet__panel">
+            <div class="pp-sheet__head">
+              <div class="pp-sheet__title">${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}</div>
+              <button type="button" class="btn small" id="psClose">✕</button>
+            </div>
 
-      // ==========================
+            <div class="pp-sheet__body">
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Nome DOG" : "DOG name"}</span>
+                <input id="psName" type="text" value="${(d.name||"").replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Razza" : "Breed"}</span>
+                <input id="psBreed" type="text" value="${(d.breed||"").replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Sesso (M/F)" : "Sex (M/F)"}</span>
+                <input id="psSex" type="text" maxlength="1" value="${(d.sex||"").replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Età" : "Age"}</span>
+                <input id="psAge" type="text" value="${(d.age||"").toString().replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Foto profilo (URL o lascia vuoto)" : "Profile photo (URL or empty)"}</span>
+                <input id="psImg" type="text" value="${(d.img||"").replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>Bio</span>
+                <textarea id="psBio" rows="3">${(d.bio||"").replace(/</g,"&lt;")}</textarea>
+              </label>
+
+              <div class="pp-sheet__actions">
+                <button type="button" class="btn outline" id="psCancel">${state.lang==="it" ? "Annulla" : "Cancel"}</button>
+                <button type="button" class="btn accent" id="psSave">${state.lang==="it" ? "Salva" : "Save"}</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        profileContent.appendChild(sheet);
+
+        const closeSheet = () => sheet.classList.remove("open");
+        document.getElementById("psBackdrop")?.addEventListener("click", closeSheet);
+        document.getElementById("psClose")?.addEventListener("click", closeSheet);
+        document.getElementById("psCancel")?.addEventListener("click", closeSheet);
+
+        // Salvataggio definitivo (Firestore source of truth)
+        document.getElementById("psSave")?.addEventListener("click", async () => {
+          try {
+            if (!window.auth || !window.auth.currentUser) return;
+            if (!window.db) {
+              const msg = state.lang === "it" ? "Firestore non disponibile." : "Firestore unavailable.";
+              if (typeof showToast === "function") showToast(msg);
+              return;
+            }
+
+            const uid = window.auth.currentUser.uid;
+            const name = (document.getElementById("psName")?.value || "").trim();
+            if (!name) {
+              const msg = state.lang === "it" ? "Il nome DOG è obbligatorio." : "DOG name is required.";
+              if (typeof showToast === "function") showToast(msg);
+              return;
+            }
+
+            const payload = {
+              ownerUid: uid,
+              name,
+              breed: (document.getElementById("psBreed")?.value || "").trim(),
+              sex: (document.getElementById("psSex")?.value || "").trim().toUpperCase(),
+              age: (document.getElementById("psAge")?.value || "").trim(),
+              img: (document.getElementById("psImg")?.value || "").trim() || d.img || "",
+              bio: (document.getElementById("psBio")?.value || "").trim(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            await window.db.collection("dogs").doc(d.id).set(payload, { merge: true });
+
+            // Aggiorna subito oggetto in memoria
+            d.name = payload.name;
+            d.breed = payload.breed;
+            d.sex = payload.sex;
+            d.age = payload.age;
+            d.img = payload.img;
+            d.bio = payload.bio;
+
+            const ok = state.lang === "it" ? "Profilo aggiornato ✅" : "Profile updated ✅";
+            if (typeof showToast === "function") showToast(ok);
+
+            closeSheet();
+            // Rerender profilo con dati aggiornati
+            window.openProfilePage(d);
+          } catch (e) {
+            console.error("Profile settings save error:", e);
+            const err = state.lang === "it" ? "Errore nel salvataggio profilo." : "Error while saving profile.";
+            if (typeof showToast === "function") showToast(err);
+          }
+        });
+
+        // Mostra
+        sheet.classList.add("open");
+      });
+    }
+
+    if (btnEditSocial && btnEditSocial.dataset.bound === "1") {
+      // già bindato
+    } else if (btnEditSocial) {
+      btnEditSocial.dataset.bound = "1";
+      btnEditSocial.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        // Solo il mio DOG può modificare social
+        if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID) || d.id !== CURRENT_USER_DOG_ID) {
+          const msg = state.lang === "it" ? "Solo il tuo DOG può modificare i social." : "Only your DOG can edit socials.";
+          if (typeof showToast === "function") showToast(msg);
+          return;
+        }
+
+        const existing = document.getElementById("editSocialSheet");
+        if (existing) {
+          existing.classList.add("open");
+          return;
+        }
+
+        const dogId = d.id;
+        const existingSocial = (state.ownerSocialByDog && state.ownerSocialByDog[dogId]) || {};
+
+        const sheet = document.createElement("div");
+        sheet.id = "editSocialSheet";
+        sheet.className = "pp-sheet";
+        sheet.innerHTML = `
+          <div class="pp-sheet__backdrop" id="esBackdrop"></div>
+          <div class="pp-sheet__panel">
+            <div class="pp-sheet__head">
+              <div class="pp-sheet__title">${state.lang==="it" ? "Modifica social" : "Edit socials"}</div>
+              <button type="button" class="btn small" id="esClose">✕</button>
+            </div>
+
+            <div class="pp-sheet__body">
+              <label class="pp-field">
+                <span>Facebook</span>
+                <input id="esFb" type="text" value="${(existingSocial.facebook||"").replace(/"/g,"&quot;")}" placeholder="https://facebook.com/..." />
+              </label>
+
+              <label class="pp-field">
+                <span>Instagram</span>
+                <input id="esIg" type="text" value="${(existingSocial.instagram||"").replace(/"/g,"&quot;")}" placeholder="https://instagram.com/..." />
+              </label>
+
+              <label class="pp-field">
+                <span>TikTok</span>
+                <input id="esTt" type="text" value="${(existingSocial.tiktok||"").replace(/"/g,"&quot;")}" placeholder="https://tiktok.com/..." />
+              </label>
+
+              <div class="pp-sheet__actions">
+                <button type="button" class="btn outline" id="esCancel">${state.lang==="it" ? "Annulla" : "Cancel"}</button>
+                <button type="button" class="btn accent" id="esSave">${state.lang==="it" ? "Salva" : "Save"}</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        profileContent.appendChild(sheet);
+
+        const closeSheet = () => sheet.classList.remove("open");
+        document.getElementById("esBackdrop")?.addEventListener("click", closeSheet);
+        document.getElementById("esClose")?.addEventListener("click", closeSheet);
+        document.getElementById("esCancel")?.addEventListener("click", closeSheet);
+
+        document.getElementById("esSave")?.addEventListener("click", () => {
+          const fb = (document.getElementById("esFb")?.value || "").trim();
+          const ig = (document.getElementById("esIg")?.value || "").trim();
+          const tt = (document.getElementById("esTt")?.value || "").trim();
+
+          if (!state.ownerSocialByDog || typeof state.ownerSocialByDog !== "object") state.ownerSocialByDog = {};
+
+          if (!fb && !ig && !tt) {
+            delete state.ownerSocialByDog[dogId];
+          } else {
+            state.ownerSocialByDog[dogId] = { facebook: fb, instagram: ig, tiktok: tt };
+          }
+
+          try {
+            localStorage.setItem("ownerSocialByDog", JSON.stringify(state.ownerSocialByDog || {}));
+          } catch (_) {}
+
+          const ok = state.lang === "it" ? "Social aggiornati ✅" : "Socials updated ✅";
+          if (typeof showToast === "function") showToast(ok);
+
+          closeSheet();
+
+          // Aggiorna SOLO la sezione social nel profilo
+          const updatedHTML = generateSocialSection(d);
+          const socialSection = document.querySelector(".pp-social-section");
+          if (socialSection && updatedHTML) socialSection.outerHTML = updatedHTML;
+        });
+
+        sheet.classList.add("open");
+      });
+    }
+
+  } catch (e) {
+    console.error("PASSAGGIO 2 bind error:", e);
+  }
+})();
+                                                    
       // 1) IMPOSTAZIONI PROFILO (solo mio DOG)
-      // ==========================
       if (btnProfileSettings) {
         // idempotente: onclick sovrascrive sempre, niente duplicazioni
         btnProfileSettings.onclick = () => {
