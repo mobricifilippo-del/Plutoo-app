@@ -2372,3 +2372,42 @@ line-height: 1.6;
   transform: scale(.98);
 }
 
+/* ===== TOAST — PLUTOO FEEDBACK ===== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18%;
+  transform: translateX(-50%) translateY(10px);
+  padding: 14px 18px;
+  min-width: 220px;
+  max-width: 86%;
+  text-align: center;
+  font-size: 0.95rem;
+  border-radius: 14px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: all .25s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+}
+
+/* visibile */
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* SUCCESSO (gold / viola) */
+.toast-success {
+  background: linear-gradient(135deg, #6b5cff, #cda434);
+  color: #111;
+  font-weight: 600;
+}
+
+/* ERRORE (rosso soft, non aggressivo) */
+.toast-error {
+  background: linear-gradient(135deg, #ff5c5c, #b31212);
+  color: #fff;
+  font-weight: 600;
+}
