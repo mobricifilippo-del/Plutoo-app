@@ -2170,93 +2170,6 @@ line-height: 1.6;
 }
 
 /* =========================
-   Plutoo — Profile Sheets (pp-sheet)
-   ========================= */
-
-.pp-sheet{
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: none;
-}
-
-.pp-sheet.open{
-  display: block;
-}
-
-.pp-sheet__backdrop{
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.pp-sheet__panel{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(92vw, 520px);
-  max-height: 82vh;
-  overflow: auto;
-
-  background: rgba(20, 20, 30, 0.98);
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.55);
-  padding: 14px;
-}
-
-.pp-sheet__head{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.pp-sheet__title{
-  font-weight: 800;
-  font-size: 1.05rem;
-}
-
-.pp-sheet__body{
-  display: block;
-}
-
-.pp-sheet__actions{
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.pp-field{
-  display: block;
-  margin: 10px 0;
-}
-
-.pp-field > span{
-  display: block;
-  font-size: .85rem;
-  opacity: .8;
-  margin-bottom: 6px;
-}
-
-.pp-field input,
-.pp-field textarea{
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  color: inherit;
-  padding: 10px 12px;
-  outline: none;
-}
-
-.pp-field textarea{
-  resize: vertical;
-}
-
-/* =========================
    PP SHEET (modali centrali) — Plutoo style
    ========================= */
 
@@ -2340,9 +2253,9 @@ line-height: 1.6;
 }
 
 .pp-field input:focus,
-.pp-field textarea:focus{
-  border-color: rgba(150, 120, 255, .55);
-  box-shadow: 0 0 0 3px rgba(150, 120, 255, .18);
+.pp-field textarea:focus {
+  border-color: #8b7bff;
+  box-shadow: 0 0 0 2px rgba(139,123,255,0.2);
 }
 
 .pp-sheet__actions{
@@ -2370,6 +2283,20 @@ line-height: 1.6;
 
 .pp-sheet__head .btn.small:active{
   transform: scale(.98);
+}
+
+/* X chiusura modali / tendine */
+.pp-modal-x,
+.pp-sheet__head .btn,
+.pp-sheet__head button {
+  color: #fff !important;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+
+.pp-modal-x:hover,
+.pp-sheet__head .btn:hover {
+  background: rgba(255,255,255,0.18);
 }
 
 /* ===== TOAST — PLUTOO FEEDBACK ===== */
@@ -2410,4 +2337,46 @@ line-height: 1.6;
   background: linear-gradient(135deg, #ff5c5c, #b31212);
   color: #fff;
   font-weight: 600;
+}
+
+/* ===== TENDINE / MODALI — PLUTOO STYLE ===== */
+
+.pp-modal-card,
+.pp-sheet__panel {
+  background: linear-gradient(
+    180deg,
+    rgba(30,30,36,0.95),
+    rgba(18,18,22,0.98)
+  );
+  border-radius: 22px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* header */
+.pp-modal-head,
+.pp-sheet__head {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: .8rem;
+}
+
+/* titolo */
+.pp-modal-title,
+.pp-sheet__title {
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+/* corpo */
+.pp-modal-body,
+.pp-sheet__body {
+  padding-top: 1rem;
+}
+
+/* footer actions */
+.pp-modal-actions,
+.pp-sheet__actions {
+  margin-top: 1.4rem;
+  gap: .6rem;
 }
