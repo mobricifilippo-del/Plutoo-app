@@ -3163,6 +3163,52 @@ storyLikeBtn.classList.add("heart-anim");
 
         profileContent.appendChild(sheet);
 
+        // =========================
+// Foto profilo: state locale del pannello
+// =========================
+let psImgValue = (d.img || "");
+
+const psImgPreview = document.getElementById("psImgPreview");
+const psImgFile = document.getElementById("psImgFile");
+const psPickImg = document.getElementById("psPickImg");
+const psRemoveImg = document.getElementById("psRemoveImg");
+
+const refreshPreview = () => {
+  if (!psImgPreview) return;
+  psImgPreview.src = psImgValue || "./plutoo-icon-192.png";
+};
+
+// Apri picker
+psPickImg?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  psImgFile?.click();
+});
+
+// File scelto → preview immediata
+psImgFile?.addEventListener("change", () => {
+  const file = psImgFile.files && psImgFile.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    psImgValue = String(reader.result || "");
+    refreshPreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+// Rimuovi foto
+psRemoveImg?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  psImgValue = "";
+  try { if (psImgFile) psImgFile.value = ""; } catch (_) {}
+  refreshPreview();
+});
+
+refreshPreview();
+
         const closeSheet = () => sheet.classList.remove("open");
         document.getElementById("psBackdrop")?.addEventListener("click", closeSheet);
         document.getElementById("psClose")?.addEventListener("click", closeSheet);
@@ -3285,52 +3331,6 @@ storyLikeBtn.classList.add("heart-anim");
         `;
 
         profileContent.appendChild(sheet);
-
-        // =========================
-// Foto profilo: state locale del pannello
-// =========================
-let psImgValue = (d.img || "");
-
-const psImgPreview = document.getElementById("psImgPreview");
-const psImgFile = document.getElementById("psImgFile");
-const psPickImg = document.getElementById("psPickImg");
-const psRemoveImg = document.getElementById("psRemoveImg");
-
-const refreshPreview = () => {
-  if (!psImgPreview) return;
-  psImgPreview.src = psImgValue || "./plutoo-icon-192.png";
-};
-
-// Apri picker
-psPickImg?.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  psImgFile?.click();
-});
-
-// File scelto → preview immediata
-psImgFile?.addEventListener("change", () => {
-  const file = psImgFile.files && psImgFile.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    psImgValue = String(reader.result || "");
-    refreshPreview();
-  };
-  reader.readAsDataURL(file);
-});
-
-// Rimuovi foto
-psRemoveImg?.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  psImgValue = "";
-  try { if (psImgFile) psImgFile.value = ""; } catch (_) {}
-  refreshPreview();
-});
-
-refreshPreview();
 
         const closeSheet = () => sheet.classList.remove("open");
         document.getElementById("esBackdrop")?.addEventListener("click", closeSheet);
