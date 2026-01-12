@@ -3192,7 +3192,7 @@ storyLikeBtn.classList.add("heart-anim");
               breed: (document.getElementById("psBreed")?.value || "").trim(),
               sex: (document.getElementById("psSex")?.value || "").trim().toUpperCase(),
               age: (document.getElementById("psAge")?.value || "").trim(),
-              img: (document.getElementById("psImg")?.value || "").trim() || d.img || "",
+              img: psImgValue || d.img || "",
               bio: (document.getElementById("psBio")?.value || "").trim(),
               updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
