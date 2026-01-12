@@ -3167,11 +3167,132 @@ storyLikeBtn.classList.add("heart-anim");
           </div>
         `;
 
-        profileContent.appendChild(sheet);
+profileContent.appendChild(sheet);
 
-        // =========================
-// Foto profilo: state locale del pannello
 // =========================
+// Autocomplete Razza (psBreed) — stesso comportamento della ricerca personalizzata
+// =========================
+(function bindPsBreedAutocomplete() {
+  const input = document.getElementById("psBreed");
+  if (!input) return;
+
+  // dropdown (una sola istanza)
+  let box = document.getElementById("psBreedSuggest");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "psBreedSuggest";
+    box.style.position = "fixed";
+    box.style.zIndex = "100000";
+    box.style.display = "none";
+    box.style.maxHeight = "220px";
+    box.style.overflow = "auto";
+    box.style.borderRadius = "14px";
+    box.style.border = "1px solid rgba(255,255,255,.10)";
+    box.style.background = "rgba(18,18,26,.98)";
+    box.style.boxShadow = "0 18px 50px rgba(0,0,0,.65)";
+    box.style.backdropFilter = "blur(8px)";
+    box.style.webkitBackdropFilter = "blur(8px)";
+    box.style.padding = "6px";
+    document.body.appendChild(box);
+  }
+
+  const positionBox = () => {
+    const r = input.getBoundingClientRect();
+    box.style.left = Math.round(r.left) + "px";
+    box.style.top = Math.round(r.bottom + 6) + "px";
+    box.style.width = Math.round(r.width) + "px";
+  };
+
+  const closeBox = () => {
+    box.style.display = "none";
+    box.innerHTML = "";
+  };
+
+  const render = () => {
+    const q = String(input.value || "").trim().toLowerCase();
+    const breeds = Array.isArray(state.breeds) ? state.breeds : [];
+
+    positionBox();
+    box.innerHTML = "";
+
+    // niente lista se non c’è input e non c’è focus
+    if (!document.activeElement || document.activeElement !== input) {
+      closeBox();
+      return;
+    }
+
+    const list = q
+      ? breeds.filter(b => String(b || "").toLowerCase().includes(q))
+      : breeds.slice(0, 40);
+
+    if (!list.length) {
+      const empty = document.createElement("div");
+      empty.textContent = state.lang === "it" ? "Nessuna razza trovata" : "No breeds found";
+      empty.style.opacity = "0.8";
+      empty.style.padding = "10px 12px";
+      empty.style.fontSize = "0.92rem";
+      box.appendChild(empty);
+      box.style.display = "block";
+      return;
+    }
+
+    list.slice(0, 40).forEach((b) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.textContent = b;
+      item.style.width = "100%";
+      item.style.textAlign = "left";
+      item.style.border = "0";
+      item.style.background = "transparent";
+      item.style.color = "rgba(255,255,255,.92)";
+      item.style.padding = "10px 12px";
+      item.style.borderRadius = "12px";
+      item.style.fontSize = "0.95rem";
+      item.style.cursor = "pointer";
+
+      item.addEventListener("mouseenter", () => {
+        item.style.background = "rgba(139,123,255,.16)";
+      });
+      item.addEventListener("mouseleave", () => {
+        item.style.background = "transparent";
+      });
+
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        input.value = b;
+        closeBox();
+        input.focus();
+      });
+
+      box.appendChild(item);
+    });
+
+    box.style.display = "block";
+  };
+
+  // Eventi
+  input.addEventListener("focus", render);
+  input.addEventListener("input", render);
+  window.addEventListener("resize", () => { if (box.style.display !== "none") positionBox(); }, { passive: true });
+  window.addEventListener("scroll", () => { if (box.style.display !== "none") positionBox(); }, { passive: true });
+
+  document.addEventListener("click", (e) => {
+    if (e.target === input) return;
+    if (box.contains(e.target)) return;
+    closeBox();
+  }, true);
+
+  // chiusura su ESC
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeBox();
+  });
+
+  // prima render
+  render();
+})();
+        
+// Foto profilo: state locale del pannello
 let psImgValue = (d.img || "");
 
 const psImgPreview = document.getElementById("psImgPreview");
