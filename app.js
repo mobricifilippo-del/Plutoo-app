@@ -3127,9 +3127,26 @@ storyLikeBtn.classList.add("heart-anim");
               </label>
 
               <label class="pp-field">
-                <span>${state.lang==="it" ? "Foto profilo (URL o lascia vuoto)" : "Profile photo (URL or empty)"}</span>
-                <input id="psImg" type="text" value="${(d.img||"").replace(/"/g,"&quot;")}" />
-              </label>
+  <span>${state.lang==="it" ? "Foto profilo (facoltativa)" : "Profile photo (optional)"}</span>
+
+  <div style="display:flex;gap:10px;align-items:center;">
+    <img id="psImgPreview"
+         src="${(d.img||"").replace(/"/g,"&quot;")}"
+         alt="Preview"
+         style="width:56px;height:56px;border-radius:14px;object-fit:cover;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);"
+         onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" />
+
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+      <input id="psImgFile" type="file" accept="image/*" style="display:none" />
+      <button type="button" class="btn outline" id="psPickImg">
+        ${state.lang==="it" ? "Carica foto profilo" : "Upload profile photo"}
+      </button>
+      <button type="button" class="btn small" id="psRemoveImg">
+        ${state.lang==="it" ? "Rimuovi foto" : "Remove photo"}
+      </button>
+    </div>
+  </div>
+</label>
 
               <label class="pp-field">
                 <span>Bio</span>
