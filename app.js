@@ -3258,12 +3258,17 @@ profileContent.appendChild(sheet);
       });
 
       item.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        input.value = b;
-        closeBox();
-        input.focus();
-      });
+  e.preventDefault();
+  e.stopPropagation();
+  input.value = b;
+
+  // chiudi davvero e chiudi focus (così non ri-rendera subito)
+  closeBox();
+  input.blur();
+
+  // micro-delay per evitare che altri handler lo riaprano
+  setTimeout(() => closeBox(), 0);
+});
 
       box.appendChild(item);
     });
