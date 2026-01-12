@@ -3174,7 +3174,11 @@ profileContent.appendChild(sheet);
 // =========================
 (function bindPsBreedAutocomplete() {
   const input = document.getElementById("psBreed");
-  if (!input) return;
+if (!input) return;
+
+// idempotenza: non ribindare se già fatto su questo input
+if (input.dataset.boundBreed === "1") return;
+input.dataset.boundBreed = "1";
 
   // dropdown (una sola istanza)
   let box = document.getElementById("psBreedSuggest");
