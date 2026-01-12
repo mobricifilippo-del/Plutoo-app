@@ -3220,57 +3220,74 @@ refreshPreview();
         document.getElementById("psClose")?.addEventListener("click", closeSheet);
         document.getElementById("psCancel")?.addEventListener("click", closeSheet);
 
-        // Salvataggio definitivo (Firestore source of truth)
-        document.getElementById("psSave")?.addEventListener("click", async () => {
-          try {
-            if (!window.auth || !window.auth.currentUser) return;
-            if (!window.db) {
-              const msg = state.lang === "it" ? "Firestore non disponibile." : "Firestore unavailable.";
-              if (typeof showToast === "function") showToast(msg);
-              return;
-            }
+  // Salvataggio definitivo (Firestore source of truth)
+document.getElementById("psSave")?.addEventListener("click", async () => {
+  try {
+    if (!window.auth || !window.auth.currentUser) return;
 
-            const uid = window.auth.currentUser.uid;
-            const name = (document.getElementById("psName")?.value || "").trim();
-            if (!name) {
-              const msg = state.lang === "it" ? "Il nome DOG è obbligatorio." : "DOG name is required.";
-              if (typeof showToast === "function") showToast(msg);
-              return;
-            }
+    if (!window.db) {
+      const msg = state.lang === "it" ? "Firestore non disponibile." : "Firestore unavailable.";
+      if (typeof showToast === "function") {
+        showToast(msg);
+        const t = document.getElementById("toast");
+        if (t) { t.classList.remove("toast-success"); t.classList.add("toast-error"); }
+      }
+      return;
+    }
 
-            const payload = {
-              ownerUid: uid,
-              name,
-              breed: (document.getElementById("psBreed")?.value || "").trim(),
-              sex: (document.getElementById("psSex")?.value || "").trim().toUpperCase(),
-              age: (document.getElementById("psAge")?.value || "").trim(),
-              img: psImgValue || d.img || "",
-              bio: (document.getElementById("psBio")?.value || "").trim(),
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
+    const uid = window.auth.currentUser.uid;
+    const name = (document.getElementById("psName")?.value || "").trim();
+    if (!name) {
+      const msg = state.lang === "it" ? "Il nome DOG è obbligatorio." : "DOG name is required.";
+      if (typeof showToast === "function") {
+        showToast(msg);
+        const t = document.getElementById("toast");
+        if (t) { t.classList.remove("toast-success"); t.classList.add("toast-error"); }
+      }
+      return;
+    }
 
-            await window.db.collection("dogs").doc(d.id).set(payload, { merge: true });
+    const payload = {
+      ownerUid: uid,
+      name,
+      breed: (document.getElementById("psBreed")?.value || "").trim(),
+      sex: (document.getElementById("psSex")?.value || "").trim().toUpperCase(),
+      age: (document.getElementById("psAge")?.value || "").trim(),
+      img: psImgValue || d.img || "",
+      bio: (document.getElementById("psBio")?.value || "").trim(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
 
-            // Aggiorna subito oggetto in memoria
-            d.name = payload.name;
-            d.breed = payload.breed;
-            d.sex = payload.sex;
-            d.age = payload.age;
-            d.img = payload.img;
-            d.bio = payload.bio;
+    await window.db.collection("dogs").doc(d.id).set(payload, { merge: true });
 
-            const ok = state.lang === "it" ? "Profilo aggiornato ✅" : "Profile updated ✅";
-            if (typeof showToast === "function") showToast(ok);
+    // Aggiorna subito oggetto in memoria
+    d.name = payload.name;
+    d.breed = payload.breed;
+    d.sex = payload.sex;
+    d.age = payload.age;
+    d.img = payload.img;
+    d.bio = payload.bio;
 
-            closeSheet();
-            // Rerender profilo con dati aggiornati
-            window.openProfilePage(d);
-          } catch (e) {
-            console.error("Profile settings save error:", e);
-            const err = state.lang === "it" ? "Errore nel salvataggio profilo." : "Error while saving profile.";
-            if (typeof showToast === "function") showToast(err);
-          }
-        });
+    const ok = state.lang === "it" ? "Profilo aggiornato ✅" : "Profile updated ✅";
+    if (typeof showToast === "function") {
+      showToast(ok);
+      const t = document.getElementById("toast");
+      if (t) { t.classList.remove("toast-error"); t.classList.add("toast-success"); }
+    }
+
+    closeSheet();
+    window.openProfilePage(d);
+
+  } catch (e) {
+    console.error("Profile settings save error:", e);
+    const err = state.lang === "it" ? "Errore nel salvataggio profilo." : "Error while saving profile.";
+    if (typeof showToast === "function") {
+      showToast(err);
+      const t = document.getElementById("toast");
+      if (t) { t.classList.remove("toast-success"); t.classList.add("toast-error"); }
+    }
+  }
+});
 
         // Mostra
         sheet.classList.add("open");
