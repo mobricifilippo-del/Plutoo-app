@@ -2366,11 +2366,17 @@ breedsList.innerHTML = matches.map(b => {
 
   breedsList.style.display = "block";
 
-  qa(".item",breedsList).forEach(it=>it.addEventListener("click",()=>{
-    breedInput.value = it.getAttribute("data-label") || it.textContent;
-    breedInput.dataset.canonical = it.getAttribute("data-canonical") || it.textContent;
-    breedsList.style.display="none";
-  }));
+qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+
+  breedInput.value = it.getAttribute("data-label") || it.textContent;
+  breedInput.dataset.canonical = it.getAttribute("data-canonical") || it.textContent;
+
+  // chiudi lista e togli focus così NON si riapre subito
+  breedsList.style.display = "none";
+  breedInput.blur();
+}));
 });
   
   document.addEventListener("click",(e)=>{
