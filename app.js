@@ -840,13 +840,22 @@ ownerSocialByDog: {},
     },
     saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
     cleanExpiredStories() {
-      const now = Date.now();
-      this.stories = this.stories.filter(story => {
-        story.media = story.media.filter(m => (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME);
-        return story.media.length > 0;
-      });
-      this.saveStories();
-    },
+  const now = Date.now();
+
+  this.stories = this.stories.filter(story => {
+    // ✅ LE DEMO RESTANO SEMPRE
+    if (story.isDemo === true) return true;
+
+    // ⏱️ pulizia media > 24h
+    story.media = story.media.filter(m => {
+      return (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME;
+    });
+
+    return story.media.length > 0;
+  });
+
+  this.saveStories();
+},
     getTodayStoriesCount() {
       const today = new Date().toDateString();
       const userStory = this.stories.find(s => s.userId === "currentUser");
