@@ -4925,6 +4925,16 @@ async function init(){
   }
 
   function publishStory() {
+  // 🔒 VETRINA: blocca pubblicazione story
+  if (window.PLUTOO_READONLY) {
+    const msg = state.lang === "it"
+      ? "🔒 Crea il profilo DOG per pubblicare una story"
+      : "🔒 Create your DOG profile to publish a story";
+    if (typeof showToast === "function") showToast(msg);
+    else alert(msg);
+    return;
+  }
+    
     const preview = $("storyPreview");
     if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
       alert(state.lang==="it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
