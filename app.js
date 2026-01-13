@@ -348,23 +348,29 @@ btnEnter?.addEventListener("click", async (e) => {
     window.PLUTOO_HAS_DOG = hasDog;
     window.PLUTOO_DOG_ID = dogId;
 
+    // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
+    window.PLUTOO_READONLY = !hasDog;
+
     // Cache (non source of truth)
     try {
       localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
       if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
       else localStorage.removeItem("plutoo_dog_id");
+      localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
     } catch (_) {}
   } catch (err) {
     // fallback safe: segnala "DOG assente" e prosegue
     window.PLUTOO_HAS_DOG = false;
     window.PLUTOO_DOG_ID = null;
+    window.PLUTOO_READONLY = true;
     try {
       localStorage.setItem("plutoo_has_dog", "0");
       localStorage.removeItem("plutoo_dog_id");
+      localStorage.setItem("plutoo_readonly", "1");
     } catch (_) {}
   }
 
-  // ✅ ENTRA definitivo (WOW) — se DOG assente, entra ma forza vista "profile"
+  // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
   state.entered = true;
 
@@ -391,7 +397,7 @@ btnEnter?.addEventListener("click", async (e) => {
     flash.classList.add("active");
   }
 
- const targetView = state.currentView || "nearby";
+  const targetView = state.currentView || "nearby";
 
   setTimeout(() => {
     appScreen?.classList.remove("hidden");
@@ -401,9 +407,91 @@ btnEnter?.addEventListener("click", async (e) => {
       initStories();
     }
 
-    // forza vista profilo se DOG assente
+    // vista normale
     try { state.currentView = targetView; } catch (_) {}
     setActiveView(targetView);
+
+    // =========================
+    // ✅ VETRINA: blocco interazioni (definitivo)
+    // =========================
+    try {
+      if (window.PLUTOO_READONLY) {
+        document.body.classList.add("plutoo-readonly");
+
+        const msg = state.lang === "it"
+          ? "🔒 Crea il tuo profilo DOG per interagire"
+          : "🔒 Create your DOG profile to interact";
+        if (typeof showToast === "function") showToast(msg);
+
+        // disabilita bottoni noti (UI)
+        const idsToDisable = [
+          "btnOpenChat",
+          "btnLikeDog",
+          "followBtn",
+          "profileLikeBtn",
+          "storyLikeBtn",
+          "unlockSelfie",
+          "uploadSelfie",
+          "publishStory",
+          "nextToCustomize",
+          "btnProfileSettings",
+          "btnEditSocial"
+        ];
+        idsToDisable.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.disabled = true;
+        });
+
+        // intercetta click su azioni sensibili (anche se non sono disabled)
+        if (!window.__plutooReadonlyBound) {
+          window.__plutooReadonlyBound = true;
+
+          const SENSITIVE = new Set([
+            "btnOpenChat",
+            "btnLikeDog",
+            "followBtn",
+            "profileLikeBtn",
+            "storyLikeBtn",
+            "unlockSelfie",
+            "uploadSelfie",
+            "publishStory",
+            "nextToCustomize",
+            "btnProfileSettings",
+            "btnEditSocial"
+          ]);
+
+          document.addEventListener("click", (ev) => {
+            try {
+              if (!window.PLUTOO_READONLY) return;
+              let t = ev.target;
+              if (!t) return;
+
+              // risali fino al button/link
+              const node = (t.closest ? t.closest("button,a") : null) || t;
+              const id = node && node.id ? String(node.id) : "";
+
+              // blocca anche classi note
+              const isAddPhoto = node && node.classList && node.classList.contains("add-photo");
+              const isDocItem = node && node.classList && node.classList.contains("doc-item");
+
+              if (SENSITIVE.has(id) || isAddPhoto || isDocItem) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                ev.stopImmediatePropagation();
+
+                const msg2 = state.lang === "it"
+                  ? "🔒 Devi creare il profilo DOG per usare questa funzione"
+                  : "🔒 You must create your DOG profile to use this feature";
+                if (typeof showToast === "function") showToast(msg2);
+                return false;
+              }
+            } catch (_) {}
+          }, true);
+        }
+      } else {
+        document.body.classList.remove("plutoo-readonly");
+      }
+    } catch (_) {}
   }, 500);
 
   setTimeout(() => {
