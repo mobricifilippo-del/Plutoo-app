@@ -4492,9 +4492,27 @@ async function init(){
 }
 
   function getVisibleMediaList(story) {
-    const hasMatch = !!state.matches[story.userId];
-    const hasFriendship = !!state.friendships[story.userId];
-    return story.media.filter(m => m.privacy !== "private" || hasMatch || hasFriendship);
+  const hasMatch = !!state.matches[story.userId];
+  const hasFriendship = !!state.friendships[story.userId];
+
+  const NOW = Date.now();
+  const DAY = 24 * 60 * 60 * 1000;
+
+  return story.media.filter(m => {
+    // 🔒 privacy (regola esistente)
+    const privacyOk =
+      m.privacy !== "private" || hasMatch || hasFriendship;
+
+    if (!privacyOk) return false;
+
+    // 🟣 DEMO: non scadono mai
+    if (story.isDemo === true) return true;
+
+    // ⏱️ REALI: scadono dopo 24h
+    if (!m.timestamp) return false;
+
+    return (NOW - m.timestamp) <= DAY;
+  });
   }
 
   function initStories() {
