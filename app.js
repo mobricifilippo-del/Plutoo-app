@@ -3867,40 +3867,52 @@ if (dogStories) {
     docFileInput.style.display = "none";
     profileContent.appendChild(docFileInput);
 
-    qa(".doc-item", profileContent).forEach(item=>{
-      item.addEventListener("click", ()=>{
-        const docType = item.getAttribute("data-doc");
-        const docCategory = item.getAttribute("data-type");
+  qa(".doc-item", profileContent).forEach(item=>{
+  item.addEventListener("click", (e)=>{
+    // 🔒 VETRINA: blocco totale documenti
+    if (window.PLUTOO_READONLY) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      const msg = state.lang === "it"
+        ? "🔒 Crea il profilo DOG per caricare i documenti"
+        : "🔒 Create your DOG profile to upload documents";
+      if (typeof showToast === "function") showToast(msg);
+      return;
+    }
 
-        // quando l'utente sceglie un file
-        docFileInput.onchange = () => {
-          const file = docFileInput.files && docFileInput.files[0];
-          if (!file) return;
+    const docType = item.getAttribute("data-doc");
+    const docCategory = item.getAttribute("data-type");
 
-          if (docCategory === "owner"){
-            if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
-            state.ownerDocsUploaded[d.id].identity = true;
-            localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+    // quando l'utente sceglie un file
+    docFileInput.onchange = () => {
+      const file = docFileInput.files && docFileInput.files[0];
+      if (!file) return;
 
-            if (!d.verified){
-              d.verified = true;
-              alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
-            }
-          } else if (docCategory === "dog"){
-            if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
-            const docName = docType.replace("dog-", "");
-            state.dogDocsUploaded[d.id][docName] = true;
-            localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
-          }
+      if (docCategory === "owner"){
+        if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
+        state.ownerDocsUploaded[d.id].identity = true;
+        localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
 
-          // ricarico il profilo per aggiornare le etichette "Caricato"
-          openProfilePage(d);
-        };
+        if (!d.verified){
+          d.verified = true;
+          alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+        }
+      } else if (docCategory === "dog"){
+        if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
+        const docName = docType.replace("dog-", "");
+        state.dogDocsUploaded[d.id][docName] = true;
+        localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
+      }
 
-        // apro il selettore file
-        docFileInput.click();
-      });
-    });
+      // ricarico il profilo per aggiornare le etichette "Caricato"
+      openProfilePage(d);
+    };
+
+    // apro il selettore file
+    docFileInput.click();
+  });
+});
 
   qa(".social-btn", profileContent).forEach(btn=>{
   btn.addEventListener("click", ()=>{
