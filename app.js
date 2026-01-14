@@ -358,6 +358,7 @@ btnEnter?.addEventListener("click", async (e) => {
       else localStorage.removeItem("plutoo_dog_id");
       localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
     } catch (_) {}
+    
   } catch (err) {
     // fallback safe: segnala "DOG assente" e prosegue
     window.PLUTOO_HAS_DOG = false;
