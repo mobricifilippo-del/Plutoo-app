@@ -374,6 +374,7 @@ try {
       }
     } else {
       btnCreateDogTopbar.classList.add("hidden");
+      btnCreateDogTopbar.classList.remove("attention");
       btnCreateDogTopbar.style.setProperty("display","none","important");
     }
   }
