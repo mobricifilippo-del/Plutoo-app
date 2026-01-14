@@ -2380,3 +2380,18 @@ line-height: 1.6;
   margin-top: 1.4rem;
   gap: .6rem;
 }
+
+/* ===============================
+   TOPBAR – CTA CREA PROFILO DOG
+   =============================== */
+#btnCreateDogTopbar{
+  margin-top: 4px;
+  padding: .38rem .55rem;
+  border-radius: 12px;
+  font-size: .82rem;
+  line-height: 1;
+  box-shadow: none;
+  filter: none;
+  white-space: nowrap;
+  max-width: 220px;
+}
