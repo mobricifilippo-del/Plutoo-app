@@ -370,38 +370,6 @@ btnEnter?.addEventListener("click", async (e) => {
     } catch (_) {}
   }
 
-  // ================== TOPBAR: CREA PROFILO DOG ==================
-try {
-  const btnCreateDogTopbar = document.getElementById("btnCreateDogTopbar");
-  if (btnCreateDogTopbar) {
-    // Mostra SOLO se non hai un DOG reale
-    if (window.PLUTOO_HAS_DOG === false) {
-      btnCreateDogTopbar.classList.remove("hidden");
-
-      // bind idempotente
-      if (btnCreateDogTopbar.dataset.bound !== "1") {
-        btnCreateDogTopbar.dataset.bound = "1";
-        btnCreateDogTopbar.addEventListener("click", (ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          // azione definitiva
-          if (typeof openCreateDogSheet === "function") {
-            openCreateDogSheet();
-            return;
-          }
-
-          console.error("openCreateDogSheet non definita");
-        });
-      }
-    } else {
-      btnCreateDogTopbar.classList.add("hidden");
-    }
-  }
-} catch (e) {
-  console.error("Topbar Create DOG error:", e);
-}
-
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
   state.entered = true;
