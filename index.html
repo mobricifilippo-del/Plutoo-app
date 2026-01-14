@@ -75,29 +75,45 @@
     <a href="contatti.html">Contatti</a>
   </div>
 </div>
+ </div>
+  
+  <!-- ==================== APP SCREEN ==================== -->
+<div id="appScreen" class="app hidden">
+  <!-- Top Bar -->
+  <div id="mainTopbar" class="topbar">
+    <div class="left">
+      <button id="btnBack" class="btn small ghost" aria-label="Back">←</button>
+      <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" style="width:32px;height:32px">
 
-  </div>  <!-- ==================== APP SCREEN ==================== -->  <div id="appScreen" class="app hidden">
-    <!-- Top Bar -->
-    <div id="mainTopbar" class="topbar">
-      <div class="left">
-        <button id="btnBack" class="btn small ghost" aria-label="Back">←</button>
-        <img src="plutoo-icon-192.png" alt="Plutoo" class="logo" style="width:32px;height:32px">
+      <!-- BRAND + CTA CREA PROFILO DOG -->
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px">
         <span class="brand-mini" data-i18n="brand">Plutoo</span>
-      </div><div class="tabs" role="tablist">
-    <button id="tabNearby" class="tab active" role="tab" data-i18n="nearby">Vicino a te</button>
-    <button id="tabLove" class="tab" role="tab" data-i18n="love">Accoppiamento</button>
-    <div class="tab dropdown" role="menuitem">
-      <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">LuoghiPET 🐾 ▼</button>
-      <div id="luoghiMenu" class="dropdown-menu" role="menu">
-        <button class="menu-item" data-cat="vets">🏥 Veterinari</button>
-        <button class="menu-item" data-cat="groomers">✂️ Toelettature</button>
-        <button class="menu-item" data-cat="shops">🛒 Negozi</button>
-        <button class="menu-item" data-cat="trainers">🎓 Addestratori</button>
-        <button class="menu-item" data-cat="kennels">🏠 Pensioni</button>
-        <button class="menu-item" data-cat="parks">🌳 Parchi</button>
+
+        <!-- CTA visibile solo se NON hai un profilo DOG (gestita via JS) -->
+        <button id="btnCreateDogTopbar" class="btn small plus-btn hidden" type="button">
+          ➕ <span data-i18n="createDog">Crea profilo DOG</span>
+        </button>
       </div>
     </div>
-  </div>
+
+    <div class="tabs" role="tablist">
+      <button id="tabNearby" class="tab active" role="tab" data-i18n="nearby">Vicino a te</button>
+      <button id="tabLove" class="tab" role="tab" data-i18n="love">Accoppiamento</button>
+
+      <div class="tab dropdown" role="menuitem">
+        <button id="tabLuoghi" class="tab" aria-haspopup="true" aria-expanded="false">
+          LuoghiPET 🐾 ▼
+        </button>
+        <div id="luoghiMenu" class="dropdown-menu" role="menu">
+          <button class="menu-item" data-cat="vets">🏥 Veterinari</button>
+          <button class="menu-item" data-cat="groomers">✂️ Toelettature</button>
+          <button class="menu-item" data-cat="shops">🛒 Negozi</button>
+          <button class="menu-item" data-cat="trainers">🎓 Addestratori</button>
+          <button class="menu-item" data-cat="kennels">🏠 Pensioni</button>
+          <button class="menu-item" data-cat="parks">🌳 Parchi</button>
+        </div>
+      </div>
+    </div>
 
   <div class="right">
     <button id="btnPlus" class="btn small plus-btn" aria-label="Plutoo Plus">
