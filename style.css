@@ -250,6 +250,33 @@ a{color:inherit;text-decoration:none}
 
 /* Utility visibility */
 .hidden{display:none !important}
+
+/* ===============================
+   TOPBAR – CTA CREA PROFILO DOG (ROUND + PULSE)
+   =============================== */
+#btnCreateDogTopbar{
+  border-radius: 999px !important;
+  padding: .42rem .75rem !important;
+  font-size: .82rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  border: 1px solid rgba(0,0,0,.18) !important;
+  background: linear-gradient(135deg,#E8CE7A,#CDA434) !important;
+  color:#111 !important;
+  box-shadow: 0 6px 18px rgba(205,164,52,.42), inset 0 0 0 1px rgba(255,255,255,.28) !important;
+}
+
+/* pulsazione SOLO quando JS aggiunge .attention */
+#btnCreateDogTopbar.attention{
+  animation: plutooCtaPulse 1.05s ease-in-out infinite !important;
+}
+
+@keyframes plutooCtaPulse{
+  0%   { transform: scale(1);   filter: brightness(1);   box-shadow: 0 6px 18px rgba(205,164,52,.42), inset 0 0 0 1px rgba(255,255,255,.28); }
+  50%  { transform: scale(1.06); filter: brightness(1.08); box-shadow: 0 10px 26px rgba(205,164,52,.65), 0 0 18px rgba(205,164,52,.35), inset 0 0 0 1px rgba(255,255,255,.35); }
+  100% { transform: scale(1);   filter: brightness(1);   box-shadow: 0 6px 18px rgba(205,164,52,.42), inset 0 0 0 1px rgba(255,255,255,.28); }
+}
+
 .modal.hidden,.panel.hidden{display:none !important}
 .story-open .hidden{display:none !important}
 
