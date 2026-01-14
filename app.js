@@ -342,7 +342,7 @@ btnEnter?.addEventListener("click", async (e) => {
       .get();
 
     const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;
-    const dogId = hasDog ? (snap.docs[0]?.id || null) : null;
+    const dogId = (!snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0) ? (snap.docs[0]?.id || null) : null;
 
     // Stato globale (runtime)
     window.PLUTOO_HAS_DOG = hasDog;
