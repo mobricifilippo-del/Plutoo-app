@@ -505,7 +505,7 @@ try {
               const isAddPhoto = node && node.classList && node.classList.contains("add-photo");
               const isDocItem = node && node.classList && node.classList.contains("doc-item");
 
-              if (SENSITIVE.has(id) || isAddPhoto || isDocItem) {
+              if (!(id === "btnOpenChat" || id === "btnSendMessage" || id === "unlockSelfie")) {
                 ev.preventDefault();
                 ev.stopPropagation();
                 ev.stopImmediatePropagation();
