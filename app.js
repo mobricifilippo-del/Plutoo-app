@@ -351,6 +351,35 @@ btnEnter?.addEventListener("click", async (e) => {
     // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
     window.PLUTOO_READONLY = !hasDog;
 
+    // ================== TOPBAR: CREA PROFILO DOG ==================
+try {
+  const btnCreateDogTopbar = document.getElementById("btnCreateDogTopbar");
+  if (btnCreateDogTopbar) {
+    if (window.PLUTOO_HAS_DOG === false) {
+      btnCreateDogTopbar.classList.remove("hidden");
+      btnCreateDogTopbar.style.display = "inline-flex";
+
+      if (btnCreateDogTopbar.dataset.bound !== "1") {
+        btnCreateDogTopbar.dataset.bound = "1";
+        btnCreateDogTopbar.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          if (typeof openCreateDogSheet === "function") {
+            openCreateDogSheet();
+            return;
+          }
+          console.error("openCreateDogSheet non definita");
+        });
+      }
+    } else {
+      btnCreateDogTopbar.classList.add("hidden");
+      btnCreateDogTopbar.style.display = "none";
+    }
+  }
+} catch (e) {
+  console.error("Topbar Create DOG error:", e);
+}
+
     // Cache (non source of truth)
     try {
       localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
