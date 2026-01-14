@@ -2380,7 +2380,3 @@ line-height: 1.6;
   margin-top: 1.4rem;
   gap: .6rem;
 }
-
-/* TOPBAR: consenti CTA sotto "Plutoo" senza tagli */
-#mainTopbar .left { overflow: visible !important; }
-#mainTopbar { overflow: visible !important; }
