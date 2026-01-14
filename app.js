@@ -358,6 +358,7 @@ try {
     if (window.PLUTOO_HAS_DOG === false) {
       btnCreateDogTopbar.classList.remove("hidden");
       btnCreateDogTopbar.style.setProperty("display","inline-flex","important");
+      btnCreateDogTopbar.classList.add("attention");
 
       if (btnCreateDogTopbar.dataset.bound !== "1") {
         btnCreateDogTopbar.dataset.bound = "1";
