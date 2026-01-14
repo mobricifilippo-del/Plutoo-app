@@ -348,6 +348,10 @@ btnEnter?.addEventListener("click", async (e) => {
     window.PLUTOO_HAS_DOG = hasDog;
     window.PLUTOO_DOG_ID = dogId;
 
+    // ✅ Source of truth per "mio DOG" (serve al profilo)
+try { CURRENT_USER_DOG_ID = dogId ? String(dogId) : ""; } catch (_) {}
+window.CURRENT_USER_DOG_ID = dogId ? String(dogId) : "";
+
     // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
     window.PLUTOO_READONLY = !hasDog;
 
@@ -362,6 +366,8 @@ btnEnter?.addEventListener("click", async (e) => {
     // fallback safe: segnala "DOG assente" e prosegue
     window.PLUTOO_HAS_DOG = false;
     window.PLUTOO_DOG_ID = null;
+    try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
+window.CURRENT_USER_DOG_ID = "";
     window.PLUTOO_READONLY = true;
     try {
       localStorage.setItem("plutoo_has_dog", "0");
