@@ -357,7 +357,7 @@ try {
   if (btnCreateDogTopbar) {
     if (window.PLUTOO_HAS_DOG === false) {
       btnCreateDogTopbar.classList.remove("hidden");
-      btnCreateDogTopbar.style.display = "inline-flex";
+      btnCreateDogTopbar.style.setProperty("display","inline-flex","important");
 
       if (btnCreateDogTopbar.dataset.bound !== "1") {
         btnCreateDogTopbar.dataset.bound = "1";
@@ -373,7 +373,7 @@ try {
       }
     } else {
       btnCreateDogTopbar.classList.add("hidden");
-      btnCreateDogTopbar.style.display = "none";
+      btnCreateDogTopbar.style.setProperty("display","none","important");
     }
   }
 } catch (e) {
