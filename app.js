@@ -341,7 +341,7 @@ btnEnter?.addEventListener("click", async (e) => {
       .limit(1)
       .get();
 
-    const hasDog = !snap.empty;
+    const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;
     const dogId = hasDog ? (snap.docs[0]?.id || null) : null;
 
     // Stato globale (runtime)
