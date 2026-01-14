@@ -2382,16 +2382,14 @@ line-height: 1.6;
 }
 
 /* ===============================
-   TOPBAR – CTA CREA PROFILO DOG
+   CTA CREA PROFILO DOG – PULSE
    =============================== */
-#btnCreateDogTopbar{
-  margin-top: 4px;
-  padding: .38rem .55rem;
-  border-radius: 12px;
-  font-size: .82rem;
-  line-height: 1;
-  box-shadow: none;
-  filter: none;
-  white-space: nowrap;
-  max-width: 220px;
+@keyframes dogPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(205,164,52,.55); }
+  70%  { box-shadow: 0 0 0 10px rgba(205,164,52,0); }
+  100% { box-shadow: 0 0 0 0 rgba(205,164,52,0); }
+}
+
+#btnCreateDogTopbar.attention{
+  animation: dogPulse 1.4s infinite;
 }
