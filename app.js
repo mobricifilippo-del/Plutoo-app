@@ -408,6 +408,7 @@ try {
     // Mostra SOLO se non hai un DOG reale
     if (window.PLUTOO_HAS_DOG === false) {
       btnCreateDogTopbar.classList.remove("hidden");
+      btnCreateDogTopbar.style.display = "inline-flex";
 
       // bind idempotente
       if (btnCreateDogTopbar.dataset.bound !== "1") {
@@ -427,6 +428,7 @@ try {
       }
     } else {
       btnCreateDogTopbar.classList.add("hidden");
+btnCreateDogTopbar.style.display = "none";
     }
   }
 } catch (e) {
