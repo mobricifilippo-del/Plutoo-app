@@ -348,10 +348,6 @@ btnEnter?.addEventListener("click", async (e) => {
     window.PLUTOO_HAS_DOG = hasDog;
     window.PLUTOO_DOG_ID = dogId;
 
-    // ✅ Source of truth per "mio DOG" (serve al profilo)
-try { CURRENT_USER_DOG_ID = dogId ? String(dogId) : ""; } catch (_) {}
-window.CURRENT_USER_DOG_ID = dogId ? String(dogId) : "";
-
     // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
     window.PLUTOO_READONLY = !hasDog;
 
@@ -366,8 +362,6 @@ window.CURRENT_USER_DOG_ID = dogId ? String(dogId) : "";
     // fallback safe: segnala "DOG assente" e prosegue
     window.PLUTOO_HAS_DOG = false;
     window.PLUTOO_DOG_ID = null;
-    try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
-window.CURRENT_USER_DOG_ID = "";
     window.PLUTOO_READONLY = true;
     try {
       localStorage.setItem("plutoo_has_dog", "0");
@@ -3014,188 +3008,117 @@ storyLikeBtn.classList.add("heart-anim");
     } catch (_) {}
   }
 
-  // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
-window.openProfilePage = (d)=>{
+// ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============ window.openProfilePage = (d)=>{
 
-  // ✅ GUARD-RAIL (anti crash da notifiche/fallback)
-  try {
-    if (!d || typeof d !== "object") d = {};
-    if (d.id == null && d.dogId != null) d.id = d.dogId;
-    d.id = (d.id != null) ? String(d.id) : "";
-    if (!d.id) return;
+// ✅ GUARD-RAIL (anti crash da notifiche/fallback) try { if (!d || typeof d !== "object") d = {}; if (d.id == null && d.dogId != null) d.id = d.dogId; d.id = (d.id != null) ? String(d.id) : ""; if (!d.id) return;
 
-    // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])
-    if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};
-    if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {};
-    if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {};
-    if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};
+// state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])
+if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};
+if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {};
+if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {};
+if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};
 
-    // campi minimi safe (evita undefined in template)
-    d.name  = (d.name  != null) ? String(d.name)  : "";
-    d.img   = (d.img   != null) ? String(d.img)   : "";
-    d.breed = (d.breed != null) ? String(d.breed) : "";
-    d.bio   = (d.bio   != null) ? String(d.bio)   : "";
-  } catch (e) {
-    console.error("openProfilePage guard-rail:", e);
-    return;
+// campi minimi safe (evita undefined in template)
+d.name  = (d.name  != null) ? String(d.name)  : "";
+d.img   = (d.img   != null) ? String(d.img)   : "";
+d.breed = (d.breed != null) ? String(d.breed) : "";
+d.bio   = (d.bio   != null) ? String(d.bio)   : "";
+
+} catch (e) { console.error("openProfilePage guard-rail:", e); return; }
+
+state.currentDogProfile = d; localStorage.setItem("currentProfileDogId", d.id); setActiveView("profile");
+
+history.pushState({view: "profile", dogId: d.id}, "", "");
+
+profilePage.classList.remove("hidden");
+
+const selfieUnlocked = isSelfieUnlocked(d.id); const ownerDocs = state.ownerDocsUploaded[d.id] || {}; const dogDocs = state.dogDocsUploaded[d.id] || {}; const selfieKey    = selfieImage_${d.id}; const selfieStored = localStorage.getItem(selfieKey); const selfieSrc    = selfieStored || d.img;
+
+const dogStories = window.StoriesState && Array.isArray(window.StoriesState.stories) ? window.StoriesState.stories.find(s => s.userId === d.id) : null;
+
+const storiesHTML = dogStories ? <div class="pp-stories-section"> <div class="pp-stories-header"> <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4> <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button> </div> <div class="pp-stories-grid" id="dogStoriesGrid"> ${dogStories.media.map((m, idx) => <div class="pp-story-item" data-story-index="${idx}"> <img src="${m.url}" alt="Story" /> <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span> </div> ).join('')} </div> </div>  : <div class="pp-stories-section"> <div class="pp-stories-header"> <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4> <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button> </div> <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p> </div>;
+
+profileContent.innerHTML = ` <div class="pp-hero"> <img src="${d.img}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"> </div> <div class="pp-head"> <h2 class="pp-name"> <span class="pp-name-main">${d.name} ${d.verified?"✅":""}</span> <button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button> <span class="pp-follow-stats"> <button type="button" id="followersCount" class="pp-follow-count">0 follower</button> <span class="pp-follow-dot">·</span> <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button> </span> </h2> <div class="pp-badges"> <span class="badge">${d.breed}</span> <span class="badge">${d.age} ${t("years")}</span> <span class="badge">${fmtKm(d.km)}</span> <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span> </div> </div> <div class="pp-meta soft">${d.bio||""}</div>
+
+${storiesHTML}
+
+<h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
+<div class="gallery">
+  <div class="ph"><img src="${d.img}" alt=""></div>
+  <div class="ph"><img src="${d.img}" alt=""></div>
+  <div class="ph"><img src="${d.img}" alt=""></div>
+  <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
+</div>
+
+<h3 class="section-title">Selfie</h3>
+<div class="selfie ${selfieUnlocked?'unlocked':''}">
+  <img class="img" src="${selfieSrc}" alt="Selfie">
+  <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
+  <div class="over">
+    <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>
+    <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
+  </div>
+</div>
+
+<h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
+
+<div class="pp-docs-section">
+  <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>
+  <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>
+  <div class="pp-docs-grid">
+    <div class="doc-item" data-doc="owner-identity" data-type="owner">
+      <div class="doc-icon">🪪</div>
+      <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>
+      <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+    </div>
+  </div>
+</div>
+
+<div class="pp-docs-section" style="margin-top:1.2rem">
+  <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>
+  <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>
+  <div class="pp-docs-grid">
+    <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
+      <div class="doc-icon">💉</div>
+      <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>
+      <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+    </div>
+    <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
+      <div class="doc-icon">📜</div>
+      <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>
+      <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+    </div>
+    <div class="doc-item" data-doc="dog-microchip" data-type="dog">
+      <div class="doc-icon">🔬</div>
+      <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>
+      <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+    </div>
+  </div>
+</div>
+
+${generateSocialSection(d)}
+
+<div class="pp-actions">
+  ${
+    (window.PLUTOO_READONLY)
+      ? `<button id="btnCreateDogProfile" class="btn primary">➕ ${state.lang==="it"?"Crea profilo DOG":"Create DOG profile"}</button>`
+      : ``
   }
 
-  state.currentDogProfile = d;
-  localStorage.setItem("currentProfileDogId", d.id);
-  setActiveView("profile");
+  <button id="btnLikeDog" class="btn accent">💛 Like</button>
+  <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
 
-  history.pushState({view: "profile", dogId: d.id}, "", "");
+  ${
+    (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
+      ? `
+        <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
+        <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
+      `
+      : ``
+  }
+</div>
 
-  profilePage.classList.remove("hidden");
-
-  const selfieUnlocked = isSelfieUnlocked(d.id);
-  const ownerDocs = state.ownerDocsUploaded[d.id] || {};
-  const dogDocs = state.dogDocsUploaded[d.id] || {};
-  const selfieKey   = `selfieImage_${d.id}`; // ✅ FIX: backtick
-  const selfieStored = localStorage.getItem(selfieKey);
-  const selfieSrc    = selfieStored || d.img;
-
-  const dogStories =
-    window.StoriesState && Array.isArray(window.StoriesState.stories)
-      ? window.StoriesState.stories.find(s => s.userId === d.id)
-      : null;
-
-  const storiesHTML = dogStories ? `
-    <div class="pp-stories-section">
-      <div class="pp-stories-header">
-        <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
-        <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
-      </div>
-      <div class="pp-stories-grid" id="dogStoriesGrid">
-        ${(dogStories.media || []).map((m, idx) => `
-          <div class="pp-story-item" data-story-index="${idx}">
-            <img src="${m.url}" alt="Story" />
-            <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-  ` : `
-    <div class="pp-stories-section">
-      <div class="pp-stories-header">
-        <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
-        <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
-      </div>
-      <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>
-    </div>
-  `;
-
-  profileContent.innerHTML = `
-    <div class="pp-hero">
-      <img src="${d.img}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-    </div>
-
-    <div class="pp-head">
-      <h2 class="pp-name">
-        <span class="pp-name-main">${d.name} ${d.verified?"✅":""}</span>
-
-        <button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>
-
-        <span class="pp-follow-stats">
-          <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
-          <span class="pp-follow-dot">·</span>
-          <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
-        </span>
-      </h2>
-
-      <div class="pp-badges">
-        <span class="badge">${d.breed}</span>
-        <span class="badge">${d.age} ${t("years")}</span>
-        <span class="badge">${fmtKm(d.km)}</span>
-        <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>
-      </div>
-    </div>
-
-    <div class="pp-meta soft">${d.bio||""}</div>
-
-    ${storiesHTML}
-
-    <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
-    <div class="gallery">
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
-    </div>
-
-    <h3 class="section-title">Selfie</h3>
-    <div class="selfie ${selfieUnlocked?'unlocked':''}">
-      <img class="img" src="${selfieSrc}" alt="Selfie">
-      <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
-      <div class="over">
-        <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>
-        <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
-      </div>
-    </div>
-
-    <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
-
-    <div class="pp-docs-section">
-      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>
-      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>
-
-      <div class="pp-docs-grid">
-        <div class="doc-item" data-doc="owner-identity" data-type="owner">
-          <div class="doc-icon">🪪</div>
-          <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>
-          <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pp-docs-section" style="margin-top:1.2rem">
-      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>
-      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>
-
-      <div class="pp-docs-grid">
-        <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
-          <div class="doc-icon">💉</div>
-          <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>
-          <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-
-        <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
-          <div class="doc-icon">📜</div>
-          <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>
-          <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-
-        <div class="doc-item" data-doc="dog-microchip" data-type="dog">
-          <div class="doc-icon">🔬</div>
-          <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>
-          <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-      </div>
-    </div>
-
-    ${generateSocialSection(d)}
-
-    <div class="pp-actions">
-      ${
-        (window.PLUTOO_READONLY)
-          ? `<button id="btnCreateDogProfile" class="btn primary">➕ ${state.lang==="it"?"Crea profilo DOG":"Create DOG profile"}</button>`
-          : ``
-      }
-
-      <button id="btnLikeDog" class="btn accent">💛 Like</button>
-      <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
-
-      ${
-        (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
-          ? `
-            <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
-            <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
-          `
-          : ``
-      }
-    </div>
-  `;
-};
+`;
 
 // ========================= // ✅ CTA "Crea profilo DOG" (solo vetrina) — IDPOTENTE (non duplica listener) // ========================= (function bindCreateDogProfileOnce() { const btn = document.getElementById("btnCreateDogProfile"); if (!btn) return; if (btn.dataset.bound === "1") return; btn.dataset.bound = "1";
 
