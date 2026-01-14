@@ -477,19 +477,18 @@ try {
         if (!window.__plutooReadonlyBound) {
           window.__plutooReadonlyBound = true;
 
-          const SENSITIVE = new Set([
-            "btnOpenChat",
-            "btnLikeDog",
-            "followBtn",
-            "profileLikeBtn",
-            "storyLikeBtn",
-            "unlockSelfie",
-            "uploadSelfie",
-            "publishStory",
-            "nextToCustomize",
-            "btnProfileSettings",
-            "btnEditSocial"
-          ]);
+  const SENSITIVE = new Set([
+  "btnMessages",        // APRI CHAT
+  "btnLikeDog",
+  "followBtn",
+  "profileLikeBtn",
+  "storyLikeBtn",
+  "uploadSelfie",
+  "publishStory",
+  "nextToCustomize",
+  "btnProfileSettings",
+  "btnEditSocial"
+]);
 
           document.addEventListener("click", (ev) => {
             try {
