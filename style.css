@@ -2380,3 +2380,10 @@ line-height: 1.6;
   margin-top: 1.4rem;
   gap: .6rem;
 }
+
+/* TOPBAR: CTA "Crea profilo DOG" sempre visibile sotto Plutoo */
+#mainTopbar #btnCreateDogTopbar{
+  margin-top: 2px;
+  white-space: nowrap;
+  max-width: 100%;
+}
