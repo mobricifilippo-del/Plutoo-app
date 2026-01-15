@@ -416,38 +416,77 @@ a{color:inherit;text-decoration:none}
   display:none !important;
 }
 
-#btnMessages{
-  margin-top:.45rem;
-}
-.topbar .logo{border-radius:8px}
-.brand-mini{color:var(--gold)}
+#btnMessages{ margin-top:.45rem; }
+.topbar .logo{ border-radius:8px; }
+.brand-mini{ color:var(--gold); }
 
-/* CTA: quando nascosta non deve lasciare spazio */
-#btnCreateDogTopbar.hidden{
-  display:none !important;
-}
+/* ===== FIX DEFINITIVO: TOPBAR A 3 COLONNE (NON ESCE PIU' FUORI) ===== */
+#mainTopbar.topbar{
+  position:sticky; top:0; z-index:1000;
+  background:rgba(12,12,18,.94);
+  -webkit-backdrop-filter:saturate(120%) blur(6px);
+  backdrop-filter:saturate(120%) blur(6px);
+  border-bottom:1px solid var(--line);
+  padding:.35rem .9rem;
 
-/* CTA: stile PUBBLICABILE dentro la topbar (non esce fuori) */
-#btnCreateDogTopbar{
-  display:inline-flex;
+  /* griglia: sinistra / centro / destra */
+  display:grid;
+  grid-template-columns: minmax(0, 260px) 1fr auto;
   align-items:center;
+  column-gap:.8rem;
+
+  /* IMPORTANTISSIMO: niente tagli strani */
+  overflow: visible;
+}
+
+/* SINISTRA: può restringersi senza spingere fuori */
+#mainTopbar .left{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+}
+
+/* il wrapper brand+cta NON deve allargare la colonna */
+#mainTopbar .left > div{
+  min-width:0;
+}
+
+/* CTA: non deve mai allargare oltre la colonna sinistra */
+#btnCreateDogTopbar{
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* CENTRO: tabs sempre al centro, e se serve vanno a capo */
+#mainTopbar .tabs{
+  min-width:0;
+  display:flex;
   justify-content:center;
+  align-items:center;
+  gap:.7rem;
+  flex-wrap:wrap;
+  row-gap:.55rem;
+  white-space:normal;
+}
 
-  padding:.5rem 1rem;
-  border-radius:999px;
+/* DESTRA: sempre attaccata a destra, non scende mai fuori */
+#mainTopbar .right{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  justify-self:end;
+  flex:0 0 auto;
+}
 
-  font-size:.92rem;
-  font-weight:800;
-  line-height:1;
-
-  background:linear-gradient(135deg,#E8CE7A,#CDA434);
-  color:#121218;
-
-  border:1px solid rgba(0,0,0,.18);
-  box-shadow:0 10px 26px rgba(205,164,52,.35);
-
-  white-space:nowrap;
-  max-width:100%;
+/* desktop: tabs in una riga */
+@media (min-width:720px){
+  #mainTopbar .tabs{
+    flex-wrap:nowrap;
+    white-space:nowrap;
+  }
 }
 
 /* ✅ pulsazione quando JS aggiunge .attention */
