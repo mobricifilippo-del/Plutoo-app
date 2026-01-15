@@ -289,13 +289,6 @@ a{color:inherit;text-decoration:none}
   display: none !important;
 }
 
-/* icona + centrata */
-#btnCreateDogTopbar svg,
-#btnCreateDogTopbar .icon{
-  width: 20px;
-  height: 20px;
-}
-
 /* pulsazione */
 #btnCreateDogTopbar.attention{
   animation: plutooCtaPulse 1.1s ease-in-out infinite;
