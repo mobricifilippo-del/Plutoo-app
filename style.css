@@ -361,11 +361,17 @@ a{color:inherit;text-decoration:none}
 
 .topbar{
   position:sticky;top:0;z-index:1000;
-  display:flex;align-items:center;gap:.8rem;
+  display:flex;
+  align-items:flex-start;
+  gap:.8rem;
   background:rgba(12,12,18,.94);
   -webkit-backdrop-filter:saturate(120%) blur(6px);
   backdrop-filter:saturate(120%) blur(6px);
-  border-bottom:1px solid var(--line);padding:.35rem .9rem;
+  border-bottom:1px solid var(--line);
+  padding:.35rem .9rem;
+
+  flex-wrap:wrap;
+  overflow:visible;
 }
 
 .topbar .left{
