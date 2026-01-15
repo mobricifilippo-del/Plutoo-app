@@ -457,6 +457,12 @@ a{color:inherit;text-decoration:none}
 .topbar .logo{border-radius:8px}
 .brand-mini{color:var(--gold)}
 
+/* quando c'è CTA crea profilo, nasconde il brand "Plutoo" per evitare disallineamenti */
+#btnCreateDogTopbar:not(.hidden) ~ .brand-mini,
+#btnCreateDogTopbar:not(.hidden) + .brand-mini{
+  display:none !important;
+}
+
 .tabs{
     display:flex;
     align-items:center;
