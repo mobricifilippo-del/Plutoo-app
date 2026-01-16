@@ -420,68 +420,89 @@ a{color:inherit;text-decoration:none}
 .topbar .logo{ border-radius:8px; }
 .brand-mini{ color:var(--gold); }
 
-/* ============ TOPBAR (GRID 3 COLONNE) ============ */
+/* ===============================
+   TOPBAR – FIX OVERFLOW (MOBILE 2 RIGHE, DESKTOP 1 RIGA)
+   =============================== */
+
 .topbar{
-  position:sticky;
-  top:0;
-  z-index:1000;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  grid-template-areas:"left tabs right";
-  align-items:center;
-  column-gap:.8rem;
+  display: flex;
+  flex-wrap: wrap;              /* ✅ permette 2 righe */
+  align-items: center;
+  gap: .6rem;
 
-  background:rgba(12,12,18,.94);
-  -webkit-backdrop-filter:saturate(120%) blur(6px);
-  backdrop-filter:saturate(120%) blur(6px);
+  background: rgba(12,12,18,.94);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  backdrop-filter: saturate(120%) blur(6px);
 
-  border-bottom:1px solid var(--line);
-  padding:.35rem .9rem;
+  border-bottom: 1px solid var(--line);
+  padding: .35rem .9rem;
 
-  overflow:hidden;              /* niente roba fuori quadro */
+  overflow: hidden;             /* ✅ niente “esce fuori” */
 }
 
+/* Riga 1: LEFT + RIGHT */
 .topbar .left{
-  grid-area:left;
-  display:flex;
-  align-items:center;
-  gap:.6rem;
-  min-width:0;
-  max-width:46vw;               /* blocca la “colonna sinistra” */
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+
+  flex: 1 1 auto;
+  min-width: 0;                 /* ✅ obbligatorio per non sfondare */
+  order: 1;
 }
 
 .topbar .right{
-  grid-area:right;
-  display:flex;
-  flex-direction:row !important;
-  align-items:center;
-  justify-content:flex-end;
-  gap:.55rem;
-  min-width:max-content;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+
+  flex: 0 0 auto;
+  margin-left: auto;            /* ✅ resta a destra */
+  order: 2;
 }
 
-.tabs{
-  grid-area:tabs;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* Riga 2: TABS sempre sotto (mobile) */
+.topbar .tabs{
+  flex: 0 0 100%;
+  width: 100%;
+  order: 3;
 
-  gap:.7rem;
-  min-width:0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
 
-  flex-wrap:nowrap;
-  white-space:nowrap;
+  margin-top: .25rem;
 
-  overflow:auto;                /* se non entra, scroll orizzontale (non rompe) */
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
+  flex-wrap: nowrap;            /* ✅ non va a capo “a caso” */
+  overflow-x: auto;             /* ✅ se manca spazio, scorre invece di rompere */
+  -webkit-overflow-scrolling: touch;
 }
-.tabs::-webkit-scrollbar{display:none;}
 
-@media (min-width:720px){
-  .tabs{
-    overflow:visible;           /* su schermi larghi niente scroll */
+/* opzionale: scrollbar quasi invisibile */
+.topbar .tabs::-webkit-scrollbar{ height: 4px; }
+.topbar .tabs::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.12); border-radius: 999px; }
+
+/* Desktop: torna 1 riga */
+@media (min-width: 720px){
+  .topbar{
+    flex-wrap: nowrap;
+  }
+  .topbar .tabs{
+    flex: 1 1 auto;
+    width: auto;
+    order: 2;
+
+    margin-top: 0;
+    overflow-x: hidden;
+    justify-content: center;
+  }
+  .topbar .right{
+    order: 3;
   }
 }
 
