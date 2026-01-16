@@ -473,12 +473,15 @@ a{color:inherit;text-decoration:none}
 }
 
 /* DESTRA: sempre attaccata a destra, non scende mai fuori */
-#mainTopbar .right{
+.topbar .right{
   display:flex;
+  flex-direction:row !important;
   align-items:center;
+  justify-content:flex-end;
   gap:.55rem;
-  justify-self:end;
+  margin-left:auto;
   flex:0 0 auto;
+  z-index:2;
 }
 
 /* desktop: tabs in una riga */
