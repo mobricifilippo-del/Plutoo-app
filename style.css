@@ -420,75 +420,68 @@ a{color:inherit;text-decoration:none}
 .topbar .logo{ border-radius:8px; }
 .brand-mini{ color:var(--gold); }
 
-/* ===== FIX DEFINITIVO: TOPBAR A 3 COLONNE (NON ESCE PIU' FUORI) ===== */
-#mainTopbar.topbar{
-  position:sticky; top:0; z-index:1000;
-  background:rgba(12,12,18,.94);
-  -webkit-backdrop-filter:saturate(120%) blur(6px);
-  backdrop-filter:saturate(120%) blur(6px);
-  border-bottom:1px solid var(--line);
-  padding:.35rem .9rem;
+/* ============ TOPBAR (GRID 3 COLONNE) ============ */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:1000;
 
-  /* griglia: sinistra / centro / destra */
   display:grid;
-  grid-template-columns: minmax(0, 260px) 1fr auto;
+  grid-template-columns:auto 1fr auto;
+  grid-template-areas:"left tabs right";
   align-items:center;
   column-gap:.8rem;
 
-  /* IMPORTANTISSIMO: niente tagli strani */
-  overflow: visible;
+  background:rgba(12,12,18,.94);
+  -webkit-backdrop-filter:saturate(120%) blur(6px);
+  backdrop-filter:saturate(120%) blur(6px);
+
+  border-bottom:1px solid var(--line);
+  padding:.35rem .9rem;
+
+  overflow:hidden;              /* niente roba fuori quadro */
 }
 
-/* SINISTRA: può restringersi senza spingere fuori */
-#mainTopbar .left{
-  min-width:0;
+.topbar .left{
+  grid-area:left;
   display:flex;
   align-items:center;
   gap:.6rem;
-}
-
-/* il wrapper brand+cta NON deve allargare la colonna */
-#mainTopbar .left > div{
   min-width:0;
+  max-width:46vw;               /* blocca la “colonna sinistra” */
 }
 
-/* CTA: non deve mai allargare oltre la colonna sinistra */
-#btnCreateDogTopbar{
-  max-width: 220px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* CENTRO: tabs sempre al centro, e se serve vanno a capo */
-#mainTopbar .tabs{
-  min-width:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:.7rem;
-  flex-wrap:wrap;
-  row-gap:.55rem;
-  white-space:normal;
-}
-
-/* DESTRA: sempre attaccata a destra, non scende mai fuori */
 .topbar .right{
+  grid-area:right;
   display:flex;
   flex-direction:row !important;
   align-items:center;
   justify-content:flex-end;
   gap:.55rem;
-  margin-left:auto;
-  flex:0 0 auto;
-  z-index:2;
+  min-width:max-content;
 }
 
-/* desktop: tabs in una riga */
+.tabs{
+  grid-area:tabs;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:.7rem;
+  min-width:0;
+
+  flex-wrap:nowrap;
+  white-space:nowrap;
+
+  overflow:auto;                /* se non entra, scroll orizzontale (non rompe) */
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none;}
+
 @media (min-width:720px){
-  #mainTopbar .tabs{
-    flex-wrap:nowrap;
-    white-space:nowrap;
+  .tabs{
+    overflow:visible;           /* su schermi larghi niente scroll */
   }
 }
 
