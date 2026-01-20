@@ -19,7 +19,8 @@
   <audio id="dogBark" preload="auto">
   <source src="dog-bark.mp3" type="audio/mpeg">
   </audio>  
-  <!-- ==================== HOME SCREEN ==================== -->  <div id="homeScreen" class="home">
+ 
+<!-- ==================== HOME SCREEN ==================== -->  <div id="homeScreen" class="home">
     <div class="home-top">
       <div class="container">
         <div class="home-bar">
@@ -77,7 +78,7 @@
 </div>
  </div>
   
-  <!-- ==================== APP SCREEN ==================== -->
+<!-- ==================== APP SCREEN ==================== -->
 <div id="appScreen" class="app hidden">
   <!-- Top Bar -->
   <div id="mainTopbar" class="topbar">
@@ -114,13 +115,6 @@
           <span id="notifDot" class="notif-dot hidden"></span>
         </button>
       </div>
-    </div>
-
-    <!-- RIGA 2: CTA CREA PROFILO (solo quando JS la mostra) -->
-    <div class="topbar-row topbar-row-2">
-      <button id="btnCreateDogTopbar" class="hidden" type="button">
-        <span class="label" data-i18n="createDog">Crea profilo DOG</span>
-      </button>
     </div>
 
     <!-- RIGA 3: TABS -->
@@ -277,7 +271,9 @@
   <a href="contatti.html">Contatti</a>
 </div>
 
-  </div>  <!-- ==================== SEARCH PANEL ==================== -->  <div id="searchPanel" class="panel hidden">
+  </div>
+  
+  <!-- ==================== SEARCH PANEL ==================== -->  <div id="searchPanel" class="panel hidden">
     <div class="panel-inner">
       <div class="panel-head">
         <h3 data-i18n="searchAdvanced">Ricerca personalizzata</h3>
@@ -516,7 +512,9 @@
     <button id="storyLikeBtn" class="story-like-btn" type="button">❤️</button>
     <button id="storyNavPrev" class="story-nav story-nav-prev" aria-label="Previous">‹</button>
     <button id="storyNavNext" class="story-nav story-nav-next" aria-label="Next">›</button>
-  </div>  <!-- ==================== UPLOAD STORY MODAL ==================== -->  <div id="uploadStoryModal" class="modal hidden">
+  </div>
+  
+  <!-- ==================== UPLOAD STORY MODAL ==================== -->  <div id="uploadStoryModal" class="modal hidden">
     <div class="modal-backdrop"></div>
     <div class="modal-content upload-story-modal">
       <button id="closeUploadStory" class="modal-close">✕</button>
