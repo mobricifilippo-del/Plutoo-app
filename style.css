@@ -360,34 +360,48 @@ a{color:inherit;text-decoration:none}
 .app{min-height:auto;display:flex;flex-direction:column}
 
 .topbar{
-  position:sticky;top:0;z-index:1000;
-  display:flex;align-items:center;gap:.8rem;
+  position:sticky;
+  top:0;
+  z-index:1000;
+
+  display:flex;
+  flex-wrap:wrap;              /* mobile: 2 righe */
+  align-items:center;
+  gap:.6rem;
+
   background:rgba(12,12,18,.94);
   -webkit-backdrop-filter:saturate(120%) blur(6px);
   backdrop-filter:saturate(120%) blur(6px);
-  border-bottom:1px solid var(--line);padding:.35rem .9rem;
+
+  border-bottom:1px solid var(--line);
+  padding:.35rem .9rem;
+
+  overflow:hidden;             /* niente “sborda” */
 }
 
+/* LEFT (logo + brand + CTA) */
 .topbar .left{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   gap:.6rem;
 
   flex:1 1 auto;
-  min-width:0;
-  z-index:2;
+  min-width:0;                 /* fondamentale: evita overflow */
+  order:1;
 }
 
+/* RIGHT (PLUS + msg + notif) */
 .topbar .right{
   display:flex;
-  flex-direction:column;
   align-items:center;
+  gap:.55rem;
 
-  margin-left:auto;
   flex:0 0 auto;
-  z-index:2;
+  margin-left:auto;
+  order:2;
 }
 
+/* brand + CTA in colonna */
 .brand-wrap{
   display:flex;
   flex-direction:column;
@@ -397,143 +411,64 @@ a{color:inherit;text-decoration:none}
 }
 
 #mainTopbar .brand-mini{
-  color:var(--gold);
-  line-height:1;
-}
-
-.topbar .left,.topbar .right{display:flex;align-items:center;flex:0 0 auto;z-index:2;gap:.5rem}
-.topbar .left{position:relative;}
-
-/* Brand sempre stabile */
-#mainTopbar .brand-mini{
   display:block;
   margin:0;
   line-height:1.05;
+  color:var(--gold);
 }
 
-/* CTA: quando nascosta non deve lasciare spazio */
-#btnCreateDogTopbar.hidden{
-  display:none !important;
-}
+.topbar .logo{border-radius:8px}
 
-#btnMessages{ margin-top:.45rem; }
-.topbar .logo{ border-radius:8px; }
-.brand-mini{ color:var(--gold); }
+/* CTA: nascosta = non occupa spazio */
+#btnCreateDogTopbar.hidden{display:none !important}
 
-/* ===============================
-   TOPBAR – FIX OVERFLOW (MOBILE 2 RIGHE, DESKTOP 1 RIGA)
-   =============================== */
-
-.topbar{
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-
-  display: flex;
-  flex-wrap: wrap;              /* ✅ permette 2 righe */
-  align-items: center;
-  gap: .6rem;
-
-  background: rgba(12,12,18,.94);
-  -webkit-backdrop-filter: saturate(120%) blur(6px);
-  backdrop-filter: saturate(120%) blur(6px);
-
-  border-bottom: 1px solid var(--line);
-  padding: .35rem .9rem;
-
-  overflow: hidden;             /* ✅ niente “esce fuori” */
-}
-
-/* Riga 1: LEFT + RIGHT */
-.topbar .left{
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-
-  flex: 1 1 auto;
-  min-width: 0;                 /* ✅ obbligatorio per non sfondare */
-  order: 1;
-}
-
-.topbar .right{
-  display: flex;
-  align-items: center;
-  gap: .55rem;
-
-  flex: 0 0 auto;
-  margin-left: auto;            /* ✅ resta a destra */
-  order: 2;
-}
-
-/* Riga 2: TABS sempre sotto (mobile) */
-.topbar .tabs{
-  flex: 0 0 100%;
-  width: 100%;
-  order: 3;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .7rem;
-
-  margin-top: .25rem;
-
-  flex-wrap: nowrap;            /* ✅ non va a capo “a caso” */
-  overflow-x: auto;             /* ✅ se manca spazio, scorre invece di rompere */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* opzionale: scrollbar quasi invisibile */
-.topbar .tabs::-webkit-scrollbar{ height: 4px; }
-.topbar .tabs::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.12); border-radius: 999px; }
-
-/* Desktop: torna 1 riga */
-@media (min-width: 720px){
-  .topbar{
-    flex-wrap: nowrap;
-  }
-  .topbar .tabs{
-    flex: 1 1 auto;
-    width: auto;
-    order: 2;
-
-    margin-top: 0;
-    overflow-x: hidden;
-    justify-content: center;
-  }
-  .topbar .right{
-    order: 3;
-  }
-}
-
-/* ✅ pulsazione quando JS aggiunge .attention */
+/* pulsazione quando JS aggiunge .attention */
 #btnCreateDogTopbar.attention{
   animation: plutooCtaPulse 1.1s ease-in-out infinite;
 }
 
 @keyframes plutooCtaPulse{
-  0%{
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(205,164,52,.45);
-  }
-  50%{
-    transform: scale(1.06);
-    box-shadow: 0 0 0 10px rgba(205,164,52,0);
-  }
-  100%{
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(205,164,52,0);
-  }
+  0%{transform:scale(1);box-shadow:0 0 0 0 rgba(205,164,52,.45)}
+  50%{transform:scale(1.06);box-shadow:0 0 0 10px rgba(205,164,52,0)}
+  100%{transform:scale(1);box-shadow:0 0 0 0 rgba(205,164,52,0)}
 }
 
-#btnMessages{
-  margin-top:.45rem;
+/* TABS: sempre seconda riga su mobile */
+.topbar .tabs{
+  flex:0 0 100%;
+  width:100%;
+  order:3;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.7rem;
+
+  margin-top:.25rem;
+
+  flex-wrap:nowrap;
+  overflow-x:auto;             /* se manca spazio: scroll, non rompe */
+  -webkit-overflow-scrolling:touch;
 }
 
-.topbar .logo{border-radius:8px}
-.brand-mini{color:var(--gold)}
+.topbar .tabs::-webkit-scrollbar{height:4px}
+.topbar .tabs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
 
-/* tabs (ok come sono) */
+/* Desktop: 1 riga */
+@media (min-width:720px){
+  .topbar{flex-wrap:nowrap}
+  .topbar .tabs{
+    flex:1 1 auto;
+    width:auto;
+    order:2;
+    margin-top:0;
+    overflow-x:hidden;
+    justify-content:center;
+  }
+  .topbar .right{order:3}
+}
+
+/* tabs (solo 1 definizione, coerente col resto) */
 .tabs{
   display:flex;
   align-items:center;
@@ -541,47 +476,10 @@ a{color:inherit;text-decoration:none}
   flex:1 1 auto;
   max-width:100%;
   gap:.7rem;
-  flex-wrap:wrap;
-  row-gap:.55rem;
-  column-gap:.7rem;
-  white-space:normal;
+  flex-wrap:nowrap;
+  white-space:nowrap;
   overflow:visible;
 }
-@media (min-width:720px){
-  .tabs{
-    flex-wrap:nowrap;
-    white-space:nowrap;
-    overflow:hidden;
-    gap:.8rem
-  }
-}
-
-.tab{
-  appearance:none;border:0;background:transparent;color:var(--muted);
-  font-size:.88rem;font-weight:700;letter-spacing:.3px;
-  padding:.5rem .75rem;border-radius:10px;transition:all .2s ease;cursor:pointer;
-  position:relative;
-}
-.tab:hover{color:var(--text);background:rgba(138,123,255,.08)}
-.tab.active{
-  color:var(--violet-glow);background:rgba(138,123,255,.15);
-  box-shadow:0 0 12px rgba(138,123,255,.25) inset, 0 0 16px rgba(138,123,255,.15);
-}
-
-.tab.dropdown{position:relative}
-.dropdown-menu{
-  position:absolute;top:calc(100% + .35rem);right:0;min-width:180px;
-  background:var(--panel);border:1px solid var(--violet);border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(138,123,255,.2);
-  padding:.5rem;z-index:999;display:none;
-}
-.dropdown.open .dropdown-menu{display:block}
-.menu-item{
-  display:block;width:100%;text-align:left;background:transparent;border:0;
-  color:var(--text);font-size:.88rem;padding:.55rem .7rem;border-radius:8px;
-  cursor:pointer;transition:background .15s;
-}
-.menu-item:hover{background:rgba(138,123,255,.12)}
 
 /* ================= STORIES BAR ================= */
 .stories-bar{
