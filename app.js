@@ -512,13 +512,6 @@ try {
     document.body.classList.remove("plutoo-readonly");
   }
 } catch (_) {}
-                
-          }, true);
-        }
-      } else {
-        document.body.classList.remove("plutoo-readonly");
-      }
-    } catch (_) {}
   }, 500);
 
   setTimeout(() => {
