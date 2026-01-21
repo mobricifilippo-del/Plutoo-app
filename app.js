@@ -3172,7 +3172,435 @@ storyLikeBtn.classList.add("heart-anim");
       }
     </div>
     `;
-  }
+
+    // =========================
+// ✅ Crea profilo DOG (solo vetrina / no-dog)
+// =========================
+(function bindCreateDogProfileOnce() {
+  const btn = document.getElementById("btnCreateDogProfile");
+  if (!btn) return;
+  if (btn.dataset.bound === "1") return;
+  btn.dataset.bound = "1";
+
+  btn.addEventListener("click", async (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    // serve login
+    if (!window.auth || !window.auth.currentUser) {
+      if (typeof openAuth === "function") openAuth("login");
+      return;
+    }
+    if (!window.db) {
+      if (typeof showToast === "function") showToast(state.lang === "it" ? "Firestore non disponibile." : "Firestore unavailable.");
+      return;
+    }
+
+    // evita doppie istanze
+    const existing = document.getElementById("createDogSheet");
+    if (existing) {
+      existing.classList.add("open");
+      return;
+    }
+
+    let cdImgValue = "";
+
+    const sheet = document.createElement("div");
+    sheet.id = "createDogSheet";
+    sheet.className = "pp-sheet";
+    sheet.innerHTML = `
+      <div class="pp-sheet__backdrop" id="cdBackdrop"></div>
+      <div class="pp-sheet__panel">
+        <div class="pp-sheet__head">
+          <div class="pp-sheet__title">${state.lang==="it" ? "Crea profilo DOG" : "Create DOG profile"}</div>
+          <button type="button" class="btn small" id="cdClose">✕</button>
+        </div>
+
+        <div class="pp-sheet__body">
+          <label class="pp-field">
+            <span>${state.lang==="it" ? "Nome DOG" : "DOG name"}</span>
+            <input id="cdName" type="text" value="" />
+          </label>
+
+          <label class="pp-field">
+            <span>${state.lang==="it" ? "Razza" : "Breed"}</span>
+            <input id="cdBreed" type="text" value="" />
+          </label>
+
+          <label class="pp-field">
+            <span>${state.lang==="it" ? "Sesso (M/F)" : "Sex (M/F)"}</span>
+            <input id="cdSex" type="text" maxlength="1" value="" />
+          </label>
+
+          <label class="pp-field">
+            <span>${state.lang==="it" ? "Età" : "Age"}</span>
+            <input id="cdAge" type="text" value="" />
+          </label>
+
+          <label class="pp-field">
+            <span>${state.lang==="it" ? "Foto profilo (facoltativa)" : "Profile photo (optional)"}</span>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <img id="cdImgPreview"
+                   src="./plutoo-icon-192.png"
+                   alt="Preview"
+                   style="width:56px;height:56px;border-radius:14px;object-fit:cover;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);" />
+
+              <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+                <input id="cdImgFile" type="file" accept="image/*" style="display:none" />
+                <button type="button" class="btn outline" id="cdPickImg">
+                  ${state.lang==="it" ? "Carica foto profilo" : "Upload profile photo"}
+                </button>
+                <button type="button" class="btn small" id="cdRemoveImg">
+                  ${state.lang==="it" ? "Rimuovi foto" : "Remove photo"}
+                </button>
+              </div>
+            </div>
+          </label>
+
+          <label class="pp-field">
+            <span>Bio</span>
+            <textarea id="cdBio" rows="3"></textarea>
+          </label>
+
+          <div class="pp-sheet__actions">
+            <button type="button" class="btn outline" id="cdCancel">${state.lang==="it" ? "Annulla" : "Cancel"}</button>
+            <button type="button" class="btn accent" id="cdSave">${state.lang==="it" ? "Crea" : "Create"}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    profileContent.appendChild(sheet);
+
+    const closeSheet = () => sheet.classList.remove("open");
+    document.getElementById("cdBackdrop")?.addEventListener("click", closeSheet);
+    document.getElementById("cdClose")?.addEventListener("click", closeSheet);
+    document.getElementById("cdCancel")?.addEventListener("click", closeSheet);
+
+    // Foto: preview locale
+    const cdImgPreview = document.getElementById("cdImgPreview");
+    const cdImgFile = document.getElementById("cdImgFile");
+    const cdPickImg = document.getElementById("cdPickImg");
+    const cdRemoveImg = document.getElementById("cdRemoveImg");
+
+    const refreshCdPreview = () => {
+      if (!cdImgPreview) return;
+      cdImgPreview.src = cdImgValue || "./plutoo-icon-192.png";
+    };
+
+    cdPickImg?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      cdImgFile?.click();
+    });
+
+    cdImgFile?.addEventListener("change", () => {
+      const file = cdImgFile.files && cdImgFile.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        cdImgValue = String(reader.result || "");
+        refreshCdPreview();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    cdRemoveImg?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      cdImgValue = "";
+      try { if (cdImgFile) cdImgFile.value = ""; } catch (_) {}
+      refreshCdPreview();
+    });
+
+    refreshCdPreview();
+
+    // Autocomplete razza (stesso comportamento: lista filtrata mentre scrivi)
+    (function bindCdBreedAutocomplete() {
+      const input = document.getElementById("cdBreed");
+      if (!input) return;
+
+      let box = document.getElementById("cdBreedSuggest");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "cdBreedSuggest";
+        box.style.position = "fixed";
+        box.style.zIndex = "100000";
+        box.style.display = "none";
+        box.style.maxHeight = "220px";
+        box.style.overflow = "auto";
+        box.style.borderRadius = "14px";
+        box.style.border = "1px solid rgba(255,255,255,.10)";
+        box.style.background = "rgba(18,18,26,.98)";
+        box.style.boxShadow = "0 18px 50px rgba(0,0,0,.65)";
+        box.style.backdropFilter = "blur(8px)";
+        box.style.webkitBackdropFilter = "blur(8px)";
+        box.style.padding = "6px";
+        document.body.appendChild(box);
+      }
+
+      const positionBox = () => {
+        const r = input.getBoundingClientRect();
+        box.style.left = Math.round(r.left) + "px";
+        box.style.top = Math.round(r.bottom + 6) + "px";
+        box.style.width = Math.round(r.width) + "px";
+      };
+
+      const closeBox = () => {
+        box.style.display = "none";
+        box.innerHTML = "";
+      };
+
+      const render = () => {
+        const q = String(input.value || "").trim().toLowerCase();
+        const breeds = Array.isArray(state.breeds) ? state.breeds : [];
+        positionBox();
+        box.innerHTML = "";
+
+        if (!document.activeElement || document.activeElement !== input) {
+          closeBox();
+          return;
+        }
+
+        const list = q
+          ? breeds.filter(b => String(b || "").toLowerCase().includes(q))
+          : breeds.slice(0, 40);
+
+        if (!list.length) {
+          const empty = document.createElement("div");
+          empty.textContent = state.lang === "it" ? "Nessuna razza trovata" : "No breeds found";
+          empty.style.opacity = "0.8";
+          empty.style.padding = "10px 12px";
+          empty.style.fontSize = "0.92rem";
+          box.appendChild(empty);
+          box.style.display = "block";
+          return;
+        }
+
+        list.slice(0, 40).forEach((b) => {
+          const item = document.createElement("button");
+          item.type = "button";
+          item.textContent = b;
+          item.style.width = "100%";
+          item.style.textAlign = "left";
+          item.style.border = "0";
+          item.style.background = "transparent";
+          item.style.color = "rgba(255,255,255,.92)";
+          item.style.padding = "10px 12px";
+          item.style.borderRadius = "12px";
+          item.style.fontSize = "0.95rem";
+          item.style.cursor = "pointer";
+
+          item.addEventListener("mouseenter", () => {
+            item.style.background = "rgba(139,123,255,.16)";
+          });
+          item.addEventListener("mouseleave", () => {
+            item.style.background = "transparent";
+          });
+
+          item.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            input.value = b;
+            closeBox();
+            input.blur();
+            setTimeout(() => closeBox(), 0);
+          });
+
+          box.appendChild(item);
+        });
+
+        box.style.display = "block";
+      };
+
+      input.addEventListener("focus", render);
+      input.addEventListener("input", render);
+      window.addEventListener("resize", () => { if (box.style.display !== "none") positionBox(); }, { passive: true });
+      window.addEventListener("scroll", () => { if (box.style.display !== "none") positionBox(); }, { passive: true });
+
+      document.addEventListener("click", (e) => {
+        if (e.target === input) return;
+        if (box.contains(e.target)) return;
+        closeBox();
+      }, true);
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeBox();
+      });
+
+      render();
+    })();
+
+    // Salvataggio: crea doc dogs
+    document.getElementById("cdSave")?.addEventListener("click", async () => {
+      try {
+        const uid = window.auth.currentUser.uid;
+
+        const name = (document.getElementById("cdName")?.value || "").trim();
+        if (!name) {
+          const msg = state.lang === "it" ? "Il nome DOG è obbligatorio." : "DOG name is required.";
+          if (typeof showToast === "function") showToast(msg);
+          return;
+        }
+
+        const payload = {
+          ownerUid: uid,
+          name,
+          breed: (document.getElementById("cdBreed")?.value || "").trim(),
+          sex: (document.getElementById("cdSex")?.value || "").trim().toUpperCase(),
+          age: (document.getElementById("cdAge")?.value || "").trim(),
+          img: cdImgValue || "",
+          bio: (document.getElementById("cdBio")?.value || "").trim(),
+          verified: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        const ref = window.db.collection("dogs").doc();
+        const newId = ref.id;
+        await ref.set(Object.assign({ id: newId }, payload), { merge: true });
+
+        // aggiorna flags runtime + cache
+        window.PLUTOO_HAS_DOG = true;
+        window.PLUTOO_DOG_ID = newId;
+        window.PLUTOO_READONLY = false;
+        try {
+          localStorage.setItem("plutoo_has_dog", "1");
+          localStorage.setItem("plutoo_dog_id", newId);
+          localStorage.setItem("plutoo_readonly", "0");
+        } catch (_) {}
+
+        if (typeof showToast === "function") {
+          showToast(state.lang === "it" ? "Profilo DOG creato ✅" : "DOG profile created ✅");
+        }
+
+        closeSheet();
+
+        // apri subito il tuo profilo creato
+        const dogObj = {
+          id: newId,
+          name: payload.name,
+          breed: payload.breed,
+          sex: payload.sex,
+          age: payload.age,
+          bio: payload.bio,
+          img: payload.img || "./plutoo-icon-192.png",
+          km: 0,
+          verified: false
+        };
+        window.openProfilePage(dogObj);
+
+      } catch (e) {
+        console.error("Create DOG profile error:", e);
+        const msg = state.lang === "it" ? "Errore creazione profilo DOG." : "Error creating DOG profile.";
+        if (typeof showToast === "function") showToast(msg);
+      }
+    });
+
+    // Mostra
+    sheet.classList.add("open");
+  });
+})();
+
+  // ================= PASSAGGIO 2 — Click handler definitivo (idempotente, zero prompt) =================
+(function bindProfileActionButtonsOnce() {
+  try {
+    if (!profileContent) return;
+
+    const btnProfileSettings = document.getElementById("btnProfileSettings");
+    const btnEditSocial = document.getElementById("btnEditSocial");
+
+    // Idempotenza: non rilegare se già fatto
+    if (btnProfileSettings && btnProfileSettings.dataset.bound === "1") {
+      // già bindato
+    } else if (btnProfileSettings) {
+      btnProfileSettings.dataset.bound = "1";
+      btnProfileSettings.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        // Solo il mio DOG può aprire impostazioni
+        if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID) || d.id !== CURRENT_USER_DOG_ID) {
+          const msg = state.lang === "it" ? "Solo il tuo DOG può modificare le impostazioni." : "Only your DOG can edit settings.";
+          if (typeof showToast === "function") showToast(msg);
+          return;
+        }
+
+        // Crea/mostra pannello impostazioni (una sola istanza)
+        const existing = document.getElementById("profileSettingsSheet");
+        if (existing) {
+          existing.classList.add("open");
+          return;
+        }
+
+        const sheet = document.createElement("div");
+        sheet.id = "profileSettingsSheet";
+        sheet.className = "pp-sheet";
+        sheet.innerHTML = `
+          <div class="pp-sheet__backdrop" id="psBackdrop"></div>
+          <div class="pp-sheet__panel">
+            <div class="pp-sheet__head">
+              <div class="pp-sheet__title">${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}</div>
+              <button type="button" class="btn small" id="psClose">✕</button>
+            </div>
+
+            <div class="pp-sheet__body">
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Nome DOG" : "DOG name"}</span>
+                <input id="psName" type="text" value="${(d.name||"").replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Razza" : "Breed"}</span>
+                <input id="psBreed" type="text" value="${(d.breed||"").replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Sesso (M/F)" : "Sex (M/F)"}</span>
+                <input id="psSex" type="text" maxlength="1" value="${(d.sex||"").replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+                <span>${state.lang==="it" ? "Età" : "Age"}</span>
+                <input id="psAge" type="text" value="${(d.age||"").toString().replace(/"/g,"&quot;")}" />
+              </label>
+
+              <label class="pp-field">
+  <span>${state.lang==="it" ? "Foto profilo (facoltativa)" : "Profile photo (optional)"}</span>
+
+  <div style="display:flex;gap:10px;align-items:center;">
+    <img id="psImgPreview"
+         src="${(d.img||"").replace(/"/g,"&quot;")}"
+         alt="Preview"
+         style="width:56px;height:56px;border-radius:14px;object-fit:cover;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.06);"
+         onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" />
+
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+      <input id="psImgFile" type="file" accept="image/*" style="display:none" />
+      <button type="button" class="btn outline" id="psPickImg">
+        ${state.lang==="it" ? "Carica foto profilo" : "Upload profile photo"}
+      </button>
+      <button type="button" class="btn small" id="psRemoveImg">
+        ${state.lang==="it" ? "Rimuovi foto" : "Remove photo"}
+      </button>
+    </div>
+  </div>
+</label>
+
+              <label class="pp-field">
+                <span>Bio</span>
+                <textarea id="psBio" rows="3">${(d.bio||"").replace(/</g,"&lt;")}</textarea>
+              </label>
+
+              <div class="pp-sheet__actions">
+                <button type="button" class="btn outline" id="psCancel">${state.lang==="it" ? "Annulla" : "Cancel"}</button>
+                <button type="button" class="btn accent" id="psSave">${state.lang==="it" ? "Salva" : "Save"}</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+profileContent.appendChild(sheet);
 
 // =========================
 // Autocomplete Razza (psBreed) — stesso comportamento della ricerca personalizzata
