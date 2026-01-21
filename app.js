@@ -3172,6 +3172,7 @@ storyLikeBtn.classList.add("heart-anim");
       }
     </div>
     `;
+  }
 
 // =========================
 // Autocomplete Razza (psBreed) — stesso comportamento della ricerca personalizzata
