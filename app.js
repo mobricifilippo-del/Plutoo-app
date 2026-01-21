@@ -3180,29 +3180,30 @@ storyLikeBtn.classList.add("heart-anim");
       ${generateSocialSection(d)}
 
   <div class="pp-actions">
-      ${
-        (window.PLUTOO_READONLY || !window.PLUTOO_HAS_DOG)
-          ? `
-            <button id="btnCreateDogProfile" class="btn accent">
-              🐶 ${state.lang==="it" ? "Crea profilo DOG" : "Create DOG profile"}
-            </button>
-          `
-          : `
-            <button id="btnLikeDog" class="btn accent">💛 Like</button>
-            <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
-          `
-      }
+    ${
+      // ✅ SEMPRE visibili per tutti (anche senza DOG): Like + Apri chat
+      `
+        <button id="btnLikeDog" class="btn accent">💛 Like</button>
+        <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
+      `
+    }
 
-      ${
-        (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
-          ? `
-            <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
-            <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
-          `
-          : ``
-      }
-    </div>
-    `;
+    ${
+      // ✅ Impostazioni/Social SOLO se:
+      // - utente ha creato un DOG reale
+      // - e sta guardando IL SUO DOG
+      (window.PLUTOO_HAS_DOG === true &&
+       typeof CURRENT_USER_DOG_ID === "string" &&
+       CURRENT_USER_DOG_ID &&
+       d.id === CURRENT_USER_DOG_ID)
+        ? `
+          <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
+          <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
+        `
+        : ``
+    }
+  </div>
+`;
 
     // =========================
 // ✅ Crea profilo DOG (solo vetrina / no-dog)
