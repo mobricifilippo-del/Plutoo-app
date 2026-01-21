@@ -444,80 +444,75 @@ try {
     try { state.currentView = targetView; } catch (_) {}
     setActiveView(targetView);
 
-    // =========================
-    // ✅ VETRINA: blocco interazioni (definitivo)
-    // =========================
-    try {
-      if (window.PLUTOO_READONLY) {
-        document.body.classList.add("plutoo-readonly");
+// =========================
+// ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
+// =========================
+try {
+  if (window.PLUTOO_READONLY) {
+    document.body.classList.add("plutoo-readonly");
 
-        const msg = state.lang === "it"
-          ? "🔒 Crea il tuo profilo DOG per interagire"
-          : "🔒 Create your DOG profile to interact";
-        if (typeof showToast === "function") showToast(msg);
+    const msg = state.lang === "it"
+      ? "🔒 Crea il tuo profilo DOG per caricare foto o documenti"
+      : "🔒 Create your DOG profile to upload photos or documents";
+    if (typeof showToast === "function") showToast(msg);
 
-        // disabilita bottoni noti (UI)
-        const idsToDisable = [
-          "btnOpenChat",
-          "btnLikeDog",
-          "followBtn",
-          "profileLikeBtn",
-          "storyLikeBtn",
-          "unlockSelfie",
-          "uploadSelfie",
-          "publishStory",
-          "nextToCustomize",
-          "btnProfileSettings",
-          "btnEditSocial"
-        ];
-        idsToDisable.forEach((id) => {
-          const el = document.getElementById(id);
-          if (el) el.disabled = true;
-        });
+    // ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)
+    const idsToDisable = [
+      "uploadSelfie",
+      "publishStory"
+    ];
+    idsToDisable.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = true;
+    });
 
-        // intercetta click su azioni sensibili (anche se non sono disabled)
-        if (!window.__plutooReadonlyBound) {
-          window.__plutooReadonlyBound = true;
+    // ✅ intercetta SOLO click su upload foto/documenti
+    if (!window.__plutooReadonlyBound) {
+      window.__plutooReadonlyBound = true;
 
-  const SENSITIVE = new Set([
-  "btnMessages",        // APRI CHAT
-  "btnLikeDog",
-  "followBtn",
-  "profileLikeBtn",
-  "storyLikeBtn",
-  "uploadSelfie",
-  "publishStory",
-  "nextToCustomize",
-  "btnProfileSettings",
-  "btnEditSocial"
-]);
+      document.addEventListener("click", (ev) => {
+        try {
+          if (!window.PLUTOO_READONLY) return;
 
-          document.addEventListener("click", (ev) => {
-            try {
-              if (!window.PLUTOO_READONLY) return;
-              let t = ev.target;
-              if (!t) return;
+          const t = ev.target;
+          if (!t) return;
 
-              // risali fino al button/link
-              const node = (t.closest ? t.closest("button,a") : null) || t;
-              const id = node && node.id ? String(node.id) : "";
+          const node = (t.closest ? t.closest("button,a,label,input,div,span") : null) || t;
+          const id = node && node.id ? String(node.id) : "";
 
-              // blocca anche classi note
-              const isAddPhoto = node && node.classList && node.classList.contains("add-photo");
-              const isDocItem = node && node.classList && node.classList.contains("doc-item");
+          // blocca anche classi note (UI)
+          const isAddPhoto = !!(node && node.classList && node.classList.contains("add-photo"));
+          const isDocItem  = !!(node && node.classList && node.classList.contains("doc-item"));
 
-              if (!(id === "btnOpenChat" || id === "btnSendMessage" || id === "unlockSelfie")) {
-                ev.preventDefault();
-                ev.stopPropagation();
-                ev.stopImmediatePropagation();
+          // blocca anche click su input file (se presente)
+          const isFileInput = !!(node && node.tagName === "INPUT" && String(node.type).toLowerCase() === "file");
 
-                const msg2 = state.lang === "it"
-                  ? "🔒 Devi creare il profilo DOG per usare questa funzione"
-                  : "🔒 You must create your DOG profile to use this feature";
-                if (typeof showToast === "function") showToast(msg2);
-                return false;
-              }
-            } catch (_) {}
+          const isBlocked =
+            isAddPhoto ||
+            isDocItem ||
+            isFileInput ||
+            id === "uploadSelfie" ||
+            id === "publishStory";
+
+          if (!isBlocked) return; // ✅ tutto il resto resta cliccabile
+
+          ev.preventDefault();
+          ev.stopPropagation();
+          ev.stopImmediatePropagation();
+
+          const msg2 = state.lang === "it"
+            ? "🔒 Per caricare foto o documenti devi creare il profilo DOG"
+            : "🔒 To upload photos or documents you must create your DOG profile";
+          if (typeof showToast === "function") showToast(msg2);
+          return false;
+        } catch (_) {}
+      }, true);
+    }
+  } else {
+    document.body.classList.remove("plutoo-readonly");
+  }
+} catch (_) {}
+                
           }, true);
         }
       } else {
