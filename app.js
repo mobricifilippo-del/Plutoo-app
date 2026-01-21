@@ -2142,7 +2142,7 @@ msgLists.forEach((list) => {
 
   // ✅ FIX: Cleanup vecchi event listeners prima di riassegnarli
   if(card._cleanup) card._cleanup();
-
+    
   async function handleSwipeComplete(direction){
     if(state.processingSwipe) return;
     state.processingSwipe = true;
@@ -3149,29 +3149,21 @@ storyLikeBtn.classList.add("heart-anim");
       ${generateSocialSection(d)}
 
   <div class="pp-actions">
-  ${
-    // ✅ SEMPRE visibili per tutti (anche senza DOG): Like + Apri chat
-    `
-      <button id="btnLikeDog" class="btn accent">💛 Like</button>
-      <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
-    `
-  }
+    <button id="btnLikeDog" class="btn accent">💛 Like</button>
+    <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>
 
-  ${
-    // ✅ Impostazioni/Social SOLO se:
-    // - utente ha creato un DOG reale
-    // - e sta guardando IL SUO DOG reale (Firestore -> window.PLUTOO_DOG_ID)
-    (window.PLUTOO_HAS_DOG === true &&
-     typeof window.PLUTOO_DOG_ID === "string" &&
-     window.PLUTOO_DOG_ID &&
-     d.id === window.PLUTOO_DOG_ID)
-      ? `
-        <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
-        <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
-      `
-      : ``
-  }
-</div>
+    ${
+      (window.PLUTOO_HAS_DOG === true &&
+       typeof window.PLUTOO_DOG_ID === "string" &&
+       window.PLUTOO_DOG_ID &&
+       d.id === window.PLUTOO_DOG_ID)
+        ? `
+          <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
+          <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
+        `
+        : ``
+    }
+  </div>
 `;
                             
     // Salvataggio: crea doc dogs
