@@ -3992,32 +3992,20 @@ document.getElementById("psSave")?.addEventListener("click", async () => {
 })();
 
 // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
-// Questo blocco NON sostituisce nulla, si aggancia al profilo già renderizzato
+// Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
+// In modalità "solo mail" restano cliccabili i profili demo: si blocca SOLO upload (gestito altrove).
 (function attachRealDogProfileControls() {
   try {
+    // Se non sono loggato, non faccio nulla
     if (!window.auth || !window.auth.currentUser) return;
-    if (!d || !d.id) return;
 
-    // Caso: NON ho ancora un DOG reale → profilo SOLO LETTURA
-    // (blocca azioni sensibili in modo definitivo e sicuro)
-    if (!window.PLUTOO_HAS_DOG) {
-      const lock = document.createElement("div");
-      lock.className = "pp-lock-note";
-      lock.style.marginTop = "1rem";
-      lock.style.opacity = "0.8";
-      lock.innerHTML = state.lang === "it"
-        ? "🔒 Crea il tuo profilo DOG per interagire"
-        : "🔒 Create your DOG profile to interact";
+    // Se non ho un DOG reale, NON inietto note e NON disabilito bottoni.
+    // (Upload già bloccato dal blocco READONLY SOLO UPLOAD che hai messo vicino a ENTRA.)
+    if (!window.PLUTOO_HAS_DOG) return;
 
-      profileContent.appendChild(lock);
-
-      const btnChat = document.getElementById("btnOpenChat");
-      const btnLike = document.getElementById("btnLikeDog");
-
-      if (btnChat) btnChat.disabled = true;
-      if (btnLike) btnLike.disabled = true;
-    }
-
+    // Se qui sotto in futuro vuoi controlli "solo per DOG reale",
+    // devi farli senza mai rompere la UI demo e senza appendChild di lock-note.
+    // Per ora: niente.
   } catch (e) {
     console.error("attachRealDogProfileControls fatal:", e);
   }
