@@ -3159,7 +3159,7 @@ profileContent.innerHTML = `
 </div>  
 `;
 
-// ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
+  // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
 // In modalità "solo mail" restano cliccabili i profili demo: si blocca SOLO upload (gestito altrove).
 (function attachRealDogProfileControls() {
@@ -3174,306 +3174,311 @@ profileContent.innerHTML = `
     // Se qui sotto in futuro vuoi controlli "solo per DOG reale",
     // devi farli
 
-// ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
-(function () {
-  // Se per qualche motivo d non c'è, esco
-  if (!d || !profileContent) return;
+    // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
+    (function () {
+      // Se per qualche motivo d non c'è, esco
+      if (!d || !profileContent) return;
 
-  const maxPhotos = 5;
-  const dogId = d.id;
-  const storageKey = `gallery_${dogId}`;
+      const maxPhotos = 5;
+      const dogId = d.id;
+      const storageKey = `gallery_${dogId}`;
 
-  // Prendo il contenitore .gallery e il bottone "+ Aggiungi"
-  const galleryBlock = qs(".gallery", profileContent);
-  if (!galleryBlock) return;
+      // Prendo il contenitore .gallery e il bottone "+ Aggiungi"
+      const galleryBlock = qs(".gallery", profileContent);
+      if (!galleryBlock) return;
 
-  const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
-  if (!addGalleryPhotoBtn) return;
+      const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
+      if (!addGalleryPhotoBtn) return;
 
-  // Lo slot che contiene il bottone "+ Aggiungi"
-  const addSlot = addGalleryPhotoBtn.closest(".ph") || galleryBlock.lastElementChild;
+      // Lo slot che contiene il bottone "+ Aggiungi"
+      const addSlot = addGalleryPhotoBtn.closest(".ph") || galleryBlock.lastElementChild;
 
-  // Carico eventuali immagini salvate
-  let images = [];
-  try {
-    const raw = localStorage.getItem(storageKey);
-    images = raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    images = [];
-  }
-  if (!Array.isArray(images)) images = [];
+      // Carico eventuali immagini salvate
+      let images = [];
+      try {
+        const raw = localStorage.getItem(storageKey);
+        images = raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        images = [];
+      }
+      if (!Array.isArray(images)) images = [];
 
-  // Input file nascosto
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.multiple = true;
-  input.style.display = "none";
-  document.body.appendChild(input);
+      // Input file nascosto
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.multiple = true;
+      input.style.display = "none";
+      document.body.appendChild(input);
 
-  // Render delle foto caricate (prima dello slot "+ Aggiungi")
-  const renderGallery = () => {
-    // Rimuovo solo le foto caricate in precedenza (marcate con data-upload="1")
-    Array.from(galleryBlock.querySelectorAll('.ph[data-upload="1"]')).forEach(ph => ph.remove());
+      // Render delle foto caricate (prima dello slot "+ Aggiungi")
+      const renderGallery = () => {
+        // Rimuovo solo le foto caricate in precedenza (marcate con data-upload="1")
+        Array.from(galleryBlock.querySelectorAll('.ph[data-upload="1"]')).forEach(ph => ph.remove());
 
-    const limit = Math.min(images.length, maxPhotos);
-    for (let i = 0; i < limit; i++) {
-      const src = images[i];
-      const ph = document.createElement("div");
-      ph.className = "ph";
-      ph.dataset.upload = "1";
+        const limit = Math.min(images.length, maxPhotos);
+        for (let i = 0; i < limit; i++) {
+          const src = images[i];
+          const ph = document.createElement("div");
+          ph.className = "ph";
+          ph.dataset.upload = "1";
 
-      const img = document.createElement("img");
-      img.src = src;
-      img.className = "pp-gallery-img";
-      img.onerror = () => {
-        img.src = "./plutoo-icon-192.png";
-      };
+          const img = document.createElement("img");
+          img.src = src;
+          img.className = "pp-gallery-img";
+          img.onerror = () => {
+            img.src = "./plutoo-icon-192.png";
+          };
 
-      ph.appendChild(img);
-      galleryBlock.insertBefore(ph, addSlot);
-    }
-
-    // Se ho raggiunto il massimo, disabilito il bottone
-    addGalleryPhotoBtn.disabled = images.length >= maxPhotos;
-  };
-
-  // Click su "+ Aggiungi" → apro il picker
-  addGalleryPhotoBtn.addEventListener("click", () => {
-    if (images.length >= maxPhotos) return;
-    input.value = "";
-    input.click();
-  });
-
-  // Quando scelgo i file, li salvo e aggiorno la griglia
-  input.addEventListener("change", () => {
-    const files = Array.from(input.files || []);
-    if (!files.length) return;
-
-    const remaining = maxPhotos - images.length;
-    const toAdd = files.slice(0, remaining);
-    if (!toAdd.length) return;
-
-    let pending = toAdd.length;
-
-    toAdd.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        images.push(e.target.result);
-        pending--;
-        if (pending === 0) {
-          try {
-            localStorage.setItem(storageKey, JSON.stringify(images));
-          } catch (err) {
-            // se localStorage è pieno, semplicemente non salvo
-          }
-          renderGallery();
+          ph.appendChild(img);
+          galleryBlock.insertBefore(ph, addSlot);
         }
+
+        // Se ho raggiunto il massimo, disabilito il bottone
+        addGalleryPhotoBtn.disabled = images.length >= maxPhotos;
       };
-      reader.readAsDataURL(file);
-    });
-  });
 
-  // Primo render (mostra eventuali foto già salvate)
-  renderGallery();
-})();
+      // Click su "+ Aggiungi" → apro il picker
+      addGalleryPhotoBtn.addEventListener("click", () => {
+        if (images.length >= maxPhotos) return;
+        input.value = "";
+        input.click();
+      });
 
-  updateFollowerUI(d);
+      // Quando scelgo i file, li salvo e aggiorno la griglia
+      input.addEventListener("change", () => {
+        const files = Array.from(input.files || []);
+        if (!files.length) return;
 
-const followBtn = $("followBtn");
-if (followBtn) {
-  const refreshFollowBtn = () => {
-    // ✅ usa SEMPRE il mio dogId reale
-    const myFollowing = (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)
-      ? getFollowing(CURRENT_USER_DOG_ID)
-      : [];
-    const isFollowing = myFollowing.includes(d.id);
+        const remaining = maxPhotos - images.length;
+        const toAdd = files.slice(0, remaining);
+        if (!toAdd.length) return;
 
-    if (state.lang === "it") {
-      followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
-    } else {
-      followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
-    }
-    followBtn.classList.toggle("is-following", isFollowing);
+        let pending = toAdd.length;
 
-    // ✅ se non ho un dogId mio, il follow non può essere salvato
-    followBtn.disabled = !(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID);
-  };
+        toAdd.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            images.push(e.target.result);
+            pending--;
+            if (pending === 0) {
+              try {
+                localStorage.setItem(storageKey, JSON.stringify(images));
+              } catch (err) {
+                // se localStorage è pieno, semplicemente non salvo
+              }
+              renderGallery();
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      });
 
-  followBtn.onclick = () => {
-    // ✅ blocca subito se manca il mio dogId (evita “sembra morto”)
-    if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
-      console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
+      // Primo render (mostra eventuali foto già salvate)
+      renderGallery();
+    })();
+
+    updateFollowerUI(d);
+
+    const followBtn = $("followBtn");
+    if (followBtn) {
+      const refreshFollowBtn = () => {
+        // ✅ usa SEMPRE il mio dogId reale
+        const myFollowing = (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)
+          ? getFollowing(CURRENT_USER_DOG_ID)
+          : [];
+        const isFollowing = myFollowing.includes(d.id);
+
+        if (state.lang === "it") {
+          followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
+        } else {
+          followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
+        }
+        followBtn.classList.toggle("is-following", isFollowing);
+
+        // ✅ se non ho un dogId mio, il follow non può essere salvato
+        followBtn.disabled = !(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID);
+      };
+
+      followBtn.onclick = () => {
+        // ✅ blocca subito se manca il mio dogId (evita “sembra morto”)
+        if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
+          console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
+          refreshFollowBtn();
+          return;
+        }
+
+        const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
+        const isFollowing = myFollowing.includes(d.id);
+
+        if (isFollowing) {
+          unfollowDog(d.id);
+        } else {
+          followDog(d.id);
+        }
+        refreshFollowBtn();
+      };
+
       refreshFollowBtn();
-      return;
     }
 
-    const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
-    const isFollowing = myFollowing.includes(d.id);
+    const followersCountEl = $("followersCount");
+    const followingCountEl = $("followingCount");
 
-    if (isFollowing) {
-      unfollowDog(d.id);
-    } else {
-      followDog(d.id);
+    // ✅ evita accumulo listeners ogni volta che apri il profilo
+    if (followersCountEl) followersCountEl.onclick = () => openFollowersList(d.id);
+    if (followingCountEl) followingCountEl.onclick = () => openFollowingList(d.id);
+
+    if (profileLikeBtn) {
+      profileLikeBtn.onclick = () => togglePhotoLike(d.id);
+      updatePhotoLikeUI(d.id);
     }
-    refreshFollowBtn();
-  };
 
-  refreshFollowBtn();
-}
-
-const followersCountEl = $("followersCount");
-const followingCountEl = $("followingCount");
-
-// ✅ evita accumulo listeners ogni volta che apri il profilo
-if (followersCountEl) followersCountEl.onclick = () => openFollowersList(d.id);
-if (followingCountEl) followingCountEl.onclick = () => openFollowingList(d.id);
-
-if (profileLikeBtn) {
-  profileLikeBtn.onclick = () => togglePhotoLike(d.id);
-  updatePhotoLikeUI(d.id);
-}
-
-if (dogStories) {
-  qa(".pp-story-item", profileContent).forEach(item => {
-    item.addEventListener("click", () => {
-      const idx = parseInt(item.getAttribute("data-story-index"));
-      openDogStoryViewer(d.id, idx);
-    });
-  });
-}
+    if (dogStories) {
+      qa(".pp-story-item", profileContent).forEach(item => {
+        item.addEventListener("click", () => {
+          const idx = parseInt(item.getAttribute("data-story-index"));
+          openDogStoryViewer(d.id, idx);
+        });
+      });
+    }
 
     $("uploadDogStory")?.addEventListener("click", ()=> { openUploadModal(); });
 
     qa(".gallery img", profileContent).forEach(img=>{
-  img.addEventListener("click", ()=>{
-    const lb = document.createElement("div");
-    lb.className = "lightbox";
-    lb.innerHTML = `
-      <button class="close" aria-label="Chiudi">✕</button>
-      <div class="lightbox-inner">
-        <img src="${img.src}" alt="">
-        <button class="story-like-btn lightbox-like-btn" type="button">❤️ 0</button>
-      </div>`;
-    document.body.appendChild(lb);
+      img.addEventListener("click", ()=>{
+        const lb = document.createElement("div");
+        lb.className = "lightbox";
+        lb.innerHTML = `
+          <button class="close" aria-label="Chiudi">✕</button>
+          <div class="lightbox-inner">
+            <img src="${img.src}" alt="">
+            <button class="story-like-btn lightbox-like-btn" type="button">❤️ 0</button>
+          </div>`;
+        document.body.appendChild(lb);
 
-    const closeBtn = qs(".close", lb);
-    if (closeBtn) closeBtn.onclick = ()=> lb.remove();
-    lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
+        const closeBtn = qs(".close", lb);
+        if (closeBtn) closeBtn.onclick = ()=> lb.remove();
+        lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
 
-    const likeBtn = qs(".lightbox-like-btn", lb);
-    if (likeBtn) {
-      const refresh = () => {
-        const liked = isDogPhotoLiked(d.id);
-        const count = liked ? 1 : 0;
-        likeBtn.textContent = "❤️ " + count;
-      };
+        const likeBtn = qs(".lightbox-like-btn", lb);
+        if (likeBtn) {
+          const refresh = () => {
+            const liked = isDogPhotoLiked(d.id);
+            const count = liked ? 1 : 0;
+            likeBtn.textContent = "❤️ " + count;
+          };
 
-      likeBtn.addEventListener("click", (ev)=>{
-        ev.stopPropagation();
-        togglePhotoLike(d.id);
-        refresh();
-        updatePhotoLikeUI(d.id);
+          likeBtn.addEventListener("click", (ev)=>{
+            ev.stopPropagation();
+            togglePhotoLike(d.id);
+            refresh();
+            updatePhotoLikeUI(d.id);
+          });
+
+          refresh();
+        }
       });
+    });
 
-      refresh();
-    }
-  });
-});
-
-  // --- DOCS: apertura file picker + salvataggio stato ---
+    // --- DOCS: apertura file picker + salvataggio stato ---
     const docFileInput = document.createElement("input");
     docFileInput.type = "file";
     docFileInput.accept = "image/*,application/pdf";
     docFileInput.style.display = "none";
     profileContent.appendChild(docFileInput);
 
-  qa(".doc-item", profileContent).forEach(item=>{
-  item.addEventListener("click", (e)=>{
-    // 🔒 VETRINA: blocco totale documenti
-    if (window.PLUTOO_READONLY) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      const msg = state.lang === "it"
-        ? "🔒 Crea il profilo DOG per caricare i documenti"
-        : "🔒 Create your DOG profile to upload documents";
-      if (typeof showToast === "function") showToast(msg);
-      return;
-    }
-
-    const docType = item.getAttribute("data-doc");
-    const docCategory = item.getAttribute("data-type");
-
-    // quando l'utente sceglie un file
-    docFileInput.onchange = () => {
-      const file = docFileInput.files && docFileInput.files[0];
-      if (!file) return;
-
-      if (docCategory === "owner"){
-        if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
-        state.ownerDocsUploaded[d.id].identity = true;
-        localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
-
-        if (!d.verified){
-          d.verified = true;
-          alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+    qa(".doc-item", profileContent).forEach(item=>{
+      item.addEventListener("click", (e)=>{
+        // 🔒 VETRINA: blocco totale documenti
+        if (window.PLUTOO_READONLY) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          const msg = state.lang === "it"
+            ? "🔒 Crea il profilo DOG per caricare i documenti"
+            : "🔒 Create your DOG profile to upload documents";
+          if (typeof showToast === "function") showToast(msg);
+          return;
         }
-      } else if (docCategory === "dog"){
-        if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
-        const docName = docType.replace("dog-", "");
-        state.dogDocsUploaded[d.id][docName] = true;
-        localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
-      }
 
-      // ricarico il profilo per aggiornare le etichette "Caricato"
-      openProfilePage(d);
-    };
+        const docType = item.getAttribute("data-doc");
+        const docCategory = item.getAttribute("data-type");
 
-    // apro il selettore file
-    docFileInput.click();
-  });
-});
+        // quando l'utente sceglie un file
+        docFileInput.onchange = () => {
+          const file = docFileInput.files && docFileInput.files[0];
+          if (!file) return;
 
-  qa(".social-btn", profileContent).forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const baseUrl   = btn.getAttribute("data-url");
-    const dogId     = btn.getAttribute("data-dog-id");
-    const socialKey = btn.getAttribute("data-social"); // "social-fb" / "social-ig" / "social-tt"
+          if (docCategory === "owner"){
+            if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
+            state.ownerDocsUploaded[d.id].identity = true;
+            localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
 
-    let finalUrl = baseUrl;
+            if (!d.verified){
+              d.verified = true;
+              alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+            }
+          } else if (docCategory === "dog"){
+            if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
+            const docName = docType.replace("dog-", "");
+            state.dogDocsUploaded[d.id][docName] = true;
+            localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
+          }
 
-    // Se esistono URL personalizzati salvati per quel DOG, li usiamo al posto di quelli mock
-    if (dogId && state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
-      const ownerSocial = state.ownerSocialByDog[dogId];
-      if (socialKey === "social-fb" && ownerSocial.facebook) {
-        finalUrl = ownerSocial.facebook;
-      } else if (socialKey === "social-ig" && ownerSocial.instagram) {
-        finalUrl = ownerSocial.instagram;
-      } else if (socialKey === "social-tt" && ownerSocial.tiktok) {
-        finalUrl = ownerSocial.tiktok;
-      }
-    }
+          // ricarico il profilo per aggiornare le etichette "Caricato"
+          openProfilePage(d);
+        };
 
-    if (!finalUrl) return;
-
-    const rewardKey = `${dogId}_${socialKey}`;
-
-    if (state.plus || state.socialRewardViewed[rewardKey]) {
-      window.open(finalUrl, "_blank", "noopener");
-      return;
-    }
-    if (state.rewardOpen) return;
-    state.rewardOpen = true;
-
-    showRewardVideoMock("social", ()=>{
-      state.rewardOpen = false;
-      state.socialRewardViewed[rewardKey] = true;
-      localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
-      window.open(finalUrl, "_blank", "noopener");
+        // apro il selettore file
+        docFileInput.click();
+      });
     });
-  });
-});
+
+    qa(".social-btn", profileContent).forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const baseUrl   = btn.getAttribute("data-url");
+        const dogId     = btn.getAttribute("data-dog-id");
+        const socialKey = btn.getAttribute("data-social"); // "social-fb" / "social-ig" / "social-tt"
+
+        let finalUrl = baseUrl;
+
+        // Se esistono URL personalizzati salvati per quel DOG, li usiamo al posto di quelli mock
+        if (dogId && state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
+          const ownerSocial = state.ownerSocialByDog[dogId];
+          if (socialKey === "social-fb" && ownerSocial.facebook) {
+            finalUrl = ownerSocial.facebook;
+          } else if (socialKey === "social-ig" && ownerSocial.instagram) {
+            finalUrl = ownerSocial.instagram;
+          } else if (socialKey === "social-tt" && ownerSocial.tiktok) {
+            finalUrl = ownerSocial.tiktok;
+          }
+        }
+
+        if (!finalUrl) return;
+
+        const rewardKey = `${dogId}_${socialKey}`;
+
+        if (state.plus || state.socialRewardViewed[rewardKey]) {
+          window.open(finalUrl, "_blank", "noopener");
+          return;
+        }
+        if (state.rewardOpen) return;
+        state.rewardOpen = true;
+
+        showRewardVideoMock("social", ()=>{
+          state.rewardOpen = false;
+          state.socialRewardViewed[rewardKey] = true;
+          localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
+          window.open(finalUrl, "_blank", "noopener");
+        });
+      });
+    });
+
+  } catch (e) {
+    console.error("attachRealDogProfileControls error:", e);
+  }
+})();
 
     // Azioni nel profilo DOG (chat + like/match)
 const openChatBtn = $("btnOpenChat");
