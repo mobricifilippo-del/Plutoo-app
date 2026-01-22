@@ -3155,16 +3155,9 @@ profileContent.innerHTML = `
             <button id="btnLikeDog" class="btn accent">💛 Like</button>  
             <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Apri chat":"Open chat"}</button>  
           `  
-      }  ${  
-    (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)  
-      ? `  
-        <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>  
-        <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>  
-      `  
-      : ``  
-  }  
+      }  
 </div>  
-`;  
+`;
 
 // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
