@@ -3162,7 +3162,11 @@ profileContent.innerHTML = `
             <button id="btnLikeDog" class="btn accent">💛 Like</button>
             <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Invia messaggio":"Send message"}</button>
           `
-          : ``
+          : `
+            <button id="btnCreateDogFromProfile" class="btn primary">
+              ${state.lang==="it" ? "Crea profilo DOG" : "Create DOG profile"}
+            </button>
+          `
         )
   }
 </div>
