@@ -3149,15 +3149,21 @@ profileContent.innerHTML = `
 
   <div class="pp-actions">
   ${
-    (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
+    (window.PLUTOO_HAS_DOG === true
+      && typeof CURRENT_USER_DOG_ID === "string"
+      && CURRENT_USER_DOG_ID
+      && d.id === CURRENT_USER_DOG_ID)
       ? `
         <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
         <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
       `
-      : `
-        <button id="btnLikeDog" class="btn accent">💛 Like</button>
-        <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Invia messaggio":"Send message"}</button>
-      `
+      : (window.PLUTOO_HAS_DOG === true
+          ? `
+            <button id="btnLikeDog" class="btn accent">💛 Like</button>
+            <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Invia messaggio":"Send message"}</button>
+          `
+          : ``
+        )
   }
 </div>
 `;
