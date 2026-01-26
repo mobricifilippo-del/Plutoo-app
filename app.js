@@ -372,18 +372,20 @@ btnEnter?.addEventListener("click", async (e) => {
       // se già ho DOG -> non deve succedere (bottone dovrebbe essere nascosto)
       if (window.PLUTOO_HAS_DOG === true) return;
 
-      // ✅ Qui NON invento pannelli.
-      // Per ora apriamo subito il profilo “vuoto” (step 2 lo facciamo dopo).
-      if (typeof window.openCreateDogDraft === "function") {
-        window.openCreateDogDraft();
-        return;
+      if (typeof window.openProfilePage === "function") {
+        window.openProfilePage({
+          id: "__create__",
+          isCreate: true,
+          name: "",
+          img: "./plutoo-icon-192.png",
+          breed: "",
+          bio: "",
+          age: "",
+          km: "",
+          sex: ""
+        });
       }
-
-      const msg = state.lang === "it"
-        ? "Manca ancora la schermata di creazione profilo DOG. Prossimo step: profilo vuoto + Salva."
-        : "Create DOG profile screen is missing. Next step: empty profile + Save.";
-      if (typeof showToast === "function") showToast(msg);
-    };
+      return;
 
     // Delegation: funziona anche quando i bottoni vengono creati via innerHTML
     document.addEventListener("click", (ev) => {
