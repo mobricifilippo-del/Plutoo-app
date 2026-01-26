@@ -3084,7 +3084,11 @@ setActiveView("profile");
 
 history.pushState({view: "profile", dogId: d.id}, "", "");  
 
-profilePage.classList.remove("hidden");  
+profilePage.classList.remove("hidden");
+  
+  requestAnimationFrame(() => {
+  window.scrollTo(0, 0);
+});
 
 const selfieUnlocked = isSelfieUnlocked(d.id);  
 const ownerDocs = state.ownerDocsUploaded[d.id] || {};  
