@@ -152,22 +152,24 @@
 
 <!-- Content -->
 <div class="content">
+
   <!-- VICINO A TE -->
-  <div id="viewNearby" class="view active">
-    <div class="view-header">
-  <div class="search-actions">
-    <button id="btnSearchPanel" class="btn plus-btn" type="button">
-      Ricerca personalizzata
-    </button>
+<div id="viewNearby" class="view active">
+  <div class="view-header">
+    <div class="search-actions">
+      <button id="btnSearchPanel" class="btn plus-btn" type="button">
+        Ricerca personalizzata
+      </button>
 
-    <button id="btnCreateDogInline" class="btn plus-btn" type="button">
-      Crea profilo DOG
-    </button>
+      <!-- Crea profilo DOG: visibile SOLO se NON ho già un DOG -->
+      <button id="btnCreateDogInline" class="btn plus-btn" type="button" style="display:none">
+        Crea profilo DOG
+      </button>
+    </div>
   </div>
-</div>
 
-<div id="nearGrid" class="grid-2"></div>
-    </div> <!-- FINE viewNearby -->
+  <div id="nearGrid" class="grid-2"></div>
+</div> <!-- FINE viewNearby -->
 
   <!-- AMORE -->
   <div id="viewLove" class="view">
