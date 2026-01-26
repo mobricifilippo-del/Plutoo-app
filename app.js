@@ -361,6 +361,56 @@ if (btnCreateDogInline) {
   }
 }
 
+// =========================
+// ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
+// =========================
+(function bindCreateDogButtonsOnce() {
+  try {
+    if (window.__createDogBindDone) return;
+    window.__createDogBindDone = true;
+
+    const clickHandler = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      // se non loggato -> login
+      if (!window.auth || !window.auth.currentUser) {
+        if (typeof openAuth === "function") openAuth("login");
+        return;
+      }
+
+      // se già ho DOG -> non deve succedere (bottone dovrebbe essere nascosto)
+      if (window.PLUTOO_HAS_DOG === true) return;
+
+      // ✅ Qui NON invento pannelli.
+      // Per ora apriamo subito il profilo “vuoto” (step 2 lo facciamo dopo).
+      if (typeof window.openCreateDogDraft === "function") {
+        window.openCreateDogDraft();
+        return;
+      }
+
+      const msg = state.lang === "it"
+        ? "Manca ancora la schermata di creazione profilo DOG. Prossimo step: profilo vuoto + Salva."
+        : "Create DOG profile screen is missing. Next step: empty profile + Save.";
+      if (typeof showToast === "function") showToast(msg);
+    };
+
+    // Delegation: funziona anche quando i bottoni vengono creati via innerHTML
+    document.addEventListener("click", (ev) => {
+      const t = ev.target;
+      if (!t) return;
+
+      const btn = t.closest && t.closest("#btnCreateDogInline, #btnCreateDogFromProfile");
+      if (!btn) return;
+
+      clickHandler(ev);
+    }, true);
+
+  } catch (e) {
+    console.error("bindCreateDogButtonsOnce error:", e);
+  }
+})();
+
     // Cache (non source of truth)
     try {
       localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
