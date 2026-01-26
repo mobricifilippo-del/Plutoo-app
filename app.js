@@ -2463,48 +2463,6 @@ async function ensureChatForMatch(dog) {
       searchPanel.style.display = "none";
     }
   });
-
-// ============ Crea profilo DOG (Vicino a te) ============
-  const btnCreateDogInline = document.getElementById("btnCreateDogInline");
-
-  const refreshCreateDogInlineBtn = () => {
-    if (!btnCreateDogInline) return;
-    btnCreateDogInline.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
-  };
-
-  // stato iniziale
-  refreshCreateDogInlineBtn();
-
-  // click -> apre profilo vuoto (creazione)
-  btnCreateDogInline?.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // deve essere loggato
-    if (!window.auth || !window.auth.currentUser) {
-      openAuth("login");
-      return;
-    }
-
-    // se per qualche motivo risulta già avere DOG, non deve aprire creazione
-    if (window.PLUTOO_HAS_DOG === true) {
-      refreshCreateDogInlineBtn();
-      return;
-    }
-
-    // profilo vuoto "in creazione" (usa la tua openProfilePage già esistente)
-    window.openProfilePage({
-      id: "__create__",
-      isCreate: true,
-      name: "",
-      img: "./plutoo-icon-192.png",
-      breed: "",
-      bio: "",
-      age: "",
-      km: "",
-      sex: ""
-    });
-  });
   
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
