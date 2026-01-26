@@ -3122,49 +3122,107 @@ const storiesHTML = dogStories ? `
   </div>  
 `;  
 
+const isCreate = (d && d.isCreate === true);
+const heroImg = isCreate ? "./plutoo-icon-192.png" : (d.img || "./plutoo-icon-192.png");
+
 profileContent.innerHTML = `  
   <div class="pp-hero">  
-    <img src="${d.img}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">  
+    <img src="${heroImg}" alt="${isCreate ? (state.lang==="it"?"Nuovo profilo DOG":"New DOG profile") : d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">  
+    ${isCreate ? `<div class="pp-create-badge">${state.lang==="it"?"CREA PROFILO DOG":"CREATE DOG PROFILE"}</div>` : ``}
   </div>  
+
   <div class="pp-head">  
     <h2 class="pp-name">  
-      <span class="pp-name-main">${d.name} ${d.verified?"✅":""}</span>  
-      <button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>  
-      <span class="pp-follow-stats">  
-        <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>  
-        <span class="pp-follow-dot">·</span>  
-        <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>  
+      <span class="pp-name-main">
+        ${isCreate ? (state.lang==="it"?"Nuovo profilo":"New profile") : `${d.name} ${d.verified?"✅":""}`}
       </span>  
-    </h2>  
-    <div class="pp-badges">  
-      <span class="badge">${d.breed}</span>  
-      <span class="badge">${d.age} ${t("years")}</span>  
-      <span class="badge">${fmtKm(d.km)}</span>  
-      <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>  
-    </div>  
-  </div>  
-  <div class="pp-meta soft">${d.bio||""}</div>  
 
-  ${storiesHTML}  
+      ${isCreate ? `` : `<button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>`}
+
+      ${isCreate ? `` : `
+        <span class="pp-follow-stats">  
+          <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>  
+          <span class="pp-follow-dot">·</span>  
+          <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>  
+        </span>
+      `}
+    </h2>  
+
+    ${isCreate ? `
+      <div class="pp-create-form">
+        <label class="pp-field">
+          <span>${state.lang==="it"?"Nome DOG (obbligatorio)":"DOG name (required)"}</span>
+          <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Es: Luna":"Ex: Luna"}">
+        </label>
+
+        <label class="pp-field">
+          <span>${state.lang==="it"?"Razza (obbligatorio)":"Breed (required)"}</span>
+          <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Es: Labrador":"Ex: Labrador"}">
+        </label>
+
+        <div class="pp-field-row">
+          <label class="pp-field">
+            <span>${state.lang==="it"?"Età (obbligatoria)":"Age (required)"}</span>
+            <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="0">
+          </label>
+
+          <label class="pp-field">
+            <span>${state.lang==="it"?"Sesso (obbligatorio)":"Sex (required)"}</span>
+            <select id="createDogSex">
+              <option value="">${state.lang==="it"?"Seleziona":"Select"}</option>
+              <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
+              <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="pp-field">
+          <span>${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}</span>
+          <textarea id="createDogBio" rows="3" placeholder="${state.lang==="it"?"Scrivi qualcosa…":"Write something…"}"></textarea>
+        </label>
+
+        <div class="pp-create-actions">
+          <button id="btnSaveDogDraft" class="btn primary">${state.lang==="it"?"Salva profilo":"Save profile"}</button>
+        </div>
+      </div>
+    ` : `
+      <div class="pp-badges">  
+        <span class="badge">${d.breed}</span>  
+        <span class="badge">${d.age} ${t("years")}</span>  
+        <span class="badge">${fmtKm(d.km)}</span>  
+        <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>  
+      </div>
+    `}
+  </div>  
+
+  <div class="pp-meta soft">${isCreate ? `` : (d.bio||"")}</div>  
+
+  ${isCreate ? `` : storiesHTML}
 
   <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>  
   <div class="gallery">  
-    <div class="ph"><img src="${d.img}" alt=""></div>  
-    <div class="ph"><img src="${d.img}" alt=""></div>  
-    <div class="ph"><img src="${d.img}" alt=""></div>  
-    <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>  
+    ${isCreate ? `
+      <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
+    ` : `
+      <div class="ph"><img src="${d.img}" alt=""></div>  
+      <div class="ph"><img src="${d.img}" alt=""></div>  
+      <div class="ph"><img src="${d.img}" alt=""></div>  
+      <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
+    `}
   </div>  
 
   <h3 class="section-title">Selfie</h3>
 
-<div class="selfie ${selfieUnlocked?'unlocked':''}">  
-  <img class="img" src="${selfieSrc}" alt="Selfie">  
-  <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />  
-  <div class="over">  
-    <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>  
-    <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>  
-  </div>  
-</div>  <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>  
+  <div class="selfie ${selfieUnlocked?'unlocked':''}">  
+    <img class="img" src="${isCreate ? "./plutoo-icon-192.png" : selfieSrc}" alt="Selfie">  
+    <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />  
+    <div class="over">  
+      <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>  
+      <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>  
+    </div>  
+  </div>
+
+  <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>  
 
   <div class="pp-docs-section">  
     <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>  
@@ -3203,26 +3261,22 @@ profileContent.innerHTML = `
   ${generateSocialSection(d)}
 
   <div class="pp-actions">
-  ${
-    (!window.PLUTOO_HAS_DOG)
-      ? `
-        <button id="btnCreateDogFromProfile" class="btn primary">
-          ${state.lang==="it" ? "Crea profilo DOG" : "Create DOG profile"}
-        </button>
-      `
-      : (
-          (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
-            ? `
-              <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
-              <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
-            `
-            : `
-              <button id="btnLikeDog" class="btn accent">💛 Like</button>
-              <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Invia messaggio":"Send message"}</button>
-            `
-        )
-  }
-</div>
+    ${
+      (!window.PLUTOO_HAS_DOG)
+        ? ``
+        : (
+            (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
+              ? `
+                <button id="btnProfileSettings" class="btn accent">${state.lang==="it"?"Impostazioni profilo":"Profile settings"}</button>
+                <button id="btnEditSocial" class="btn outline">${state.lang==="it"?"Modifica social":"Edit socials"}</button>
+              `
+              : `
+                <button id="btnLikeDog" class="btn accent">💛 Like</button>
+                <button id="btnOpenChat" class="btn primary">${state.lang==="it"?"Invia messaggio":"Send message"}</button>
+              `
+          )
+    }
+  </div>
 `;
 
   // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
