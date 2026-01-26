@@ -3097,7 +3097,7 @@ try {
   if (!d || typeof d !== "object") d = {};  
   if (d.id == null && d.dogId != null) d.id = d.dogId;  
   d.id = (d.id != null) ? String(d.id) : "";  
-  if (!d.id) return;  
+   if (!d.id && d.id !== "__create__") return;
 
   // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])  
   if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};  
