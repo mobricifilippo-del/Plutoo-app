@@ -386,6 +386,7 @@ btnEnter?.addEventListener("click", async (e) => {
         });
       }
       return;
+    }
 
     // Delegation: funziona anche quando i bottoni vengono creati via innerHTML
     document.addEventListener("click", (ev) => {
