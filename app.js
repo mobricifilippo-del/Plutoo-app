@@ -2138,7 +2138,9 @@ msgLists.forEach((list) => {
   }
 
   function fmtKm(n){
-    return `${n.toFixed(1)} km`;
+  const num = (typeof n === "number") ? n : Number(String(n ?? "").replace(",", "."));
+  if (!Number.isFinite(num)) return "— km";
+  return `${num.toFixed(1)} km`;
   }
 
   function filteredDogs(){
