@@ -351,6 +351,16 @@ btnEnter?.addEventListener("click", async (e) => {
     // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
     window.PLUTOO_READONLY = !hasDog;
 
+    // === Toggle Crea profilo DOG in "Vicino a te"
+const btnCreateDogInline = document.getElementById("btnCreateDogInline");
+if (btnCreateDogInline) {
+  if (window.PLUTOO_HAS_DOG === true) {
+    btnCreateDogInline.style.display = "none";
+  } else {
+    btnCreateDogInline.style.display = "inline-flex";
+  }
+}
+
     // Cache (non source of truth)
     try {
       localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
