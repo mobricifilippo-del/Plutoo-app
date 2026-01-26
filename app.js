@@ -3260,31 +3260,33 @@ profileContent.innerHTML = `
 
   ${generateSocialSection(d)}
 
-  <div class="pp-actions">${
-  (!window.PLUTOO_HAS_DOG)
-    ? (
-        '<button id="btnCreateDogFromProfile" class="btn primary">' +
-          (state.lang==="it" ? "Crea profilo DOG" : "Create DOG profile") +
-        '</button>'
-      )
+  <div class="pp-actions">
+${
+  !window.PLUTOO_HAS_DOG
+    ? `
+      <button id="btnCreateDogFromProfile" class="btn primary">
+        ${state.lang==="it" ? "Crea profilo DOG" : "Create DOG profile"}
+      </button>
+    `
     : (
         (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
-          ? (
-              '<button id="btnProfileSettings" class="btn accent">' +
-                (state.lang==="it" ? "Impostazioni profilo" : "Profile settings") +
-              '</button>' +
-              '<button id="btnEditSocial" class="btn outline">' +
-                (state.lang==="it" ? "Modifica social" : "Edit socials") +
-              '</button>'
-            )
-          : (
-              '<button id="btnLikeDog" class="btn accent">💛 Like</button>' +
-              '<button id="btnOpenChat" class="btn primary">' +
-                (state.lang==="it" ? "Invia messaggio" : "Send message") +
-              '</button>'
-            )
+          ? `
+            <button id="btnProfileSettings" class="btn accent">
+              ${state.lang==="it"?"Impostazioni profilo":"Profile settings"}
+            </button>
+            <button id="btnEditSocial" class="btn outline">
+              ${state.lang==="it"?"Modifica social":"Edit socials"}
+            </button>
+          `
+          : `
+            <button id="btnLikeDog" class="btn accent">💛 Like</button>
+            <button id="btnOpenChat" class="btn primary">
+              ${state.lang==="it"?"Invia messaggio":"Send message"}
+            </button>
+          `
       )
-   }</div>
+    }
+  </div>
 
   // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
