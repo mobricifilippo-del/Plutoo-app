@@ -3310,7 +3310,7 @@ ${
 
       const maxPhotos = 5;
       const dogId = d.id;
-      const storageKey = `gallery_${dogId}`;
+      const storageKey = "gallery_" + dogId;
 
       // Prendo il contenitore .gallery e il bottone "+ Aggiungi"
       const galleryBlock = qs(".gallery", profileContent);
