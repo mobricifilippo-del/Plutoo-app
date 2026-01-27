@@ -3137,10 +3137,18 @@ const storiesHTML = dogStories ? `
   </div>  
 `;  
 
-const isCreate = (d && d.isCreate === true);
-const heroImg = isCreate ? "./plutoo-icon-192.png" : (d.img || "./plutoo-icon-192.png");
+// ❌ Create profile non si apre più dentro la pagina profilo.
+// Regola: “Crea profilo” solo vicino a “Ricerca personalizzata”.
+const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
+if (isCreate) {
+  // Torno indietro e lascio l’utente su Vicino a te.
+  setActiveView("nearby");
+  return;
+}
 
-profileContent.innerHTML = `  
+const heroImg = (d.img || "./plutoo-icon-192.png");
+
+profileContent.innerHTML = `
   <div class="pp-hero">  
     <img src="${heroImg}" alt="${isCreate ? (state.lang==="it"?"Nuovo profilo DOG":"New DOG profile") : d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">  
     ${isCreate ? `<div class="pp-create-badge">${state.lang==="it"?"CREA PROFILO DOG":"CREATE DOG PROFILE"}</div>` : ``}
