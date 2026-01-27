@@ -377,11 +377,11 @@ btnEnter?.addEventListener("click", async (e) => {
           id: "__create__",
           isCreate: true,
           name: "",
-          img: "./plutoo-icon-192.png",
+          img: "",
           breed: "",
           bio: "",
           age: "",
-          km: "",
+          km: 0,
           sex: ""
         });
       }
