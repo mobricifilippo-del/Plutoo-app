@@ -329,7 +329,8 @@ btnEnter?.addEventListener("click", async (e) => {
 
   // ✨ rimuove il glow SOLO quando clicco ENTRA
   btnEnter.classList.remove("enter-glow");
-
+  });
+  
 // =========================
 // ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
 // =========================
@@ -388,7 +389,6 @@ if (inlineBtn) {
     console.error("bindCreateDogButtonsOnce error:", e);
   }
 })();
-  });
 
     // Cache (non source of truth)
     try {
