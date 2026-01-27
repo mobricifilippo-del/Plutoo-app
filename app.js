@@ -346,6 +346,11 @@ btnEnter?.addEventListener("click", async (e) => {
 
     // Stato globale (runtime)
     window.PLUTOO_HAS_DOG = hasDog;
+    // UI: "Crea profilo DOG" vicino a Ricerca personalizzata
+const inlineBtn = document.getElementById("btnCreateDogInline");
+if (inlineBtn) {
+  inlineBtn.style.display = (hasDog === true) ? "none" : "inline-flex";
+}
     window.PLUTOO_DOG_ID = dogId;
 
     // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
