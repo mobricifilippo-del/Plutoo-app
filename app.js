@@ -388,6 +388,7 @@ if (inlineBtn) {
     console.error("bindCreateDogButtonsOnce error:", e);
   }
 })();
+  });
 
     // Cache (non source of truth)
     try {
