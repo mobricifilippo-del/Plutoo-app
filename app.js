@@ -3225,13 +3225,21 @@ profileContent.innerHTML = `
   </div>
 
   <div class="pp-meta soft">
-    ${isCreate ? `
-      <textarea id="createDogBio" rows="3" placeholder="${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"></textarea>
-      <div style="margin-top:.6rem;text-align:center">
-        <button id="btnSaveDogDraft" class="btn primary">${state.lang==="it"?"Salva profilo":"Save profile"}</button>
-      </div>
-    ` : (d.bio||"")}
-  </div>
+  ${isCreate ? `
+    <textarea
+      id="createDogBio"
+      rows="3"
+      placeholder="${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}"
+      style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"
+    ></textarea>
+
+    <div style="margin-top:.6rem;text-align:center">
+      <button id="btnSaveDogDraft" class="btn primary">
+        ${state.lang==="it"?"Salva profilo":"Save profile"}
+      </button>
+    </div>
+  ` : (d.bio||"")}
+</div>
 
   ${isCreate ? `` : storiesHTML}
 
