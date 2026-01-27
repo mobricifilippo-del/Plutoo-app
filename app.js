@@ -331,45 +331,50 @@ btnEnter?.addEventListener("click", async (e) => {
   btnEnter.classList.remove("enter-glow");
 
   // ✅ DOG presence check (Firestore source of truth)
-  try {
-    const uid = window.auth.currentUser.uid; // = PLUTOO_UID
-    if (!uid || !window.db) throw new Error("Missing PLUTOO_UID or Firestore (window.db)");
+try {
+  const uid = window.auth.currentUser.uid; // = PLUTOO_UID
+  if (!uid || !window.db) throw new Error("Missing PLUTOO_UID or Firestore (window.db)");
 
-    const snap = await window.db
-      .collection("dogs")
-      .where("ownerUid", "==", uid)
-      .limit(1)
-      .get();
+  const snap = await window.db
+    .collection("dogs")
+    .where("ownerUid", "==", uid)
+    .limit(1)
+    .get();
 
-   const data = (!snap.empty && snap.docs[0]) ? (snap.docs[0].data() || {}) : {};
+  const doc  = (!snap.empty && snap.docs[0]) ? snap.docs[0] : null;
+  const data = (doc && doc.data) ? (doc.data() || {}) : {};
 
-// ✅ Profilo DOG "completo" = campi obbligatori + FOTO
-const name  = String(data.name  || "").trim();
-const breed = String(data.breed || "").trim();
-const sex   = String(data.sex   || "").trim();
+  // ✅ DOG "valido" SOLO se ha i campi minimi OBBLIGATORI:
+  // - name non vuoto
+  // - img non vuoto (foto profilo obbligatoria)
+  const nameOk = String(data.name || "").trim().length > 0;
+  const imgOk  = String(data.img  || "").trim().length > 0;
 
-// age: accettiamo anche 0, ma deve essere valorizzato
-const ageRaw = (data.age != null) ? data.age : "";
-const ageNum = (ageRaw === "" ? NaN : Number(ageRaw));
-const hasAge = Number.isFinite(ageNum) && ageNum >= 0;
+  const hasDog = !!(doc && nameOk && imgOk);
+  const dogId  = hasDog ? (doc.id || null) : null;
 
-// foto obbligatoria
-const img = String(data.img || "").trim();
+  // Stato globale (runtime)
+  window.PLUTOO_HAS_DOG = hasDog;
+  window.PLUTOO_DOG_ID = dogId;
 
-const hasDog = (!!name && !!breed && !!sex && hasAge && !!img);
-const dogId = (hasDog && snap.docs[0]?.id) ? snap.docs[0].id : null;
+  // ✅ VETRINA: se non hai DOG valido, app in sola lettura (blocca interazioni)
+  window.PLUTOO_READONLY = !hasDog;
 
-    // Stato globale (runtime)
-    window.PLUTOO_HAS_DOG = hasDog;
-    // UI: "Crea profilo DOG" vicino a Ricerca personalizzata
-const inlineBtn = document.getElementById("btnCreateDogInline");
-if (inlineBtn) {
-  inlineBtn.style.display = (hasDog === true) ? "none" : "inline-flex";
+  // UI: "Crea profilo DOG" vicino a Ricerca personalizzata
+  const inlineBtn = document.getElementById("btnCreateDogInline");
+  if (inlineBtn) {
+    inlineBtn.style.display = (hasDog === true) ? "none" : "inline-flex";
+  }
+} catch (e) {
+  console.error("DOG presence check error:", e);
+  // fallback safe
+  window.PLUTOO_HAS_DOG = false;
+  window.PLUTOO_DOG_ID = null;
+  window.PLUTOO_READONLY = true;
+
+  const inlineBtn = document.getElementById("btnCreateDogInline");
+  if (inlineBtn) inlineBtn.style.display = "inline-flex";
 }
-    window.PLUTOO_DOG_ID = dogId;
-
-    // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
-    window.PLUTOO_READONLY = !hasDog;
 
 // =========================
 // ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
