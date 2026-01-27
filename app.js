@@ -3328,6 +3328,136 @@ profileContent.innerHTML = `
 </div>
 `;
 
+  // =========================
+// ✅ CREATE DOG: wiring (foto + validazione + feedback)
+// =========================
+try {
+  if (isCreate) {
+    const $ = (sel) => profileContent.querySelector(sel);
+
+    const photoBtn = $("#btnPickCreateDogPhoto");
+    const photoInput = $("#createDogPhotoInput");
+    const photoPreview = $("#createDogPhotoPreview");
+    const photoEmpty = $("#createDogPhotoEmpty");
+
+    const nameEl = $("#createDogName");
+    const breedEl = $("#createDogBreed");
+    const ageEl = $("#createDogAge");
+    const sexEl = $("#createDogSex");
+    const bioEl = $("#createDogBio");
+    const saveBtn = $("#btnSaveDogDraft");
+    const errBox = $("#createDogErrors");
+
+    const markBadge = (fieldId, isBad) => {
+      const field = $("#" + fieldId);
+      if (!field) return;
+      const badge = field.closest && field.closest(".badge");
+      if (!badge) return;
+      badge.style.border = isBad ? "1px solid rgba(255,80,80,.75)" : "";
+      badge.style.boxShadow = isBad ? "0 0 0 2px rgba(255,80,80,.15)" : "";
+    };
+
+    const clearErrors = () => {
+      ["createDogName","createDogBreed","createDogAge","createDogSex"].forEach(id => markBadge(id, false));
+      if (errBox) { errBox.style.display = "none"; errBox.textContent = ""; }
+    };
+
+    const validateCreate = () => {
+      const missing = [];
+      const name = (nameEl?.value || "").trim();
+      const breed = (breedEl?.value || "").trim();
+      const age = (ageEl?.value || "").trim();
+      const sex = (sexEl?.value || "").trim();
+
+      if (!name) missing.push(state.lang==="it" ? "Nome DOG" : "DOG name");
+      if (!breed) missing.push(state.lang==="it" ? "Razza" : "Breed");
+      if (!age) missing.push(state.lang==="it" ? "Età" : "Age");
+      if (!sex) missing.push(state.lang==="it" ? "Sesso" : "Sex");
+
+      markBadge("createDogName", !name);
+      markBadge("createDogBreed", !breed);
+      markBadge("createDogAge", !age);
+      markBadge("createDogSex", !sex);
+
+      if (missing.length) {
+        if (errBox) {
+          errBox.style.display = "block";
+          errBox.innerHTML = (state.lang==="it"
+            ? `Compila i campi obbligatori: <b>${missing.join(", ")}</b>.`
+            : `Fill the required fields: <b>${missing.join(", ")}</b>.`
+          );
+        }
+        return false;
+      }
+      if (errBox) { errBox.style.display = "none"; errBox.textContent = ""; }
+      return true;
+    };
+
+    // Foto: apri picker
+    if (photoBtn && photoInput) {
+      photoBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        photoInput.click();
+      });
+    }
+
+    // Foto: preview
+    if (photoInput && photoPreview && photoEmpty) {
+      photoInput.addEventListener("change", () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+
+        const url = URL.createObjectURL(file);
+        photoPreview.src = url;
+        photoPreview.style.display = "block";
+        photoEmpty.style.display = "none";
+
+        // salviamo TEMP su state per lo step "salvataggio reale"
+        state.__createDogPhotoFile = file;
+        state.__createDogPhotoUrl = url;
+      });
+    }
+
+    // Feedback live: togli errori mentre scrive
+    [nameEl, breedEl, ageEl, sexEl].forEach(el => {
+      if (!el) return;
+      el.addEventListener("input", clearErrors);
+      el.addEventListener("change", clearErrors);
+    });
+
+    // Salva: valida, poi lascia proseguire (qui NON inventiamo salvataggi)
+    if (saveBtn) {
+      saveBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clearErrors();
+
+        if (!validateCreate()) return;
+
+        // Qui NON salvo io: tu hai già la logica altrove.
+        // Setto solo un payload standard pronto per la tua funzione di save.
+        state.__createDogDraft = {
+          name: (nameEl?.value || "").trim(),
+          breed: (breedEl?.value || "").trim(),
+          age: (ageEl?.value || "").trim(),
+          sex: (sexEl?.value || "").trim(),
+          bio: (bioEl?.value || "").trim(),
+          photoFile: state.__createDogPhotoFile || null,
+          photoUrl: state.__createDogPhotoUrl || ""
+        };
+
+        // Se esiste una tua funzione di salvataggio, la chiamiamo (senza inventarla)
+        if (typeof window.saveCreateDogProfile === "function") {
+          window.saveCreateDogProfile(state.__createDogDraft);
+        }
+      }, true);
+    }
+  }
+} catch (e) {
+  console.error("CREATE DOG wiring error:", e);
+}
+
   // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
 // In modalità "solo mail" restano cliccabili i profili demo: si blocca SOLO upload (gestito altrove).
