@@ -375,6 +375,7 @@ try {
   const inlineBtn = document.getElementById("btnCreateDogInline");
   if (inlineBtn) inlineBtn.style.display = "inline-flex";
 }
+  });
 
 // =========================
 // ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
