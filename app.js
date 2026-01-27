@@ -3134,12 +3134,39 @@ const storiesHTML = dogStories ? `
 `;
 
 const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
-const heroImg = isCreate ? "./plutoo-icon-192.png" : (d.img || "./plutoo-icon-192.png");
+const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
 profileContent.innerHTML = `
   <div class="pp-hero">
-    <img src="${heroImg}" alt="${isCreate ? (state.lang==="it"?"Nuovo profilo DOG":"New DOG profile") : d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-    ${isCreate ? `<div class="pp-create-badge">${state.lang==="it"?"CREA PROFILO DOG":"CREATE DOG PROFILE"}</div>` : ``}
+    ${
+      isCreate
+        ? `
+          <div class="pp-create-hero">
+            <img
+              id="createDogPhotoPreview"
+              src=""
+              alt="${state.lang==="it" ? "Foto profilo DOG" : "DOG profile photo"}"
+              style="width:100%;height:100%;object-fit:cover;display:none;border-radius:inherit;"
+            />
+            <div id="createDogPhotoEmpty"
+                 style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.6rem;">
+              <div style="opacity:.85;font-weight:700">
+                ${state.lang==="it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
+              </div>
+              <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
+                ${state.lang==="it" ? "📸 Carica foto" : "📸 Upload photo"}
+              </button>
+              <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
+              <div style="opacity:.65;font-size:.9rem;text-align:center;padding:0 .8rem">
+                ${state.lang==="it" ? "Consiglio: foto frontale, ben illuminata." : "Tip: front-facing, well-lit photo."}
+              </div>
+            </div>
+          </div>
+        `
+        : `
+          <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        `
+    }
   </div>
 
   <div class="pp-head">
@@ -3181,8 +3208,14 @@ profileContent.innerHTML = `
           </select>
         </span>
       </div>
+
+      <div id="createDogErrors"
+           class="soft"
+           style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)">
+      </div>
     ` : `
-      <div class="pp-badges">
+
+        <div class="pp-badges">
         <span class="badge">${d.breed}</span>
         <span class="badge">${d.age} ${t("years")}</span>
         <span class="badge">${fmtKm(d.km)}</span>
