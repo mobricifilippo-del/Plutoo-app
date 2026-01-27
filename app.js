@@ -359,6 +359,12 @@ btnEnter?.addEventListener("click", async (e) => {
     if (window.__createDogBindDone) return;
     window.__createDogBindDone = true;
 
+    // show/hide bottone "Crea profilo DOG" accanto a Ricerca personalizzata
+const inlineBtn = document.getElementById("btnCreateDogInline");
+if (inlineBtn) {
+  inlineBtn.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
+}
+
     const clickHandler = (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
