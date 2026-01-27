@@ -3096,211 +3096,194 @@ setActiveView("profile");
 history.pushState({view: "profile", dogId: d.id}, "", "");  
 
 profilePage.classList.remove("hidden");
-  
-  requestAnimationFrame(() => {
-  window.scrollTo(0, 0);
-});
 
-const selfieUnlocked = isSelfieUnlocked(d.id);  
-const ownerDocs = state.ownerDocsUploaded[d.id] || {};  
-const dogDocs = state.dogDocsUploaded[d.id] || {};  
-const selfieKey   = `selfieImage_${d.id}`;  
-const selfieStored = localStorage.getItem(selfieKey);  
-const selfieSrc    = selfieStored || d.img;  
+const selfieUnlocked = isSelfieUnlocked(d.id);
+const ownerDocs = state.ownerDocsUploaded[d.id] || {};
+const dogDocs = state.dogDocsUploaded[d.id] || {};
+const selfieKey   = `selfieImage_${d.id}`;
+const selfieStored = localStorage.getItem(selfieKey);
+const selfieSrc    = selfieStored || d.img;
 
-const dogStories =  
-window.StoriesState && Array.isArray(window.StoriesState.stories)  
-? window.StoriesState.stories.find(s => s.userId === d.id)  
-: null;  
-const storiesHTML = dogStories ? `  
-  <div class="pp-stories-section">  
-    <div class="pp-stories-header">  
-      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>  
-      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>  
-    </div>  
-    <div class="pp-stories-grid" id="dogStoriesGrid">  
-      ${dogStories.media.map((m, idx) => `  
-        <div class="pp-story-item" data-story-index="${idx}">  
-          <img src="${m.url}" alt="Story" />  
-          <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>  
-        </div>  
-      `).join('')}  
-    </div>  
-  </div>  
-` : `  
-  <div class="pp-stories-section">  
-    <div class="pp-stories-header">  
-      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>  
-      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>  
-    </div>  
-    <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>  
-  </div>  
-`;  
+const dogStories =
+window.StoriesState && Array.isArray(window.StoriesState.stories)
+? window.StoriesState.stories.find(s => s.userId === d.id)
+: null;
+const storiesHTML = dogStories ? `
+  <div class="pp-stories-section">
+    <div class="pp-stories-header">
+      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
+      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
+    </div>
+    <div class="pp-stories-grid" id="dogStoriesGrid">
+      ${dogStories.media.map((m, idx) => `
+        <div class="pp-story-item" data-story-index="${idx}">
+          <img src="${m.url}" alt="Story" />
+          <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+` : `
+  <div class="pp-stories-section">
+    <div class="pp-stories-header">
+      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
+      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
+    </div>
+    <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>
+  </div>
+`;
 
-// ❌ Create profile non si apre più dentro la pagina profilo.
-// Regola: “Crea profilo” solo vicino a “Ricerca personalizzata”.
 const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
-if (isCreate) {
-  // Torno indietro e lascio l’utente su Vicino a te.
-  setActiveView("nearby");
-  return;
-}
-
-const heroImg = (d.img || "./plutoo-icon-192.png");
+const heroImg = isCreate ? "./plutoo-icon-192.png" : (d.img || "./plutoo-icon-192.png");
 
 profileContent.innerHTML = `
-  <div class="pp-hero">  
-    <img src="${heroImg}" alt="${isCreate ? (state.lang==="it"?"Nuovo profilo DOG":"New DOG profile") : d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">  
+  <div class="pp-hero">
+    <img src="${heroImg}" alt="${isCreate ? (state.lang==="it"?"Nuovo profilo DOG":"New DOG profile") : d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
     ${isCreate ? `<div class="pp-create-badge">${state.lang==="it"?"CREA PROFILO DOG":"CREATE DOG PROFILE"}</div>` : ``}
-  </div>  
+  </div>
 
-  <div class="pp-head">  
-    <h2 class="pp-name">  
+  <div class="pp-head">
+    <h2 class="pp-name">
       <span class="pp-name-main">
         ${isCreate ? (state.lang==="it"?"Nuovo profilo":"New profile") : `${d.name} ${d.verified?"✅":""}`}
-      </span>  
+      </span>
 
       ${isCreate ? `` : `<button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>`}
 
       ${isCreate ? `` : `
-        <span class="pp-follow-stats">  
-          <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>  
-          <span class="pp-follow-dot">·</span>  
-          <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>  
+        <span class="pp-follow-stats">
+          <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
+          <span class="pp-follow-dot">·</span>
+          <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
         </span>
       `}
-    </h2>  
+    </h2>
 
     ${isCreate ? `
-      <div class="pp-create-form">
-        <label class="pp-field">
-          <span>${state.lang==="it"?"Nome DOG (obbligatorio)":"DOG name (required)"}</span>
-          <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Es: Luna":"Ex: Luna"}">
-        </label>
+      <div class="pp-badges pp-create-inline">
+        <span class="badge" style="padding:.35rem .5rem">
+          <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Nome DOG *":"DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+        </span>
 
-        <label class="pp-field">
-          <span>${state.lang==="it"?"Razza (obbligatorio)":"Breed (required)"}</span>
-          <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Es: Labrador":"Ex: Labrador"}">
-        </label>
+        <span class="badge" style="padding:.35rem .5rem">
+          <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Razza *":"Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+        </span>
 
-        <div class="pp-field-row">
-          <label class="pp-field">
-            <span>${state.lang==="it"?"Età (obbligatoria)":"Age (required)"}</span>
-            <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="0">
-          </label>
+        <span class="badge" style="padding:.35rem .5rem">
+          <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang==="it"?"Età *":"Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
+        </span>
 
-          <label class="pp-field">
-            <span>${state.lang==="it"?"Sesso (obbligatorio)":"Sex (required)"}</span>
-            <select id="createDogSex">
-              <option value="">${state.lang==="it"?"Seleziona":"Select"}</option>
-              <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
-              <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
-            </select>
-          </label>
-        </div>
-
-        <label class="pp-field">
-          <span>${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}</span>
-          <textarea id="createDogBio" rows="3" placeholder="${state.lang==="it"?"Scrivi qualcosa…":"Write something…"}"></textarea>
-        </label>
-
-        <div class="pp-create-actions">
-          <button id="btnSaveDogDraft" class="btn primary">${state.lang==="it"?"Salva profilo":"Save profile"}</button>
-        </div>
+        <span class="badge" style="padding:.35rem .5rem">
+          <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
+            <option value="">${state.lang==="it"?"Sesso *":"Sex *"}</option>
+            <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
+            <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
+          </select>
+        </span>
       </div>
     ` : `
-      <div class="pp-badges">  
-        <span class="badge">${d.breed}</span>  
-        <span class="badge">${d.age} ${t("years")}</span>  
-        <span class="badge">${fmtKm(d.km)}</span>  
-        <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>  
+      <div class="pp-badges">
+        <span class="badge">${d.breed}</span>
+        <span class="badge">${d.age} ${t("years")}</span>
+        <span class="badge">${fmtKm(d.km)}</span>
+        <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>
       </div>
     `}
-  </div>  
+  </div>
 
-  <div class="pp-meta soft">${isCreate ? `` : (d.bio||"")}</div>  
+  <div class="pp-meta soft">
+    ${isCreate ? `
+      <textarea id="createDogBio" rows="3" placeholder="${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"></textarea>
+      <div style="margin-top:.6rem;text-align:center">
+        <button id="btnSaveDogDraft" class="btn primary">${state.lang==="it"?"Salva profilo":"Save profile"}</button>
+      </div>
+    ` : (d.bio||"")}
+  </div>
 
   ${isCreate ? `` : storiesHTML}
 
-  <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>  
-  <div class="gallery">  
+  <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
+  <div class="gallery">
     ${isCreate ? `
-      <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
+      <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi foto":"Add photo"}</button></div>
     ` : `
-      <div class="ph"><img src="${d.img}" alt=""></div>  
-      <div class="ph"><img src="${d.img}" alt=""></div>  
-      <div class="ph"><img src="${d.img}" alt=""></div>  
+      <div class="ph"><img src="${d.img}" alt=""></div>
+      <div class="ph"><img src="${d.img}" alt=""></div>
+      <div class="ph"><img src="${d.img}" alt=""></div>
       <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
     `}
-  </div>  
+  </div>
 
   <h3 class="section-title">Selfie</h3>
 
-  <div class="selfie ${selfieUnlocked?'unlocked':''}">  
-    <img class="img" src="${isCreate ? "./plutoo-icon-192.png" : selfieSrc}" alt="Selfie">  
-    <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />  
-    <div class="over">  
-      <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>  
-      <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>  
-    </div>  
+  <div class="selfie ${selfieUnlocked?'unlocked':''}">
+    <img class="img" src="${isCreate ? "./plutoo-icon-192.png" : (selfieSrc || "./plutoo-icon-192.png")}" alt="Selfie">
+    <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
+    <div class="over">
+      <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>
+      <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
+    </div>
   </div>
 
-  <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>  
+  <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
 
-  <div class="pp-docs-section">  
-    <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>  
-    <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>  
-    <div class="pp-docs-grid">  
-      <div class="doc-item" data-doc="owner-identity" data-type="owner">  
-        <div class="doc-icon">🪪</div>  
-        <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>  
-        <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>  
-      </div>  
-    </div>  
-  </div>  
+  <div class="pp-docs-section">
+    <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>
+    <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>
+    <div class="pp-docs-grid">
+      <div class="doc-item" data-doc="owner-identity" data-type="owner">
+        <div class="doc-icon">🪪</div>
+        <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>
+        <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+      </div>
+    </div>
+  </div>
 
-  <div class="pp-docs-section" style="margin-top:1.2rem">  
-    <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>  
-    <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>  
-    <div class="pp-docs-grid">  
-      <div class="doc-item" data-doc="dog-vaccines" data-type="dog">  
-        <div class="doc-icon">💉</div>  
-        <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>  
-        <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>  
-      </div>  
-      <div class="doc-item" data-doc="dog-pedigree" data-type="dog">  
-        <div class="doc-icon">📜</div>  
-        <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>  
-        <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>  
-      </div>  
-      <div class="doc-item" data-doc="dog-microchip" data-type="dog">  
-        <div class="doc-icon">🔬</div>  
-        <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>  
-        <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>  
-      </div>  
-    </div>  
-  </div>  
+  <div class="pp-docs-section" style="margin-top:1.2rem">
+    <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>
+    <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>
+    <div class="pp-docs-grid">
+      <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
+        <div class="doc-icon">💉</div>
+        <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>
+        <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+      </div>
+      <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
+        <div class="doc-icon">📜</div>
+        <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>
+        <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+      </div>
+      <div class="doc-item" data-doc="dog-microchip" data-type="dog">
+        <div class="doc-icon">🔬</div>
+        <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>
+        <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+      </div>
+    </div>
+  </div>
 
   ${generateSocialSection(d)}
 
- <div class="pp-actions">
-  ${
-    (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
-      ? `
-        <button id="btnProfileSettings" class="btn accent">
-          ${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}
-        </button>
-        <button id="btnEditSocial" class="btn outline">
-          ${state.lang==="it" ? "Modifica social" : "Edit socials"}
-        </button>
-      `
-      : `
-        <button id="btnLikeDog" class="btn accent">💛 Like</button>
-        <button id="btnOpenChat" class="btn primary">
-          ${state.lang==="it" ? "Invia messaggio" : "Send message"}
-        </button>
-      `
-  }
+  ${isCreate ? `` : `
+    <div class="pp-actions">
+      ${
+        (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
+          ? `
+            <button id="btnProfileSettings" class="btn accent">
+              ${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}
+            </button>
+            <button id="btnEditSocial" class="btn outline">
+              ${state.lang==="it" ? "Modifica social" : "Edit socials"}
+            </button>
+          `
+          : `
+            <button id="btnLikeDog" class="btn accent">💛 Like</button>
+            <button id="btnOpenChat" class="btn primary">
+              ${state.lang==="it" ? "Invia messaggio" : "Send message"}
+            </button>
+          `
+      }
+    </div>
+  `}
 </div>
 `;
 
