@@ -340,10 +340,10 @@ btnEnter?.addEventListener("click", async (e) => {
     window.__createDogBindDone = true;
 
     // show/hide bottone "Crea profilo DOG" accanto a Ricerca personalizzata
-const inlineBtn = document.getElementById("btnCreateDogInline");
-if (inlineBtn) {
-  inlineBtn.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
-}
+    const inlineBtn = document.getElementById("btnCreateDogInline");
+    if (inlineBtn) {
+      inlineBtn.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
+    }
 
     const clickHandler = (ev) => {
       ev.preventDefault();
@@ -371,8 +371,7 @@ if (inlineBtn) {
           sex: ""
         });
       }
-      return;
-    }
+    };
 
     // Delegation: funziona anche quando i bottoni vengono creati via innerHTML
     document.addEventListener("click", (ev) => {
