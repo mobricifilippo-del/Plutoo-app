@@ -341,8 +341,23 @@ btnEnter?.addEventListener("click", async (e) => {
       .limit(1)
       .get();
 
-    const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;
-    const dogId = (!snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0) ? (snap.docs[0]?.id || null) : null;
+   const data = (!snap.empty && snap.docs[0]) ? (snap.docs[0].data() || {}) : {};
+
+// ✅ Profilo DOG "completo" = campi obbligatori + FOTO
+const name  = String(data.name  || "").trim();
+const breed = String(data.breed || "").trim();
+const sex   = String(data.sex   || "").trim();
+
+// age: accettiamo anche 0, ma deve essere valorizzato
+const ageRaw = (data.age != null) ? data.age : "";
+const ageNum = (ageRaw === "" ? NaN : Number(ageRaw));
+const hasAge = Number.isFinite(ageNum) && ageNum >= 0;
+
+// foto obbligatoria
+const img = String(data.img || "").trim();
+
+const hasDog = (!!name && !!breed && !!sex && hasAge && !!img);
+const dogId = (hasDog && snap.docs[0]?.id) ? snap.docs[0].id : null;
 
     // Stato globale (runtime)
     window.PLUTOO_HAS_DOG = hasDog;
