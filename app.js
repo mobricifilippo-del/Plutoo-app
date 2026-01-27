@@ -3137,7 +3137,7 @@ const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
 const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
 profileContent.innerHTML = `
-  <div class="pp-hero">
+  <div class="pp-create-hero" style="position:relative;width:100%;height:220px;border-radius:inherit;overflow:hidden;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);">
     ${
       isCreate
         ? `
