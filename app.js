@@ -3143,11 +3143,12 @@ profileContent.innerHTML = `
         ? `
           <div class="pp-create-hero">
             <img
-              id="createDogPhotoPreview"
-              src=""
-              alt="${state.lang==="it" ? "Foto profilo DOG" : "DOG profile photo"}"
-              style="width:100%;height:100%;object-fit:cover;display:none;border-radius:inherit;"
-            />
+  id="createDogPhotoPreview"
+  src="./plutoo-icon-192.png"
+  alt="${state.lang==="it" ? "Foto profilo DOG" : "DOG profile photo"}"
+  onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"
+  style="width:100%;height:100%;object-fit:cover;display:none;border-radius:inherit;"
+/>
             <div id="createDogPhotoEmpty"
                  style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.6rem;">
               <div style="opacity:.85;font-weight:700">
