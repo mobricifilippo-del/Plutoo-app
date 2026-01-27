@@ -3186,34 +3186,34 @@ profileContent.innerHTML = `
       `}
     </h2>
 
-    ${isCreate ? `
-      <div class="pp-badges pp-create-inline">
-        <span class="badge" style="padding:.35rem .5rem">
-          <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Nome DOG *":"DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-        </span>
+  ${isCreate ? `
+  <div class="pp-badges pp-create-inline">
+    <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Nome DOG":"DOG name"}" style="padding:.35rem .5rem">
+      <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Nome DOG *":"DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+    </span>
 
-        <span class="badge" style="padding:.35rem .5rem">
-          <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Razza *":"Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-        </span>
+    <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Razza":"Breed"}" style="padding:.35rem .5rem">
+      <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Razza *":"Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+    </span>
 
-        <span class="badge" style="padding:.35rem .5rem">
-          <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang==="it"?"Età *":"Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
-        </span>
+    <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Età":"Age"}" style="padding:.35rem .5rem">
+      <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang==="it"?"Età *":"Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
+    </span>
 
-        <span class="badge" style="padding:.35rem .5rem">
-          <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
-            <option value="">${state.lang==="it"?"Sesso *":"Sex *"}</option>
-            <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
-            <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
-          </select>
-        </span>
-      </div>
+    <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Sesso":"Sex"}" style="padding:.35rem .5rem">
+      <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
+        <option value="">${state.lang==="it"?"Sesso *":"Sex *"}</option>
+        <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
+        <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
+      </select>
+    </span>
+  </div>
 
-      <div id="createDogErrors"
-           class="soft"
-           style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)">
-      </div>
-    ` : `
+  <div id="createDogErrors"
+       class="soft"
+       style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)">
+  </div>
+` : ` 
 
         <div class="pp-badges">
         <span class="badge">${d.breed}</span>
