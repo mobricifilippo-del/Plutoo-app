@@ -3141,24 +3141,7 @@ profileContent.innerHTML = `
     ${
       isCreate
         ? `
-          <div class="pp-create-hero">
-            <img
-              id="createDogPhotoPreview"
-              src=""
-              alt="${state.lang==="it" ? "Foto profilo DOG" : "DOG profile photo"}"
-              style="width:100%;height:100%;object-fit:cover;display:none;border-radius:inherit;"
-            />
-            <div id="createDogPhotoEmpty"
-                 style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.6rem;">
-              <div style="opacity:.85;font-weight:700">
-                ${state.lang==="it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
-              </div>
-              <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
-                ${state.lang==="it" ? "📸 Carica foto" : "📸 Upload photo"}
-              </button>
-              <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
-              <div style="opacity:.65;font-size:.9rem;text-align:center;padding:0 .8rem">
-                ${state.lang==="it" ? "Consiglio: foto frontale, ben illuminata." : "Tip: front-facing, well-lit photo."}
+            <div class="pp-create-hero" style="min-height:180px;"></div>
               </div>
             </div>
           </div>
