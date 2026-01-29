@@ -528,7 +528,6 @@ updateEnterState();
 firebase.auth().onAuthStateChanged(() => {
   updateEnterState();
 });
-}); // <-- CHIUDE
 
   // Firebase handles
 const auth = firebase.auth();
