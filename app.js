@@ -340,10 +340,10 @@ btnEnter?.addEventListener("click", async (e) => {
     window.__createDogBindDone = true;
 
     // show/hide bottone "Crea profilo DOG" accanto a Ricerca personalizzata
-    const inlineBtn = document.getElementById("btnCreateDogInline");
-    if (inlineBtn) {
-      inlineBtn.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
-    }
+const inlineBtn = document.getElementById("btnCreateDogInline");
+if (inlineBtn) {
+  inlineBtn.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
+}
 
     const clickHandler = (ev) => {
       ev.preventDefault();
@@ -371,7 +371,8 @@ btnEnter?.addEventListener("click", async (e) => {
           sex: ""
         });
       }
-    };
+      return;
+    }
 
     // Delegation: funziona anche quando i bottoni vengono creati via innerHTML
     document.addEventListener("click", (ev) => {
@@ -388,6 +389,26 @@ btnEnter?.addEventListener("click", async (e) => {
     console.error("bindCreateDogButtonsOnce error:", e);
   }
 })();
+
+    // Cache (non source of truth)
+    try {
+      localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
+      if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
+      else localStorage.removeItem("plutoo_dog_id");
+      localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
+    } catch (_) {}
+    
+  } catch (err) {
+    // fallback safe: segnala "DOG assente" e prosegue
+    window.PLUTOO_HAS_DOG = false;
+    window.PLUTOO_DOG_ID = null;
+    window.PLUTOO_READONLY = true;
+    try {
+      localStorage.setItem("plutoo_has_dog", "0");
+      localStorage.removeItem("plutoo_dog_id");
+      localStorage.setItem("plutoo_readonly", "1");
+    } catch (_) {}
+  }
 
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
@@ -528,6 +549,7 @@ updateEnterState();
 firebase.auth().onAuthStateChanged(() => {
   updateEnterState();
 });
+}); // <-- CHIUDE
 
   // Firebase handles
 const auth = firebase.auth();
