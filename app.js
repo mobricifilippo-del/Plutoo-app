@@ -3673,7 +3673,7 @@ try {
     qa(".doc-item", profileContent).forEach(item=>{
       item.addEventListener("click", (e)=>{
         // 🔒 VETRINA: blocco totale documenti
-        if (window.PLUTOO_READONLY) {
+        if (window.PLUTOO_READONLY && d.id !== "__create__") {
           e.preventDefault();
           e.stopPropagation();
           e.stopImmediatePropagation();
