@@ -481,17 +481,18 @@ if (inlineBtn) {
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
 // =========================
 try {
-  if (!window.PLUTOO_READONLY) return;
+  if (window.PLUTOO_READONLY) {
 
-// ✅ in "Crea profilo DOG" (profilo vuoto) NON bloccare upload/click
-if (
-  state &&
-  state.currentView === "profile" &&
-  state.currentDogProfile &&
-  (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
-) {
-  return;
-}
+    // ✅ in "Crea profilo DOG" (profilo vuoto) NON bloccare upload/click
+    if (
+      state &&
+      state.currentView === "profile" &&
+      state.currentDogProfile &&
+      (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
+    ) {
+      return;
+    }
+
     document.body.classList.add("plutoo-readonly");
 
     const msg = state.lang === "it"
@@ -517,17 +518,24 @@ if (
         try {
           if (!window.PLUTOO_READONLY) return;
 
+          // ✅ bypass anche qui: profilo creazione
+          if (
+            state &&
+            state.currentView === "profile" &&
+            state.currentDogProfile &&
+            (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
+          ) {
+            return;
+          }
+
           const t = ev.target;
           if (!t) return;
 
           const node = (t.closest ? t.closest("button,a,label,input,div,span") : null) || t;
           const id = node && node.id ? String(node.id) : "";
 
-          // blocca anche classi note (UI)
           const isAddPhoto = !!(node && node.classList && node.classList.contains("add-photo"));
           const isDocItem  = !!(node && node.classList && node.classList.contains("doc-item"));
-
-          // blocca anche click su input file (se presente)
           const isFileInput = !!(node && node.tagName === "INPUT" && String(node.type).toLowerCase() === "file");
 
           const isBlocked =
@@ -537,7 +545,7 @@ if (
             id === "uploadSelfie" ||
             id === "publishStory";
 
-          if (!isBlocked) return; // ✅ tutto il resto resta cliccabile
+          if (!isBlocked) return;
 
           ev.preventDefault();
           ev.stopPropagation();
@@ -554,6 +562,9 @@ if (
   } else {
     document.body.classList.remove("plutoo-readonly");
   }
+} catch (_) {}
+      }, true);
+    }
 } catch (_) {}
   }, 500);
 
