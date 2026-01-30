@@ -481,20 +481,17 @@ if (inlineBtn) {
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
 // =========================
 try {
-  if (window.PLUTOO_READONLY) {
+  if (!window.PLUTOO_READONLY) return;
 
-    // ✅ in "Crea profilo DOG" (profilo vuoto) NON bloccare upload/click
-    if (
-      state &&
-      state.currentView === "profile" &&
-      state.currentDogProfile &&
-      (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
-    ) {
-      // niente readonly UI dentro la creazione profilo
-      document.body.classList.remove("plutoo-readonly");
-      return;
-    }
-
+// ✅ in "Crea profilo DOG" (profilo vuoto) NON bloccare upload/click
+if (
+  state &&
+  state.currentView === "profile" &&
+  state.currentDogProfile &&
+  (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
+) {
+  return;
+}
     document.body.classList.add("plutoo-readonly");
 
     const msg = state.lang === "it"
@@ -503,7 +500,10 @@ try {
     if (typeof showToast === "function") showToast(msg);
 
     // ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)
-    const idsToDisable = ["uploadSelfie", "publishStory"];
+    const idsToDisable = [
+      "uploadSelfie",
+      "publishStory"
+    ];
     idsToDisable.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.disabled = true;
@@ -517,24 +517,17 @@ try {
         try {
           if (!window.PLUTOO_READONLY) return;
 
-          // ✅ bypass anche qui: profilo creazione
-          if (
-            state &&
-            state.currentView === "profile" &&
-            state.currentDogProfile &&
-            (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
-          ) {
-            return;
-          }
-
           const t = ev.target;
           if (!t) return;
 
           const node = (t.closest ? t.closest("button,a,label,input,div,span") : null) || t;
           const id = node && node.id ? String(node.id) : "";
 
+          // blocca anche classi note (UI)
           const isAddPhoto = !!(node && node.classList && node.classList.contains("add-photo"));
           const isDocItem  = !!(node && node.classList && node.classList.contains("doc-item"));
+
+          // blocca anche click su input file (se presente)
           const isFileInput = !!(node && node.tagName === "INPUT" && String(node.type).toLowerCase() === "file");
 
           const isBlocked =
@@ -544,7 +537,7 @@ try {
             id === "uploadSelfie" ||
             id === "publishStory";
 
-          if (!isBlocked) return;
+          if (!isBlocked) return; // ✅ tutto il resto resta cliccabile
 
           ev.preventDefault();
           ev.stopPropagation();
@@ -558,11 +551,11 @@ try {
         } catch (_) {}
       }, true);
     }
-
   } else {
     document.body.classList.remove("plutoo-readonly");
   }
 } catch (_) {}
+  }, 500);
 
   setTimeout(() => {
     homeScreen?.classList.add("hidden");
@@ -788,6 +781,7 @@ ownerSocialByDog: {},
   const homeScreen   = $("homeScreen");
   const appScreen    = $("appScreen");
   const heroLogo     = $("heroLogo");
+  const btnEnter     = $("btnEnter");
   const sponsorLink  = $("sponsorLink");
   const sponsorLinkApp = $("sponsorLinkApp");
   const ethicsButton = $("ethicsButton");
