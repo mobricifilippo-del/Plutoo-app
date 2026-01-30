@@ -481,7 +481,17 @@ if (inlineBtn) {
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
 // =========================
 try {
-  if (window.PLUTOO_READONLY) {
+  if (!window.PLUTOO_READONLY) return;
+
+// ✅ in "Crea profilo DOG" (profilo vuoto) NON bloccare upload/click
+if (
+  state &&
+  state.currentView === "profile" &&
+  state.currentDogProfile &&
+  (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
+) {
+  return;
+}
     document.body.classList.add("plutoo-readonly");
 
     const msg = state.lang === "it"
