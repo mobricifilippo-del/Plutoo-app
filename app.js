@@ -788,7 +788,6 @@ ownerSocialByDog: {},
   const homeScreen   = $("homeScreen");
   const appScreen    = $("appScreen");
   const heroLogo     = $("heroLogo");
-  const btnEnter     = $("btnEnter");
   const sponsorLink  = $("sponsorLink");
   const sponsorLinkApp = $("sponsorLinkApp");
   const ethicsButton = $("ethicsButton");
