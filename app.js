@@ -490,6 +490,8 @@ try {
       state.currentDogProfile &&
       (state.currentDogProfile.isCreate === true || state.currentDogProfile.id === "__create__")
     ) {
+      // niente readonly UI dentro la creazione profilo
+      document.body.classList.remove("plutoo-readonly");
       return;
     }
 
@@ -501,10 +503,7 @@ try {
     if (typeof showToast === "function") showToast(msg);
 
     // ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)
-    const idsToDisable = [
-      "uploadSelfie",
-      "publishStory"
-    ];
+    const idsToDisable = ["uploadSelfie", "publishStory"];
     idsToDisable.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.disabled = true;
@@ -559,14 +558,11 @@ try {
         } catch (_) {}
       }, true);
     }
+
   } else {
     document.body.classList.remove("plutoo-readonly");
   }
 } catch (_) {}
-      }, true);
-    }
-} catch (_) {}
-  }, 500);
 
   setTimeout(() => {
     homeScreen?.classList.add("hidden");
