@@ -3867,7 +3867,7 @@ if (likeDogBtn) {
   });
 }
 
-    const uploadSelfieBtn = $("uploadSelfie");
+const uploadSelfieBtn = $("uploadSelfie");
 if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
   const d = state.currentDogProfile;
   if (!d) return;
@@ -3901,20 +3901,19 @@ if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
   fileInput.click();
 };
 
-  const unlockSelfieBtn = $("unlockSelfie");
-if (unlockSelfieBtn) unlockSelfieBtn.onclick = ()=>{
-      if (!isSelfieUnlocked(d.id)){
-        const unlock = ()=> {
-          state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-          localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-          openProfilePage(d);
-        };
-        if (!state.plus){
-          showRewardVideoMock("selfie", unlock);
-        } else unlock();
-      }
+const unlockSelfieBtn = $("unlockSelfie");
+if (unlockSelfieBtn) unlockSelfieBtn.onclick = () => {
+  if (!isSelfieUnlocked(d.id)) {
+    const unlock = () => {
+      state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+      localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+      openProfilePage(d);
     };
-  };
+    if (!state.plus) {
+      showRewardVideoMock("selfie", unlock);
+    } else unlock();
+  }
+};
 
   profileBack?.addEventListener("click", ()=> closeProfilePage());
   profileClose?.addEventListener("click", ()=> closeProfilePage());
