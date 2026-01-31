@@ -3334,6 +3334,53 @@ profileContent.innerHTML = `
 `;
 
   // =========================
+// ✅ CREATE MODE — FOTO PROFILO: click → picker → preview + feedback
+// =========================
+try {
+  if (isCreate) {
+    const photoBtn   = profileContent.querySelector("#btnPickCreateDogPhoto");
+    const photoInput = profileContent.querySelector("#createDogPhotoInput");
+    const preview    = profileContent.querySelector("#createDogPhotoPreview");
+    const emptyBox   = profileContent.querySelector("#createDogPhotoEmpty");
+    const feedback   = profileContent.querySelector("#createDogPhotoFeedback");
+
+    const openPicker = (e) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (photoInput) {
+        photoInput.value = "";
+        photoInput.click();
+      }
+    };
+
+    if (photoBtn) photoBtn.addEventListener("click", openPicker);
+
+    // (opzionale ma utile) click anche sull’area hero per riaprire il picker
+    if (emptyBox) emptyBox.addEventListener("click", openPicker);
+    if (preview)  preview.addEventListener("click", openPicker);
+
+    if (photoInput && preview && emptyBox) {
+      photoInput.addEventListener("change", () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+
+        // ✅ preview immediata
+        const url = URL.createObjectURL(file);
+        preview.src = url;
+        preview.style.display = "block";
+        emptyBox.style.display = "none";
+        if (feedback) feedback.style.display = "block";
+
+        // ✅ salvo TEMP su state (servirà allo step “Salva profilo”)
+        state.__createDogPhotoFile = file;
+        state.__createDogPhotoUrl  = url;
+      });
+    }
+  }
+} catch (e) {
+  console.error("CREATE MODE photo wiring error:", e);
+}
+
+  // =========================
 // ✅ CREATE DOG: wiring (foto + validazione + feedback)
 // =========================
 try {
