@@ -414,6 +414,14 @@ if (inlineBtn) {
     console.error("bindCreateDogButtonsOnce error:", e);
   }
 })();
+  
+// fine bindCreateDogButtonsOnce
+
+  } catch (e) {
+    console.error("ENTRA / DOG check error:", e);
+  }
+}); // fine btnEnter click handler
+}); // fine DOMContentLoaded
 
     // Cache (non source of truth)
     try {
