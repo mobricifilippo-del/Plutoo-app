@@ -414,13 +414,26 @@ if (inlineBtn) {
     console.error("bindCreateDogButtonsOnce error:", e);
   }
 })();
-  
-// fine bindCreateDogButtonsOnce
 
-  } catch (e) {
-    console.error("ENTRA / DOG check error:", e);
+    // Cache (non source of truth)
+    try {
+      localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
+      if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
+      else localStorage.removeItem("plutoo_dog_id");
+      localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
+    } catch (_) {}
+    
+  } catch (err) {
+    // fallback safe: segnala "DOG assente" e prosegue
+    window.PLUTOO_HAS_DOG = false;
+    window.PLUTOO_DOG_ID = null;
+    window.PLUTOO_READONLY = true;
+    try {
+      localStorage.setItem("plutoo_has_dog", "0");
+      localStorage.removeItem("plutoo_dog_id");
+      localStorage.setItem("plutoo_readonly", "1");
+    } catch (_) {}
   }
-}); // fine btnEnter click handler
 
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
@@ -492,8 +505,7 @@ try {
 
       document.addEventListener("click", (ev) => {
         try {
-          if (!window.PLUTOO_READONLY) return;
-if (state.currentDogProfile?.id === "__create__") return;
+          if (!window.PLUTOO_READONLY || state.currentDogProfile?.id === "__create__") return;
 
           const t = ev.target;
           if (!t) return;
@@ -562,6 +574,7 @@ updateEnterState();
 firebase.auth().onAuthStateChanged(() => {
   updateEnterState();
 });
+}); // <-- CHIUDE
 
   // Firebase handles
 const auth = firebase.auth();
@@ -3321,53 +3334,6 @@ profileContent.innerHTML = `
 `;
 
   // =========================
-// ✅ CREATE MODE — FOTO PROFILO: click → picker → preview + feedback
-// =========================
-try {
-  if (isCreate) {
-    const photoBtn   = profileContent.querySelector("#btnPickCreateDogPhoto");
-    const photoInput = profileContent.querySelector("#createDogPhotoInput");
-    const preview    = profileContent.querySelector("#createDogPhotoPreview");
-    const emptyBox   = profileContent.querySelector("#createDogPhotoEmpty");
-    const feedback   = profileContent.querySelector("#createDogPhotoFeedback");
-
-    const openPicker = (e) => {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      if (photoInput) {
-        photoInput.value = "";
-        photoInput.click();
-      }
-    };
-
-    if (photoBtn) photoBtn.addEventListener("click", openPicker);
-
-    // (opzionale ma utile) click anche sull’area hero per riaprire il picker
-    if (emptyBox) emptyBox.addEventListener("click", openPicker);
-    if (preview)  preview.addEventListener("click", openPicker);
-
-    if (photoInput && preview && emptyBox) {
-      photoInput.addEventListener("change", () => {
-        const file = photoInput.files && photoInput.files[0];
-        if (!file) return;
-
-        // ✅ preview immediata
-        const url = URL.createObjectURL(file);
-        preview.src = url;
-        preview.style.display = "block";
-        emptyBox.style.display = "none";
-        if (feedback) feedback.style.display = "block";
-
-        // ✅ salvo TEMP su state (servirà allo step “Salva profilo”)
-        state.__createDogPhotoFile = file;
-        state.__createDogPhotoUrl  = url;
-      });
-    }
-  }
-} catch (e) {
-  console.error("CREATE MODE photo wiring error:", e);
-}
-
-  // =========================
 // ✅ CREATE DOG: wiring (foto + validazione + feedback)
 // =========================
 try {
@@ -3853,8 +3819,7 @@ if (likeDogBtn) {
   });
 }
 
-const uploadSelfieBtn = $("uploadSelfie");
-if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
+    $("uploadSelfie").onclick = () => {
   const d = state.currentDogProfile;
   if (!d) return;
 
@@ -3886,20 +3851,19 @@ if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
 
   fileInput.click();
 };
-
-const unlockSelfieBtn = $("unlockSelfie");
-if (unlockSelfieBtn) unlockSelfieBtn.onclick = () => {
-  if (!isSelfieUnlocked(d.id)) {
-    const unlock = () => {
-      state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-      localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-      openProfilePage(d);
+    $("unlockSelfie").onclick = ()=>{
+      if (!isSelfieUnlocked(d.id)){
+        const unlock = ()=> {
+          state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+          localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+          openProfilePage(d);
+        };
+        if (!state.plus){
+          showRewardVideoMock("selfie", unlock);
+        } else unlock();
+      }
     };
-    if (!state.plus) {
-      showRewardVideoMock("selfie", unlock);
-    } else unlock();
-  }
-};
+  };
 
   profileBack?.addEventListener("click", ()=> closeProfilePage());
   profileClose?.addEventListener("click", ()=> closeProfilePage());
