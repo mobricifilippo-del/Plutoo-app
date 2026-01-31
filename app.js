@@ -505,7 +505,8 @@ try {
 
       document.addEventListener("click", (ev) => {
         try {
-          if (!window.PLUTOO_READONLY || state.currentDogProfile?.id === "__create__") return;
+          if (!window.PLUTOO_READONLY) return;
+if (state.currentDogProfile?.id === "__create__") return;
 
           const t = ev.target;
           if (!t) return;
