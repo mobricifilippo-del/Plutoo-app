@@ -3867,7 +3867,8 @@ if (likeDogBtn) {
   });
 }
 
-    $("uploadSelfie").onclick = () => {
+    const uploadSelfieBtn = $("uploadSelfie");
+if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
   const d = state.currentDogProfile;
   if (!d) return;
 
@@ -3899,7 +3900,9 @@ if (likeDogBtn) {
 
   fileInput.click();
 };
-    $("unlockSelfie").onclick = ()=>{
+
+  const unlockSelfieBtn = $("unlockSelfie");
+if (unlockSelfieBtn) unlockSelfieBtn.onclick = ()=>{
       if (!isSelfieUnlocked(d.id)){
         const unlock = ()=> {
           state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
