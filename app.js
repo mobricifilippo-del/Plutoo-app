@@ -422,26 +422,6 @@ if (inlineBtn) {
   }
 }); // fine btnEnter click handler
 
-    // Cache (non source of truth)
-    try {
-      localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
-      if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
-      else localStorage.removeItem("plutoo_dog_id");
-      localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
-    } catch (_) {}
-    
-  } catch (err) {
-    // fallback safe: segnala "DOG assente" e prosegue
-    window.PLUTOO_HAS_DOG = false;
-    window.PLUTOO_DOG_ID = null;
-    window.PLUTOO_READONLY = true;
-    try {
-      localStorage.setItem("plutoo_has_dog", "0");
-      localStorage.removeItem("plutoo_dog_id");
-      localStorage.setItem("plutoo_readonly", "1");
-    } catch (_) {}
-  }
-
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
   state.entered = true;
