@@ -3334,6 +3334,96 @@ profileContent.innerHTML = `
 `;
 
   // =========================
+// ✅ CREATE MODE: foto profilo (hero) — wiring DEFINITIVO
+// =========================
+try {
+  if (isCreate) {
+    const photoBtn = profileContent.querySelector("#btnPickCreateDogPhoto");
+    const photoInput = profileContent.querySelector("#createDogPhotoInput");
+    const photoPreview = profileContent.querySelector("#createDogPhotoPreview");
+    const photoEmpty = profileContent.querySelector("#createDogPhotoEmpty");
+    const photoFeedback = profileContent.querySelector("#createDogPhotoFeedback");
+
+    const setHeroOk = () => {
+      if (photoFeedback) photoFeedback.style.display = "block";
+      if (photoEmpty) photoEmpty.style.outline = "2px solid rgba(205,164,52,.55)";
+      if (photoEmpty) photoEmpty.style.boxShadow = "0 0 0 3px rgba(205,164,52,.18)";
+    };
+
+    const setHeroError = (msg) => {
+      // riuso il box error se esiste, senza inventare UI nuova
+      const errBox = profileContent.querySelector("#createDogErrors");
+      if (errBox) {
+        errBox.style.display = "block";
+        errBox.innerHTML = msg;
+      } else {
+        alert(msg.replace(/<[^>]*>/g, ""));
+      }
+      if (photoEmpty) photoEmpty.style.outline = "2px solid rgba(255,80,80,.55)";
+      if (photoEmpty) photoEmpty.style.boxShadow = "0 0 0 3px rgba(255,80,80,.16)";
+    };
+
+    // apri picker (capture=true per battere eventuali blocchi globali)
+    const openPicker = (ev) => {
+      if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+      }
+      if (!photoInput) return;
+      photoInput.value = ""; // reset
+      photoInput.click();
+    };
+
+    if (photoBtn) photoBtn.addEventListener("click", openPicker, true);
+    if (photoEmpty) photoEmpty.addEventListener("click", openPicker, true);
+
+    if (photoInput) {
+      photoInput.addEventListener("change", () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+
+        // filtro minimo: solo immagini
+        if (!/^image\//i.test(file.type || "")) {
+          setHeroError(state.lang === "it"
+            ? "❌ Seleziona un file immagine (jpg/png/heic)."
+            : "❌ Please select an image file (jpg/png/heic)."
+          );
+          return;
+        }
+
+        // preview via FileReader (più compatibile del blob URL in WebView)
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e && e.target ? e.target.result : "";
+          if (!dataUrl) return;
+
+          if (photoPreview) {
+            photoPreview.src = dataUrl;
+            photoPreview.style.display = "block";
+          }
+          if (photoEmpty) photoEmpty.style.display = "none";
+          setHeroOk();
+
+          // payload pronto per lo step "SALVA profilo"
+          state.__createDogPhotoFile = file;
+          state.__createDogPhotoDataUrl = dataUrl;
+        };
+        reader.onerror = () => {
+          setHeroError(state.lang === "it"
+            ? "❌ Errore nel caricamento della foto. Riprova."
+            : "❌ Error loading the photo. Please try again."
+          );
+        };
+        reader.readAsDataURL(file);
+      }, true);
+    }
+  }
+} catch (e) {
+  console.error("CREATE MODE hero photo wiring error:", e);
+}
+
+  // =========================
 // ✅ CREATE DOG: wiring (foto + validazione + feedback)
 // =========================
 try {
