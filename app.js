@@ -481,7 +481,10 @@ if (inlineBtn) {
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
 // =========================
 try {
-  if (window.PLUTOO_READONLY) {
+  if (
+  window.PLUTOO_READONLY &&
+  localStorage.getItem("currentProfileDogId") !== "__create__"
+) {
     document.body.classList.add("plutoo-readonly");
 
     const msg = state.lang === "it"
