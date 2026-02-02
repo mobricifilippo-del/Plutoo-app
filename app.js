@@ -3066,7 +3066,7 @@ storyLikeBtn.classList.add("heart-anim");
     } catch (_) {}
   }
 
-  // ============ Profilo DOG (con Stories + Social + Follow + Like foto) ============
+  // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
 window.openProfilePage = (d)=>{
 
 // ✅ GUARD-RAIL (anti crash da notifiche/fallback)  
@@ -3336,227 +3336,7 @@ profileContent.innerHTML = `
 </div>
 `;
 
-  // =========================
-// ✅ CREATE MODE: foto profilo (hero) — wiring DEFINITIVO
-// =========================
-try {
-  if (isCreate) {
-    const photoBtn = profileContent.querySelector("#btnPickCreateDogPhoto");
-    const photoInput = profileContent.querySelector("#createDogPhotoInput");
-    const photoPreview = profileContent.querySelector("#createDogPhotoPreview");
-    const photoEmpty = profileContent.querySelector("#createDogPhotoEmpty");
-    const photoFeedback = profileContent.querySelector("#createDogPhotoFeedback");
-
-    const setHeroOk = () => {
-      if (photoFeedback) photoFeedback.style.display = "block";
-      if (photoEmpty) photoEmpty.style.outline = "2px solid rgba(205,164,52,.55)";
-      if (photoEmpty) photoEmpty.style.boxShadow = "0 0 0 3px rgba(205,164,52,.18)";
-    };
-
-    const setHeroError = (msg) => {
-      // riuso il box error se esiste, senza inventare UI nuova
-      const errBox = profileContent.querySelector("#createDogErrors");
-      if (errBox) {
-        errBox.style.display = "block";
-        errBox.innerHTML = msg;
-      } else {
-        alert(msg.replace(/<[^>]*>/g, ""));
-      }
-      if (photoEmpty) photoEmpty.style.outline = "2px solid rgba(255,80,80,.55)";
-      if (photoEmpty) photoEmpty.style.boxShadow = "0 0 0 3px rgba(255,80,80,.16)";
-    };
-
-    // apri picker (capture=true per battere eventuali blocchi globali)
-    const openPicker = (ev) => {
-      if (ev) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.stopImmediatePropagation();
-      }
-      if (!photoInput) return;
-      photoInput.value = ""; // reset
-      photoInput.click();
-    };
-
-    if (photoBtn) photoBtn.addEventListener("click", openPicker, true);
-    if (photoEmpty) photoEmpty.addEventListener("click", openPicker, true);
-
-    if (photoInput) {
-      photoInput.addEventListener("change", () => {
-        const file = photoInput.files && photoInput.files[0];
-        if (!file) return;
-
-        // filtro minimo: solo immagini
-        if (!/^image\//i.test(file.type || "")) {
-          setHeroError(state.lang === "it"
-            ? "❌ Seleziona un file immagine (jpg/png/heic)."
-            : "❌ Please select an image file (jpg/png/heic)."
-          );
-          return;
-        }
-
-        // preview via FileReader (più compatibile del blob URL in WebView)
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e && e.target ? e.target.result : "";
-          if (!dataUrl) return;
-
-          if (photoPreview) {
-            photoPreview.src = dataUrl;
-            photoPreview.style.display = "block";
-          }
-          if (photoEmpty) photoEmpty.style.display = "none";
-          setHeroOk();
-
-          // payload pronto per lo step "SALVA profilo"
-          state.__createDogPhotoFile = file;
-          state.__createDogPhotoDataUrl = dataUrl;
-        };
-        reader.onerror = () => {
-          setHeroError(state.lang === "it"
-            ? "❌ Errore nel caricamento della foto. Riprova."
-            : "❌ Error loading the photo. Please try again."
-          );
-        };
-        reader.readAsDataURL(file);
-      }, true);
-    }
-  }
-} catch (e) {
-  console.error("CREATE MODE hero photo wiring error:", e);
-}
-
-  // =========================
-// ✅ CREATE DOG: wiring (foto + validazione + feedback)
-// =========================
-try {
-  if (isCreate) {
-    const $ = (sel) => profileContent.querySelector(sel);
-
-    const photoBtn = $("#btnPickCreateDogPhoto");
-    const photoInput = $("#createDogPhotoInput");
-    const photoPreview = $("#createDogPhotoPreview");
-    const photoEmpty = $("#createDogPhotoEmpty");
-
-    const nameEl = $("#createDogName");
-    const breedEl = $("#createDogBreed");
-    const ageEl = $("#createDogAge");
-    const sexEl = $("#createDogSex");
-    const bioEl = $("#createDogBio");
-    const saveBtn = $("#btnSaveDogDraft");
-    const errBox = $("#createDogErrors");
-
-    const markBadge = (fieldId, isBad) => {
-      const field = $("#" + fieldId);
-      if (!field) return;
-      const badge = field.closest && field.closest(".badge");
-      if (!badge) return;
-      badge.style.border = isBad ? "1px solid rgba(255,80,80,.75)" : "";
-      badge.style.boxShadow = isBad ? "0 0 0 2px rgba(255,80,80,.15)" : "";
-    };
-
-    const clearErrors = () => {
-      ["createDogName","createDogBreed","createDogAge","createDogSex"].forEach(id => markBadge(id, false));
-      if (errBox) { errBox.style.display = "none"; errBox.textContent = ""; }
-    };
-
-    const validateCreate = () => {
-      const missing = [];
-      const name = (nameEl?.value || "").trim();
-      const breed = (breedEl?.value || "").trim();
-      const age = (ageEl?.value || "").trim();
-      const sex = (sexEl?.value || "").trim();
-
-      if (!name) missing.push(state.lang==="it" ? "Nome DOG" : "DOG name");
-      if (!breed) missing.push(state.lang==="it" ? "Razza" : "Breed");
-      if (!age) missing.push(state.lang==="it" ? "Età" : "Age");
-      if (!sex) missing.push(state.lang==="it" ? "Sesso" : "Sex");
-
-      markBadge("createDogName", !name);
-      markBadge("createDogBreed", !breed);
-      markBadge("createDogAge", !age);
-      markBadge("createDogSex", !sex);
-
-      if (missing.length) {
-        if (errBox) {
-          errBox.style.display = "block";
-          errBox.innerHTML = (state.lang==="it"
-            ? `Compila i campi obbligatori: <b>${missing.join(", ")}</b>.`
-            : `Fill the required fields: <b>${missing.join(", ")}</b>.`
-          );
-        }
-        return false;
-      }
-      if (errBox) { errBox.style.display = "none"; errBox.textContent = ""; }
-      return true;
-    };
-
-    // Foto: apri picker
-    if (photoBtn && photoInput) {
-      photoBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        photoInput.click();
-      });
-    }
-
-    // Foto: preview
-    if (photoInput && photoPreview && photoEmpty) {
-      photoInput.addEventListener("change", () => {
-        const file = photoInput.files && photoInput.files[0];
-        if (!file) return;
-
-        const url = URL.createObjectURL(file);
-        photoPreview.src = url;
-        photoPreview.style.display = "block";
-        photoEmpty.style.display = "none";
-
-        // salviamo TEMP su state per lo step "salvataggio reale"
-        state.__createDogPhotoFile = file;
-        state.__createDogPhotoUrl = url;
-      });
-    }
-
-    // Feedback live: togli errori mentre scrive
-    [nameEl, breedEl, ageEl, sexEl].forEach(el => {
-      if (!el) return;
-      el.addEventListener("input", clearErrors);
-      el.addEventListener("change", clearErrors);
-    });
-
-    // Salva: valida, poi lascia proseguire (qui NON inventiamo salvataggi)
-    if (saveBtn) {
-      saveBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        clearErrors();
-
-        if (!validateCreate()) return;
-
-        // Qui NON salvo io: tu hai già la logica altrove.
-        // Setto solo un payload standard pronto per la tua funzione di save.
-        state.__createDogDraft = {
-          name: (nameEl?.value || "").trim(),
-          breed: (breedEl?.value || "").trim(),
-          age: (ageEl?.value || "").trim(),
-          sex: (sexEl?.value || "").trim(),
-          bio: (bioEl?.value || "").trim(),
-          photoFile: state.__createDogPhotoFile || null,
-          photoUrl: state.__createDogPhotoUrl || ""
-        };
-
-        // Se esiste una tua funzione di salvataggio, la chiamiamo (senza inventarla)
-        if (typeof window.saveCreateDogProfile === "function") {
-          window.saveCreateDogProfile(state.__createDogDraft);
-        }
-      }, true);
-    }
-  }
-} catch (e) {
-  console.error("CREATE DOG wiring error:", e);
-}
-
-  // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
+// ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
 // In modalità "solo mail" restano cliccabili i profili demo: si blocca SOLO upload (gestito altrove).
 (function attachRealDogProfileControls() {
@@ -3912,7 +3692,9 @@ if (likeDogBtn) {
   });
 }
 
-    $("uploadSelfie").onclick = () => {
+// ✅ FIX CRASH: in create mode uploadSelfie/unlockSelfie non esistono
+const uploadSelfieBtn = $("uploadSelfie");
+if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
   const d = state.currentDogProfile;
   if (!d) return;
 
@@ -3944,19 +3726,20 @@ if (likeDogBtn) {
 
   fileInput.click();
 };
-    $("unlockSelfie").onclick = ()=>{
-      if (!isSelfieUnlocked(d.id)){
-        const unlock = ()=> {
-          state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
-          localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-          openProfilePage(d);
-        };
-        if (!state.plus){
-          showRewardVideoMock("selfie", unlock);
-        } else unlock();
-      }
+
+const unlockSelfieBtn = $("unlockSelfie");
+if (unlockSelfieBtn) unlockSelfieBtn.onclick = ()=>{
+  if (!isSelfieUnlocked(d.id)){
+    const unlock = ()=> {
+      state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+      localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+      openProfilePage(d);
     };
-  };
+    if (!state.plus){
+      showRewardVideoMock("selfie", unlock);
+    } else unlock();
+  }
+};
 
   profileBack?.addEventListener("click", ()=> closeProfilePage());
   profileClose?.addEventListener("click", ()=> closeProfilePage());
@@ -3969,6 +3752,8 @@ if (likeDogBtn) {
   };
 
   function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
+
+};
 
   // Carica i messaggi da Firestore per una chat (ROBUSTO: ordina lato JS)
 async function loadChatHistory(chatId, dogName) {
