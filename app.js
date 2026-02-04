@@ -3151,7 +3151,7 @@ profileContent.innerHTML = `
             <div style="font-size:.9rem;opacity:.7">
               ${
                 state.lang==="it"
-                  ? "Solo foto del dog. No persone."
+                  ? "Solo foto del cane. No persone."
                   : "Only dog photos. No people."
               }
             </div>
@@ -3310,17 +3310,17 @@ profileContent.innerHTML = `
       </div>
 
       <h3 class="section-title">${state.lang==="it"?"Social":"Social"}</h3>
-<div class="socials">
-  <button class="social-btn" data-url="https://fb.com" data-dog-id="${d.id}" data-social="social-fb" aria-label="Facebook">
-    <span class="social-ico">f</span>
-  </button>
-  <button class="social-btn" data-url="https://instagram.com" data-dog-id="${d.id}" data-social="social-ig" aria-label="Instagram">
-    <span class="social-ico">ig</span>
-  </button>
-  <button class="social-btn" data-url="https://tiktok.com" data-dog-id="${d.id}" data-social="social-tt" aria-label="TikTok">
-    <span class="social-ico">tt</span>
-  </button>
-</div>
+      <div class="socials">
+        <button class="social-btn" data-url="https://fb.com" data-dog-id="${d.id}" data-social="social-fb">
+          <img src="./fb.svg" alt="Facebook">
+        </button>
+        <button class="social-btn" data-url="https://instagram.com" data-dog-id="${d.id}" data-social="social-ig">
+          <img src="./ig.svg" alt="Instagram">
+        </button>
+        <button class="social-btn" data-url="https://tiktok.com" data-dog-id="${d.id}" data-social="social-tt">
+          <img src="./tt.svg" alt="TikTok">
+        </button>
+      </div>
 
       <div class="profile-actions">
         <button id="btnOpenChat" class="btn accent">💬 Chat</button>
@@ -3594,139 +3594,93 @@ if (btnSaveDogDraft && isCreate) {
     });
 
     qa(".add-photo", profileContent).forEach(btn => {
-  btn.addEventListener("click", () => {
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.style.display = "none";
-    document.body.appendChild(fileInput);
+      btn.addEventListener("click", () => {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.style.display = "none";
+        document.body.appendChild(fileInput);
 
-    fileInput.onchange = () => {
-      const file = fileInput.files && fileInput.files[0];
-      if (!file) return;
+        fileInput.onchange = () => {
+          const file = fileInput.files && fileInput.files[0];
+          if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
-        const galleryKey = `gallery_${d.id}`;
-        let gallery = JSON.parse(localStorage.getItem(galleryKey) || "[]");
-        gallery.push(dataUrl);
-        localStorage.setItem(galleryKey, JSON.stringify(gallery));
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const dataUrl = e.target.result;
+            const galleryKey = `gallery_${d.id}`;
+            let gallery = JSON.parse(localStorage.getItem(galleryKey) || "[]");
+            gallery.push(dataUrl);
+            localStorage.setItem(galleryKey, JSON.stringify(gallery));
 
-        if (typeof showToast === "function") {
-          showToast(state.lang === "it" ? "✅ Foto aggiunta!" : "✅ Photo added!");
-        }
+            if (typeof showToast === "function") {
+              showToast(state.lang === "it" ? "✅ Foto aggiunta!" : "✅ Photo added!");
+            }
 
-        openProfilePage(d);
-      };
+            openProfilePage(d);
+          };
 
-      reader.readAsDataURL(file);
-      document.body.removeChild(fileInput);
-    };
+          reader.readAsDataURL(file);
+          document.body.removeChild(fileInput);
+        };
 
-    fileInput.click();
-  });
-});
-
-const galleryKey = `gallery_${d.id}`;
-const gallery = JSON.parse(localStorage.getItem(galleryKey) || "[]");
-const galleryContainer = qs(".gallery", profileContent);
-
-if (galleryContainer && gallery.length > 0) {
-  gallery.forEach((src, idx) => {
-    const ph = document.createElement("div");
-    ph.className = "ph";
-    ph.dataset.idx = String(idx);
-    ph.style.position = "relative";
-
-    ph.innerHTML = `
-      <img src="${src}" alt="Gallery ${idx + 1}">
-      <button type="button"
-              class="ph-del"
-              data-idx="${idx}"
-              aria-label="${state.lang === "it" ? "Elimina foto" : "Remove photo"}"
-              style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:999px;border:0;
-                     background:rgba(0,0,0,.55);color:#fff;font-size:18px;line-height:28px;
-                     display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;">
-        ×
-      </button>
-    `;
-
-    galleryContainer.insertBefore(ph, galleryContainer.firstChild);
-  });
-}
-
-// ✅ ELIMINA FOTO: click sulla X (non apre lightbox)
-qa(".ph-del", profileContent).forEach(btn => {
-  btn.addEventListener("click", (ev) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-
-    const idxStr = btn.getAttribute("data-idx");
-    const idx = parseInt(idxStr, 10);
-    if (isNaN(idx)) return;
+        fileInput.click();
+      });
+    });
 
     const galleryKey = `gallery_${d.id}`;
-    let gallery = [];
-    try { gallery = JSON.parse(localStorage.getItem(galleryKey) || "[]"); } catch (_) { gallery = []; }
-    if (!Array.isArray(gallery)) gallery = [];
-    if (idx < 0 || idx >= gallery.length) return;
+    const gallery = JSON.parse(localStorage.getItem(galleryKey) || "[]");
+    const galleryContainer = qs(".gallery", profileContent);
 
-    gallery.splice(idx, 1);
-    localStorage.setItem(galleryKey, JSON.stringify(gallery));
-
-    if (typeof showToast === "function") {
-      showToast(state.lang === "it" ? "🗑️ Foto eliminata" : "🗑️ Photo removed");
-    }
-
-    openProfilePage(d);
-  });
-});
-
-// ✅ LIGHTBOX: click sulla foto (ma NON sulla X)
-qa(".gallery .ph:not(.add-slot)", profileContent).forEach(ph => {
-  ph.addEventListener("click", (ev) => {
-    const isDeleteClick = ev && ev.target && (ev.target.closest ? ev.target.closest(".ph-del") : null);
-    if (isDeleteClick) return;
-
-    const img = qs("img", ph);
-    if (!img) return;
-
-    const lb = document.createElement("div");
-    lb.className = "lightbox";
-    lb.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;";
-
-    lb.innerHTML = `
-      <img src="${img.src}" style="max-width:90%;max-height:80%;border-radius:8px;margin-bottom:1rem;">
-      <button class="lightbox-like-btn" style="background:rgba(255,255,255,.1);border:0;color:#fff;padding:.75rem 1.5rem;border-radius:2rem;font-size:1.2rem;cursor:pointer;">❤️ 0</button>
-      <button class="close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.2);border:0;color:#fff;font-size:2rem;cursor:pointer;border-radius:50%;width:3rem;height:3rem;">×</button>
-    `;
-
-    document.body.appendChild(lb);
-
-    const closeBtn = qs(".close", lb);
-    if (closeBtn) closeBtn.onclick = () => lb.remove();
-    lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
-
-    const likeBtn = qs(".lightbox-like-btn", lb);
-    if (likeBtn) {
-      const refresh = () => {
-        const liked = isDogPhotoLiked(d.id);
-        const count = liked ? 1 : 0;
-        likeBtn.textContent = "❤️ " + count;
-      };
-
-      likeBtn.addEventListener("click", (ev2) => {
-        ev2.stopPropagation();
-        togglePhotoLike(d.id);
-        refresh();
-        updatePhotoLikeUI(d.id);
+    if (galleryContainer && gallery.length > 0) {
+      gallery.forEach((src, idx) => {
+        const ph = document.createElement("div");
+        ph.className = "ph";
+        ph.innerHTML = `<img src="${src}" alt="Gallery ${idx + 1}">`;
+        galleryContainer.insertBefore(ph, galleryContainer.firstChild);
       });
-
-      refresh();
     }
-  });
-});
+
+    qa(".gallery .ph:not(.add-slot)", profileContent).forEach(ph => {
+      ph.addEventListener("click", () => {
+        const img = qs("img", ph);
+        if (!img) return;
+
+        const lb = document.createElement("div");
+        lb.className = "lightbox";
+        lb.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;";
+
+        lb.innerHTML = `
+          <img src="${img.src}" style="max-width:90%;max-height:80%;border-radius:8px;margin-bottom:1rem;">
+          <button class="lightbox-like-btn" style="background:rgba(255,255,255,.1);border:0;color:#fff;padding:.75rem 1.5rem;border-radius:2rem;font-size:1.2rem;cursor:pointer;">❤️ 0</button>
+          <button class="close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.2);border:0;color:#fff;font-size:2rem;cursor:pointer;border-radius:50%;width:3rem;height:3rem;">×</button>
+        `;
+
+        document.body.appendChild(lb);
+
+        const closeBtn = qs(".close", lb);
+        if (closeBtn) closeBtn.onclick = () => lb.remove();
+        lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
+
+        const likeBtn = qs(".lightbox-like-btn", lb);
+        if (likeBtn) {
+          const refresh = () => {
+            const liked = isDogPhotoLiked(d.id);
+            const count = liked ? 1 : 0;
+            likeBtn.textContent = "❤️ " + count;
+          };
+
+          likeBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            togglePhotoLike(d.id);
+            refresh();
+            updatePhotoLikeUI(d.id);
+          });
+
+          refresh();
+        }
+      });
+    });
 
     const docFileInput = document.createElement("input");
     docFileInput.type = "file";
