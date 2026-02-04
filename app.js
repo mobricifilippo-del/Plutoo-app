@@ -3311,14 +3311,14 @@ profileContent.innerHTML = `
 
       <h3 class="section-title">${state.lang==="it"?"Social":"Social"}</h3>
 <div class="socials">
-  <button class="social-btn" data-url="https://fb.com" data-dog-id="${d.id}" data-social="social-fb">
-    <img src="./fb.svg" alt="Facebook">
+  <button class="social-btn" data-url="https://fb.com" data-dog-id="${d.id}" data-social="social-fb" aria-label="Facebook">
+    <span class="social-ico">f</span>
   </button>
-  <button class="social-btn" data-url="https://instagram.com" data-dog-id="${d.id}" data-social="social-ig">
-    <img src="./ig.svg" alt="Instagram">
+  <button class="social-btn" data-url="https://instagram.com" data-dog-id="${d.id}" data-social="social-ig" aria-label="Instagram">
+    <span class="social-ico">ig</span>
   </button>
-  <button class="social-btn" data-url="https://tiktok.com" data-dog-id="${d.id}" data-social="social-tt">
-    <img src="./tt.svg" alt="TikTok">
+  <button class="social-btn" data-url="https://tiktok.com" data-dog-id="${d.id}" data-social="social-tt" aria-label="TikTok">
+    <span class="social-ico">tt</span>
   </button>
 </div>
 
