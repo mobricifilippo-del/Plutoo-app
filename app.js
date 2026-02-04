@@ -3310,17 +3310,17 @@ profileContent.innerHTML = `
       </div>
 
       <h3 class="section-title">${state.lang==="it"?"Social":"Social"}</h3>
-      <div class="socials">
-        <button class="social-btn" data-url="https://fb.com" data-dog-id="${d.id}" data-social="social-fb">
-          <img src="./fb.svg" alt="Facebook">
-        </button>
-        <button class="social-btn" data-url="https://instagram.com" data-dog-id="${d.id}" data-social="social-ig">
-          <img src="./ig.svg" alt="Instagram">
-        </button>
-        <button class="social-btn" data-url="https://tiktok.com" data-dog-id="${d.id}" data-social="social-tt">
-          <img src="./tt.svg" alt="TikTok">
-        </button>
-      </div>
+<div class="socials">
+  <button class="social-btn" data-url="https://fb.com" data-dog-id="${d.id}" data-social="social-fb">
+    <img src="./fb.svg" alt="Facebook">
+  </button>
+  <button class="social-btn" data-url="https://instagram.com" data-dog-id="${d.id}" data-social="social-ig">
+    <img src="./ig.svg" alt="Instagram">
+  </button>
+  <button class="social-btn" data-url="https://tiktok.com" data-dog-id="${d.id}" data-social="social-tt">
+    <img src="./tt.svg" alt="TikTok">
+  </button>
+</div>
 
       <div class="profile-actions">
         <button id="btnOpenChat" class="btn accent">💬 Chat</button>
