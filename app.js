@@ -3069,41 +3069,41 @@ storyLikeBtn.classList.add("heart-anim");
   // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
 window.openProfilePage = (d)=>{
 
-// ✅ GUARD-RAIL (anti crash da notifiche/fallback)  
-try {  
-  if (!d || typeof d !== "object") d = {};  
-  if (d.id == null && d.dogId != null) d.id = d.dogId;  
-  d.id = (d.id != null) ? String(d.id) : "";  
-   if (!d.id && d.id !== "__create__") return;
+// ✅ GUARD-RAIL (anti crash da notifiche/fallback)
+try {
+if (!d || typeof d !== "object") d = {};
+if (d.id == null && d.dogId != null) d.id = d.dogId;
+d.id = (d.id != null) ? String(d.id) : "";
+if (!d.id && d.id !== "create") return;
 
-  // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])  
-  if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};  
-  if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {};  
-  if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {};  
-  if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};  
+// state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])
+if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};
+if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {};
+if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {};
+if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};
 
-  // campi minimi safe (evita undefined in template)  
-  d.name  = (d.name  != null) ? String(d.name)  : "";  
-  d.img   = (d.img   != null) ? String(d.img)   : "";  
-  d.breed = (d.breed != null) ? String(d.breed) : "";  
-  d.bio   = (d.bio   != null) ? String(d.bio)   : "";  
-} catch (e) {  
-  console.error("openProfilePage guard-rail:", e);  
-  return;  
-}  
-  
-state.currentDogProfile = d;  
-localStorage.setItem("currentProfileDogId", d.id);  
-setActiveView("profile");  
+// campi minimi safe (evita undefined in template)
+d.name  = (d.name  != null) ? String(d.name)  : "";
+d.img   = (d.img   != null) ? String(d.img)   : "";
+d.breed = (d.breed != null) ? String(d.breed) : "";
+d.bio   = (d.bio   != null) ? String(d.bio)   : "";
+} catch (e) {
+console.error("openProfilePage guard-rail:", e);
+return;
+}
 
-history.pushState({view: "profile", dogId: d.id}, "", "");  
+state.currentDogProfile = d;
+localStorage.setItem("currentProfileDogId", d.id);
+setActiveView("profile");
+
+history.pushState({view: "profile", dogId: d.id}, "", "");
 
 profilePage.classList.remove("hidden");
 
 const selfieUnlocked = isSelfieUnlocked(d.id);
 const ownerDocs = state.ownerDocsUploaded[d.id] || {};
 const dogDocs = state.dogDocsUploaded[d.id] || {};
-const selfieKey   = `selfieImage_${d.id}`;
+const selfieKey   = selfieImage_${d.id};
 const selfieStored = localStorage.getItem(selfieKey);
 const selfieSrc    = selfieStored || d.img;
 
@@ -3112,229 +3112,172 @@ window.StoriesState && Array.isArray(window.StoriesState.stories)
 ? window.StoriesState.stories.find(s => s.userId === d.id)
 : null;
 const storiesHTML = dogStories ? `
-  <div class="pp-stories-section">
-    <div class="pp-stories-header">
-      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
-      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
-    </div>
-    <div class="pp-stories-grid" id="dogStoriesGrid">
-      ${dogStories.media.map((m, idx) => `
-        <div class="pp-story-item" data-story-index="${idx}">
-          <img src="${m.url}" alt="Story" />
-          <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
-        </div>
-      `).join('')}
-    </div>
-  </div>
-` : `
-  <div class="pp-stories-section">
-    <div class="pp-stories-header">
-      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
-      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
-    </div>
-    <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>
-  </div>
-`;
 
-const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
-const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
+  <div class="pp-stories-section">        
+    <div class="pp-stories-header">        
+      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>        
+      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>        
+    </div>        
+    <div class="pp-stories-grid" id="dogStoriesGrid">        
+      ${dogStories.media.map((m, idx) => `        
+        <div class="pp-story-item" data-story-index="${idx}">        
+          <img src="${m.url}" alt="Story" />        
+          <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>        
+        </div>        
+      `).join('')}        
+    </div>        
+  </div>        
+` : `        
+  <div class="pp-stories-section">        
+    <div class="pp-stories-header">        
+      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>        
+      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>        
+    </div>        
+    <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>        
+  </div>        
+`;  const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");      
+const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");  profileContent.innerHTML = `      <div class="pp-hero">        
+    ${        
+      isCreate        
+        ? `        
+          <div class="pp-create-hero" style="position:relative;min-height:180px;border-radius:18px;overflow:hidden;">        
+            <img        
+              id="createDogPhotoPreview"        
+              src=""        
+              alt="${state.lang==="it" ? "Foto profilo DOG" : "DOG profile photo"}"        
+              style="width:100%;height:100%;object-fit:cover;display:none;"        
+            />        
+            <div        
+              id="createDogPhotoEmpty"        
+              style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.65rem;padding:0 1rem;text-align:center;"        
+            >        
+              <div style="font-weight:800;opacity:.9">        
+                ${state.lang==="it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}        
+              </div>  <button id="btnPickCreateDogPhoto" type="button" class="btn accent">        
+            ${state.lang==="it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}        
+          </button>    <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />        <div style="font-size:.9rem;opacity:.7">        
+    ${state.lang==="it"        
+      ? "Solo foto dog. No persone."        
+      : "Only dog photos. No people."}        
+  </div>        
 
-profileContent.innerHTML = `
-  <div class="pp-hero">
-    ${
-      isCreate
-        ? `
-          <div class="pp-create-hero" style="position:relative;min-height:180px;border-radius:18px;overflow:hidden;">
-            <img
-              id="createDogPhotoPreview"
-              src=""
-              alt="${state.lang==="it" ? "Foto profilo DOG" : "DOG profile photo"}"
-              style="width:100%;height:100%;object-fit:cover;display:none;"
-            />
-            <div
-              id="createDogPhotoEmpty"
-              style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.65rem;padding:0 1rem;text-align:center;"
-            >
-              <div style="font-weight:800;opacity:.9">
-                ${state.lang==="it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
-              </div>
-
-              <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
-                ${state.lang==="it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
-              </button>
-
-              <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
-
-              <div style="font-size:.9rem;opacity:.7">
-                ${state.lang==="it"
-                  ? "Solo foto del cane. No persone."
-                  : "Only dog photos. No people."}
-              </div>
-
-              <div id="createDogPhotoFeedback" style="display:none;margin-top:.25rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:700;">
-                ${state.lang==="it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
-              </div>
-            </div>
-          </div>
-        `
-        : `
-          <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-        `
-    }
-  </div>
-
-  <div class="pp-head">
-    <h2 class="pp-name">
-      <span class="pp-name-main">
-        ${isCreate ? (state.lang==="it"?"Nuovo profilo":"New profile") : `${d.name} ${d.verified?"✅":""}`}
-      </span>
-
-      ${isCreate ? `` : `<button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>`}
-
-      ${isCreate ? `` : `
-        <span class="pp-follow-stats">
-          <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
-          <span class="pp-follow-dot">·</span>
-          <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
-        </span>
-      `}
-    </h2>
-
-  ${isCreate ? `
-    <div class="pp-badges pp-create-inline">
-      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Nome DOG":"DOG name"}" style="padding:.35rem .5rem">
-        <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Nome DOG *":"DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-      </span>
-
-      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Razza":"Breed"}" style="padding:.35rem .5rem">
-        <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Razza *":"Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-      </span>
-
-      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Età":"Age"}" style="padding:.35rem .5rem">
-        <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang==="it"?"Età *":"Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
-      </span>
-
-      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Sesso":"Sex"}" style="padding:.35rem .5rem">
-        <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
-          <option value="">${state.lang==="it"?"Sesso *":"Sex *"}</option>
-          <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
-          <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
-        </select>
-      </span>
-    </div>
-
-    <div id="createDogErrors"
-         class="soft"
-         style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)">
-    </div>
-  ` : ` 
-    <div class="pp-badges">
-      <span class="badge">${d.breed}</span>
-      <span class="badge">${d.age} ${t("years")}</span>
-      <span class="badge">${fmtKm(d.km)}</span>
-      <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>
-    </div>
-  `}
-  </div>
-
-  <div class="pp-meta soft">
-    ${isCreate ? `
-      <textarea
-        id="createDogBio"
-        rows="3"
-        placeholder="${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}"
-        style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"
-      ></textarea>
-
-      <div style="margin-top:.6rem;text-align:center">
-        <button id="btnSaveDogDraft" class="btn primary">
-          ${state.lang==="it"?"Salva profilo":"Save profile"}
-        </button>
-      </div>
-    ` : (d.bio||"")}
-  </div>
-
-  ${isCreate ? `` : storiesHTML}
-
-  ${isCreate ? `` : `
-    <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
-    <div class="gallery">
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
-    </div>
-
-    <h3 class="section-title">Selfie</h3>
-    <div class="selfie ${selfieUnlocked?'unlocked':''}">
-      <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie">
-      <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
-      <div class="over">
-        <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>
-        <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
-      </div>
-    </div>
-
-    <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
-
-    <div class="pp-docs-section">
-      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>
-      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>
-      <div class="pp-docs-grid">
-        <div class="doc-item" data-doc="owner-identity" data-type="owner">
-          <div class="doc-icon">🪪</div>
-          <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>
-          <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pp-docs-section" style="margin-top:1.2rem">
-      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>
-      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>
-      <div class="pp-docs-grid">
-        <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
-          <div class="doc-icon">💉</div>
-          <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>
-          <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-        <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
-          <div class="doc-icon">📜</div>
-          <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>
-          <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-        <div class="doc-item" data-doc="dog-microchip" data-type="dog">
-          <div class="doc-icon">🔬</div>
-          <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>
-          <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
-        </div>
-      </div>
-    </div>
-
-    ${generateSocialSection(d)}
-
-    <div class="pp-actions">
-      ${
-        (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
-          ? `
-            <button id="btnProfileSettings" class="btn accent">
-              ${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}
-            </button>
-            <button id="btnEditSocial" class="btn outline">
-              ${state.lang==="it" ? "Modifica social" : "Edit socials"}
-            </button>
-          `
-          : `
-            <button id="btnLikeDog" class="btn accent">💛 Like</button>
-            <button id="btnOpenChat" class="btn primary">
-              ${state.lang==="it" ? "Invia messaggio" : "Send message"}
-            </button>
-          `
-      }
-    </div>
-  `}
+  <div id="createDogPhotoFeedback" style="display:none;margin-top:.25rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:700;">        
+    ${state.lang==="it" ? "Foto caricata ✅" : "Photo uploaded ✅"}        
+  </div>        
 </div>
-`;
+
+  </div>        
+`        
+: `        
+  <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">        
+`    }
+
+  </div>    <div class="pp-head">        
+    <h2 class="pp-name">        
+      <span class="pp-name-main">        
+        ${isCreate ? (state.lang==="it"?"Nuovo profilo":"New profile") : `${d.name} ${d.verified?"✅":""}`}        
+      </span>  ${isCreate ? `` : `<button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>`}    ${isCreate ? `` :     <span class="pp-follow-stats">     <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>     <span class="pp-follow-dot">·</span>     <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>     </span>    }    </h2>  ${isCreate ? `    <div class="pp-badges pp-create-inline">      
+<span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Nome DOG":"DOG name"}" style="padding:.35rem .5rem">      
+<input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Nome DOG *":"DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">      
+</span>  <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Razza":"Breed"}" style="padding:.35rem .5rem">    
+<input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Razza *":"Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">    
+</span>    <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Età":"Age"}" style="padding:.35rem .5rem">
+<input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang==="it"?"Età *":"Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
+</span>
+
+<span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Sesso":"Sex"}" style="padding:.35rem .5rem">
+<select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
+
+<option value="">${state.lang==="it"?"Sesso *":"Sex *"}</option>    
+<option value="M">${state.lang==="it"?"Maschio":"Male"}</option>    
+<option value="F">${state.lang==="it"?"Femmina":"Female"}</option>    
+</select>    
+</span>    </div>    <div id="createDogErrors"        
+     class="soft"        
+     style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)">        
+</div>  :    <div class="pp-badges">      
+<span class="badge">${d.breed}</span>      
+<span class="badge">${d.age} ${t("years")}</span>      
+<span class="badge">${fmtKm(d.km)}</span>      
+<span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>      
+</div>      
+`}    </div>    <div class="pp-meta soft">        
+    ${isCreate ? `        
+      <textarea        
+        id="createDogBio"        
+        rows="3"        
+        placeholder="${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}"        
+        style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"        
+      ></textarea>  <div style="margin-top:.6rem;text-align:center">        
+    <button id="btnSaveDogDraft" class="btn primary">        
+      ${state.lang==="it"?"Salva profilo":"Save profile"}        
+    </button>        
+  </div>        
+` : (d.bio||"")}    </div>  ${isCreate ? `` : storiesHTML}  ${isCreate ? `` : `    <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>      
+<div class="gallery">      
+<div class="ph"><img src="${d.img}" alt=""></div>      
+<div class="ph"><img src="${d.img}" alt=""></div>      
+<div class="ph"><img src="${d.img}" alt=""></div>      
+<div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>      
+</div>  <h3 class="section-title">Selfie</h3>        
+<div class="selfie ${selfieUnlocked?'unlocked':''}">        
+  <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie">        
+  <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />        
+  <div class="over">        
+    <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>        
+    <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>        
+  </div>        
+</div>    <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>    <div class="pp-docs-section">        
+  <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>        
+  <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>        
+  <div class="pp-docs-grid">        
+    <div class="doc-item" data-doc="owner-identity" data-type="owner">        
+      <div class="doc-icon">🪪</div>        
+      <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>        
+      <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>        
+    </div>        
+  </div>        
+</div>    <div class="pp-docs-section" style="margin-top:1.2rem">        
+  <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>        
+  <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>        
+  <div class="pp-docs-grid">        
+    <div class="doc-item" data-doc="dog-vaccines" data-type="dog">        
+      <div class="doc-icon">💉</div>        
+      <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>        
+      <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>        
+    </div>        
+    <div class="doc-item" data-doc="dog-pedigree" data-type="dog">        
+      <div class="doc-icon">📜</div>        
+      <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>        
+      <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>        
+    </div>        
+    <div class="doc-item" data-doc="dog-microchip" data-type="dog">        
+      <div class="doc-icon">🔬</div>        
+      <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>        
+      <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>        
+    </div>        
+  </div>        
+</div>    ${generateSocialSection(d)}    <div class="pp-actions">        
+  ${        
+    (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)        
+      ? `        
+        <button id="btnProfileSettings" class="btn accent">        
+          ${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}        
+        </button>        
+        <button id="btnEditSocial" class="btn outline">        
+          ${state.lang==="it" ? "Modifica social" : "Edit socials"}        
+        </button>        
+      `        
+      : `        
+        <button id="btnLikeDog" class="btn accent">💛 Like</button>        
+        <button id="btnOpenChat" class="btn primary">        
+          ${state.lang==="it" ? "Invia messaggio" : "Send message"}        
+        </button>        
+      `        
+  }        
+</div>  `}    </div>        
+`;    
+```0
 
 // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
