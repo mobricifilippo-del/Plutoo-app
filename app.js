@@ -487,11 +487,6 @@ try {
 ) {
     document.body.classList.add("plutoo-readonly");
 
-    const msg = state.lang === "it"
-      ? "🔒 Crea il tuo profilo DOG per caricare foto o documenti"
-      : "🔒 Create your DOG profile to upload photos or documents";
-    if (typeof showToast === "function") showToast(msg);
-
     // ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)
     const idsToDisable = [
       "uploadSelfie",
