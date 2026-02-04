@@ -3066,102 +3066,114 @@ storyLikeBtn.classList.add("heart-anim");
     } catch (_) {}
   }
 
-  window.openProfilePage = (d)=>{
- 
-// ✅ GUARD-RAIL (anti crash da notifiche/fallback) 
-try { 
-  if (!d || typeof d !== "object") d = {}; 
-  if (d.id == null && d.dogId != null) d.id = d.dogId; 
-  d.id = (d.id != null) ? String(d.id) : ""; 
-  if (!d.id && d.id !== "**create**") return;
- 
-  // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id]) 
-  if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {}; 
-  if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {}; 
-  if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {}; 
-  if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};
- 
-  // campi minimi safe (evita undefined in template) 
-  d.name  = (d.name  != null) ? String(d.name)  : ""; 
-  d.img   = (d.img   != null) ? String(d.img)   : ""; 
-  d.breed = (d.breed != null) ? String(d.breed) : ""; 
-  d.bio   = (d.bio   != null) ? String(d.bio)   : ""; 
-} catch (e) { 
-  console.error("openProfilePage guard-rail:", e); 
-  return; 
-}
- 
-state.currentDogProfile = d; 
-localStorage.setItem("currentProfileDogId", d.id); 
-setActiveView("profile");
- 
-history.pushState({view: "profile", dogId: d.id}, "", "");
- 
+  // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
+window.openProfilePage = (d)=>{
+
+// ✅ GUARD-RAIL (anti crash da notifiche/fallback)  
+try {  
+  if (!d || typeof d !== "object") d = {};  
+  if (d.id == null && d.dogId != null) d.id = d.dogId;  
+  d.id = (d.id != null) ? String(d.id) : "";  
+   if (!d.id && d.id !== "__create__") return;
+
+  // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])  
+  if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};  
+  if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {};  
+  if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {};  
+  if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};  
+
+  // campi minimi safe (evita undefined in template)  
+  d.name  = (d.name  != null) ? String(d.name)  : "";  
+  d.img   = (d.img   != null) ? String(d.img)   : "";  
+  d.breed = (d.breed != null) ? String(d.breed) : "";  
+  d.bio   = (d.bio   != null) ? String(d.bio)   : "";  
+} catch (e) {  
+  console.error("openProfilePage guard-rail:", e);  
+  return;  
+}  
+  
+state.currentDogProfile = d;  
+localStorage.setItem("currentProfileDogId", d.id);  
+setActiveView("profile");  
+
+history.pushState({view: "profile", dogId: d.id}, "", "");  
+
 profilePage.classList.remove("hidden");
- 
-const selfieUnlocked = isSelfieUnlocked(d.id); 
-const ownerDocs = state.ownerDocsUploaded[d.id] || {}; 
-const dogDocs = state.dogDocsUploaded[d.id] || {}; 
-const selfieKey   = `selfieImage_${d.id}`; 
-const selfieStored = localStorage.getItem(selfieKey); 
+
+const selfieUnlocked = isSelfieUnlocked(d.id);
+const ownerDocs = state.ownerDocsUploaded[d.id] || {};
+const dogDocs = state.dogDocsUploaded[d.id] || {};
+const selfieKey   = `selfieImage_${d.id}`;
+const selfieStored = localStorage.getItem(selfieKey);
 const selfieSrc    = selfieStored || d.img;
- 
-const dogStories = window.StoriesState && Array.isArray(window.StoriesState.stories) 
-  ? window.StoriesState.stories.find(s => s.userId === d.id) 
-  : null; 
- 
+
+const dogStories =
+window.StoriesState && Array.isArray(window.StoriesState.stories)
+? window.StoriesState.stories.find(s => s.userId === d.id)
+: null;
 const storiesHTML = dogStories ? `
-  <div class="pp-stories">
-    <div class="pp-stories-head">
-      <h4>${state.lang==="it"?"Stories":"Stories"}</h4>
-      <button type="button" id="uploadDogStory" class="btn pill">${state.lang==="it"?"📸 Carica Story":"📸 Upload Story"}</button>
+  <div class="pp-stories-section">
+    <div class="pp-stories-header">
+      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
+      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
     </div>
-    <div class="pp-stories-row">
+    <div class="pp-stories-grid" id="dogStoriesGrid">
       ${dogStories.media.map((m, idx) => `
         <div class="pp-story-item" data-story-index="${idx}">
-          <div class="pp-story-thumb">Story</div>
-          <div class="pp-story-time">${getTimeAgo(m.timestamp)}</div>
+          <img src="${m.url}" alt="Story" />
+          <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
         </div>
       `).join('')}
     </div>
   </div>
 ` : `
-  <div class="pp-stories">
-    <div class="pp-stories-head">
-      <h4>${state.lang==="it"?"Stories":"Stories"}</h4>
-      <button type="button" id="uploadDogStory" class="btn pill">${state.lang==="it"?"📸 Carica Story":"📸 Upload Story"}</button>
+  <div class="pp-stories-section">
+    <div class="pp-stories-header">
+      <h4 class="section-title" style="margin:0">${state.lang==="it"?"Stories":"Stories"}</h4>
+      <button id="uploadDogStory" class="btn accent small">📸 ${state.lang==="it"?"Carica Story":"Upload Story"}</button>
     </div>
-    <div class="pp-stories-empty">
-      ${state.lang==="it"?"Nessuna story disponibile":"No stories available"}
-    </div>
+    <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>
   </div>
-`;   
- 
-const isCreate = (d && d.isCreate === true) || (d && d.id === "**create**"); 
+`;
+
+const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
 const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
- 
+
 profileContent.innerHTML = `
-  <div class="profile-hero">
+  <div class="pp-hero">
     ${
       isCreate
         ? `
-          <div class="create-hero">
-            <div class="create-hero-title">
-              ${state.lang==="it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
-            </div>
-            <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
-              ${state.lang==="it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
-            </button>
-            <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
-            <div style="font-size:.9rem;opacity:.7">
-              ${
-                state.lang==="it"
+          <div class="pp-create-hero" style="position:relative;min-height:180px;border-radius:18px;overflow:hidden;">
+            <img
+              id="createDogPhotoPreview"
+              src=""
+              alt="${state.lang==="it" ? "Foto profilo DOG" : "DOG profile photo"}"
+              style="width:100%;height:100%;object-fit:cover;display:none;"
+            />
+            <div
+              id="createDogPhotoEmpty"
+              style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.65rem;padding:0 1rem;text-align:center;"
+            >
+              <div style="font-weight:800;opacity:.9">
+                ${state.lang==="it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
+              </div>
+
+              <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
+                ${state.lang==="it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
+              </button>
+
+              <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
+
+              <div style="font-size:.9rem;opacity:.7">
+                ${state.lang==="it"
                   ? "Solo foto del cane. No persone."
-                  : "Only dog photos. No people."
-              }
-            </div>
-            <div id="createDogPhotoFeedback" style="display:none;margin-top:.25rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:700;">
-              ${state.lang==="it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
+                  : "Only dog photos. No people."}
+              </div>
+
+              <div id="createDogPhotoFeedback" style="display:none;margin-top:.25rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:700;">
+                ${state.lang==="it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
+              </div>
             </div>
           </div>
         `
@@ -3171,501 +3183,360 @@ profileContent.innerHTML = `
     }
   </div>
 
-  <div class="profile-head">
-    <h2 class="profile-title">
-      ${
-        isCreate
-          ? (state.lang==="it"?"Nuovo profilo":"New profile")
-          : `${d.name} ${d.verified?"✅":""}`
-      }
+  <div class="pp-head">
+    <h2 class="pp-name">
+      <span class="pp-name-main">
+        ${isCreate ? (state.lang==="it"?"Nuovo profilo":"New profile") : `${d.name} ${d.verified?"✅":""}`}
+      </span>
+
       ${isCreate ? `` : `<button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>`}
-      ${
-        isCreate ? `` : `
-          <span class="pp-follow-stats">
-            <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
-            <span class="pp-follow-dot">·</span>
-            <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
-          </span>
-        `
-      }
+
+      ${isCreate ? `` : `
+        <span class="pp-follow-stats">
+          <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
+          <span class="pp-follow-dot">·</span>
+          <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
+        </span>
+      `}
     </h2>
 
-    ${
-      isCreate ? `
-        <div class="profile-badges">
-          <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Nome DOG":"DOG name"}" style="padding:.35rem .5rem">
-            <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Nome DOG *":"DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-          </span>
+  ${isCreate ? `
+    <div class="pp-badges pp-create-inline">
+      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Nome DOG":"DOG name"}" style="padding:.35rem .5rem">
+        <input id="createDogName" type="text" value="" placeholder="${state.lang==="it"?"Nome DOG *":"DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+      </span>
 
-          <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Razza":"Breed"}" style="padding:.35rem .5rem">
-            <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Razza *":"Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-          </span>
+      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Razza":"Breed"}" style="padding:.35rem .5rem">
+        <input id="createDogBreed" type="text" value="" placeholder="${state.lang==="it"?"Razza *":"Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+      </span>
 
-          <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Età":"Age"}" style="padding:.35rem .5rem">
-            <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang==="it"?"Età *":"Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
-          </span>
+      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Età":"Age"}" style="padding:.35rem .5rem">
+        <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang==="it"?"Età *":"Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
+      </span>
 
-          <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Sesso":"Sex"}" style="padding:.35rem .5rem">
-            <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
-              <option value="">${state.lang==="it"?"Sesso *":"Sex *"}</option>
-              <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
-              <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
-            </select>
-          </span>
-        </div>
-
-        <div id="createDogErrors"
-             class="soft"
-             style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)">
-        </div>
-      ` : `
-        <div class="profile-meta">
-          ${d.breed} ${d.age} ${t("years")} ${fmtKm(d.km)} ${
-            d.sex==="M"
-              ? (state.lang==="it"?"Maschio":"Male")
-              : (state.lang==="it"?"Femmina":"Female")
-          }
-        </div>
-      `
-    }
-
-    <div class="profile-bio">
-      ${
-        isCreate
-          ? `
-            <div style="margin-top:.6rem;text-align:center">
-              <button id="btnSaveDogDraft" class="btn primary">
-                ${state.lang==="it"?"Salva profilo":"Save profile"}
-              </button>
-            </div>
-          `
-          : (d.bio||"")
-      }
+      <span class="badge create-req" data-req="1" data-label="${state.lang==="it"?"Sesso":"Sex"}" style="padding:.35rem .5rem">
+        <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
+          <option value="">${state.lang==="it"?"Sesso *":"Sex *"}</option>
+          <option value="M">${state.lang==="it"?"Maschio":"Male"}</option>
+          <option value="F">${state.lang==="it"?"Femmina":"Female"}</option>
+        </select>
+      </span>
     </div>
+
+    <div id="createDogErrors"
+         class="soft"
+         style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)">
+    </div>
+  ` : ` 
+    <div class="pp-badges">
+      <span class="badge">${d.breed}</span>
+      <span class="badge">${d.age} ${t("years")}</span>
+      <span class="badge">${fmtKm(d.km)}</span>
+      <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>
+    </div>
+  `}
+  </div>
+
+  <div class="pp-meta soft">
+    ${isCreate ? `
+      <textarea
+        id="createDogBio"
+        rows="3"
+        placeholder="${state.lang==="it"?"Bio (opzionale)":"Bio (optional)"}"
+        style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"
+      ></textarea>
+
+      <div style="margin-top:.6rem;text-align:center">
+        <button id="btnSaveDogDraft" class="btn primary">
+          ${state.lang==="it"?"Salva profilo":"Save profile"}
+        </button>
+      </div>
+    ` : (d.bio||"")}
   </div>
 
   ${isCreate ? `` : storiesHTML}
 
-  ${
-    isCreate ? `` : `
-      <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
-      <div class="gallery">
-        <div class="ph add-slot">
-          <button type="button" class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button>
+  ${isCreate ? `` : `
+    <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>
+    <div class="gallery">
+      <div class="ph"><img src="${d.img}" alt=""></div>
+      <div class="ph"><img src="${d.img}" alt=""></div>
+      <div class="ph"><img src="${d.img}" alt=""></div>
+      <div class="ph"><button class="add-photo">+ ${state.lang==="it"?"Aggiungi":"Add"}</button></div>
+    </div>
+
+    <h3 class="section-title">Selfie</h3>
+    <div class="selfie ${selfieUnlocked?'unlocked':''}">
+      <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie">
+      <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
+      <div class="over">
+        <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>
+        <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
+      </div>
+    </div>
+
+    <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
+
+    <div class="pp-docs-section">
+      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>
+      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>
+      <div class="pp-docs-grid">
+        <div class="doc-item" data-doc="owner-identity" data-type="owner">
+          <div class="doc-icon">🪪</div>
+          <div class="doc-label">${state.lang==="it"?"Carta d'identità":"Identity Card"}</div>
+          <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
         </div>
       </div>
+    </div>
 
-      <h3 class="section-title">Selfie</h3>
-      <div class="selfie ${selfieUnlocked?'unlocked':''}">
-        <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie">
-        <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
-        <div class="over">
-          <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>
-          <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>
+    <div class="pp-docs-section" style="margin-top:1.2rem">
+      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>
+      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>
+      <div class="pp-docs-grid">
+        <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
+          <div class="doc-icon">💉</div>
+          <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>
+          <div class="doc-status ${dogDocs.vaccines?'uploaded':'pending'}">${dogDocs.vaccines?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+        </div>
+        <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
+          <div class="doc-icon">📜</div>
+          <div class="doc-label">${state.lang==="it"?"Pedigree":"Pedigree"}</div>
+          <div class="doc-status ${dogDocs.pedigree?'uploaded':'pending'}">${dogDocs.pedigree?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
+        </div>
+        <div class="doc-item" data-doc="dog-microchip" data-type="dog">
+          <div class="doc-icon">🔬</div>
+          <div class="doc-label">${state.lang==="it"?"Microchip":"Microchip"}</div>
+          <div class="doc-status ${dogDocs.microchip?'uploaded':'pending'}">${dogDocs.microchip?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>
         </div>
       </div>
+    </div>
 
-      <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>
+    ${generateSocialSection(d)}
 
-      <div class="pp-docs-section">
-        <div class="pp-docs-title">${state.lang==="it"?"Documenti Proprietario":"Owner Documents"}</div>
-        <div class="pp-docs-row">
-          <div class="doc-item ${ownerDocs.identity?'uploaded':''}" data-doc="owner-identity" data-type="owner">
-            <div class="doc-icon">📄</div>
-            <div class="doc-label">${state.lang==="it"?"Documento identità":"Identity document"}</div>
-            <div class="doc-check">✅</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="pp-docs-section">
-        <div class="pp-docs-title">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</div>
-        <div class="pp-docs-row">
-          <div class="doc-item ${dogDocs.pedigree?'uploaded':''}" data-doc="dog-pedigree" data-type="dog">
-            <div class="doc-icon">🐕</div>
-            <div class="doc-label">Pedigree</div>
-            <div class="doc-check">✅</div>
-          </div>
-          <div class="doc-item ${dogDocs.microchip?'uploaded':''}" data-doc="dog-microchip" data-type="dog">
-            <div class="doc-icon">🔖</div>
-            <div class="doc-label">Microchip</div>
-            <div class="doc-check">✅</div>
-          </div>
-          <div class="doc-item ${dogDocs.vaccini?'uploaded':''}" data-doc="dog-vaccini" data-type="dog">
-            <div class="doc-icon">💉</div>
-            <div class="doc-label">${state.lang==="it"?"Vaccini":"Vaccines"}</div>
-            <div class="doc-check">✅</div>
-          </div>
-          <div class="doc-item ${dogDocs.antirabbica?'uploaded':''}" data-doc="dog-antirabbica" data-type="dog">
-            <div class="doc-icon">🐾</div>
-            <div class="doc-label">${state.lang==="it"?"Antirabbica":"Rabies"}</div>
-            <div class="doc-check">✅</div>
-          </div>
-          <div class="doc-item ${dogDocs.passaporto?'uploaded':''}" data-doc="dog-passaporto" data-type="dog">
-            <div class="doc-icon">🛂</div>
-            <div class="doc-label">${state.lang==="it"?"Passaporto":"Passport"}</div>
-            <div class="doc-check">✅</div>
-          </div>
-          <div class="doc-item ${dogDocs.attestati?'uploaded':''}" data-doc="dog-attestati" data-type="dog">
-            <div class="doc-icon">🏆</div>
-            <div class="doc-label">${state.lang==="it"?"Attestati":"Certificates"}</div>
-            <div class="doc-check">✅</div>
-          </div>
-        </div>
-      </div>
-
-      <h3 class="section-title">${state.lang==="it"?"Social":"Social"}</h3>
-      <div class="socials">
-        <button class="social-btn" data-url="https://fb.com" data-dog-id="${d.id}" data-social="social-fb">
-          <img src="./fb.svg" alt="Facebook">
-        </button>
-        <button class="social-btn" data-url="https://instagram.com" data-dog-id="${d.id}" data-social="social-ig">
-          <img src="./ig.svg" alt="Instagram">
-        </button>
-        <button class="social-btn" data-url="https://tiktok.com" data-dog-id="${d.id}" data-social="social-tt">
-          <img src="./tt.svg" alt="TikTok">
-        </button>
-      </div>
-
-      <div class="profile-actions">
-        <button id="btnOpenChat" class="btn accent">💬 Chat</button>
-        <button id="btnLikeDog"  class="btn primary">💖 Match</button>
-      </div>
-    `
-  }
-`;
-   
-// ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
-if (isCreate) {
-  const btnPickCreateDogPhoto = document.getElementById('btnPickCreateDogPhoto');
-  const createDogPhotoInput = document.getElementById('createDogPhotoInput');
-  const createDogPhotoFeedback = document.getElementById('createDogPhotoFeedback');
-
-  if (btnPickCreateDogPhoto && createDogPhotoInput) {
-    btnPickCreateDogPhoto.addEventListener('click', () => {
-      createDogPhotoInput.click();
-    });
-
-    createDogPhotoInput.addEventListener('change', () => {
-      const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
-        
-        // Salva la foto in una variabile temporanea per il profilo in creazione
-        if (!state.createDogDraft) state.createDogDraft = {};
-        state.createDogDraft.photoDataUrl = dataUrl;
-        
-        // Mostra feedback visivo
-        if (createDogPhotoFeedback) {
-          createDogPhotoFeedback.style.display = 'block';
-        }
-        
-        // Aggiorna l'immagine hero
-        const createHero = document.querySelector('.create-hero');
-        if (createHero) {
-          const existingPreview = createHero.querySelector('.create-photo-preview');
-          if (existingPreview) {
-            existingPreview.src = dataUrl;
-          } else {
-            const preview = document.createElement('img');
-            preview.className = 'create-photo-preview';
-            preview.src = dataUrl;
-            preview.style.cssText = 'width:100%;max-width:300px;border-radius:12px;margin-top:1rem;';
-            createHero.appendChild(preview);
-          }
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-}
-
-// ✅ LOGICA SALVATAGGIO PROFILO
-const btnSaveDogDraft = document.getElementById('btnSaveDogDraft');
-if (btnSaveDogDraft && isCreate) {
-  btnSaveDogDraft.addEventListener('click', () => {
-    const nameInput = document.getElementById('createDogName');
-    const breedInput = document.getElementById('createDogBreed');
-    const ageInput = document.getElementById('createDogAge');
-    const sexSelect = document.getElementById('createDogSex');
-    const errorDiv = document.getElementById('createDogErrors');
-
-    const name = nameInput ? nameInput.value.trim() : '';
-    const breed = breedInput ? breedInput.value.trim() : '';
-    const age = ageInput ? ageInput.value : '';
-    const sex = sexSelect ? sexSelect.value : '';
-
-    const errors = [];
-    if (!name) errors.push(state.lang === 'it' ? 'Nome DOG mancante' : 'DOG name missing');
-    if (!breed) errors.push(state.lang === 'it' ? 'Razza mancante' : 'Breed missing');
-    if (!age) errors.push(state.lang === 'it' ? 'Età mancante' : 'Age missing');
-    if (!sex) errors.push(state.lang === 'it' ? 'Sesso mancante' : 'Sex missing');
-    
-    // Controlla se la foto è stata caricata
-    if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
-      errors.push(state.lang === 'it' ? 'Foto profilo mancante' : 'Profile photo missing');
-    }
-
-    if (errors.length > 0) {
-      if (errorDiv) {
-        errorDiv.textContent = errors.join(', ');
-        errorDiv.style.display = 'block';
+    <div class="pp-actions">
+      ${
+        (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
+          ? `
+            <button id="btnProfileSettings" class="btn accent">
+              ${state.lang==="it" ? "Impostazioni profilo" : "Profile settings"}
+            </button>
+            <button id="btnEditSocial" class="btn outline">
+              ${state.lang==="it" ? "Modifica social" : "Edit socials"}
+            </button>
+          `
+          : `
+            <button id="btnLikeDog" class="btn accent">💛 Like</button>
+            <button id="btnOpenChat" class="btn primary">
+              ${state.lang==="it" ? "Invia messaggio" : "Send message"}
+            </button>
+          `
       }
-      return;
-    }
+    </div>
+  `}
+</div>
+`;
 
-    // Salva il profilo
-    const newDogId = 'dog_' + Date.now();
-    const newDog = {
-      id: newDogId,
-      name: name,
-      breed: breed,
-      age: parseInt(age, 10),
-      sex: sex,
-      img: state.createDogDraft.photoDataUrl,
-      verified: false,
-      bio: '',
-      km: 0
-    };
-
-    // Aggiungi ai dogs
-    if (!state.dogs) state.dogs = [];
-    state.dogs.push(newDog);
-    localStorage.setItem('dogs', JSON.stringify(state.dogs));
-
-    // Reset draft
-    state.createDogDraft = {};
-
-    // Torna alla home
-    if (typeof setActiveView === 'function') {
-      setActiveView('swipe');
-    }
-
-    // Messaggio di successo
-    if (typeof showToast === 'function') {
-      showToast(state.lang === 'it' ? '✅ Profilo creato con successo!' : '✅ Profile created successfully!');
-    } else {
-      alert(state.lang === 'it' ? '✅ Profilo creato con successo!' : '✅ Profile created successfully!');
-    }
-  });
-}
-
-(async ()=>{
+// ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
+// Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
+// In modalità "solo mail" restano cliccabili i profili demo: si blocca SOLO upload (gestito altrove).
+(function attachRealDogProfileControls() {
   try {
-    if (isCreate) return;
+    // Se non sono loggato, non faccio nulla
+    if (!window.auth || !window.auth.currentUser) return;
 
-    const followBtn = document.getElementById("followBtn");
-    if (followBtn) {
-      const updateFollowBtn = () => {
-        const isFollowing = state.following && state.following[d.id];
-        followBtn.textContent = isFollowing
-          ? (state.lang === "it" ? "Non seguire più" : "Unfollow")
-          : (state.lang === "it" ? "Segui 🐕🐾" : "Follow 🐕🐾");
+    // Se non ho un DOG reale, NON inietto note e NON disabilito bottoni.
+    // (Upload già bloccato dal blocco READONLY SOLO UPLOAD che hai messo vicino a ENTRA.)
+    if (!window.PLUTOO_HAS_DOG) return;
+
+    // Se qui sotto in futuro vuoi controlli "solo per DOG reale",
+    // devi farli
+
+    // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
+    (function () {
+      // Se per qualche motivo d non c'è, esco
+      if (!d || !profileContent) return;
+
+      const maxPhotos = 5;
+      const dogId = d.id;
+      const storageKey = "gallery_" + dogId;
+
+      // Prendo il contenitore .gallery e il bottone "+ Aggiungi"
+      const galleryBlock = qs(".gallery", profileContent);
+      if (!galleryBlock) return;
+
+      const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
+      if (!addGalleryPhotoBtn) return;
+
+      // Lo slot che contiene il bottone "+ Aggiungi"
+      const addSlot = addGalleryPhotoBtn.closest(".ph") || galleryBlock.lastElementChild;
+
+      // Carico eventuali immagini salvate
+      let images = [];
+      try {
+        const raw = localStorage.getItem(storageKey);
+        images = raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        images = [];
+      }
+      if (!Array.isArray(images)) images = [];
+
+      // Input file nascosto
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.multiple = true;
+      input.style.display = "none";
+      document.body.appendChild(input);
+
+      // Render delle foto caricate (prima dello slot "+ Aggiungi")
+      const renderGallery = () => {
+        // Rimuovo solo le foto caricate in precedenza (marcate con data-upload="1")
+        Array.from(galleryBlock.querySelectorAll('.ph[data-upload="1"]')).forEach(ph => ph.remove());
+
+        const limit = Math.min(images.length, maxPhotos);
+        for (let i = 0; i < limit; i++) {
+          const src = images[i];
+          const ph = document.createElement("div");
+          ph.className = "ph";
+          ph.dataset.upload = "1";
+
+          const img = document.createElement("img");
+          img.src = src;
+          img.className = "pp-gallery-img";
+          img.onerror = () => {
+            img.src = "./plutoo-icon-192.png";
+          };
+
+          ph.appendChild(img);
+          galleryBlock.insertBefore(ph, addSlot);
+        }
+
+        // Se ho raggiunto il massimo, disabilito il bottone
+        addGalleryPhotoBtn.disabled = images.length >= maxPhotos;
       };
 
-      followBtn.addEventListener("click", () => {
-        if (!state.following) state.following = {};
-        const isFollowing = state.following[d.id];
+      // Click su "+ Aggiungi" → apro il picker
+      addGalleryPhotoBtn.addEventListener("click", () => {
+        if (images.length >= maxPhotos) return;
+        input.value = "";
+        input.click();
+      });
+
+      // Quando scelgo i file, li salvo e aggiorno la griglia
+      input.addEventListener("change", () => {
+        const files = Array.from(input.files || []);
+        if (!files.length) return;
+
+        const remaining = maxPhotos - images.length;
+        const toAdd = files.slice(0, remaining);
+        if (!toAdd.length) return;
+
+        let pending = toAdd.length;
+
+        toAdd.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            images.push(e.target.result);
+            pending--;
+            if (pending === 0) {
+              try {
+                localStorage.setItem(storageKey, JSON.stringify(images));
+              } catch (err) {
+                // se localStorage è pieno, semplicemente non salvo
+              }
+              renderGallery();
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      // Primo render (mostra eventuali foto già salvate)
+      renderGallery();
+    })();
+
+    updateFollowerUI(d);
+
+    const followBtn = $("followBtn");
+    if (followBtn) {
+      const refreshFollowBtn = () => {
+        // ✅ usa SEMPRE il mio dogId reale
+        const myFollowing = (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)
+          ? getFollowing(CURRENT_USER_DOG_ID)
+          : [];
+        const isFollowing = myFollowing.includes(d.id);
+
+        if (state.lang === "it") {
+          followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
+        } else {
+          followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
+        }
+        followBtn.classList.toggle("is-following", isFollowing);
+
+        // ✅ se non ho un dogId mio, il follow non può essere salvato
+        followBtn.disabled = !(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID);
+      };
+
+      followBtn.onclick = () => {
+        // ✅ blocca subito se manca il mio dogId (evita “sembra morto”)
+        if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
+          console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
+          refreshFollowBtn();
+          return;
+        }
+
+        const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
+        const isFollowing = myFollowing.includes(d.id);
 
         if (isFollowing) {
-          delete state.following[d.id];
+          unfollowDog(d.id);
         } else {
-          state.following[d.id] = true;
+          followDog(d.id);
         }
+        refreshFollowBtn();
+      };
 
-        localStorage.setItem("following", JSON.stringify(state.following));
-        updateFollowBtn();
-        updateFollowStats(d.id);
-      });
-
-      updateFollowBtn();
+      refreshFollowBtn();
     }
 
-    const followersCountBtn = document.getElementById("followersCount");
-    const followingCountBtn = document.getElementById("followingCount");
+    const followersCountEl = $("followersCount");
+    const followingCountEl = $("followingCount");
 
-    const updateFollowStats = (dogId) => {
-      const followersCount = Math.floor(Math.random() * 1000);
-      const followingCount = Math.floor(Math.random() * 500);
+    // ✅ evita accumulo listeners ogni volta che apri il profilo
+    if (followersCountEl) followersCountEl.onclick = () => openFollowersList(d.id);
+    if (followingCountEl) followingCountEl.onclick = () => openFollowingList(d.id);
 
-      if (followersCountBtn) {
-        followersCountBtn.textContent = `${followersCount} ${state.lang === "it" ? "follower" : "followers"}`;
-      }
-      if (followingCountBtn) {
-        followingCountBtn.textContent = `${followingCount} ${state.lang === "it" ? "seguiti" : "following"}`;
-      }
-    };
+    if (profileLikeBtn) {
+      profileLikeBtn.onclick = () => togglePhotoLike(d.id);
+      updatePhotoLikeUI(d.id);
+    }
 
-    updateFollowStats(d.id);
-
-    if (followersCountBtn) {
-      followersCountBtn.addEventListener("click", () => {
-        if (typeof showToast === "function") {
-          showToast(state.lang === "it" ? "Lista follower in arrivo!" : "Followers list coming soon!");
-        }
+    if (dogStories) {
+      qa(".pp-story-item", profileContent).forEach(item => {
+        item.addEventListener("click", () => {
+          const idx = parseInt(item.getAttribute("data-story-index"));
+          openDogStoryViewer(d.id, idx);
+        });
       });
     }
 
-    if (followingCountBtn) {
-      followingCountBtn.addEventListener("click", () => {
-        if (typeof showToast === "function") {
-          showToast(state.lang === "it" ? "Lista seguiti in arrivo!" : "Following list coming soon!");
-        }
-      });
-    }
+    $("uploadDogStory")?.addEventListener("click", ()=> { openUploadModal(); });
 
-    const uploadDogStoryBtn = document.getElementById("uploadDogStory");
-    if (uploadDogStoryBtn) {
-      uploadDogStoryBtn.addEventListener("click", () => {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = "image/*,video/*";
-        fileInput.style.display = "none";
-        document.body.appendChild(fileInput);
-
-        fileInput.onchange = () => {
-          const file = fileInput.files && fileInput.files[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const dataUrl = e.target.result;
-            const isVideo = file.type.startsWith("video/");
-
-            if (!window.StoriesState) window.StoriesState = { stories: [] };
-            let userStory = window.StoriesState.stories.find(s => s.userId === d.id);
-            if (!userStory) {
-              userStory = { userId: d.id, media: [] };
-              window.StoriesState.stories.push(userStory);
-            }
-
-            userStory.media.push({
-              type: isVideo ? "video" : "image",
-              src: dataUrl,
-              timestamp: Date.now()
-            });
-
-            localStorage.setItem("StoriesState", JSON.stringify(window.StoriesState));
-
-            if (typeof showToast === "function") {
-              showToast(state.lang === "it" ? "✅ Story caricata!" : "✅ Story uploaded!");
-            }
-
-            openProfilePage(d);
-          };
-
-          reader.readAsDataURL(file);
-          document.body.removeChild(fileInput);
-        };
-
-        fileInput.click();
-      });
-    }
-
-    qa(".pp-story-item", profileContent).forEach(item => {
-      item.addEventListener("click", () => {
-        const storyIndex = parseInt(item.getAttribute("data-story-index"), 10);
-        if (isNaN(storyIndex)) return;
-
-        const userStory = window.StoriesState.stories.find(s => s.userId === d.id);
-        if (!userStory || !userStory.media[storyIndex]) return;
-
-        const media = userStory.media[storyIndex];
+    qa(".gallery img", profileContent).forEach(img=>{
+      img.addEventListener("click", ()=>{
         const lb = document.createElement("div");
         lb.className = "lightbox";
-        lb.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:9999;display:flex;align-items:center;justify-content:center;";
-
-        if (media.type === "video") {
-          lb.innerHTML = `
-            <video src="${media.src}" controls autoplay style="max-width:90%;max-height:90%;border-radius:8px;"></video>
-            <button class="close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.2);border:0;color:#fff;font-size:2rem;cursor:pointer;border-radius:50%;width:3rem;height:3rem;">×</button>
-          `;
-        } else {
-          lb.innerHTML = `
-            <img src="${media.src}" style="max-width:90%;max-height:90%;border-radius:8px;">
-            <button class="close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.2);border:0;color:#fff;font-size:2rem;cursor:pointer;border-radius:50%;width:3rem;height:3rem;">×</button>
-          `;
-        }
-
-        document.body.appendChild(lb);
-
-        const closeBtn = qs(".close", lb);
-        if (closeBtn) closeBtn.onclick = () => lb.remove();
-        lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
-      });
-    });
-
-    qa(".add-photo", profileContent).forEach(btn => {
-      btn.addEventListener("click", () => {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = "image/*";
-        fileInput.style.display = "none";
-        document.body.appendChild(fileInput);
-
-        fileInput.onchange = () => {
-          const file = fileInput.files && fileInput.files[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const dataUrl = e.target.result;
-            const galleryKey = `gallery_${d.id}`;
-            let gallery = JSON.parse(localStorage.getItem(galleryKey) || "[]");
-            gallery.push(dataUrl);
-            localStorage.setItem(galleryKey, JSON.stringify(gallery));
-
-            if (typeof showToast === "function") {
-              showToast(state.lang === "it" ? "✅ Foto aggiunta!" : "✅ Photo added!");
-            }
-
-            openProfilePage(d);
-          };
-
-          reader.readAsDataURL(file);
-          document.body.removeChild(fileInput);
-        };
-
-        fileInput.click();
-      });
-    });
-
-    const galleryKey = `gallery_${d.id}`;
-    const gallery = JSON.parse(localStorage.getItem(galleryKey) || "[]");
-    const galleryContainer = qs(".gallery", profileContent);
-
-    if (galleryContainer && gallery.length > 0) {
-      gallery.forEach((src, idx) => {
-        const ph = document.createElement("div");
-        ph.className = "ph";
-        ph.innerHTML = `<img src="${src}" alt="Gallery ${idx + 1}">`;
-        galleryContainer.insertBefore(ph, galleryContainer.firstChild);
-      });
-    }
-
-    qa(".gallery .ph:not(.add-slot)", profileContent).forEach(ph => {
-      ph.addEventListener("click", () => {
-        const img = qs("img", ph);
-        if (!img) return;
-
-        const lb = document.createElement("div");
-        lb.className = "lightbox";
-        lb.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;";
-
         lb.innerHTML = `
-          <img src="${img.src}" style="max-width:90%;max-height:80%;border-radius:8px;margin-bottom:1rem;">
-          <button class="lightbox-like-btn" style="background:rgba(255,255,255,.1);border:0;color:#fff;padding:.75rem 1.5rem;border-radius:2rem;font-size:1.2rem;cursor:pointer;">❤️ 0</button>
-          <button class="close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.2);border:0;color:#fff;font-size:2rem;cursor:pointer;border-radius:50%;width:3rem;height:3rem;">×</button>
-        `;
-
+          <button class="close" aria-label="Chiudi">✕</button>
+          <div class="lightbox-inner">
+            <img src="${img.src}" alt="">
+            <button class="story-like-btn lightbox-like-btn" type="button">❤️ 0</button>
+          </div>`;
         document.body.appendChild(lb);
 
         const closeBtn = qs(".close", lb);
-        if (closeBtn) closeBtn.onclick = () => lb.remove();
-        lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
+        if (closeBtn) closeBtn.onclick = ()=> lb.remove();
+        lb.addEventListener("click", (e)=>{ if(e.target===lb) lb.remove(); });
 
         const likeBtn = qs(".lightbox-like-btn", lb);
         if (likeBtn) {
@@ -3675,7 +3546,7 @@ if (btnSaveDogDraft && isCreate) {
             likeBtn.textContent = "❤️ " + count;
           };
 
-          likeBtn.addEventListener("click", (ev) => {
+          likeBtn.addEventListener("click", (ev)=>{
             ev.stopPropagation();
             togglePhotoLike(d.id);
             refresh();
@@ -3687,14 +3558,16 @@ if (btnSaveDogDraft && isCreate) {
       });
     });
 
+    // --- DOCS: apertura file picker + salvataggio stato ---
     const docFileInput = document.createElement("input");
     docFileInput.type = "file";
     docFileInput.accept = "image/*,application/pdf";
     docFileInput.style.display = "none";
     profileContent.appendChild(docFileInput);
 
-    qa(".doc-item", profileContent).forEach(item => {
-      item.addEventListener("click", (e) => {
+    qa(".doc-item", profileContent).forEach(item=>{
+      item.addEventListener("click", (e)=>{
+        // 🔒 VETRINA: blocco totale documenti
         if (window.PLUTOO_READONLY && d.id !== "__create__") {
           e.preventDefault();
           e.stopPropagation();
@@ -3709,41 +3582,45 @@ if (btnSaveDogDraft && isCreate) {
         const docType = item.getAttribute("data-doc");
         const docCategory = item.getAttribute("data-type");
 
+        // quando l'utente sceglie un file
         docFileInput.onchange = () => {
           const file = docFileInput.files && docFileInput.files[0];
           if (!file) return;
 
-          if (docCategory === "owner") {
+          if (docCategory === "owner"){
             if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
             state.ownerDocsUploaded[d.id].identity = true;
             localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
 
-            if (!d.verified) {
+            if (!d.verified){
               d.verified = true;
-              alert(state.lang === "it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
+              alert(state.lang==="it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
             }
-          } else if (docCategory === "dog") {
+          } else if (docCategory === "dog"){
             if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
             const docName = docType.replace("dog-", "");
             state.dogDocsUploaded[d.id][docName] = true;
             localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
           }
 
+          // ricarico il profilo per aggiornare le etichette "Caricato"
           openProfilePage(d);
         };
 
+        // apro il selettore file
         docFileInput.click();
       });
     });
 
-    qa(".social-btn", profileContent).forEach(btn => {
-      btn.addEventListener("click", () => {
-        const baseUrl = btn.getAttribute("data-url");
-        const dogId = btn.getAttribute("data-dog-id");
-        const socialKey = btn.getAttribute("data-social");
+    qa(".social-btn", profileContent).forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const baseUrl   = btn.getAttribute("data-url");
+        const dogId     = btn.getAttribute("data-dog-id");
+        const socialKey = btn.getAttribute("data-social"); // "social-fb" / "social-ig" / "social-tt"
 
         let finalUrl = baseUrl;
 
+        // Se esistono URL personalizzati salvati per quel DOG, li usiamo al posto di quelli mock
         if (dogId && state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
           const ownerSocial = state.ownerSocialByDog[dogId];
           if (socialKey === "social-fb" && ownerSocial.facebook) {
@@ -3766,7 +3643,7 @@ if (btnSaveDogDraft && isCreate) {
         if (state.rewardOpen) return;
         state.rewardOpen = true;
 
-        showRewardVideoMock("social", () => {
+        showRewardVideoMock("social", ()=>{
           state.rewardOpen = false;
           state.socialRewardViewed[rewardKey] = true;
           localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
@@ -3774,108 +3651,108 @@ if (btnSaveDogDraft && isCreate) {
         });
       });
     });
+
   } catch (e) {
     console.error("attachRealDogProfileControls error:", e);
   }
 })();
- 
-// Azioni nel profilo DOG (chat + like/match)
-const openChatBtn = $("btnOpenChat"); 
-if (openChatBtn) { 
-  openChatBtn.onclick = () => openChat(d); 
+
+    // Azioni nel profilo DOG (chat + like/match)
+const openChatBtn = $("btnOpenChat");
+if (openChatBtn) {
+  openChatBtn.onclick = () => openChat(d);
 }
- 
-const likeDogBtn = $("btnLikeDog"); 
-if (likeDogBtn) { 
-  likeDogBtn.addEventListener("click", async () => { 
+
+  const likeDogBtn = $("btnLikeDog");
+if (likeDogBtn) {
+  likeDogBtn.addEventListener("click", async () => {
     if (!d || !d.id) return;
- 
+
     // 1) Match locale (cache UI)
-    state.matches[d.id] = true; 
+    state.matches[d.id] = true;
     localStorage.setItem("matches", JSON.stringify(state.matches));
- 
+
     // 2) Match su Firestore (FONTE per la tab Match)
-    if (typeof ensureChatForMatch === "function") { 
-      try { 
-        await ensureChatForMatch(d); 
-      } catch (e) { 
-        console.error("ensureChatForMatch PROFILO FALLITA:", e); 
-      } 
+    if (typeof ensureChatForMatch === "function") {
+      try {
+        await ensureChatForMatch(d);
+      } catch (e) {
+        console.error("ensureChatForMatch PROFILO FALLITA:", e);
+      }
     }
- 
+
     // 3) Animazione
-    const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match"); 
+    const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
     showMatchAnimation(nameForMatch, nextMatchColor);
- 
-    state.matchCount++; 
+
+    state.matchCount++;
     localStorage.setItem("matchCount", String(state.matchCount));
- 
+
     nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
-  }); 
+  });
 }
- 
+
+// ✅ FIX CRASH: in create mode uploadSelfie/unlockSelfie non esistono
 const uploadSelfieBtn = $("uploadSelfie");
-if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => { 
-  const d = state.currentDogProfile; 
+if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
+  const d = state.currentDogProfile;
   if (!d) return;
- 
-  const fileInput = $("selfieFileInput"); 
+
+  const fileInput = $("selfieFileInput");
   if (!fileInput) return;
- 
+
   // reset della selezione precedente
   fileInput.value = "";
- 
-  fileInput.onchange = () => { 
-    const file = fileInput.files && fileInput.files[0]; 
+
+  fileInput.onchange = () => {
+    const file = fileInput.files && fileInput.files[0];
     if (!file) return;
- 
-    const reader = new FileReader(); 
-    reader.onload = e => { 
-      const dataUrl   = e.target.result; 
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl   = e.target.result;
       const selfieKey = `selfieImage_${d.id}`;
- 
+
       // salva localmente
       localStorage.setItem(selfieKey, dataUrl);
- 
+
       // aggiorna subito l’immagine in pagina
-      const img = qs(".selfie .img", profileContent); 
-      if (img) img.src = dataUrl; 
-    }; 
- 
+      const img = qs(".selfie .img", profileContent);
+      if (img) img.src = dataUrl;
+    };
+
     reader.readAsDataURL(file);
   };
- 
-  fileInput.click(); 
-}; 
- 
+
+  fileInput.click();
+};
+
 const unlockSelfieBtn = $("unlockSelfie");
-if (unlockSelfieBtn) unlockSelfieBtn.onclick = () => { 
-  if (!isSelfieUnlocked(d.id)){ 
-    const unlock = ()=> { 
-      state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000; 
-      localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog)); 
-      openProfilePage(d); 
-    }; 
-    if (!state.plus){ 
-      showRewardVideoMock("selfie", unlock); 
-    } else unlock(); 
-  } 
+if (unlockSelfieBtn) unlockSelfieBtn.onclick = ()=>{
+  if (!isSelfieUnlocked(d.id)){
+    const unlock = ()=> {
+      state.selfieUntilByDog[d.id] = Date.now() + 24*60*60*1000;
+      localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
+      openProfilePage(d);
+    };
+    if (!state.plus){
+      showRewardVideoMock("selfie", unlock);
+    } else unlock();
+  }
 };
- 
-profileBack?.addEventListener("click", ()=> closeProfilePage()); 
-profileClose?.addEventListener("click", ()=> closeProfilePage());
- 
-window.closeProfilePage = ()=>{ 
-  profilePage.classList.add("hidden"); 
-  const previousView = state.viewHistory.pop() || "nearby"; 
-  setActiveView(previousView); 
-  state.currentDogProfile = null;
-};
- 
-function isSelfieUnlocked(id){ 
-  return Date.now() < (state.selfieUntilByDog[id]||0); 
-}
- 
+
+  profileBack?.addEventListener("click", ()=> closeProfilePage());
+  profileClose?.addEventListener("click", ()=> closeProfilePage());
+
+  window.closeProfilePage = ()=>{
+    profilePage.classList.add("hidden");
+    const previousView = state.viewHistory.pop() || "nearby";
+    setActiveView(previousView);
+    state.currentDogProfile = null;
+  };
+
+  function isSelfieUnlocked(id){ return Date.now() < (state.selfieUntilByDog[id]||0); }
+
 };
 
   // Carica i messaggi da Firestore per una chat (ROBUSTO: ordina lato JS)
