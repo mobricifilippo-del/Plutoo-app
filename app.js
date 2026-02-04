@@ -3151,7 +3151,7 @@ profileContent.innerHTML = `
             <div style="font-size:.9rem;opacity:.7">
               ${
                 state.lang==="it"
-                  ? "Solo foto del cane. No persone."
+                  ? "Solo foto del dog. No persone."
                   : "Only dog photos. No people."
               }
             </div>
