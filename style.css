@@ -800,6 +800,113 @@ body.story-open #storiesBar {
   color:#fff;
 }
 
+/* ================= CREATE PROFILO DOG (coerente con PROFILO) ================= */
+
+/* Wrapper hero in openProfilePage (nuova UI) */
+.profile-hero{
+  border-radius:16px;
+  overflow:hidden;
+  border:2px solid var(--violet);
+  box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(138,123,255,.18);
+  margin-bottom:.9rem;
+  background:rgba(18,18,38,.5);
+}
+
+/* Modalità CREATE: card hero pulita e centrata */
+.create-hero{
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.55rem;
+  text-align:center;
+}
+
+.create-hero-title{
+  font-weight:900;
+  color:var(--violet-glow);
+  font-size:1.05rem;
+}
+
+.create-hero .btn{
+  width:100%;
+  max-width:360px;
+}
+
+/* Preview foto (che appendi via JS) */
+.create-photo-preview{
+  width:100%;
+  max-width:360px;
+  aspect-ratio: 1 / 1;
+  object-fit:cover;
+  border-radius:14px;
+  border:2px solid rgba(138,123,255,.35);
+  box-shadow:0 10px 22px rgba(0,0,0,.35);
+  margin-top:.45rem;
+}
+
+/* Header profilo (titolo + badges) per la UI nuova */
+.profile-head{
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+  margin:.4rem 0 .9rem 0;
+}
+
+.profile-title{
+  margin:0;
+  font-size:1.35rem;
+  font-weight:900;
+  color:var(--violet-glow);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.6rem;
+}
+
+.profile-badges{
+  display:flex;
+  gap:.45rem;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* I badge CREATE con input dentro devono restare “puliti” */
+.badge.create-req{
+  background:#24243a;
+  border:1px solid rgba(138,123,255,.25);
+}
+
+/* Input dentro badge: allineamento e leggibilità */
+.badge.create-req input,
+.badge.create-req select{
+  font-weight:800;
+  font-size:.9rem;
+}
+
+/* Bio / box contenuti */
+.profile-bio{
+  margin:.4rem 0 1rem 0;
+  line-height:1.5;
+}
+
+/* Azioni finali (chat/match) nella UI nuova */
+.profile-actions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:.7rem;
+  margin-top:1.1rem;
+}
+
+@media (min-width:520px){
+  .profile-actions{ grid-template-columns:repeat(4,1fr); }
+}
+
+/* Error box già inline: lo rendiamo più “app-like” */
+#createDogErrors.soft{
+  border-radius:14px !important;
+}
+
 /* ✅ FIX: ICONE SOCIAL UFFICIALI VISIBILI */
 .pp-social-section {
   background: rgba(138, 123, 255, 0.06);
