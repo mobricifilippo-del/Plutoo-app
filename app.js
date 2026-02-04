@@ -3103,7 +3103,7 @@ profilePage.classList.remove("hidden");
 const selfieUnlocked = isSelfieUnlocked(d.id);
 const ownerDocs = state.ownerDocsUploaded[d.id] || {};
 const dogDocs = state.dogDocsUploaded[d.id] || {};
-const selfieKey   = selfieImage_${d.id};
+const selfieKey   = `selfieImage_${d.id}`;
 const selfieStored = localStorage.getItem(selfieKey);
 const selfieSrc    = selfieStored || d.img;
 
