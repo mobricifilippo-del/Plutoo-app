@@ -3135,7 +3135,9 @@ const storiesHTML = dogStories ? `
     </div>        
     <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang==="it"?"Nessuna story disponibile":"No stories available"}</p>        
   </div>        
-`;  const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");      
+`;
+  
+  const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");      
 const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");  profileContent.innerHTML = `      <div class="pp-hero">        
     ${        
       isCreate        
@@ -3201,7 +3203,9 @@ const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");  profileCont
 <span class="badge">${fmtKm(d.km)}</span>      
 <span class="badge">${d.sex==="M"?(state.lang==="it"?"Maschio":"Male"):(state.lang==="it"?"Femmina":"Female")}</span>      
 </div>      
-`}    </div>    <div class="pp-meta soft">        
+`}
+
+</div>    <div class="pp-meta soft">        
     ${isCreate ? `        
       <textarea        
         id="createDogBio"        
@@ -3213,7 +3217,8 @@ const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");  profileCont
       ${state.lang==="it"?"Salva profilo":"Save profile"}        
     </button>        
   </div>        
-` : (d.bio||"")}    </div>  ${isCreate ? `` : storiesHTML}  ${isCreate ? `` : `    <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>      
+` : 
+      (d.bio||"")}    </div>  ${isCreate ? `` : storiesHTML}  ${isCreate ? `` : `    <h3 class="section-title">${state.lang==="it"?"Galleria":"Gallery"}</h3>      
 <div class="gallery">      
 <div class="ph"><img src="${d.img}" alt=""></div>      
 <div class="ph"><img src="${d.img}" alt=""></div>      
@@ -3227,7 +3232,9 @@ const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");  profileCont
     <button id="unlockSelfie" class="btn pill">${state.lang==="it"?"Sblocca selfie":"Unlock selfie"}</button>        
     <button id="uploadSelfie" class="btn pill ghost">${state.lang==="it"?"Carica selfie":"Upload selfie"}</button>        
   </div>        
-</div>    <h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>    <div class="pp-docs-section">        
+</div>
+
+<h3 class="section-title">${state.lang==="it"?"Documenti":"Documents"}</h3>    <div class="pp-docs-section">        
   <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti Proprietario DOG":"DOG Owner Documents"}</h4>        
   <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Obbligatorio per ottenere il badge verificato ✅":"Required to get verified badge ✅"}</p>        
   <div class="pp-docs-grid">        
@@ -3237,7 +3244,9 @@ const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");  profileCont
       <div class="doc-status ${ownerDocs.identity?'uploaded':'pending'}">${ownerDocs.identity?(state.lang==="it"?"✓ Caricato":"✓ Uploaded"):(state.lang==="it"?"Da caricare":"Upload")}</div>        
     </div>        
   </div>        
-</div>    <div class="pp-docs-section" style="margin-top:1.2rem">        
+</div>
+
+<div class="pp-docs-section" style="margin-top:1.2rem">        
   <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang==="it"?"Documenti DOG":"DOG Documents"}</h4>        
   <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang==="it"?"Facoltativi (vaccini, pedigree, microchip)":"Optional (vaccines, pedigree, microchip)"}</p>        
   <div class="pp-docs-grid">        
@@ -3275,9 +3284,9 @@ const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");  profileCont
         </button>        
       `        
   }        
-</div>  `}    </div>        
-`;    
-```0
+</div>  `}
+</div>        
+`;
 
 // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
 // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
