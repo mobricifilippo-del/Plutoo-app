@@ -3089,6 +3089,7 @@ window.openProfilePage = (d) => {
   profilePage.classList.remove("hidden");
 
   const selfieUnlocked = isSelfieUnlocked(d.id);
+  if (!state.selfieUntilByDog || typeof state.selfieUntilByDog !== "object") state.selfieUntilByDog = {};
   const ownerDocs = state.ownerDocsUploaded[d.id] || {};
   const dogDocs = state.dogDocsUploaded[d.id] || {};
 
