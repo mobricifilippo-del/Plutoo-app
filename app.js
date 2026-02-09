@@ -2938,12 +2938,6 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     }
   });
 
-  followingOverlay?.addEventListener("click", (e) => {
-    if (e.target === followingOverlay || e.target.classList.contains("sheet-close")) {
-      closeFollowingOverlay();
-    }
-  });
-
   // ============ LIKE FOTO PROFILO ============
   function isDogPhotoLiked(dogId) {
     if (!dogId) return false;
@@ -3341,6 +3335,150 @@ window.openProfilePage = (d) => {
       `
     }
   `;
+
+  // =========================
+  // ✅ CREATE DOG — LOGICA PRESA DAL BLOCCO VECCHIO (FOTO + SALVATAGGIO)
+  // =========================
+  if (isCreate) {
+    // --- FOTO PROFILO (draft) ---
+    const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
+    const createDogPhotoInput   = document.getElementById("createDogPhotoInput");
+    const previewImg            = document.getElementById("createDogPhotoPreview");
+    const emptyBox              = document.getElementById("createDogPhotoEmpty");
+    const feedback              = document.getElementById("createDogPhotoFeedback");
+
+    if (btnPickCreateDogPhoto && createDogPhotoInput) {
+      // evita accumulo listener: onclick sostituisce
+      btnPickCreateDogPhoto.onclick = () => createDogPhotoInput.click();
+
+      createDogPhotoInput.onchange = () => {
+        const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+
+          if (!state.createDogDraft || typeof state.createDogDraft !== "object") state.createDogDraft = {};
+          state.createDogDraft.photoDataUrl = dataUrl;
+
+          // UI: mostra preview + nasconde placeholder
+          if (previewImg) {
+            previewImg.src = dataUrl;
+            previewImg.style.display = "block";
+          }
+          if (emptyBox) emptyBox.style.display = "none";
+          if (feedback) feedback.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      };
+    }
+
+    // --- SALVA PROFILO ---
+    const btnSaveDogDraft = document.getElementById("btnSaveDogDraft");
+    if (btnSaveDogDraft) {
+      btnSaveDogDraft.onclick = async () => {
+        const nameInput  = document.getElementById("createDogName");
+        const breedInput = document.getElementById("createDogBreed");
+        const ageInput   = document.getElementById("createDogAge");
+        const sexSelect  = document.getElementById("createDogSex");
+        const bioInput   = document.getElementById("createDogBio");
+        const errorDiv   = document.getElementById("createDogErrors");
+
+        const name  = nameInput  ? String(nameInput.value || "").trim()  : "";
+        const breed = breedInput ? String(breedInput.value || "").trim() : "";
+        const age   = ageInput   ? String(ageInput.value || "").trim()   : "";
+        const sex   = sexSelect  ? String(sexSelect.value || "").trim()  : "";
+        const bio   = bioInput   ? String(bioInput.value || "").trim()   : "";
+
+        const errors = [];
+        if (!name)  errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
+        if (!breed) errors.push(state.lang === "it" ? "Razza mancante"    : "Breed missing");
+        if (!age)   errors.push(state.lang === "it" ? "Età mancante"      : "Age missing");
+        if (!sex)   errors.push(state.lang === "it" ? "Sesso mancante"    : "Sex missing");
+
+        if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
+          errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
+        }
+
+        if (errors.length > 0) {
+          if (errorDiv) {
+            errorDiv.textContent = errors.join(", ");
+            errorDiv.style.display = "block";
+          }
+          return;
+        }
+
+        // nasconde errori se ok
+        if (errorDiv) {
+          errorDiv.textContent = "";
+          errorDiv.style.display = "none";
+        }
+
+        // ✅ CREAZIONE PROFILO (coerente col tuo attuale: Firestore source of truth)
+        try {
+          if (!window.auth || !window.auth.currentUser) throw new Error("Not logged");
+          if (!window.db) throw new Error("Missing Firestore window.db");
+
+          const uid = window.auth.currentUser.uid;
+          const photoDataUrl = state.createDogDraft.photoDataUrl;
+
+          const payload = {
+            ownerUid: uid,
+            name: name,
+            breed: breed,
+            age: parseInt(age, 10),
+            sex: sex,
+            bio: bio || "",
+            img: photoDataUrl,
+            verified: false,
+            createdAt: (window.firebase && window.firebase.firestore) ? window.firebase.firestore.FieldValue.serverTimestamp() : null
+          };
+
+          // crea un DOG in Firestore
+          const ref = await window.db.collection("dogs").add(payload);
+
+          // reset draft
+          state.createDogDraft = {};
+
+          // aggiorna stato runtime
+          window.PLUTOO_HAS_DOG = true;
+          window.PLUTOO_DOG_ID = ref.id;
+          window.PLUTOO_READONLY = false;
+
+          // nascondi bottone inline se esiste
+          const inlineBtn = document.getElementById("btnCreateDogInline");
+          if (inlineBtn) inlineBtn.style.display = "none";
+
+          // feedback
+          if (typeof showToast === "function") {
+            showToast(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
+          }
+
+          // apri il profilo reale appena creato (profilo “normale”)
+          window.openProfilePage({
+            id: ref.id,
+            name: name,
+            img: photoDataUrl,
+            breed: breed,
+            bio: bio || "",
+            age: parseInt(age, 10),
+            km: 0,
+            sex: sex,
+            verified: false
+          });
+
+        } catch (e) {
+          console.error("CREATE DOG save error:", e);
+          if (typeof showToast === "function") {
+            showToast(state.lang === "it" ? "Errore creazione profilo" : "Profile creation error");
+          } else {
+            alert(state.lang === "it" ? "Errore creazione profilo" : "Profile creation error");
+          }
+        }
+      };
+    }
+  }
 
   // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
   // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
