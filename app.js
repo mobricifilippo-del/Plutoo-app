@@ -12,7 +12,13 @@ window.addEventListener("error", function (e) {
         ? (target.src || target.href)
         : "";
 
-    const msg = (e && e.message) ? e.message : "(no message)";
+    // Se è un errore di RISORSA (img/script/link/input file), non rompere con alert: logga e basta
+if (e && e.target && !e.error) {
+  console.warn("RESOURCE ERROR:", resUrl || e.target);
+  return;
+}
+
+const msg = (e && e.message) ? e.message : "(no message)";
     const file = (e && e.filename) ? e.filename : (resUrl || "(no file)");
     const line = (e && typeof e.lineno === "number") ? e.lineno : "-";
     const col  = (e && typeof e.colno === "number") ? e.colno : "-";
