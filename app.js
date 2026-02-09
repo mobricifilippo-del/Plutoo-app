@@ -483,7 +483,7 @@ if (inlineBtn) {
 try {
   if (
   window.PLUTOO_READONLY &&
-  localStorage.getItem("currentProfileDogId") !== "__create__"
+  state.currentDogProfile?.id !== "__create__"
 ) {
     document.body.classList.add("plutoo-readonly");
 
