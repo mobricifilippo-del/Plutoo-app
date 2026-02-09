@@ -4,6 +4,15 @@
 window.addEventListener("error", function (e) {
   try {
     const errObj = e && e.error ? e.error : null;
+    
+    // Se non ho dettagli reali (niente error object, niente filename), è rumore: ignora
+const hasRealJsError = !!(errObj && (errObj.stack || errObj.message));
+const hasFileInfo = !!(e && e.filename);
+
+if (!hasRealJsError && !hasFileInfo) {
+  console.warn("IGNORED UNKNOWN ERROR EVENT:", e);
+  return;
+}
 
     // errori di risorse (script/img/css) spesso NON hanno filename/line
     const target = e && e.target ? e.target : null;
