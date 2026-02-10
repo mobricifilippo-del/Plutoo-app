@@ -2991,18 +2991,19 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
   }
 
   function updatePhotoLikeUI(dogId) {
-  if (!profileLikeBtn || !dogId) return;
-  const liked = isDogPhotoLiked(dogId);
-  const count = liked ? 1 : 0;  // 0 se non likato, 1 se likato
+    if (!profileLikeBtn || !dogId) return;
 
-  profileLikeBtn.classList.toggle("liked", liked);
+    const liked = isDogPhotoLiked(dogId);
+    const count = liked ? 1 : 0; // 0 se non likato, 1 se likato
 
-  profileLikeBtn.classList.remove("heart-anim");
-  void profileLikeBtn.offsetWidth;
-  profileLikeBtn.classList.add("heart-anim");
+    profileLikeBtn.classList.toggle("liked", liked);
 
-  profileLikeBtn.textContent = "❤️ " + count;
-}
+    profileLikeBtn.classList.remove("heart-anim");
+    void profileLikeBtn.offsetWidth;
+    profileLikeBtn.classList.add("heart-anim");
+
+    profileLikeBtn.textContent = "❤️ " + count;
+  }
 
   function togglePhotoLike(dogId) {
     if (!dogId) return;
@@ -3019,32 +3020,41 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     persistPhotoLikes();
     updatePhotoLikeUI(dogId);
 
-   // ✅ FIRESTORE (PRODUCTION): salva like/unlike (robusto, non silenzioso)
-try {
-  const uid = window.PLUTOO_UID;
-  const _db = (window.db || (typeof db !== "undefined" ? db : null));
-  if (!uid || !_db) return;
+    // ✅ FIRESTORE (PRODUCTION): salva like/unlike (robusto, non silenzioso)
+    try {
+      const uid = window.PLUTOO_UID;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!uid || !_db) return;
 
-  const hasFirebase = (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
-  const ts = hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function"
-    ? firebase.firestore.FieldValue.serverTimestamp()
-    : new Date();
+      const hasFirebase =
+        (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
 
-  const ref = _db.collection("dogs").doc(String(dogId))
-    .collection("photoLikes").doc(String(uid));
+      const ts =
+        (hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function")
+          ? firebase.firestore.FieldValue.serverTimestamp()
+          : new Date();
 
-  if (wasLiked) {
-    ref.delete().catch((e) => console.error("photoLike delete error:", e));
-  } else {
-    ref.set({
-      uid: String(uid),
-      dogId: String(dogId),
-      createdAt: ts
-    }, { merge: true }).catch((e) => console.error("photoLike set error:", e));
-  }
-} catch (e) {
-  console.error("photoLike write fatal error:", e);
-} 
+      const ref = _db
+        .collection("dogs")
+        .doc(String(dogId))
+        .collection("photoLikes")
+        .doc(String(uid));
+
+      if (wasLiked) {
+        ref.delete().catch((e) => console.error("photoLike delete error:", e));
+      } else {
+        ref.set(
+          {
+            uid: String(uid),
+            dogId: String(dogId),
+            createdAt: ts
+          },
+          { merge: true }
+        ).catch((e) => console.error("photoLike set error:", e));
+      }
+    } catch (e) {
+      console.error("photoLike write fatal error:", e);
+    }
   }
 
   // ============ LIKE STORIES ============
@@ -3058,14 +3068,17 @@ try {
   }
 
   function updateStoryLikeUI(mediaId) {
-  if (!storyLikeBtn || !mediaId) return;
-  const liked = isStoryLiked(mediaId);
-  storyLikeBtn.classList.toggle("liked", liked);
+    if (!storyLikeBtn || !mediaId) return;
+
+    const liked = isStoryLiked(mediaId);
+    storyLikeBtn.classList.toggle("liked", liked);
+
     storyLikeBtn.classList.remove("heart-anim");
-void storyLikeBtn.offsetWidth;
-storyLikeBtn.classList.add("heart-anim");
-  storyLikeBtn.textContent = "❤️";
-}
+    void storyLikeBtn.offsetWidth;
+    storyLikeBtn.classList.add("heart-anim");
+
+    storyLikeBtn.textContent = "❤️";
+  }
 
   function toggleStoryLike(mediaId) {
     if (!mediaId) return;
@@ -3083,32 +3096,41 @@ storyLikeBtn.classList.add("heart-anim");
     updateStoryLikeUI(mediaId);
 
     // ✅ FIRESTORE (PRODUCTION): salva like/unlike (robusto, non silenzioso)
-try {
-  const uid = window.PLUTOO_UID;
-  const _db = (window.db || (typeof db !== "undefined" ? db : null));
-  if (!uid || !_db) return;
+    try {
+      const uid = window.PLUTOO_UID;
+      const _db = (window.db || (typeof db !== "undefined" ? db : null));
+      if (!uid || !_db) return;
 
-  const hasFirebase = (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
-  const ts = hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function"
-    ? firebase.firestore.FieldValue.serverTimestamp()
-    : new Date();
+      const hasFirebase =
+        (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
 
-  const ref = _db.collection("stories").doc(String(mediaId))
-    .collection("likes").doc(String(uid));
+      const ts =
+        (hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function")
+          ? firebase.firestore.FieldValue.serverTimestamp()
+          : new Date();
 
-  if (wasLiked) {
-    ref.delete().catch((e) => console.error("storyLike delete error:", e));
-  } else {
-    ref.set({
-      uid: String(uid),
-      mediaId: String(mediaId),
-      createdAt: ts
-    }, { merge: true }).catch((e) => console.error("storyLike set error:", e));
+      const ref = _db
+        .collection("stories")
+        .doc(String(mediaId))
+        .collection("likes")
+        .doc(String(uid));
+
+      if (wasLiked) {
+        ref.delete().catch((e) => console.error("storyLike delete error:", e));
+      } else {
+        ref.set(
+          {
+            uid: String(uid),
+            mediaId: String(mediaId),
+            createdAt: ts
+          },
+          { merge: true }
+        ).catch((e) => console.error("storyLike set error:", e));
+      }
+    } catch (e) {
+      console.error("storyLike write fatal error:", e);
+    }
   }
-} catch (e) {
-  console.error("storyLike write fatal error:", e);
-}
-}
 
   // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
 window.openProfilePage = (d) => {
