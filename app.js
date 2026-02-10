@@ -3140,7 +3140,7 @@ window.openProfilePage = (d) => {
     if (!d || typeof d !== "object") d = {};
     if (d.id == null && d.dogId != null) d.id = d.dogId;
     d.id = (d.id != null) ? String(d.id) : "";
-    if (!d.id && d.id !== "__create__") return;
+    if (!d.id && d.id !== "**create**") return;
 
     // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])
     if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};
@@ -3163,7 +3163,6 @@ window.openProfilePage = (d) => {
   setActiveView("profile");
 
   history.pushState({ view: "profile", dogId: d.id }, "", "");
-
   profilePage.classList.remove("hidden");
 
   const selfieUnlocked = isSelfieUnlocked(d.id);
@@ -3176,36 +3175,33 @@ window.openProfilePage = (d) => {
   const selfieSrc = selfieStored || d.img;
 
   const dogStories =
-    window.StoriesState && Array.isArray(window.StoriesState.stories)
+    (window.StoriesState && Array.isArray(window.StoriesState.stories))
       ? window.StoriesState.stories.find(s => s.userId === d.id)
       : null;
 
-  const storiesHTML = dogStories ? `
-    <div class="pp-stories-section">
-      <div class="pp-stories-header">
-        <h4 class="section-title" style="margin:0">${state.lang === "it" ? "Stories" : "Stories"}</h4>
-        <button id="uploadDogStory" class="btn accent small">📸 ${state.lang === "it" ? "Carica Story" : "Upload Story"}</button>
+  const storiesHTML = dogStories
+    ? `
+      <div class="pp-stories-section">
+        <div class="pp-stories-header">
+          <h4 class="section-title" style="margin:0">${state.lang === "it" ? "Stories" : "Stories"}</h4>
+          <button id="uploadDogStory" class="btn accent small">📸 ${state.lang === "it" ? "Carica Story" : "Upload Story"}</button>
+        </div>
+        <div class="pp-stories-grid" id="dogStoriesGrid">
+          ${dogStories.media.map((m, idx) => ` Story ${getTimeAgo(m.timestamp)} `).join("")}
+        </div>
       </div>
-      <div class="pp-stories-grid" id="dogStoriesGrid">
-        ${dogStories.media.map((m, idx) => `
-          <div class="pp-story-item" data-story-index="${idx}">
-            <img src="${m.url}" alt="Story" />
-            <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
-          </div>
-        `).join("")}
+    `
+    : `
+      <div class="pp-stories-section">
+        <div class="pp-stories-header">
+          <h4 class="section-title" style="margin:0">${state.lang === "it" ? "Stories" : "Stories"}</h4>
+          <button id="uploadDogStory" class="btn accent small">📸 ${state.lang === "it" ? "Carica Story" : "Upload Story"}</button>
+        </div>
+        <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang === "it" ? "Nessuna story disponibile" : "No stories available"}</p>
       </div>
-    </div>
-  ` : `
-    <div class="pp-stories-section">
-      <div class="pp-stories-header">
-        <h4 class="section-title" style="margin:0">${state.lang === "it" ? "Stories" : "Stories"}</h4>
-        <button id="uploadDogStory" class="btn accent small">📸 ${state.lang === "it" ? "Carica Story" : "Upload Story"}</button>
-      </div>
-      <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang === "it" ? "Nessuna story disponibile" : "No stories available"}</p>
-    </div>
-  `;
+    `;
 
-  const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
+  const isCreate = (d && d.isCreate === true) || (d && d.id === "**create**");
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
   profileContent.innerHTML = `
@@ -3213,35 +3209,17 @@ window.openProfilePage = (d) => {
       ${
         isCreate
           ? `
-            <div class="pp-create-hero" style="position:relative;min-height:180px;border-radius:18px;overflow:hidden;">
-              <img
-                id="createDogPhotoPreview"
-                src=""
-                alt="${state.lang === "it" ? "Foto profilo DOG" : "DOG profile photo"}"
-                style="width:100%;height:100%;object-fit:cover;display:none;"
-              />
-              <div
-                id="createDogPhotoEmpty"
-                style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.65rem;padding:0 1rem;text-align:center;"
-              >
-                <div style="font-weight:800;opacity:.9">
-                  ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
-                </div>
-
-                <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
-                  ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
-                </button>
-
-                <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
-
-                <div style="font-size:.9rem;opacity:.7">
-                  ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
-                </div>
-
-                <div id="createDogPhotoFeedback" style="display:none;margin-top:.25rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:700;">
-                  ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
-                </div>
-              </div>
+            <img id="createDogPhotoPreview" src="" alt="${state.lang === "it" ? "Foto profilo DOG" : "DOG profile photo"}" style="width:100%;height:100%;object-fit:cover;display:none;" />
+            ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
+            <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
+              ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
+            </button>
+            <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
+            <div style="font-size:.9rem;opacity:.7">
+              ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
+            </div>
+            <div id="createDogPhotoFeedback" style="display:none;margin-top:.25rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:700;">
+              ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
             </div>
           `
           : `
@@ -3250,285 +3228,279 @@ window.openProfilePage = (d) => {
       }
     </div>
 
-    <div class="pp-head">
-      <h2 class="pp-name">
-        <span class="pp-name-main">
-          ${isCreate ? (state.lang === "it" ? "Nuovo profilo" : "New profile") : `${d.name} ${d.verified ? "✅" : ""}`}
-        </span>
-
-        ${isCreate ? `` : `<button type="button" id="followBtn" class="btn small pp-follow-btn">Segui 🐕🐾</button>`}
-
-        ${
-          isCreate ? `` : `
-            <span class="pp-follow-stats">
-              <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
-              <span class="pp-follow-dot">·</span>
-              <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
-            </span>
-          `
-        }
-      </h2>
-
-      ${
-        isCreate
-          ? `
-            <div class="pp-badges pp-create-inline">
-              <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Nome DOG" : "DOG name"}" style="padding:.35rem .5rem">
-                <input id="createDogName" type="text" value="" placeholder="${state.lang === "it" ? "Nome DOG *" : "DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-              </span>
-
-              <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Razza" : "Breed"}" style="padding:.35rem .5rem">
-                <input id="createDogBreed" type="text" value="" placeholder="${state.lang === "it" ? "Razza *" : "Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
-              </span>
-
-              <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Età" : "Age"}" style="padding:.35rem .5rem">
-                <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang === "it" ? "Età *" : "Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
-              </span>
-
-              <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Sesso" : "Sex"}" style="padding:.35rem .5rem">
-                <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
-                  <option value="">${state.lang === "it" ? "Sesso *" : "Sex *"}</option>
-                  <option value="M">${state.lang === "it" ? "Maschio" : "Male"}</option>
-                  <option value="F">${state.lang === "it" ? "Femmina" : "Female"}</option>
-                </select>
-              </span>
-            </div>
-
-            <div
-              id="createDogErrors"
-              class="soft"
-              style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)"
-            ></div>
-          `
-          : `
-            <div class="pp-badges">
-              <span class="badge">${d.breed}</span>
-              <span class="badge">${d.age} ${t("years")}</span>
-              <span class="badge">${fmtKm(d.km)}</span>
-              <span class="badge">${d.sex === "M" ? (state.lang === "it" ? "Maschio" : "Male") : (state.lang === "it" ? "Femmina" : "Female")}</span>
-            </div>
-          `
-      }
-    </div>
-
-    <div class="pp-meta soft">
-      ${
-        isCreate
-          ? `
-            <textarea
-              id="createDogBio"
-              rows="3"
-              placeholder="${state.lang === "it" ? "Bio (opzionale)" : "Bio (optional)"}"
-              style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"
-            ></textarea>
-
-            <div style="margin-top:.6rem;text-align:center">
-              <button id="btnSaveDogDraft" class="btn primary">
-                ${state.lang === "it" ? "Salva profilo" : "Save profile"}
-              </button>
-            </div>
-          `
-          : (d.bio || "")
-      }
-    </div>
-
-    ${isCreate ? `` : storiesHTML}
+    ${
+      isCreate
+        ? `${state.lang === "it" ? "Nuovo profilo" : "New profile"}`
+        : `${d.name} ${d.verified ? "✅" : ""}`
+    }
 
     ${
-      isCreate ? `` : `
-        <h3 class="section-title">${state.lang === "it" ? "Galleria" : "Gallery"}</h3>
-        <div class="gallery">
-          <div class="ph"><img src="${d.img}" alt=""></div>
-          <div class="ph"><img src="${d.img}" alt=""></div>
-          <div class="ph"><img src="${d.img}" alt=""></div>
-          <div class="ph"><button class="add-photo">+ ${state.lang === "it" ? "Aggiungi" : "Add"}</button></div>
-        </div>
+      isCreate
+        ? `Segui 🐕🐾`
+        : `
+          <span class="pp-follow-stats">
+            <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
+            <span class="pp-follow-dot">·</span>
+            <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
+          </span>
+        `
+    }
 
-        <h3 class="section-title">Selfie</h3>
-        <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
-          <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie">
-          <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
-          <div class="over">
-            <button id="unlockSelfie" class="btn pill">${state.lang === "it" ? "Sblocca selfie" : "Unlock selfie"}</button>
-            <button id="uploadSelfie" class="btn pill ghost">${state.lang === "it" ? "Carica selfie" : "Upload selfie"}</button>
+    ${
+      isCreate
+        ? `
+          <div class="pp-badges pp-create-inline">
+            <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Nome DOG" : "DOG name"}" style="padding:.35rem .5rem">
+              <input id="createDogName" type="text" value="" placeholder="${state.lang === "it" ? "Nome DOG *" : "DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+            </span>
+
+            <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Razza" : "Breed"}" style="padding:.35rem .5rem">
+              <input id="createDogBreed" type="text" value="" placeholder="${state.lang === "it" ? "Razza *" : "Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:10rem;max-width:45vw">
+            </span>
+
+            <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Età" : "Age"}" style="padding:.35rem .5rem">
+              <input id="createDogAge" type="number" min="0" step="1" value="" placeholder="${state.lang === "it" ? "Età *" : "Age *"}" style="background:transparent;border:0;outline:none;color:inherit;width:5.5rem">
+            </span>
+
+            <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Sesso" : "Sex"}" style="padding:.35rem .5rem">
+              <select id="createDogSex" style="background:transparent;border:0;outline:none;color:inherit">
+                <option value="">${state.lang === "it" ? "Sesso *" : "Sex *"}</option>
+                <option value="M">${state.lang === "it" ? "Maschio" : "Male"}</option>
+                <option value="F">${state.lang === "it" ? "Femmina" : "Female"}</option>
+              </select>
+            </span>
           </div>
-        </div>
 
-        <h3 class="section-title">${state.lang === "it" ? "Documenti" : "Documents"}</h3>
+          <div
+            id="createDogErrors"
+            class="soft"
+            style="display:none;margin-top:.6rem;padding:.6rem .8rem;border:1px solid rgba(255,80,80,.45);border-radius:14px;color:#ffb3b3;background:rgba(255,0,0,.06)"
+          ></div>
+        `
+        : `
+          <div class="pp-badges">
+            <span class="badge">${d.breed}</span>
+            <span class="badge">${d.age} ${t("years")}</span>
+            <span class="badge">${fmtKm(d.km)}</span>
+            <span class="badge">${d.sex === "M" ? (state.lang === "it" ? "Maschio" : "Male") : (state.lang === "it" ? "Femmina" : "Female")}</span>
+          </div>
+        `
+    }
 
-        <div class="pp-docs-section">
-          <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti Proprietario DOG" : "DOG Owner Documents"}</h4>
-          <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Obbligatorio per ottenere il badge verificato ✅" : "Required to get verified badge ✅"}</p>
-          <div class="pp-docs-grid">
-            <div class="doc-item" data-doc="owner-identity" data-type="owner">
-              <div class="doc-icon">🪪</div>
-              <div class="doc-label">${state.lang === "it" ? "Carta d'identità" : "Identity Card"}</div>
-              <div class="doc-status ${ownerDocs.identity ? "uploaded" : "pending"}">${ownerDocs.identity ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+    ${
+      isCreate
+        ? `
+          <textarea
+            id="createDogBio"
+            rows="3"
+            placeholder="${state.lang === "it" ? "Bio (opzionale)" : "Bio (optional)"}"
+            style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.6rem;color:inherit"
+          ></textarea>
+
+          <div style="margin-top:.6rem;text-align:center">
+            <button id="btnSaveDogDraft" class="btn primary">
+              ${state.lang === "it" ? "Salva profilo" : "Save profile"}
+            </button>
+          </div>
+        `
+        : (d.bio || "")
+    }
+
+    ${isCreate ? "" : storiesHTML}
+
+    ${
+      isCreate
+        ? ""
+        : `
+          <h3 class="section-title">${state.lang === "it" ? "Galleria" : "Gallery"}</h3>
+          <div class="gallery">
+            <div class="ph"><img src="${d.img}" alt=""></div>
+            <div class="ph"><img src="${d.img}" alt=""></div>
+            <div class="ph"><img src="${d.img}" alt=""></div>
+            <div class="ph"><button class="add-photo">+ ${state.lang === "it" ? "Aggiungi" : "Add"}</button></div>
+          </div>
+
+          <h3 class="section-title">Selfie</h3>
+          <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
+            <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie">
+            <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
+            <div class="over">
+              <button id="unlockSelfie" class="btn pill">${state.lang === "it" ? "Sblocca selfie" : "Unlock selfie"}</button>
+              <button id="uploadSelfie" class="btn pill ghost">${state.lang === "it" ? "Carica selfie" : "Upload selfie"}</button>
             </div>
           </div>
-        </div>
 
-        <div class="pp-docs-section" style="margin-top:1.2rem">
-          <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti DOG" : "DOG Documents"}</h4>
-          <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Facoltativi (vaccini, pedigree, microchip)" : "Optional (vaccines, pedigree, microchip)"}</p>
-          <div class="pp-docs-grid">
-            <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
-              <div class="doc-icon">💉</div>
-              <div class="doc-label">${state.lang === "it" ? "Vaccini" : "Vaccines"}</div>
-              <div class="doc-status ${dogDocs.vaccines ? "uploaded" : "pending"}">${dogDocs.vaccines ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
-            </div>
-            <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
-              <div class="doc-icon">📜</div>
-              <div class="doc-label">${state.lang === "it" ? "Pedigree" : "Pedigree"}</div>
-              <div class="doc-status ${dogDocs.pedigree ? "uploaded" : "pending"}">${dogDocs.pedigree ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
-            </div>
-            <div class="doc-item" data-doc="dog-microchip" data-type="dog">
-              <div class="doc-icon">🔬</div>
-              <div class="doc-label">${state.lang === "it" ? "Microchip" : "Microchip"}</div>
-              <div class="doc-status ${dogDocs.microchip ? "uploaded" : "pending"}">${dogDocs.microchip ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+          <h3 class="section-title">${state.lang === "it" ? "Documenti" : "Documents"}</h3>
+
+          <div class="pp-docs-section">
+            <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti Proprietario DOG" : "DOG Owner Documents"}</h4>
+            <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Obbligatorio per ottenere il badge verificato ✅" : "Required to get verified badge ✅"}</p>
+            <div class="pp-docs-grid">
+              <div class="doc-item" data-doc="owner-identity" data-type="owner">
+                <div class="doc-icon">🪪</div>
+                <div class="doc-label">${state.lang === "it" ? "Carta d'identità" : "Identity Card"}</div>
+                <div class="doc-status ${ownerDocs.identity ? "uploaded" : "pending"}">${ownerDocs.identity ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        ${generateSocialSection(d)}
+          <div class="pp-docs-section" style="margin-top:1.2rem">
+            <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti DOG" : "DOG Documents"}</h4>
+            <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Facoltativi (vaccini, pedigree, microchip)" : "Optional (vaccines, pedigree, microchip)"}</p>
+            <div class="pp-docs-grid">
+              <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
+                <div class="doc-icon">💉</div>
+                <div class="doc-label">${state.lang === "it" ? "Vaccini" : "Vaccines"}</div>
+                <div class="doc-status ${dogDocs.vaccines ? "uploaded" : "pending"}">${dogDocs.vaccines ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+              </div>
 
-        <div class="pp-actions">
-          ${
-            (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
-              ? `
-                <button id="btnProfileSettings" class="btn accent">
+              <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
+                <div class="doc-icon">📜</div>
+                <div class="doc-label">${state.lang === "it" ? "Pedigree" : "Pedigree"}</div>
+                <div class="doc-status ${dogDocs.pedigree ? "uploaded" : "pending"}">${dogDocs.pedigree ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+              </div>
+
+              <div class="doc-item" data-doc="dog-microchip" data-type="dog">
+                <div class="doc-icon">🔬</div>
+                <div class="doc-label">${state.lang === "it" ? "Microchip" : "Microchip"}</div>
+                <div class="doc-status ${dogDocs.microchip ? "uploaded" : "pending"}">${dogDocs.microchip ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+              </div>
+            </div>
+          </div>
+
+          ${generateSocialSection(d)}
+
+          <div class="pp-actions">
+            ${
+              (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
+                ? `
                   ${state.lang === "it" ? "Impostazioni profilo" : "Profile settings"}
-                </button>
-                <button id="btnEditSocial" class="btn outline">
                   ${state.lang === "it" ? "Modifica social" : "Edit socials"}
-                </button>
-              `
-              : `
-                <button id="btnLikeDog" class="btn accent">💛 Like</button>
-                <button id="btnOpenChat" class="btn primary">
+                `
+                : `
+                  💛 Like
                   ${state.lang === "it" ? "Invia messaggio" : "Send message"}
-                </button>
-              `
-          }
-        </div>
-      `
+                `
+            }
+          </div>
+        `
     }
   `;
 
-// ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
-if (isCreate) {
-  const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
-  const createDogPhotoInput = document.getElementById("createDogPhotoInput");
-  const createDogPhotoFeedback = document.getElementById("createDogPhotoFeedback");
+  // ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
+  if (isCreate) {
+    const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
+    const createDogPhotoInput = document.getElementById("createDogPhotoInput");
+    const createDogPhotoFeedback = document.getElementById("createDogPhotoFeedback");
 
-  if (btnPickCreateDogPhoto && createDogPhotoInput) {
-    btnPickCreateDogPhoto.addEventListener("click", () => {
-      createDogPhotoInput.click();
-    });
+    if (btnPickCreateDogPhoto && createDogPhotoInput) {
+      btnPickCreateDogPhoto.addEventListener("click", () => {
+        createDogPhotoInput.click();
+      });
 
-    createDogPhotoInput.addEventListener("change", () => {
-      const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
-      if (!file) return;
+      createDogPhotoInput.addEventListener("change", () => {
+        const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
+        if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
 
-        // Salva la foto in una variabile temporanea per il profilo in creazione
-        if (!state.createDogDraft) state.createDogDraft = {};
-        state.createDogDraft.photoDataUrl = dataUrl;
+          // Salva la foto in una variabile temporanea per il profilo in creazione
+          if (!state.createDogDraft) state.createDogDraft = {};
+          state.createDogDraft.photoDataUrl = dataUrl;
 
-        // Mostra feedback visivo
-        if (createDogPhotoFeedback) {
-          createDogPhotoFeedback.style.display = "block";
+          // Mostra feedback visivo
+          if (createDogPhotoFeedback) {
+            createDogPhotoFeedback.style.display = "block";
+          }
+
+          // ✅ (CHIRURGICO) Aggiorna il preview dell’hero CREATE usando gli ID del blocco attuale
+          const previewImg = document.getElementById("createDogPhotoPreview");
+          const emptyBox = document.getElementById("createDogPhotoEmpty");
+          if (previewImg) {
+            previewImg.src = dataUrl;
+            previewImg.style.display = "block";
+          }
+          if (emptyBox) {
+            emptyBox.style.display = "none";
+          }
+        };
+
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  // ✅ LOGICA SALVATAGGIO PROFILO
+  const btnSaveDogDraft = document.getElementById("btnSaveDogDraft");
+  if (btnSaveDogDraft && isCreate) {
+    btnSaveDogDraft.addEventListener("click", () => {
+      const nameInput = document.getElementById("createDogName");
+      const breedInput = document.getElementById("createDogBreed");
+      const ageInput = document.getElementById("createDogAge");
+      const sexSelect = document.getElementById("createDogSex");
+      const errorDiv = document.getElementById("createDogErrors");
+
+      const name = nameInput ? nameInput.value.trim() : "";
+      const breed = breedInput ? breedInput.value.trim() : "";
+      const age = ageInput ? ageInput.value : "";
+      const sex = sexSelect ? sexSelect.value : "";
+
+      const errors = [];
+      if (!name) errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
+      if (!breed) errors.push(state.lang === "it" ? "Razza mancante" : "Breed missing");
+      if (!age) errors.push(state.lang === "it" ? "Età mancante" : "Age missing");
+      if (!sex) errors.push(state.lang === "it" ? "Sesso mancante" : "Sex missing");
+
+      // Controlla se la foto è stata caricata
+      if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
+        errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
+      }
+
+      if (errors.length > 0) {
+        if (errorDiv) {
+          errorDiv.textContent = errors.join(", ");
+          errorDiv.style.display = "block";
         }
+        return;
+      }
 
-        // ✅ (CHIRURGICO) Aggiorna il preview dell’hero CREATE usando gli ID del blocco attuale
-        const previewImg = document.getElementById("createDogPhotoPreview");
-        const emptyBox = document.getElementById("createDogPhotoEmpty");
-        if (previewImg) {
-          previewImg.src = dataUrl;
-          previewImg.style.display = "block";
-        }
-        if (emptyBox) {
-          emptyBox.style.display = "none";
-        }
+      // Salva il profilo
+      const newDogId = "dog_" + Date.now();
+      const newDog = {
+        id: newDogId,
+        name: name,
+        breed: breed,
+        age: parseInt(age, 10),
+        sex: sex,
+        img: state.createDogDraft.photoDataUrl,
+        verified: false,
+        bio: "",
+        km: 0
       };
 
-      reader.readAsDataURL(file);
+      // Aggiungi ai dogs
+      if (!state.dogs) state.dogs = [];
+      state.dogs.push(newDog);
+      localStorage.setItem("dogs", JSON.stringify(state.dogs));
+
+      // Reset draft
+      state.createDogDraft = {};
+
+      // Torna alla home
+      if (typeof setActiveView === "function") {
+        setActiveView("swipe");
+      }
+
+      // Messaggio di successo
+      if (typeof showToast === "function") {
+        showToast(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
+      } else {
+        alert(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
+      }
     });
   }
-}
-
-// ✅ LOGICA SALVATAGGIO PROFILO
-const btnSaveDogDraft = document.getElementById("btnSaveDogDraft");
-if (btnSaveDogDraft && isCreate) {
-  btnSaveDogDraft.addEventListener("click", () => {
-    const nameInput = document.getElementById("createDogName");
-    const breedInput = document.getElementById("createDogBreed");
-    const ageInput = document.getElementById("createDogAge");
-    const sexSelect = document.getElementById("createDogSex");
-    const errorDiv = document.getElementById("createDogErrors");
-
-    const name = nameInput ? nameInput.value.trim() : "";
-    const breed = breedInput ? breedInput.value.trim() : "";
-    const age = ageInput ? ageInput.value : "";
-    const sex = sexSelect ? sexSelect.value : "";
-
-    const errors = [];
-    if (!name) errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
-    if (!breed) errors.push(state.lang === "it" ? "Razza mancante" : "Breed missing");
-    if (!age) errors.push(state.lang === "it" ? "Età mancante" : "Age missing");
-    if (!sex) errors.push(state.lang === "it" ? "Sesso mancante" : "Sex missing");
-
-    // Controlla se la foto è stata caricata
-    if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
-      errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
-    }
-
-    if (errors.length > 0) {
-      if (errorDiv) {
-        errorDiv.textContent = errors.join(", ");
-        errorDiv.style.display = "block";
-      }
-      return;
-    }
-
-    // Salva il profilo
-    const newDogId = "dog_" + Date.now();
-    const newDog = {
-      id: newDogId,
-      name: name,
-      breed: breed,
-      age: parseInt(age, 10),
-      sex: sex,
-      img: state.createDogDraft.photoDataUrl,
-      verified: false,
-      bio: "",
-      km: 0
-    };
-
-    // Aggiungi ai dogs
-    if (!state.dogs) state.dogs = [];
-    state.dogs.push(newDog);
-    localStorage.setItem("dogs", JSON.stringify(state.dogs));
-
-    // Reset draft
-    state.createDogDraft = {};
-
-    // Torna alla home
-    if (typeof setActiveView === "function") {
-      setActiveView("swipe");
-    }
-
-    // Messaggio di successo
-    if (typeof showToast === "function") {
-      showToast(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
-    } else {
-      alert(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
-    }
-  });
-}
 
   // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
   // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
@@ -3709,12 +3681,7 @@ if (btnSaveDogDraft && isCreate) {
         img.addEventListener("click", () => {
           const lb = document.createElement("div");
           lb.className = "lightbox";
-          lb.innerHTML = `
-            <button class="close" aria-label="Chiudi">✕</button>
-            <div class="lightbox-inner">
-              <img src="${img.src}" alt="">
-              <button class="story-like-btn lightbox-like-btn" type="button">❤️ 0</button>
-            </div>`;
+          lb.innerHTML = `           ✕ ❤️ 0 `;
           document.body.appendChild(lb);
 
           const closeBtn = qs(".close", lb);
@@ -3822,7 +3789,6 @@ if (btnSaveDogDraft && isCreate) {
           if (!finalUrl) return;
 
           const rewardKey = `${dogId}_${socialKey}`;
-
           if (state.plus || state.socialRewardViewed[rewardKey]) {
             window.open(finalUrl, "_blank", "noopener");
             return;
@@ -3887,7 +3853,6 @@ if (btnSaveDogDraft && isCreate) {
     if (!fileInput) return;
 
     fileInput.value = "";
-
     fileInput.onchange = () => {
       const file = fileInput.files && fileInput.files[0];
       if (!file) return;
@@ -3938,7 +3903,7 @@ if (btnSaveDogDraft && isCreate) {
   }
 };
 
-  // Carica i messaggi da Firestore per una chat (ROBUSTO: ordina lato JS)
+// Carica i messaggi da Firestore per una chat (ROBUSTO: ordina lato JS)
 async function loadChatHistory(chatId, dogName) {
   if (!db || !chatList || !chatId) return;
 
@@ -4003,6 +3968,7 @@ async function loadChatHistory(chatId, dogName) {
     });
 
     chatList.scrollTop = chatList.scrollHeight;
+
   } catch (err) {
     console.error("Errore loadChatHistory:", err);
   }
