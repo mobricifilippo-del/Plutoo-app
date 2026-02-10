@@ -3046,6 +3046,7 @@ try {
 } catch (e) {
   console.error("photoLike write fatal error:", e);
 } 
+  }
 
   // ============ LIKE STORIES ============
   function isStoryLiked(mediaId) {
@@ -3107,6 +3108,7 @@ try {
   }
 } catch (e) {
   console.error("storyLike write fatal error:", e);
+}
 }
 
   // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
