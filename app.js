@@ -1,5 +1,4 @@
 /* ================= CRASH DEBUG SYSTEM (PARAFULMINE UNICO) ================= */
-
 (function () {
   // evita doppio attach
   if (window.__PLUTOO_CRASH_SHIELD__) return;
