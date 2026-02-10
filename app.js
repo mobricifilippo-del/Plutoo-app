@@ -1,139 +1,137 @@
-/* ================= CRASH DEBUG SYSTEM (OBBLIGATORIO) ================= */
+/* ================= CRASH DEBUG SYSTEM (PARAFULMINE UNICO) ================= */
 
-// ================= ALERT TRACE WRAPPER (OBBLIGATORIO PER TROVARE "Unknown error") =================
 (function () {
-  try {
-    if (window.__ALERT_TRACE_WRAPPED__) return;
-    window.__ALERT_TRACE_WRAPPED__ = true;
+  // evita doppio attach
+  if (window.__PLUTOO_CRASH_SHIELD__) return;
+  window.__PLUTOO_CRASH_SHIELD__ = true;
 
-    const _alert = window.alert;
-    window.alert = function (msg) {
-      try {
-        const m = (msg == null) ? "" : String(msg);
-        let stack = "";
-        try {
-          throw new Error("ALERT_TRACE");
-        } catch (e) {
-          stack = (e && e.stack) ? String(e.stack) : "";
-        }
+  // traccia ultimo input utente (click/tap) per capire "dove" eri
+  window.__LAST_UI_ACTION__ = { t: 0, text: "", id: "", cls: "", tag: "" };
 
-        // Evita alert infinite se per caso alert viene richiamato dentro alert
-        if (m.includes("ALERT_TRACE")) {
-          return _alert.call(window, m);
-        }
-
-        return _alert.call(window, m + "\n\n--- ALERT TRACE (dove nasce) ---\n" + stack);
-      } catch (_) {
-        return _alert.call(window, msg);
-      }
-    };
-  } catch (_) {}
-})();
-
-// 1️⃣ Errori JS globali (con STACK reale quando disponibile)
-window.addEventListener("error", function (e) {
-  try {
-    const errObj = e && e.error ? e.error : null;
-    
-    // Se non ho dettagli reali (niente error object, niente filename), è rumore: ignora
-const hasRealJsError = !!(errObj && (errObj.stack || errObj.message));
-const hasFileInfo = !!(e && e.filename);
-
-if (!hasRealJsError && !hasFileInfo) {
-  console.warn("IGNORED UNKNOWN ERROR EVENT:", e);
-  return;
-}
-
-    // errori di risorse (script/img/css) spesso NON hanno filename/line
-    const target = e && e.target ? e.target : null;
-    const resUrl =
-      target && (target.src || target.href)
-        ? (target.src || target.href)
-        : "";
-
-    // Se è un errore di RISORSA (img/script/link/input file), non rompere con alert: logga e basta
-if (e && e.target && !e.error) {
-  console.warn("RESOURCE ERROR:", resUrl || e.target);
-  return;
-}
-
-const msg = (e && e.message) ? e.message : "(no message)";
-    const file = (e && e.filename) ? e.filename : (resUrl || "(no file)");
-    const line = (e && typeof e.lineno === "number") ? e.lineno : "-";
-    const col  = (e && typeof e.colno === "number") ? e.colno : "-";
-    const stack = (errObj && errObj.stack) ? ("\n\nSTACK:\n" + errObj.stack) : "";
-
-    alert(
-      "❌ JS ERROR\n\n" +
-      "Messaggio: " + msg + "\n" +
-      "File: " + file + "\n" +
-      "Linea: " + line + ":" + col +
-      stack
-    );
-  } catch (_) {
-    alert("❌ JS ERROR\n\n(Impossibile leggere dettagli errore)");
-  }
-}, true);
-
-// 2️⃣ Errori Promise / Firebase (robusto: niente JSON.stringify che può crashare)
-window.addEventListener("unhandledrejection", function (e) {
-  try {
-    const r = e && e.reason;
-
-    let msg = "";
-    if (r && typeof r === "object") {
-      if (r.message) msg += "Messaggio: " + r.message + "\n";
-      if (r.code) msg += "Code: " + r.code + "\n";
-      if (r.name) msg += "Name: " + r.name + "\n";
-      if (r.stack) msg += "\nSTACK:\n" + r.stack + "\n";
-      if (!msg) msg = "Reason object (non leggibile)";
-    } else {
-      msg = String(r);
+  function pickElInfo(el) {
+    try {
+      if (!el) return { text: "", id: "", cls: "", tag: "" };
+      const tag = (el.tagName || "").toLowerCase();
+      const id = el.id ? String(el.id) : "";
+      const cls = el.className ? String(el.className) : "";
+      const text = (el.innerText || el.textContent || "").trim().slice(0, 80);
+      return { text, id, cls, tag };
+    } catch (_) {
+      return { text: "", id: "", cls: "", tag: "" };
     }
+  }
 
-    alert("❌ PROMISE ERROR\n\n" + msg);
-  } catch (_) {
-    alert("❌ PROMISE ERROR\n\n(Impossibile leggere e.reason)");
-  }
-});
+  document.addEventListener("click", function (ev) {
+    try {
+      const target = ev && ev.target ? ev.target : null;
+      const node = target && target.closest ? target.closest("button,a,label,div,span,input") : target;
+      const info = pickElInfo(node || target);
+      window.__LAST_UI_ACTION__ = { t: Date.now(), ...info };
+    } catch (_) {}
+  }, true);
 
-// 3️⃣ Verifica Firestore sempre disponibile
-function assertFirestore() {
-  if (!window.db) {
-    alert("❌ FIRESTORE NON INIZIALIZZATO (window.db è undefined)");
-    return false;
-  }
-  return true;
-}
+  // helper: alert unico "cazzuto" ma non infinito
+  function hardAlert(title, payload) {
+    try {
+      const last = window.__LAST_UI_ACTION__ || {};
+      const when = last.t ? new Date(last.t).toLocaleString() : "-";
+      const ui =
+        "ULTIMO CLICK:\n" +
+        "Quando: " + when + "\n" +
+        "Tag: " + (last.tag || "-") + "\n" +
+        "ID: " + (last.id || "-") + "\n" +
+        "Class: " + (last.cls || "-") + "\n" +
+        "Testo: " + (last.text || "-") + "\n";
 
-// 4️⃣ Verifica UID sempre presente
-function assertUID() {
-  if (!window.PLUTOO_UID) {
-    alert("❌ UTENTE NON AUTENTICATO (PLUTOO_UID mancante)");
-    return false;
-  }
-  return true;
-}
+      const msg =
+        "⛔ PLUTOO CRASH SHIELD\n\n" +
+        title + "\n\n" +
+        ui + "\n" +
+        payload;
 
-// 5️⃣ Wrapper sicuro per Firestore write
-async function safeFirestoreWrite(label, fn) {
-  if (!assertFirestore() || !assertUID()) {
-    alert("❌ BLOCCO WRITE: " + label);
-    return;
+      // evita loop se alert stesso genera errori
+      if (window.__PLUTOO_ALERTING__) return;
+      window.__PLUTOO_ALERTING__ = true;
+      alert(msg);
+      window.__PLUTOO_ALERTING__ = false;
+    } catch (_) {
+      alert("⛔ PLUTOO CRASH SHIELD\n\n" + title);
+    }
   }
-  try {
-    await fn();
-  } catch (e) {
-    const emsg = (e && e.message) ? e.message : String(e);
-    const estack = (e && e.stack) ? ("\n\nSTACK:\n" + e.stack) : "";
-    alert(
-      "❌ FIRESTORE WRITE ERROR\n\n" +
-      label + "\n\n" +
-      emsg +
-      estack
-    );
+
+  // filtra errori risorsa (img/css/script) = rumore
+  function isResourceErrorEvent(e) {
+    try {
+      return !!(e && e.target && !e.error);
+    } catch (_) {
+      return false;
+    }
   }
-}
+
+  // 1) errori JS globali
+  window.addEventListener("error", function (e) {
+    try {
+      // ignora errori risorsa (img/css) -> console only
+      if (isResourceErrorEvent(e)) {
+        try {
+          const t = e.target;
+          const u = t && (t.src || t.href) ? (t.src || t.href) : "";
+          console.warn("RESOURCE ERROR:", u || t);
+        } catch (_) {}
+        return;
+      }
+
+      const errObj = e && e.error ? e.error : null;
+      const msg = (e && e.message) ? String(e.message) : "(no message)";
+      const file = (e && e.filename) ? String(e.filename) : "(no file)";
+      const line = (e && typeof e.lineno === "number") ? e.lineno : "-";
+      const col  = (e && typeof e.colno === "number") ? e.colno : "-";
+      const stack = (errObj && errObj.stack) ? String(errObj.stack) : "";
+
+      const payload =
+        "MESSAGGIO: " + msg + "\n" +
+        "FILE: " + file + "\n" +
+        "LINEA: " + line + ":" + col + "\n\n" +
+        (stack ? ("STACK:\n" + stack) : "STACK: (non disponibile)");
+
+      hardAlert("JS ERROR", payload);
+    } catch (ex) {
+      hardAlert("JS ERROR", "Dettagli non leggibili.\n" + String(ex));
+    }
+  }, true);
+
+  // 2) promise rejection (Firebase ecc.)
+  window.addEventListener("unhandledrejection", function (e) {
+    try {
+      const r = e && e.reason ? e.reason : null;
+
+      let msg = "";
+      let stack = "";
+      let code = "";
+      let name = "";
+
+      if (r && typeof r === "object") {
+        if (r.message) msg = String(r.message);
+        if (r.stack) stack = String(r.stack);
+        if (r.code) code = String(r.code);
+        if (r.name) name = String(r.name);
+      } else {
+        msg = String(r);
+      }
+
+      const payload =
+        "REASON: " + (msg || "(no message)") + "\n" +
+        (code ? ("CODE: " + code + "\n") : "") +
+        (name ? ("NAME: " + name + "\n") : "") + "\n" +
+        (stack ? ("STACK:\n" + stack) : "STACK: (non disponibile)");
+
+      hardAlert("PROMISE REJECTION", payload);
+    } catch (ex) {
+      hardAlert("PROMISE REJECTION", "Dettagli non leggibili.\n" + String(ex));
+    }
+  });
+
+})();
 
 document.addEventListener("DOMContentLoaded", () => {
   const authSheet = document.getElementById("authSheet");
