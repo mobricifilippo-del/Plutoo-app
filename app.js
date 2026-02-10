@@ -3020,26 +3020,32 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     persistPhotoLikes();
     updatePhotoLikeUI(dogId);
 
-    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
-    try {
-      const uid = window.PLUTOO_UID;
-      const _db = (window.db || (typeof db !== "undefined" ? db : null));
-      if (!uid || !_db) return;
+   // ✅ FIRESTORE (PRODUCTION): salva like/unlike (robusto, non silenzioso)
+try {
+  const uid = window.PLUTOO_UID;
+  const _db = (window.db || (typeof db !== "undefined" ? db : null));
+  if (!uid || !_db) return;
 
-      const ref = _db.collection("dogs").doc(String(dogId))
-        .collection("photoLikes").doc(String(uid));
+  const hasFirebase = (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
+  const ts = hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function"
+    ? firebase.firestore.FieldValue.serverTimestamp()
+    : new Date();
 
-      if (wasLiked) {
-        ref.delete().catch(()=>{});
-      } else {
-        ref.set({
-          uid: String(uid),
-          dogId: String(dogId),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch(()=>{});
-      }
-    } catch (_) {}
+  const ref = _db.collection("dogs").doc(String(dogId))
+    .collection("photoLikes").doc(String(uid));
+
+  if (wasLiked) {
+    ref.delete().catch((e) => console.error("photoLike delete error:", e));
+  } else {
+    ref.set({
+      uid: String(uid),
+      dogId: String(dogId),
+      createdAt: ts
+    }, { merge: true }).catch((e) => console.error("photoLike set error:", e));
   }
+} catch (e) {
+  console.error("photoLike write fatal error:", e);
+} 
 
   // ============ LIKE STORIES ============
   function isStoryLiked(mediaId) {
@@ -3076,26 +3082,32 @@ storyLikeBtn.classList.add("heart-anim");
     persistStoryLikes();
     updateStoryLikeUI(mediaId);
 
-    // ✅ FIRESTORE (PRODUCTION): salva like/unlike
-    try {
-      const uid = window.PLUTOO_UID;
-      const _db = (window.db || (typeof db !== "undefined" ? db : null));
-      if (!uid || !_db) return;
+    // ✅ FIRESTORE (PRODUCTION): salva like/unlike (robusto, non silenzioso)
+try {
+  const uid = window.PLUTOO_UID;
+  const _db = (window.db || (typeof db !== "undefined" ? db : null));
+  if (!uid || !_db) return;
 
-      const ref = _db.collection("stories").doc(String(mediaId))
-        .collection("likes").doc(String(uid));
+  const hasFirebase = (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
+  const ts = hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function"
+    ? firebase.firestore.FieldValue.serverTimestamp()
+    : new Date();
 
-      if (wasLiked) {
-        ref.delete().catch(()=>{});
-      } else {
-        ref.set({
-          uid: String(uid),
-          mediaId: String(mediaId),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch(()=>{});
-      }
-    } catch (_) {}
+  const ref = _db.collection("stories").doc(String(mediaId))
+    .collection("likes").doc(String(uid));
+
+  if (wasLiked) {
+    ref.delete().catch((e) => console.error("storyLike delete error:", e));
+  } else {
+    ref.set({
+      uid: String(uid),
+      mediaId: String(mediaId),
+      createdAt: ts
+    }, { merge: true }).catch((e) => console.error("storyLike set error:", e));
   }
+} catch (e) {
+  console.error("storyLike write fatal error:", e);
+}
 
   // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
 window.openProfilePage = (d) => {
