@@ -1,5 +1,35 @@
 /* ================= CRASH DEBUG SYSTEM (OBBLIGATORIO) ================= */
 
+// ================= ALERT TRACE WRAPPER (OBBLIGATORIO PER TROVARE "Unknown error") =================
+(function () {
+  try {
+    if (window.__ALERT_TRACE_WRAPPED__) return;
+    window.__ALERT_TRACE_WRAPPED__ = true;
+
+    const _alert = window.alert;
+    window.alert = function (msg) {
+      try {
+        const m = (msg == null) ? "" : String(msg);
+        let stack = "";
+        try {
+          throw new Error("ALERT_TRACE");
+        } catch (e) {
+          stack = (e && e.stack) ? String(e.stack) : "";
+        }
+
+        // Evita alert infinite se per caso alert viene richiamato dentro alert
+        if (m.includes("ALERT_TRACE")) {
+          return _alert.call(window, m);
+        }
+
+        return _alert.call(window, m + "\n\n--- ALERT TRACE (dove nasce) ---\n" + stack);
+      } catch (_) {
+        return _alert.call(window, msg);
+      }
+    };
+  } catch (_) {}
+})();
+
 // 1️⃣ Errori JS globali (con STACK reale quando disponibile)
 window.addEventListener("error", function (e) {
   try {
