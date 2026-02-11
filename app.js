@@ -80,12 +80,33 @@
         return;
       }
 
-      const errObj = e && e.error ? e.error : null;
-      const msg = (e && e.message) ? String(e.message) : "(no message)";
-      const file = (e && e.filename) ? String(e.filename) : "(no file)";
-      const line = (e && typeof e.lineno === "number") ? e.lineno : "-";
-      const col  = (e && typeof e.colno === "number") ? e.colno : "-";
-      const stack = (errObj && errObj.stack) ? String(errObj.stack) : "";
+    const errObj = e && e.error ? e.error : null;
+
+// 1) prova a prendere il messaggio reale in ogni modo
+const msg =
+  (errObj && errObj.message) ? String(errObj.message) :
+  (e && e.message) ? String(e.message) :
+  "(no message)";
+
+// 2) se GitHub Pages non valorizza filename/line/col, prova a estrarli dallo stack
+let file = (e && e.filename) ? String(e.filename) : "";
+let line = (e && typeof e.lineno === "number") ? e.lineno : "";
+let col  = (e && typeof e.colno === "number") ? e.colno : "";
+
+const stack = (errObj && errObj.stack) ? String(errObj.stack) : "";
+
+if ((!file || !line) && stack) {
+  const m = stack.match(/(https?:\/\/[^\s)]+):(\d+):(\d+)/);
+  if (m) {
+    file = file || m[1];
+    line = line || m[2];
+    col  = col  || m[3];
+  }
+}
+
+file = file || "(no file)";
+line = line || "-";
+col  = col  || "-";
 
       const payload =
         "MESSAGGIO: " + msg + "\n" +
