@@ -3255,10 +3255,10 @@ window.openProfilePage = (d) => {
         : `${d.name} ${d.verified ? "✅" : ""}`
     }
 
-    ${
-      isCreate
-        ? `Segui 🐕🐾`
-        : `
+${ 
+  isCreate
+    ? ``
+    : `
           <span class="pp-follow-stats">
             <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
             <span class="pp-follow-dot">·</span>
