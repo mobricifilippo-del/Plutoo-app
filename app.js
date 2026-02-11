@@ -3230,7 +3230,7 @@ window.openProfilePage = (d) => {
       ${
         isCreate
           ? `
-            <img id="createDogPhotoPreview" src="" alt="${state.lang === "it" ? "Foto profilo DOG" : "DOG profile photo"}" style="width:100%;height:100%;object-fit:cover;display:none;" />
+            <img id="createDogPhotoPreview" alt="${state.lang === "it" ? "Foto profilo DOG" : "DOG profile photo"}" style="width:100%;height:100%;object-fit:cover;display:none;" />
             ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
             <button id="btnPickCreateDogPhoto" type="button" class="btn accent">
               ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
