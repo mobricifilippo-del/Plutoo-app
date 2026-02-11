@@ -3382,9 +3382,6 @@ profileContent.innerHTML = `
         </div>
       </div>
     </div>
-  `
-
-} `;
 
           ${generateSocialSection(d)}
 
