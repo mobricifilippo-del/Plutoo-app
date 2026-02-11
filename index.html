@@ -629,21 +629,46 @@
   }
 
   window.addEventListener("error", function (e) {
-    // Cattura anche SyntaxError/parse error (app.js che non parte)
-    var msg = e && e.message ? e.message : "Unknown error";
-    var src = e && e.filename ? e.filename : "";
-    var line = (e && typeof e.lineno === "number") ? e.lineno : "";
-    var col  = (e && typeof e.colno === "number") ? e.colno : "";
-    var stack = (e && e.error && e.error.stack) ? e.error.stack : "";
+  // 1) Se è un errore "classico" JS: ErrorEvent con message/filename/line/col
+  // 2) Se è un errore di risorsa (script/img/css): e.target è l'elemento che ha fallito
 
-    var details =
-      "ERROR: " + esc(msg) + "\n" +
-      "FILE: " + esc(src) + "\n" +
-      "LINE: " + esc(line) + "  COL: " + esc(col) + "\n" +
-      (stack ? ("\nSTACK:\n" + stack) : "");
+  var isResourceError = !!(e && e.target && e.target !== window);
 
-    show(details);
-  }, true);
+  var msg = (e && e.message) ? e.message : (isResourceError ? "Resource load error" : "Unknown error");
+  var src = (e && e.filename) ? e.filename : "";
+  var line = (e && typeof e.lineno === "number") ? e.lineno : "";
+  var col  = (e && typeof e.colno === "number") ? e.colno : "";
+  var stack = (e && e.error && e.error.stack) ? e.error.stack : "";
+
+  // Se è resource error, prova a ricavare URL e info dell'elemento
+  var targetInfo = "";
+  if (isResourceError) {
+    try {
+      var t = e.target;
+      var url = (t && (t.src || t.href)) ? (t.src || t.href) : "";
+      var tag = (t && t.tagName) ? t.tagName : "";
+      var id = (t && t.id) ? ("#" + t.id) : "";
+      var cls = (t && t.className) ? ("." + String(t.className).trim().replace(/\s+/g, ".")) : "";
+      targetInfo =
+        "RESOURCE:\n" +
+        "TAG: " + esc(tag + id + cls) + "\n" +
+        "URL: " + esc(url) + "\n";
+      // in caso di resource, metto l'URL anche in FILE per renderlo subito visibile
+      if (!src && url) src = url;
+      line = "";
+      col = "";
+    } catch (_) {}
+  }
+
+  var details =
+    "ERROR: " + esc(msg) + "\n" +
+    "FILE: " + esc(src) + "\n" +
+    "LINE: " + esc(line) + "  COL: " + esc(col) + "\n" +
+    (targetInfo ? ("\n" + targetInfo) : "") +
+    (stack ? ("\nSTACK:\n" + stack) : "");
+
+  show(details);
+}, true);
 
   window.addEventListener("unhandledrejection", function (e) {
     var reason = (e && e.reason) ? e.reason : "Unhandled rejection";
