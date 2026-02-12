@@ -3234,7 +3234,7 @@ profileContent.innerHTML = `
           <img
             id="createDogPhotoPreview"
             alt="${state.lang === "it" ? "Foto profilo DOG" : "DOG profile photo"}"
-            style="width:100%;height:100%;object-fit:cover;display:none;"
+            style="width:100%;height:100%;object-fit:contain;object-position:center;background:#0b0b0f;display:block;cursor:pointer;"
           /><div style="padding:.9rem .9rem .7rem">
         <div style="font-weight:900;font-size:1.05rem;margin-bottom:.35rem">
           ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
