@@ -3447,19 +3447,21 @@ profileContent.innerHTML = `
     }
   }
 
-const btnSaveDogDraft = document.getElementById("btnSaveDogDraft"); if (btnSaveDogDraft && isCreate) { btnSaveDogDraft.addEventListener("click", () => { const nameInput = document.getElementById("createDogName"); const breedInput = document.getElementById("createDogBreed"); const ageInput = document.getElementById("createDogAge"); const sexSelect = document.getElementById("createDogSex"); const errorDiv = document.getElementById("createDogErrors");
+const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft"); if (btnSaveDogDraft0 && isCreate) { const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true); btnSaveDogDraft0.parentNode.replaceChild(btnSaveDogDraft, btnSaveDogDraft0);
+
+btnSaveDogDraft.addEventListener("click", () => { const nameInput = document.getElementById("createDogName"); const breedInput = document.getElementById("createDogBreed"); const ageInput = document.getElementById("createDogAge"); const sexSelect = document.getElementById("createDogSex"); const bioInput = document.getElementById("createDogBio"); const errorDiv = document.getElementById("createDogErrors");
 
 const name = nameInput ? nameInput.value.trim() : "";
 const breed = breedInput ? breedInput.value.trim() : "";
 const age = ageInput ? ageInput.value : "";
 const sex = sexSelect ? sexSelect.value : "";
+const bio = bioInput ? bioInput.value.trim() : "";
 
 const errors = [];
 if (!name) errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
 if (!breed) errors.push(state.lang === "it" ? "Razza mancante" : "Breed missing");
 if (!age) errors.push(state.lang === "it" ? "Età mancante" : "Age missing");
 if (!sex) errors.push(state.lang === "it" ? "Sesso mancante" : "Sex missing");
-
 if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
   errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
 }
@@ -3481,7 +3483,7 @@ const newDog = {
   sex: sex,
   img: state.createDogDraft.photoDataUrl,
   verified: false,
-  bio: "",
+  bio: bio || "",
   km: 0
 };
 
@@ -3491,8 +3493,10 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
 
 state.createDogDraft = {};
 
-if (typeof setActiveView === "function") {
-  setActiveView("swipe");
+if (typeof openProfilePage === "function") {
+  openProfilePage(newDog);
+} else if (typeof setActiveView === "function") {
+  setActiveView("profile");
 }
 
 if (typeof showToast === "function") {
