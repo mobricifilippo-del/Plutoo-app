@@ -3408,50 +3408,103 @@ profileContent.innerHTML = `
     }
   `;
 
-  // ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
-  if (isCreate) {
-    const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
-    const createDogPhotoInput = document.getElementById("createDogPhotoInput");
-    const createDogPhotoFeedback = document.getElementById("createDogPhotoFeedback");
+ // ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
+if (isCreate) {
+  const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
+  const createDogPhotoInput = document.getElementById("createDogPhotoInput");
+  const createDogPhotoFeedback = document.getElementById("createDogPhotoFeedback");
+  const previewImg = document.getElementById("createDogPhotoPreview");
+  const emptyBox = document.getElementById("createDogPhotoEmpty"); // se esiste, ok; se no viene ignorato
 
-    if (btnPickCreateDogPhoto && createDogPhotoInput) {
-      btnPickCreateDogPhoto.addEventListener("click", () => {
+  // ✅ helper: mostra/nasconde preview in modo safe (mai src="")
+  const setPreview = (dataUrl) => {
+    if (!previewImg) return;
+
+    if (typeof dataUrl === "string" && dataUrl.trim()) {
+      previewImg.src = dataUrl;
+      previewImg.style.display = "block";
+      previewImg.style.cursor = "pointer";
+      if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
+      if (emptyBox) emptyBox.style.display = "none";
+    } else {
+      // IMPORTANTISSIMO: niente src vuoto (evita richiesta alla root)
+      previewImg.removeAttribute("src");
+      previewImg.style.display = "none";
+      if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
+      if (emptyBox) emptyBox.style.display = "block";
+    }
+  };
+
+  // ✅ bottone RIMUOVI (creato una sola volta)
+  const ensureRemoveBtn = () => {
+    if (!btnPickCreateDogPhoto) return;
+    if (document.getElementById("btnRemoveCreateDogPhoto")) return;
+
+    const rm = document.createElement("button");
+    rm.id = "btnRemoveCreateDogPhoto";
+    rm.type = "button";
+    rm.className = "btn ghost";
+    rm.style.width = "100%";
+    rm.style.justifyContent = "center";
+    rm.style.marginTop = ".5rem";
+    rm.textContent = state.lang === "it" ? "🗑️ Rimuovi foto profilo" : "🗑️ Remove profile photo";
+
+    rm.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      if (!state.createDogDraft) state.createDogDraft = {};
+      delete state.createDogDraft.photoDataUrl;
+
+      if (createDogPhotoInput) createDogPhotoInput.value = "";
+      setPreview("");
+    });
+
+    // lo metto sotto al bottone “Carica foto profilo”
+    btnPickCreateDogPhoto.parentNode.insertBefore(rm, btnPickCreateDogPhoto.nextSibling);
+  };
+
+  // init UI da stato draft (se già caricata prima)
+  try {
+    const existing = state.createDogDraft && state.createDogDraft.photoDataUrl;
+    setPreview(existing || "");
+  } catch (_) {}
+
+  ensureRemoveBtn();
+
+  if (btnPickCreateDogPhoto && createDogPhotoInput) {
+    // ✅ click su bottone = scegli file
+    btnPickCreateDogPhoto.addEventListener("click", () => {
+      createDogPhotoInput.click();
+    });
+
+    // ✅ click su preview = sostituisci (apre picker)
+    if (previewImg) {
+      previewImg.addEventListener("click", () => {
         createDogPhotoInput.click();
       });
-
-      createDogPhotoInput.addEventListener("change", () => {
-        const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e.target.result;
-
-          // Salva la foto in una variabile temporanea per il profilo in creazione
-          if (!state.createDogDraft) state.createDogDraft = {};
-          state.createDogDraft.photoDataUrl = dataUrl;
-
-          // Mostra feedback visivo
-          if (createDogPhotoFeedback) {
-            createDogPhotoFeedback.style.display = "block";
-          }
-
-          // ✅ (CHIRURGICO) Aggiorna il preview dell’hero CREATE usando gli ID del blocco attuale
-          const previewImg = document.getElementById("createDogPhotoPreview");
-          const emptyBox = document.getElementById("createDogPhotoEmpty");
-          if (previewImg) {
-            previewImg.src = dataUrl;
-            previewImg.style.display = "block";
-          }
-          if (emptyBox) {
-            emptyBox.style.display = "none";
-          }
-        };
-
-        reader.readAsDataURL(file);
-      });
     }
+
+    createDogPhotoInput.addEventListener("change", () => {
+      const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e && e.target ? e.target.result : "";
+        if (!dataUrl) return;
+
+        if (!state.createDogDraft) state.createDogDraft = {};
+        state.createDogDraft.photoDataUrl = dataUrl;
+
+        setPreview(dataUrl);
+        ensureRemoveBtn();
+      };
+
+      reader.readAsDataURL(file);
+    });
   }
+}
 
  const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
