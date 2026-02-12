@@ -3510,10 +3510,14 @@ if (typeof openProfilePage === "function") {
   setActiveView("profile");
 }
 
-if (typeof showToast === "function") {
-  showToast(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
-} else {
-  alert(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
+if (errorDiv) {
+  errorDiv.textContent = state.lang === "it"
+    ? "✅ Profilo salvato"
+    : "✅ Profile saved";
+  errorDiv.style.display = "block";
+  errorDiv.style.border = "1px solid rgba(60,200,120,.45)";
+  errorDiv.style.background = "rgba(60,200,120,.08)";
+  errorDiv.style.color = "#bff7d6";
 }
 
 }); }
