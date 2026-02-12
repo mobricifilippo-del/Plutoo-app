@@ -3208,7 +3208,12 @@ window.openProfilePage = (d) => {
           <button id="uploadDogStory" class="btn accent small">📸 ${state.lang === "it" ? "Carica Story" : "Upload Story"}</button>
         </div>
         <div class="pp-stories-grid" id="dogStoriesGrid">
-          ${dogStories.media.map((m, idx) => ` Story ${getTimeAgo(m.timestamp)} `).join("")}
+          ${dogStories.media.map((m, idx) => `
+  <div class="pp-story-item" data-story-index="${idx}">
+    <img src="${m.url}" alt="Story" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" />
+    <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
+  </div>
+`).join("")}
         </div>
       </div>
     `
