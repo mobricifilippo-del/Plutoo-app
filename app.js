@@ -3458,69 +3458,103 @@ profileContent.innerHTML = `
     }
   }
 
-const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft"); if (btnSaveDogDraft0 && isCreate) { const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true); btnSaveDogDraft0.parentNode.replaceChild(btnSaveDogDraft, btnSaveDogDraft0);
+ const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
+if (btnSaveDogDraft0 && isCreate) {
+  const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
+  btnSaveDogDraft0.parentNode.replaceChild(btnSaveDogDraft, btnSaveDogDraft0);
 
-btnSaveDogDraft.addEventListener("click", () => { const nameInput = document.getElementById("createDogName"); const breedInput = document.getElementById("createDogBreed"); const ageInput = document.getElementById("createDogAge"); const sexSelect = document.getElementById("createDogSex"); const bioInput = document.getElementById("createDogBio"); const errorDiv = document.getElementById("createDogErrors");
+  btnSaveDogDraft.addEventListener("click", () => {
+    const nameInput = document.getElementById("createDogName");
+    const breedInput = document.getElementById("createDogBreed");
+    const ageInput = document.getElementById("createDogAge");
+    const sexSelect = document.getElementById("createDogSex");
+    const bioInput = document.getElementById("createDogBio");
+    const errorDiv = document.getElementById("createDogErrors");
 
-const name = nameInput ? nameInput.value.trim() : "";
-const breed = breedInput ? breedInput.value.trim() : "";
-const age = ageInput ? ageInput.value : "";
-const sex = sexSelect ? sexSelect.value : "";
-const bio = bioInput ? bioInput.value.trim() : "";
+    const name = nameInput ? nameInput.value.trim() : "";
+    const breed = breedInput ? breedInput.value.trim() : "";
+    const age = ageInput ? ageInput.value : "";
+    const sex = sexSelect ? sexSelect.value : "";
+    const bio = bioInput ? bioInput.value.trim() : "";
 
-const errors = [];
-if (!name) errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
-if (!breed) errors.push(state.lang === "it" ? "Razza mancante" : "Breed missing");
-if (!age) errors.push(state.lang === "it" ? "Età mancante" : "Age missing");
-if (!sex) errors.push(state.lang === "it" ? "Sesso mancante" : "Sex missing");
-if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
-  errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
+    const errors = [];
+    if (!name) errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
+    if (!breed) errors.push(state.lang === "it" ? "Razza mancante" : "Breed missing");
+    if (!age) errors.push(state.lang === "it" ? "Età mancante" : "Age missing");
+    if (!sex) errors.push(state.lang === "it" ? "Sesso mancante" : "Sex missing");
+    if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
+      errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
+    }
+
+    if (errors.length > 0) {
+      if (errorDiv) {
+        errorDiv.textContent = errors.join(", ");
+        errorDiv.style.display = "block";
+      }
+      return;
+    }
+
+    const newDogId = "dog_" + Date.now();
+    const newDog = {
+      id: newDogId,
+      name: name,
+      breed: breed,
+      age: parseInt(age, 10),
+      sex: sex,
+      img: state.createDogDraft.photoDataUrl,
+      verified: false,
+      bio: bio || "",
+      km: 0
+    };
+
+    if (!state.dogs) state.dogs = [];
+    state.dogs.push(newDog);
+    localStorage.setItem("dogs", JSON.stringify(state.dogs));
+
+    state.createDogDraft = {};
+
+    // =========================
+    // ✅ FIX STATO: da ORA "hai un DOG" (localStorage + runtime)
+    // =========================
+    try {
+      window.PLUTOO_HAS_DOG = true;
+      window.PLUTOO_READONLY = false;
+      window.PLUTOO_DOG_ID = newDogId;
+
+      // se nel codice esiste CURRENT_USER_DOG_ID, lo allinei qui
+      window.CURRENT_USER_DOG_ID = newDogId;
+      try { CURRENT_USER_DOG_ID = newDogId; } catch (_) {}
+
+      // cache coerente
+      localStorage.setItem("plutoo_has_dog", "1");
+      localStorage.setItem("plutoo_dog_id", newDogId);
+      localStorage.setItem("plutoo_readonly", "0");
+
+      // spegni classe readonly (se era stata attivata)
+      document.body.classList.remove("plutoo-readonly");
+
+      // nascondi CTA "Crea profilo DOG" in Vicino a te
+      const inlineBtn = document.getElementById("btnCreateDogInline");
+      if (inlineBtn) inlineBtn.style.display = "none";
+    } catch (_) {}
+
+    // feedback inline (resta qui; nel prossimo step lo rendiamo visibile anche dopo il redirect)
+    if (errorDiv) {
+      errorDiv.textContent = state.lang === "it" ? "✅ Profilo salvato" : "✅ Profile saved";
+      errorDiv.style.display = "block";
+      errorDiv.style.border = "1px solid rgba(60,200,120,.45)";
+      errorDiv.style.background = "rgba(60,200,120,.08)";
+      errorDiv.style.color = "#bff7d6";
+    }
+
+    // vai al profilo
+    if (typeof openProfilePage === "function") {
+      openProfilePage(newDog);
+    } else if (typeof setActiveView === "function") {
+      setActiveView("profile");
+    }
+  });
 }
-
-if (errors.length > 0) {
-  if (errorDiv) {
-    errorDiv.textContent = errors.join(", ");
-    errorDiv.style.display = "block";
-  }
-  return;
-}
-
-const newDogId = "dog_" + Date.now();
-const newDog = {
-  id: newDogId,
-  name: name,
-  breed: breed,
-  age: parseInt(age, 10),
-  sex: sex,
-  img: state.createDogDraft.photoDataUrl,
-  verified: false,
-  bio: bio || "",
-  km: 0
-};
-
-if (!state.dogs) state.dogs = [];
-state.dogs.push(newDog);
-localStorage.setItem("dogs", JSON.stringify(state.dogs));
-
-state.createDogDraft = {};
-
-if (typeof openProfilePage === "function") {
-  openProfilePage(newDog);
-} else if (typeof setActiveView === "function") {
-  setActiveView("profile");
-}
-
-if (errorDiv) {
-  errorDiv.textContent = state.lang === "it"
-    ? "✅ Profilo salvato"
-    : "✅ Profile saved";
-  errorDiv.style.display = "block";
-  errorDiv.style.border = "1px solid rgba(60,200,120,.45)";
-  errorDiv.style.background = "rgba(60,200,120,.08)";
-  errorDiv.style.color = "#bff7d6";
-}
-
-}); }
 
   // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
   // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
