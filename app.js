@@ -3449,11 +3449,12 @@ profileContent.innerHTML = `
 
   // ✅ LOGICA SALVATAGGIO PROFILO const btnSaveDogDraft = document.getElementById("btnSaveDogDraft"); if (btnSaveDogDraft && isCreate) { btnSaveDogDraft.addEventListener("click", () => { const nameInput = document.getElementById("createDogName"); const breedInput = document.getElementById("createDogBreed"); const ageInput = document.getElementById("createDogAge"); const sexSelect = document.getElementById("createDogSex"); const bioInput = document.getElementById("createDogBio"); const errorDiv = document.getElementById("createDogErrors");
 
+const btnSaveDogDraft = document.getElementById("btnSaveDogDraft"); if (btnSaveDogDraft && isCreate) { btnSaveDogDraft.addEventListener("click", () => { const nameInput = document.getElementById("createDogName"); const breedInput = document.getElementById("createDogBreed"); const ageInput = document.getElementById("createDogAge"); const sexSelect = document.getElementById("createDogSex"); const errorDiv = document.getElementById("createDogErrors");
+
 const name = nameInput ? nameInput.value.trim() : "";
 const breed = breedInput ? breedInput.value.trim() : "";
 const age = ageInput ? ageInput.value : "";
 const sex = sexSelect ? sexSelect.value : "";
-const bio = bioInput ? bioInput.value.trim() : "";
 
 const errors = [];
 if (!name) errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
@@ -3461,7 +3462,6 @@ if (!breed) errors.push(state.lang === "it" ? "Razza mancante" : "Breed missing"
 if (!age) errors.push(state.lang === "it" ? "Età mancante" : "Age missing");
 if (!sex) errors.push(state.lang === "it" ? "Sesso mancante" : "Sex missing");
 
-// Controlla se la foto è stata caricata
 if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
   errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
 }
@@ -3474,7 +3474,6 @@ if (errors.length > 0) {
   return;
 }
 
-// Salva il profilo
 const newDogId = "dog_" + Date.now();
 const newDog = {
   id: newDogId,
@@ -3484,27 +3483,20 @@ const newDog = {
   sex: sex,
   img: state.createDogDraft.photoDataUrl,
   verified: false,
-  bio: bio || "",
+  bio: "",
   km: 0
 };
 
-// Aggiungi ai dogs
 if (!state.dogs) state.dogs = [];
 state.dogs.push(newDog);
 localStorage.setItem("dogs", JSON.stringify(state.dogs));
 
-// Reset draft
 state.createDogDraft = {};
 
-// ✅ DOPO IL SALVATAGGIO: apri subito la pagina profilo del DOG appena creato
-if (typeof openProfilePage === "function") {
-  openProfilePage(newDog);
-} else if (typeof setActiveView === "function") {
-  // fallback: se per qualche motivo non esiste openProfilePage
-  setActiveView("profile");
+if (typeof setActiveView === "function") {
+  setActiveView("swipe");
 }
 
-// Messaggio di successo
 if (typeof showToast === "function") {
   showToast(state.lang === "it" ? "✅ Profilo creato con successo!" : "✅ Profile created successfully!");
 } else {
