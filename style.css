@@ -723,7 +723,18 @@ body.story-open #storiesBar {
   box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(138,123,255,.18);
   margin-bottom:.9rem;
 }
-.pp-hero img{display:block;width:100%;aspect-ratio: 16/9;height:auto;object-fit:cover;object-position:center}
+
+.pp-hero img{
+  display:block;
+  width:100%;
+  aspect-ratio: 16/9;
+  height:auto;
+  object-fit:contain;        /* ✅ non taglia */
+  object-position:center;
+  background:#0b0b0f;        /* ✅ riempie il “vuoto” */
+  cursor:pointer;            /* ✅ cliccabile */
+}
+
 .pp-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.4rem 0 .7rem 0}
 .pp-name{font-size:1.5rem;font-weight:900;color:var(--violet-glow);margin:0}
 .pp-badges{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap}
