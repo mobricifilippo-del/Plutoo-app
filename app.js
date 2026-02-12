@@ -3447,8 +3447,6 @@ profileContent.innerHTML = `
     }
   }
 
-  // ✅ LOGICA SALVATAGGIO PROFILO const btnSaveDogDraft = document.getElementById("btnSaveDogDraft"); if (btnSaveDogDraft && isCreate) { btnSaveDogDraft.addEventListener("click", () => { const nameInput = document.getElementById("createDogName"); const breedInput = document.getElementById("createDogBreed"); const ageInput = document.getElementById("createDogAge"); const sexSelect = document.getElementById("createDogSex"); const bioInput = document.getElementById("createDogBio"); const errorDiv = document.getElementById("createDogErrors");
-
 const btnSaveDogDraft = document.getElementById("btnSaveDogDraft"); if (btnSaveDogDraft && isCreate) { btnSaveDogDraft.addEventListener("click", () => { const nameInput = document.getElementById("createDogName"); const breedInput = document.getElementById("createDogBreed"); const ageInput = document.getElementById("createDogAge"); const sexSelect = document.getElementById("createDogSex"); const errorDiv = document.getElementById("createDogErrors");
 
 const name = nameInput ? nameInput.value.trim() : "";
