@@ -719,9 +719,12 @@ body.story-open #storiesBar {
 }
 
 .pp-hero{
-  border-radius:16px;overflow:hidden;border:2px solid var(--violet);
+  border-radius:16px;
+  overflow:hidden;
+  border:2px solid var(--violet);
   box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(138,123,255,.18);
   margin-bottom:.9rem;
+  aspect-ratio:1/1;
 }
 
 .pp-hero img{
