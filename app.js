@@ -2795,6 +2795,7 @@ _db.collection("followers").doc(docId).set({
 }, { merge: true })
 .then(() => {
   console.log("FOLLOW Firestore OK:", docId);
+  
   // ✅ NOTIFICA (source of truth): follow
 const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
 _db.collection("notifications").doc(notifId).set({
@@ -2862,7 +2863,8 @@ if (!selfDogId) {
 
     const docId = `${String(selfDogId)}_${String(targetDogId)}`;
     _db.collection("followers").doc(docId).delete().catch((e) => {
-      // ✅ NOTIFICA: rimuovi follow
+      
+// ✅ NOTIFICA: rimuovi follow
 const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
 _db.collection("notifications").doc(notifId).delete().catch((e) => {
   console.error("unfollowDog notification delete:", e);
@@ -3231,13 +3233,35 @@ profileContent.innerHTML = `
     ${
       isCreate
         ? `
-        <div id="createDogPhotoEmpty" style="width:100%;aspect-ratio:16/9;background:#0b0b0f;"></div>
-
-<img
+        <img
   id="createDogPhotoPreview"
   alt=""
-  style="width:100%;aspect-ratio:16/9;object-fit:cover;object-position:center;background:#0b0b0f;display:none;cursor:pointer;"
+  style="width:100%;height:100%;object-fit:cover;object-position:center;background:#0b0b0f;display:none;cursor:pointer;"
 />
+
+<div id="createDogPhotoEmpty" style="padding:.9rem .9rem .7rem">
+  <div style="font-weight:900;font-size:1.05rem;margin-bottom:.35rem">
+    ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
+  </div>
+
+  <button id="btnPickCreateDogPhoto" type="button" class="btn accent" style="width:100%;justify-content:center">
+    ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
+  </button>
+
+  <button id="btnRemoveCreateDogPhoto" type="button" class="btn ghost" style="width:100%;justify-content:center;margin-top:.6rem;display:none">
+    🗑️ ${state.lang === "it" ? "Rimuovi foto profilo" : "Remove profile photo"}
+  </button>
+
+  <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
+
+  <div style="font-size:.9rem;opacity:.7;margin-top:.35rem">
+    ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
+  </div>
+
+  <div id="createDogPhotoFeedback" style="display:none;margin-top:.35rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:800;">
+    ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
+  </div>
+</div>
     `
     : `
       <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
@@ -3395,102 +3419,86 @@ profileContent.innerHTML = `
  // ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
 if (isCreate) {
   const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
+  const btnRemoveCreateDogPhoto = document.getElementById("btnRemoveCreateDogPhoto");
   const createDogPhotoInput = document.getElementById("createDogPhotoInput");
   const createDogPhotoFeedback = document.getElementById("createDogPhotoFeedback");
   const previewImg = document.getElementById("createDogPhotoPreview");
-  const emptyBox = document.getElementById("createDogPhotoEmpty"); // se esiste, ok; se no viene ignorato
+  const emptyBox = document.getElementById("createDogPhotoEmpty");
 
-  // ✅ helper: mostra/nasconde preview in modo safe (mai src="")
-  const setPreview = (dataUrl) => {
-    if (!previewImg) return;
+  // Stato iniziale (se esiste già una bozza con foto)
+  const existing = state.createDogDraft && state.createDogDraft.photoDataUrl;
+  if (existing && previewImg) {
+    previewImg.src = existing;
+    previewImg.style.display = "block";
+    if (emptyBox) emptyBox.style.display = "none";
+    if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
+    if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "flex";
+  } else {
+    if (previewImg) previewImg.style.display = "none";
+    if (emptyBox) emptyBox.style.display = "block";
+    if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
+    if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "none";
+  }
 
-    if (typeof dataUrl === "string" && dataUrl.trim()) {
-      previewImg.src = dataUrl;
-      previewImg.style.display = "block";
-      previewImg.style.cursor = "pointer";
-      if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
-      if (emptyBox) emptyBox.style.display = "none";
-    } else {
-      // IMPORTANTISSIMO: niente src vuoto (evita richiesta alla root)
-      previewImg.removeAttribute("src");
-      previewImg.style.display = "none";
-      if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
-      if (emptyBox) emptyBox.style.display = "block";
-    }
-  };
-
-  // ✅ bottone RIMUOVI (creato una sola volta)
-  const ensureRemoveBtn = () => {
-    if (!btnPickCreateDogPhoto) return;
-    if (document.getElementById("btnRemoveCreateDogPhoto")) return;
-
-    const rm = document.createElement("button");
-    rm.id = "btnRemoveCreateDogPhoto";
-    rm.type = "button";
-    rm.className = "btn ghost";
-    rm.style.width = "100%";
-    rm.style.justifyContent = "center";
-    rm.style.marginTop = ".5rem";
-    rm.textContent = state.lang === "it" ? "🗑️ Rimuovi foto profilo" : "🗑️ Remove profile photo";
-
-    rm.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      if (!state.createDogDraft) state.createDogDraft = {};
-      delete state.createDogDraft.photoDataUrl;
-
-      if (createDogPhotoInput) createDogPhotoInput.value = "";
-      setPreview("");
-    });
-
-    // lo metto sotto al bottone “Carica foto profilo”
-    btnPickCreateDogPhoto.parentNode.insertBefore(rm, btnPickCreateDogPhoto.nextSibling);
-  };
-
-  // init UI da stato draft (se già caricata prima)
-  try {
-    const existing = state.createDogDraft && state.createDogDraft.photoDataUrl;
-    setPreview(existing || "");
-  } catch (_) {}
-
-  ensureRemoveBtn();
-
+  // Click bottone -> picker
   if (btnPickCreateDogPhoto && createDogPhotoInput) {
-    // ✅ click su bottone = scegli file
     btnPickCreateDogPhoto.addEventListener("click", () => {
       createDogPhotoInput.click();
     });
+  }
 
-    // ✅ click su preview = sostituisci (apre picker)
-    if (previewImg) {
-      previewImg.addEventListener("click", () => {
-        createDogPhotoInput.click();
-      });
-    }
+  // Click foto preview -> picker (sostituzione)
+  if (previewImg && createDogPhotoInput) {
+    previewImg.addEventListener("click", () => {
+      createDogPhotoInput.click();
+    });
+  }
 
+  // Change file
+  if (createDogPhotoInput) {
     createDogPhotoInput.addEventListener("change", () => {
       const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        const dataUrl = e && e.target ? e.target.result : "";
-        if (!dataUrl) return;
+        const dataUrl = e.target.result;
 
         if (!state.createDogDraft) state.createDogDraft = {};
         state.createDogDraft.photoDataUrl = dataUrl;
 
-        setPreview(dataUrl);
-        ensureRemoveBtn();
+        if (previewImg) {
+          previewImg.src = dataUrl;
+          previewImg.style.display = "block";
+        }
+        if (emptyBox) emptyBox.style.display = "none";
+        if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
+        if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "flex";
       };
 
       reader.readAsDataURL(file);
     });
   }
-}
 
- const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
+  // Remove foto
+  if (btnRemoveCreateDogPhoto) {
+    btnRemoveCreateDogPhoto.addEventListener("click", () => {
+      if (!state.createDogDraft) state.createDogDraft = {};
+      state.createDogDraft.photoDataUrl = "";
+
+      if (previewImg) {
+        previewImg.removeAttribute("src");
+        previewImg.style.display = "none";
+      }
+      if (emptyBox) emptyBox.style.display = "block";
+      if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
+      btnRemoveCreateDogPhoto.style.display = "none";
+      if (createDogPhotoInput) createDogPhotoInput.value = "";
+    });
+  }
+}
+    
+const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
   btnSaveDogDraft0.parentNode.replaceChild(btnSaveDogDraft, btnSaveDogDraft0);
