@@ -3416,7 +3416,7 @@ profileContent.innerHTML = `
     }
   `;
 
- // ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
+// ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
 if (isCreate) {
   const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
   const btnRemoveCreateDogPhoto = document.getElementById("btnRemoveCreateDogPhoto");
@@ -3435,7 +3435,7 @@ if (isCreate) {
     if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "flex";
   } else {
     if (previewImg) previewImg.style.display = "none";
-    if (emptyBox) emptyBox.style.display = "block";
+    if (emptyBox) emptyBox.style.display = "flex"; // ✅ MODIFICA (era "block")
     if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
     if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "none";
   }
@@ -3493,8 +3493,8 @@ if (btnRemoveCreateDogPhoto) {
       previewImg.style.display = "none";
     }
 
-    // torna al box vuoto (usa block come nel tuo originale)
-    if (emptyBox) emptyBox.style.display = "block";
+    // torna al box vuoto (usa flex come nel layout vuoto)
+    if (emptyBox) emptyBox.style.display = "flex"; // ✅ MODIFICA (era "block")
 
     if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
     btnRemoveCreateDogPhoto.style.display = "none";
