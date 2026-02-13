@@ -3234,52 +3234,42 @@ profileContent.innerHTML = `
       isCreate
         ? `
         <img
-  id="createDogPhotoPreview"
-  alt=""
-  style="width:100%;height:100%;object-fit:cover;object-position:center;background:#0b0b0f;display:none;cursor:pointer;"
-/>
+          id="createDogPhotoPreview"
+          alt=""
+          style="width:100%;height:100%;object-fit:cover;object-position:center;background:#0b0b0f;display:none;cursor:pointer;"
+        />
 
- <div id="createDogPhotoEmpty" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.2rem">
-  <div style="font-weight:900;font-size:1.05rem;margin-bottom:.35rem">
-    ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
+        <div id="createDogPhotoEmpty" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.2rem">
+          <div style="font-weight:900;font-size:1.05rem;margin-bottom:.35rem">
+            ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
+          </div>
+
+          <button id="btnPickCreateDogPhoto" type="button" class="btn accent" style="width:100%;justify-content:center">
+            ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
+          </button>
+
+          <button id="btnRemoveCreateDogPhoto" type="button" class="btn ghost" style="width:100%;justify-content:center;margin-top:.6rem;display:none">
+            🗑️ ${state.lang === "it" ? "Rimuovi foto profilo" : "Remove profile photo"}
+          </button>
+
+          <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
+
+          <div style="font-size:.9rem;opacity:.7;margin-top:.35rem">
+            ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
+          </div>
+
+          <div id="createDogPhotoFeedback" style="display:none;margin-top:.35rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:800;">
+            ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
+          </div>
+        </div>
+        `
+        : `
+        <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        `
+    }
   </div>
-
-  <button id="btnPickCreateDogPhoto" type="button" class="btn accent" style="width:100%;justify-content:center">
-    ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
-  </button>
-
-  <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
-
-  <div style="font-size:.9rem;opacity:.7;margin-top:.35rem">
-    ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
-  </div>
-
-  <div id="createDogPhotoFeedback" style="display:none;margin-top:.35rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:800;">
-    ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
-  </div>
-</div>
-
-<button id="btnRemoveCreateDogPhoto" type="button" class="btn ghost" style="width:100%;justify-content:center;margin-top:.6rem;display:none">
-  🗑️ ${state.lang === "it" ? "Rimuovi foto profilo" : "Remove profile photo"}
-</button>
-
-  <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
-
-  <div style="font-size:.9rem;opacity:.7;margin-top:.35rem">
-    ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
-  </div>
-
-  <div id="createDogPhotoFeedback" style="display:none;margin-top:.35rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:800;">
-    ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
-  </div>
-</div>
-    `
-    : `
-      <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-    `
-}
-
-  </div>  <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.8rem">
+  
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.8rem">
     <div style="font-weight:900;font-size:1.15rem;line-height:1.2">
       ${
         isCreate
