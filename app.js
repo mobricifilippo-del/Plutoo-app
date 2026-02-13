@@ -3239,7 +3239,7 @@ profileContent.innerHTML = `
   style="width:100%;height:100%;object-fit:cover;object-position:center;background:#0b0b0f;display:none;cursor:pointer;"
 />
 
-<div id="createDogPhotoEmpty" style="padding:.9rem .9rem .7rem">
+ <div id="createDogPhotoEmpty" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.2rem">
   <div style="font-weight:900;font-size:1.05rem;margin-bottom:.35rem">
     ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
   </div>
