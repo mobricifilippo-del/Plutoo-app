@@ -3231,29 +3231,13 @@ profileContent.innerHTML = `
     ${
       isCreate
         ? `
-          <img
-            id="createDogPhotoPreview"
-            alt=""
-            style="width:100%;height:100%;object-fit:contain;object-position:center;background:#0b0b0f;display:block;cursor:pointer;"
-          /><div style="padding:.9rem .9rem .7rem">
-        <div style="font-weight:900;font-size:1.05rem;margin-bottom:.35rem">
-          ${state.lang === "it" ? "Carica la foto del tuo DOG" : "Upload your DOG photo"}
-        </div>
+        <div id="createDogPhotoEmpty" style="width:100%;aspect-ratio:16/9;background:#0b0b0f;"></div>
 
-        <button id="btnPickCreateDogPhoto" type="button" class="btn accent" style="width:100%;justify-content:center">
-          ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
-        </button>
-
-        <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
-
-        <div style="font-size:.9rem;opacity:.7;margin-top:.35rem">
-          ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
-        </div>
-
-        <div id="createDogPhotoFeedback" style="display:none;margin-top:.35rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:800;">
-          ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
-        </div>
-      </div>
+<img
+  id="createDogPhotoPreview"
+  alt=""
+  style="width:100%;aspect-ratio:16/9;object-fit:cover;object-position:center;background:#0b0b0f;display:none;cursor:pointer;"
+/>
     `
     : `
       <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
