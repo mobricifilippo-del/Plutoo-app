@@ -3480,22 +3480,28 @@ if (isCreate) {
     });
   }
 
-  // Remove foto
-  if (btnRemoveCreateDogPhoto) {
-    btnRemoveCreateDogPhoto.addEventListener("click", () => {
-      if (!state.createDogDraft) state.createDogDraft = {};
-      state.createDogDraft.photoDataUrl = "";
+// Remove foto
+if (btnRemoveCreateDogPhoto) {
+  btnRemoveCreateDogPhoto.addEventListener("click", () => {
+    if (!state.createDogDraft) state.createDogDraft = {};
 
-      if (previewImg) {
-        previewImg.removeAttribute("src");
-        previewImg.style.display = "none";
-      }
-      if (emptyBox) emptyBox.style.display = "block";
-      if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
-      btnRemoveCreateDogPhoto.style.display = "none";
-      if (createDogPhotoInput) createDogPhotoInput.value = "";
-    });
-  }
+    // invece di mettere stringa vuota: pulisco davvero
+    if ("photoDataUrl" in state.createDogDraft) delete state.createDogDraft.photoDataUrl;
+
+    if (previewImg) {
+      previewImg.removeAttribute("src");
+      previewImg.style.display = "none";
+    }
+
+    // torna al box vuoto (usa block come nel tuo originale)
+    if (emptyBox) emptyBox.style.display = "block";
+
+    if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
+    btnRemoveCreateDogPhoto.style.display = "none";
+    if (createDogPhotoInput) createDogPhotoInput.value = "";
+  });
+
+}
 }
     
 const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
