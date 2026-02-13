@@ -3248,9 +3248,20 @@ profileContent.innerHTML = `
     ${state.lang === "it" ? "📸 Carica foto profilo" : "📸 Upload profile photo"}
   </button>
 
-  <button id="btnRemoveCreateDogPhoto" type="button" class="btn ghost" style="width:100%;justify-content:center;margin-top:.6rem;display:none">
-    🗑️ ${state.lang === "it" ? "Rimuovi foto profilo" : "Remove profile photo"}
-  </button>
+  <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
+
+  <div style="font-size:.9rem;opacity:.7;margin-top:.35rem">
+    ${state.lang === "it" ? "Solo foto DOG. No persone." : "Only dog photos. No people."}
+  </div>
+
+  <div id="createDogPhotoFeedback" style="display:none;margin-top:.35rem;font-size:.9rem;color:var(--gold,#CDA434);font-weight:800;">
+    ${state.lang === "it" ? "Foto caricata ✅" : "Photo uploaded ✅"}
+  </div>
+</div>
+
+<button id="btnRemoveCreateDogPhoto" type="button" class="btn ghost" style="width:100%;justify-content:center;margin-top:.6rem;display:none">
+  🗑️ ${state.lang === "it" ? "Rimuovi foto profilo" : "Remove profile photo"}
+</button>
 
   <input type="file" id="createDogPhotoInput" accept="image/*" style="display:none" />
 
