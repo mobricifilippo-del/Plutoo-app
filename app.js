@@ -3190,7 +3190,7 @@ window.openProfilePage = (d) => {
 
   const selfieKey = `selfieImage_${d.id}`;
   const selfieStored = localStorage.getItem(selfieKey);
-  const selfieSrc = selfieStored || d.img;
+  const selfieSrc = selfieStored || "./plutoo-icon-192.png";
 
   const dogStories =
     (window.StoriesState && Array.isArray(window.StoriesState.stories))
