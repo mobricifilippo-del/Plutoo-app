@@ -3432,17 +3432,19 @@ if (isCreate) {
   // ✅ FIX: metto il tasto Rimuovi dentro la hero (non dentro emptyBox che copre la foto)
   try {
     const heroEl = profileContent.querySelector(".pp-hero");
-    if (heroEl) {
+    if (heroEl && btnRemoveCreateDogPhoto) {
       heroEl.style.position = "relative";
-      if (btnRemoveCreateDogPhoto && btnRemoveCreateDogPhoto.parentNode) {
-        heroEl.appendChild(btnRemoveCreateDogPhoto);
-        btnRemoveCreateDogPhoto.style.position = "absolute";
-        btnRemoveCreateDogPhoto.style.left = "12px";
-        btnRemoveCreateDogPhoto.style.bottom = "12px";
-        btnRemoveCreateDogPhoto.style.width = "auto";
-        btnRemoveCreateDogPhoto.style.marginTop = "0";
-        btnRemoveCreateDogPhoto.style.zIndex = "60";
-      }
+
+      // ✅ sposta SEMPRE il bottone nella hero
+      // (così non sparisce quando #createDogPhotoEmpty viene nascosto)
+      heroEl.appendChild(btnRemoveCreateDogPhoto);
+
+      btnRemoveCreateDogPhoto.style.position = "absolute";
+      btnRemoveCreateDogPhoto.style.left = "12px";
+      btnRemoveCreateDogPhoto.style.bottom = "12px";
+      btnRemoveCreateDogPhoto.style.width = "auto";
+      btnRemoveCreateDogPhoto.style.marginTop = "0";
+      btnRemoveCreateDogPhoto.style.zIndex = "60";
     }
   } catch (_) {}
 
