@@ -5134,16 +5134,17 @@ async function init(){
       }
 
       preview.dataset.hasMedia = "true";
-      const nextBtn = $("nextToCustomize");
-if (nextBtn) { nextBtn.disabled = false; nextBtn.classList.remove("hidden"); }
-    };
 
-    if (nextBtn) {
+const nextBtn = $("nextToCustomize");
+if (nextBtn) {
+  nextBtn.disabled = false;
+  nextBtn.classList.remove("hidden");
+
   nextBtn.onclick = () => {
     $("uploadStoryStep1")?.classList.remove("active");
     $("uploadStoryStep2")?.classList.add("active");
   };
-    }
+}
 
     reader.onerror = function () {
       alert("Errore nel caricamento del file. Riprova.");
