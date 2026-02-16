@@ -3611,15 +3611,6 @@ if (isCreate) {
       });
     }
 
-    const gal = profileContent.querySelectorAll(".gallery img");
-    if (gal && gal.length) {
-      gal.forEach((im) => {
-        im.addEventListener("click", () => {
-          openPlutooImageViewer(im.getAttribute("src"));
-        });
-      });
-    }
-
     const selfieEl = profileContent.querySelector(".selfie .img");
     if (selfieEl) {
       selfieEl.addEventListener("click", () => {
