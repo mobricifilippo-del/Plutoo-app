@@ -5066,7 +5066,7 @@ async function init(){
     openStoryViewerFromBar(dogId);
   });
 
-  // ===== STORIES — upload, filtri, pubblicazione =====
+ // ===== STORIES — upload, filtri, pubblicazione =====
   function openUploadModal() {
     if (!StoriesState.canUploadStory()) {
       showToast(state.lang==="it"
@@ -5146,6 +5146,8 @@ if (nextBtn) {
   };
 }
 
+    }; // ✅ CHIUSURA MANCANTE: chiude reader.onload
+
     reader.onerror = function () {
       alert("Errore nel caricamento del file. Riprova.");
       StoriesState.uploadedFile = null;
@@ -5154,7 +5156,7 @@ if (nextBtn) {
       $("nextToCustomize")?.classList.add("hidden");
       const nextBtn = $("nextToCustomize");
 if (nextBtn) nextBtn.disabled = true;
-    };
+    }; // ✅ CHIUSURA MANCANTE: chiude reader.onerror
 
     reader.readAsDataURL(file);
   }
