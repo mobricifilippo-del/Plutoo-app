@@ -3337,12 +3337,7 @@ window.openProfilePage = (d) => {
     ${storiesHTML}
 
     <h3 class="section-title">${state.lang === "it" ? "Galleria" : "Gallery"}</h3>
-    <div class="gallery">
-      <div class="ph"><img src="${d.img}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;"></div>
-      <div class="ph"><img src="${d.img}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;"></div>
-      <div class="ph"><img src="${d.img}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;"></div>
-      <div class="ph"><button class="add-photo">+ ${state.lang === "it" ? "Aggiungi" : "Add"}</button></div>
-    </div>
+    <div class="gallery" id="dogGallery"></div>
 
     <h3 class="section-title">Selfie</h3>
     <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
