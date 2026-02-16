@@ -3913,35 +3913,34 @@ if (btnSaveDogDraft0 && isCreate) {
         if (img.dataset && img.dataset.lbBound === "1") return;
         if (img.dataset) img.dataset.lbBound = "1";
 
-        img.addEventListener("click", () => {
-          const lb = document.createElement("div");
-          lb.className = "lightbox";
-          lb.innerHTML = `           ✕ ❤️ 0 `;
-          document.body.appendChild(lb);
+        img.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  ev.stopPropagation();
 
-          const closeBtn = qs(".close", lb);
-          if (closeBtn) closeBtn.onclick = () => lb.remove();
-          lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
+  const src = img.getAttribute("src");
+  if (!src) return;
 
-          const likeBtn = qs(".lightbox-like-btn", lb);
-          if (likeBtn) {
-            const refresh = () => {
-              const liked = isDogPhotoLiked(d.id);
-              const count = liked ? 1 : 0;
-              likeBtn.textContent = "❤️ " + count;
-            };
+  // evita overlay doppi
+  const old = document.querySelector(".lightbox");
+  if (old && old.parentNode) old.parentNode.removeChild(old);
 
-            likeBtn.onclick = (ev) => {
-              ev.stopPropagation();
-              togglePhotoLike(d.id);
-              refresh();
-              updatePhotoLikeUI(d.id);
-            };
+  const lb = document.createElement("div");
+  lb.className = "lightbox";
 
-            refresh();
-          }
-        });
-      });
+  lb.innerHTML = `
+    <button type="button" class="close" aria-label="Close">✕</button>
+    <img class="lightbox-img" src="${src}" alt="">
+  `;
+
+  document.body.appendChild(lb);
+
+  const closeBtn = qs(".close", lb);
+  if (closeBtn) closeBtn.onclick = () => lb.remove();
+
+  lb.addEventListener("click", (e) => {
+    if (e.target === lb) lb.remove();
+  });
+});
 
       // --- DOCS: apertura file picker + salvataggio stato ---
       // ✅ bind-once per docs: se già presente input nel profilo, non crearne altri
