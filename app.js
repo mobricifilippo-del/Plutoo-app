@@ -3227,7 +3227,7 @@ window.openProfilePage = (d) => {
   const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
-profileContent.innerHTML = `
+ profileContent.innerHTML = `
 
   <div class="pp-hero">
     ${
@@ -3264,7 +3264,7 @@ profileContent.innerHTML = `
         </div>
         `
         : `
-        <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        <img src="${heroImg}" alt="${d.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;">
         `
     }
   </div>
@@ -3338,15 +3338,15 @@ profileContent.innerHTML = `
 
     <h3 class="section-title">${state.lang === "it" ? "Galleria" : "Gallery"}</h3>
     <div class="gallery">
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><img src="${d.img}" alt=""></div>
-      <div class="ph"><img src="${d.img}" alt=""></div>
+      <div class="ph"><img src="${d.img}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;"></div>
+      <div class="ph"><img src="${d.img}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;"></div>
+      <div class="ph"><img src="${d.img}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;"></div>
       <div class="ph"><button class="add-photo">+ ${state.lang === "it" ? "Aggiungi" : "Add"}</button></div>
     </div>
 
     <h3 class="section-title">Selfie</h3>
     <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
-      <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie">
+      <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie" style="cursor:pointer;">
       <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
       <div class="over">
         <button id="unlockSelfie" class="btn pill">${state.lang === "it" ? "Sblocca selfie" : "Unlock selfie"}</button>
@@ -3398,11 +3398,14 @@ profileContent.innerHTML = `
   ${
     (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
       ? `
-        <button id="btnProfileSettings" class="btn accent">
+        <button id="btnProfileSettings" class="btn accent" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Impostazioni profilo" : "Profile settings"}
         </button>
-        <button id="btnEditSocial" class="btn outline">
+        <button id="btnEditSocial" class="btn outline" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Modifica social" : "Edit socials"}
+        </button>
+        <button id="btnDeleteAccount" class="btn ghost" style="position:relative;z-index:50;">
+          ${state.lang === "it" ? "Elimina account" : "Delete account"}
         </button>
       `
       : `
@@ -3426,12 +3429,29 @@ if (isCreate) {
   const previewImg = document.getElementById("createDogPhotoPreview");
   const emptyBox = document.getElementById("createDogPhotoEmpty");
 
+  // ✅ FIX: metto il tasto Rimuovi dentro la hero (non dentro emptyBox che copre la foto)
+  try {
+    const heroEl = profileContent.querySelector(".pp-hero");
+    if (heroEl) {
+      heroEl.style.position = "relative";
+      if (btnRemoveCreateDogPhoto && btnRemoveCreateDogPhoto.parentNode) {
+        heroEl.appendChild(btnRemoveCreateDogPhoto);
+        btnRemoveCreateDogPhoto.style.position = "absolute";
+        btnRemoveCreateDogPhoto.style.left = "12px";
+        btnRemoveCreateDogPhoto.style.bottom = "12px";
+        btnRemoveCreateDogPhoto.style.width = "auto";
+        btnRemoveCreateDogPhoto.style.marginTop = "0";
+        btnRemoveCreateDogPhoto.style.zIndex = "60";
+      }
+    }
+  } catch (_) {}
+
   // Stato iniziale (se esiste già una bozza con foto)
   const existing = state.createDogDraft && state.createDogDraft.photoDataUrl;
   if (existing && previewImg) {
     previewImg.src = existing;
     previewImg.style.display = "block";
-    if (emptyBox) emptyBox.style.display = "flex";
+    if (emptyBox) emptyBox.style.display = "none"; // ✅ FIX: non deve coprire la foto
     if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
     if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
   } else {
@@ -3472,7 +3492,7 @@ if (isCreate) {
           previewImg.src = dataUrl;
           previewImg.style.display = "block";
         }
-        if (emptyBox) emptyBox.style.display = "flex";
+        if (emptyBox) emptyBox.style.display = "none"; // ✅ FIX: non coprire la foto
         if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
         if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
       };
@@ -3494,7 +3514,7 @@ if (isCreate) {
         previewImg.style.display = "none";
       }
 
-      // torna al box (resta visibile perché contiene i controlli)
+      // torna al box
       if (emptyBox) emptyBox.style.display = "flex";
 
       if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
@@ -3503,7 +3523,131 @@ if (isCreate) {
     });
   }
 }
-    
+
+// ✅ VIEWER IMMAGINI (sempre con chiusura)
+(function () {
+  function openPlutooImageViewer(src) {
+    if (!src) return;
+
+    // se esiste già, rimuovi
+    const old = document.getElementById("plutooImageViewer");
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+
+    const wrap = document.createElement("div");
+    wrap.id = "plutooImageViewer";
+    wrap.style.position = "fixed";
+    wrap.style.left = "0";
+    wrap.style.top = "0";
+    wrap.style.right = "0";
+    wrap.style.bottom = "0";
+    wrap.style.background = "rgba(0,0,0,.82)";
+    wrap.style.zIndex = "99999";
+    wrap.style.display = "flex";
+    wrap.style.alignItems = "center";
+    wrap.style.justifyContent = "center";
+    wrap.style.padding = "18px";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "";
+    img.style.maxWidth = "100%";
+    img.style.maxHeight = "100%";
+    img.style.objectFit = "contain";
+    img.style.borderRadius = "16px";
+    img.style.background = "#0b0b0f";
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "✕";
+    close.style.position = "fixed";
+    close.style.top = "14px";
+    close.style.left = "14px";
+    close.style.zIndex = "100000";
+    close.style.border = "0";
+    close.style.borderRadius = "999px";
+    close.style.padding = "10px 14px";
+    close.style.fontSize = "18px";
+    close.style.fontWeight = "900";
+    close.style.background = "rgba(20,20,20,.8)";
+    close.style.color = "#fff";
+
+    close.addEventListener("click", () => {
+      if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+    });
+
+    wrap.addEventListener("click", (e) => {
+      if (e.target === wrap) {
+        if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+      }
+    });
+
+    wrap.appendChild(img);
+    document.body.appendChild(wrap);
+    document.body.appendChild(close);
+
+    // chiudendo rimuovo anche il bottone
+    wrap.addEventListener("remove", () => {
+      if (close && close.parentNode) close.parentNode.removeChild(close);
+    });
+    close.addEventListener("click", () => {
+      if (close && close.parentNode) close.parentNode.removeChild(close);
+    });
+  }
+
+  // CREATE: preview cliccabile apre viewer (oltre al picker già esistente)
+  if (isCreate) {
+    const p = document.getElementById("createDogPhotoPreview");
+    if (p) {
+      p.addEventListener("click", () => {
+        if (p.getAttribute("src")) openPlutooImageViewer(p.getAttribute("src"));
+      });
+    }
+  } else {
+    // PROFILO: hero img / gallery / selfie cliccabili
+    const heroImgEl = profileContent.querySelector(".pp-hero img");
+    if (heroImgEl) {
+      heroImgEl.addEventListener("click", () => {
+        openPlutooImageViewer(heroImgEl.getAttribute("src"));
+      });
+    }
+
+    const gal = profileContent.querySelectorAll(".gallery img");
+    if (gal && gal.length) {
+      gal.forEach((im) => {
+        im.addEventListener("click", () => {
+          openPlutooImageViewer(im.getAttribute("src"));
+        });
+      });
+    }
+
+    const selfieEl = profileContent.querySelector(".selfie .img");
+    if (selfieEl) {
+      selfieEl.addEventListener("click", () => {
+        openPlutooImageViewer(selfieEl.getAttribute("src"));
+      });
+    }
+
+    // Elimina account (locale)
+    const btnDel = document.getElementById("btnDeleteAccount");
+    if (btnDel) {
+      btnDel.addEventListener("click", () => {
+        const ok = confirm(state.lang === "it"
+          ? "Eliminare l'account LOCALE? (Cancella i dati salvati su questo dispositivo)"
+          : "Delete LOCAL account? (Clears data stored on this device)");
+        if (!ok) return;
+
+        try {
+          localStorage.removeItem("dogs");
+          localStorage.removeItem("plutoo_has_dog");
+          localStorage.removeItem("plutoo_dog_id");
+          localStorage.removeItem("plutoo_readonly");
+        } catch (_) {}
+        location.reload();
+      });
+    }
+  }
+})();
+
 const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
