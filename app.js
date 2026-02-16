@@ -5088,10 +5088,11 @@ async function init(){
     const file = e.target.files[0];
     if (!file) return;
 
-    const preview = $("storyPreview");
+    const preview = $("uploadPreview");
     if (!preview) return;
 
     preview.innerHTML = "";
+    preview.classList.remove("hidden");
     preview.dataset.type = "";
     preview.dataset.hasMedia = "false";
 
@@ -5140,6 +5141,7 @@ async function init(){
       alert("Errore nel caricamento del file. Riprova.");
       StoriesState.uploadedFile = null;
       preview.innerHTML = "";
+      preview.classList.add("hidden");
       $("nextToCustomize")?.classList.add("hidden");
     };
 
@@ -5187,7 +5189,7 @@ async function init(){
     return;
   }
     
-    const preview = $("storyPreview");
+    const preview = $("uploadPreview");
     if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
       alert(state.lang==="it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
       return;
