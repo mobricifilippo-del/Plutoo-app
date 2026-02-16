@@ -3914,34 +3914,29 @@ if (btnSaveDogDraft0 && isCreate) {
         if (img.dataset) img.dataset.lbBound = "1";
 
         img.addEventListener("click", (ev) => {
-  ev.preventDefault();
-  ev.stopPropagation();
+          ev.preventDefault();
+          ev.stopPropagation();
 
-  const src = img.getAttribute("src");
-  if (!src) return;
+          const src = img.getAttribute("src");
+          if (!src) return;
 
-  // evita overlay doppi
-  const old = document.querySelector(".lightbox");
-  if (old && old.parentNode) old.parentNode.removeChild(old);
+          // evita overlay doppi
+          const old = document.querySelector(".lightbox");
+          if (old && old.parentNode) old.parentNode.removeChild(old);
 
-  const lb = document.createElement("div");
-  lb.className = "lightbox";
+          const lb = document.createElement("div");
+          lb.className = "lightbox";
+          lb.innerHTML = `
+            <button type="button" class="close" aria-label="Close">✕</button>
+            <img class="lightbox-img" src="${src}" alt="">
+          `;
+          document.body.appendChild(lb);
 
-  lb.innerHTML = `
-    <button type="button" class="close" aria-label="Close">✕</button>
-    <img class="lightbox-img" src="${src}" alt="">
-  `;
-
-  document.body.appendChild(lb);
-
-  const closeBtn = qs(".close", lb);
-  if (closeBtn) closeBtn.onclick = () => lb.remove();
-
-  lb.addEventListener("click", (e) => {
-    if (e.target === lb) lb.remove();
-  }
-  });
-});
+          const closeBtn = qs(".close", lb);
+          if (closeBtn) closeBtn.onclick = () => lb.remove();
+          lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
+        });
+      });
 
       // --- DOCS: apertura file picker + salvataggio stato ---
       // ✅ bind-once per docs: se già presente input nel profilo, non crearne altri
