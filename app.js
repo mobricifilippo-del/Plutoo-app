@@ -5134,8 +5134,16 @@ async function init(){
       }
 
       preview.dataset.hasMedia = "true";
-      $("nextToCustomize")?.classList.remove("hidden");
+      const nextBtn = $("nextToCustomize");
+if (nextBtn) { nextBtn.disabled = false; nextBtn.classList.remove("hidden"); }
     };
+
+    if (nextBtn) {
+  nextBtn.onclick = () => {
+    $("uploadStoryStep1")?.classList.remove("active");
+    $("uploadStoryStep2")?.classList.add("active");
+  };
+    }
 
     reader.onerror = function () {
       alert("Errore nel caricamento del file. Riprova.");
@@ -5143,6 +5151,8 @@ async function init(){
       preview.innerHTML = "";
       preview.classList.add("hidden");
       $("nextToCustomize")?.classList.add("hidden");
+      const nextBtn = $("nextToCustomize");
+if (nextBtn) nextBtn.disabled = true;
     };
 
     reader.readAsDataURL(file);
