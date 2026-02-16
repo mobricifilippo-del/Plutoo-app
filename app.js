@@ -5067,117 +5067,175 @@ async function init(){
   });
 
  // ===== STORIES — upload, filtri, pubblicazione =====
-  function openUploadModal() {
-    if (!StoriesState.canUploadStory()) {
-      showToast(state.lang==="it"
-        ? "Limite giornaliero Stories raggiunto"
-        : "Daily stories limit reached");
-      return;
+function pruneStories24h() {
+  try {
+    if (!window.StoriesState || !Array.isArray(StoriesState.stories)) return;
+    const now = Date.now();
+    let changed = false;
+
+    StoriesState.stories.forEach(s => {
+      if (!s || !Array.isArray(s.media)) return;
+      const before = s.media.length;
+      s.media = s.media.filter(m => {
+        if (!m) return false;
+        const exp = typeof m.expiresAt === "number" ? m.expiresAt : (typeof m.timestamp === "number" ? (m.timestamp + 24 * 60 * 60 * 1000) : 0);
+        return exp > now;
+      });
+      if (s.media.length !== before) changed = true;
+    });
+
+    // rimuovi storie vuote
+    const beforeStories = StoriesState.stories.length;
+    StoriesState.stories = StoriesState.stories.filter(s => s && Array.isArray(s.media) && s.media.length > 0);
+    if (StoriesState.stories.length !== beforeStories) changed = true;
+
+    if (changed && typeof StoriesState.saveStories === "function") StoriesState.saveStories();
+  } catch (e) {}
+}
+
+function resetUploadModalUI() {
+  const step1 = $("uploadStoryStep1");
+  const step2 = $("uploadStoryStep2");
+  if (step1) step1.classList.add("active");
+  if (step2) step2.classList.remove("active");
+
+  const preview = $("uploadPreview");
+  if (preview) {
+    preview.innerHTML = "";
+    preview.classList.add("hidden");
+    preview.dataset.type = "";
+    preview.dataset.hasMedia = "false";
+  }
+
+  const nextBtn = $("nextToCustomize");
+  if (nextBtn) {
+    nextBtn.disabled = true;
+  }
+
+  const fileInput = $("storyFileInput");
+  if (fileInput) fileInput.value = "";
+
+  if (window.StoriesState) {
+    StoriesState.uploadedFile = null;
+    StoriesState.selectedFilter = StoriesState.selectedFilter || "none";
+    StoriesState.selectedMusic = StoriesState.selectedMusic || "";
+  }
+}
+
+function openUploadModal() {
+  pruneStories24h();
+
+  if (!StoriesState.canUploadStory()) {
+    showToast(state.lang === "it"
+      ? "Limite giornaliero Stories raggiunto"
+      : "Daily stories limit reached");
+    return;
+  }
+
+  resetUploadModalUI();
+  $("uploadStoryModal")?.classList.remove("hidden");
+  document.body.classList.add("noscroll");
+}
+
+function closeUploadModal() {
+  $("uploadStoryModal")?.classList.add("hidden");
+  document.body.classList.remove("noscroll");
+  resetUploadModalUI();
+}
+
+function handleFileSelect(e) {
+  const file = e && e.target ? e.target.files[0] : null;
+  if (!file) return;
+
+  const preview = $("uploadPreview");
+  if (!preview) return;
+
+  preview.innerHTML = "";
+  preview.classList.remove("hidden");
+  preview.dataset.type = "";
+  preview.dataset.hasMedia = "false";
+
+  const isImage = file.type && file.type.startsWith("image/");
+  const isVideo = file.type && file.type.startsWith("video/");
+
+  if (!isImage && !isVideo) {
+    alert("Formato non supportato. Usa solo foto o video.");
+    return;
+  }
+
+  if (isImage && file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
+    alert("Foto troppo grande. Riduci la dimensione e riprova.");
+    return;
+  }
+  if (isVideo && file.size > STORIES_CONFIG.MAX_VIDEO_SIZE) {
+    alert("Video troppo grande. Riduci la durata/dimensione e riprova.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    const base64 = event.target.result;
+
+    StoriesState.uploadedFile = {
+      type: isImage ? "image" : "video",
+      url: base64,
+      mime: file.type,
+      size: file.size
+    };
+
+    if (isImage) {
+      preview.innerHTML = `<img src="${base64}" alt="Story" />`;
+      preview.dataset.type = "image";
+    } else {
+      preview.innerHTML = `<video src="${base64}" controls playsinline muted></video>`;
+      preview.dataset.type = "video";
     }
-    $("uploadStoryModal")?.classList.remove("hidden");
-    document.body.classList.add("noscroll");
-  }
 
-  function closeUploadModal() {
-    $("uploadStoryModal")?.classList.add("hidden");
-    document.body.classList.remove("noscroll");
-    $("storyFileInput").value = "";
-  }
+    preview.dataset.hasMedia = "true";
 
-  function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+    const nextBtn = $("nextToCustomize");
+    if (nextBtn) nextBtn.disabled = false;
+  };
 
-    const preview = $("uploadPreview");
-    if (!preview) return;
+  reader.onerror = function () {
+    alert("Errore nel caricamento del file. Riprova.");
+    StoriesState.uploadedFile = null;
 
     preview.innerHTML = "";
-    preview.classList.remove("hidden");
+    preview.classList.add("hidden");
     preview.dataset.type = "";
     preview.dataset.hasMedia = "false";
 
-    const isImage = file.type.startsWith("image/");
-    const isVideo = file.type.startsWith("video/");
-
-    if (!isImage && !isVideo) {
-      alert("Formato non supportato. Usa solo foto o video.");
-      return;
-    }
-
-    if (isImage && file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
-      alert("Foto troppo grande. Riduci la dimensione e riprova.");
-      return;
-    }
-    if (isVideo && file.size > STORIES_CONFIG.MAX_VIDEO_SIZE) {
-      alert("Video troppo grande. Riduci la durata/dimensione e riprova.");
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function (event) {
-      const base64 = event.target.result;
-
-      StoriesState.uploadedFile = {
-        type: isImage ? "image" : "video",
-        url: base64,
-        mime: file.type,
-        size: file.size
-      };
-
-      if (isImage) {
-        preview.innerHTML = `<img src="${base64}" alt="Story" />`;
-        preview.dataset.type = "image";
-      } else {
-        preview.innerHTML = `<video src="${base64}" controls playsinline muted></video>`;
-        preview.dataset.type = "video";
-      }
-
-      preview.dataset.hasMedia = "true";
-
-const nextBtn = $("nextToCustomize");
-if (nextBtn) {
-  nextBtn.disabled = false;
-  nextBtn.classList.remove("hidden");
-
-  nextBtn.onclick = () => {
-    $("uploadStoryStep1")?.classList.remove("active");
-    $("uploadStoryStep2")?.classList.add("active");
+    const nextBtn = $("nextToCustomize");
+    if (nextBtn) nextBtn.disabled = true;
   };
+
+  reader.readAsDataURL(file);
 }
 
-    }; // ✅ CHIUSURA MANCANTE: chiude reader.onload
-
-    reader.onerror = function () {
-      alert("Errore nel caricamento del file. Riprova.");
-      StoriesState.uploadedFile = null;
-      preview.innerHTML = "";
-      preview.classList.add("hidden");
-      $("nextToCustomize")?.classList.add("hidden");
-      const nextBtn = $("nextToCustomize");
-if (nextBtn) nextBtn.disabled = true;
-    }; // ✅ CHIUSURA MANCANTE: chiude reader.onerror
-
-    reader.readAsDataURL(file);
-  }
-
-  function showCustomizeStep() {
-  const step1 = $("uploadStoryStep1") || $("uploadStep");
-  const step2 = $("uploadStoryStep2") || $("customizeStep");
+function showCustomizeStep() {
+  const step1 = $("uploadStoryStep1");
+  const step2 = $("uploadStoryStep2");
   if (!step1 || !step2) return;
 
-  // modello "active" (come nel tuo HTML)
   step1.classList.remove("active");
   step2.classList.add("active");
-  }
+}
 
-  function showUploadStep() {
-    $("customizeStep").classList.add("hidden");
-    $("uploadStep").classList.remove("hidden");
-  }
+function showUploadStep() {
+  const step1 = $("uploadStoryStep1");
+  const step2 = $("uploadStoryStep2");
+  if (!step1 || !step2) return;
 
-  function setupFiltersGrid() {
-    const filterButtons = qa(".filter-chip", $("filtersGrid"));
+  step2.classList.remove("active");
+  step1.classList.add("active");
+}
+
+function setupFiltersGrid() {
+  const filtersGrid = $("filtersGrid");
+  if (filtersGrid) {
+    const filterButtons = qa(".filter-chip", filtersGrid);
     filterButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         filterButtons.forEach(b => b.classList.remove("active"));
@@ -5185,8 +5243,11 @@ if (nextBtn) nextBtn.disabled = true;
         StoriesState.selectedFilter = btn.dataset.filter || "none";
       });
     });
+  }
 
-    const musicButtons = qa(".music-chip", $("musicGrid"));
+  const musicGrid = $("musicGrid");
+  if (musicGrid) {
+    const musicButtons = qa(".music-chip", musicGrid);
     musicButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         musicButtons.forEach(b => b.classList.remove("active"));
@@ -5196,7 +5257,16 @@ if (nextBtn) nextBtn.disabled = true;
     });
   }
 
-  function publishStory() {
+  // fallback: select (nel tuo HTML c’è storyMusicSelect)
+  const musicSelect = $("storyMusicSelect");
+  if (musicSelect) {
+    musicSelect.onchange = () => {
+      StoriesState.selectedMusic = musicSelect.value || "";
+    };
+  }
+}
+
+function publishStory() {
   // 🔒 VETRINA: blocca pubblicazione story
   if (window.PLUTOO_READONLY) {
     const msg = state.lang === "it"
@@ -5206,51 +5276,88 @@ if (nextBtn) nextBtn.disabled = true;
     else alert(msg);
     return;
   }
-    
-    const preview = $("uploadPreview");
-    if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
-      alert(state.lang==="it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
-      return;
-    }
 
-    const userId = "currentUser";
-    let userStory = StoriesState.stories.find(s => s.userId === userId);
-    if (!userStory) {
-      userStory = {
-        userId,
-        userName: "You",
-        avatar: "plutoo-icon-192.png",
-        verified: false,
-        media: []
-      };
-      StoriesState.stories.unshift(userStory);
-    }
+  pruneStories24h();
 
-    const newMedia = {
-      id: `m_${Date.now()}`,
-      type: StoriesState.uploadedFile.type,
-      url: StoriesState.uploadedFile.url,
-      timestamp: Date.now(),
-      filter: StoriesState.selectedFilter || "none",
-      music: StoriesState.selectedMusic || "",
-      viewed: false,
-      privacy: "public"
-    };
-
-    userStory.media.push(newMedia);
-    StoriesState.saveStories();
-
-    StoriesState.uploadedFile = null;
-    StoriesState.selectedFilter = "none";
-    StoriesState.selectedMusic = "";
-
-    closeUploadModal();
-    renderStoriesBar();
-
-    showToast(state.lang==="it" ? "Story pubblicata!" : "Story published!");
+  const preview = $("uploadPreview");
+  if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
+    alert(state.lang === "it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
+    return;
   }
 
-  function showToast(msg, type = "success") {
+  const userId = "currentUser";
+  let userStory = StoriesState.stories.find(s => s.userId === userId);
+  if (!userStory) {
+    userStory = {
+      userId,
+      userName: "You",
+      avatar: "plutoo-icon-192.png",
+      verified: false,
+      media: []
+    };
+    StoriesState.stories.unshift(userStory);
+  }
+
+  const now = Date.now();
+  const newMedia = {
+    id: `m_${now}`,
+    type: StoriesState.uploadedFile.type,
+    url: StoriesState.uploadedFile.url,
+    timestamp: now,
+    expiresAt: now + 24 * 60 * 60 * 1000,
+    filter: StoriesState.selectedFilter || "none",
+    music: StoriesState.selectedMusic || "",
+    viewed: false,
+    privacy: "public"
+  };
+
+  userStory.media.push(newMedia);
+
+  if (typeof StoriesState.saveStories === "function") StoriesState.saveStories();
+
+  StoriesState.uploadedFile = null;
+  StoriesState.selectedFilter = "none";
+  StoriesState.selectedMusic = "";
+
+  closeUploadModal();
+  if (typeof renderStoriesBar === "function") renderStoriesBar();
+
+  showToast(state.lang === "it" ? "Story pubblicata!" : "Story published!");
+}
+
+(function bindUploadStoryModalOnce() {
+  const modal = $("uploadStoryModal");
+  if (!modal) return;
+  if (modal.dataset && modal.dataset.bound === "1") return;
+  if (modal.dataset) modal.dataset.bound = "1";
+
+  // file input
+  const fileInput = $("storyFileInput");
+  if (fileInput) fileInput.onchange = handleFileSelect;
+
+  // avanti / indietro
+  const nextBtn = $("nextToCustomize");
+  if (nextBtn) nextBtn.onclick = showCustomizeStep;
+
+  const backBtn = $("backToUpload");
+  if (backBtn) backBtn.onclick = showUploadStep;
+
+  // pubblica
+  const pubBtn = $("publishStory");
+  if (pubBtn) pubBtn.onclick = publishStory;
+
+  // chiusure
+  const closeX = $("closeUploadStory");
+  if (closeX) closeX.onclick = closeUploadModal;
+
+  const cancelBtn = $("cancelUpload");
+  if (cancelBtn) cancelBtn.onclick = closeUploadModal;
+
+  // inizializza filtri/music una volta
+  setupFiltersGrid();
+})();
+
+function showToast(msg, type = "success") {
   let el = document.getElementById("toast");
   if (!el) {
     el = document.createElement("div");
@@ -5259,25 +5366,16 @@ if (nextBtn) nextBtn.disabled = true;
     document.body.appendChild(el);
   }
 
-  // reset stato
   el.className = "toast";
   el.textContent = msg;
 
-  // tipo feedback
-  if (type === "error") {
-    el.classList.add("toast-error");
-  } else {
-    el.classList.add("toast-success");
-  }
+  if (type === "error") el.classList.add("toast-error");
+  else el.classList.add("toast-success");
 
-  // mostra
-  requestAnimationFrame(() => {
-    el.classList.add("show");
-  });
+  requestAnimationFrame(() => el.classList.add("show"));
 
-  // auto hide
   clearTimeout(el._t);
   el._t = setTimeout(() => {
     el.classList.remove("show");
   }, 2200);
-  }
+}    
