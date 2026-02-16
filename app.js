@@ -3752,7 +3752,7 @@ if (btnSaveDogDraft0 && isCreate) {
       (function () {
         if (!d || !profileContent) return;
 
-        const galleryBlock = qs(".gallery", profileContent);
+        const galleryBlock = qs("#dogGallery", profileContent) || qs(".gallery", profileContent);
         if (!galleryBlock) return;
 
         // ✅ bind-once: se già agganciata per questo dogId, basta
@@ -3764,11 +3764,6 @@ if (btnSaveDogDraft0 && isCreate) {
         const dogId = d.id;
         const storageKey = "gallery_" + dogId;
 
-        const addGalleryPhotoBtn = galleryBlock.querySelector(".add-photo");
-        if (!addGalleryPhotoBtn) return;
-
-        const addSlot = addGalleryPhotoBtn.closest(".ph") || galleryBlock.lastElementChild;
-
         let images = [];
         try {
           const raw = localStorage.getItem(storageKey);
@@ -3778,6 +3773,7 @@ if (btnSaveDogDraft0 && isCreate) {
         }
         if (!Array.isArray(images)) images = [];
 
+        // input unico
         const input = document.createElement("input");
         input.type = "file";
         input.accept = "image/*";
@@ -3786,8 +3782,10 @@ if (btnSaveDogDraft0 && isCreate) {
         document.body.appendChild(input);
 
         const renderGallery = () => {
-          Array.from(galleryBlock.querySelectorAll('.ph[data-upload="1"]')).forEach(ph => ph.remove());
+          // pulisco tutto
+          galleryBlock.innerHTML = "";
 
+          // render immagini
           const limit = Math.min(images.length, maxPhotos);
           for (let i = 0; i < limit; i++) {
             const src = images[i];
@@ -3798,20 +3796,38 @@ if (btnSaveDogDraft0 && isCreate) {
             const img = document.createElement("img");
             img.src = src;
             img.className = "pp-gallery-img";
+            img.style.width = "100%";
+            img.style.height = "100%";
+            img.style.objectFit = "cover";
+            img.style.objectPosition = "center";
+            img.style.display = "block";
+            img.style.cursor = "pointer";
             img.onerror = () => { img.src = "./plutoo-icon-192.png"; };
 
             ph.appendChild(img);
-            galleryBlock.insertBefore(ph, addSlot);
+            galleryBlock.appendChild(ph);
           }
 
-          addGalleryPhotoBtn.disabled = images.length >= maxPhotos;
-        };
+          // slot ADD (sempre ultimo)
+          const addPh = document.createElement("div");
+          addPh.className = "ph";
 
-        // ✅ evita duplicazioni: uso onclick (sostituisce)
-        addGalleryPhotoBtn.onclick = () => {
-          if (images.length >= maxPhotos) return;
-          input.value = "";
-          input.click();
+          const addBtn = document.createElement("button");
+          addBtn.type = "button";
+          addBtn.className = "add-photo";
+          addBtn.textContent = "+ " + (state.lang === "it" ? "Aggiungi" : "Add");
+
+          addBtn.disabled = images.length >= maxPhotos;
+
+          // ✅ evita duplicazioni: onclick (sostituisce)
+          addBtn.onclick = () => {
+            if (images.length >= maxPhotos) return;
+            input.value = "";
+            input.click();
+          };
+
+          addPh.appendChild(addBtn);
+          galleryBlock.appendChild(addPh);
         };
 
         input.onchange = () => {
