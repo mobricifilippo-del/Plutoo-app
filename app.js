@@ -3781,6 +3781,118 @@ if (btnSaveDogDraft0 && isCreate) {
         input.style.display = "none";
         document.body.appendChild(input);
 
+        // ===== UI: pannello "Pubblica" (creato via JS, non tocchiamo HTML)
+        let pendingFiles = [];
+        let publishBar = null;
+
+        const ensurePublishBar = () => {
+          if (publishBar && publishBar.parentNode) return;
+
+          publishBar = document.createElement("div");
+          publishBar.id = "plutooGalleryPublishBar";
+          publishBar.style.margin = ".55rem 0 .15rem";
+          publishBar.style.padding = ".65rem .75rem";
+          publishBar.style.border = "1px solid rgba(205,164,52,.35)";
+          publishBar.style.borderRadius = "14px";
+          publishBar.style.background = "rgba(205,164,52,.08)";
+          publishBar.style.display = "none";
+          publishBar.style.gap = ".55rem";
+          publishBar.style.alignItems = "center";
+          publishBar.style.justifyContent = "space-between";
+
+          publishBar.innerHTML = `
+            <div style="font-weight:900;">
+              ${state.lang === "it" ? "Foto pronte ✅" : "Photos ready ✅"}
+              <span id="plutooGalleryPendingCount" style="opacity:.8;font-weight:800;"></span>
+            </div>
+            <div style="display:flex;gap:.5rem;">
+              <button type="button" id="plutooGalleryPublishBtn" class="btn accent small">
+                ${state.lang === "it" ? "Pubblica" : "Publish"}
+              </button>
+              <button type="button" id="plutooGalleryCancelBtn" class="btn ghost small">
+                ${state.lang === "it" ? "Annulla" : "Cancel"}
+              </button>
+            </div>
+          `;
+
+          // metto la bar prima della galleria
+          galleryBlock.parentNode.insertBefore(publishBar, galleryBlock);
+
+          const pubBtn = document.getElementById("plutooGalleryPublishBtn");
+          const cancelBtn = document.getElementById("plutooGalleryCancelBtn");
+
+          if (cancelBtn) {
+            cancelBtn.onclick = () => {
+              pendingFiles = [];
+              const c = document.getElementById("plutooGalleryPendingCount");
+              if (c) c.textContent = "";
+              publishBar.style.display = "none";
+            };
+          }
+
+          if (pubBtn) {
+            pubBtn.onclick = () => {
+              if (!pendingFiles.length) return;
+
+              const remaining = maxPhotos - images.length;
+              const toAdd = pendingFiles.slice(0, remaining);
+              if (!toAdd.length) {
+                pendingFiles = [];
+                const c = document.getElementById("plutooGalleryPendingCount");
+                if (c) c.textContent = "";
+                publishBar.style.display = "none";
+                return;
+              }
+
+              let pending = toAdd.length;
+
+              toAdd.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                  images.push(e.target.result);
+                  pending--;
+                  if (pending === 0) {
+                    try { localStorage.setItem(storageKey, JSON.stringify(images)); } catch (err) {}
+                    pendingFiles = [];
+                    const c = document.getElementById("plutooGalleryPendingCount");
+                    if (c) c.textContent = "";
+                    publishBar.style.display = "none";
+                    renderGallery();
+                  }
+                };
+                reader.readAsDataURL(file);
+              });
+            };
+          }
+        };
+
+        const showPublishBar = () => {
+          ensurePublishBar();
+          const c = document.getElementById("plutooGalleryPendingCount");
+          if (c) c.textContent = `(${pendingFiles.length}/${maxPhotos - images.length})`;
+          publishBar.style.display = "flex";
+        };
+
+        // ===== Lightbox semplice (solo foto + X + tap fuori)
+        const openLightbox = (src) => {
+          if (!src) return;
+
+          const old = document.querySelector(".lightbox");
+          if (old && old.parentNode) old.parentNode.removeChild(old);
+
+          const lb = document.createElement("div");
+          lb.className = "lightbox";
+          lb.innerHTML = `
+            <button type="button" class="close" aria-label="Close">✕</button>
+            <img class="lightbox-img" src="${src}" alt="">
+          `;
+          document.body.appendChild(lb);
+
+          const closeBtn = qs(".close", lb);
+          if (closeBtn) closeBtn.onclick = () => lb.remove();
+          lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
+        };
+
         const renderGallery = () => {
           // pulisco tutto
           galleryBlock.innerHTML = "";
@@ -3789,9 +3901,11 @@ if (btnSaveDogDraft0 && isCreate) {
           const limit = Math.min(images.length, maxPhotos);
           for (let i = 0; i < limit; i++) {
             const src = images[i];
+
             const ph = document.createElement("div");
             ph.className = "ph";
             ph.dataset.upload = "1";
+            ph.style.position = "relative";
 
             const img = document.createElement("img");
             img.src = src;
@@ -3804,7 +3918,39 @@ if (btnSaveDogDraft0 && isCreate) {
             img.style.cursor = "pointer";
             img.onerror = () => { img.src = "./plutoo-icon-192.png"; };
 
+            // ✅ click apre lightbox (sempre)
+            img.onclick = (ev) => {
+              ev.preventDefault();
+              ev.stopPropagation();
+              openLightbox(img.getAttribute("src"));
+            };
+
+            // ✅ rimuovi (🗑️) per singola foto
+            const del = document.createElement("button");
+            del.type = "button";
+            del.textContent = "🗑️";
+            del.setAttribute("aria-label", "Remove photo");
+            del.style.position = "absolute";
+            del.style.right = "10px";
+            del.style.bottom = "10px";
+            del.style.zIndex = "5";
+            del.style.border = "0";
+            del.style.borderRadius = "999px";
+            del.style.padding = "8px 10px";
+            del.style.background = "rgba(0,0,0,.55)";
+            del.style.color = "#fff";
+
+            del.onclick = (ev) => {
+              ev.preventDefault();
+              ev.stopPropagation();
+
+              images.splice(i, 1);
+              try { localStorage.setItem(storageKey, JSON.stringify(images)); } catch (err) {}
+              renderGallery();
+            };
+
             ph.appendChild(img);
+            ph.appendChild(del);
             galleryBlock.appendChild(ph);
           }
 
@@ -3835,23 +3981,11 @@ if (btnSaveDogDraft0 && isCreate) {
           if (!files.length) return;
 
           const remaining = maxPhotos - images.length;
-          const toAdd = files.slice(0, remaining);
-          if (!toAdd.length) return;
+          const toQueue = files.slice(0, remaining);
+          if (!toQueue.length) return;
 
-          let pending = toAdd.length;
-
-          toAdd.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = e => {
-              images.push(e.target.result);
-              pending--;
-              if (pending === 0) {
-                try { localStorage.setItem(storageKey, JSON.stringify(images)); } catch (err) {}
-                renderGallery();
-              }
-            };
-            reader.readAsDataURL(file);
-          });
+          pendingFiles = toQueue;
+          showPublishBar();
         };
 
         renderGallery();
