@@ -5162,8 +5162,13 @@ if (nextBtn) nextBtn.disabled = true;
   }
 
   function showCustomizeStep() {
-    $("uploadStep").classList.add("hidden");
-    $("customizeStep").classList.remove("hidden");
+  const step1 = $("uploadStoryStep1") || $("uploadStep");
+  const step2 = $("uploadStoryStep2") || $("customizeStep");
+  if (!step1 || !step2) return;
+
+  // modello "active" (come nel tuo HTML)
+  step1.classList.remove("active");
+  step2.classList.add("active");
   }
 
   function showUploadStep() {
