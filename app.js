@@ -3939,6 +3939,7 @@ if (btnSaveDogDraft0 && isCreate) {
 
   lb.addEventListener("click", (e) => {
     if (e.target === lb) lb.remove();
+  }
   });
 });
 
