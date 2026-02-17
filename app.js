@@ -3591,7 +3591,7 @@ if (isCreate) {
     });
   }
 
-  // CREATE: preview cliccabile apre viewer (oltre al picker già esistente)
+   // CREATE: preview cliccabile apre viewer (oltre al picker già esistente)
   if (isCreate) {
     const p = document.getElementById("createDogPhotoPreview");
     if (p) {
@@ -3620,16 +3620,56 @@ if (isCreate) {
     if (btnDel) {
       btnDel.addEventListener("click", () => {
         const ok = confirm(state.lang === "it"
-          ? "Eliminare l'account LOCALE? (Cancella i dati salvati su questo dispositivo)"
-          : "Delete LOCAL account? (Clears data stored on this device)");
+          ? "Eliminare l'account LOCALE? (Cancella TUTTI i dati Plutoo salvati su questo dispositivo)"
+          : "Delete LOCAL account? (Clears ALL Plutoo data stored on this device)");
         if (!ok) return;
 
         try {
-          localStorage.removeItem("dogs");
-          localStorage.removeItem("plutoo_has_dog");
-          localStorage.removeItem("plutoo_dog_id");
-          localStorage.removeItem("plutoo_readonly");
+          // ✅ wipe mirato: rimuovo tutte le chiavi Plutoo + per-dog (gallery_, selfieImage_, docs, stories, ecc.)
+          const keys = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k) keys.push(k);
+          }
+
+          keys.forEach((k) => {
+            // tutto ciò che è chiaramente Plutoo / per-dog
+            if (
+              k === "dogs" ||
+              k === "matches" ||
+              k === "matchCount" ||
+              k === "currentProfileDogId" ||
+              k === "ownerDocsUploaded" ||
+              k === "dogDocsUploaded" ||
+              k === "socialRewardViewed" ||
+              k === "selfieUntilByDog" ||
+              k === "plutoo_plus" ||
+              k === "plutoo_has_dog" ||
+              k === "plutoo_dog_id" ||
+              k === "plutoo_readonly" ||
+              k.startsWith("plutoo_") ||
+              k.startsWith("gallery_") ||
+              k.startsWith("selfieImage_") ||
+              k.startsWith("galleryBound_") ||
+              k.startsWith("ownerSocialByDog_") ||
+              k.startsWith("story_") ||
+              k.startsWith("stories_") ||
+              k.startsWith("StoriesState_") ||
+              k.startsWith("notifications_") ||
+              k.startsWith("follow_") ||
+              k.startsWith("photo_")
+            ) {
+              localStorage.removeItem(k);
+            }
+          });
+
+          // ✅ anche bozza create (se la usi così)
+          if (state && state.createDogDraft) state.createDogDraft = {};
+
+          // (opzionale ma pulito) session storage
+          try { sessionStorage.clear(); } catch (_) {}
         } catch (_) {}
+
         location.reload();
       });
     }
