@@ -401,22 +401,63 @@ btnEnter?.addEventListener("click", async (e) => {
     if (window.__createDogBindDone) return;
     window.__createDogBindDone = true;
 
-    const inlineBtn = document.getElementById("btnCreateDogInline");
-    if (inlineBtn) {
-      inlineBtn.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
-    }
+    // ✅ helper unico: aggiorna CTA in base allo stato
+    window.refreshCreateDogCTA = function () {
+      const inlineBtn = document.getElementById("btnCreateDogInline");
+      if (!inlineBtn) return;
+
+      const hasDog = (window.PLUTOO_HAS_DOG === true);
+      const dogId = window.PLUTOO_DOG_ID;
+
+      if (hasDog && dogId) {
+        inlineBtn.style.display = "inline-flex";
+        inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
+        inlineBtn.dataset.mode = "my";
+      } else {
+        inlineBtn.style.display = "inline-flex";
+        inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
+        inlineBtn.dataset.mode = "create";
+      }
+    };
+
+    // prima passata (stato corrente)
+    window.refreshCreateDogCTA();
 
     const clickHandler = (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
 
+      // login richiesto
       if (!window.auth || !window.auth.currentUser) {
         if (typeof openAuth === "function") openAuth("login");
         return;
       }
 
-      if (window.PLUTOO_HAS_DOG === true) return;
+      // ✅ se hai già un DOG: apri "Il mio profilo"
+      if (window.PLUTOO_HAS_DOG === true && window.PLUTOO_DOG_ID) {
+        if (typeof window.openProfilePage === "function") {
+          let dogs = [];
+          try {
+            dogs = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : [];
+          } catch (_) {}
+          if (!dogs.length) {
+            try {
+              dogs = JSON.parse(localStorage.getItem("dogs") || "[]");
+            } catch (_) {
+              dogs = [];
+            }
+          }
 
+          const myId = String(window.PLUTOO_DOG_ID);
+          const myDog =
+            (Array.isArray(dogs) ? dogs : []).find(x => x && String(x.id) === myId) || null;
+
+          window.openProfilePage(myDog || { id: myId });
+        }
+        return;
+      }
+
+      // ✅ se NON hai un DOG: apri create
       if (typeof window.openProfilePage === "function") {
         window.openProfilePage({
           id: "__create__",
@@ -431,7 +472,7 @@ btnEnter?.addEventListener("click", async (e) => {
         });
       }
       return;
-    }
+    };
 
     document.addEventListener("click", (ev) => {
       const t = ev.target;
@@ -446,51 +487,53 @@ btnEnter?.addEventListener("click", async (e) => {
   }
 })();
 
-  // ✅ DOG presence check (Firestore source of truth)
+// ✅ DOG presence check (Firestore source of truth)
+try {
+  const uid = window.auth.currentUser.uid; // = PLUTOO_UID
+  if (!uid || !window.db) throw new Error("Missing PLUTOO_UID or Firestore (window.db)");
+
+  const snap = await window.db
+    .collection("dogs")
+    .where("ownerUid", "==", uid)
+    .limit(1)
+    .get();
+
+  const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;
+  const dogId = (!snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0) ? (snap.docs[0]?.id || null) : null;
+
+  // Stato globale (runtime)
+  window.PLUTOO_HAS_DOG = hasDog;
+  window.PLUTOO_DOG_ID = dogId;
+
+  // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
+  window.PLUTOO_READONLY = !hasDog;
+
+  // UI CTA aggiornata
+  if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+
+  // Cache (non source of truth)
   try {
-    const uid = window.auth.currentUser.uid; // = PLUTOO_UID
-    if (!uid || !window.db) throw new Error("Missing PLUTOO_UID or Firestore (window.db)");
+    localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
+    if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
+    else localStorage.removeItem("plutoo_dog_id");
+    localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
+  } catch (_) {}
 
-    const snap = await window.db
-      .collection("dogs")
-      .where("ownerUid", "==", uid)
-      .limit(1)
-      .get();
+} catch (err) {
+  // fallback safe: segnala "DOG assente" e prosegue
+  window.PLUTOO_HAS_DOG = false;
+  window.PLUTOO_DOG_ID = null;
+  window.PLUTOO_READONLY = true;
 
-    const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;
-    const dogId = (!snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0) ? (snap.docs[0]?.id || null) : null;
+  // UI CTA aggiornata
+  if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
 
-    // Stato globale (runtime)
-    window.PLUTOO_HAS_DOG = hasDog;
-    // UI: "Crea profilo DOG" vicino a Ricerca personalizzata
-const inlineBtn = document.getElementById("btnCreateDogInline");
-if (inlineBtn) {
-  inlineBtn.style.display = (hasDog === true) ? "none" : "inline-flex";
+  try {
+    localStorage.setItem("plutoo_has_dog", "0");
+    localStorage.removeItem("plutoo_dog_id");
+    localStorage.setItem("plutoo_readonly", "1");
+  } catch (_) {}
 }
-    window.PLUTOO_DOG_ID = dogId;
-
-    // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
-    window.PLUTOO_READONLY = !hasDog;
-
-    // Cache (non source of truth)
-    try {
-      localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
-      if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
-      else localStorage.removeItem("plutoo_dog_id");
-      localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
-    } catch (_) {}
-    
-  } catch (err) {
-    // fallback safe: segnala "DOG assente" e prosegue
-    window.PLUTOO_HAS_DOG = false;
-    window.PLUTOO_DOG_ID = null;
-    window.PLUTOO_READONLY = true;
-    try {
-      localStorage.setItem("plutoo_has_dog", "0");
-      localStorage.removeItem("plutoo_dog_id");
-      localStorage.setItem("plutoo_readonly", "1");
-    } catch (_) {}
-  }
 
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
