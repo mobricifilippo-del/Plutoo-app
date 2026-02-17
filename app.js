@@ -403,28 +403,39 @@ btnEnter?.addEventListener("click", async (e) => {
 
     // ✅ helper unico: aggiorna CTA in base allo stato
     window.refreshCreateDogCTA = function () {
-      const inlineBtn = document.getElementById("btnCreateDogInline");
-      if (!inlineBtn) return;
+  const inlineBtn = document.getElementById("btnCreateDogInline");
+  if (!inlineBtn) return;
 
-      const hasDog = (window.PLUTOO_HAS_DOG === true);
-      const dogId = window.PLUTOO_DOG_ID;
+  const hasDog = (window.PLUTOO_HAS_DOG === true);
+  const dogId = window.PLUTOO_DOG_ID;
 
-      if (hasDog && dogId) {
-        inlineBtn.style.display = "inline-flex";
-        inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
-        inlineBtn.dataset.mode = "my";
+  // ✅ sempre visibile in Nearby: forza anche contro CSS readonly
+  inlineBtn.classList.remove("hidden");
+  inlineBtn.style.removeProperty("display");
+  inlineBtn.style.setProperty("display", "inline-flex", "important");
+  inlineBtn.style.setProperty("visibility", "visible", "important");
+  inlineBtn.style.setProperty("opacity", "1", "important");
 
-        // ✅ STOP animazione quando esiste il DOG
-        inlineBtn.classList.remove("pulse", "glow", "flash", "heartbeat");
-      } else {
-        inlineBtn.style.display = "inline-flex";
-        inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
-        inlineBtn.dataset.mode = "create";
+  if (hasDog && dogId) {
+    inlineBtn.dataset.mode = "my";
 
-        // ✅ Animazione SOLO prima della creazione
-        inlineBtn.classList.add("pulse");
-      }
-    };
+    // testo
+    inlineBtn.textContent =
+      (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
+
+    // ✅ STOP animazione quando esiste il DOG
+    inlineBtn.classList.remove("pulse", "glow", "flash", "heartbeat");
+  } else {
+    inlineBtn.dataset.mode = "create";
+
+    // testo
+    inlineBtn.textContent =
+      (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
+
+    // ✅ Animazione SOLO prima della creazione
+    inlineBtn.classList.add("pulse");
+  }
+};
 
     // prima passata (stato corrente)
     window.refreshCreateDogCTA();
