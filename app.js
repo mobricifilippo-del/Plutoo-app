@@ -2107,6 +2107,11 @@ msgLists.forEach((list) => {
       tabNearby.classList.add("active");
       renderNearby();
       renderStoriesBar();
+
+      if (typeof window.refreshCreateDogCTA === "function") {
+  window.refreshCreateDogCTA();
+      }
+      
       window.renderStories && window.renderStories();
       if (btnSearchPanel) btnSearchPanel.disabled = false;
     }
@@ -2132,10 +2137,6 @@ msgLists.forEach((list) => {
         viewMessages.classList.remove("hidden");
         viewMessages.classList.add("active");
       }
-    }
-
-    if (view === "nearby" && typeof window.refreshCreateDogCTA === "function") {
-  window.refreshCreateDogCTA();
     }
 
     window.scrollTo({top:0, behavior:"smooth"});
