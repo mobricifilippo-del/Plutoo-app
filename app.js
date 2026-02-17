@@ -3859,9 +3859,10 @@ if (btnSaveDogDraft0 && isCreate) {
       // spegni classe readonly (se era stata attivata)
       document.body.classList.remove("plutoo-readonly");
 
-      // nascondi CTA "Crea profilo DOG" in Vicino a te
-      const inlineBtn = document.getElementById("btnCreateDogInline");
-      if (inlineBtn) inlineBtn.style.display = "none";
+    // aggiorna CTA Vicino a te → diventa "Il mio profilo"
+if (typeof window.refreshCreateDogCTA === "function") {
+  window.refreshCreateDogCTA();
+}
     } catch (_) {}
 
     // feedback inline (resta qui; nel prossimo step lo rendiamo visibile anche dopo il redirect)
