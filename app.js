@@ -2270,6 +2270,11 @@ msgLists.forEach((list) => {
         });
       });
     }, 10);
+    
+    // ✅ CTA "Crea profilo / Il mio profilo": riallinea SEMPRE dopo ogni render
+    setTimeout(() => {
+      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+    }, 0);
   }
 
   function cardHTML(d){
