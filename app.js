@@ -2134,6 +2134,10 @@ msgLists.forEach((list) => {
       }
     }
 
+    if (view === "nearby" && typeof window.refreshCreateDogCTA === "function") {
+  window.refreshCreateDogCTA();
+    }
+
     window.scrollTo({top:0, behavior:"smooth"});
   }
 
