@@ -3663,8 +3663,29 @@ if (isCreate) {
             }
           });
 
-          // ✅ anche bozza create (se la usi così)
-          if (state && state.createDogDraft) state.createDogDraft = {};
+          // ✅ RESET runtime (QUESTO È IL FIX)
+          try {
+            window.PLUTOO_HAS_DOG = false;
+            window.PLUTOO_READONLY = false;
+            window.PLUTOO_DOG_ID = "";
+            window.CURRENT_USER_DOG_ID = "";
+            try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
+          } catch (_) {}
+
+          // ✅ reset state in RAM (evita UI incoerente prima del reload)
+          try {
+            if (state) {
+              state.dogs = [];
+              state.matches = {};
+              state.matchCount = 0;
+              state.ownerDocsUploaded = {};
+              state.dogDocsUploaded = {};
+              state.selfieUntilByDog = {};
+              state.socialRewardViewed = {};
+              state.createDogDraft = {};
+              state.currentDogProfile = null;
+            }
+          } catch (_) {}
 
           // (opzionale ma pulito) session storage
           try { sessionStorage.clear(); } catch (_) {}
