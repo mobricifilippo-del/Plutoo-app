@@ -540,7 +540,6 @@ try {
     localStorage.setItem("plutoo_readonly", "1");
   } catch (_) {}
 }
-})();
 
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
