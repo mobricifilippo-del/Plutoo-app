@@ -403,34 +403,32 @@ btnEnter?.addEventListener("click", async (e) => {
 
     // ✅ helper unico: aggiorna CTA in base allo stato
     window.refreshCreateDogCTA = function () {
-  const inlineBtn = document.getElementById("btnCreateDogInline");
+  const inlineBtn =
+    document.getElementById("btnCreateDogInline") ||
+    document.getElementById("btnCreateDogInline");
   if (!inlineBtn) return;
+
+  // ✅ FORZA SEMPRE visibilità (fix “sparisce il tasto”)
+  try {
+    inlineBtn.classList.remove("hidden");
+    inlineBtn.style.display = "inline-flex";
+    inlineBtn.style.visibility = "visible";
+    inlineBtn.style.pointerEvents = "auto";
+    inlineBtn.style.opacity = "1";
+  } catch (_) {}
 
   const hasDog = (window.PLUTOO_HAS_DOG === true);
   const dogId = window.PLUTOO_DOG_ID;
 
-  // ✅ sempre visibile in Nearby: forza anche contro CSS readonly
-  inlineBtn.classList.remove("hidden");
-  inlineBtn.style.removeProperty("display");
-  inlineBtn.style.setProperty("display", "inline-flex", "important");
-  inlineBtn.style.setProperty("visibility", "visible", "important");
-  inlineBtn.style.setProperty("opacity", "1", "important");
-
   if (hasDog && dogId) {
     inlineBtn.dataset.mode = "my";
-
-    // testo
-    inlineBtn.textContent =
-      (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
+    inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
 
     // ✅ STOP animazione quando esiste il DOG
     inlineBtn.classList.remove("pulse", "glow", "flash", "heartbeat");
   } else {
     inlineBtn.dataset.mode = "create";
-
-    // testo
-    inlineBtn.textContent =
-      (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
+    inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
 
     // ✅ Animazione SOLO prima della creazione
     inlineBtn.classList.add("pulse");
