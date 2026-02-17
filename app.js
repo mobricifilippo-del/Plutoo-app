@@ -402,33 +402,30 @@ btnEnter?.addEventListener("click", async (e) => {
     window.__createDogBindDone = true;
 
     // ✅ helper unico: aggiorna CTA in base allo stato
-    window.refreshCreateDogCTA = function () {
-  const inlineBtn =
-    document.getElementById("btnCreateDogInline") ||
-    document.getElementById("btnCreateDogInline");
+window.refreshCreateDogCTA = function () {
+  const inlineBtn = document.getElementById("btnCreateDogInline");
   if (!inlineBtn) return;
-
-  // ✅ FORZA SEMPRE visibilità (fix “sparisce il tasto”)
-  try {
-    inlineBtn.classList.remove("hidden");
-    inlineBtn.style.display = "inline-flex";
-    inlineBtn.style.visibility = "visible";
-    inlineBtn.style.pointerEvents = "auto";
-    inlineBtn.style.opacity = "1";
-  } catch (_) {}
 
   const hasDog = (window.PLUTOO_HAS_DOG === true);
   const dogId = window.PLUTOO_DOG_ID;
 
   if (hasDog && dogId) {
-    inlineBtn.dataset.mode = "my";
+    inlineBtn.style.setProperty("display", "inline-flex", "important");
+    inlineBtn.style.setProperty("visibility", "visible", "important");
+    inlineBtn.style.setProperty("pointer-events", "auto", "important");
+
     inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
+    inlineBtn.dataset.mode = "my";
 
     // ✅ STOP animazione quando esiste il DOG
     inlineBtn.classList.remove("pulse", "glow", "flash", "heartbeat");
   } else {
-    inlineBtn.dataset.mode = "create";
+    inlineBtn.style.setProperty("display", "inline-flex", "important");
+    inlineBtn.style.setProperty("visibility", "visible", "important");
+    inlineBtn.style.setProperty("pointer-events", "auto", "important");
+
     inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
+    inlineBtn.dataset.mode = "create";
 
     // ✅ Animazione SOLO prima della creazione
     inlineBtn.classList.add("pulse");
