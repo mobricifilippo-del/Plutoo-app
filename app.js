@@ -1109,8 +1109,9 @@ if (bark) {
   });
 
   if (state.entered) {
-    homeScreen?.classList.add("hidden");
-    appScreen?.classList.remove("hidden");
+  homeScreen?.classList.add("hidden");
+  appScreen?.classList.remove("hidden");
+  setActiveView(state.currentView);
   }
 
   // ============ I18N ============
