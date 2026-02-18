@@ -748,8 +748,8 @@ auth.onAuthStateChanged(async (user) => {
     if (window.__booted) return;
     window.__booted = true;
 
-    // 🚀 avvio app
-    if (typeof init === "function") init();
+    // 🚀 avvio app SOLO dopo che tutto il file è caricato
+if (typeof init === "function") setTimeout(init, 0);
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
