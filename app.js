@@ -2218,37 +2218,37 @@ msgLists.forEach((list) => {
   }
 
   // ============ Nearby ============
-  function renderNearby(){
-    if(!nearGrid) return;
+function renderNearby(){
+  if(!nearGrid) return;
 
-    const list = filteredDogs();
-    if (!list.length){
-      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
-      return;
-    }
-    nearGrid.innerHTML = list.map(cardHTML).join("");
+  // ✅ CTA "Crea profilo / Il mio profilo": riallinea SEMPRE, anche se la lista è vuota
+  try {
+    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+  } catch (_) {}
 
-    setTimeout(()=>{
-      qa(".dog-card").forEach(card=>{
-        const id = card.getAttribute("data-id");
-        const d  = DOGS.find(x=>x.id===id);
-        if(!d) return;
-
-        card.addEventListener("click", ()=>{
-          card.classList.add("flash-violet");
-          setTimeout(()=>{
-            card.classList.remove("flash-violet");
-            openProfilePage(d);
-          }, 500);
-        });
-      });
-    }, 10);
-    
-    // ✅ CTA "Crea profilo / Il mio profilo": riallinea SEMPRE dopo ogni render
-    setTimeout(() => {
-      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-    }, 0);
+  const list = filteredDogs();
+  if (!list.length){
+    nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
+    return;
   }
+  nearGrid.innerHTML = list.map(cardHTML).join("");
+
+  setTimeout(()=>{
+    qa(".dog-card").forEach(card=>{
+      const id = card.getAttribute("data-id");
+      const d  = DOGS.find(x=>x.id===id);
+      if(!d) return;
+
+      card.addEventListener("click", ()=>{
+        card.classList.add("flash-violet");
+        setTimeout(()=>{
+          card.classList.remove("flash-violet");
+          openProfilePage(d);
+        }, 500);
+      });
+    });
+  }, 10);
+}
 
   function cardHTML(d){
     return `
