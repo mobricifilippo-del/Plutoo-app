@@ -1112,6 +1112,7 @@ if (bark) {
   homeScreen?.classList.add("hidden");
   appScreen?.classList.remove("hidden");
   setActiveView(state.currentView);
+  setTimeout(() => { try { window.refreshCreateDogCTA && window.refreshCreateDogCTA(); } catch(_) {} }, 0);
   }
 
   // ============ I18N ============
