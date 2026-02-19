@@ -521,10 +521,23 @@ btnEnter?.addEventListener("click", async (e) => {
   }
 })();
 
-// ✅ DOG presence check (Firestore source of truth)
+ // ✅ DOG presence check (Firestore source of truth)
 // (wrappato in IIFE async per evitare await fuori contesto)
 (async function plutooDogPresenceCheck() {
   try {
+
+    // ✅ RESET IMMEDIATO (evita stato “sporco” post-refresh)
+    // Se poi Firestore conferma, verrà sovrascritto sotto.
+    window.PLUTOO_HAS_DOG = false;
+    window.PLUTOO_DOG_ID = null;
+    window.PLUTOO_DOG_NAME = "";
+    window.PLUTOO_READONLY = true;
+    try { localStorage.setItem("plutoo_has_dog", "0"); } catch (_) {}
+    try { localStorage.removeItem("plutoo_dog_id"); } catch (_) {}
+    try { localStorage.removeItem("plutoo_dog_name"); } catch (_) {}
+    try { localStorage.setItem("plutoo_readonly", "1"); } catch (_) {}
+    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+
     if (!window.auth || !window.auth.currentUser) throw new Error("Missing auth/currentUser");
     const uid = window.auth.currentUser.uid; // = PLUTOO_UID
     if (!uid || !window.db) throw new Error("Missing PLUTOO_UID or Firestore (window.db)");
