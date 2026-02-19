@@ -1128,7 +1128,7 @@ if (bark) {
   if (state.entered) {
   homeScreen?.classList.add("hidden");
   appScreen?.classList.remove("hidden");
-  setActiveView(state.currentView);
+  runAfterGlobalsReady(() => setActiveView(state.currentView));
   setTimeout(() => { try { window.refreshCreateDogCTA && window.refreshCreateDogCTA(); } catch(_) {} }, 0);
   }
 
