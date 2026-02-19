@@ -749,7 +749,7 @@ auth.onAuthStateChanged(async (user) => {
     window.__booted = true;
 
     // 🚀 avvio app SOLO dopo che tutto il file è caricato
-if (typeof init === "function") setTimeout(init, 0);
+   if (typeof init === "function") runAfterGlobalsReady(init);
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
@@ -780,6 +780,23 @@ if (isAndroidWebView) {
   const qs = (s, r=document) => r.querySelector(s);
   const qa = (s, r=document) => r ? Array.from(r.querySelectorAll(s)) : [];
   const $all = qa;
+
+// =========================
+// ✅ BOOT SAFE: aspetta che I18N + DOGS siano pronti
+// (evita TDZ "Cannot access ... before initialization")
+// =========================
+function runAfterGlobalsReady(fn) {
+  try {
+    const tick = () => {
+      try {
+        const ok = !!(window.I18N && window.DOGS && Array.isArray(window.DOGS));
+        if (ok) return fn();
+      } catch (_) {}
+      setTimeout(tick, 0);
+    };
+    tick();
+  } catch (_) {}
+}
 
   function autodetectLang(){
     return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
