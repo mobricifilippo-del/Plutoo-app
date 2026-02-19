@@ -1129,6 +1129,20 @@ if (bark) {
   homeScreen?.classList.add("hidden");
   appScreen?.classList.remove("hidden");
   runAfterGlobalsReady(() => setActiveView(state.currentView));
+
+    // ✅ CTA: dopo refresh può essere ancora non definita -> retry breve
+let __ctaTries = 0;
+const __ctaTimer = setInterval(() => {
+  __ctaTries++;
+  try {
+    if (typeof window.refreshCreateDogCTA === "function") {
+      window.refreshCreateDogCTA();
+      clearInterval(__ctaTimer);
+    }
+  } catch (_) {}
+  if (__ctaTries >= 30) clearInterval(__ctaTimer); // ~1.5s max
+}, 50);
+    
   setTimeout(() => { try { window.refreshCreateDogCTA && window.refreshCreateDogCTA(); } catch(_) {} }, 0);
   }
 
