@@ -395,28 +395,95 @@ btnEnter?.addEventListener("click", async (e) => {
 
   // =========================
 // ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
+// CTA NON deve mai sparire: cambia solo testo + azione
 // =========================
 (function bindCreateDogButtonsOnce() {
   try {
     if (window.__createDogBindDone) return;
     window.__createDogBindDone = true;
 
-    const inlineBtn = document.getElementById("btnCreateDogInline");
-    if (inlineBtn) {
-      inlineBtn.style.display = (window.PLUTOO_HAS_DOG === true) ? "none" : "inline-flex";
-    }
+    // ✅ helper unico: aggiorna CTA in base allo stato (mai hide definitivo)
+    window.refreshCreateDogCTA = function () {
+      const inlineBtn = document.getElementById("btnCreateDogInline");
+      if (!inlineBtn) return;
 
-    const clickHandler = (ev) => {
+      const hasDog = (window.PLUTOO_HAS_DOG === true);
+      const dogId = window.PLUTOO_DOG_ID ? String(window.PLUTOO_DOG_ID) : "";
+      const dogName = (window.PLUTOO_DOG_NAME ? String(window.PLUTOO_DOG_NAME) : "").trim();
+
+      inlineBtn.style.display = "inline-flex";
+
+      if (hasDog && dogId) {
+        inlineBtn.dataset.mode = "my";
+        if (dogName) {
+          inlineBtn.textContent = `🐶 ${dogName}`;
+        } else {
+          inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
+        }
+      } else {
+        inlineBtn.dataset.mode = "create";
+        inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
+      }
+    };
+
+    // prima passata (stato corrente)
+    window.refreshCreateDogCTA();
+
+    const clickHandler = async (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
 
+      // login richiesto
       if (!window.auth || !window.auth.currentUser) {
         if (typeof openAuth === "function") openAuth("login");
         return;
       }
 
-      if (window.PLUTOO_HAS_DOG === true) return;
+      // ✅ se hai già un DOG: apri "Il mio profilo"
+      if (window.PLUTOO_HAS_DOG === true && window.PLUTOO_DOG_ID) {
+        const myId = String(window.PLUTOO_DOG_ID);
 
+        // 1) prova da state/local
+        let dogs = [];
+        try { dogs = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : []; } catch (_) {}
+        if (!dogs.length) {
+          try { dogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) { dogs = []; }
+        }
+        let myDog = (Array.isArray(dogs) ? dogs : []).find(x => x && String(x.id) === myId) || null;
+
+        // 2) fallback Firestore se manca
+        if (!myDog && window.db) {
+          try {
+            const doc = await window.db.collection("dogs").doc(myId).get();
+            if (doc && doc.exists) {
+              const data = doc.data() || {};
+              myDog = {
+                id: doc.id,
+                name: (data.name || ""),
+                breed: (data.breed || ""),
+                age: (data.age || ""),
+                sex: (data.sex || ""),
+                bio: (data.bio || ""),
+                km: (data.km || 0),
+                img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
+                verified: !!data.verified
+              };
+              // memorizza nome per CTA
+              try { window.PLUTOO_DOG_NAME = (myDog.name || "").trim(); } catch (_) {}
+            }
+          } catch (_) {}
+        }
+
+        if (typeof window.openProfilePage === "function") {
+          window.openProfilePage(myDog || { id: myId });
+        }
+
+        // riallineo CTA (sicurezza)
+        if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+        return;
+      }
+
+      // ✅ se NON hai un DOG: apri create
       if (typeof window.openProfilePage === "function") {
         window.openProfilePage({
           id: "__create__",
@@ -430,8 +497,11 @@ btnEnter?.addEventListener("click", async (e) => {
           sex: ""
         });
       }
+
+      // CTA resta visibile
+      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
       return;
-    }
+    };
 
     document.addEventListener("click", (ev) => {
       const t = ev.target;
@@ -441,13 +511,21 @@ btnEnter?.addEventListener("click", async (e) => {
       clickHandler(ev);
     }, true);
 
+    // ✅ quando qualcuno aggiorna lo stato DOG altrove, può forzare refresh chiamando questo evento
+    window.addEventListener("plutoo:dog-changed", () => {
+      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+    });
+
   } catch (e) {
     console.error("bindCreateDogButtonsOnce error:", e);
   }
 })();
 
-  // ✅ DOG presence check (Firestore source of truth)
+// ✅ DOG presence check (Firestore source of truth)
+// (wrappato in IIFE async per evitare await fuori contesto)
+(async function plutooDogPresenceCheck() {
   try {
+    if (!window.auth || !window.auth.currentUser) throw new Error("Missing auth/currentUser");
     const uid = window.auth.currentUser.uid; // = PLUTOO_UID
     if (!uid || !window.db) throw new Error("Missing PLUTOO_UID or Firestore (window.db)");
 
@@ -458,19 +536,19 @@ btnEnter?.addEventListener("click", async (e) => {
       .get();
 
     const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;
-    const dogId = (!snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0) ? (snap.docs[0]?.id || null) : null;
+    const dogId = hasDog ? (snap.docs[0]?.id || null) : null;
+    const dogName = hasDog ? String(snap.docs[0]?.data()?.name || "").trim() : "";
 
     // Stato globale (runtime)
     window.PLUTOO_HAS_DOG = hasDog;
-    // UI: "Crea profilo DOG" vicino a Ricerca personalizzata
-const inlineBtn = document.getElementById("btnCreateDogInline");
-if (inlineBtn) {
-  inlineBtn.style.display = (hasDog === true) ? "none" : "inline-flex";
-}
     window.PLUTOO_DOG_ID = dogId;
+    window.PLUTOO_DOG_NAME = dogName;
 
     // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
     window.PLUTOO_READONLY = !hasDog;
+
+    // UI CTA aggiornata (mai sparire)
+    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
 
     // Cache (non source of truth)
     try {
@@ -478,19 +556,28 @@ if (inlineBtn) {
       if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
       else localStorage.removeItem("plutoo_dog_id");
       localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
+      if (dogName) localStorage.setItem("plutoo_dog_name", dogName);
+      else localStorage.removeItem("plutoo_dog_name");
     } catch (_) {}
-    
+
   } catch (err) {
     // fallback safe: segnala "DOG assente" e prosegue
     window.PLUTOO_HAS_DOG = false;
     window.PLUTOO_DOG_ID = null;
+    window.PLUTOO_DOG_NAME = "";
     window.PLUTOO_READONLY = true;
+
+    // UI CTA aggiornata (mai sparire)
+    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+
     try {
       localStorage.setItem("plutoo_has_dog", "0");
       localStorage.removeItem("plutoo_dog_id");
+      localStorage.removeItem("plutoo_dog_name");
       localStorage.setItem("plutoo_readonly", "1");
     } catch (_) {}
   }
+})();
 
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
@@ -3391,7 +3478,7 @@ window.openProfilePage = (d) => {
 
           <div class="pp-actions">
   ${
-    (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && d.id === CURRENT_USER_DOG_ID)
+    ((window.PLUTOO_HAS_DOG === true || localStorage.getItem("plutoo_has_dog") === "1") && (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id)
       ? `
         <button id="btnProfileSettings" class="btn accent" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Impostazioni profilo" : "Profile settings"}
@@ -3591,7 +3678,7 @@ if (isCreate) {
     });
   }
 
-  // CREATE: preview cliccabile apre viewer (oltre al picker già esistente)
+   // CREATE: preview cliccabile apre viewer (oltre al picker già esistente)
   if (isCreate) {
     const p = document.getElementById("createDogPhotoPreview");
     if (p) {
@@ -3620,16 +3707,77 @@ if (isCreate) {
     if (btnDel) {
       btnDel.addEventListener("click", () => {
         const ok = confirm(state.lang === "it"
-          ? "Eliminare l'account LOCALE? (Cancella i dati salvati su questo dispositivo)"
-          : "Delete LOCAL account? (Clears data stored on this device)");
+          ? "Eliminare l'account LOCALE? (Cancella TUTTI i dati Plutoo salvati su questo dispositivo)"
+          : "Delete LOCAL account? (Clears ALL Plutoo data stored on this device)");
         if (!ok) return;
 
         try {
-          localStorage.removeItem("dogs");
-          localStorage.removeItem("plutoo_has_dog");
-          localStorage.removeItem("plutoo_dog_id");
-          localStorage.removeItem("plutoo_readonly");
+          // ✅ wipe mirato: rimuovo tutte le chiavi Plutoo + per-dog (gallery_, selfieImage_, docs, stories, ecc.)
+          const keys = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k) keys.push(k);
+          }
+
+          keys.forEach((k) => {
+            // tutto ciò che è chiaramente Plutoo / per-dog
+            if (
+              k === "dogs" ||
+              k === "matches" ||
+              k === "matchCount" ||
+              k === "currentProfileDogId" ||
+              k === "ownerDocsUploaded" ||
+              k === "dogDocsUploaded" ||
+              k === "socialRewardViewed" ||
+              k === "selfieUntilByDog" ||
+              k === "plutoo_plus" ||
+              k === "plutoo_has_dog" ||
+              k === "plutoo_dog_id" ||
+              k === "plutoo_readonly" ||
+              k.startsWith("plutoo_") ||
+              k.startsWith("gallery_") ||
+              k.startsWith("selfieImage_") ||
+              k.startsWith("galleryBound_") ||
+              k.startsWith("ownerSocialByDog_") ||
+              k.startsWith("story_") ||
+              k.startsWith("stories_") ||
+              k.startsWith("StoriesState_") ||
+              k.startsWith("notifications_") ||
+              k.startsWith("follow_") ||
+              k.startsWith("photo_")
+            ) {
+              localStorage.removeItem(k);
+            }
+          });
+
+          // ✅ RESET runtime (QUESTO È IL FIX)
+          try {
+            window.PLUTOO_HAS_DOG = false;
+            window.PLUTOO_READONLY = false;
+            window.PLUTOO_DOG_ID = "";
+            window.CURRENT_USER_DOG_ID = "";
+            try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
+          } catch (_) {}
+
+          // ✅ reset state in RAM (evita UI incoerente prima del reload)
+          try {
+            if (state) {
+              state.dogs = [];
+              state.matches = {};
+              state.matchCount = 0;
+              state.ownerDocsUploaded = {};
+              state.dogDocsUploaded = {};
+              state.selfieUntilByDog = {};
+              state.socialRewardViewed = {};
+              state.createDogDraft = {};
+              state.currentDogProfile = null;
+            }
+          } catch (_) {}
+
+          // (opzionale ma pulito) session storage
+          try { sessionStorage.clear(); } catch (_) {}
         } catch (_) {}
+
         location.reload();
       });
     }
@@ -3711,9 +3859,10 @@ if (btnSaveDogDraft0 && isCreate) {
       // spegni classe readonly (se era stata attivata)
       document.body.classList.remove("plutoo-readonly");
 
-      // nascondi CTA "Crea profilo DOG" in Vicino a te
-      const inlineBtn = document.getElementById("btnCreateDogInline");
-      if (inlineBtn) inlineBtn.style.display = "none";
+    // aggiorna CTA Vicino a te → diventa "Il mio profilo"
+if (typeof window.refreshCreateDogCTA === "function") {
+  window.refreshCreateDogCTA();
+}
     } catch (_) {}
 
     // feedback inline (resta qui; nel prossimo step lo rendiamo visibile anche dopo il redirect)
