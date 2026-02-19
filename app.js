@@ -748,8 +748,8 @@ auth.onAuthStateChanged(async (user) => {
     if (window.__booted) return;
     window.__booted = true;
 
-    // 🚀 avvio app SOLO dopo che tutto il file è caricato
-   if (typeof init === "function") runAfterGlobalsReady(init);
+    // 🚀 avvio app
+    if (typeof init === "function") init();
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
@@ -780,23 +780,6 @@ if (isAndroidWebView) {
   const qs = (s, r=document) => r.querySelector(s);
   const qa = (s, r=document) => r ? Array.from(r.querySelectorAll(s)) : [];
   const $all = qa;
-
-// =========================
-// ✅ BOOT SAFE: aspetta che I18N + DOGS siano pronti
-// (evita TDZ "Cannot access ... before initialization")
-// =========================
-function runAfterGlobalsReady(fn) {
-  try {
-    const tick = () => {
-      try {
-        const ok = !!(window.I18N && window.DOGS && Array.isArray(window.DOGS));
-        if (ok) return fn();
-      } catch (_) {}
-      setTimeout(tick, 0);
-    };
-    tick();
-  } catch (_) {}
-}
 
   function autodetectLang(){
     return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
@@ -1126,24 +1109,8 @@ if (bark) {
   });
 
   if (state.entered) {
-  homeScreen?.classList.add("hidden");
-  appScreen?.classList.remove("hidden");
-  runAfterGlobalsReady(() => setActiveView(state.currentView));
-
-    // ✅ CTA: dopo refresh può essere ancora non definita -> retry breve
-let __ctaTries = 0;
-const __ctaTimer = setInterval(() => {
-  __ctaTries++;
-  try {
-    if (typeof window.refreshCreateDogCTA === "function") {
-      window.refreshCreateDogCTA();
-      clearInterval(__ctaTimer);
-    }
-  } catch (_) {}
-  if (__ctaTries >= 30) clearInterval(__ctaTimer); // ~1.5s max
-}, 50);
-    
-  setTimeout(() => { try { window.refreshCreateDogCTA && window.refreshCreateDogCTA(); } catch(_) {} }, 0);
+    homeScreen?.classList.add("hidden");
+    appScreen?.classList.remove("hidden");
   }
 
   // ============ I18N ============
@@ -2251,37 +2218,37 @@ msgLists.forEach((list) => {
   }
 
   // ============ Nearby ============
-function renderNearby(){
-  if(!nearGrid) return;
+  function renderNearby(){
+    if(!nearGrid) return;
 
-  // ✅ CTA "Crea profilo / Il mio profilo": riallinea SEMPRE, anche se la lista è vuota
-  try {
-    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-  } catch (_) {}
+    const list = filteredDogs();
+    if (!list.length){
+      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
+      return;
+    }
+    nearGrid.innerHTML = list.map(cardHTML).join("");
 
-  const list = filteredDogs();
-  if (!list.length){
-    nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
-    return;
-  }
-  nearGrid.innerHTML = list.map(cardHTML).join("");
+    setTimeout(()=>{
+      qa(".dog-card").forEach(card=>{
+        const id = card.getAttribute("data-id");
+        const d  = DOGS.find(x=>x.id===id);
+        if(!d) return;
 
-  setTimeout(()=>{
-    qa(".dog-card").forEach(card=>{
-      const id = card.getAttribute("data-id");
-      const d  = DOGS.find(x=>x.id===id);
-      if(!d) return;
-
-      card.addEventListener("click", ()=>{
-        card.classList.add("flash-violet");
-        setTimeout(()=>{
-          card.classList.remove("flash-violet");
-          openProfilePage(d);
-        }, 500);
+        card.addEventListener("click", ()=>{
+          card.classList.add("flash-violet");
+          setTimeout(()=>{
+            card.classList.remove("flash-violet");
+            openProfilePage(d);
+          }, 500);
+        });
       });
-    });
-  }, 10);
-}
+    }, 10);
+    
+    // ✅ CTA "Crea profilo / Il mio profilo": riallinea SEMPRE dopo ogni render
+    setTimeout(() => {
+      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+    }, 0);
+  }
 
   function cardHTML(d){
     return `
@@ -3815,7 +3782,7 @@ if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
   btnSaveDogDraft0.parentNode.replaceChild(btnSaveDogDraft, btnSaveDogDraft0);
 
-   btnSaveDogDraft.addEventListener("click", async () => {
+  btnSaveDogDraft.addEventListener("click", () => {
     const nameInput = document.getElementById("createDogName");
     const breedInput = document.getElementById("createDogBreed");
     const ageInput = document.getElementById("createDogAge");
@@ -3846,88 +3813,24 @@ if (btnSaveDogDraft0 && isCreate) {
       return;
     }
 
-    // ✅ DEFINITIVO: salva su Firestore + Storage (source of truth)
-if (!window.auth || !window.auth.currentUser) {
-  if (errorDiv) { errorDiv.textContent = (state.lang === "it") ? "Devi fare login" : "You must login"; errorDiv.style.display = "block"; }
-  return;
-}
-if (!window.db || !window.storage) {
-  if (errorDiv) { errorDiv.textContent = (state.lang === "it") ? "Firebase non pronto (db/storage)" : "Firebase not ready (db/storage)"; errorDiv.style.display = "block"; }
-  return;
-}
+    const newDogId = "dog_" + Date.now();
+    const newDog = {
+      id: newDogId,
+      name: name,
+      breed: breed,
+      age: parseInt(age, 10),
+      sex: sex,
+      img: state.createDogDraft.photoDataUrl,
+      verified: false,
+      bio: bio || "",
+      km: 0
+    };
 
-try {
-  const uid = window.auth.currentUser.uid;
+    if (!state.dogs) state.dogs = [];
+    state.dogs.push(newDog);
+    localStorage.setItem("dogs", JSON.stringify(state.dogs));
 
-  // 1 DOG per account: docId deterministico = uid (serve per delete definitivo dopo)
-  const newDogId = String(uid);
-
-  // upload foto profilo
-  const dataUrl = state.createDogDraft.photoDataUrl;
-  const ref = window.storage.ref().child("dogs/" + newDogId + "/profile.jpg");
-  await ref.putString(dataUrl, "data_url");
-  const photoURL = await ref.getDownloadURL();
-
-  // Firestore doc
-  const newDog = {
-    ownerUid: uid,
-    name: name,
-    breed: breed,
-    age: parseInt(age, 10),
-    sex: sex,
-    img: photoURL,
-    verified: false,
-    bio: bio || "",
-    km: 0,
-    createdAt: (firebase?.firestore?.FieldValue?.serverTimestamp) ? firebase.firestore.FieldValue.serverTimestamp() : null,
-    updatedAt: (firebase?.firestore?.FieldValue?.serverTimestamp) ? firebase.firestore.FieldValue.serverTimestamp() : null
-  };
-
-  await window.db.collection("dogs").doc(newDogId).set(newDog, { merge: true });
-
-  // runtime + cache coerente
-  window.PLUTOO_HAS_DOG = true;
-  window.PLUTOO_DOG_ID = newDogId;
-  window.PLUTOO_READONLY = false;
-  try { CURRENT_USER_DOG_ID = newDogId; } catch (_) {}
-
-  try {
-    localStorage.setItem("plutoo_has_dog", "1");
-    localStorage.setItem("plutoo_dog_id", newDogId);
-    localStorage.setItem("plutoo_readonly", "0");
-    localStorage.setItem("currentDogId", newDogId);
-  } catch (_) {}
-
-  // cache locale SOLO per UI (non source of truth)
-  if (!state.dogs) state.dogs = [];
-  state.dogs = [{
-    id: newDogId,
-    name: name,
-    breed: breed,
-    age: parseInt(age, 10),
-    sex: sex,
-    img: photoURL,
-    verified: false,
-    bio: bio || "",
-    km: 0
-  }];
-  try { localStorage.setItem("dogs", JSON.stringify(state.dogs)); } catch (_) {}
-
-  state.createDogDraft = {};
-
-  // CTA aggiornata e torna a "Vicino a te"
-  try { if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA(); } catch (_) {}
-  try { setActiveView("nearby"); } catch (_) {}
-
-} catch (e) {
-  if (errorDiv) {
-    errorDiv.textContent = (state.lang === "it")
-      ? ("Errore salvataggio profilo: " + (e?.message || String(e)))
-      : ("Profile save error: " + (e?.message || String(e)));
-    errorDiv.style.display = "block";
-  }
-  return;
-}
+    state.createDogDraft = {};
 
     // =========================
     // ✅ FIX STATO: da ORA "hai un DOG" (localStorage + runtime)
