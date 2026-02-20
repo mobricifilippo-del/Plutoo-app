@@ -847,7 +847,7 @@ selfieUntilByDog: {},
 ownerSocialByDog: {},
 
     // lingua
-    lang: localStorage.getItem("lang") || autodetectLang(),
+    lang: lang: localStorage.getItem("lang") || "it",
 
     // PLUS
     plus: localStorage.getItem("plutoo_plus") === "yes",
