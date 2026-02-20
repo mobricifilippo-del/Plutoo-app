@@ -1310,17 +1310,34 @@ if (bark) {
   }
 
   $("langIT")?.addEventListener("click", ()=>{
-    state.lang="it";
-    localStorage.setItem("lang","it");
-    applyTranslations();
-    if(state.entered) renderNearby();
-  });
-  $("langEN")?.addEventListener("click", ()=>{
-    state.lang="en";
-    localStorage.setItem("lang","en");
-    applyTranslations();
-    if(state.entered) renderNearby();
-  });
+  state.lang="it";
+  localStorage.setItem("lang","it");
+
+  // ✅ rende disponibile sempre la lingua anche alle funzioni che leggono window.state.lang
+  try { window.state = state; } catch (_) {}
+
+  applyTranslations();
+
+  // ✅ riallinea subito CTA lingua/testo
+  try { if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA(); } catch (_) {}
+
+  if(state.entered) renderNearby();
+});
+
+$("langEN")?.addEventListener("click", ()=>{
+  state.lang="en";
+  localStorage.setItem("lang","en");
+
+  // ✅ rende disponibile sempre la lingua anche alle funzioni che leggono window.state.lang
+  try { window.state = state; } catch (_) {}
+
+  applyTranslations();
+
+  // ✅ riallinea subito CTA lingua/testo
+  try { if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA(); } catch (_) {}
+
+  if(state.entered) renderNearby();
+});
 
   // ============ Dati mock DOGS ============
 const DOGS = [
