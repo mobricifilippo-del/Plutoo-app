@@ -746,24 +746,15 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
   console.error("Auth persistence error:", err);
 });
 
-auth.onAuthStateChanged(async (user) => {
+ auth.onAuthStateChanged(async (user) => {
   try {
     const linkLogin = document.getElementById("linkLogin");
     const linkRegister = document.getElementById("linkRegister");
 
     if (!user) {
-      
       // ===== NON LOGGATO =====
       window.PLUTOO_UID = null;
       window.__booted = false;
-
-      // ✅ reset stato DOG (source of truth Firestore, quindi da logged-out = no dog)
-      try {
-        window.PLUTOO_HAS_DOG = false;
-        window.PLUTOO_DOG_ID = null;
-        window.PLUTOO_DOG_NAME = "";
-        window.PLUTOO_READONLY = true;
-      } catch (_) {}
 
       if (linkLogin) {
         linkLogin.setAttribute("data-i18n", "login");
@@ -777,11 +768,6 @@ auth.onAuthStateChanged(async (user) => {
       if (linkRegister) {
         linkRegister.style.display = "";
       }
-
-      // CTA (se esiste) riallineata
-      try {
-        if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-      } catch (_) {}
 
       return;
     }
@@ -806,64 +792,6 @@ auth.onAuthStateChanged(async (user) => {
     // 🔒 evita boot multipli sullo stesso UID
     if (window.__booted) return;
     window.__booted = true;
-
-    // =========================
-    // ✅ VERITÀ DOG = Firestore (definitivo)
-    // Prima di init(), così UI/CTA non mentono al refresh.
-    // =========================
-    try {
-      // reset immediato anti-stato-sporco
-      window.PLUTOO_HAS_DOG = false;
-      window.PLUTOO_DOG_ID = null;
-      window.PLUTOO_DOG_NAME = "";
-      window.PLUTOO_READONLY = true;
-
-      if (window.db && window.PLUTOO_UID) {
-        const snap = await window.db
-          .collection("dogs")
-          .where("ownerUid", "==", String(window.PLUTOO_UID))
-          .limit(1)
-          .get();
-
-        const hasDog = !!(snap && !snap.empty);
-        const doc0 = hasDog ? snap.docs[0] : null;
-        const data0 = doc0 ? (doc0.data() || {}) : {};
-
-        const dogId = (doc0 && doc0.id) ? String(doc0.id) : null;
-        const dogName = (data0 && data0.name != null) ? String(data0.name).trim() : "";
-
-        // Fonte di verità runtime
-        window.PLUTOO_HAS_DOG = hasDog && dogName.length > 0;
-        window.PLUTOO_DOG_ID = window.PLUTOO_HAS_DOG ? dogId : null;
-        window.PLUTOO_DOG_NAME = window.PLUTOO_HAS_DOG ? dogName : "";
-        window.PLUTOO_READONLY = !window.PLUTOO_HAS_DOG;
-
-        // Cache (NON source of truth)
-        try {
-          localStorage.setItem("plutoo_has_dog", window.PLUTOO_HAS_DOG ? "1" : "0");
-          if (window.PLUTOO_DOG_ID) localStorage.setItem("plutoo_dog_id", String(window.PLUTOO_DOG_ID));
-          else localStorage.removeItem("plutoo_dog_id");
-          if (window.PLUTOO_DOG_NAME) localStorage.setItem("plutoo_dog_name", String(window.PLUTOO_DOG_NAME));
-          else localStorage.removeItem("plutoo_dog_name");
-          localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
-        } catch (_) {}
-      }
-    } catch (e2) {
-      // fallback safe: trattalo come "senza DOG"
-      try {
-        window.PLUTOO_HAS_DOG = false;
-        window.PLUTOO_DOG_ID = null;
-        window.PLUTOO_DOG_NAME = "";
-        window.PLUTOO_READONLY = true;
-      } catch (_) {}
-    }
-
-    // CTA aggiornata (mai sparire)
-    try {
-      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-      // opzionale: notifica chi ascolta (se hai listener)
-      window.dispatchEvent(new Event("plutoo:dog-changed"));
-    } catch (_) {}
 
     // 🚀 avvio app
     if (typeof init === "function") init();
