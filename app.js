@@ -731,7 +731,7 @@ firebase.auth().onAuthStateChanged(() => {
 });
 }); // <-- CHIUDE
 
-  // Firebase handles
+// Firebase handles
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -787,6 +787,29 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 
     if (linkRegister) {
       linkRegister.style.display = "none";
+    }
+
+    // ✅ FIRESTORE: crea/aggiorna users/{uid} (source of truth account)
+    try {
+      if (db && window.PLUTOO_UID) {
+        const uid = String(window.PLUTOO_UID);
+        const ref = db.collection("users").doc(uid);
+        const snap = await ref.get();
+
+        const base = {
+          email: (user && user.email) ? String(user.email) : "",
+          userAgent: (navigator && navigator.userAgent) ? String(navigator.userAgent) : "",
+          lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (!snap.exists) {
+          base.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        }
+
+        await ref.set(base, { merge: true });
+      }
+    } catch (e) {
+      console.error("users/{uid} upsert error:", e);
     }
 
     // 🔒 evita boot multipli sullo stesso UID
