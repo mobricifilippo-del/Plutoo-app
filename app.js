@@ -3927,14 +3927,20 @@ if (btnSaveDogDraft0 && isCreate) {
 
       await storageRef.put(blob, { contentType: blob.type || "image/jpeg" });
       photoUrl = await storageRef.getDownloadURL();
-    } catch (e) {
-      if (errorDiv) {
-        errorDiv.textContent = state.lang === "it"
-          ? "❌ Errore upload foto (Storage)"
-          : "❌ Photo upload error (Storage)";
-        errorDiv.style.display = "block";
-      }
-      return;
+
+      } catch (e) {
+  try { console.error("Storage upload error:", e); } catch (_) {}
+
+  const code = (e && e.code) ? String(e.code) : "";
+  const msg  = (e && e.message) ? String(e.message) : "";
+
+  if (errorDiv) {
+    errorDiv.textContent = state.lang === "it"
+      ? `❌ Errore upload foto (Storage) ${code ? "— " + code : ""}${msg ? " — " + msg : ""}`
+      : `❌ Photo upload error (Storage) ${code ? "— " + code : ""}${msg ? " — " + msg : ""}`;
+    errorDiv.style.display = "block";
+  }
+  return;
     }
 
     // write su Firestore (dogs/{dogId})
