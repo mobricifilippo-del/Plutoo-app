@@ -3841,12 +3841,12 @@ if (isCreate) {
   }
 })();
 
-const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
+      const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
   btnSaveDogDraft0.parentNode.replaceChild(btnSaveDogDraft, btnSaveDogDraft0);
 
-  btnSaveDogDraft.addEventListener("click", () => {
+  btnSaveDogDraft.addEventListener("click", async () => {
     const nameInput = document.getElementById("createDogName");
     const breedInput = document.getElementById("createDogBreed");
     const ageInput = document.getElementById("createDogAge");
@@ -3877,19 +3877,108 @@ if (btnSaveDogDraft0 && isCreate) {
       return;
     }
 
-    const newDogId = "dog_" + Date.now();
+    // =========================
+    // ✅ FIREBASE (PRODUCTION): Storage + Firestore (source of truth)
+    // =========================
+    const uid = (window.PLUTOO_UID) || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
+    if (!uid || !window.db || !window.storage) {
+      if (errorDiv) {
+        errorDiv.textContent = state.lang === "it"
+          ? "❌ Login richiesto (Firebase non pronto)"
+          : "❌ Login required (Firebase not ready)";
+        errorDiv.style.display = "block";
+      }
+      return;
+    }
+
+    // helper: dataURL -> Blob
+    const dataUrlToBlob = (dataUrl) => {
+      const parts = String(dataUrl || "").split(",");
+      const meta = parts[0] || "";
+      const b64 = parts[1] || "";
+      const mimeMatch = meta.match(/data:([^;]+);base64/i);
+      const mime = (mimeMatch && mimeMatch[1]) ? mimeMatch[1] : "image/jpeg";
+      const bin = atob(b64);
+      const len = bin.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+      return new Blob([bytes], { type: mime });
+    };
+
+    // id definitivo Firestore
+    const dogRef = window.db.collection("dogs").doc();
+    const newDogId = dogRef.id;
+
+    // upload foto profilo su Storage
+    let photoUrl = "";
+    try {
+      const blob = dataUrlToBlob(state.createDogDraft.photoDataUrl);
+      const ext = (blob.type && blob.type.includes("png")) ? "png" : "jpg";
+      const storageRef = window.storage.ref().child(`dogs/${uid}/${newDogId}/profile.${ext}`);
+
+      // feedback inline "salvataggio..."
+      if (errorDiv) {
+        errorDiv.textContent = state.lang === "it" ? "Salvataggio in corso..." : "Saving...";
+        errorDiv.style.display = "block";
+        errorDiv.style.border = "1px solid rgba(205, 164, 52, 0.35)";
+        errorDiv.style.background = "rgba(205, 164, 52, 0.10)";
+        errorDiv.style.color = "#CDA434";
+      }
+
+      await storageRef.put(blob, { contentType: blob.type || "image/jpeg" });
+      photoUrl = await storageRef.getDownloadURL();
+    } catch (e) {
+      if (errorDiv) {
+        errorDiv.textContent = state.lang === "it"
+          ? "❌ Errore upload foto (Storage)"
+          : "❌ Photo upload error (Storage)";
+        errorDiv.style.display = "block";
+      }
+      return;
+    }
+
+    // write su Firestore (dogs/{dogId})
+    try {
+      const createdAt = (firebase && firebase.firestore && firebase.firestore.FieldValue && firebase.firestore.FieldValue.serverTimestamp)
+        ? firebase.firestore.FieldValue.serverTimestamp()
+        : new Date();
+
+      await dogRef.set({
+        ownerUid: uid,
+        name: name,
+        breed: breed,
+        age: parseInt(age, 10),
+        sex: sex,
+        bio: bio || "",
+        km: 0,
+        verified: false,
+        photoUrl: photoUrl,
+        createdAt: createdAt,
+        updatedAt: createdAt
+      }, { merge: true });
+    } catch (e) {
+      if (errorDiv) {
+        errorDiv.textContent = state.lang === "it"
+          ? "❌ Errore salvataggio profilo (Firestore)"
+          : "❌ Profile save error (Firestore)";
+        errorDiv.style.display = "block";
+      }
+      return;
+    }
+
     const newDog = {
       id: newDogId,
       name: name,
       breed: breed,
       age: parseInt(age, 10),
       sex: sex,
-      img: state.createDogDraft.photoDataUrl,
+      img: photoUrl,
       verified: false,
       bio: bio || "",
       km: 0
     };
 
+    // cache locale (solo UI/velocità; source of truth = Firestore)
     if (!state.dogs) state.dogs = [];
     state.dogs.push(newDog);
     localStorage.setItem("dogs", JSON.stringify(state.dogs));
@@ -3897,12 +3986,13 @@ if (btnSaveDogDraft0 && isCreate) {
     state.createDogDraft = {};
 
     // =========================
-    // ✅ FIX STATO: da ORA "hai un DOG" (localStorage + runtime)
+    // ✅ FIX STATO: da ORA "hai un DOG" (runtime + cache)
     // =========================
     try {
       window.PLUTOO_HAS_DOG = true;
       window.PLUTOO_READONLY = false;
       window.PLUTOO_DOG_ID = newDogId;
+      window.PLUTOO_DOG_NAME = name;
 
       // se nel codice esiste CURRENT_USER_DOG_ID, lo allinei qui
       window.CURRENT_USER_DOG_ID = newDogId;
@@ -3912,17 +4002,21 @@ if (btnSaveDogDraft0 && isCreate) {
       localStorage.setItem("plutoo_has_dog", "1");
       localStorage.setItem("plutoo_dog_id", newDogId);
       localStorage.setItem("plutoo_readonly", "0");
+      localStorage.setItem("plutoo_dog_name", name);
 
       // spegni classe readonly (se era stata attivata)
       document.body.classList.remove("plutoo-readonly");
 
-    // aggiorna CTA Vicino a te → diventa "Il mio profilo"
-if (typeof window.refreshCreateDogCTA === "function") {
-  window.refreshCreateDogCTA();
-}
+      // aggiorna CTA Vicino a te → diventa "Il mio profilo"
+      if (typeof window.refreshCreateDogCTA === "function") {
+        window.refreshCreateDogCTA();
+      }
+
+      // segnala cambio stato (se qualcuno ascolta)
+      try { window.dispatchEvent(new Event("plutoo:dog-changed")); } catch (_) {}
     } catch (_) {}
 
-    // feedback inline (resta qui; nel prossimo step lo rendiamo visibile anche dopo il redirect)
+    // feedback inline
     if (errorDiv) {
       errorDiv.textContent = state.lang === "it" ? "✅ Profilo salvato" : "✅ Profile saved";
       errorDiv.style.display = "block";
