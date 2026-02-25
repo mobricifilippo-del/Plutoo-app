@@ -3759,87 +3759,74 @@ if (isCreate) {
       });
     }
 
-    // Elimina account (locale)
-    const btnDel = document.getElementById("btnDeleteAccount");
-    if (btnDel) {
-      btnDel.addEventListener("click", () => {
-        const ok = confirm(state.lang === "it"
-          ? "Eliminare l'account LOCALE? (Cancella TUTTI i dati Plutoo salvati su questo dispositivo)"
-          : "Delete LOCAL account? (Clears ALL Plutoo data stored on this device)");
-        if (!ok) return;
+    // Elimina account (locale) const btnDel = document.getElementById("btnDeleteAccount"); if (btnDel) { btnDel.addEventListener("click", async () => { const ok = confirm(state.lang === "it" ? "Eliminare l'account LOCALE? (Cancella TUTTI i dati Plutoo salvati su questo dispositivo)" : "Delete LOCAL account? (Clears ALL Plutoo data stored on this device)"); if (!ok) return;
 
-        try {
-          // ✅ wipe mirato: rimuovo tutte le chiavi Plutoo + per-dog (gallery_, selfieImage_, docs, stories, ecc.)
-          const keys = [];
-          for (let i = 0; i < localStorage.length; i++) {
-            const k = localStorage.key(i);
-            if (k) keys.push(k);
-          }
+   // =========================
+   // ✅ FIREBASE DELETE (Firestore + best-effort Storage + Auth)
+   // =========================
+   try {
+     const u = (window.auth && window.auth.currentUser) ? window.auth.currentUser : null;
+     const uid = (u && u.uid) ? String(u.uid) : (window.PLUTOO_UID ? String(window.PLUTOO_UID) : "");
 
-          keys.forEach((k) => {
-            // tutto ciò che è chiaramente Plutoo / per-dog
-            if (
-              k === "dogs" ||
-              k === "matches" ||
-              k === "matchCount" ||
-              k === "currentProfileDogId" ||
-              k === "ownerDocsUploaded" ||
-              k === "dogDocsUploaded" ||
-              k === "socialRewardViewed" ||
-              k === "selfieUntilByDog" ||
-              k === "plutoo_plus" ||
-              k === "plutoo_has_dog" ||
-              k === "plutoo_dog_id" ||
-              k === "plutoo_readonly" ||
-              k.startsWith("plutoo_") ||
-              k.startsWith("gallery_") ||
-              k.startsWith("selfieImage_") ||
-              k.startsWith("galleryBound_") ||
-              k.startsWith("ownerSocialByDog_") ||
-              k.startsWith("story_") ||
-              k.startsWith("stories_") ||
-              k.startsWith("StoriesState_") ||
-              k.startsWith("notifications_") ||
-              k.startsWith("follow_") ||
-              k.startsWith("photo_")
-            ) {
-              localStorage.removeItem(k);
-            }
-          });
+     if (uid && window.db) {
+       // 1) cancella DOGS dell’utente (collection dogs where ownerUid==uid)
+       let dogIds = [];
+       try {
+         const snap = await window.db.collection("dogs").where("ownerUid", "==", uid).get();
+         const batch = window.db.batch();
+         snap.forEach((doc) => { dogIds.push(String(doc.id)); batch.delete(doc.ref); });
 
-          // ✅ RESET runtime (QUESTO È IL FIX)
-          try {
-            window.PLUTOO_HAS_DOG = false;
-            window.PLUTOO_READONLY = false;
-            window.PLUTOO_DOG_ID = "";
-            window.CURRENT_USER_DOG_ID = "";
-            try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
-          } catch (_) {}
+         // 2) cancella users/{uid}
+         batch.delete(window.db.collection("users").doc(uid));
 
-          // ✅ reset state in RAM (evita UI incoerente prima del reload)
-          try {
-            if (state) {
-              state.dogs = [];
-              state.matches = {};
-              state.matchCount = 0;
-              state.ownerDocsUploaded = {};
-              state.dogDocsUploaded = {};
-              state.selfieUntilByDog = {};
-              state.socialRewardViewed = {};
-              state.createDogDraft = {};
-              state.currentDogProfile = null;
-            }
-          } catch (_) {}
+         await batch.commit();
+       } catch (e) {}
 
-          // (opzionale ma pulito) session storage
-          try { sessionStorage.clear(); } catch (_) {}
-        } catch (_) {}
+       // 3) best-effort Storage cleanup (non garantito senza backend/rules)
+       try {
+         if (window.storage && dogIds.length) {
+           for (let i = 0; i < dogIds.length; i++) {
+             const dogId = dogIds[i];
 
-        location.reload();
-      });
-    }
-  }
-})();
+             // prova file noti
+             try { await window.storage.ref().child(`dogs/${uid}/${dogId}/profile.jpg`).delete(); } catch (_) {}
+             try { await window.storage.ref().child(`dogs/${uid}/${dogId}/profile.png`).delete(); } catch (_) {}
+
+             // prova a listare e cancellare tutto sotto dogs/{uid}/{dogId} (se rules lo permettono)
+             try {
+               const folderRef = window.storage.ref().child(`dogs/${uid}/${dogId}`);
+               const list = await folderRef.listAll();
+               if (list && list.items && list.items.length) {
+                 for (let j = 0; j < list.items.length; j++) {
+                   try { await list.items[j].delete(); } catch (_) {}
+                 }
+               }
+             } catch (_) {}
+           }
+         }
+       } catch (_) {}
+     }
+
+     // 4) prova a cancellare l’utente Auth (se richiede re-login, non blocca)
+     try {
+       if (u && typeof u.delete === "function") {
+         await u.delete();
+       }
+     } catch (e) {
+       const code = e && e.code ? String(e.code) : "";
+       if (code === "auth/requires-recent-login") {
+         alert(state.lang === "it"
+           ? "Per eliminare definitivamente l’account serve un login recente. Fai Logout, rientra con email/password e ripeti Elimina account."
+           : "To delete the account permanently, a recent login is required. Log out, log in again, then retry Delete account.");
+       }
+     }
+
+     // 5) logout sempre (porta alla Home)
+     try { if (window.auth) await window.auth.signOut(); } catch (_) {}
+   } catch (_) {}
+
+   try {         // ✅ wipe mirato: rimuovo tutte le chiavi Plutoo + per-dog (gallery_, selfieImage_, docs, stories, ecc.)         const keys = [];         for (let i = 0; i < localStorage.length; i++) {           const k = localStorage.key(i);           if (k) keys.push(k);         }          keys.forEach((k) => {           // tutto ciò che è chiaramente Plutoo / per-dog           if (             k === "dogs" ||             k === "matches" ||             k === "matchCount" ||             k === "currentProfileDogId" ||             k === "ownerDocsUploaded" ||             k === "dogDocsUploaded" ||             k === "socialRewardViewed" ||             k === "selfieUntilByDog" ||             k === "plutoo_plus" ||             k === "plutoo_has_dog" ||             k === "plutoo_dog_id" ||             k === "plutoo_readonly" ||             k.startsWith("plutoo_") ||             k.startsWith("gallery_") ||             k.startsWith("selfieImage_") ||             k.startsWith("galleryBound_") ||             k.startsWith("ownerSocialByDog_") ||             k.startsWith("story_") ||             k.startsWith("stories_") ||             k.startsWith("StoriesState_") ||             k.startsWith("notifications_") ||             k.startsWith("follow_") ||             k.startsWith("photo_")           ) {             localStorage.removeItem(k);           }         });          // ✅ RESET runtime (QUESTO È IL FIX)         try {           window.PLUTOO_HAS_DOG = false;           window.PLUTOO_READONLY = false;           window.PLUTOO_DOG_ID = "";           window.CURRENT_USER_DOG_ID = "";           try { CURRENT_USER_DOG_ID = ""; } catch (_) {}         } catch (_) {}          // ✅ reset state in RAM (evita UI incoerente prima del reload)         try {           if (state) {             state.dogs = [];             state.matches = {};             state.matchCount = 0;             state.ownerDocsUploaded = {};             state.dogDocsUploaded = {};             state.selfieUntilByDog = {};             state.socialRewardViewed = {};             state.createDogDraft = {};             state.currentDogProfile = null;           }         } catch (_) {}          // (opzionale ma pulito) session storage         try { sessionStorage.clear(); } catch (_) {}       } catch (_) {}        location.reload();     });   }  
+} })();
 
       const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
