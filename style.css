@@ -727,16 +727,15 @@ body.story-open #storiesBar {
   aspect-ratio:1/1;
 }
 
-.pp-hero img{
+ .pp-hero img{
   display:block;
   width:100%;
-  aspect-ratio: 16/9;
-  height:auto;
-  object-fit:contain;        /* ✅ non taglia */
+  height:100%;
+  object-fit:contain;
   object-position:center;
-  background:#0b0b0f;        /* ✅ riempie il “vuoto” */
-  cursor:pointer;            /* ✅ cliccabile */
-}
+  background:#0b0b0f;
+  cursor:pointer;
+ }
 
 .pp-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.4rem 0 .7rem 0}
 .pp-name{font-size:1.5rem;font-weight:900;color:var(--violet-glow);margin:0}
