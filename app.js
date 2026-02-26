@@ -1538,31 +1538,47 @@ const DOGS = [
 
     const viewToRestore = state.currentView || "nearby";
 
-    // ✅ FIX: sanitize view (evita valori sporchi che lasciano UI in stato incoerente)
-    const __allowedViews = { nearby:1, love:1, messages:1, profile:1 };
-    const __safeView = (__allowedViews[viewToRestore] ? viewToRestore : "nearby");
-
-    if (__safeView === "profile") {
+    if (viewToRestore === "profile") {
       const savedId = localStorage.getItem("currentProfileDogId");
       if (savedId) {
         const dog = DOGS.find(d => d.id == savedId);
         if (dog && window.openProfilePage) {
           window.openProfilePage(dog);
         } else {
-          setActiveView("nearby");
+          // ✅ FIX: se non è un demo DOGS, provo Firestore prima di buttarti su "nearby"
+          if (window.db && window.openProfilePage) {
+            window.db.collection("dogs").doc(String(savedId)).get()
+              .then((doc) => {
+                if (doc && doc.exists) {
+                  const data = doc.data() || {};
+                  window.openProfilePage({
+                    id: doc.id,
+                    name: (data.name || ""),
+                    breed: (data.breed || ""),
+                    age: (data.age || ""),
+                    sex: (data.sex || ""),
+                    bio: (data.bio || ""),
+                    km: (data.km || 0),
+                    img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
+                    verified: !!data.verified
+                  });
+                } else {
+                  setActiveView("nearby");
+                }
+              })
+              .catch(() => {
+                setActiveView("nearby");
+              });
+          } else {
+            setActiveView("nearby");
+          }
         }
       } else {
         setActiveView("nearby");
       }
     } else {
-      setActiveView(__safeView);
+      setActiveView(viewToRestore);
     }
-
-    // ✅ FIX: riallinea CTA dopo restore (timing auth/bind)
-    try {
-      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-      try { window.dispatchEvent(new Event("plutoo:dog-changed")); } catch (_) {}
-    } catch (_) {}
 
     showAdBanner();
   }
