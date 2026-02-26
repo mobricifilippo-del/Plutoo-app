@@ -332,7 +332,7 @@ loginForm.addEventListener("submit", async (e) => {
   } catch (err) {
     const code = err && err.code ? String(err.code) : "";
 
-    setAuthError("login", err?.message || "Errore login");
+    setAuthError("login", translateAuthError(err));
   }
 });
 
