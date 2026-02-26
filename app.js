@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // chiudi cliccando fuori (backdrop)
   authSheet.querySelector('[data-auth-close="1"]')?.addEventListener("click", closeAuth);
 
-  // helper error box (rosso SOLO per errori, GOLD per successi ✅)
+ // helper error box (rosso SOLO per errori, GOLD per successi ✅)
   function setAuthError(which, msg) {
     const box = document.getElementById(which === "login" ? "loginError" : "registerError");
     if (!box) return;
@@ -237,6 +237,44 @@ document.addEventListener("DOMContentLoaded", () => {
       box.style.background = "rgba(180, 30, 30, 0.18)";
       box.style.border = "1px solid rgba(255, 90, 90, 0.35)";
       box.style.color = "#ffd1d1";
+    }
+  }
+
+  // ✅ traduci errori Firebase in IT/EN (niente più inglese a schermo)
+  function translateAuthError(err) {
+    const code = (err && err.code) ? String(err.code) : "";
+    const it = (state && state.lang === "it");
+
+    switch (code) {
+      case "auth/invalid-credential":
+      case "auth/wrong-password":
+        return it ? "Email o password non corretti." : "Email or password incorrect.";
+
+      case "auth/user-not-found":
+        return it ? "Account non trovato." : "Account not found.";
+
+      case "auth/too-many-requests":
+        return it ? "Troppi tentativi. Riprova più tardi." : "Too many attempts. Try again later.";
+
+      case "auth/network-request-failed":
+        return it ? "Problema di connessione." : "Network error.";
+
+      case "auth/email-already-in-use":
+        return it ? "Questa email è già registrata." : "This email is already registered.";
+
+      case "auth/weak-password":
+        return it ? "Password troppo debole (minimo 6 caratteri)." : "Weak password (minimum 6 characters).";
+
+      case "auth/invalid-email":
+        return it ? "Email non valida." : "Invalid email.";
+
+      case "auth/requires-recent-login":
+        return it
+          ? "Per eliminare l’account serve un login recente. Fai login e riprova."
+          : "Deleting the account requires a recent login. Log in again and retry.";
+
+      default:
+        return it ? "Errore di accesso." : "Login error.";
     }
   }
 
