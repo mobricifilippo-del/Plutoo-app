@@ -669,8 +669,8 @@ btnEnter?.addEventListener("click", async (e) => {
     }
 
     // vista normale
-    try { state.currentView = targetView; } catch (_) {}
     setActiveView(targetView);
+    try { state.currentView = targetView; } catch (_) {}
 
 // =========================
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
