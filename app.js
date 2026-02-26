@@ -1513,7 +1513,11 @@ const DOGS = [
 
     const viewToRestore = state.currentView || "nearby";
 
-    if (viewToRestore === "profile") {
+    // ✅ FIX: sanitize view (evita valori sporchi che lasciano UI in stato incoerente)
+    const __allowedViews = { nearby:1, love:1, messages:1, profile:1 };
+    const __safeView = (__allowedViews[viewToRestore] ? viewToRestore : "nearby");
+
+    if (__safeView === "profile") {
       const savedId = localStorage.getItem("currentProfileDogId");
       if (savedId) {
         const dog = DOGS.find(d => d.id == savedId);
@@ -1526,8 +1530,14 @@ const DOGS = [
         setActiveView("nearby");
       }
     } else {
-      setActiveView(viewToRestore);
+      setActiveView(__safeView);
     }
+
+    // ✅ FIX: riallinea CTA dopo restore (timing auth/bind)
+    try {
+      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+      try { window.dispatchEvent(new Event("plutoo:dog-changed")); } catch (_) {}
+    } catch (_) {}
 
     showAdBanner();
   }
