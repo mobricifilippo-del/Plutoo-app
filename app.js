@@ -906,11 +906,14 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     }
 
     // 🔒 evita boot multipli sullo stesso UID
-    if (window.__booted) return;
-    window.__booted = true;
+    if (!window.__booted) {
+  window.__booted = true;
 
-    // 🚀 avvio app
+  // 🚀 avvio app SOLO dopo Auth stabile
+  setTimeout(() => {
     if (typeof init === "function") init();
+  }, 0);
+    }
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
