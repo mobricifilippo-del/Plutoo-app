@@ -3901,22 +3901,37 @@ if (isCreate) {
               location.reload();
             })
             .catch((err) => {
-              // ✅ non blocco mai l'app
-              const code = (err && err.code) ? err.code : "";
-              if (code === "auth/requires-recent-login") {
-                alert(state.lang === "it"
-                  ? "Per eliminare l’account serve un login recente. Ti disconnetto: rientra e riprova."
-                  : "Deleting the account requires a recent login. I'll sign you out: log in again and retry.");
-                try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
-                location.reload();
-                return;
-              }
+              
+          // ✅ non blocco mai l'app
+const code = (err && err.code) ? err.code : "";
+if (code === "auth/requires-recent-login") {
+  alert("Per eliminare l’account serve un login recente. Ti disconnetto: rientra e riprova.");
 
-              alert(state.lang === "it"
-                ? "Errore eliminazione account. Ti riporto alla Home senza bloccare l'app."
-                : "Account deletion error. Returning to Home without blocking the app.");
-              try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
-              location.reload();
+  // ✅ forza ritorno HOME al reload
+  try {
+    localStorage.removeItem("entered");
+    localStorage.removeItem("currentView");
+    localStorage.setItem("entered", "0");
+    localStorage.setItem("currentView", "home");
+  } catch (_) {}
+
+  try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
+  location.reload();
+  return;
+}
+
+alert("Errore eliminazione account. Ti riporto alla Home senza bloccare l'app.");
+
+// ✅ forza ritorno HOME al reload
+try {
+  localStorage.removeItem("entered");
+  localStorage.removeItem("currentView");
+  localStorage.setItem("entered", "0");
+  localStorage.setItem("currentView", "home");
+} catch (_) {}
+
+try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
+location.reload();
             });
 
         } catch (_) {}
