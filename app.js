@@ -1545,30 +1545,54 @@ const DOGS = [
         if (dog && window.openProfilePage) {
           window.openProfilePage(dog);
         } else {
-          // ✅ FIX: se non è un demo DOGS, provo Firestore prima di buttarti su "nearby"
-          if (window.db && window.openProfilePage) {
-            window.db.collection("dogs").doc(String(savedId)).get()
-              .then((doc) => {
-                if (doc && doc.exists) {
-                  const data = doc.data() || {};
-                  window.openProfilePage({
-                    id: doc.id,
-                    name: (data.name || ""),
-                    breed: (data.breed || ""),
-                    age: (data.age || ""),
-                    sex: (data.sex || ""),
-                    bio: (data.bio || ""),
-                    km: (data.km || 0),
-                    img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
-                    verified: !!data.verified
-                  });
-                } else {
+          // ✅ FIX: se NON è un DOG demo, provo cache locale e poi Firestore
+          let myDog = null;
+
+          // 1) prova state/local
+          try {
+            const dogsLocal = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : [];
+            myDog = dogsLocal.find(x => x && String(x.id) === String(savedId)) || null;
+          } catch (_) {}
+
+          // 2) fallback localStorage "dogs"
+          if (!myDog) {
+            try {
+              const dogsLS = JSON.parse(localStorage.getItem("dogs") || "[]");
+              myDog = (Array.isArray(dogsLS) ? dogsLS : []).find(x => x && String(x.id) === String(savedId)) || null;
+            } catch (_) { myDog = null; }
+          }
+
+          // 3) se ho già dati → apro profilo
+          if (myDog && window.openProfilePage) {
+            window.openProfilePage(myDog);
+          } else if (window.db) {
+            // 4) Firestore (no await): provo a caricare il DOG reale
+            try {
+              window.db.collection("dogs").doc(String(savedId)).get()
+                .then((doc) => {
+                  if (doc && doc.exists && window.openProfilePage) {
+                    const data = doc.data() || {};
+                    window.openProfilePage({
+                      id: doc.id,
+                      name: (data.name || ""),
+                      breed: (data.breed || ""),
+                      age: (data.age || ""),
+                      sex: (data.sex || ""),
+                      bio: (data.bio || ""),
+                      km: (data.km || 0),
+                      img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
+                      verified: !!data.verified
+                    });
+                  } else {
+                    setActiveView("nearby");
+                  }
+                })
+                .catch(() => {
                   setActiveView("nearby");
-                }
-              })
-              .catch(() => {
-                setActiveView("nearby");
-              });
+                });
+            } catch (_) {
+              setActiveView("nearby");
+            }
           } else {
             setActiveView("nearby");
           }
