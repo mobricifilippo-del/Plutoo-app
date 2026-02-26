@@ -815,15 +815,6 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     localStorage.setItem("entered", "0");
   } catch (_) {}
 
-  // ✅ Evita loop: reload UNA volta sola per uscire da "Vicino a te" dopo delete account
-  try {
-    if (sessionStorage.getItem("__plutoo_force_home_once") !== "1") {
-      sessionStorage.setItem("__plutoo_force_home_once", "1");
-      location.reload();
-      return;
-    }
-  } catch (_) {}
-
   if (linkLogin) {
     linkLogin.setAttribute("data-i18n", "login");
     linkLogin.textContent = "Login";
