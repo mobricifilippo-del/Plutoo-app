@@ -893,13 +893,12 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
       console.error("users/{uid} upsert error:", e);
     }
 
-    // 🔒 evita boot multipli sullo stesso UID
-if (!window.__booted) {
-  window.__booted = true;
+   // 🔒 evita boot multipli sullo stesso UID
+if (window.__booted) return;
+window.__booted = true;
 
-  // 🚀 avvio app (una volta sola: già protetto da window.__booted)
-  if (typeof init === "function") init();
-}
+// 🚀 avvio app
+if (typeof init === "function") init();
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
