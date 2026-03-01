@@ -832,22 +832,10 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     if (!user) {
   // ===== NON LOGGATO =====
   window.PLUTOO_UID = null;
-  window.__booted = false;
 
-  // ✅ RESET runtime per evitare UI "mezzo loggata"
-  try {
-    window.PLUTOO_HAS_DOG = false;
-    window.PLUTOO_READONLY = false;
-    window.PLUTOO_DOG_ID = "";
-    window.CURRENT_USER_DOG_ID = "";
-    try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
-  } catch (_) {}
-
-  // ✅ FORZA HOME al prossimo render/boot (la tua app legge currentView da localStorage)
-  try {
-    localStorage.setItem("currentView", "home");
-    localStorage.setItem("entered", "0");
-  } catch (_) {}
+  // ❌ NON resettare qui DOG/state/localStorage/__booted:
+  // su refresh mobile/WebView può arrivare un "null" transitorio
+  // e ti fa sparire il profilo/CTA.
 
   if (linkLogin) {
     linkLogin.setAttribute("data-i18n", "login");
