@@ -430,7 +430,6 @@ btnEnter?.addEventListener("click", async (e) => {
 
   // ✨ rimuove il glow SOLO quando clicco ENTRA
   btnEnter.classList.remove("enter-glow");
-  });
 
   // =========================
 // ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
@@ -671,6 +670,116 @@ btnEnter?.addEventListener("click", async (e) => {
   }
 })();
 
+  // ✅ ENTRA definitivo (WOW)
+  try { localStorage.setItem("entered", "1"); } catch (err) {}
+  state.entered = true;
+
+  const bark = document.getElementById("dogBark");
+  if (bark) {
+    bark.currentTime = 0;
+    bark.volume = 0.5;
+    const playPromise = bark.play();
+    if (playPromise && typeof playPromise.then === "function") {
+      playPromise.catch(() => {
+        // in produzione niente alert
+      });
+    }
+  }
+
+  if (heroLogo) {
+    heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+    void heroLogo.offsetWidth;
+    heroLogo.classList.add("heartbeat-violet-wow");
+  }
+
+  const flash = document.getElementById("whiteFlash");
+  if (flash) {
+    flash.classList.add("active");
+  }
+
+  const targetView = state.currentView || "nearby";
+
+  setTimeout(() => {
+
+    appScreen?.classList.remove("hidden");
+    document.body.classList.remove("story-open");
+
+    if (typeof initStories === "function") {
+      initStories();
+    }
+
+    // vista normale
+    setActiveView(targetView);
+    try { state.currentView = targetView; } catch (_) {}
+
+// =========================
+// ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
+// =========================
+try {
+  if (
+  window.PLUTOO_READONLY &&
+  state.currentDogProfile?.id !== "__create__"
+) {
+    document.body.classList.add("plutoo-readonly");
+
+    // ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)
+    const idsToDisable = [
+      "uploadSelfie",
+      "publishStory"
+    ];
+    idsToDisable.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = true;
+    });
+
+    // ✅ intercetta SOLO click su upload foto/documenti
+    if (!window.__plutooReadonlyBound) {
+      window.__plutooReadonlyBound = true;
+
+      document.addEventListener("click", (ev) => {
+        try {
+          if (!window.PLUTOO_READONLY || state.currentDogProfile?.id === "__create__") return;
+
+          const t = ev.target;
+          if (!t) return;
+
+          const node = (t.closest ? t.closest("button,a,label,input,div,span") : null) || t;
+          const id = node && node.id ? String(node.id) : "";
+
+          // blocca anche classi note (UI)
+          const isAddPhoto = !!(node && node.classList && node.classList.contains("add-photo"));
+          const isDocItem  = !!(node && node.classList && node.classList.contains("doc-item"));
+
+          // blocca anche click su input file (se presente)
+          const isFileInput = !!(node && node.tagName === "INPUT" && String(node.type).toLowerCase() === "file");
+
+          const isBlocked =
+            isAddPhoto ||
+            isDocItem ||
+            isFileInput ||
+            id === "uploadSelfie" ||
+            id === "publishStory";
+
+          if (!isBlocked) return; // ✅ tutto il resto resta cliccabile
+
+          ev.preventDefault();
+          ev.stopPropagation();
+          ev.stopImmediatePropagation();
+
+          const msg2 = state.lang === "it"
+            ? "🔒 Per caricare foto o documenti devi creare il profilo DOG"
+            : "🔒 To upload photos or documents you must create your DOG profile";
+          if (typeof showToast === "function") showToast(msg2);
+          return false;
+        } catch (_) {}
+      }, true);
+    }
+  } else {
+    document.body.classList.remove("plutoo-readonly");
+  }
+} catch (_) {}
+  }, 500);
+
   setTimeout(() => {
     homeScreen?.classList.add("hidden");
     const flash2 = document.getElementById("whiteFlash");
@@ -698,6 +807,7 @@ updateEnterState();
 firebase.auth().onAuthStateChanged(() => {
   updateEnterState();
 });
+}); // <-- CHIUDE
 
 // Firebase handles
 const auth = firebase.auth();
@@ -722,10 +832,22 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     if (!user) {
   // ===== NON LOGGATO =====
   window.PLUTOO_UID = null;
+  window.__booted = false;
 
-  // ❌ NON resettare qui DOG/state/localStorage/__booted:
-  // su refresh mobile/WebView può arrivare un "null" transitorio
-  // e ti fa sparire il profilo/CTA.
+  // ✅ RESET runtime per evitare UI "mezzo loggata"
+  try {
+    window.PLUTOO_HAS_DOG = false;
+    window.PLUTOO_READONLY = false;
+    window.PLUTOO_DOG_ID = "";
+    window.CURRENT_USER_DOG_ID = "";
+    try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
+  } catch (_) {}
+
+  // ✅ FORZA HOME al prossimo render/boot (la tua app legge currentView da localStorage)
+  try {
+    localStorage.setItem("currentView", "home");
+    localStorage.setItem("entered", "0");
+  } catch (_) {}
 
   if (linkLogin) {
     linkLogin.setAttribute("data-i18n", "login");
@@ -783,12 +905,13 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
       console.error("users/{uid} upsert error:", e);
     }
 
-   // 🔒 evita boot multipli sullo stesso UID
-if (window.__booted) return;
-window.__booted = true;
+    // 🔒 evita boot multipli sullo stesso UID
+if (!window.__booted) {
+  window.__booted = true;
 
-// 🚀 avvio app
-if (typeof init === "function") init();
+  // 🚀 avvio app (una volta sola: già protetto da window.__booted)
+  if (typeof init === "function") init();
+}
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
