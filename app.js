@@ -588,14 +588,11 @@ btnEnter?.addEventListener("click", async (e) => {
       try {
         if (window.auth && typeof window.auth.onAuthStateChanged === "function") {
           if (!window.__plutoo_presence_retry_bound) {
-  window.__plutoo_presence_retry_bound = true;
+            window.__plutoo_presence_retry_bound = true;
 
-  window.auth.onAuthStateChanged(async (u) => {
-  });
-          }
-          
-          try {
-          if (!u || !window.db) return;
+            window.auth.onAuthStateChanged(async (u) => {
+              try {
+                if (!u || !window.db) return;
 
                 const uid2 = u.uid;
                 const snap2 = await window.db
