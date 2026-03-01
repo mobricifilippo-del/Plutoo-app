@@ -431,245 +431,6 @@ btnEnter?.addEventListener("click", async (e) => {
   // ✨ rimuove il glow SOLO quando clicco ENTRA
   btnEnter.classList.remove("enter-glow");
 
-  // =========================
-// ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
-// CTA NON deve mai sparire: cambia solo testo + azione
-// =========================
-(function bindCreateDogButtonsOnce() {
-  try {
-    if (window.__createDogBindDone) return;
-    window.__createDogBindDone = true;
-
-    // ✅ helper unico: aggiorna CTA in base allo stato (mai hide definitivo)
-    window.refreshCreateDogCTA = function () {
-      const inlineBtn = document.getElementById("btnCreateDogInline");
-      if (!inlineBtn) return;
-
-      const hasDog = (window.PLUTOO_HAS_DOG === true);
-      const dogId = window.PLUTOO_DOG_ID ? String(window.PLUTOO_DOG_ID) : "";
-      const dogName = (window.PLUTOO_DOG_NAME ? String(window.PLUTOO_DOG_NAME) : "").trim();
-
-      inlineBtn.style.display = "inline-flex";
-
-      if (hasDog && dogId) {
-        inlineBtn.dataset.mode = "my";
-        if (dogName) {
-          inlineBtn.textContent = `🐶 ${dogName}`;
-        } else {
-          inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";
-        }
-      } else {
-        inlineBtn.dataset.mode = "create";
-        inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
-      }
-    };
-
-    // prima passata (stato corrente)
-    window.refreshCreateDogCTA();
-
-    const clickHandler = async (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      // login richiesto
-      if (!window.auth || !window.auth.currentUser) {
-        if (typeof openAuth === "function") openAuth("login");
-        return;
-      }
-
-      // ✅ se hai già un DOG: apri "Il mio profilo"
-      if (window.PLUTOO_HAS_DOG === true && window.PLUTOO_DOG_ID) {
-        const myId = String(window.PLUTOO_DOG_ID);
-
-        // 1) prova da state/local
-        let dogs = [];
-        try { dogs = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : []; } catch (_) {}
-        if (!dogs.length) {
-          try { dogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) { dogs = []; }
-        }
-        let myDog = (Array.isArray(dogs) ? dogs : []).find(x => x && String(x.id) === myId) || null;
-
-        // 2) fallback Firestore se manca
-        if (!myDog && window.db) {
-          try {
-            const doc = await window.db.collection("dogs").doc(myId).get();
-            if (doc && doc.exists) {
-              const data = doc.data() || {};
-              myDog = {
-                id: doc.id,
-                name: (data.name || ""),
-                breed: (data.breed || ""),
-                age: (data.age || ""),
-                sex: (data.sex || ""),
-                bio: (data.bio || ""),
-                km: (data.km || 0),
-                img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
-                verified: !!data.verified
-              };
-              // memorizza nome per CTA
-              try { window.PLUTOO_DOG_NAME = (myDog.name || "").trim(); } catch (_) {}
-            }
-          } catch (_) {}
-        }
-
-        if (typeof window.openProfilePage === "function") {
-          window.openProfilePage(myDog || { id: myId });
-        }
-
-        // riallineo CTA (sicurezza)
-        if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-        return;
-      }
-
-      // ✅ se NON hai un DOG: apri create
-      if (typeof window.openProfilePage === "function") {
-        window.openProfilePage({
-          id: "__create__",
-          isCreate: true,
-          name: "",
-          img: "",
-          breed: "",
-          bio: "",
-          age: "",
-          km: 0,
-          sex: ""
-        });
-      }
-
-      // CTA resta visibile
-      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-      return;
-    };
-
-    document.addEventListener("click", (ev) => {
-      const t = ev.target;
-      if (!t) return;
-      const btn = t.closest && t.closest("#btnCreateDogInline, #btnCreateDogFromProfile");
-      if (!btn) return;
-      clickHandler(ev);
-    }, true);
-
-    // ✅ quando qualcuno aggiorna lo stato DOG altrove, può forzare refresh chiamando questo evento
-    window.addEventListener("plutoo:dog-changed", () => {
-      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-    });
-
-  } catch (e) {
-    console.error("bindCreateDogButtonsOnce error:", e);
-  }
-})();
-
- // ✅ DOG presence check (Firestore source of truth)
-// (wrappato in IIFE async per evitare await fuori contesto)
-(async function plutooDogPresenceCheck() {
-  try {
-
-    // ✅ BOOTSTRAP SEMPRE da cache (prima di Firestore)
-    // Così al refresh NON perdi "🐶 Nome" per timing auth/db.
-    try {
-      const cHas  = localStorage.getItem("plutoo_has_dog") === "1";
-      const cId   = localStorage.getItem("plutoo_dog_id") || "";
-      const cName = localStorage.getItem("plutoo_dog_name") || "";
-      const cRO   = localStorage.getItem("plutoo_readonly") === "1";
-
-      if (cId) {
-        window.PLUTOO_HAS_DOG = true;
-        window.PLUTOO_DOG_ID = cId;
-        window.PLUTOO_DOG_NAME = cName;
-        window.PLUTOO_READONLY = false;
-      }
-
-      if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-    } catch (_) {}
-
-    // ✅ Se auth/db non sono pronti, NON ribalto nulla.
-    // In più: faccio retry UNA volta quando auth diventa pronto.
-    if (!window.auth || !window.db || !window.auth.currentUser) {
-      try {
-        if (window.auth && typeof window.auth.onAuthStateChanged === "function") {
-          if (!window.__plutoo_presence_retry_bound) {
-            window.__plutoo_presence_retry_bound = true;
-
-            window.auth.onAuthStateChanged(async (u) => {
-              try {
-                if (!u || !window.db) return;
-
-                const uid2 = u.uid;
-                const snap2 = await window.db
-                  .collection("dogs")
-                  .where("ownerUid", "==", uid2)
-                  .limit(1)
-                  .get();
-
-                const hasDog2 = !snap2.empty && String(snap2.docs[0]?.data()?.name || "").trim().length > 0;
-                const dogId2 = hasDog2 ? (snap2.docs[0]?.id || null) : null;
-                const dogName2 = hasDog2 ? String(snap2.docs[0]?.data()?.name || "").trim() : "";
-
-                window.PLUTOO_HAS_DOG = hasDog2;
-                window.PLUTOO_DOG_ID = dogId2;
-                window.PLUTOO_DOG_NAME = dogName2;
-                window.PLUTOO_READONLY = !hasDog2;
-
-                if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-
-                try {
-                  localStorage.setItem("plutoo_has_dog", hasDog2 ? "1" : "0");
-                  if (dogId2) localStorage.setItem("plutoo_dog_id", dogId2);
-                  else localStorage.removeItem("plutoo_dog_id");
-                  localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
-                  if (dogName2) localStorage.setItem("plutoo_dog_name", dogName2);
-                  else localStorage.removeItem("plutoo_dog_name");
-                } catch (_) {}
-              } catch (_) {}
-            });
-          }
-        }
-      } catch (_) {}
-
-      return;
-    }
-
-    const uid = window.auth.currentUser.uid; // = PLUTOO_UID
-    if (!uid || !window.db) return;
-
-    const snap = await window.db
-      .collection("dogs")
-      .where("ownerUid", "==", uid)
-      .limit(1)
-      .get();
-
-    const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;
-    const dogId = hasDog ? (snap.docs[0]?.id || null) : null;
-    const dogName = hasDog ? String(snap.docs[0]?.data()?.name || "").trim() : "";
-
-    // Stato globale (runtime)
-    window.PLUTOO_HAS_DOG = hasDog;
-    window.PLUTOO_DOG_ID = dogId;
-    window.PLUTOO_DOG_NAME = dogName;
-
-    // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
-    window.PLUTOO_READONLY = !hasDog;
-
-    // UI CTA aggiornata (mai sparire)
-    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-
-    // Cache (non source of truth)
-    try {
-      localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
-      if (dogId) localStorage.setItem("plutoo_dog_id", dogId);
-      else localStorage.removeItem("plutoo_dog_id");
-      localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
-      if (dogName) localStorage.setItem("plutoo_dog_name", dogName);
-      else localStorage.removeItem("plutoo_dog_name");
-    } catch (_) {}
-
-  } catch (err) {
-    // (FIX) fallback safe: NON forzo "DOG assente" e NON tocco cache/stato.
-    // Se auth/db non sono pronti al refresh, mantengo lo stato/cached e aggiorno solo UI.
-    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-  }
-})();
-
   // ✅ ENTRA definitivo (WOW)
   try { localStorage.setItem("entered", "1"); } catch (err) {}
   state.entered = true;
@@ -808,6 +569,245 @@ firebase.auth().onAuthStateChanged(() => {
   updateEnterState();
 });
 }); // <-- CHIUDE
+
+// =========================
+// ✅ CREATE DOG: handler unico (Vicino a te + dentro profilo)
+// CTA NON deve mai sparire: cambia solo testo + azione
+// =========================
+(function bindCreateDogButtonsOnce() {
+try {
+if (window.__createDogBindDone) return;
+window.__createDogBindDone = true;
+
+// ✅ helper unico: aggiorna CTA in base allo stato (mai hide definitivo)  
+window.refreshCreateDogCTA = function () {  
+  const inlineBtn = document.getElementById("btnCreateDogInline");  
+  if (!inlineBtn) return;  
+
+  const hasDog = (window.PLUTOO_HAS_DOG === true);  
+  const dogId = window.PLUTOO_DOG_ID ? String(window.PLUTOO_DOG_ID) : "";  
+  const dogName = (window.PLUTOO_DOG_NAME ? String(window.PLUTOO_DOG_NAME) : "").trim();  
+
+  inlineBtn.style.display = "inline-flex";  
+
+  if (hasDog && dogId) {  
+    inlineBtn.dataset.mode = "my";  
+    if (dogName) {  
+      inlineBtn.textContent = `🐶 ${dogName}`;  
+    } else {  
+      inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";  
+    }  
+  } else {  
+    inlineBtn.dataset.mode = "create";  
+    inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";  
+  }  
+};  
+
+// prima passata (stato corrente)  
+window.refreshCreateDogCTA();  
+
+const clickHandler = async (ev) => {  
+  ev.preventDefault();  
+  ev.stopPropagation();  
+
+  // login richiesto  
+  if (!window.auth || !window.auth.currentUser) {  
+    if (typeof openAuth === "function") openAuth("login");  
+    return;  
+  }  
+
+  // ✅ se hai già un DOG: apri "Il mio profilo"  
+  if (window.PLUTOO_HAS_DOG === true && window.PLUTOO_DOG_ID) {  
+    const myId = String(window.PLUTOO_DOG_ID);  
+
+    // 1) prova da state/local  
+    let dogs = [];  
+    try { dogs = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : []; } catch (_) {}  
+    if (!dogs.length) {  
+      try { dogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) { dogs = []; }  
+    }  
+    let myDog = (Array.isArray(dogs) ? dogs : []).find(x => x && String(x.id) === myId) || null;  
+
+    // 2) fallback Firestore se manca  
+    if (!myDog && window.db) {  
+      try {  
+        const doc = await window.db.collection("dogs").doc(myId).get();  
+        if (doc && doc.exists) {  
+          const data = doc.data() || {};  
+          myDog = {  
+            id: doc.id,  
+            name: (data.name || ""),  
+            breed: (data.breed || ""),  
+            age: (data.age || ""),  
+            sex: (data.sex || ""),  
+            bio: (data.bio || ""),  
+            km: (data.km || 0),  
+            img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),  
+            verified: !!data.verified  
+          };  
+          // memorizza nome per CTA  
+          try { window.PLUTOO_DOG_NAME = (myDog.name || "").trim(); } catch (_) {}  
+        }  
+      } catch (_) {}  
+    }  
+
+    if (typeof window.openProfilePage === "function") {  
+      window.openProfilePage(myDog || { id: myId });  
+    }  
+
+    // riallineo CTA (sicurezza)  
+    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+    return;  
+  }  
+
+  // ✅ se NON hai un DOG: apri create  
+  if (typeof window.openProfilePage === "function") {  
+    window.openProfilePage({  
+      id: "__create__",  
+      isCreate: true,  
+      name: "",  
+      img: "",  
+      breed: "",  
+      bio: "",  
+      age: "",  
+      km: 0,  
+      sex: ""  
+    });  
+  }  
+
+  // CTA resta visibile  
+  if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+  return;  
+};  
+
+document.addEventListener("click", (ev) => {  
+  const t = ev.target;  
+  if (!t) return;  
+  const btn = t.closest && t.closest("#btnCreateDogInline, #btnCreateDogFromProfile");  
+  if (!btn) return;  
+  clickHandler(ev);  
+}, true);  
+
+// ✅ quando qualcuno aggiorna lo stato DOG altrove, può forzare refresh chiamando questo evento  
+window.addEventListener("plutoo:dog-changed", () => {  
+  if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+});
+
+} catch (e) {
+console.error("bindCreateDogButtonsOnce error:", e);
+}
+})();
+
+// ✅ DOG presence check (Firestore source of truth)
+// (wrappato in IIFE async per evitare await fuori contesto)
+(async function plutooDogPresenceCheck() {
+try {
+
+// ✅ BOOTSTRAP SEMPRE da cache (prima di Firestore)  
+// Così al refresh NON perdi "🐶 Nome" per timing auth/db.  
+try {  
+  const cHas  = localStorage.getItem("plutoo_has_dog") === "1";  
+  const cId   = localStorage.getItem("plutoo_dog_id") || "";  
+  const cName = localStorage.getItem("plutoo_dog_name") || "";  
+  const cRO   = localStorage.getItem("plutoo_readonly") === "1";  
+
+  if (cId) {  
+    window.PLUTOO_HAS_DOG = true;  
+    window.PLUTOO_DOG_ID = cId;  
+    window.PLUTOO_DOG_NAME = cName;  
+    window.PLUTOO_READONLY = false;  
+  }  
+
+  if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+} catch (_) {}  
+
+// ✅ Se auth/db non sono pronti, NON ribalto nulla.  
+// In più: faccio retry UNA volta quando auth diventa pronto.  
+if (!window.auth || !window.db || !window.auth.currentUser) {  
+  try {  
+    if (window.auth && typeof window.auth.onAuthStateChanged === "function") {  
+      if (!window.__plutoo_presence_retry_bound) {  
+        window.__plutoo_presence_retry_bound = true;  
+
+        window.auth.onAuthStateChanged(async (u) => {  
+          try {  
+            if (!u || !window.db) return;  
+
+            const uid2 = u.uid;  
+            const snap2 = await window.db  
+              .collection("dogs")  
+              .where("ownerUid", "==", uid2)  
+              .limit(1)  
+              .get();  
+
+            const hasDog2 = !snap2.empty && String(snap2.docs[0]?.data()?.name || "").trim().length > 0;  
+            const dogId2 = hasDog2 ? (snap2.docs[0]?.id || null) : null;  
+            const dogName2 = hasDog2 ? String(snap2.docs[0]?.data()?.name || "").trim() : "";  
+
+            window.PLUTOO_HAS_DOG = hasDog2;  
+            window.PLUTOO_DOG_ID = dogId2;  
+            window.PLUTOO_DOG_NAME = dogName2;  
+            window.PLUTOO_READONLY = !hasDog2;  
+
+            if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+
+            try {  
+              localStorage.setItem("plutoo_has_dog", hasDog2 ? "1" : "0");  
+              if (dogId2) localStorage.setItem("plutoo_dog_id", dogId2);  
+              else localStorage.removeItem("plutoo_dog_id");  
+              localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");  
+              if (dogName2) localStorage.setItem("plutoo_dog_name", dogName2);  
+              else localStorage.removeItem("plutoo_dog_name");  
+            } catch (_) {}  
+          } catch (_) {}  
+        });  
+      }  
+    }  
+  } catch (_) {}  
+
+  return;  
+}  
+
+const uid = window.auth.currentUser.uid; // = PLUTOO_UID  
+if (!uid || !window.db) return;  
+
+const snap = await window.db  
+  .collection("dogs")  
+  .where("ownerUid", "==", uid)  
+  .limit(1)  
+  .get();  
+
+const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;  
+const dogId = hasDog ? (snap.docs[0]?.id || null) : null;  
+const dogName = hasDog ? String(snap.docs[0]?.data()?.name || "").trim() : "";  
+
+// Stato globale (runtime)  
+window.PLUTOO_HAS_DOG = hasDog;  
+window.PLUTOO_DOG_ID = dogId;  
+window.PLUTOO_DOG_NAME = dogName;  
+
+// ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)  
+window.PLUTOO_READONLY = !hasDog;  
+
+// UI CTA aggiornata (mai sparire)  
+if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+
+// Cache (non source of truth)  
+try {  
+  localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");  
+  if (dogId) localStorage.setItem("plutoo_dog_id", dogId);  
+  else localStorage.removeItem("plutoo_dog_id");  
+  localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");  
+  if (dogName) localStorage.setItem("plutoo_dog_name", dogName);  
+  else localStorage.removeItem("plutoo_dog_name");  
+} catch (_) {}
+
+} catch (err) {
+// (FIX) fallback safe: NON forzo "DOG assente" e NON tocco cache/stato.
+// Se auth/db non sono pronti al refresh, mantengo lo stato/cached e aggiorno solo UI.
+if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+}
+})();
 
 // Firebase handles
 const auth = firebase.auth();
