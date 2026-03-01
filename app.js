@@ -836,17 +836,11 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 
   // ✅ RESET runtime per evitare UI "mezzo loggata"
 try {
-  const __cid = localStorage.getItem("plutoo_dog_id") || "";
-  const __cname = localStorage.getItem("plutoo_dog_name") || "";
-  const __cro = localStorage.getItem("plutoo_readonly") === "1";
-
-  window.PLUTOO_HAS_DOG = !!__cid;
-  window.PLUTOO_DOG_ID = __cid;
-  window.PLUTOO_DOG_NAME = __cname;
-  window.PLUTOO_READONLY = __cid ? false : __cro;
-
-  window.CURRENT_USER_DOG_ID = __cid || "";
-  try { CURRENT_USER_DOG_ID = __cid || ""; } catch (_) {}
+  window.PLUTOO_HAS_DOG = false;
+  window.PLUTOO_READONLY = false;
+  window.PLUTOO_DOG_ID = "";
+  window.CURRENT_USER_DOG_ID = "";
+  try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
 } catch (_) {}
 
   // ✅ FORZA HOME al prossimo render/boot (la tua app legge currentView da localStorage)
