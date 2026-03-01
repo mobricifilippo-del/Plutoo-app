@@ -834,20 +834,37 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
   window.PLUTOO_UID = null;
   window.__booted = false;
 
-  // ✅ RESET runtime per evitare UI "mezzo loggata"
-try {
-  window.PLUTOO_HAS_DOG = false;
-  window.PLUTOO_READONLY = false;
-  window.PLUTOO_DOG_ID = "";
-  window.CURRENT_USER_DOG_ID = "";
-  try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
-} catch (_) {}
-
-  // ✅ FORZA HOME al prossimo render/boot (la tua app legge currentView da localStorage)
+  // ✅ Anti-glitch refresh: non resettare subito (Firebase può passare da user=null per pochi ms)
   try {
-    localStorage.setItem("currentView", "home");
-    localStorage.setItem("entered", "0");
+    if (window.__plutooAuthNullTimer) clearTimeout(window.__plutooAuthNullTimer);
   } catch (_) {}
+
+  window.__plutooAuthNullTimer = setTimeout(() => {
+    try {
+      // Se nel frattempo l'utente è tornato loggato, NON tocco nulla
+      if (window.auth && window.auth.currentUser) return;
+
+      // ✅ RESET runtime SOLO se davvero non loggato
+      try {
+        window.PLUTOO_HAS_DOG = false;
+        window.PLUTOO_READONLY = false;
+        window.PLUTOO_DOG_ID = "";
+        window.CURRENT_USER_DOG_ID = "";
+        try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
+      } catch (_) {}
+
+      // ✅ FORZA HOME al prossimo render/boot
+      try {
+        localStorage.setItem("currentView", "home");
+        localStorage.setItem("entered", "0");
+      } catch (_) {}
+
+      // (opzionale ma utile) riallinea CTA se esiste già
+      try {
+        if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+      } catch (_) {}
+    } catch (_) {}
+  }, 600);
 
   if (linkLogin) {
     linkLogin.setAttribute("data-i18n", "login");
