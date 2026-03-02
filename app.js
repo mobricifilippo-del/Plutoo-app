@@ -2504,13 +2504,16 @@ msgLists.forEach((list) => {
   function cardHTML(d){
     return `
       <article class="card dog-card" data-id="${d.id}">
-        <img
-          src="./${d.img}"
-          alt="${d.name}"
-          class="card-img"
-          decoding="async"
-          onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"
-        />
+       <img
+  src="./${d.img}"
+  alt="${d.name}"
+  class="card-img"
+  loading="eager"
+  fetchpriority="high"
+  decoding="sync"
+  onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"
+/>
+
         <div class="card-info">
           <h3>${d.name} ${d.verified?"✅":""}</h3>
           <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
