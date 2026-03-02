@@ -386,12 +386,40 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
   });
 
   // LOGOUT (dentro pannello "già loggato")
-  document.getElementById("btnLogout")?.addEventListener("click", async () => {
-    try {
-      await window.auth.signOut();
-      closeAuth();
-    } catch (_) {}
-  });
+document.getElementById("btnLogout")?.addEventListener("click", async () => {
+  try {
+    await window.auth.signOut();
+  } catch (_) {}
+
+  // ✅ RESET UI + DOG SOLO su logout esplicito
+  try {
+    window.PLUTOO_UID = null;
+    window.__booted = false;
+
+    window.PLUTOO_HAS_DOG = false;
+    window.PLUTOO_READONLY = false;
+    window.PLUTOO_DOG_ID = "";
+    window.PLUTOO_DOG_NAME = "";
+    window.CURRENT_USER_DOG_ID = "";
+    try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
+  } catch (_) {}
+
+  // ✅ reset cache minima per CTA/UI
+  try {
+    localStorage.setItem("plutoo_has_dog", "0");
+    localStorage.removeItem("plutoo_dog_id");
+    localStorage.removeItem("plutoo_dog_name");
+    localStorage.setItem("plutoo_readonly", "0");
+  } catch (_) {}
+
+  // ✅ torna Home al prossimo avvio
+  try {
+    localStorage.setItem("currentView", "home");
+    localStorage.setItem("entered", "0");
+  } catch (_) {}
+
+  try { closeAuth(); } catch (_) {}
+});
 
   document.getElementById("btnAlreadyClose")?.addEventListener("click", closeAuth);
 
@@ -830,40 +858,29 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     const linkRegister = document.getElementById("linkRegister");
 
     if (!user) {
-  // ===== NON LOGGATO =====
-  window.PLUTOO_UID = null;
-  window.__booted = false;
+      // ===== NON LOGGATO =====
+      window.PLUTOO_UID = null;
+      window.__booted = false;
 
-  // ✅ RESET runtime per evitare UI "mezzo loggata"
-  try {
-    window.PLUTOO_HAS_DOG = false;
-    window.PLUTOO_READONLY = false;
-    window.PLUTOO_DOG_ID = "";
-    window.CURRENT_USER_DOG_ID = "";
-    try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
-  } catch (_) {}
+      // ✅ IMPORTANTISSIMO:
+      // NON resetto PLUTOO_HAS_DOG / DOG_ID qui, perché al refresh Firebase può passare da user=null per un istante.
+      // Il reset "vero" (Home/entered=0 + clear DOG) avviene SOLO su Logout esplicito / Delete account.
 
-  // ✅ FORZA HOME al prossimo render/boot (la tua app legge currentView da localStorage)
-  try {
-    localStorage.setItem("currentView", "home");
-    localStorage.setItem("entered", "0");
-  } catch (_) {}
+      if (linkLogin) {
+        linkLogin.setAttribute("data-i18n", "login");
+        linkLogin.textContent = "Login";
+        linkLogin.onclick = (e) => {
+          e.preventDefault();
+          window.openAuth("login");
+        };
+      }
 
-  if (linkLogin) {
-    linkLogin.setAttribute("data-i18n", "login");
-    linkLogin.textContent = "Login";
-    linkLogin.onclick = (e) => {
-      e.preventDefault();
-      window.openAuth("login");
-    };
-  }
+      if (linkRegister) {
+        linkRegister.style.display = "";
+      }
 
-  if (linkRegister) {
-    linkRegister.style.display = "";
-  }
-
-  return;
-    } 
+      return;
+    }
 
     // ===== LOGGATO =====
     window.PLUTOO_UID = user.uid;
@@ -906,12 +923,12 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     }
 
     // 🔒 evita boot multipli sullo stesso UID
-if (!window.__booted) {
-  window.__booted = true;
+    if (!window.__booted) {
+      window.__booted = true;
 
-  // 🚀 avvio app (una volta sola: già protetto da window.__booted)
-  if (typeof init === "function") init();
-}
+      // 🚀 avvio app (una volta sola: già protetto da window.__booted)
+      if (typeof init === "function") init();
+    }
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
