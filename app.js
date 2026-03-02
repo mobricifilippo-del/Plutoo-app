@@ -3913,178 +3913,190 @@ if (isCreate) {
       });
     }
   } else {
+    
     // PROFILO: hero img / gallery / selfie cliccabili
-    const heroImgEl = profileContent.querySelector(".pp-hero img");
-    if (heroImgEl) {
-      heroImgEl.addEventListener("click", () => {
-        openPlutooImageViewer(heroImgEl.getAttribute("src"));
-      });
-    }
+const heroImgEl = profileContent.querySelector(".pp-hero img");
+if (heroImgEl) {
+heroImgEl.addEventListener("click", () => {
+openPlutooImageViewer(heroImgEl.getAttribute("src"));
+});
+}
 
-    const selfieEl = profileContent.querySelector(".selfie .img");
-    if (selfieEl) {
-      selfieEl.addEventListener("click", () => {
-        openPlutooImageViewer(selfieEl.getAttribute("src"));
-      });
-    }
+const selfieEl = profileContent.querySelector(".selfie .img");  
+if (selfieEl) {  
+  selfieEl.addEventListener("click", () => {  
+    openPlutooImageViewer(selfieEl.getAttribute("src"));  
+  });  
+}  
 
-    // Elimina account (locale)
-    const btnDel = document.getElementById("btnDeleteAccount");
-    if (btnDel) {
-      btnDel.addEventListener("click", () => {
-        const ok = confirm(state.lang === "it"
-          ? "Eliminare l'account? (Cancella profilo e dati da Firebase + TUTTI i dati Plutoo su questo dispositivo)"
-          : "Delete account? (Deletes profile/data from Firebase + ALL Plutoo data on this device)");
-        if (!ok) return;
+// Elimina account (locale)  
+const btnDel = document.getElementById("btnDeleteAccount");  
+if (btnDel) {  
+  btnDel.addEventListener("click", () => {  
+    const ok = confirm(state.lang === "it"  
+      ? "Eliminare l'account? (Cancella profilo e dati da Firebase + TUTTI i dati Plutoo su questo dispositivo)"  
+      : "Delete account? (Deletes profile/data from Firebase + ALL Plutoo data on this device)");  
+    if (!ok) return;  
 
-        try {
-          // ✅ 1) Cancellazione Firebase (NO await: solo Promise chain)
-          const uid = window.PLUTOO_UID || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
-          const user = (window.auth && window.auth.currentUser) ? window.auth.currentUser : null;
-          const db = window.db || null;
+    try {  
+      // ✅ 1) Cancellazione Firebase (NO await: solo Promise chain)  
+      const uid = window.PLUTOO_UID || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");  
+      const user = (window.auth && window.auth.currentUser) ? window.auth.currentUser : null;  
+      const db = window.db || null;  
 
-          const deleteFromFirebase = () => {
-            // Se non ho auth/db, salto (non blocco mai l'app)
-            if (!uid || !user || !db) return Promise.resolve();
+      const deleteFromFirebase = () => {  
+        // Se non ho auth/db, salto (non blocco mai l'app)  
+        if (!uid || !user || !db) return Promise.resolve();  
 
-            // a) elimina dogs dell'ownerUid
-            const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()
-              .then((snap) => {
-                const jobs = [];
-                snap.forEach((doc) => {
-                  jobs.push(doc.ref.delete().catch(() => {}));
-                });
-                return Promise.all(jobs);
-              })
-              .catch(() => {});
+        // a) elimina dogs dell'ownerUid  
+        const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()  
+          .then((snap) => {  
+            const jobs = [];  
+            snap.forEach((doc) => {  
+              jobs.push(doc.ref.delete().catch(() => {}));  
+            });  
+            return Promise.all(jobs);  
+          })  
+          .catch(() => {});  
 
-            // b) elimina users/{uid}
-            const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});
+        // b) elimina users/{uid}  
+        const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});  
 
-            // c) elimina Auth user (può richiedere recent login)
-            const delAuth = user.delete();
+        // c) elimina Auth user (può richiedere recent login)  
+        const delAuth = user.delete();  
 
-            return Promise.all([delDogs, delUserDoc, delAuth]).then(() => {}).catch((err) => { throw err; });
-          };
+        return Promise.all([delDogs, delUserDoc, delAuth]).then(() => {}).catch((err) => { throw err; });  
+      };  
 
-          deleteFromFirebase()
-            .then(() => {
-              // ✅ wipe mirato: rimuovo tutte le chiavi Plutoo + per-dog (gallery_, selfieImage_, docs, stories, ecc.)
-              const keys = [];
-              for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                if (k) keys.push(k);
-              }
+      deleteFromFirebase()  
+        .then(() => {  
+          // ✅ wipe mirato: rimuovo tutte le chiavi Plutoo + per-dog (gallery_, selfieImage_, docs, stories, ecc.)  
+          const keys = [];  
+          for (let i = 0; i < localStorage.length; i++) {  
+            const k = localStorage.key(i);  
+            if (k) keys.push(k);  
+          }  
 
-              keys.forEach((k) => {
-                // tutto ciò che è chiaramente Plutoo / per-dog
-                if (
-                  k === "dogs" ||
-                  k === "matches" ||
-                  k === "matchCount" ||
-                  k === "currentProfileDogId" ||
-                  k === "ownerDocsUploaded" ||
-                  k === "dogDocsUploaded" ||
-                  k === "socialRewardViewed" ||
-                  k === "selfieUntilByDog" ||
-                  k === "plutoo_plus" ||
-                  k === "plutoo_has_dog" ||
-                  k === "plutoo_dog_id" ||
-                  k === "plutoo_readonly" ||
-                  k.startsWith("plutoo_") ||
-                  k.startsWith("gallery_") ||
-                  k.startsWith("selfieImage_") ||
-                  k.startsWith("galleryBound_") ||
-                  k.startsWith("ownerSocialByDog_") ||
-                  k.startsWith("story_") ||
-                  k.startsWith("stories_") ||
-                  k.startsWith("StoriesState_") ||
-                  k.startsWith("notifications_") ||
-                  k.startsWith("follow_") ||
-                  k.startsWith("photo_")
-                ) {
-                  localStorage.removeItem(k);
-                }
-              });
+          keys.forEach((k) => {  
+            // tutto ciò che è chiaramente Plutoo / per-dog  
+            if (  
+              k === "dogs" ||  
+              k === "matches" ||  
+              k === "matchCount" ||  
+              k === "currentProfileDogId" ||  
+              k === "ownerDocsUploaded" ||  
+              k === "dogDocsUploaded" ||  
+              k === "socialRewardViewed" ||  
+              k === "selfieUntilByDog" ||  
+              k === "plutoo_plus" ||  
+              k === "plutoo_has_dog" ||  
+              k === "plutoo_dog_id" ||  
+              k === "plutoo_readonly" ||  
+              k.startsWith("plutoo_") ||  
+              k.startsWith("gallery_") ||  
+              k.startsWith("selfieImage_") ||  
+              k.startsWith("galleryBound_") ||  
+              k.startsWith("ownerSocialByDog_") ||  
+              k.startsWith("story_") ||  
+              k.startsWith("stories_") ||  
+              k.startsWith("StoriesState_") ||  
+              k.startsWith("notifications_") ||  
+              k.startsWith("follow_") ||  
+              k.startsWith("photo_")  
+            ) {  
+              localStorage.removeItem(k);  
+            }  
+          });  
 
-              // ✅ RESET runtime (QUESTO È IL FIX)
-              try {
-                window.PLUTOO_HAS_DOG = false;
-                window.PLUTOO_READONLY = false;
-                window.PLUTOO_DOG_ID = "";
-                window.CURRENT_USER_DOG_ID = "";
-                try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
-              } catch (_) {}
+          // ✅ RESET runtime (QUESTO È IL FIX)  
+          try {  
+            window.PLUTOO_HAS_DOG = false;  
+            window.PLUTOO_READONLY = false;  
+            window.PLUTOO_DOG_ID = "";  
+            window.CURRENT_USER_DOG_ID = "";  
+            try { CURRENT_USER_DOG_ID = ""; } catch (_) {}  
+          } catch (_) {}  
 
-              // ✅ reset state in RAM (evita UI incoerente prima del reload)
-              try {
-                if (state) {
-                  state.dogs = [];
-                  state.matches = {};
-                  state.matchCount = 0;
-                  state.ownerDocsUploaded = {};
-                  state.dogDocsUploaded = {};
-                  state.selfieUntilByDog = {};
-                  state.socialRewardViewed = {};
-                  state.createDogDraft = {};
-                  state.currentDogProfile = null;
-                }
-              } catch (_) {}
+          // ✅ reset state in RAM (evita UI incoerente prima del reload)  
+          try {  
+            if (state) {  
+              state.dogs = [];  
+              state.matches = {};  
+              state.matchCount = 0;  
+              state.ownerDocsUploaded = {};  
+              state.dogDocsUploaded = {};  
+              state.selfieUntilByDog = {};  
+              state.socialRewardViewed = {};  
+              state.createDogDraft = {};  
+              state.currentDogProfile = null;  
+            }  
+          } catch (_) {}  
 
-              // (opzionale ma pulito) session storage
-              try { sessionStorage.clear(); } catch (_) {}
+          // (opzionale ma pulito) session storage  
+          try { sessionStorage.clear(); } catch (_) {}  
 
-              // ✅ signOut (se possibile) — poi reload
-              try {
-                if (window.auth) {
-                  return window.auth.signOut().catch(() => {});
-                }
-              } catch (_) {}
-              return Promise.resolve();
-            })
-            .then(() => {
-              location.reload();
-            })
-            .catch((err) => {
-              
-          // ✅ non blocco mai l'app
+          // ✅ signOut (se possibile) — poi reload  
+          try {  
+            if (window.auth) {  
+              return window.auth.signOut().catch(() => {});  
+            }  
+          } catch (_) {}  
+          return Promise.resolve();  
+        })  
+        .then(() => {  
+          // ✅ forza ritorno HOME al reload (anche nel SUCCESS, non solo nel catch)
+          try {
+            localStorage.removeItem("entered");
+            localStorage.removeItem("currentView");
+            localStorage.setItem("entered", "0");
+            localStorage.setItem("currentView", "home");
+          } catch (_) {}
+
+          location.reload();  
+        })  
+        .catch((err) => {  
+            
+      // ✅ non blocco mai l'app
+
 const code = (err && err.code) ? err.code : "";
 if (code === "auth/requires-recent-login") {
-  alert("Per eliminare l’account serve un login recente. Ti disconnetto: rientra e riprova.");
+alert("Per eliminare l’account serve un login recente. Ti disconnetto: rientra e riprova.");
 
-  // ✅ forza ritorno HOME al reload
-  try {
-    localStorage.removeItem("entered");
-    localStorage.removeItem("currentView");
-    localStorage.setItem("entered", "0");
-    localStorage.setItem("currentView", "home");
-  } catch (_) {}
+// ✅ forza ritorno HOME al reload
+try {
+localStorage.removeItem("entered");
+localStorage.removeItem("currentView");
+localStorage.setItem("entered", "0");
+localStorage.setItem("currentView", "home");
+} catch (_) {}
 
-  try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
-  location.reload();
-  return;
+try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
+location.reload();
+return;
 }
 
 alert("Errore eliminazione account. Ti riporto alla Home senza bloccare l'app.");
 
 // ✅ forza ritorno HOME al reload
 try {
-  localStorage.removeItem("entered");
-  localStorage.removeItem("currentView");
-  localStorage.setItem("entered", "0");
-  localStorage.setItem("currentView", "home");
+localStorage.removeItem("entered");
+localStorage.removeItem("currentView");
+localStorage.setItem("entered", "0");
+localStorage.setItem("currentView", "home");
 } catch (_) {}
 
 try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
 location.reload();
-            });
+});
 
-        } catch (_) {}
+} catch (_) {}  
 
-      });
-    }
-  }
+  });  
+}
+
+}
 })();
+
       const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
