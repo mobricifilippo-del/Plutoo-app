@@ -1554,7 +1554,7 @@ const DOGS = [
     homeScreen.classList.add("hidden");
     appScreen.classList.remove("hidden");
 
-    const viewToRestore = state.currentView || "nearby";
+    const viewToRestore = localStorage.getItem("currentView") || state.currentView || "nearby";
 
     if (viewToRestore === "profile") {
       const savedId = localStorage.getItem("currentProfileDogId");
