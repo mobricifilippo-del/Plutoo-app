@@ -1557,9 +1557,21 @@ const DOGS = [
     const viewToRestore = localStorage.getItem("currentView") || state.currentView || "nearby";
 
     if (viewToRestore === "profile") {
-      setActiveView("profile");
-
       const savedId = localStorage.getItem("currentProfileDogId");
+
+      // ✅ REGOLA DEMO: nessun “profilo attivo” al refresh.
+      // Se l'id è un demo (presente in DOGS), NON ripristino la vista profilo.
+      // Torno a nearby e pulisco il marker, così non si ripete al prossimo refresh.
+      if (savedId) {
+        const demoDog = DOGS.find(d => d.id == savedId);
+        if (demoDog) {
+          try { localStorage.removeItem("currentProfileDogId"); } catch (_) {}
+          setActiveView("nearby");
+          showAdBanner();
+          return;
+        }
+      }
+
       if (savedId) {
         const dog = DOGS.find(d => d.id == savedId);
         if (dog && window.openProfilePage) {
