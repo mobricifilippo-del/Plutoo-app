@@ -723,7 +723,7 @@ console.error("bindCreateDogButtonsOnce error:", e);
 
 // ✅ DOG presence check (Firestore source of truth)
 // (wrappato in IIFE async per evitare await fuori contesto)
-(async function plutooDogPresenceCheck() {
+window.plutooDogPresenceCheck = async function plutooDogPresenceCheck() {
 try {
 
 // ✅ BOOTSTRAP SEMPRE da cache (prima di Firestore)  
@@ -780,7 +780,7 @@ try {
 // Se auth/db non sono pronti al refresh, mantengo lo stato/cached e aggiorno solo UI.
 if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
 }
-})();
+};
 
 // Firebase handles
 const auth = firebase.auth();
