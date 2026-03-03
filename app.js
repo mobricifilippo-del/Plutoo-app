@@ -4657,6 +4657,295 @@ const newDogId = dogRef.id;
         });
       });
 
+      // ===============================
+// ✅ OWNER-ONLY: Profile Settings + Edit Socials (BIND) — STABILE
+// ===============================
+(function bindOwnerOnlyProfileButtons() {
+  try {
+    if (!d || !d.id) return;
+
+    const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
+    const hasDog  = (window.PLUTOO_HAS_DOG === true || localStorage.getItem("plutoo_has_dog") === "1");
+    const isOwnerViewing = hasDog && myDogId && String(d.id) === myDogId;
+    if (!isOwnerViewing) return;
+
+    if (!state || typeof state !== "object") return;
+    if (!state.ownerSocialByDog || typeof state.ownerSocialByDog !== "object") state.ownerSocialByDog = {};
+
+    const closeExisting = (id) => {
+      const old = document.getElementById(id);
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+    };
+
+    const normalizeUrl = (u) => {
+      const s = String(u || "").trim();
+      if (!s) return "";
+      if (/^https?:\/\//i.test(s)) return s;
+      return "https://" + s.replace(/^\/+/, "");
+    };
+
+    // =========================
+    // 1) IMPOSTAZIONI PROFILO (full screen stabile, no router)
+    // =========================
+    const btnSettings0 = document.getElementById("btnProfileSettings");
+    if (btnSettings0) {
+      const btnSettings = btnSettings0.cloneNode(true);
+      btnSettings0.parentNode.replaceChild(btnSettings, btnSettings0);
+
+      btnSettings.addEventListener("click", () => {
+        closeExisting("plutooProfileSettingsView");
+
+        const wrap = document.createElement("div");
+        wrap.id = "plutooProfileSettingsView";
+        wrap.style.position = "fixed";
+        wrap.style.left = "0";
+        wrap.style.top = "0";
+        wrap.style.right = "0";
+        wrap.style.bottom = "0";
+        wrap.style.zIndex = "99999";
+        wrap.style.background = "rgba(0,0,0,.86)";
+        wrap.style.display = "flex";
+        wrap.style.flexDirection = "column";
+
+        const card = document.createElement("div");
+        card.style.margin = "12px";
+        card.style.borderRadius = "18px";
+        card.style.border = "1px solid rgba(255,255,255,.10)";
+        card.style.background = "#121218";
+        card.style.padding = "14px";
+        card.style.display = "flex";
+        card.style.flexDirection = "column";
+        card.style.gap = "10px";
+        card.style.flex = "1";
+        card.style.overflow = "auto";
+
+        const title = document.createElement("div");
+        title.style.fontWeight = "900";
+        title.style.fontSize = "1.05rem";
+        title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
+
+        const bioLabel = document.createElement("div");
+        bioLabel.style.opacity = ".85";
+        bioLabel.style.fontWeight = "800";
+        bioLabel.textContent = (state.lang === "it") ? "Bio del DOG" : "DOG bio";
+
+        const bio = document.createElement("textarea");
+        bio.rows = 5;
+        bio.value = String(d.bio || "");
+        bio.placeholder = (state.lang === "it")
+          ? "Scrivi una breve descrizione del tuo DOG…"
+          : "Write a short description of your DOG…";
+        bio.style.width = "100%";
+        bio.style.background = "transparent";
+        bio.style.border = "1px solid rgba(255,255,255,.12)";
+        bio.style.borderRadius = "14px";
+        bio.style.padding = "10px 12px";
+        bio.style.color = "inherit";
+        bio.style.resize = "vertical";
+        bio.style.minHeight = "120px";
+
+        const feedback = document.createElement("div");
+        feedback.style.display = "none";
+        feedback.style.padding = ".65rem .8rem";
+        feedback.style.borderRadius = "14px";
+        feedback.style.fontWeight = "900";
+
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.gap = ".6rem";
+        row.style.marginTop = "8px";
+
+        const btnBack = document.createElement("button");
+        btnBack.type = "button";
+        btnBack.className = "btn ghost";
+        btnBack.style.flex = "1";
+        btnBack.textContent = (state.lang === "it") ? "← Indietro" : "← Back";
+
+        const btnSave = document.createElement("button");
+        btnSave.type = "button";
+        btnSave.className = "btn accent";
+        btnSave.style.flex = "1";
+        btnSave.textContent = (state.lang === "it") ? "Salva" : "Save";
+
+        btnBack.addEventListener("click", () => closeExisting("plutooProfileSettingsView"));
+        wrap.addEventListener("click", (e) => { if (e.target === wrap) closeExisting("plutooProfileSettingsView"); });
+
+        btnSave.addEventListener("click", async () => {
+          const newBio = String(bio.value || "").trim();
+
+          feedback.style.display = "block";
+          feedback.style.border = "1px solid rgba(205,164,52,.35)";
+          feedback.style.background = "rgba(205,164,52,.10)";
+          feedback.style.color = "#CDA434";
+          feedback.textContent = (state.lang === "it") ? "Salvataggio in corso..." : "Saving...";
+
+          try {
+            const db = window.db || null;
+
+            // dogs/{uid} => docId = d.id (owner viewing)
+            if (db) {
+              const dogRef = db.collection("dogs").doc(String(d.id));
+              const ts = (window.firebase && firebase.firestore && firebase.firestore.FieldValue && firebase.firestore.FieldValue.serverTimestamp)
+                ? firebase.firestore.FieldValue.serverTimestamp()
+                : new Date();
+              await dogRef.set({ bio: newBio, updatedAt: ts }, { merge: true });
+            }
+
+            d.bio = newBio;
+
+            try {
+              if (Array.isArray(state.dogs)) {
+                const idx = state.dogs.findIndex(x => String(x && x.id) === String(d.id));
+                if (idx >= 0) {
+                  state.dogs[idx].bio = newBio;
+                  localStorage.setItem("dogs", JSON.stringify(state.dogs));
+                }
+              }
+            } catch (_) {}
+
+            feedback.style.border = "1px solid rgba(60,200,120,.45)";
+            feedback.style.background = "rgba(60,200,120,.10)";
+            feedback.style.color = "#bff7d6";
+            feedback.textContent = (state.lang === "it") ? "✅ Bio salvata" : "✅ Bio saved";
+
+            setTimeout(() => {
+              closeExisting("plutooProfileSettingsView");
+              if (typeof window.openProfilePage === "function") window.openProfilePage(d);
+            }, 450);
+
+          } catch (e) {
+            try { console.error("Profile bio save error:", e); } catch (_) {}
+            feedback.style.border = "1px solid rgba(255,80,80,.45)";
+            feedback.style.background = "rgba(255,0,0,.08)";
+            feedback.style.color = "#ffb3b3";
+            feedback.textContent = (state.lang === "it") ? "❌ Errore salvataggio bio" : "❌ Bio save error";
+          }
+        });
+
+        row.appendChild(btnBack);
+        row.appendChild(btnSave);
+
+        card.appendChild(title);
+        card.appendChild(bioLabel);
+        card.appendChild(bio);
+        card.appendChild(feedback);
+        card.appendChild(row);
+
+        wrap.appendChild(card);
+        document.body.appendChild(wrap);
+      });
+    }
+
+    // =========================
+    // 2) MODIFICA SOCIAL (sheet leggero stabile)
+    // =========================
+    const btnSocial0 = document.getElementById("btnEditSocial");
+    if (btnSocial0) {
+      const btnSocial = btnSocial0.cloneNode(true);
+      btnSocial0.parentNode.replaceChild(btnSocial, btnSocial0);
+
+      btnSocial.addEventListener("click", () => {
+        closeExisting("plutooEditSocialSheet");
+
+        const saved = (state.ownerSocialByDog && state.ownerSocialByDog[d.id]) ? state.ownerSocialByDog[d.id] : {};
+
+        const wrap = document.createElement("div");
+        wrap.id = "plutooEditSocialSheet";
+        wrap.style.position = "fixed";
+        wrap.style.left = "0";
+        wrap.style.top = "0";
+        wrap.style.right = "0";
+        wrap.style.bottom = "0";
+        wrap.style.zIndex = "99999";
+        wrap.style.background = "rgba(0,0,0,.70)";
+        wrap.style.display = "flex";
+        wrap.style.alignItems = "flex-end";
+
+        const sheet = document.createElement("div");
+        sheet.style.width = "100%";
+        sheet.style.borderTopLeftRadius = "20px";
+        sheet.style.borderTopRightRadius = "20px";
+        sheet.style.border = "1px solid rgba(255,255,255,.10)";
+        sheet.style.background = "#121218";
+        sheet.style.padding = "14px";
+        sheet.style.boxSizing = "border-box";
+
+        sheet.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="font-weight:900;font-size:1.05rem;">
+              ${state.lang === "it" ? "Modifica social" : "Edit socials"}
+            </div>
+            <button type="button" id="plutooCloseSocialSheet" class="btn ghost" style="padding:.45rem .7rem;">✕</button>
+          </div>
+
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;">
+            <input id="plutooSocialInstagram" type="text" value="${String(saved.instagram || "")}"
+              placeholder="Instagram URL"
+              style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 12px;color:inherit;outline:none" />
+
+            <input id="plutooSocialFacebook" type="text" value="${String(saved.facebook || "")}"
+              placeholder="Facebook URL"
+              style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 12px;color:inherit;outline:none" />
+
+            <input id="plutooSocialTiktok" type="text" value="${String(saved.tiktok || "")}"
+              placeholder="TikTok URL"
+              style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 12px;color:inherit;outline:none" />
+
+            <div id="plutooSocialSaveFeedback" style="display:none;padding:.65rem .8rem;border-radius:14px;font-weight:900;"></div>
+
+            <button type="button" id="plutooSaveSocialSheet" class="btn accent" style="width:100%;justify-content:center;">
+              ${state.lang === "it" ? "Salva" : "Save"}
+            </button>
+          </div>
+        `;
+
+        wrap.addEventListener("click", (e) => { if (e.target === wrap) closeExisting("plutooEditSocialSheet"); });
+
+        document.body.appendChild(wrap);
+        wrap.appendChild(sheet);
+
+        const closeBtn = document.getElementById("plutooCloseSocialSheet");
+        if (closeBtn) closeBtn.onclick = () => closeExisting("plutooEditSocialSheet");
+
+        const saveBtn = document.getElementById("plutooSaveSocialSheet");
+        const fbEl = document.getElementById("plutooSocialFacebook");
+        const igEl = document.getElementById("plutooSocialInstagram");
+        const ttEl = document.getElementById("plutooSocialTiktok");
+        const fbk = document.getElementById("plutooSocialSaveFeedback");
+
+        if (saveBtn) {
+          saveBtn.onclick = () => {
+            const next = {
+              instagram: normalizeUrl(igEl ? igEl.value : ""),
+              facebook:  normalizeUrl(fbEl ? fbEl.value : ""),
+              tiktok:    normalizeUrl(ttEl ? ttEl.value : "")
+            };
+
+            state.ownerSocialByDog[d.id] = next;
+            try { localStorage.setItem("ownerSocialByDog", JSON.stringify(state.ownerSocialByDog)); } catch (_) {}
+
+            if (fbk) {
+              fbk.style.display = "block";
+              fbk.style.border = "1px solid rgba(60,200,120,.45)";
+              fbk.style.background = "rgba(60,200,120,.10)";
+              fbk.style.color = "#bff7d6";
+              fbk.textContent = (state.lang === "it") ? "✅ Social salvati" : "✅ Social saved";
+            }
+
+            setTimeout(() => {
+              closeExisting("plutooEditSocialSheet");
+              if (typeof window.openProfilePage === "function") window.openProfilePage(d);
+            }, 450);
+          };
+        }
+      });
+    }
+
+  } catch (e) {
+    console.error("bindOwnerOnlyProfileButtons error:", e);
+  }
+})();
+
       // --- DOCS: apertura file picker + salvataggio stato ---
       // ✅ bind-once per docs: se già presente input nel profilo, non crearne altri
       let docFileInput = qs('input[data-doc-picker="1"]', profileContent);
