@@ -802,15 +802,12 @@ if (!window.auth || !window.db || !window.auth.currentUser) {
 const uid = window.auth.currentUser.uid; // = PLUTOO_UID  
 if (!uid || !window.db) return;  
 
-const snap = await window.db  
-  .collection("dogs")  
-  .where("ownerUid", "==", uid)  
-  .limit(1)  
-  .get();  
+ const doc = await window.db.collection("dogs").doc(String(uid)).get();
+const data = (doc && doc.exists) ? (doc.data() || {}) : null;
 
-const hasDog = !snap.empty && String(snap.docs[0]?.data()?.name || "").trim().length > 0;  
-const dogId = hasDog ? (snap.docs[0]?.id || null) : null;  
-const dogName = hasDog ? String(snap.docs[0]?.data()?.name || "").trim() : "";  
+const hasDog = !!(data && String(data.name || "").trim().length > 0);
+const dogId = hasDog ? String(uid) : null;
+const dogName = hasDog ? String(data.name || "").trim() : "";  
 
 // Stato globale (runtime)  
 window.PLUTOO_HAS_DOG = hasDog;  
