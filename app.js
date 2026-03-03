@@ -3657,7 +3657,7 @@ window.openProfilePage = (d) => {
 
     ${d.bio || ""}
 
-    ${storiesHTML}
+    ${""}
 
     <h3 class="section-title">${state.lang === "it" ? "Galleria" : "Gallery"}</h3>
     <div class="gallery" id="dogGallery"></div>
