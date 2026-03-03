@@ -1593,6 +1593,23 @@ const DOGS = [
       setActiveView("profile");
 
       const savedId = localStorage.getItem("currentProfileDogId");
+
+      // 🔥 CREATE MODE: se ero in "__create__", riapro create e STOP
+if (String(savedId) === "__create__" && typeof window.openProfilePage === "function") {
+  window.openProfilePage({
+    id: "__create__",
+    isCreate: true,
+    name: "",
+    img: "",
+    breed: "",
+    bio: "",
+    age: "",
+    km: 0,
+    sex: ""
+  });
+  return;
+}
+      
       if (savedId) {
         const dog = DOGS.find(d => d.id == savedId);
         if (dog && window.openProfilePage) {
