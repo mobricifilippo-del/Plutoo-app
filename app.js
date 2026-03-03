@@ -847,6 +847,19 @@ window.auth = auth;
 window.db = db;
 window.storage = storage;
 
+// ✅ run subito al load
+try { window.plutooDogPresenceCheck(); } catch (_) {}
+
+// ✅ hook: rerun ad ogni cambio auth (logout/login)
+try {
+  if (window.auth && typeof window.auth.onAuthStateChanged === "function" && !window.__plutooDogPresenceHooked) {
+    window.__plutooDogPresenceHooked = true;
+    window.auth.onAuthStateChanged(() => {
+      try { window.plutooDogPresenceCheck(); } catch (_) {}
+    });
+  }
+} catch (_) {}
+
 // ✅ Persistenza Auth su device (no reset dopo refresh)
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
   console.error("Auth persistence error:", err);
