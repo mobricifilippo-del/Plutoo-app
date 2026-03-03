@@ -688,7 +688,10 @@ const clickHandler = async (ev) => {
     return;  
   }  
 
-  // ✅ se NON hai un DOG: apri create  
+  // ✅ se NON hai un DOG: apri create
+  localStorage.setItem("currentView", "profile");
+localStorage.setItem("currentProfileDogId", "__create__");
+  
   if (typeof window.openProfilePage === "function") {  
     window.openProfilePage({  
       id: "__create__",  
