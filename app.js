@@ -404,14 +404,6 @@ document.getElementById("btnLogout")?.addEventListener("click", async () => {
     try { CURRENT_USER_DOG_ID = ""; } catch (_) {}
   } catch (_) {}
 
-  // ✅ reset cache minima per CTA/UI
-  try {
-    localStorage.setItem("plutoo_has_dog", "0");
-    localStorage.removeItem("plutoo_dog_id");
-    localStorage.removeItem("plutoo_dog_name");
-    localStorage.setItem("plutoo_readonly", "0");
-  } catch (_) {}
-
   // ✅ torna Home al prossimo avvio
   try {
     localStorage.setItem("currentView", "home");
