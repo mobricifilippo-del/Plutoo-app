@@ -752,53 +752,6 @@ try {
   if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
 } catch (_) {}  
 
-// ✅ Se auth/db non sono pronti, NON ribalto nulla.  
-// In più: faccio retry UNA volta quando auth diventa pronto.  
-if (!window.auth || !window.db || !window.auth.currentUser) {  
-  try {  
-    if (window.auth && typeof window.auth.onAuthStateChanged === "function") {  
-      if (!window.__plutoo_presence_retry_bound) {  
-        window.__plutoo_presence_retry_bound = true;  
-
-        window.auth.onAuthStateChanged(async (u) => {  
-          try {  
-            if (!u || !window.db) return;  
-
-            const uid2 = u.uid;  
-            const snap2 = await window.db  
-              .collection("dogs")  
-              .where("ownerUid", "==", uid2)  
-              .limit(1)  
-              .get();  
-
-            const hasDog2 = !snap2.empty && String(snap2.docs[0]?.data()?.name || "").trim().length > 0;  
-            const dogId2 = hasDog2 ? (snap2.docs[0]?.id || null) : null;  
-            const dogName2 = hasDog2 ? String(snap2.docs[0]?.data()?.name || "").trim() : "";  
-
-            window.PLUTOO_HAS_DOG = hasDog2;  
-            window.PLUTOO_DOG_ID = dogId2;  
-            window.PLUTOO_DOG_NAME = dogName2;  
-            window.PLUTOO_READONLY = !hasDog2;  
-
-            if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
-
-            try {  
-              localStorage.setItem("plutoo_has_dog", hasDog2 ? "1" : "0");  
-              if (dogId2) localStorage.setItem("plutoo_dog_id", dogId2);  
-              else localStorage.removeItem("plutoo_dog_id");  
-              localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");  
-              if (dogName2) localStorage.setItem("plutoo_dog_name", dogName2);  
-              else localStorage.removeItem("plutoo_dog_name");  
-            } catch (_) {}  
-          } catch (_) {}  
-        });  
-      }  
-    }  
-  } catch (_) {}  
-
-  return;  
-}  
-
 const uid = window.auth.currentUser.uid; // = PLUTOO_UID  
 if (!uid || !window.db) return;  
 
