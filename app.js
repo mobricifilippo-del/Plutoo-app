@@ -1583,39 +1583,45 @@ const DOGS = [
 
   
   // =========== Restore in APP ===========
-  if (state.entered) {
-    homeScreen.classList.add("hidden");
-    appScreen.classList.remove("hidden");
+if (state.entered) {
+  homeScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
 
-    const viewToRestore = localStorage.getItem("currentView") || state.currentView || "nearby";
+  const viewToRestore = localStorage.getItem("currentView") || state.currentView || "nearby";
 
-    if (viewToRestore === "profile") {
-      setActiveView("profile");
+  if (viewToRestore === "profile") {
+    setActiveView("profile");
 
-      const savedId = localStorage.getItem("currentProfileDogId");
+    const savedId = localStorage.getItem("currentProfileDogId");
 
-      // 🔥 CREATE MODE: se ero in "__create__", riapro create e STOP
-if (String(savedId) === "__create__" && typeof window.openProfilePage === "function") {
-  window.openProfilePage({
-    id: "__create__",
-    isCreate: true,
-    name: "",
-    img: "",
-    breed: "",
-    bio: "",
-    age: "",
-    km: 0,
-    sex: ""
-  });
-  return;
-}
-      
-      if (savedId) {
+    if (savedId) {
+
+      // 🔥 CREATE MODE: se ero in "__create__", riapro create
+      if (String(savedId) === "__create__" && typeof window.openProfilePage === "function") {
+
+        window.openProfilePage({
+          id: "__create__",
+          isCreate: true,
+          name: "",
+          img: "",
+          breed: "",
+          bio: "",
+          age: "",
+          km: 0,
+          sex: ""
+        });
+
+      } else {
+
         const dog = DOGS.find(d => d.id == savedId);
+
         if (dog && window.openProfilePage) {
+
           window.openProfilePage(dog);
+
         } else {
-          // ✅ FIX: se NON è un DOG demo, provo cache locale e poi Firestore
+
+          // ✅ se NON è un DOG demo, provo cache locale e poi Firestore
           let myDog = null;
 
           // 1) prova state/local
@@ -1634,9 +1640,12 @@ if (String(savedId) === "__create__" && typeof window.openProfilePage === "funct
 
           // 3) se ho già dati → apro profilo
           if (myDog && window.openProfilePage) {
+
             window.openProfilePage(myDog);
+
           } else if (window.db) {
-            // 4) Firestore (no await): provo a caricare il DOG reale
+
+            // 4) Firestore (no await)
             try {
               window.db.collection("dogs").doc(String(savedId)).get()
                 .then((doc) => {
@@ -1663,19 +1672,23 @@ if (String(savedId) === "__create__" && typeof window.openProfilePage === "funct
             } catch (_) {
               setActiveView("nearby");
             }
+
           } else {
             setActiveView("nearby");
           }
         }
-      } else {
-        setActiveView("nearby");
       }
+
     } else {
-      setActiveView(viewToRestore);
+      setActiveView("nearby");
     }
 
-    showAdBanner();
+  } else {
+    setActiveView(viewToRestore);
   }
+
+  showAdBanner();
+}
 
   function openSponsor(){
   const url = "https://www.gelatofido.it/";
