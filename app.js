@@ -4229,9 +4229,9 @@ if (btnSaveDogDraft0 && isCreate) {
       return new Blob([bytes], { type: mime });
     };
 
-    // id definitivo Firestore
-    const dogRef = window.db.collection("dogs").doc();
-    const newDogId = dogRef.id;
+    // id definitivo Firestore (1 utente = 1 DOG)
+const dogRef = window.db.collection("dogs").doc(String(uid));
+const newDogId = dogRef.id;
 
     // upload foto profilo su Storage
     let photoUrl = "";
