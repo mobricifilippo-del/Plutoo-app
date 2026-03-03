@@ -847,15 +847,31 @@ window.auth = auth;
 window.db = db;
 window.storage = storage;
 
-// ✅ run subito al load
-try { window.plutooDogPresenceCheck(); } catch (_) {}
+// ✅ run subito al load (ma SOLO quando la funzione esiste davvero)
+(function runPresenceWhenReady(){
+  try {
+    if (typeof window.plutooDogPresenceCheck === "function") {
+      window.plutooDogPresenceCheck();
+      return;
+    }
+  } catch (_) {}
+  setTimeout(runPresenceWhenReady, 200);
+})();
 
-// ✅ hook: rerun ad ogni cambio auth (logout/login)
+// ✅ hook: rerun ad ogni cambio auth (logout/login) (con guardia "function ready")
 try {
   if (window.auth && typeof window.auth.onAuthStateChanged === "function" && !window.__plutooDogPresenceHooked) {
     window.__plutooDogPresenceHooked = true;
     window.auth.onAuthStateChanged(() => {
-      try { window.plutooDogPresenceCheck(); } catch (_) {}
+      (function runPresenceAfterAuth(){
+        try {
+          if (typeof window.plutooDogPresenceCheck === "function") {
+            window.plutooDogPresenceCheck();
+            return;
+          }
+        } catch (_) {}
+        setTimeout(runPresenceAfterAuth, 200);
+      })();
     });
   }
 } catch (_) {}
