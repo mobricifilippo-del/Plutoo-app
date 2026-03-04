@@ -6189,58 +6189,56 @@ function publishStory() {
 }
 
 (function bindUploadStoryModalOnce() {
-  return; // DISATTIVATO: wiring duplicato. Usa solo setupStoriesEvents().
+const modal = $("uploadStoryModal");
+if (!modal) return;
+if (modal.dataset && modal.dataset.bound === "1") return;
+if (modal.dataset) modal.dataset.bound = "1";
 
-  const modal = $("uploadStoryModal");
-  if (!modal) return;
-  if (modal.dataset && modal.dataset.bound === "1") return;
-  if (modal.dataset) modal.dataset.bound = "1";
+// file input
+const fileInput = $("storyFileInput");
+if (fileInput) fileInput.onchange = handleFileSelect;
 
-  // file input
-  const fileInput = $("storyFileInput");
-  if (fileInput) fileInput.onchange = handleFileSelect;
+// avanti / indietro
+const nextBtn = $("nextToCustomize");
+if (nextBtn) nextBtn.onclick = showCustomizeStep;
 
-  // avanti / indietro
-  const nextBtn = $("nextToCustomize");
-  if (nextBtn) nextBtn.onclick = showCustomizeStep;
+const backBtn = $("backToUpload");
+if (backBtn) backBtn.onclick = showUploadStep;
 
-  const backBtn = $("backToUpload");
-  if (backBtn) backBtn.onclick = showUploadStep;
+// pubblica
+const pubBtn = $("publishStory");
+if (pubBtn) pubBtn.onclick = publishStory;
 
-  // pubblica
-  const pubBtn = $("publishStory");
-  if (pubBtn) pubBtn.onclick = publishStory;
+// chiusure
+const closeX = $("closeUploadStory");
+if (closeX) closeX.onclick = closeUploadModal;
 
-  // chiusure
-  const closeX = $("closeUploadStory");
-  if (closeX) closeX.onclick = closeUploadModal;
+const cancelBtn = $("cancelUpload");
+if (cancelBtn) cancelBtn.onclick = closeUploadModal;
 
-  const cancelBtn = $("cancelUpload");
-  if (cancelBtn) cancelBtn.onclick = closeUploadModal;
-
-  // inizializza filtri/music una volta
-  setupFiltersGrid();
+// inizializza filtri/music una volta
+setupFiltersGrid();
 })();
 
 function showToast(msg, type = "success") {
-  let el = document.getElementById("toast");
-  if (!el) {
-    el = document.createElement("div");
-    el.id = "toast";
-    el.className = "toast";
-    document.body.appendChild(el);
-  }
+let el = document.getElementById("toast");
+if (!el) {
+el = document.createElement("div");
+el.id = "toast";
+el.className = "toast";
+document.body.appendChild(el);
+}
 
-  el.className = "toast";
-  el.textContent = msg;
+el.className = "toast";
+el.textContent = msg;
 
-  if (type === "error") el.classList.add("toast-error");
-  else el.classList.add("toast-success");
+if (type === "error") el.classList.add("toast-error");
+else el.classList.add("toast-success");
 
-  requestAnimationFrame(() => el.classList.add("show"));
+requestAnimationFrame(() => el.classList.add("show"));
 
-  clearTimeout(el._t);
-  el._t = setTimeout(() => {
-    el.classList.remove("show");
-  }, 2200);
+clearTimeout(el._t);
+el._t = setTimeout(() => {
+el.classList.remove("show");
+}, 2200);
 }
