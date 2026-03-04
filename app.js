@@ -6189,6 +6189,8 @@ function publishStory() {
 }
 
 (function bindUploadStoryModalOnce() {
+  return; // DISATTIVATO: wiring duplicato. Usa solo setupStoriesEvents().
+
   const modal = $("uploadStoryModal");
   if (!modal) return;
   if (modal.dataset && modal.dataset.bound === "1") return;
@@ -6241,4 +6243,4 @@ function showToast(msg, type = "success") {
   el._t = setTimeout(() => {
     el.classList.remove("show");
   }, 2200);
-}    
+}
