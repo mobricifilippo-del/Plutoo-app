@@ -1182,7 +1182,9 @@ ownerSocialByDog: {},
       if (!userStory) return 0;
       return userStory.media.filter(m => new Date(m.timestamp).toDateString() === today).length;
     },
-    canUploadStory() { return state.plus || this.getTodayStoriesCount() < STORIES_CONFIG.FREE_DAILY_LIMIT; },
+    canUploadStory() { 
+  return !!state.plus; 
+    },
     generateMockStories() {
       return [
        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true, isDemo:true,
