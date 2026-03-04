@@ -5988,11 +5988,14 @@ function resetUploadModalUI() {
 function openUploadModal() {
   pruneStories24h();
 
+  // ✅ SOLO PLUS può pubblicare (messaggio definitivo)
   if (!StoriesState.canUploadStory()) {
-    showToast(state.lang === "it"
-      ? "Limite giornaliero Stories raggiunto"
-      : "Daily stories limit reached");
-    return;
+    const msg = state.lang === "it"
+  ? "Gli Aggiornamenti DOG sono disponibili con Plutoo Plus.\nAttiva Plus per pubblicare aggiornamenti del tuo DOG."
+  : "DOG Updates are available with Plutoo Plus.\nActivate Plus to publish updates of your DOG.";
+if (typeof showToast === "function") showToast(msg, "error");
+else alert(msg);
+return;
   }
 
   resetUploadModalUI();
