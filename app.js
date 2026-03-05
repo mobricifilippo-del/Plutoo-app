@@ -6146,8 +6146,11 @@ function publishStory() {
   pruneStories24h();
 
   const preview = $("uploadPreview");
+  
+  console.log("DEBUG STORIES", preview ? preview.dataset.hasMedia : null, StoriesState.uploadedFile);
+  
 if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
-  alert(state.lang === "it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
+  alert(state.lang === "it" ? "Seleziona prima una foto" : "Select a photo first");
   return;
 }
 
