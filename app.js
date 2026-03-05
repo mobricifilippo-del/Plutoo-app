@@ -6006,7 +6006,7 @@ return;
 function closeUploadModal() {
   $("uploadStoryModal")?.classList.add("hidden");
   document.body.classList.remove("noscroll");
-  resetUploadModalUI();
+  // resetUploadModalUI();   ← disattivato temporaneamente
 }
 
 function handleFileSelect(e) {
