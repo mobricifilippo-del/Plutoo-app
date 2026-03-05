@@ -6145,26 +6145,11 @@ function publishStory() {
 
   pruneStories24h();
 
-  // 🔧 fallback: se la preview c’è ma uploadedFile è stato azzerato, ricostruiscilo dalla preview
   const preview = $("uploadPreview");
-  if (preview && preview.dataset.hasMedia === "true" && !StoriesState.uploadedFile) {
-    const img = preview.querySelector("img");
-    const vid = preview.querySelector("video");
-    const src = img ? img.getAttribute("src") : (vid ? vid.getAttribute("src") : "");
-    if (src) {
-      StoriesState.uploadedFile = {
-        type: img ? "image" : "video",
-        url: src,
-        mime: img ? "image/*" : "video/*",
-        size: 0
-      };
-    }
-  }
-
-  if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
-    alert(state.lang === "it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
-    return;
-  }
+if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
+  alert(state.lang === "it" ? "Seleziona prima una foto o un video" : "Select a photo or video first");
+  return;
+}
 
   const userId = "currentUser";
   let userStory = StoriesState.stories.find(s => s.userId === userId);
