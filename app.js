@@ -6251,7 +6251,6 @@ function publishStory() {
     };
 
     userStory.media.push(newMedia);
-    alert("SAVED TEXT: " + (newMedia.text || "(vuoto)"));
 
     if (typeof StoriesState.saveStories === "function") StoriesState.saveStories();
 
