@@ -6210,16 +6210,23 @@ function publishStory() {
     } catch (_) {}
 
     const newMedia = {
-      id: `m_${now}`,
-      type: "image",
-      url: StoriesState.uploadedFile.url,
-      timestamp: now,
-      expiresAt: now + 24 * 60 * 60 * 1000,
-      filter: "none",
-      music: "",
-      viewed: false,
-      privacy: "public"
-    };
+  id: `m_${now}`,
+  type: "image",
+  url: StoriesState.uploadedFile.url,
+  timestamp: now,
+  expiresAt: now + 24 * 60 * 60 * 1000,
+
+  // 👇 STORIES TEXT OVERLAY
+  text: "",
+  textColor: "#ffffff",
+  textX: 0.5,
+  textY: 0.8,
+
+  filter: "none",
+  music: "",
+  viewed: false,
+  privacy: "public"
+};
 
     userStory.media.push(newMedia);
 
