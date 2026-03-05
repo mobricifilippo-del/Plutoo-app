@@ -6147,7 +6147,7 @@ function publishStory() {
 
   const preview = $("uploadPreview");
   
-  console.log("DEBUG STORIES", preview ? preview.dataset.hasMedia : null, StoriesState.uploadedFile);
+  alert("DEBUG publishStory → hasMedia=" + (preview ? preview.dataset.hasMedia : "NULL_PREVIEW") + " | uploadedFile=" + (StoriesState.uploadedFile ? "OK" : "NULL"));
   
 if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
   alert(state.lang === "it" ? "Seleziona prima una foto" : "Select a photo first");
