@@ -6134,6 +6134,147 @@ function showCustomizeStep() {
       const dataUrl = preview && preview.dataset ? (preview.dataset.mediaUrl || "") : "";
       if (dataUrl) step2Preview.innerHTML = `<img src="${dataUrl}" alt="Aggiornamento" />`;
       else step2Preview.innerHTML = "";
+
+      // ====== ✅ EDITOR TESTO OVERLAY (Instagram-like) ======
+      try {
+        // assicura container posizionato
+        step2Preview.style.position = "relative";
+
+        // textarea esistente (lo usiamo come storage, anche se non lo vuoi vedere)
+        const ta = document.getElementById("storyTextInput");
+        if (ta) {
+          ta.style.opacity = "0";
+          ta.style.pointerEvents = "none";
+          ta.style.position = "absolute";
+          ta.style.left = "-9999px";
+        }
+
+        // crea/riusa overlay
+        let overlay = step2Preview.querySelector(".story-text-overlay-editor");
+        if (!overlay) {
+          overlay = document.createElement("div");
+          overlay.className = "story-text-overlay-editor";
+          overlay.setAttribute("contenteditable", "true");
+          overlay.setAttribute("spellcheck", "false");
+
+          overlay.style.position = "absolute";
+          overlay.style.left = "50%";
+          overlay.style.top = "75%";
+          overlay.style.transform = "translate(-50%, -50%)";
+          overlay.style.padding = "6px 10px";
+          overlay.style.borderRadius = "14px";
+          overlay.style.maxWidth = "92%";
+          overlay.style.minWidth = "40px";
+          overlay.style.outline = "none";
+          overlay.style.textAlign = "center";
+          overlay.style.fontSize = "22px";
+          overlay.style.fontWeight = "700";
+          overlay.style.lineHeight = "1.15";
+          overlay.style.color = "#ffffff";
+          overlay.style.textShadow = "0 2px 10px rgba(0,0,0,.85)";
+          overlay.style.background = "rgba(0,0,0,.10)";
+
+          step2Preview.appendChild(overlay);
+
+          // tap sulla foto → focus testo (tastiera)
+          const imgEl = step2Preview.querySelector("img");
+          if (imgEl) {
+            imgEl.style.display = "block";
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "cover";
+            imgEl.addEventListener("click", () => {
+              overlay.focus();
+            });
+          }
+
+          // sync testo su textarea (per publishStory già esistente)
+          overlay.addEventListener("input", () => {
+            if (ta) ta.value = overlay.innerText || "";
+          });
+
+          // doppio tap/click → toggle colore (bianco/nero)
+          overlay.addEventListener("dblclick", (ev) => {
+            ev.preventDefault();
+            const cur = (overlay.dataset && overlay.dataset.color) ? overlay.dataset.color : "white";
+            const next = (cur === "white") ? "black" : "white";
+            if (overlay.dataset) overlay.dataset.color = next;
+
+            if (next === "black") {
+              overlay.style.color = "#111111";
+              overlay.style.textShadow = "0 2px 10px rgba(255,255,255,.55)";
+              overlay.style.background = "rgba(255,255,255,.14)";
+            } else {
+              overlay.style.color = "#ffffff";
+              overlay.style.textShadow = "0 2px 10px rgba(0,0,0,.85)";
+              overlay.style.background = "rgba(0,0,0,.10)";
+            }
+          });
+
+          // drag con dito (pointer)
+          let dragging = false;
+          let startX = 0, startY = 0;
+          let startLeft = 0, startTop = 0;
+
+          overlay.addEventListener("pointerdown", (ev) => {
+            dragging = true;
+            overlay.setPointerCapture(ev.pointerId);
+            const rect = step2Preview.getBoundingClientRect();
+            const orect = overlay.getBoundingClientRect();
+
+            startX = ev.clientX;
+            startY = ev.clientY;
+
+            startLeft = (orect.left - rect.left) + (orect.width / 2);
+            startTop  = (orect.top - rect.top) + (orect.height / 2);
+
+            ev.preventDefault();
+          });
+
+          overlay.addEventListener("pointermove", (ev) => {
+            if (!dragging) return;
+            const rect = step2Preview.getBoundingClientRect();
+
+            const dx = ev.clientX - startX;
+            const dy = ev.clientY - startY;
+
+            let cx = startLeft + dx;
+            let cy = startTop + dy;
+
+            // clamp
+            if (cx < 20) cx = 20;
+            if (cy < 20) cy = 20;
+            if (cx > rect.width - 20) cx = rect.width - 20;
+            if (cy > rect.height - 20) cy = rect.height - 20;
+
+            overlay.style.left = (cx / rect.width * 100) + "%";
+            overlay.style.top  = (cy / rect.height * 100) + "%";
+
+            // salva su textarea dataset (per step successivo: publish potrà leggerlo)
+            if (ta && ta.dataset) {
+              ta.dataset.textX = String(cx / rect.width);
+              ta.dataset.textY = String(cy / rect.height);
+              ta.dataset.textColor = (overlay.dataset && overlay.dataset.color === "black") ? "#111111" : "#ffffff";
+            }
+          });
+
+          overlay.addEventListener("pointerup", (ev) => {
+            dragging = false;
+            try { overlay.releasePointerCapture(ev.pointerId); } catch (_) {}
+          });
+
+          overlay.addEventListener("pointercancel", (ev) => {
+            dragging = false;
+            try { overlay.releasePointerCapture(ev.pointerId); } catch (_) {}
+          });
+        }
+
+        // se già c’era testo salvato, rimettilo dentro overlay
+        if (ta && (ta.value || "").trim() !== "") {
+          overlay.innerText = ta.value;
+        }
+      } catch (_) {}
+      // ====== /EDITOR TESTO OVERLAY ======
     }
   } catch (_) {}
 
