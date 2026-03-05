@@ -2015,20 +2015,25 @@ line-height: 1.6;
 
 .story-text-input{
   position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 14px;
-  min-height: 44px;
-  max-height: 120px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.22);
-  background: rgba(0,0,0,.35);
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+
   color: #fff;
-  font-size: 16px;
-  line-height: 1.2;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+
   resize: none;
   outline: none;
+
+  text-shadow:
+    0 2px 6px rgba(0,0,0,.8),
+    0 0 10px rgba(0,0,0,.6);
 }
 
 /* === MATCH FLASH – STILE COME ENTRA MA GIALLO === */
