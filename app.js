@@ -6140,6 +6140,9 @@ function showCustomizeStep() {
         // assicura container posizionato
         step2Preview.style.position = "relative";
 
+        // ✅ FIX: evita scroll/gesture che bloccano il drag verticale in WebView
+        step2Preview.style.touchAction = "none";
+
         // textarea esistente (lo usiamo come storage, anche se non lo vuoi vedere)
         const ta = document.getElementById("storyTextInput");
         if (ta) {
@@ -6191,6 +6194,22 @@ function showCustomizeStep() {
             });
           }
 
+          // ✅ ENTER/INVIO: conferma testo (no a-capo) + chiudi tastiera
+          overlay.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              overlay.blur();
+            }
+          });
+
+          // ✅ tap fuori dal testo: chiudi tastiera
+          step2Preview.addEventListener("pointerdown", (ev) => {
+            const inside = ev.target && ev.target.closest ? ev.target.closest(".story-text-overlay-editor") : null;
+            if (!inside) {
+              try { overlay.blur(); } catch (_) {}
+            }
+          });
+
           // sync testo su textarea (per publishStory già esistente)
           overlay.addEventListener("input", () => {
             if (ta) ta.value = overlay.innerText || "";
@@ -6241,6 +6260,10 @@ function showCustomizeStep() {
 
           overlay.addEventListener("pointermove", (ev) => {
             if (!dragging) return;
+
+            // ✅ FIX: blocca gesture/scroll che spezzano Y in WebView
+            ev.preventDefault();
+
             const rect = step2Preview.getBoundingClientRect();
 
             const dx = ev.clientX - startX;
@@ -6258,7 +6281,7 @@ function showCustomizeStep() {
             overlay.style.left = (cx / rect.width * 100) + "%";
             overlay.style.top  = (cy / rect.height * 100) + "%";
 
-            // salva su textarea dataset (per step successivo: publish potrà leggerlo)
+            // salva su textarea dataset
             if (ta && ta.dataset) {
               ta.dataset.textX = String(cx / rect.width);
               ta.dataset.textY = String(cy / rect.height);
@@ -6298,7 +6321,7 @@ function showCustomizeStep() {
 
   step1.classList.remove("active");
   step2.classList.add("active");
-}
+              }
 
 function showUploadStep() {
   const step1 = $("uploadStoryStep1");
