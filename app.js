@@ -5782,6 +5782,24 @@ async function init(){
       img.alt = "Story";
       img.className = `filter-${media.filter}`;
       content.appendChild(img);
+      // ===== TEXT OVERLAY =====
+if (media.text && media.text.trim() !== "") {
+  const text = document.createElement("div");
+  text.className = "story-text-overlay";
+  text.innerText = media.text;
+
+  text.style.position = "absolute";
+  text.style.left = (media.textX * 100) + "%";
+  text.style.top = (media.textY * 100) + "%";
+  text.style.transform = "translate(-50%, -50%)";
+  text.style.color = media.textColor || "#ffffff";
+  text.style.fontSize = "22px";
+  text.style.fontWeight = "600";
+  text.style.textAlign = "center";
+  text.style.textShadow = "0 2px 8px rgba(0,0,0,.9)";
+
+  content.appendChild(text);
+}
     } else if (media.type === "video") {
       const video = document.createElement("video");
       video.src = media.url;
