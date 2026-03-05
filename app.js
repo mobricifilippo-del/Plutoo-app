@@ -6174,6 +6174,9 @@ function showCustomizeStep() {
           overlay.style.textShadow = "0 2px 10px rgba(0,0,0,.85)";
           overlay.style.background = "rgba(0,0,0,.10)";
 
+          // ✅ FIX DRAG ANDROID/WEBVIEW
+          overlay.style.touchAction = "none";
+
           step2Preview.appendChild(overlay);
 
           // tap sulla foto → focus testo (tastiera)
@@ -6218,6 +6221,11 @@ function showCustomizeStep() {
 
           overlay.addEventListener("pointerdown", (ev) => {
             dragging = true;
+
+            // ✅ FIX: durante drag non selezionare testo
+            overlay.style.userSelect = "none";
+            overlay.style.webkitUserSelect = "none";
+
             overlay.setPointerCapture(ev.pointerId);
             const rect = step2Preview.getBoundingClientRect();
             const orect = overlay.getBoundingClientRect();
@@ -6260,11 +6268,21 @@ function showCustomizeStep() {
 
           overlay.addEventListener("pointerup", (ev) => {
             dragging = false;
+
+            // ✅ ripristina selezione testo
+            overlay.style.userSelect = "";
+            overlay.style.webkitUserSelect = "";
+
             try { overlay.releasePointerCapture(ev.pointerId); } catch (_) {}
           });
 
           overlay.addEventListener("pointercancel", (ev) => {
             dragging = false;
+
+            // ✅ ripristina selezione testo
+            overlay.style.userSelect = "";
+            overlay.style.webkitUserSelect = "";
+
             try { overlay.releasePointerCapture(ev.pointerId); } catch (_) {}
           });
         }
