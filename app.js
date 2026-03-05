@@ -5941,13 +5941,14 @@ function pruneStories24h() {
       const before = s.media.length;
       s.media = s.media.filter(m => {
         if (!m) return false;
-        const exp = typeof m.expiresAt === "number" ? m.expiresAt : (typeof m.timestamp === "number" ? (m.timestamp + 24 * 60 * 60 * 1000) : 0);
+        const exp = typeof m.expiresAt === "number"
+          ? m.expiresAt
+          : (typeof m.timestamp === "number" ? (m.timestamp + 24 * 60 * 60 * 1000) : 0);
         return exp > now;
       });
       if (s.media.length !== before) changed = true;
     });
 
-    // rimuovi storie vuote
     const beforeStories = StoriesState.stories.length;
     StoriesState.stories = StoriesState.stories.filter(s => s && Array.isArray(s.media) && s.media.length > 0);
     if (StoriesState.stories.length !== beforeStories) changed = true;
@@ -5962,18 +5963,30 @@ function resetUploadModalUI() {
   if (step1) step1.classList.add("active");
   if (step2) step2.classList.remove("active");
 
+  // ripristina upload zone (se era stata nascosta dopo selezione)
+  try {
+    const zone = step1 ? qs(".upload-zone", step1) : null;
+    if (zone) zone.style.display = "";
+  } catch (_) {}
+
   const preview = $("uploadPreview");
   if (preview) {
     preview.innerHTML = "";
     preview.classList.add("hidden");
     preview.dataset.type = "";
     preview.dataset.hasMedia = "false";
+    preview.dataset.mediaUrl = "";
+    preview.dataset.mediaMime = "";
   }
 
+  // preview nello step 2 (div .upload-preview senza id)
+  try {
+    const step2Preview = $("uploadStoryStep2") ? qs(".upload-preview", $("uploadStoryStep2")) : null;
+    if (step2Preview) step2Preview.innerHTML = "";
+  } catch (_) {}
+
   const nextBtn = $("nextToCustomize");
-  if (nextBtn) {
-    nextBtn.disabled = true;
-  }
+  if (nextBtn) nextBtn.disabled = true;
 
   const fileInput = $("storyFileInput");
   if (fileInput) fileInput.value = "";
@@ -5982,6 +5995,7 @@ function resetUploadModalUI() {
     StoriesState.uploadedFile = null;
     StoriesState.selectedFilter = StoriesState.selectedFilter || "none";
     StoriesState.selectedMusic = StoriesState.selectedMusic || "";
+    StoriesState.__publishing = false;
   }
 }
 
@@ -5991,11 +6005,11 @@ function openUploadModal() {
   // ✅ SOLO PLUS può pubblicare (messaggio definitivo)
   if (!StoriesState.canUploadStory()) {
     const msg = state.lang === "it"
-  ? "Gli Aggiornamenti DOG sono disponibili con Plutoo Plus.\nAttiva Plus per pubblicare aggiornamenti del tuo DOG."
-  : "DOG Updates are available with Plutoo Plus.\nActivate Plus to publish updates of your DOG.";
-if (typeof showToast === "function") showToast(msg, "error");
-else alert(msg);
-return;
+      ? "Gli Aggiornamenti DOG sono disponibili con Plutoo Plus.\nAttiva Plus per pubblicare aggiornamenti del tuo DOG."
+      : "DOG Updates are available with Plutoo Plus.\nActivate Plus to publish updates of your DOG.";
+    if (typeof showToast === "function") showToast(msg, "error");
+    else alert(msg);
+    return;
   }
 
   resetUploadModalUI();
@@ -6006,7 +6020,7 @@ return;
 function closeUploadModal() {
   $("uploadStoryModal")?.classList.add("hidden");
   document.body.classList.remove("noscroll");
-  // resetUploadModalUI();   ← disattivato temporaneamente
+  resetUploadModalUI();
 }
 
 function handleFileSelect(e) {
@@ -6020,58 +6034,67 @@ function handleFileSelect(e) {
   preview.classList.remove("hidden");
   preview.dataset.type = "";
   preview.dataset.hasMedia = "false";
+  preview.dataset.mediaUrl = "";
+  preview.dataset.mediaMime = "";
 
   const isImage = file.type && file.type.startsWith("image/");
   const isVideo = file.type && file.type.startsWith("video/");
 
-  if (!isImage && !isVideo) {
-    alert("Formato non supportato. Usa solo foto o video.");
+  // ✅ MODELLO DEFINITIVO: solo immagini (Aggiornamenti DOG)
+  if (!isImage) {
+    alert(state.lang === "it" ? "Formato non supportato. Usa solo una FOTO." : "Unsupported format. Use PHOTO only.");
     return;
   }
 
-  if (isImage && file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
-    alert("Foto troppo grande. Riduci la dimensione e riprova.");
-    return;
-  }
-  if (isVideo && file.size > STORIES_CONFIG.MAX_VIDEO_SIZE) {
-    alert("Video troppo grande. Riduci la durata/dimensione e riprova.");
+  if (file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
+    alert(state.lang === "it" ? "Foto troppo grande. Riduci la dimensione e riprova." : "Photo too large. Reduce size and retry.");
     return;
   }
 
   const reader = new FileReader();
 
   reader.onload = function (event) {
-    const base64 = event.target.result;
+    const dataUrl = event && event.target ? event.target.result : "";
+    if (!dataUrl) {
+      alert(state.lang === "it" ? "Errore nel caricamento del file. Riprova." : "File load error. Retry.");
+      return;
+    }
 
+    // ✅ salva in stato + anche su dataset (anti-perdita tra step)
     StoriesState.uploadedFile = {
-      type: isImage ? "image" : "video",
-      url: base64,
+      type: "image",
+      url: dataUrl,
       mime: file.type,
       size: file.size
     };
 
-    if (isImage) {
-      preview.innerHTML = `<img src="${base64}" alt="Story" />`;
-      preview.dataset.type = "image";
-    } else {
-      preview.innerHTML = `<video src="${base64}" controls playsinline muted></video>`;
-      preview.dataset.type = "video";
-    }
-
+    preview.innerHTML = `<img src="${dataUrl}" alt="Aggiornamento" />`;
+    preview.dataset.type = "image";
     preview.dataset.hasMedia = "true";
+    preview.dataset.mediaUrl = dataUrl;
+    preview.dataset.mediaMime = file.type || "image/*";
+
+    // ✅ dopo selezione: sparisce box upload, resta solo foto
+    try {
+      const step1 = $("uploadStoryStep1");
+      const zone = step1 ? qs(".upload-zone", step1) : null;
+      if (zone) zone.style.display = "none";
+    } catch (_) {}
 
     const nextBtn = $("nextToCustomize");
     if (nextBtn) nextBtn.disabled = false;
   };
 
   reader.onerror = function () {
-    alert("Errore nel caricamento del file. Riprova.");
+    alert(state.lang === "it" ? "Errore nel caricamento del file. Riprova." : "File load error. Retry.");
     StoriesState.uploadedFile = null;
 
     preview.innerHTML = "";
     preview.classList.add("hidden");
     preview.dataset.type = "";
     preview.dataset.hasMedia = "false";
+    preview.dataset.mediaUrl = "";
+    preview.dataset.mediaMime = "";
 
     const nextBtn = $("nextToCustomize");
     if (nextBtn) nextBtn.disabled = true;
@@ -6084,6 +6107,17 @@ function showCustomizeStep() {
   const step1 = $("uploadStoryStep1");
   const step2 = $("uploadStoryStep2");
   if (!step1 || !step2) return;
+
+  // ✅ copia la stessa foto nello step2 (evita “pagina 2 vuota / box sopra”)
+  try {
+    const preview = $("uploadPreview");
+    const step2Preview = qs(".upload-preview", step2);
+    if (step2Preview) {
+      const dataUrl = preview && preview.dataset ? (preview.dataset.mediaUrl || "") : "";
+      if (dataUrl) step2Preview.innerHTML = `<img src="${dataUrl}" alt="Aggiornamento" />`;
+      else step2Preview.innerHTML = "";
+    }
+  } catch (_) {}
 
   step1.classList.remove("active");
   step2.classList.add("active");
@@ -6099,31 +6133,8 @@ function showUploadStep() {
 }
 
 function setupFiltersGrid() {
-  const filtersGrid = $("filtersGrid");
-  if (filtersGrid) {
-    const filterButtons = qa(".filter-chip", filtersGrid);
-    filterButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        filterButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        StoriesState.selectedFilter = btn.dataset.filter || "none";
-      });
-    });
-  }
-
-  const musicGrid = $("musicGrid");
-  if (musicGrid) {
-    const musicButtons = qa(".music-chip", musicGrid);
-    musicButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        musicButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        StoriesState.selectedMusic = btn.dataset.music || "";
-      });
-    });
-  }
-
-  // fallback: select (nel tuo HTML c’è storyMusicSelect)
+  // ✅ Rimane la chiamata (stessa struttura), ma non attiviamo nulla nel modello definitivo
+  // (Filtri/Musica verranno tolti dal markup quando decidi tu, in uno step dedicato)
   const musicSelect = $("storyMusicSelect");
   if (musicSelect) {
     musicSelect.onchange = () => {
@@ -6136,115 +6147,149 @@ function publishStory() {
   // 🔒 VETRINA: blocca pubblicazione story
   if (window.PLUTOO_READONLY) {
     const msg = state.lang === "it"
-      ? "🔒 Crea il profilo DOG per pubblicare una story"
-      : "🔒 Create your DOG profile to publish a story";
-    if (typeof showToast === "function") showToast(msg);
+      ? "🔒 Crea il profilo DOG per pubblicare un aggiornamento"
+      : "🔒 Create your DOG profile to publish an update";
+    if (typeof showToast === "function") showToast(msg, "error");
     else alert(msg);
     return;
   }
 
-  pruneStories24h();
+  // ✅ anti multi-click / doppio binding
+  if (StoriesState.__publishing === true) return;
+  StoriesState.__publishing = true;
 
-  const preview = $("uploadPreview");
-  
-  alert("DEBUG publishStory → hasMedia=" + (preview ? preview.dataset.hasMedia : "NULL_PREVIEW") + " | uploadedFile=" + (StoriesState.uploadedFile ? "OK" : "NULL"));
-  
-if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
-  alert(state.lang === "it" ? "Seleziona prima una foto" : "Select a photo first");
-  return;
-}
+  try {
+    pruneStories24h();
 
-  const userId = "currentUser";
-  let userStory = StoriesState.stories.find(s => s.userId === userId);
-  if (!userStory) {
-    userStory = {
-      userId,
-      userName: "You",
-      avatar: "plutoo-icon-192.png",
-      verified: false,
-      media: []
+    const preview = $("uploadPreview");
+
+    // ✅ fallback: se per qualsiasi motivo uploadedFile si è perso, ricostruisci dal dataset
+    if (!StoriesState.uploadedFile && preview && preview.dataset && preview.dataset.mediaUrl) {
+      StoriesState.uploadedFile = {
+        type: "image",
+        url: preview.dataset.mediaUrl,
+        mime: preview.dataset.mediaMime || "image/*",
+        size: 0
+      };
+    }
+
+    if (!preview || preview.dataset.hasMedia !== "true" || !StoriesState.uploadedFile) {
+      alert(state.lang === "it" ? "Seleziona prima una foto" : "Select a photo first");
+      StoriesState.__publishing = false;
+      return;
+    }
+
+    // ✅ modello definitivo: solo immagini
+    if (StoriesState.uploadedFile.type !== "image") {
+      alert(state.lang === "it" ? "Formato non supportato. Usa solo una FOTO." : "Unsupported format. Use PHOTO only.");
+      StoriesState.__publishing = false;
+      return;
+    }
+
+    const userId = "currentUser";
+    let userStory = StoriesState.stories.find(s => s.userId === userId);
+    if (!userStory) {
+      userStory = {
+        userId,
+        userName: "You",
+        avatar: "plutoo-icon-192.png",
+        verified: false,
+        media: []
+      };
+      StoriesState.stories.unshift(userStory);
+    }
+
+    const now = Date.now();
+
+    // ✅ limite 3 attive: se ne aggiungi una 4ª, elimina la più vecchia
+    try {
+      const realMedia = Array.isArray(userStory.media) ? userStory.media.slice() : [];
+      realMedia.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      while (realMedia.length > 2) realMedia.shift(); // tengo le 2 più recenti, aggiungo la nuova = 3
+      userStory.media = realMedia;
+    } catch (_) {}
+
+    const newMedia = {
+      id: `m_${now}`,
+      type: "image",
+      url: StoriesState.uploadedFile.url,
+      timestamp: now,
+      expiresAt: now + 24 * 60 * 60 * 1000,
+      filter: "none",
+      music: "",
+      viewed: false,
+      privacy: "public"
     };
-    StoriesState.stories.unshift(userStory);
+
+    userStory.media.push(newMedia);
+
+    if (typeof StoriesState.saveStories === "function") StoriesState.saveStories();
+
+    // reset stato upload
+    StoriesState.uploadedFile = null;
+    StoriesState.selectedFilter = "none";
+    StoriesState.selectedMusic = "";
+
+    closeUploadModal();
+    if (typeof renderStoriesBar === "function") renderStoriesBar();
+
+    showToast(state.lang === "it" ? "Aggiornamento pubblicato!" : "Update published!");
+  } finally {
+    StoriesState.__publishing = false;
   }
-
-  const now = Date.now();
-  const newMedia = {
-    id: `m_${now}`,
-    type: StoriesState.uploadedFile.type,
-    url: StoriesState.uploadedFile.url,
-    timestamp: now,
-    expiresAt: now + 24 * 60 * 60 * 1000,
-    filter: StoriesState.selectedFilter || "none",
-    music: StoriesState.selectedMusic || "",
-    viewed: false,
-    privacy: "public"
-  };
-
-  userStory.media.push(newMedia);
-
-  if (typeof StoriesState.saveStories === "function") StoriesState.saveStories();
-
-  StoriesState.uploadedFile = null;
-  StoriesState.selectedFilter = "none";
-  StoriesState.selectedMusic = "";
-
-  closeUploadModal();
-  if (typeof renderStoriesBar === "function") renderStoriesBar();
-
-  showToast(state.lang === "it" ? "Story pubblicata!" : "Story published!");
 }
 
 (function bindUploadStoryModalOnce() {
-const modal = $("uploadStoryModal");
-if (!modal) return;
-if (modal.dataset && modal.dataset.bound === "1") return;
-if (modal.dataset) modal.dataset.bound = "1";
+  const modal = $("uploadStoryModal");
+  if (!modal) return;
+  if (modal.dataset && modal.dataset.bound === "1") return;
+  if (modal.dataset) modal.dataset.bound = "1";
 
-// file input
-const fileInput = $("storyFileInput");
-if (fileInput) fileInput.onchange = handleFileSelect;
+  // file input
+  const fileInput = $("storyFileInput");
+  if (fileInput) fileInput.onchange = handleFileSelect;
 
-// avanti / indietro
-const nextBtn = $("nextToCustomize");
-if (nextBtn) nextBtn.onclick = showCustomizeStep;
+  // avanti / indietro
+  const nextBtn = $("nextToCustomize");
+  if (nextBtn) nextBtn.onclick = showCustomizeStep;
 
-const backBtn = $("backToUpload");
-if (backBtn) backBtn.onclick = showUploadStep;
+  const backBtn = $("backToUpload");
+  if (backBtn) backBtn.onclick = showUploadStep;
 
-// pubblica
-const pubBtn = $("publishStory");
-if (pubBtn) pubBtn.onclick = publishStory;
+  // pubblica
+  const pubBtn = $("publishStory");
+  if (pubBtn) pubBtn.onclick = publishStory;
 
-// chiusure
-const closeX = $("closeUploadStory");
-if (closeX) closeX.onclick = closeUploadModal;
+  // chiusure
+  const closeX = $("closeUploadStory");
+  if (closeX) closeX.onclick = closeUploadModal;
 
-const cancelBtn = $("cancelUpload");
-if (cancelBtn) cancelBtn.onclick = closeUploadModal;
+  const cancelBtn = $("cancelUpload");
+  if (cancelBtn) cancelBtn.onclick = closeUploadModal;
 
-// inizializza filtri/music una volta
-setupFiltersGrid();
+  // inizializza filtri/music una volta
+  setupFiltersGrid();
 })();
 
 function showToast(msg, type = "success") {
-let el = document.getElementById("toast");
-if (!el) {
-el = document.createElement("div");
-el.id = "toast";
-el.className = "toast";
-document.body.appendChild(el);
-}
+  let el = document.getElementById("toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "toast";
+    el.className = "toast";
+    document.body.appendChild(el);
+  }
 
-el.className = "toast";
-el.textContent = msg;
+  el.className = "toast";
+  el.textContent = msg;
 
-if (type === "error") el.classList.add("toast-error");
-else el.classList.add("toast-success");
+  if (type === "error") el.classList.add("toast-error");
+  else el.classList.add("toast-success");
 
-requestAnimationFrame(() => el.classList.add("show"));
+  requestAnimationFrame(() => el.classList.add("show"));
 
-clearTimeout(el._t);
-el._t = setTimeout(() => {
-el.classList.remove("show");
-}, 2200);
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    el.classList.remove("show");
+  }, 2200);
 }
