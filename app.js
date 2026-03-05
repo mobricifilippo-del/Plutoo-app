@@ -6227,9 +6227,11 @@ function publishStory() {
       userStory.media = realMedia;
     } catch (_) {}
 
-    // ✅ PRENDE IL TESTO DALL'EDITOR (prima era sempre "")
-    const textEl = $("storyTextInput");
-    const storyText = (textEl && typeof textEl.value === "string") ? textEl.value.trim() : "";
+    // ✅ leggi testo inserito nello step "✨ Personalizza"
+const storyTextEl = document.getElementById("storyTextInput");
+const storyText = (storyTextEl && typeof storyTextEl.value === "string")
+  ? storyTextEl.value.trim()
+  : "";
 
     const newMedia = {
       id: `m_${now}`,
