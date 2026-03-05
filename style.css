@@ -2000,6 +2000,37 @@ line-height: 1.6;
   transform: scale(1.05);
 }
 
+/* ===== STORIES EDITOR TESTO SOPRA IMMAGINE ===== */
+
+.story-editor{
+  position: relative;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+#uploadStoryStep2 .story-editor .upload-preview{
+  height: 400px;
+  max-height: 400px;
+}
+
+.story-text-input{
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.2;
+  resize: none;
+  outline: none;
+}
+
 /* === MATCH FLASH – STILE COME ENTRA MA GIALLO === */
 
 .match-overlay{
