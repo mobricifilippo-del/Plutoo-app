@@ -1262,7 +1262,7 @@ body.story-open #storiesBar {
   max-height:400px;display:flex;align-items:center;justify-content:center;
 }
 .upload-preview img,.upload-preview video{
-  width:100%;height:auto;max-height:400px;object-fit:contain;
+  width:100%;height:auto;max-height:400px;object-fit:cover;
 }
 .story-customize{display:flex;flex-direction:column;gap:1.5rem;padding:1rem 0}
 .customize-section{display:flex;flex-direction:column;gap:.8rem}
