@@ -1148,54 +1148,141 @@ ownerSocialByDog: {},
     selectedMusic: "",
     openedFrom: null,
 
-    loadStories() {
-      const saved = localStorage.getItem("plutoo_stories");
-      if (saved) {
-        this.stories = JSON.parse(saved);
-        this.cleanExpiredStories();
-      } else {
-        this.stories = this.generateMockStories();
+    async loadStories() {
+      try {
+        const saved = localStorage.getItem("plutoo_stories");
+        const demoStories = this.generateMockStories().filter(story => story && story.isDemo === true);
+        const now = Date.now();
+
+        // fallback sicuro se Firebase non è pronto
+        if (!window.db) {
+          if (saved) {
+            this.stories = JSON.parse(saved);
+            this.cleanExpiredStories();
+          } else {
+            this.stories = demoStories;
+            this.saveStories();
+          }
+
+          if (typeof renderStoriesBar === "function") renderStoriesBar();
+          return;
+        }
+
+        const snap = await window.db
+          .collection("stories")
+          .where("active", "==", true)
+          .get();
+
+        const grouped = {};
+
+        snap.forEach((doc) => {
+          const data = doc.data() || {};
+          const expiresAt = Number(data.expiresAt || 0);
+          const timestamp = Number(data.timestamp || 0);
+
+          if (!expiresAt || expiresAt <= now) return;
+
+          const userId = data.ownerUid || data.dogId || doc.id;
+          if (!userId) return;
+
+          if (!grouped[userId]) {
+            grouped[userId] = {
+              userId: userId,
+              userName: data.dogName || "DOG",
+              avatar: data.dogAvatar || "plutoo-icon-192.png",
+              verified: !!data.verified,
+              media: []
+            };
+          }
+
+          grouped[userId].media.push({
+            id: data.storyId || data.id || doc.id,
+            type: data.type || "image",
+            url: data.url || "",
+            storagePath: data.storagePath || "",
+            timestamp: timestamp,
+            expiresAt: expiresAt,
+            text: data.text || "",
+            textColor: data.textColor || "#ffffff",
+            textX: Number.isFinite(Number(data.textX)) ? Number(data.textX) : 0.5,
+            textY: Number.isFinite(Number(data.textY)) ? Number(data.textY) : 0.8,
+            filter: data.filter || "none",
+            music: data.music || "",
+            viewed: !!data.viewed,
+            privacy: data.privacy || "public"
+          });
+        });
+
+        const firebaseStories = Object.values(grouped)
+          .map((story) => {
+            story.media.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+            return story;
+          })
+          .filter((story) => Array.isArray(story.media) && story.media.length > 0);
+
+        this.stories = [...demoStories, ...firebaseStories];
         this.saveStories();
+
+        if (typeof renderStoriesBar === "function") renderStoriesBar();
+
+      } catch (err) {
+        console.error("StoriesState.loadStories Firebase error:", err);
+
+        const saved = localStorage.getItem("plutoo_stories");
+        if (saved) {
+          this.stories = JSON.parse(saved);
+          this.cleanExpiredStories();
+        } else {
+          this.stories = this.generateMockStories();
+          this.saveStories();
+        }
+
+        if (typeof renderStoriesBar === "function") renderStoriesBar();
       }
     },
+
     saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
+
     cleanExpiredStories() {
-  const now = Date.now();
+      const now = Date.now();
 
-  this.stories = this.stories.filter(story => {
-    // ✅ LE DEMO RESTANO SEMPRE
-    if (story.isDemo === true) return true;
+      this.stories = this.stories.filter(story => {
+        // ✅ LE DEMO RESTANO SEMPRE
+        if (story.isDemo === true) return true;
 
-    // ⏱️ pulizia media > 24h
-    story.media = story.media.filter(m => {
-      return (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME;
-    });
+        // ⏱️ pulizia media > 24h
+        story.media = story.media.filter(m => {
+          return (now - m.timestamp) < STORIES_CONFIG.STORY_LIFETIME;
+        });
 
-    return story.media.length > 0;
-  });
+        return story.media.length > 0;
+      });
 
-  this.saveStories();
-},
+      this.saveStories();
+    },
+
     getTodayStoriesCount() {
       const today = new Date().toDateString();
       const userStory = this.stories.find(s => s.userId === "currentUser");
       if (!userStory) return 0;
       return userStory.media.filter(m => new Date(m.timestamp).toDateString() === today).length;
     },
+
     canUploadStory() { 
-  return !!state.plus; 
+      return !!state.plus; 
     },
+
     generateMockStories() {
       return [
-       { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true, isDemo:true,
-         media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false,privacy:"public"}] },
-        
+        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true, isDemo:true,
+          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",music:"",viewed:false,privacy:"public"}] },
+
         { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
           media:[
             {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",music:"happy",viewed:false,privacy:"public"},
             {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",music:"",viewed:false,privacy:"private"}
           ]},
-        
+
         { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
           media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",music:"",viewed:false,privacy:"public"}] }
       ];
