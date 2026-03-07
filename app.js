@@ -5721,29 +5721,41 @@ async function init(){
   }
 
   function renderStoryViewer() {
-    const story = StoriesState.stories.find(
-      (s) => s.userId === StoriesState.currentStoryUserId
-    );
-    if (!story) return;
+  const story = StoriesState.stories.find(
+    (s) => s.userId === StoriesState.currentStoryUserId
+  );
+  if (!story) return;
 
-    const visibleMedia = getVisibleMediaList(story);
-    if (!visibleMedia.length) {
-      closeStoryViewer();
-      return;
+  const visibleMedia = getVisibleMediaList(story);
+  if (!visibleMedia.length) {
+    closeStoryViewer();
+    return;
+  }
+
+  const media = visibleMedia[StoriesState.currentMediaIndex];
+  if (!media) return;
+
+  $("storyUserAvatar").src = story.avatar;
+  $("storyUserName").textContent = story.userName;
+  $("storyTimestamp").textContent = getTimeAgo(media.timestamp);
+
+  // ✅ mostra "Elimina" solo sui tuoi aggiornamenti
+  const deleteBtn = $("deleteStoryBtn");
+  if (deleteBtn) {
+    if (story.userId === "currentUser") {
+      deleteBtn.classList.remove("hidden");
+      deleteBtn.onclick = deleteCurrentStoryMedia;
+    } else {
+      deleteBtn.classList.add("hidden");
+      deleteBtn.onclick = null;
     }
+  }
 
-    const media = visibleMedia[StoriesState.currentMediaIndex];
-    if (!media) return;
+  renderProgressBars(visibleMedia.length);
+  renderStoryContent(media);
 
-    $("storyUserAvatar").src = story.avatar;
-    $("storyUserName").textContent = story.userName;
-    $("storyTimestamp").textContent = getTimeAgo(media.timestamp);
-
-    renderProgressBars(visibleMedia.length);
-    renderStoryContent(media);
-
-    media.viewed = true;
-    StoriesState.saveStories();
+  media.viewed = true;
+  StoriesState.saveStories();
   }
 
   function renderProgressBars(count) {
@@ -5782,6 +5794,7 @@ async function init(){
       img.alt = "Story";
       img.className = `filter-${media.filter}`;
       content.appendChild(img);
+      
       // ===== TEXT OVERLAY =====
 if (media.text && media.text.trim() !== "") {
   const text = document.createElement("div");
@@ -5909,6 +5922,48 @@ if (media.text && media.text.trim() !== "") {
 
     renderStoriesBar();
   }
+
+function deleteCurrentStoryMedia() {
+  const story = StoriesState.stories.find(
+    (s) => s.userId === StoriesState.currentStoryUserId
+  );
+  if (!story) return;
+
+  const visibleMedia = getVisibleMediaList(story);
+  const currentMedia = visibleMedia[StoriesState.currentMediaIndex];
+  if (!currentMedia) return;
+
+  const ok = confirm(
+    state.lang === "it"
+      ? "Vuoi eliminare questo aggiornamento?"
+      : "Do you want to delete this update?"
+  );
+  if (!ok) return;
+
+  // rimuove il media corrente usando l'id
+  story.media = (story.media || []).filter(m => m && m.id !== currentMedia.id);
+
+  // se non resta nulla, rimuove tutta la story dell'utente
+  if (!story.media.length) {
+    StoriesState.stories = StoriesState.stories.filter(
+      s => s.userId !== StoriesState.currentStoryUserId
+    );
+    StoriesState.saveStories();
+    closeStoryViewer();
+    renderStoriesBar();
+    return;
+  }
+
+  // se l'indice attuale supera il nuovo totale, torna all'ultimo valido
+  const newVisible = getVisibleMediaList(story);
+  if (StoriesState.currentMediaIndex >= newVisible.length) {
+    StoriesState.currentMediaIndex = Math.max(0, newVisible.length - 1);
+  }
+
+  StoriesState.saveStories();
+  renderStoryViewer();
+  renderStoriesBar();
+}
 
   function getTimeAgo(timestamp) {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
