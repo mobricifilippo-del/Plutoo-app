@@ -6447,7 +6447,9 @@ function publishStory() {
     closeUploadModal();
     if (typeof renderStoriesBar === "function") renderStoriesBar();
 
-    showToast(state.lang === "it" ? "Aggiornamento pubblicato!" : "Update published!");
+    const successMsg = state.lang === "it" ? "Aggiornamento pubblicato!" : "Update published!";
+    if (typeof showToast === "function") showToast(successMsg);
+    else alert(successMsg);
   } finally {
     StoriesState.__publishing = false;
   }
