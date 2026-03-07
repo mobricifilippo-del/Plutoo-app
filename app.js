@@ -493,27 +493,26 @@ btnEnter?.addEventListener("click", async (e) => {
     setActiveView(targetView);
     try { state.currentView = targetView; } catch (_) {}
 
-// =========================
+ // =========================
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
 // =========================
 try {
   if (
-  window.PLUTOO_READONLY &&
-  state.currentDogProfile?.id !== "__create__"
-) {
+    window.PLUTOO_READONLY &&
+    state.currentDogProfile?.id !== "__create__"
+  ) {
     document.body.classList.add("plutoo-readonly");
 
-    // ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)
+    // ✅ disabilita SOLO azioni di UPLOAD reali (NON il bottone Pubblica del modal)
     const idsToDisable = [
-      "uploadSelfie",
-      "publishStory"
+      "uploadSelfie"
     ];
     idsToDisable.forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.disabled = true;
     });
 
-    // ✅ intercetta SOLO click su upload foto/documenti
+    // ✅ intercetta SOLO click su upload foto/documenti reali
     if (!window.__plutooReadonlyBound) {
       window.__plutooReadonlyBound = true;
 
@@ -538,8 +537,7 @@ try {
             isAddPhoto ||
             isDocItem ||
             isFileInput ||
-            id === "uploadSelfie" ||
-            id === "publishStory";
+            id === "uploadSelfie";
 
           if (!isBlocked) return; // ✅ tutto il resto resta cliccabile
 
