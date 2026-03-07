@@ -6457,4 +6457,48 @@ function publishStory() {
     StoriesState.__publishing = false;
   }
 }
+
+function showToast(message, type = "success") {
+  let toast = document.getElementById("plutoo-toast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "plutoo-toast";
+
+    toast.style.position = "fixed";
+    toast.style.top = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "#6c4df6";
+    toast.style.color = "#fff";
+    toast.style.padding = "12px 18px";
+    toast.style.borderRadius = "14px";
+    toast.style.fontWeight = "600";
+    toast.style.fontSize = "14px";
+    toast.style.zIndex = "999999";
+    toast.style.boxShadow = "0 8px 25px rgba(0,0,0,0.25)";
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.25s ease";
+
+    document.body.appendChild(toast);
+  }
+
+  if (type === "error") {
+    toast.style.background = "#e54848";
+  } else {
+    toast.style.background = "#6c4df6";
+  }
+
+  toast.textContent = message;
+
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+  });
+
+  clearTimeout(toast._hideTimer);
+
+  toast._hideTimer = setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2500);
+}
       
