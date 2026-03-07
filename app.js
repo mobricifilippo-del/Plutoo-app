@@ -6398,7 +6398,7 @@ function setupFiltersGrid() {
   }
 }
 
-function publishStory() {
+async function publishStory() {
   // 🔒 VETRINA: blocca pubblicazione story
   if (window.PLUTOO_READONLY) {
     const msg = state.lang === "it"
@@ -6442,21 +6442,126 @@ function publishStory() {
       return;
     }
 
-    const userId = "currentUser";
-    let userStory = StoriesState.stories.find(s => s.userId === userId);
+    // ✅ Firebase pronto obbligatorio
+    if (!window.auth || !window.db || !window.storage) {
+      const msg = state.lang === "it"
+        ? "Firebase non pronto. Riprova tra un attimo."
+        : "Firebase not ready. Please retry in a moment.";
+      if (typeof showToast === "function") showToast(msg, "error");
+      else alert(msg);
+      StoriesState.__publishing = false;
+      return;
+    }
+
+    const currentUser = window.auth.currentUser;
+    const uid = currentUser && currentUser.uid ? currentUser.uid : (window.PLUTOO_UID || "");
+    if (!uid) {
+      const msg = state.lang === "it"
+        ? "Devi essere autenticato per pubblicare un aggiornamento."
+        : "You must be logged in to publish an update.";
+      if (typeof showToast === "function") showToast(msg, "error");
+      else alert(msg);
+      StoriesState.__publishing = false;
+      return;
+    }
+
+    const now = Date.now();
+
+    const storyTextEl = document.getElementById("storyTextInput");
+    const storyText = (storyTextEl && typeof storyTextEl.value === "string")
+      ? storyTextEl.value.trim()
+      : "";
+
+    const textColor = (storyTextEl && storyTextEl.dataset && storyTextEl.dataset.textColor)
+      ? storyTextEl.dataset.textColor
+      : "#ffffff";
+
+    const textX = (storyTextEl && storyTextEl.dataset && storyTextEl.dataset.textX !== undefined)
+      ? Number(storyTextEl.dataset.textX)
+      : 0.5;
+
+    const textY = (storyTextEl && storyTextEl.dataset && storyTextEl.dataset.textY !== undefined)
+      ? Number(storyTextEl.dataset.textY)
+      : 0.8;
+
+    const storyId = `story_${uid}_${now}`;
+    const storagePath = `stories/${uid}/${storyId}.jpg`;
+    const storageRef = window.storage.ref().child(storagePath);
+
+    // ✅ upload Base64/dataUrl su Firebase Storage
+    await storageRef.putString(
+      StoriesState.uploadedFile.url,
+      "data_url",
+      {
+        contentType: StoriesState.uploadedFile.mime || "image/jpeg",
+        customMetadata: {
+          ownerUid: uid,
+          storyId: storyId,
+          kind: "story"
+        }
+      }
+    );
+
+    const downloadURL = await storageRef.getDownloadURL();
+
+    const dogId = window.PLUTOO_DOG_ID || uid;
+    const dogName =
+      window.PLUTOO_DOG_NAME ||
+      localStorage.getItem("plutoo_dog_name") ||
+      "DOG";
+
+    const dogAvatar =
+      window.PLUTOO_DOG_AVATAR ||
+      localStorage.getItem("plutoo_dog_avatar") ||
+      "plutoo-icon-192.png";
+
+    const storyDoc = {
+      id: storyId,
+      storyId: storyId,
+      ownerUid: uid,
+      dogId: dogId,
+      dogName: dogName,
+      dogAvatar: dogAvatar,
+      verified: false,
+
+      type: "image",
+      url: downloadURL,
+      storagePath: storagePath,
+      mime: StoriesState.uploadedFile.mime || "image/jpeg",
+      size: StoriesState.uploadedFile.size || 0,
+
+      timestamp: now,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      expiresAt: now + 24 * 60 * 60 * 1000,
+
+      text: storyText,
+      textColor: textColor,
+      textX: Number.isFinite(textX) ? textX : 0.5,
+      textY: Number.isFinite(textY) ? textY : 0.8,
+
+      filter: "none",
+      music: "",
+      viewed: false,
+      privacy: "public",
+      active: true
+    };
+
+    // ✅ save su Firestore
+    await window.db.collection("stories").doc(storyId).set(storyDoc);
+
+    // ✅ mantengo anche sync locale per non rompere la UI attuale
+    let userStory = StoriesState.stories.find(s => s.userId === uid);
 
     if (!userStory) {
       userStory = {
-        userId,
-        userName: "You",
-        avatar: "plutoo-icon-192.png",
+        userId: uid,
+        userName: dogName,
+        avatar: dogAvatar,
         verified: false,
         media: []
       };
       StoriesState.stories.unshift(userStory);
     }
-
-    const now = Date.now();
 
     try {
       const realMedia = Array.isArray(userStory.media) ? userStory.media.slice() : [];
@@ -6465,22 +6570,18 @@ function publishStory() {
       userStory.media = realMedia;
     } catch (_) {}
 
-    const storyTextEl = document.getElementById("storyTextInput");
-    const storyText = (storyTextEl && typeof storyTextEl.value === "string")
-      ? storyTextEl.value.trim()
-      : "";
-
     const newMedia = {
-      id: `m_${now}`,
+      id: storyId,
       type: "image",
-      url: StoriesState.uploadedFile.url,
+      url: downloadURL,
+      storagePath: storagePath,
       timestamp: now,
       expiresAt: now + 24 * 60 * 60 * 1000,
 
       text: storyText,
-      textColor: "#ffffff",
-      textX: 0.5,
-      textY: 0.8,
+      textColor: textColor,
+      textX: Number.isFinite(textX) ? textX : 0.5,
+      textY: Number.isFinite(textY) ? textY : 0.8,
 
       filter: "none",
       music: "",
@@ -6497,16 +6598,34 @@ function publishStory() {
     StoriesState.selectedFilter = "none";
     StoriesState.selectedMusic = "";
 
+    if (storyTextEl) {
+      storyTextEl.value = "";
+      if (storyTextEl.dataset) {
+        delete storyTextEl.dataset.textX;
+        delete storyTextEl.dataset.textY;
+        delete storyTextEl.dataset.textColor;
+      }
+    }
+
     closeUploadModal();
     if (typeof renderStoriesBar === "function")
       renderStoriesBar();
 
-    // ✅ messaggio finale pulito
     if (typeof showToast === "function") {
-      showToast("Aggiornamento pubblicato ✓");
+      showToast(state.lang === "it" ? "Aggiornamento pubblicato ✓" : "Update published ✓");
     } else {
-      alert("Aggiornamento pubblicato ✓");
+      alert(state.lang === "it" ? "Aggiornamento pubblicato ✓" : "Update published ✓");
     }
+
+  } catch (err) {
+    console.error("publishStory Firebase error:", err);
+
+    const msg = state.lang === "it"
+      ? "Errore nella pubblicazione dell'aggiornamento. Riprova."
+      : "Update publish error. Please retry.";
+
+    if (typeof showToast === "function") showToast(msg, "error");
+    else alert(msg);
 
   } finally {
     StoriesState.__publishing = false;
