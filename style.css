@@ -2265,3 +2265,25 @@ line-height: 1.6;
     filter: brightness(1);
   }
 }
+
+.story-header-actions{
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+}
+
+.story-delete-btn{
+  border:0;
+  border-radius:999px;
+  padding:.45rem .85rem;
+  background:rgba(255,59,48,.92);
+  color:#fff;
+  font-weight:700;
+  font-size:.85rem;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
+
+.story-delete-btn.hidden{
+  display:none;
+}
