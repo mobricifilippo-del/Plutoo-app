@@ -6363,7 +6363,7 @@ function publishStory() {
 
     const preview = $("uploadPreview");
 
-    // ✅ fallback: se per qualsiasi motivo uploadedFile si è perso, ricostruisci dal dataset
+    // fallback se uploadedFile perso
     if (!StoriesState.uploadedFile && preview && preview.dataset && preview.dataset.mediaUrl) {
       StoriesState.uploadedFile = {
         type: "image",
@@ -6373,14 +6373,14 @@ function publishStory() {
       };
     }
 
-    // ✅ se il file esiste già/non si è perso, NON bloccare con alert
+    // blocco se davvero non esiste media
     if (!StoriesState.uploadedFile) {
       alert(state.lang === "it" ? "Seleziona prima una foto" : "Select a photo first");
       StoriesState.__publishing = false;
       return;
     }
 
-    // ✅ modello definitivo: solo immagini
+    // solo immagini
     if (StoriesState.uploadedFile.type !== "image") {
       alert(state.lang === "it" ? "Formato non supportato. Usa solo una FOTO." : "Unsupported format. Use PHOTO only.");
       StoriesState.__publishing = false;
@@ -6389,6 +6389,7 @@ function publishStory() {
 
     const userId = "currentUser";
     let userStory = StoriesState.stories.find(s => s.userId === userId);
+
     if (!userStory) {
       userStory = {
         userId,
@@ -6402,15 +6403,13 @@ function publishStory() {
 
     const now = Date.now();
 
-    // ✅ limite 3 attive: se ne aggiungi una 4ª, elimina la più vecchia
     try {
       const realMedia = Array.isArray(userStory.media) ? userStory.media.slice() : [];
       realMedia.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-      while (realMedia.length > 2) realMedia.shift(); // tengo le 2 più recenti, aggiungo la nuova = 3
+      while (realMedia.length > 2) realMedia.shift();
       userStory.media = realMedia;
     } catch (_) {}
 
-    // ✅ leggi testo inserito nello step "✨ Personalizza"
     const storyTextEl = document.getElementById("storyTextInput");
     const storyText = (storyTextEl && typeof storyTextEl.value === "string")
       ? storyTextEl.value.trim()
@@ -6423,7 +6422,6 @@ function publishStory() {
       timestamp: now,
       expiresAt: now + 24 * 60 * 60 * 1000,
 
-      // 👇 STORIES TEXT OVERLAY (source-of-truth)
       text: storyText,
       textColor: "#ffffff",
       textX: 0.5,
@@ -6437,20 +6435,26 @@ function publishStory() {
 
     userStory.media.push(newMedia);
 
-    if (typeof StoriesState.saveStories === "function") StoriesState.saveStories();
+    if (typeof StoriesState.saveStories === "function")
+      StoriesState.saveStories();
 
-    // reset stato upload
     StoriesState.uploadedFile = null;
     StoriesState.selectedFilter = "none";
     StoriesState.selectedMusic = "";
 
     closeUploadModal();
-    if (typeof renderStoriesBar === "function") renderStoriesBar();
+    if (typeof renderStoriesBar === "function")
+      renderStoriesBar();
 
-    const successMsg = state.lang === "it" ? "Aggiornamento pubblicato!" : "Update published!";
-    if (typeof showToast === "function") showToast(successMsg);
-    else alert(successMsg);
+    // ✅ messaggio finale pulito
+    if (typeof showToast === "function") {
+      showToast("Aggiornamento pubblicato ✓");
+    } else {
+      alert("Aggiornamento pubblicato ✓");
+    }
+
   } finally {
     StoriesState.__publishing = false;
   }
 }
+      
