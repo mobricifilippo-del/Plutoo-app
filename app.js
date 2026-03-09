@@ -815,7 +815,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
   } catch (_) {}
   setTimeout(runEnterStateWhenReady, 200);
 })();
-  };
+  }
 
   try {
     const linkLogin = document.getElementById("linkLogin");
