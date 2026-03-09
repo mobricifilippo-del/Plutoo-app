@@ -582,12 +582,6 @@ try {
     }
   }, 3500);
 });
-
-// iniziale + ogni cambio auth
-updateEnterState();
-firebase.auth().onAuthStateChanged(() => {
-  updateEnterState();
-});
 }); // <-- CHIUDE
 
 // =========================
@@ -802,24 +796,6 @@ window.storage = storage;
   } catch (_) {}
   setTimeout(runPresenceWhenReady, 200);
 })();
-
-// ✅ hook: rerun ad ogni cambio auth (logout/login) (con guardia "function ready")
-try {
-  if (window.auth && typeof window.auth.onAuthStateChanged === "function" && !window.__plutooDogPresenceHooked) {
-    window.__plutooDogPresenceHooked = true;
-    window.auth.onAuthStateChanged(() => {
-      (function runPresenceAfterAuth(){
-        try {
-          if (typeof window.plutooDogPresenceCheck === "function") {
-            window.plutooDogPresenceCheck();
-            return;
-          }
-        } catch (_) {}
-        setTimeout(runPresenceAfterAuth, 200);
-      })();
-    });
-  }
-} catch (_) {}
 
 // ✅ Persistenza Auth su device (no reset dopo refresh)
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
