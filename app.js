@@ -802,6 +802,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
   console.error("Auth persistence error:", err);
 });
 
+updateEnterState();
  auth.onAuthStateChanged(async (user) => {
   const runPresenceAfterAuth = () => {
     (function waitDogPresenceReady() {
