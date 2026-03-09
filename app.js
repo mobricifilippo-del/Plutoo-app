@@ -419,6 +419,7 @@ document.getElementById("btnLogout")?.addEventListener("click", async () => {
 const btnEnter = document.getElementById("btnEnter");
 
 function updateEnterState() {
+  alert("UPDATE ENTER STATE CALLED");
   const enterBtn = document.getElementById("btnEnter");
   if (!enterBtn) return;
 
