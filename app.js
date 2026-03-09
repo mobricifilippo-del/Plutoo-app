@@ -808,6 +808,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 });
 
  auth.onAuthStateChanged(async (user) => {
+   alert("AUTH LISTENER | user=" + (user ? "YES" : "NO"));
   const runPresenceAfterAuth = () => {
   (function waitDogPresenceReady() {
     (function runEnterStateWhenReady() {
