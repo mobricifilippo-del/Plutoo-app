@@ -434,6 +434,7 @@ enterBtn.style.animation = "none";
 void enterBtn.offsetWidth;
 enterBtn.style.animation = "";
 enterBtn.classList.add("enter-glow");
+    console.log("ENTER DEBUG", enterBtn.className);
   } else {
     enterBtn.disabled = true;
     enterBtn.classList.add("disabled");
