@@ -810,17 +810,17 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 
  auth.onAuthStateChanged(async (user) => {
   const runPresenceAfterAuth = () => {
-  (function waitDogPresenceReady() {
-    (function runEnterStateWhenReady() {
-      try {
-        if (typeof updateEnterState === "function" && document.getElementById("btnEnter")) {
-          updateEnterState();
-          return;
-        }
-      } catch (_) {}
-      setTimeout(runEnterStateWhenReady, 200);
-    })();
-  })();
+  try {
+    if (typeof updateEnterState === "function") {
+      updateEnterState();
+    }
+  } catch (_) {}
+
+  try {
+    if (typeof window.plutooDogPresenceCheck === "function") {
+      window.plutooDogPresenceCheck();
+    }
+  } catch (_) {}
 };
 
   try {
