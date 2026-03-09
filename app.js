@@ -1195,69 +1195,6 @@ const state = {
   
   window.StoriesState = StoriesState;
 
-  // ============ HOME: ENTRA (con animazione WOW) ============
-  btnEnter?.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    try { localStorage.setItem("entered", "1"); } catch(err){}
-    state.entered = true;
-
-  const bark = document.getElementById("dogBark");
-if (bark) {
-  bark.currentTime = 0;
-  bark.volume = 0.5;
-  const playPromise = bark.play();
-  if (playPromise && typeof playPromise.then === "function") {
-    playPromise.catch(() => {
-      // in produzione niente alert, al massimo in futuro un log silenzioso
-    });
-  }
-}
-
-    if (heroLogo) {
-      heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
-      void heroLogo.offsetWidth;
-      heroLogo.classList.add("heartbeat-violet-wow");
-    }
-
-    const flash = document.getElementById("whiteFlash");
-    if (flash) {
-      flash.classList.add("active");
-    }
-
-    setTimeout(() => {
-      appScreen?.classList.remove("hidden");
-      document.body.classList.remove("story-open");
-
-      if (typeof initStories === "function") {
-        initStories();
-      }
-      setActiveView(state.currentView);
-    }, 500);
-
-    setTimeout(() => {
-      homeScreen?.classList.add("hidden");
-      const flash2 = document.getElementById("whiteFlash");
-      if (flash2) {
-        flash2.classList.remove("active");
-      }
-      if (heroLogo) {
-        heroLogo.style.transition = "opacity 1.5s ease-out";
-        heroLogo.style.opacity = "0";
-        showAdBanner();
-      }
-    }, 2000);
-
-    setTimeout(() => {
-      if (heroLogo) {
-        heroLogo.classList.remove("heartbeat-violet-wow");
-        heroLogo.style.opacity = "";
-        heroLogo.style.transition = "";
-      }
-    }, 3500);
-  });
-
   if (state.entered) {
     homeScreen?.classList.add("hidden");
     appScreen?.classList.remove("hidden");
