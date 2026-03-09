@@ -423,7 +423,6 @@ function updateEnterState() {
   if (!enterBtn) return;
 
   const logged = !!(window.auth && window.auth.currentUser);
-  alert("UPDATE ENTER STATE | logged=" + logged);
 
   if (logged) {
     enterBtn.disabled = false;
