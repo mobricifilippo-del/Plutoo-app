@@ -941,93 +941,84 @@ if (isAndroidWebView) {
   let CURRENT_USER_DOG_ID = String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "d1");
 
   // ============ Stato (caricato da localStorage dove possibile) ============
-  const state = {
-    // UX / navigazione
-    entered: localStorage.getItem("entered") === "1",
-    currentView: localStorage.getItem("currentView") || "nearby",
-    viewHistory: [],
-    processingSwipe: false,
+const state = {
+  // UX / navigazione
+  entered: localStorage.getItem("entered") === "1",
+  currentView: localStorage.getItem("currentView") || "nearby",
+  viewHistory: [],
+  processingSwipe: false,
 
-    // ===== Profile / Docs / Selfie (required for profile open) =====
-ownerDocsUploaded: {},
-dogDocsUploaded: {},
-selfieUntilByDog: {},
-ownerSocialByDog: {},
+  // lingua
+  lang: localStorage.getItem("lang") || "it",
 
-    // lingua
-    lang: localStorage.getItem("lang") || "it",
+  // PLUS
+  plus: localStorage.getItem("plutoo_plus") === "yes",
+  plusPlan: localStorage.getItem("plusPlan") || "monthly",
 
-    // PLUS
-    plus: localStorage.getItem("plutoo_plus") === "yes",
-    plusPlan: localStorage.getItem("plusPlan") || "monthly",
+  // Filtri
+  filters: {
+    breed:        localStorage.getItem("f_breed") || "",
+    distKm:       parseInt(localStorage.getItem("f_distKm") || "50", 10),
+    verified:     localStorage.getItem("f_verified") === "1",
+    sex:          localStorage.getItem("f_sex") || "",
+    ageMin:       localStorage.getItem("f_ageMin") || "",
+    ageMax:       localStorage.getItem("f_ageMax") || "",
+    weight:       localStorage.getItem("f_weight") || "",
+    height:       localStorage.getItem("f_height") || "",
+    pedigree:     localStorage.getItem("f_pedigree") || "",
+    breeding:     localStorage.getItem("f_breeding") || "",
+    size:         localStorage.getItem("f_size") || "",
+  },
 
-    // Filtri
-    filters: {
-      breed:        localStorage.getItem("f_breed") || "",
-      distKm:       parseInt(localStorage.getItem("f_distKm") || "50", 10),
-      verified:     localStorage.getItem("f_verified") === "1",
-      sex:          localStorage.getItem("f_sex") || "",
-      ageMin:       localStorage.getItem("f_ageMin") || "",
-      ageMax:       localStorage.getItem("f_ageMax") || "",
-      weight:       localStorage.getItem("f_weight") || "",
-      height:       localStorage.getItem("f_height") || "",
-      pedigree:     localStorage.getItem("f_pedigree") || "",
-      breeding:     localStorage.getItem("f_breeding") || "",
-      size:         localStorage.getItem("f_size") || "",
-    },
+  // Swipe & rewards
+  swipeCount: parseInt(localStorage.getItem("swipes") || "0", 10),
+  nextRewardAt: parseInt(localStorage.getItem("nextRewardAt") || "10", 10),
+  rewardOpen: false,
 
-    // Swipe & rewards
-    swipeCount: parseInt(localStorage.getItem("swipes") || "0", 10),
-    nextRewardAt: parseInt(localStorage.getItem("nextRewardAt") || "10", 10),
-    rewardOpen: false,
+  // Match / amicizie / chat
+  matches: JSON.parse(localStorage.getItem("matches") || "{}"),
+  friendships: JSON.parse(localStorage.getItem("friendships") || "{}"),
+  chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent") || "{}"),
+  matchCount: Number(localStorage.getItem("matchCount") || "0"),
 
-    // Match / amicizie / chat
-    matches: JSON.parse(localStorage.getItem("matches") || "{}"),
-    friendships: JSON.parse(localStorage.getItem("friendships") || "{}"),
-    chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent") || "{}"),
-    matchCount: Number(localStorage.getItem("matchCount") || "0"),
+  // Selfie unlock (per DOG)
+  selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
 
-    // Selfie unlock (per DOG)
-    selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
+  // Rewards già visti per social
+  socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed") || "{}"),
 
-    // Rewards già visti per social
-    socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed") || "{}"),
+  // Dati caricati (docs)
+  ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded") || "{}"),
+  dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded") || "{}"),
 
-    // Dati caricati (docs)
-    ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded") || "{}"),
-    dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded") || "{}"),
+  // Stories
+  storyOpen: false,
 
-    // Stories
-    storyOpen: false,
+  // Indici deck
+  currentLoveIdx: 0,
+  currentPlayIdx: 0,
 
-    // Indici deck
-    currentLoveIdx: 0,
-    currentPlayIdx: 0,
+  // Geo
+  geo: null,
 
-    // Geo
-    geo: null,
+  // Razze
+  breeds: [],
 
-    // Razze
-    breeds: [],
+  // Profilo corrente
+  currentDogProfile: null,
+  previousViewForMessages: "nearby",
 
-    // Profilo corrente
-    currentDogProfile: null,
-    previousViewForMessages: "nearby",
+  // Follow / seguiti (mock locale)
+  followersByDog: JSON.parse(localStorage.getItem("followersByDog") || "{}"),
+  followingByDog: JSON.parse(localStorage.getItem("followingByDog") || "{}"),
+  ownerSocialByDog: JSON.parse(localStorage.getItem("ownerSocialByDog") || "{}"),
 
-    // Follow / seguiti (mock locale)
-    followersByDog: 
-      JSON.parse(localStorage.getItem("followersByDog") || "{}"),
-    followingByDog: 
-      JSON.parse(localStorage.getItem("followingByDog") || "{}"),
-    ownerSocialByDog: 
-      JSON.parse(localStorage.getItem("ownerSocialByDog") || "{}"),
+  // Like foto profilo
+  photoLikesByDog: JSON.parse(localStorage.getItem("photoLikesByDog") || "{}"),
 
-    // Like foto profilo
-    photoLikesByDog: JSON.parse(localStorage.getItem("photoLikesByDog") || "{}"),
-
-    // Like stories (per media id)
-    storyLikesByMedia: JSON.parse(localStorage.getItem("storyLikesByMedia") || "{}"),
-  };
+  // Like stories (per media id)
+  storyLikesByMedia: JSON.parse(localStorage.getItem("storyLikesByMedia") || "{}"),
+};
 
 // ✅ FIX DEFINITIVO: una sola sorgente di verità per la lingua e per tutte le funzioni che usano window.state
   window.state = state;
