@@ -828,7 +828,6 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     }
   }
 } catch (_) {}
-  }
 
   try {
     if (typeof window.plutooDogPresenceCheck === "function") {
