@@ -805,21 +805,17 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
  auth.onAuthStateChanged(async (user) => {
   const runPresenceAfterAuth = () => {
     (function waitDogPresenceReady() {
-      try {
-        if (typeof window.plutooDogPresenceCheck === "function") {
-          window.plutooDogPresenceCheck();
-          return;
-        }
-      } catch (_) {}
-      setTimeout(waitDogPresenceReady, 200);
-    })();
-  };
 
+      (function runEnterStateWhenReady() {
   try {
-    if (typeof updateEnterState === "function") {
+    if (typeof updateEnterState === "function" && document.getElementById("btnEnter")) {
       updateEnterState();
+      return;
     }
   } catch (_) {}
+  setTimeout(runEnterStateWhenReady, 200);
+})();
+  };
 
   try {
     const linkLogin = document.getElementById("linkLogin");
