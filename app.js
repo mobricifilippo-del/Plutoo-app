@@ -419,22 +419,23 @@ document.getElementById("btnLogout")?.addEventListener("click", async () => {
 const btnEnter = document.getElementById("btnEnter");
 
 function updateEnterState() {
-  if (!btnEnter) return;
+  const enterBtn = document.getElementById("btnEnter");
+  if (!enterBtn) return;
 
   const logged = !!(window.auth && window.auth.currentUser);
 
   if (logged) {
-    btnEnter.disabled = false;
-    btnEnter.classList.remove("disabled");
+    enterBtn.disabled = false;
+    enterBtn.classList.remove("disabled");
 
     // ✨ FEEDBACK LOGIN: accendi ENTRA (oro) se non ancora cliccato
-    btnEnter.classList.add("enter-glow");
+    enterBtn.classList.add("enter-glow");
   } else {
-    btnEnter.disabled = true;
-    btnEnter.classList.add("disabled");
+    enterBtn.disabled = true;
+    enterBtn.classList.add("disabled");
 
     // reset glow se logout
-    btnEnter.classList.remove("enter-glow");
+    enterBtn.classList.remove("enter-glow");
   }
 }
 
