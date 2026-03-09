@@ -811,6 +811,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
  auth.onAuthStateChanged(async (user) => {
   const runPresenceAfterAuth = () => {
   try {
+    alert("TYPEOF updateEnterState = " + typeof updateEnterState);
     if (typeof updateEnterState === "function") {
       updateEnterState();
     }
