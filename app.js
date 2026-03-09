@@ -827,18 +827,31 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 });
 
  auth.onAuthStateChanged(async (user) => {
+  const runPresenceAfterAuth = () => {
+    (function waitDogPresenceReady() {
+      try {
+        if (typeof window.plutooDogPresenceCheck === "function") {
+          window.plutooDogPresenceCheck();
+          return;
+        }
+      } catch (_) {}
+      setTimeout(waitDogPresenceReady, 200);
+    })();
+  };
+
+  try {
+    if (typeof updateEnterState === "function") {
+      updateEnterState();
+    }
+  } catch (_) {}
+
   try {
     const linkLogin = document.getElementById("linkLogin");
     const linkRegister = document.getElementById("linkRegister");
 
     if (!user) {
-      // ===== NON LOGGATO =====
       window.PLUTOO_UID = null;
       window.__booted = false;
-
-      // ✅ IMPORTANTISSIMO:
-      // NON resetto PLUTOO_HAS_DOG / DOG_ID qui, perché al refresh Firebase può passare da user=null per un istante.
-      // Il reset "vero" (Home/entered=0 + clear DOG) avviene SOLO su Logout esplicito / Delete account.
 
       if (linkLogin) {
         linkLogin.setAttribute("data-i18n", "login");
@@ -853,19 +866,18 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
         linkRegister.style.display = "";
       }
 
+      runPresenceAfterAuth();
       return;
     }
 
-    // ===== LOGGATO =====
     window.PLUTOO_UID = user.uid;
 
     if (linkLogin) {
       linkLogin.removeAttribute("data-i18n");
       linkLogin.textContent = "Logout";
-      // ✅ NON fare logout qui: deve solo aprire la tendina account
       linkLogin.onclick = (e) => {
         e.preventDefault();
-        window.openAuth("login"); // mostrerà "già loggato" grazie al tuo override
+        window.openAuth("login");
       };
     }
 
@@ -873,7 +885,6 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
       linkRegister.style.display = "none";
     }
 
-    // ✅ FIRESTORE: crea/aggiorna users/{uid} (source of truth account)
     try {
       if (db && window.PLUTOO_UID) {
         const uid = String(window.PLUTOO_UID);
@@ -896,11 +907,10 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
       console.error("users/{uid} upsert error:", e);
     }
 
-    // 🔒 evita boot multipli sullo stesso UID
+    runPresenceAfterAuth();
+
     if (!window.__booted) {
       window.__booted = true;
-
-      // 🚀 avvio app (una volta sola: già protetto da window.__booted)
       if (typeof init === "function") init();
     }
 
