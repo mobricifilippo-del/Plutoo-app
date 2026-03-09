@@ -811,12 +811,23 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
  auth.onAuthStateChanged(async (user) => {
   const runPresenceAfterAuth = () => {
   try {
-    alert("TYPEOF updateEnterState = " + typeof updateEnterState);
-    if (typeof updateEnterState === "function") {
-      updateEnterState();
+  const enterBtn = document.getElementById("btnEnter");
+  const logged = !!user;
+
+  if (enterBtn) {
+    if (logged) {
+      enterBtn.disabled = false;
+      enterBtn.classList.remove("disabled");
+      enterBtn.classList.remove("enter-glow");
+      void enterBtn.offsetWidth;
+      enterBtn.classList.add("enter-glow");
+    } else {
+      enterBtn.disabled = true;
+      enterBtn.classList.add("disabled");
+      enterBtn.classList.remove("enter-glow");
     }
-  } catch (e) {
-    alert("runPresenceAfterAuth → updateEnterState ERROR: " + (e && e.message ? e.message : e));
+  }
+} catch (_) {}
   }
 
   try {
