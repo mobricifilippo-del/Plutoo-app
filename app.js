@@ -423,6 +423,7 @@ function updateEnterState() {
   if (!enterBtn) return;
 
   const logged = !!(window.auth && window.auth.currentUser);
+  alert("UPDATE ENTER STATE | logged=" + logged);
 
   if (logged) {
     enterBtn.disabled = false;
@@ -434,7 +435,6 @@ enterBtn.style.animation = "none";
 void enterBtn.offsetWidth;
 enterBtn.style.animation = "";
 enterBtn.classList.add("enter-glow");
-    alert("ENTER DEBUG: " + enterBtn.className);
   } else {
     enterBtn.disabled = true;
     enterBtn.classList.add("disabled");
