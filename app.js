@@ -429,7 +429,9 @@ function updateEnterState() {
     enterBtn.classList.remove("disabled");
 
     // ✨ FEEDBACK LOGIN: accendi ENTRA (oro) se non ancora cliccato
-    enterBtn.classList.add("enter-glow");
+    enterBtn.classList.remove("enter-glow");
+void enterBtn.offsetWidth;
+enterBtn.classList.add("enter-glow");
   } else {
     enterBtn.disabled = true;
     enterBtn.classList.add("disabled");
