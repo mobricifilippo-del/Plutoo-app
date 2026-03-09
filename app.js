@@ -814,7 +814,9 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     if (typeof updateEnterState === "function") {
       updateEnterState();
     }
-  } catch (_) {}
+  } catch (e) {
+    alert("runPresenceAfterAuth → updateEnterState ERROR: " + (e && e.message ? e.message : e));
+  }
 
   try {
     if (typeof window.plutooDogPresenceCheck === "function") {
