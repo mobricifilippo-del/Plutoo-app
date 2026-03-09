@@ -430,7 +430,9 @@ function updateEnterState() {
 
     // ✨ FEEDBACK LOGIN: accendi ENTRA (oro) se non ancora cliccato
     enterBtn.classList.remove("enter-glow");
+enterBtn.style.animation = "none";
 void enterBtn.offsetWidth;
+enterBtn.style.animation = "";
 enterBtn.classList.add("enter-glow");
   } else {
     enterBtn.disabled = true;
