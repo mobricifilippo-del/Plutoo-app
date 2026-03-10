@@ -185,7 +185,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function closeAuth() {
-    authSheet.classList.add("hidden");
+  authSheet.classList.add("hidden");
+  loginForm.classList.add("hidden");
+  registerForm.classList.add("hidden");
+  authAlready.classList.add("hidden");
+  setAuthError("login", "");
+  setAuthError("register", "");
   }
 
   linkLogin.addEventListener("click", (e) => {
