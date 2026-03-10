@@ -605,7 +605,8 @@ window.__createDogBindDone = true;
 
 // ✅ helper unico: aggiorna CTA in base allo stato (mai hide definitivo)  
 window.refreshCreateDogCTA = function () {  
-  const inlineBtn = document.getElementById("btnCreateDogInline");  
+  const inlineBtn = document.getElementById("btnCreateDogInline");
+  const lang = ((window.state && window.state.lang) || localStorage.getItem("lang") || "it");
   if (!inlineBtn) return;  
 
   const hasDog = (window.PLUTOO_HAS_DOG === true);  
@@ -619,11 +620,11 @@ window.refreshCreateDogCTA = function () {
     if (dogName) {  
       inlineBtn.textContent = `🐶 ${dogName}`;  
     } else {  
-      inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Il mio profilo" : "My profile";  
+      inlineBtn.textContent = (lang === "it") ? "Il mio profilo" : "My profile";  
     }  
   } else {  
     inlineBtn.dataset.mode = "create";  
-    inlineBtn.textContent = (window.state && window.state.lang === "it") ? "Crea profilo DOG" : "Create DOG profile";  
+    inlineBtn.textContent = (lang === "it") ? "Crea profilo DOG" : "Create DOG profile";  
   }  
 };  
 
