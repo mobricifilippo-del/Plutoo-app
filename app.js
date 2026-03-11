@@ -788,6 +788,12 @@ if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA
 }
 };
 
+function markBootReady() {
+  try {
+    document.body.classList.add("plutoo-booted");
+  } catch (_) {}
+}
+
 // Firebase handles
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -870,7 +876,8 @@ sessionStorage.removeItem("plutoo_explicit_logout");
       }
 
       runPresenceAfterAuth();
-      return;
+markBootReady();
+return;
     }
 
     window.PLUTOO_UID = user.uid;
@@ -911,6 +918,7 @@ sessionStorage.removeItem("plutoo_explicit_logout");
     }
 
     runPresenceAfterAuth();
+    markBootReady();
 
     if (!window.__booted) {
       window.__booted = true;
