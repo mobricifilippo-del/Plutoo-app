@@ -20,20 +20,6 @@
   <audio id="dogBark" preload="auto">
   <source src="dog-bark.mp3" type="audio/mpeg">
   </audio>
-
-  <script>
-(function () {
-  try {
-    var entered = localStorage.getItem("entered") === "1";
-    if (entered) {
-      document.documentElement.classList.add("plutoo-prehide-home");
-      document.documentElement.classList.remove("plutoo-booted");
-    } else {
-      document.documentElement.classList.add("plutoo-booted");
-    }
-  } catch (_) {}
-})();
-  </script>
   
   <!-- ==================== HOME SCREEN ==================== -->
   <div id="homeScreen" class="home">
