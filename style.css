@@ -2287,36 +2287,3 @@ line-height: 1.6;
 .story-delete-btn.hidden{
   display:none;
 }
-
-/* ===== PLUTOO BOOT LOADER (anti flash Home) ===== */
-
-.boot-loader{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:#0a0a0f;
-  z-index:999999;
-}
-
-.boot-loader-logo{
-  width:88px;
-  height:88px;
-  object-fit:contain;
-  animation: plutooBootPulse 1.2s ease-in-out infinite;
-}
-
-@keyframes plutooBootPulse{
-  0%,100%{transform:scale(1);opacity:.9}
-  50%{transform:scale(1.05);opacity:1}
-}
-
-html.plutoo-prehide-home:not(.plutoo-booted) #bootLoader{
-  display:flex !important;
-}
-
-html.plutoo-prehide-home:not(.plutoo-booted) #homeScreen,
-html.plutoo-prehide-home:not(.plutoo-booted) #appScreen{
-  visibility:hidden !important;
-}
