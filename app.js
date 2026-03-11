@@ -847,6 +847,12 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
     const linkRegister = document.getElementById("linkRegister");
 
     if (!user) {
+      const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
+      if (!explicitLogout) {
+  return;
+}
+      
+sessionStorage.removeItem("plutoo_explicit_logout");
       window.PLUTOO_UID = null;
       window.__booted = false;
 
