@@ -26,10 +26,17 @@
       var entered = localStorage.getItem("entered") === "1";
       if (entered) {
         document.documentElement.classList.add("plutoo-prehide-home");
+        document.body.classList.remove("plutoo-booted");
+      } else {
+        document.body.classList.add("plutoo-booted");
       }
     } catch (_) {}
   })();
   </script>
+
+  <div id="bootLoader" class="boot-loader" aria-hidden="true">
+  <img src="plutoo-icon-192.png" alt="Plutoo" class="boot-loader-logo">
+  </div>
   
   <!-- ==================== HOME SCREEN ==================== -->
   <div id="homeScreen" class="home">
