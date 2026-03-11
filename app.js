@@ -2403,7 +2403,7 @@ msgLists.forEach((list) => {
       return;
     }
 
-    if (state.currentView === "nearby"){
+    if (state.currentView === "nearby" && !state.entered){
         localStorage.removeItem("entered");
         state.entered=false;
         appScreen.classList.add("hidden");
