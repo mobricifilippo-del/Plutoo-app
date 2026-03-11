@@ -870,7 +870,6 @@ sessionStorage.removeItem("plutoo_explicit_logout");
       }
 
       runPresenceAfterAuth();
-markBootReady();
 return;
     }
 
@@ -917,8 +916,6 @@ return;
       window.__booted = true;
       if (typeof init === "function") init();
     }
-
-    markBootReady();
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
