@@ -788,12 +788,6 @@ if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA
 }
 };
 
-function markBootReady() {
-  try {
-    document.body.classList.add("plutoo-booted");
-  } catch (_) {}
-}
-
 // Firebase handles
 const auth = firebase.auth();
 const db = firebase.firestore();
