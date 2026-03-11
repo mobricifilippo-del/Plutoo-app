@@ -13,6 +13,18 @@
   <link rel="preload" as="image" href="dog2.jpg">
   <link rel="preload" as="image" href="dog3.jpg">
   <link rel="stylesheet" href="style.css">
+
+  <script>
+(function () {
+  try {
+    var entered = localStorage.getItem("entered") === "1";
+    if (entered) {
+      document.documentElement.classList.add("plutoo-start-in-app");
+    }
+  } catch (_) {}
+})();
+  </script>
+  
 </head>
 <body>
   <div id="whiteFlash"></div>
