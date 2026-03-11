@@ -1224,7 +1224,7 @@ const state = {
       sponsorCopy: "Fido, il gelato per i nostri amici a quattro zampe",
       sponsorUrl: "https://www.fido.it/",
       ethicsLine1: "Non abbandonare mai i tuoi amici",
-      ethicsLine2: "(canili nelle vicinanze)",
+      ethicsLine2: "(rifugi nelle vicinanze)",
       terms: "Termini",
       privacy: "Privacy",
       nearby: "Vicino a te",
@@ -1276,7 +1276,7 @@ const state = {
       plusPeriod: "/mese",
       activatePlus: "Attiva Plutoo Plus",
       cancel: "Annulla",
-      mapsShelters: "canili nelle vicinanze",
+      mapsShelters: "Rifugi nelle vicinanze",
       noProfiles: "Nessun profilo. Modifica i filtri.",
       years: "anni"
     },
