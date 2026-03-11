@@ -918,12 +918,13 @@ return;
     }
 
     runPresenceAfterAuth();
-    markBootReady();
 
     if (!window.__booted) {
       window.__booted = true;
       if (typeof init === "function") init();
     }
+
+    markBootReady();
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
