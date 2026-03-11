@@ -2312,11 +2312,11 @@ line-height: 1.6;
   50%{transform:scale(1.05);opacity:1}
 }
 
-html.plutoo-prehide-home body:not(.plutoo-booted) #bootLoader{
+html.plutoo-prehide-home:not(.plutoo-booted) #bootLoader{
   display:flex !important;
 }
 
-html.plutoo-prehide-home body:not(.plutoo-booted) #homeScreen,
-html.plutoo-prehide-home body:not(.plutoo-booted) #appScreen{
+html.plutoo-prehide-home:not(.plutoo-booted) #homeScreen,
+html.plutoo-prehide-home:not(.plutoo-booted) #appScreen{
   visibility:hidden !important;
 }
