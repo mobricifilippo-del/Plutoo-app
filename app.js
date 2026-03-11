@@ -848,10 +848,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 
     if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
-
   if (!explicitLogout) {
-    // bootstrap iniziale → non fare logout UI
-    runPresenceAfterAuth();
     return;
   }
       
