@@ -386,7 +386,7 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
         closeAuth();
       }, 900);
     } catch (err) {
-      setAuthError("register", err?.message || "Errore registrazione");
+      setAuthError("register", translateAuthError(err));
     }
   });
 
