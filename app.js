@@ -379,7 +379,6 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
 
     try {
       await window.auth.createUserWithEmailAndPassword(email, p1);
-      localStorage.setItem("plutoo_auth_hint", "1");
 
       // ✅ feedback GOLD + chiusura
       setAuthError("register", "✅ Registrazione completata");
