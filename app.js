@@ -869,10 +869,6 @@ sessionStorage.removeItem("plutoo_explicit_logout");
         linkRegister.style.display = "";
       }
 
-      if (authLinks) {
-  authLinks.classList.remove("hidden");
-      }
-
       runPresenceAfterAuth();
 return;
     }
@@ -890,10 +886,6 @@ return;
 
     if (linkRegister) {
       linkRegister.style.display = "none";
-    }
-
-    if (authLinks) {
-  authLinks.classList.remove("hidden");
     }
 
     try {
