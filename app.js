@@ -327,7 +327,6 @@ loginForm.addEventListener("submit", async (e) => {
 
   try {
     await window.auth.signInWithEmailAndPassword(email, pass);
-    localStorage.setItem("plutoo_auth_hint", "1");
 
     // ✅ feedback GOLD + chiusura
     setAuthError("login", "✅ Login effettuato");
