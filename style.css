@@ -2287,3 +2287,8 @@ line-height: 1.6;
 .story-delete-btn.hidden{
   display:none;
 }
+
+.auth-loading #homeScreen,
+.auth-loading #appScreen{
+  visibility:hidden;
+}
