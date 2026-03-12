@@ -327,6 +327,7 @@ loginForm.addEventListener("submit", async (e) => {
 
   try {
     await window.auth.signInWithEmailAndPassword(email, pass);
+    localStorage.setItem("plutoo_auth_hint", "1");
 
     // ✅ feedback GOLD + chiusura
     setAuthError("login", "✅ Login effettuato");
@@ -379,6 +380,7 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
 
     try {
       await window.auth.createUserWithEmailAndPassword(email, p1);
+      localStorage.setItem("plutoo_auth_hint", "1");
 
       // ✅ feedback GOLD + chiusura
       setAuthError("register", "✅ Registrazione completata");
@@ -394,6 +396,7 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
 document.getElementById("btnLogout")?.addEventListener("click", async () => {
   sessionStorage.setItem("plutoo_explicit_logout", "1");
   try {
+    localStorage.removeItem("plutoo_auth_hint");
     await window.auth.signOut();
   } catch (_) {}
 
