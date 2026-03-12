@@ -852,7 +852,7 @@ const linkRegister = document.getElementById("linkRegister");
   const hasBooted = window.__booted === true;
 
   // bootstrap iniziale: non forzare UI guest
-  if (!explicitLogout && !hasBooted) {
+  if (!explicitLogout && !hasBooted && localStorage.getItem(authKey)) {
     return;
   }
 
