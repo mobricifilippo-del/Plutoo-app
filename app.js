@@ -848,6 +848,7 @@ const linkRegister = document.getElementById("linkRegister");
 
   if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
+    const authKey = `firebase:authUser:${firebase.app().options.apiKey}:[DEFAULT]`;
   const hasBooted = window.__booted === true;
 
   // bootstrap iniziale: non forzare UI guest
