@@ -875,27 +875,6 @@ const linkRegister = document.getElementById("linkRegister");
   runPresenceAfterAuth();
   return;
   }
-      
-sessionStorage.removeItem("plutoo_explicit_logout");
-      window.PLUTOO_UID = null;
-      window.__booted = false;
-
-      if (linkLogin) {
-        linkLogin.setAttribute("data-i18n", "login");
-        linkLogin.textContent = "Login";
-        linkLogin.onclick = (e) => {
-          e.preventDefault();
-          window.openAuth("login");
-        };
-      }
-
-      if (linkRegister) {
-        linkRegister.style.display = "";
-      }
-
-      runPresenceAfterAuth();
-return;
-    }
 
     window.PLUTOO_UID = user.uid;
 
