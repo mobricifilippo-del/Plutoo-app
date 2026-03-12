@@ -845,7 +845,6 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
   try {
    const linkLogin = document.getElementById("linkLogin");
 const linkRegister = document.getElementById("linkRegister");
-const authLinks = document.getElementById("authLinks");
 
     if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
