@@ -917,8 +917,6 @@ return;
       if (typeof init === "function") init();
     }
 
-    document.documentElement.classList.remove("auth-loading");
-
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
   }
