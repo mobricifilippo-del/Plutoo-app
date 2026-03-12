@@ -847,32 +847,6 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
    const linkLogin = document.getElementById("linkLogin");
 const linkRegister = document.getElementById("linkRegister");
 
-    const authHint = localStorage.getItem("plutoo_auth_hint") === "1";
-const enterBtn = document.getElementById("btnEnter");
-
-    if (authHint && !user) {
-  if (linkLogin) {
-    linkLogin.removeAttribute("data-i18n");
-    linkLogin.textContent = "Logout";
-    linkLogin.onclick = (e) => {
-      e.preventDefault();
-      window.openAuth("login");
-    };
-  }
-
-  if (linkRegister) {
-    linkRegister.style.display = "none";
-  }
-
-  if (enterBtn) {
-    enterBtn.disabled = false;
-    enterBtn.classList.remove("disabled");
-    enterBtn.classList.remove("enter-glow");
-    void enterBtn.offsetWidth;
-    enterBtn.classList.add("enter-glow");
-  }
-    }
-
     if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
   if (!explicitLogout) {
