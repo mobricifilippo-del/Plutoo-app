@@ -396,7 +396,6 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
 document.getElementById("btnLogout")?.addEventListener("click", async () => {
   sessionStorage.setItem("plutoo_explicit_logout", "1");
   try {
-    localStorage.removeItem("plutoo_auth_hint");
     await window.auth.signOut();
   } catch (_) {}
 
