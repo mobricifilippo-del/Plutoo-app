@@ -848,9 +848,10 @@ const linkRegister = document.getElementById("linkRegister");
 
   if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
+  const hasBooted = window.__booted === true;
 
-  // se è solo il bootstrap dopo refresh NON toccare la UI
-  if (!explicitLogout) {
+  // bootstrap iniziale: non forzare UI guest
+  if (!explicitLogout && !hasBooted) {
     return;
   }
 
