@@ -843,8 +843,9 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
 };
 
   try {
-    const linkLogin = document.getElementById("linkLogin");
-    const linkRegister = document.getElementById("linkRegister");
+   const linkLogin = document.getElementById("linkLogin");
+const linkRegister = document.getElementById("linkRegister");
+const authLinks = document.getElementById("authLinks");
 
     if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
@@ -869,6 +870,10 @@ sessionStorage.removeItem("plutoo_explicit_logout");
         linkRegister.style.display = "";
       }
 
+      if (authLinks) {
+  authLinks.classList.remove("hidden");
+      }
+
       runPresenceAfterAuth();
 return;
     }
@@ -886,6 +891,10 @@ return;
 
     if (linkRegister) {
       linkRegister.style.display = "none";
+    }
+
+    if (authLinks) {
+  authLinks.classList.remove("hidden");
     }
 
     try {
