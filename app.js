@@ -1480,8 +1480,9 @@ if (state.entered) {
   const viewToRestore = localStorage.getItem("currentView") || state.currentView || "nearby";
 
   if (viewToRestore === "profile") {
+  setActiveView("profile");
 
-    const savedId = localStorage.getItem("currentProfileDogId");
+  const savedId = localStorage.getItem("currentProfileDogId");
 
     if (savedId) {
 
