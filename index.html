@@ -45,25 +45,6 @@
             <div class="auth-links">
   <a id="linkLogin" href="#" data-i18n="login">Login</a>
   <a id="linkRegister" href="#" data-i18n="register">Registrati</a>
-  <script>
-    (function () {
-      try {
-        var authKey = "firebase:authUser:AIzaSyAEqA_Cx0NkwGfEGVEPR1R-NrrfKdBT33w:[DEFAULT]";
-        if (!localStorage.getItem(authKey)) return;
-
-        var login = document.getElementById("linkLogin");
-        var register = document.getElementById("linkRegister");
-
-        if (login) {
-          login.removeAttribute("data-i18n");
-          login.textContent = "Logout";
-        }
-        if (register) {
-          register.style.display = "none";
-        }
-      } catch (_) {}
-    })();
-  </script>
             </div>
           </div>
         </div>
