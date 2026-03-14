@@ -810,11 +810,13 @@ window.storage = storage;
 })();
 
 // ✅ Persistenza Auth su device (no reset dopo refresh)
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((err) => {
-  console.error("Auth persistence error:", err);
-});
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .catch((err) => {
+    console.error("Auth persistence error:", err);
+  })
+  .finally(() => {
 
- auth.onAuthStateChanged(async (user) => {
+auth.onAuthStateChanged(async (user) => {
   const runPresenceAfterAuth = () => {
   try {
   const enterBtn = document.getElementById("btnEnter");
@@ -925,7 +927,8 @@ const linkRegister = document.getElementById("linkRegister");
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
   }
-});
+    });
+  });
 
 // Disabilita PWA/Service Worker dentro l'app Android (WebView)
 const isAndroidWebView =
