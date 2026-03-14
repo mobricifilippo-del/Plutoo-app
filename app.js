@@ -1212,6 +1212,10 @@ const state = {
   };
   
   window.StoriesState = StoriesState;
+if (state.entered === true) {
+  homeScreen?.classList.add("hidden");
+  appScreen?.classList.remove("hidden");
+}
 
   // ============ I18N ============
   const I18N = {
