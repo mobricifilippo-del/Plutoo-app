@@ -740,9 +740,12 @@ try {
   const cName = localStorage.getItem("plutoo_dog_name") || "";  
   const cRO   = localStorage.getItem("plutoo_readonly") === "1";  
 
-  // STEP 1 FIX:
-// da cache NON assegnamo più alcun DOG utente.
-// Il DOG corrente utente può arrivare solo da Firestore.
+  if (cId) {
+  window.PLUTOO_HAS_DOG = true;
+  window.PLUTOO_DOG_ID = cId;
+  window.PLUTOO_DOG_NAME = cName;
+  window.PLUTOO_READONLY = false;
+  }
 
   if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
 } catch (_) {}  
