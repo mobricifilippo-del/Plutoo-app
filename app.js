@@ -959,7 +959,8 @@ if (isAndroidWebView) {
     return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
   }
 
-  let CURRENT_USER_DOG_ID = String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "d1");
+  let CURRENT_USER_DOG_ID =
+  String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "");
 
   // ============ Stato (caricato da localStorage dove possibile) ============
 const state = {
