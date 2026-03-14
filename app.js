@@ -1473,9 +1473,6 @@ const DOGS = [
   
   // =========== Restore in APP ===========
 if (state.entered) {
-  homeScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
-
   const viewToRestore = localStorage.getItem("currentView") || state.currentView || "nearby";
 
   if (viewToRestore === "profile") {
