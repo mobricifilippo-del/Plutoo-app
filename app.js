@@ -960,7 +960,7 @@ if (isAndroidWebView) {
   }
 
   let CURRENT_USER_DOG_ID =
-  String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "");
+  String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "d1");
 
   // ============ Stato (caricato da localStorage dove possibile) ============
 const state = {
