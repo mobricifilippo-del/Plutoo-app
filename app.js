@@ -1505,17 +1505,8 @@ if (state.entered) {
 
       } else {
 
-        const dog = DOGS.find(d => d.id == savedId);
-
-        if (dog && window.openProfilePage) {
-
-  setTimeout(() => {
-    if (typeof window.openProfilePage === "function") {
-      window.openProfilePage(dog);
-    }
-  }, 0);
-
-} else {
+        // ramo DOG vetrina ELIMINATO dal restore:
+// i DOG demo restano nella lista, ma non sono più profili persistenti al refresh
 
           // ✅ se NON è un DOG demo, provo cache locale e poi Firestore
           let myDog = null;
