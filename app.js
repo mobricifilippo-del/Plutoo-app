@@ -1558,10 +1558,9 @@ if (state.entered) {
                     setActiveView("nearby");
                   }
                 })
-                .catch(() => {
-  // Firestore/auth non pronta al bootstrap:
-  // non forzo nearby, resto in profile
-});
+              .catch(() => {
+                setActiveView("nearby");
+              });  
               
             } catch (_) {
               setActiveView("nearby");
