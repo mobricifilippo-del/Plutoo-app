@@ -1572,8 +1572,7 @@ if (state.entered) {
       }
 
    } else {
-  // db non ancora pronta al bootstrap:
-  // resto in profile e non forzo nearby
+  setActiveView("nearby");
     }
 
   } else {
