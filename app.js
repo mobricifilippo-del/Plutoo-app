@@ -4614,10 +4614,10 @@ const newDogId = dogRef.id;
   try {
     if (!d || !d.id) return;
 
-    const myDogId = String(window.PLUTOO_DOG_ID || "");
-const hasDog = (window.PLUTOO_HAS_DOG === true);
+   const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
+const hasDog = (window.PLUTOO_HAS_DOG === true || localStorage.getItem("plutoo_has_dog") === "1");
 const isOwnerViewing = hasDog && myDogId && String(d.id) === myDogId;
-if (!isOwnerViewing) return;
+if (!isOwnerViewing) return; 
 
     if (!state || typeof state !== "object") return;
     if (!state.ownerSocialByDog || typeof state.ownerSocialByDog !== "object") state.ownerSocialByDog = {};
