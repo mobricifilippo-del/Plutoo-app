@@ -1509,9 +1509,13 @@ if (state.entered) {
 
         if (dog && window.openProfilePage) {
 
-          window.openProfilePage(dog);
+  setTimeout(() => {
+    if (typeof window.openProfilePage === "function") {
+      window.openProfilePage(dog);
+    }
+  }, 0);
 
-        } else {
+} else {
 
           // ✅ se NON è un DOG demo, provo cache locale e poi Firestore
           let myDog = null;
