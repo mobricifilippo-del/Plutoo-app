@@ -1571,8 +1571,8 @@ if (state.entered) {
         }
       }
 
-    } else {
-  return;
+   } else {
+  setActiveView("nearby");
     }
 
   } else {
