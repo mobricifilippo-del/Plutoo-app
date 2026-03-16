@@ -1572,7 +1572,7 @@ if (state.entered) {
       }
 
     } else {
-      setActiveView("nearby");
+  return;
     }
 
   } else {
