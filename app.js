@@ -1503,6 +1503,18 @@ if (state.entered) {
           sex: ""
         });
 
+  } else {
+
+        const dog = DOGS.find(d => d.id == savedId);
+
+        if (dog && window.openProfilePage) {
+
+  setTimeout(() => {
+    if (typeof window.openProfilePage === "function") {
+      window.openProfilePage(dog);
+    }
+  }, 0);
+
 } else {
 
         // ramo DOG vetrina ELIMINATO dal restore:
