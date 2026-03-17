@@ -1503,8 +1503,6 @@ if (state.entered) {
           sex: ""
         });
 
-      } else {
-
         // ramo DOG vetrina ELIMINATO dal restore:
 // i DOG demo restano nella lista, ma non sono più profili persistenti al refresh
 
