@@ -2491,28 +2491,38 @@ msgLists.forEach((list) => {
   }
 
   function filteredDogs(){
-    const f = state.filters;
-    return DOGS
-      .filter(d => !d.km || d.km <= (f.distKm || 999))
-      .filter(d => (!f.verified || !state.plus) ? true : d.verified)
-      .filter(d => (!f.sex) ? true : d.sex === f.sex)
-      .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
-      .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
-      .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
-      .filter(d => { if (!state.plus || !f.weight) return true; return d.weight >= parseInt(f.weight); })
-      .filter(d => { if (!state.plus || !f.height) return true; return d.height >= parseInt(f.height); })
-      .filter(d => {
-        if (!state.plus || !f.pedigree) return true;
-        return f.pedigree === "yes" ? d.pedigree : true;
-      })
-      .filter(d => {
-        if (!state.plus || !f.breeding) return true;
-        return f.breeding === "yes" ? d.breeding : true;
-      })
-      .filter(d => {
-        if (!state.plus || !f.size) return true;
-        return d.size === f.size;
-      });
+const f = state.filters;
+
+let realDogs = [];
+try { realDogs = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : []; } catch (_) {}
+if (!realDogs.length) {
+try { realDogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) { realDogs = []; }
+}
+if (!Array.isArray(realDogs)) realDogs = [];
+
+const sourceDogs = [...realDogs, ...DOGS];
+
+return sourceDogs
+.filter(d => !d.km || d.km <= (f.distKm || 999))
+.filter(d => (!f.verified || !state.plus) ? true : d.verified)
+.filter(d => (!f.sex) ? true : d.sex === f.sex)
+.filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
+.filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
+.filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
+.filter(d => { if (!state.plus || !f.weight) return true; return d.weight >= parseInt(f.weight); })
+.filter(d => { if (!state.plus || !f.height) return true; return d.height >= parseInt(f.height); })
+.filter(d => {
+if (!state.plus || !f.pedigree) return true;
+return f.pedigree === "yes" ? d.pedigree : true;
+})
+.filter(d => {
+if (!state.plus || !f.breeding) return true;
+return f.breeding === "yes" ? d.breeding : true;
+})
+.filter(d => {
+if (!state.plus || !f.size) return true;
+return d.size === f.size;
+});
   }
 
   // ============ Swipe ============
