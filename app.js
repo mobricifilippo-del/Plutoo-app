@@ -3458,8 +3458,14 @@ window.openProfilePage = (d) => {
   }
 
   state.currentDogProfile = d;
+
+if (!DOGS.find(x => x && String(x.id) === String(d.id))) {
   localStorage.setItem("currentProfileDogId", d.id);
-  setActiveView("profile");
+} else {
+  localStorage.removeItem("currentProfileDogId");
+}
+
+setActiveView("profile");
 
   history.pushState({ view: "profile", dogId: d.id }, "", "");
   profilePage.classList.remove("hidden");
