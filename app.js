@@ -2449,8 +2449,8 @@ msgLists.forEach((list) => {
     setTimeout(()=>{
       qa(".dog-card").forEach(card=>{
         const id = card.getAttribute("data-id");
-        const d  = DOGS.find(x=>x.id===id);
-        if(!d) return;
+const d  = list.find(x => x && String(x.id) === String(id));
+if(!d) return;
 
         card.addEventListener("click", ()=>{
           card.classList.add("flash-violet");
