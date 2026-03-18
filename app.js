@@ -5563,6 +5563,41 @@ async function init(){
     if (sizeFilter) sizeFilter.value = state.filters.size;
   }
 
+  try {
+    if (window.db) {
+      const snap = await window.db.collection("dogs").get();
+      const realDogs = [];
+
+      snap.forEach((doc) => {
+        const data = doc.data() || {};
+        const name = String(data.name || "").trim();
+        if (!name) return;
+
+        realDogs.push({
+          id: doc.id,
+          name: name,
+          breed: String(data.breed || ""),
+          age: Number(data.age || 0),
+          sex: String(data.sex || ""),
+          img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
+          verified: !!data.verified,
+          bio: String(data.bio || ""),
+          km: Number(data.km || 0),
+          weight: Number(data.weight || 0),
+          height: Number(data.height || 0),
+          pedigree: !!data.pedigree,
+          breeding: !!data.breeding,
+          size: String(data.size || "")
+        });
+      });
+
+      state.dogs = realDogs;
+      localStorage.setItem("dogs", JSON.stringify(realDogs));
+    }
+  } catch (e) {
+    console.error("Nearby real dogs load error:", e);
+  }
+
   if (state.entered){
     // initStories parte dopo ENTRA per effetto WOW
   }
