@@ -2501,8 +2501,10 @@ try { realDogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) {
 if (!Array.isArray(realDogs)) realDogs = [];
 
 const sourceDogs = [...realDogs, ...DOGS];
+const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
 
 return sourceDogs
+.filter(d => !myDogId || String(d.id) !== myDogId)
 .filter(d => !d.km || d.km <= (f.distKm || 999))
 .filter(d => (!f.verified || !state.plus) ? true : d.verified)
 .filter(d => (!f.sex) ? true : d.sex === f.sex)
