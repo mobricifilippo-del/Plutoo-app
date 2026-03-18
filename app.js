@@ -5359,16 +5359,24 @@ async function sendChatMessage(text, dogId, hasMatch, msgCount) {
         : (dogId || "");
 
     if (!safeDogId) {
-      console.error("sendChatMessage: dogId mancante");
-      statusEl.textContent = "⚠️";
-      statusEl.dataset.status = "error";
-      return;
-    }
+  console.error("sendChatMessage: dogId mancante");
+  statusEl.textContent = "⚠️";
+  statusEl.dataset.status = "error";
+  return;
+}
 
-    const chatId =
-      (chatPane && chatPane.dataset && chatPane.dataset.chatId)
-        ? chatPane.dataset.chatId
-        : `${selfUid}_${safeDogId}`;
+const isShowcaseDog = !!DOGS.find(d => d && String(d.id) === String(safeDogId));
+if (isShowcaseDog) {
+  console.warn("sendChatMessage: DOG vetrina, niente persistenza chat");
+  statusEl.textContent = "⚠️";
+  statusEl.dataset.status = "error";
+  return;
+}
+
+const chatId =
+  (chatPane && chatPane.dataset && chatPane.dataset.chatId)
+    ? chatPane.dataset.chatId
+    : `${selfUid}_${safeDogId}`;
 
     const dogProfile =
       state.currentDogProfile || DOGS.find(d => d.id === safeDogId) || {};
