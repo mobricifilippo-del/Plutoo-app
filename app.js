@@ -4214,17 +4214,35 @@ const newDogId = dogRef.id;
       return;
     }
 
-    const newDog = {
-      id: newDogId,
-      name: name,
-      breed: breed,
-      age: parseInt(age, 10),
-      sex: sex,
-      img: photoUrl,
-      verified: false,
-      bio: bio || "",
-      km: 0
+    let newDog = {
+  id: newDogId,
+  name: name,
+  breed: breed,
+  age: parseInt(age, 10),
+  sex: sex,
+  img: photoUrl,
+  verified: false,
+  bio: bio || "",
+  km: 0
+};
+
+try {
+  const dogSnap = await dogRef.get();
+  if (dogSnap && dogSnap.exists) {
+    const data = dogSnap.data() || {};
+    newDog = {
+      id: dogSnap.id,
+      name: data.name || "",
+      breed: data.breed || "",
+      age: data.age || "",
+      sex: data.sex || "",
+      img: data.photoUrl || "",
+      verified: !!data.verified,
+      bio: data.bio || "",
+      km: data.km || 0
     };
+  }
+} catch (_) {}
 
     // cache locale (solo UI/velocità; source of truth = Firestore)
 if (!state.dogs) state.dogs = [];
