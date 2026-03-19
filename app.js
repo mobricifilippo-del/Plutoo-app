@@ -1135,12 +1135,15 @@ const state = {
 
   const storyLikeBtn = $("storyLikeBtn");
 
-  const adBanner = $("adBanner");
-  const matchOverlay = $("matchOverlay");
+const adBanner = $("adBanner"); const matchOverlay = $("matchOverlay");
 
-  
-  // ============ STORIES – Config & State ============
-  const STORIES_CONFIG = {
+if (state.entered === true) {
+  homeScreen?.classList.add("hidden");
+  appScreen?.classList.remove("hidden");
+}
+
+// ============ STORIES – Config & State ============
+const STORIES_CONFIG = {
     PHOTO_DURATION: 15000,
     VIDEO_MAX_DURATION_FREE: 15,
     VIDEO_MAX_DURATION_PLUS: 90,
@@ -1216,10 +1219,6 @@ const state = {
   };
   
   window.StoriesState = StoriesState;
-if (state.entered === true) {
-  homeScreen?.classList.add("hidden");
-  appScreen?.classList.remove("hidden");
-}
 
   // ============ I18N ============
   const I18N = {
