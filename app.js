@@ -4227,9 +4227,10 @@ const newDogId = dogRef.id;
     };
 
     // cache locale (solo UI/velocità; source of truth = Firestore)
-    if (!state.dogs) state.dogs = [];
-    state.dogs.push(newDog);
-    localStorage.setItem("dogs", JSON.stringify(state.dogs));
+if (!state.dogs) state.dogs = [];
+state.dogs = state.dogs.filter(d => !(d && String(d.id) === String(newDogId)));
+state.dogs.push(newDog);
+localStorage.setItem("dogs", JSON.stringify(state.dogs));
 
     state.createDogDraft = {};
 
