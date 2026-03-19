@@ -740,11 +740,11 @@ try {
   const cName = localStorage.getItem("plutoo_dog_name") || "";  
   const cRO   = localStorage.getItem("plutoo_readonly") === "1";  
 
-  if (cId) {
+  if (cHas && cId) {
   window.PLUTOO_HAS_DOG = true;
   window.PLUTOO_DOG_ID = cId;
   window.PLUTOO_DOG_NAME = cName;
-  window.PLUTOO_READONLY = false;
+  window.PLUTOO_READONLY = cRO;
   }
 
   if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
