@@ -775,13 +775,36 @@ window.PLUTOO_READONLY = !hasDog;
 if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
 
 // Cache (non source of truth)  
-try {  
-  localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");  
-  if (dogId) localStorage.setItem("plutoo_dog_id", dogId);  
-  else localStorage.removeItem("plutoo_dog_id");  
-  localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");  
-  if (dogName) localStorage.setItem("plutoo_dog_name", dogName);  
-  else localStorage.removeItem("plutoo_dog_name");  
+try {
+  localStorage.setItem("plutoo_has_dog", hasDog ? "1" : "0");
+  if (dogId) localStorage.setItem("plutoo_dog_id", dogId); else localStorage.removeItem("plutoo_dog_id");
+  localStorage.setItem("plutoo_readonly", window.PLUTOO_READONLY ? "1" : "0");
+  if (dogName) localStorage.setItem("plutoo_dog_name", dogName); else localStorage.removeItem("plutoo_dog_name");
+
+  if (!Array.isArray(state.dogs)) state.dogs = [];
+
+  state.dogs = state.dogs.filter(d => !(d && String(d.id) === String(uid)));
+
+  if (hasDog) {
+    state.dogs.push({
+      id: String(uid),
+      name: String(data.name || ""),
+      breed: String(data.breed || ""),
+      age: Number(data.age || 0),
+      sex: String(data.sex || ""),
+      img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
+      verified: !!data.verified,
+      bio: String(data.bio || ""),
+      km: Number(data.km || 0),
+      weight: Number(data.weight || 0),
+      height: Number(data.height || 0),
+      pedigree: !!data.pedigree,
+      breeding: !!data.breeding,
+      size: String(data.size || "")
+    });
+  }
+
+  localStorage.setItem("dogs", JSON.stringify(state.dogs));
 } catch (_) {}
 
 } catch (err) {
