@@ -750,8 +750,11 @@ try {
   if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
 } catch (_) {}  
 
-const uid = window.auth.currentUser.uid; // = PLUTOO_UID  
-if (!uid || !window.db) return;  
+const uid =
+  (window.PLUTOO_UID) ||
+  (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
+
+if (!uid || !window.db) return;
 
  const doc = await window.db.collection("dogs").doc(String(uid)).get();
 const data = (doc && doc.exists) ? (doc.data() || {}) : null;
