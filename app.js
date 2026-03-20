@@ -5645,9 +5645,6 @@ async function init(){
   }
 
   if (state.entered){
-  if (state.currentView === "nearby" && typeof renderNearby === "function") {
-    renderNearby();
-  }
   // initStories parte dopo ENTRA per effetto WOW
   }
 }
