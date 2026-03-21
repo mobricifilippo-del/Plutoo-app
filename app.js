@@ -803,8 +803,6 @@ try {
       size: String(data.size || "")
     });
   }
-
-  localStorage.setItem("dogs", JSON.stringify(state.dogs));
 } catch (_) {}
 
 } catch (err) {
