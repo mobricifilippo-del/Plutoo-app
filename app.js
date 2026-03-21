@@ -2462,7 +2462,26 @@ msgLists.forEach((list) => {
 
   // ============ Nearby ============
   function renderNearby(){
-    if(!nearGrid) return;
+  if(!nearGrid) return;
+
+  try {
+    console.log("[PLUTOO renderNearby]", {
+      ts: Date.now(),
+      currentView: state.currentView,
+      entered: state.entered,
+      nearGridWidth: nearGrid ? nearGrid.clientWidth : null,
+      nearGridHeight: nearGrid ? nearGrid.clientHeight : null,
+      viewNearbyHidden: viewNearby ? viewNearby.classList.contains("hidden") : null,
+      viewNearbyActive: viewNearby ? viewNearby.classList.contains("active") : null,
+      appHidden: appScreen ? appScreen.classList.contains("hidden") : null,
+      homeHidden: homeScreen ? homeScreen.classList.contains("hidden") : null,
+      dogsStateCount: (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs.length : null,
+      dogsCacheCount: (() => {
+        try { return JSON.parse(localStorage.getItem("dogs") || "[]").length; } catch (_) { return null; }
+      })(),
+      stack: (new Error().stack || "").split("\n").slice(0, 6).join(" | ")
+    });
+  } catch (_) {}
 
     const list = filteredDogs();
     if (!list.length){
