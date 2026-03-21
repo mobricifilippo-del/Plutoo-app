@@ -786,22 +786,57 @@ try {
   state.dogs = state.dogs.filter(d => !(d && String(d.id) === String(uid)));
 
   if (hasDog) {
-    state.dogs.push({
-      id: String(uid),
-      name: String(data.name || ""),
-      breed: String(data.breed || ""),
-      age: Number(data.age || 0),
-      sex: String(data.sex || ""),
-      img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
-      verified: !!data.verified,
-      bio: String(data.bio || ""),
-      km: Number(data.km || 0),
-      weight: Number(data.weight || 0),
-      height: Number(data.height || 0),
-      pedigree: !!data.pedigree,
-      breeding: !!data.breeding,
-      size: String(data.size || "")
-    });
+  const myDogRuntime = {
+    id: String(uid),
+    name: String(data.name || ""),
+    breed: String(data.breed || ""),
+    age: Number(data.age || 0),
+    sex: String(data.sex || ""),
+    img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
+    verified: !!data.verified,
+    bio: String(data.bio || ""),
+    km: Number(data.km || 0),
+    weight: Number(data.weight || 0),
+    height: Number(data.height || 0),
+    pedigree: !!data.pedigree,
+    breeding: !!data.breeding,
+    size: String(data.size || "")
+  };
+
+  state.dogs.push(myDogRuntime);
+
+  try {
+    let diag = document.getElementById("plutooDogDiag");
+    if (!diag) {
+      diag = document.createElement("div");
+      diag.id = "plutooDogDiag";
+      diag.style.position = "fixed";
+      diag.style.left = "12px";
+      diag.style.right = "12px";
+      diag.style.bottom = "12px";
+      diag.style.zIndex = "99999";
+      diag.style.padding = "10px 12px";
+      diag.style.borderRadius = "12px";
+      diag.style.background = "rgba(10,10,14,.92)";
+      diag.style.border = "1px solid rgba(205,164,52,.45)";
+      diag.style.color = "#fff";
+      diag.style.fontSize = "12px";
+      diag.style.lineHeight = "1.35";
+      diag.style.whiteSpace = "pre-wrap";
+      diag.style.wordBreak = "break-word";
+      document.body.appendChild(diag);
+    }
+
+    const imgValue = String(myDogRuntime.img || "");
+    const shortImg = imgValue.length > 160 ? imgValue.slice(0, 160) + "..." : imgValue;
+
+    diag.textContent =
+      "[MY DOG PUSH]\n" +
+      "ts: " + new Date().toLocaleTimeString() + "\n" +
+      "id: " + myDogRuntime.id + "\n" +
+      "name: " + myDogRuntime.name + "\n" +
+      "img: " + shortImg;
+  } catch (_) {}
   }
   
   localStorage.setItem("dogs", JSON.stringify(state.dogs));
