@@ -2492,19 +2492,15 @@ if(!d) return;
   function cardHTML(d){
   return `
     <article class="card dog-card" data-id="${d.id}">
-      <div style="position:relative">
-        <img  
-          src="${String(d.img || "").startsWith("http") ? d.img : `./${d.img}`}"  
-          alt="${d.name}"  
-          class="card-img"  
-          loading="eager"  
-          fetchpriority="high"  
-          decoding="sync"  
-          onload="(function(img){try{var box=img.nextElementSibling;if(!box)return;box.textContent='N '+img.naturalWidth+'×'+img.naturalHeight+' | C '+img.clientWidth+'×'+img.clientHeight;}catch(_){}})(this)"  
-          onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"  
-        />
-        <div style="position:absolute;left:8px;right:8px;bottom:8px;padding:4px 6px;border-radius:8px;background:rgba(0,0,0,.72);color:#fff;font-size:11px;line-height:1.2;z-index:2;pointer-events:none;">IMG DEBUG</div>
-      </div>
+  <img  
+    src="${String(d.img || "").startsWith("http") ? d.img : `./${d.img}`}"  
+    alt="${d.name}"  
+    class="card-img"  
+    loading="eager"  
+    fetchpriority="high"  
+    decoding="sync"  
+    onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"  
+  />
 
       <div class="card-info">
         <h3>${d.name} ${d.verified?"✅":""}</h3>
