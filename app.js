@@ -610,9 +610,9 @@ window.refreshCreateDogCTA = function () {
   const lang = ((window.state && window.state.lang) || localStorage.getItem("lang") || "it");
   if (!inlineBtn) return;  
 
-  const hasDog = (window.PLUTOO_HAS_DOG === true);  
-  const dogId = window.PLUTOO_DOG_ID ? String(window.PLUTOO_DOG_ID) : "";  
-  const dogName = (window.PLUTOO_DOG_NAME ? String(window.PLUTOO_DOG_NAME) : "").trim();  
+  const hasDog = !!(data && String(data.name || "").trim().length > 0);
+const dogId = hasDog ? String(uid) : null;
+const dogName = hasDog ? String(data.name || "").trim() : "";  
 
   inlineBtn.style.display = "inline-flex";  
 
@@ -762,31 +762,6 @@ const data = (doc && doc.exists) ? (doc.data() || {}) : null;
  const hasDog = !!(data && String(data.name || "").trim().length > 0);
 const dogId = hasDog ? String(uid) : null;
 const dogName = hasDog ? String(data.name || "").trim() : "";
-
-try {
-  let diag = document.getElementById("plutooHasDogDiag");
-  if (!diag) {
-    diag = document.createElement("div");
-    diag.id = "plutooHasDogDiag";
-    diag.style.position = "fixed";
-    diag.style.top = "12px";
-    diag.style.left = "12px";
-    diag.style.right = "12px";
-    diag.style.zIndex = "99999";
-    diag.style.padding = "12px";
-    diag.style.borderRadius = "12px";
-    diag.style.background = hasDog ? "rgba(20,120,60,.96)" : "rgba(140,20,20,.96)";
-    diag.style.color = "#fff";
-    diag.style.fontSize = "14px";
-    diag.style.fontWeight = "700";
-    diag.style.textAlign = "center";
-    diag.style.boxShadow = "0 8px 24px rgba(0,0,0,.35)";
-    document.body.appendChild(diag);
-  }
-  diag.textContent = hasDog
-    ? `HAS_DOG TRUE — ${dogName} — ${dogId}`
-    : "HAS_DOG FALSE";
-} catch (_) {} 
 
 // Stato globale (runtime)  
 window.PLUTOO_HAS_DOG = hasDog;  
