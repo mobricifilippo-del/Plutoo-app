@@ -2490,24 +2490,17 @@ if(!d) return;
   }
 
   function cardHTML(d){
-  const srcValue = String(d.img || "").startsWith("http") ? String(d.img || "") : `./${d.img}`;
-  const srcType = String(d.img || "").startsWith("http") ? "http" : "local";
-
   return `
     <article class="card dog-card" data-id="${d.id}">
-      <div style="position:relative">
-        <img
-          src="${srcValue}"
-          alt="${d.name}"
-          class="card-img"
-          loading="eager"
-          fetchpriority="high"
-          decoding="sync"
-          onload="(function(img){try{var box=img.nextElementSibling;if(box){box.textContent='id: ${String(d.id)} | name: ${String(d.name)} | src: ${srcType} | LOAD OK';}}catch(_){}})(this)"
-          onerror="(function(img){try{var box=img.nextElementSibling;if(box){box.textContent='id: ${String(d.id)} | name: ${String(d.name)} | src: ${srcType} | LOAD ERR';}}catch(_){ } this.onerror=null;this.src='./plutoo-icon-192.png';}).call(this,this)"
-        />
-        <div style="position:absolute;left:8px;right:8px;bottom:8px;padding:4px 6px;border-radius:8px;background:rgba(0,0,0,.72);color:#fff;font-size:11px;line-height:1.2;z-index:2;pointer-events:none;">id: ${String(d.id)} | name: ${String(d.name)} | src: ${srcType} | WAIT</div>
-      </div>
+      <img  
+        src="${String(d.img || "").startsWith("http") ? d.img : `./${d.img}`}"  
+        alt="${d.name}"  
+        class="card-img"  
+        loading="eager"  
+        fetchpriority="high"  
+        decoding="sync"  
+        onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"  
+      />
 
       <div class="card-info">
         <h3>${d.name} ${d.verified?"✅":""}</h3>
@@ -2515,7 +2508,7 @@ if(!d) return;
         <p class="bio">${d.bio||""}</p>
       </div>
     </article>`;
-  }
+}
 
   function fmtKm(n){
   const num = (typeof n === "number") ? n : Number(String(n ?? "").replace(",", "."));
