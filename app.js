@@ -2353,21 +2353,17 @@ msgLists.forEach((list) => {
   tabLove.classList.remove("active");
   if (tabPlay) tabPlay.classList.remove("active");
    
-    if (name === "nearby") {
+   if (name === "nearby") {
   if (viewNearby) {
     viewNearby.classList.remove("hidden");
     viewNearby.classList.add("active");
   }
   tabNearby.classList.add("active");
-
-  requestAnimationFrame(() => {
-    renderNearby();
-    renderStoriesBar();
-    window.renderStories && window.renderStories();
-  });
-
+  renderNearby();
+  renderStoriesBar();
+  window.renderStories && window.renderStories();
   if (btnSearchPanel) btnSearchPanel.disabled = false;
-    }
+   }
 
     if (name === "love") {
       if (viewLove) {
