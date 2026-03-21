@@ -3804,59 +3804,19 @@ if (isCreate) {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-  const rawDataUrl = e.target.result;
-  const img = new Image();
+      const dataUrl = e.target.result;
 
-  img.onload = () => {
-    const size = 1200;
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
+  if (!state.createDogDraft) state.createDogDraft = {};
+  state.createDogDraft.photoDataUrl = dataUrl;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  if (previewImg) {
+    previewImg.src = dataUrl;
+    previewImg.style.display = "block";
+  }
 
-    const sw = img.naturalWidth || img.width || size;
-    const sh = img.naturalHeight || img.height || size;
-    const scale = Math.max(size / sw, size / sh);
-    const dw = sw * scale;
-    const dh = sh * scale;
-    const dx = (size - dw) / 2;
-    const dy = (size - dh) / 2;
-
-    ctx.clearRect(0, 0, size, size);
-    ctx.drawImage(img, dx, dy, dw, dh);
-
-    const normalizedDataUrl = canvas.toDataURL("image/jpeg", 0.92);
-
-    if (!state.createDogDraft) state.createDogDraft = {};
-    state.createDogDraft.photoDataUrl = normalizedDataUrl;
-
-    if (previewImg) {
-      previewImg.src = normalizedDataUrl;
-      previewImg.style.display = "block";
-    }
-
-    if (emptyBox) emptyBox.style.display = "none";
-    if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
-    if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
-  };
-
-  img.onerror = () => {
-    if (!state.createDogDraft) state.createDogDraft = {};
-    state.createDogDraft.photoDataUrl = rawDataUrl;
-
-    if (previewImg) {
-      previewImg.src = rawDataUrl;
-      previewImg.style.display = "block";
-    }
-
-    if (emptyBox) emptyBox.style.display = "none";
-    if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
-    if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
-  };
-
-  img.src = rawDataUrl;
+  if (emptyBox) emptyBox.style.display = "none";
+  if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
+  if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
 };
 
       reader.readAsDataURL(file);
