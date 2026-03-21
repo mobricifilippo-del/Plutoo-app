@@ -633,18 +633,17 @@ body.story-open #storiesBar {
 }
 
 .card-img{
-width:100%;
-height:200px;
-object-fit:contain;
-object-position:center;
-background:#0a0a0e;
-display:block;
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  background:#0a0a0e;
 }
 
 .card-info{padding:.75rem .85rem .9rem}
 .card-info h3{
   font-size:1.05rem;font-weight:900;color:var(--violet-glow);margin:0 0 .25rem 0;
 }
+
 .card-info .meta{font-size:.88rem;color:var(--muted);margin:0 0 .4rem 0}
 .card-info .bio{font-size:.9rem;line-height:1.4;margin:0}
 
