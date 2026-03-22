@@ -877,11 +877,12 @@ const linkRegister = document.getElementById("linkRegister");
 
   if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
-    const authKey = `firebase:authUser:${firebase.app().options.apiKey}:[DEFAULT]`;
+  const authKey = `firebase:authUser:${firebase.app().options.apiKey}:[DEFAULT]`;
   const hasBooted = window.__booted === true;
+  const enteredBoot = localStorage.getItem("entered") === "1";
 
-  // bootstrap iniziale: non forzare UI guest
-  if (!explicitLogout && !hasBooted && localStorage.getItem(authKey)) {
+  // bootstrap iniziale: se l'app è già entrata, NON passare mai dalla UI guest/Home
+  if (!explicitLogout && (enteredBoot || (!hasBooted && localStorage.getItem(authKey)))) {
     return;
   }
 
