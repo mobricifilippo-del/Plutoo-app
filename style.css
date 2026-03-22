@@ -636,11 +636,7 @@ body.story-open #storiesBar {
   width:100%;
   height:200px;
   object-fit:cover;
-  object-position:center;
   background:#0a0a0e;
-  display:block;
-  transform:translateZ(0);
-  backface-visibility:hidden;
 }
 
 .card-info{padding:.75rem .85rem .9rem}
