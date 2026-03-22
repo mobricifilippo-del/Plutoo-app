@@ -605,29 +605,30 @@ if (window.__createDogBindDone) return;
 window.__createDogBindDone = true;
 
 // ✅ helper unico: aggiorna CTA in base allo stato (mai hide definitivo)  
-window.refreshCreateDogCTA = function () {  
+
+  window.refreshCreateDogCTA = function () {
   const inlineBtn = document.getElementById("btnCreateDogInline");
   const lang = ((window.state && window.state.lang) || localStorage.getItem("lang") || "it");
-  if (!inlineBtn) return;  
+  if (!inlineBtn) return;
 
-  const hasDog = !!(data && String(data.name || "").trim().length > 0);
-const dogId = hasDog ? String(uid) : null;
-const dogName = hasDog ? String(data.name || "").trim() : "";  
+  const hasDog = (window.PLUTOO_HAS_DOG === true);
+  const dogId = window.PLUTOO_DOG_ID ? String(window.PLUTOO_DOG_ID) : null;
+  const dogName = window.PLUTOO_DOG_NAME ? String(window.PLUTOO_DOG_NAME).trim() : "";
 
-  inlineBtn.style.display = "inline-flex";  
+  inlineBtn.style.display = "inline-flex";
 
-  if (hasDog && dogId) {  
-    inlineBtn.dataset.mode = "my";  
-    if (dogName) {  
-      inlineBtn.textContent = `🐶 ${dogName}`;  
-    } else {  
-      inlineBtn.textContent = (lang === "it") ? "Il mio profilo" : "My profile";  
-    }  
-  } else {  
-    inlineBtn.dataset.mode = "create";  
-    inlineBtn.textContent = (lang === "it") ? "Crea profilo DOG" : "Create DOG profile";  
-  }  
-};  
+  if (hasDog && dogId) {
+    inlineBtn.dataset.mode = "my";
+    if (dogName) {
+      inlineBtn.textContent = `🐶 ${dogName}`;
+    } else {
+      inlineBtn.textContent = (lang === "it") ? "Il mio profilo" : "My profile";
+    }
+  } else {
+    inlineBtn.dataset.mode = "create";
+    inlineBtn.textContent = (lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
+  }
+};
 
 // prima passata (stato corrente)  
 window.refreshCreateDogCTA();  
