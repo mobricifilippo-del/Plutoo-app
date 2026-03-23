@@ -2492,16 +2492,21 @@ if(!d) return;
   }
 
   function cardHTML(d){
+  const rawImg = String(d.img || "");
+  const srcValue = rawImg.startsWith("http") ? rawImg : `./${rawImg}`;
+
   return `
     <article class="card dog-card" data-id="${d.id}">
-      <img  
-        src="${String(d.img || "").startsWith("http") ? d.img : `./${d.img}`}"  
-        alt="${d.name}"  
-        class="card-img"  
-        loading="eager"  
-        fetchpriority="high"  
-        decoding="sync"  
-        onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"  
+      <img
+        src="${srcValue}"
+        alt="${d.name}"
+        class="card-img"
+        loading="eager"
+        fetchpriority="high"
+        decoding="sync"
+        style="opacity:0"
+        onload="this.style.opacity='1'"
+        onerror="this.onerror=null;this.src='./plutoo-icon-192.png';this.style.opacity='1';"
       />
 
       <div class="card-info">
