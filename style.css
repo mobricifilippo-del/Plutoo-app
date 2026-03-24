@@ -401,8 +401,9 @@ a{color:inherit;text-decoration:none}
 }
 
 #btnDogBoard{
-  flex-basis:100%;
+  align-self:center;
 }
+
 #btnMessages{
   margin-top:.45rem;
 }
