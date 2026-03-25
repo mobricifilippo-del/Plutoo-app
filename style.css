@@ -394,18 +394,27 @@ a{color:inherit;text-decoration:none}
 
 .topbar .left,.topbar .right{display:flex;align-items:center;flex:0 0 auto;z-index:2;gap:.5rem}
 .topbar .right{
-  flex-direction:row;
-  flex-wrap:wrap;
+  display:grid;
+  grid-template-columns:auto auto;
+  justify-items:center;
   align-items:center;
+  row-gap:.45rem;
+  column-gap:.5rem;
   margin-left:auto;
 }
-
-#btnDogBoard{
-  align-self:center;
+.topbar .right .plus-btn{
+  grid-column:1 / -1;
 }
-
 #btnMessages{
-  margin-top:.45rem;
+  grid-column:1;
+  margin-top:0;
+}
+#notifBtn{
+  grid-column:2;
+}
+#btnDogBoard{
+  grid-column:1 / -1;
+  justify-self:center;
 }
 
 .topbar .logo{border-radius:8px}
