@@ -250,15 +250,13 @@ a{color:inherit;text-decoration:none}
 .search-plus-wrapper{
   display:flex;flex-direction:column;align-items:center;gap:.45rem;width:100%;
 }
-
 .btn.plus-btn{
   display:inline-flex;align-items:center;gap:.4rem;
   background:linear-gradient(135deg,#E8CE7A,#CDA434);
   color:#111;border:1px solid rgba(0,0,0,.15);
-  padding:.42rem .75rem;border-radius:12px;font-size:.88rem;
+  padding:.5rem .75rem;border-radius:12px;font-size:.88rem;
   box-shadow:0 4px 12px rgba(205,164,52,.35), inset 0 0 0 1px rgba(255,255,255,.25);
 }
-
 .btn.plus-btn:hover{
   filter:brightness(1.08);
   box-shadow:0 6px 16px rgba(205,164,52,.45), inset 0 0 0 1px rgba(255,255,255,.35);
