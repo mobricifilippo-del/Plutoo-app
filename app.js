@@ -2310,7 +2310,18 @@ msgLists.forEach((list) => {
   });
 });
 
-  function setActiveView(name){
+  function setActiveTabUI(name){
+  tabNearby?.classList.remove("active");
+  tabLove?.classList.remove("active");
+  tabLuoghi?.classList.remove("active");
+  if (tabPlay) tabPlay.classList.remove("active");
+
+  if (name === "nearby") tabNearby?.classList.add("active");
+  if (name === "love") tabLove?.classList.add("active");
+  if (name === "luoghi") tabLuoghi?.classList.add("active");
+}
+
+function setActiveView(name){
     // ✅ GUARD: se arriva una view sconosciuta (es. "notifications"), non lasciare schermo nero
     try {
       const allowed = { nearby:1, love:1, play:1, profile:1, messages:1 };
@@ -2351,16 +2362,14 @@ msgLists.forEach((list) => {
     if (storiesBar) {
       storiesBar.classList.toggle("hidden", name !== "nearby");
     }
-    tabNearby.classList.remove("active");
-  tabLove.classList.remove("active");
-  if (tabPlay) tabPlay.classList.remove("active");
+
+    setActiveTabUI(name);
    
    if (name === "nearby") {
   if (viewNearby) {
     viewNearby.classList.remove("hidden");
     viewNearby.classList.add("active");
   }
-  tabNearby.classList.add("active");
   renderNearby();
   renderStoriesBar();
   window.renderStories && window.renderStories();
@@ -2372,7 +2381,6 @@ msgLists.forEach((list) => {
         viewLove.classList.remove("hidden");
         viewLove.classList.add("active");
       }
-      tabLove.classList.add("active");
       renderSwipe("love");
     }
 
