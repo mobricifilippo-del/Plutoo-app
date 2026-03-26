@@ -2433,11 +2433,22 @@ window.scrollTo({top:0, behavior:"smooth"});
 }
 
   btnBack?.addEventListener("click", ()=> goBack() );
-  btnBackLove?.addEventListener("click", ()=> goBack() );
-  btnMsgBack?.addEventListener("click", () => {
-    const prev = state.previousViewForMessages || "nearby";
-    setActiveView(prev);
-  });
+btnBackLove?.addEventListener("click", ()=> goBack() );
+btnMsgBack?.addEventListener("click", () => {
+  const prev = state.previousViewForMessages || "nearby";
+  setActiveView(prev);
+});
+
+const btnDogBoard = document.getElementById("btnDogBoard");
+btnDogBoard?.addEventListener("click", () => {
+  setActiveView("dogboard");
+});
+
+const btnDogBoardBack = document.getElementById("btnDogBoardBack");
+btnDogBoardBack?.addEventListener("click", () => {
+  const prev = state.previousViewForMessages || "nearby";
+  setActiveView(prev);
+});
 
     function goBack(){
     // Se è aperta la lightbox della galleria profilo, chiudila
