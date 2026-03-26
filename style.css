@@ -427,7 +427,7 @@ a{color:inherit;text-decoration:none}
   display:flex;
   align-items:center;
   gap:.6rem;
-  transform:translateY(-16px);
+  transform:translateY(-8px);
 }
 
 .topbar .right{
