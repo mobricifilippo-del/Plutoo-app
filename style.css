@@ -160,16 +160,32 @@ a{color:inherit;text-decoration:none}
 .btn.tiny{padding:.35rem .5rem;border-radius:10px;font-weight:700;font-size:.88rem}
 .btn.small{padding:.45rem .7rem;border-radius:12px;font-size:.9rem}
 
-/* ===== TOPBAR ICON BUTTONS (Messaggi / Notifiche) ===== */
+/* ===== TOPBAR ICON BUTTONS (Messaggi / Notifiche / Bacheca) ===== */
 #btnMessages,
-#notifBtn{
+#notifBtn,
+#btnDogBoard{
   min-width:40px;
   height:40px;
-  padding:0;
+  padding:0 .85rem;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   border-radius:14px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 6px 14px rgba(0,0,0,.22);
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+}
+
+#btnMessages:active,
+#notifBtn:active,
+#btnDogBoard:active{
+  transform:translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 3px 8px rgba(0,0,0,.18);
 }
 
 /* ===== BADGE NUMERICO MESSAGGI ===== */
