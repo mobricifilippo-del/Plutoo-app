@@ -406,10 +406,12 @@ a{color:inherit;text-decoration:none}
 }
 
 .topbar .left{
+  justify-self:start;
   height:100%;
   display:flex;
   align-items:center;
   gap:.6rem;
+  transform:translateY(6px);
 }
 
 .topbar .right{
