@@ -502,6 +502,8 @@ a{color:inherit;text-decoration:none}
     column-gap:.7rem;
     white-space:normal;
     overflow:visible;
+  transform: translateY(4px);
+padding: 0 .5rem;
 }
 
 #tabLuoghi{
