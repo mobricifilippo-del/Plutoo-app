@@ -1698,23 +1698,30 @@ if (state.entered) {
   }
 
   // ============ Tabs ============
-  tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
-  tabLove?.addEventListener("click",   ()=>setActiveView("love"));
-  tabLuoghi?.addEventListener("click",(e)=>{
-    e.stopPropagation();
-    const wrap = tabLuoghi.parentElement;
-    const expanded = wrap.classList.toggle("open");
-    tabLuoghi.setAttribute("aria-expanded", expanded ? "true" : "false");
-  });
-  document.addEventListener("click",()=>tabLuoghi?.parentElement.classList.remove("open"));
+tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
+tabLove?.addEventListener("click",   ()=>setActiveView("love"));
+tabLuoghi?.addEventListener("click",(e)=>{
+  e.stopPropagation();
+  const wrap = tabLuoghi.parentElement;
+  const expanded = wrap.classList.toggle("open");
+  tabLuoghi.setAttribute("aria-expanded", expanded ? "true" : "false");
+  setActiveTabUI(expanded ? "luoghi" : state.currentView);
+});
+document.addEventListener("click",()=>{
+  tabLuoghi?.parentElement.classList.remove("open");
+  tabLuoghi?.setAttribute("aria-expanded", "false");
+  setActiveTabUI(state.currentView);
+});
 
-  qa(".menu-item", luoghiMenu).forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const cat = btn.getAttribute("data-cat");
-      tabLuoghi.parentElement.classList.remove("open");
-      openMapsCategory(cat);
-    });
+qa(".menu-item", luoghiMenu).forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const cat = btn.getAttribute("data-cat");
+    tabLuoghi.parentElement.classList.remove("open");
+    tabLuoghi?.setAttribute("aria-expanded", "false");
+    setActiveTabUI(state.currentView);
+    openMapsCategory(cat);
   });
+});
 
 // ====== MESSAGGI - VISTA E TABS INTERN INTERNI ======
 const btnMessages = $("btnMessages");
