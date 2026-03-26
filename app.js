@@ -2328,85 +2328,109 @@ msgLists.forEach((list) => {
   if (name === "luoghi") tabLuoghi?.classList.add("active");
 }
 
+ function setActiveTabUI(name){
+tabNearby?.classList.remove("active");
+tabLove?.classList.remove("active");
+tabLuoghi?.classList.remove("active");
+document.getElementById("btnDogBoard")?.classList.remove("active");
+if (tabPlay) tabPlay.classList.remove("active");
+
+if (name === "nearby") tabNearby?.classList.add("active");
+if (name === "love") tabLove?.classList.add("active");
+if (name === "luoghi") tabLuoghi?.classList.add("active");
+if (name === "dogboard") document.getElementById("btnDogBoard")?.classList.add("active");
+}
+
 function setActiveView(name){
-    // ✅ GUARD: se arriva una view sconosciuta (es. "notifications"), non lasciare schermo nero
-    try {
-      const allowed = { nearby:1, love:1, play:1, profile:1, messages:1 };
-      if (!allowed[String(name || "")]) name = "nearby";
-    } catch (_) {
-      name = "nearby";
-    }
+// ✅ GUARD: se arriva una view sconosciuta (es. "notifications"), non lasciare schermo nero
+try {
+const allowed = { nearby:1, love:1, dogboard:1, play:1, profile:1, messages:1 };
+if (!allowed[String(name || "")]) name = "nearby";
+} catch (_) {
+name = "nearby";
+}
 
-    localStorage.setItem("currentView", name);
+localStorage.setItem("currentView", name);
 
-    if (state.currentView !== name && state.currentView){
-      state.viewHistory.push(state.currentView);
-    }
+if (state.currentView !== name && state.currentView){
+  state.viewHistory.push(state.currentView);
+}
 
-    if (name === "messages" && state.currentView !== "messages"){
-      state.previousViewForMessages = state.currentView || "nearby";
-    }
+if ((name === "messages" || name === "dogboard") && state.currentView !== name){
+  state.previousViewForMessages = state.currentView || "nearby";
+}
 
-    state.currentView = name;
-    // 🔄 Mantieni allineato lo stato delle Stories
-  try {
-    StoriesState.loadStories();
-  } catch (e) {}
+state.currentView = name;
+// 🔄 Mantieni allineato lo stato delle Stories
 
-  [viewNearby, viewLove, viewPlay, viewMessages, profilePage].forEach(v => {
-  if (!v) return;
-  v.classList.remove("active");
-  v.classList.add("hidden");
-  });
+try {
+StoriesState.loadStories();
+} catch (e) {}
 
-    if (name === "profile" || name === "messages") {
-      mainTopbar?.classList.add("hidden");
-    } else {
-      mainTopbar?.classList.remove("hidden");
-    }
+[viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), profilePage].forEach(v => {
+if (!v) return;
+v.classList.remove("active");
+v.classList.add("hidden");
+});
 
-    const storiesBar = $("storiesBar");
-    if (storiesBar) {
-      storiesBar.classList.toggle("hidden", name !== "nearby");
-    }
+if (name === "profile" || name === "messages" || name === "dogboard") {
+  mainTopbar?.classList.add("hidden");
+} else {
+  mainTopbar?.classList.remove("hidden");
+}
 
-    setActiveTabUI(name);
-   
-   if (name === "nearby") {
-  if (viewNearby) {
-    viewNearby.classList.remove("hidden");
-    viewNearby.classList.add("active");
+const storiesBar = $("storiesBar");
+if (storiesBar) {
+  storiesBar.classList.toggle("hidden", name !== "nearby");
+}
+
+setActiveTabUI(name);
+
+if (name === "nearby") {
+if (viewNearby) {
+viewNearby.classList.remove("hidden");
+viewNearby.classList.add("active");
+}
+renderNearby();
+renderStoriesBar();
+window.renderStories && window.renderStories();
+if (btnSearchPanel) btnSearchPanel.disabled = false;
+}
+
+if (name === "love") {
+  if (viewLove) {
+    viewLove.classList.remove("hidden");
+    viewLove.classList.add("active");
   }
-  renderNearby();
-  renderStoriesBar();
-  window.renderStories && window.renderStories();
-  if (btnSearchPanel) btnSearchPanel.disabled = false;
-   }
+  renderSwipe("love");
+}
 
-    if (name === "love") {
-      if (viewLove) {
-        viewLove.classList.remove("hidden");
-        viewLove.classList.add("active");
-      }
-      renderSwipe("love");
-    }
+if (name === "profile") {
 
-    if (name === "profile") {
-  if (profilePage) {
-    profilePage.classList.remove("hidden");
-    profilePage.classList.add("active");
+if (profilePage) {
+profilePage.classList.remove("hidden");
+profilePage.classList.add("active");
+}
+}
+
+if (name === "messages") {
+  if (viewMessages) {
+    viewMessages.classList.remove("hidden");
+    viewMessages.classList.add("active");
   }
-    }
+}
 
-    if (name === "messages") {
-      if (viewMessages) {
-        viewMessages.classList.remove("hidden");
-        viewMessages.classList.add("active");
-      }
-    }
-
-    window.scrollTo({top:0, behavior:"smooth"});
+if (name === "dogboard") {
+  const viewDogBoard = document.getElementById("viewDogBoard");
+  if (viewDogBoard) {
+    viewDogBoard.classList.remove("hidden");
+    viewDogBoard.classList.add("active");
   }
+}
+
+window.scrollTo({top:0, behavior:"smooth"});
+
+}
 
   btnBack?.addEventListener("click", ()=> goBack() );
   btnBackLove?.addEventListener("click", ()=> goBack() );
