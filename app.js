@@ -1100,7 +1100,16 @@ const state = {
   const viewLove     = $("viewLove");
   const viewPlay     = $("viewPlay");
   const viewMessages = $("viewMessages");
-  const nearGrid     = $("nearGrid");
+const viewDogBoard = $("viewDogBoard");
+const nearGrid     = $("nearGrid");
+
+const dogBoardList = $("dogBoardList");
+const dogBoardText = $("dogBoardText");
+const dogBoardPhotos = $("dogBoardPhotos");
+const dogBoardPreview = $("dogBoardPreview");
+const btnPublishDogBoard = $("btnPublishDogBoard");
+const btnRefreshDogBoard = $("btnRefreshDogBoard");
+const btnDogBoardBack = $("btnDogBoardBack");
 
   const loveCard     = $("loveCard");
   const loveImg      = $("loveImg");
