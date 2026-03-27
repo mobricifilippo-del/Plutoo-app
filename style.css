@@ -1745,12 +1745,125 @@ display: block;
 display: none !important;
 }
 
-.empty-state {
-text-align: center;
-color: rgba(255, 255, 255, 0.5);
-padding: 40px 20px;
-font-size: 1rem;
-line-height: 1.6;
+.empty-state { text-align: center; color: rgba(255, 255, 255, 0.5); padding: 40px 20px; font-size: 1rem; line-height: 1.6; }
+
+/* ================= BACHECA DOG ================= */
+.dogboard-feed-head{
+  display:flex;
+  justify-content:flex-start;
+  margin-bottom:.75rem;
+}
+
+#dogBoardList{
+  display:flex;
+  flex-direction:column;
+  gap:.75rem;
+  min-height:180px;
+}
+
+.dogboard-empty-state{
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
+  padding:1rem;
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(138,123,255,.16);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.dogboard-empty-icon{
+  font-size:1.4rem;
+  line-height:1;
+}
+
+.dogboard-empty-title{
+  font-size:1rem;
+  font-weight:800;
+  color:var(--violet-glow);
+}
+
+.dogboard-empty-text{
+  font-size:.92rem;
+  line-height:1.5;
+  color:rgba(255,255,255,.74);
+}
+
+.dogboard-composer{
+  position:sticky;
+  bottom:0;
+  z-index:3;
+  padding-top:.75rem;
+  margin-top:1rem;
+  background:linear-gradient(180deg, rgba(11,11,15,0) 0%, rgba(11,11,15,.92) 22%, rgba(11,11,15,1) 100%);
+}
+
+.dogboard-composer-card{
+  display:flex;
+  flex-direction:column;
+  gap:.65rem;
+  padding:.9rem;
+  border-radius:18px;
+  background:rgba(20,20,30,.92);
+  border:1px solid rgba(138,123,255,.18);
+  box-shadow:0 10px 24px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.dogboard-composer-head{
+  display:flex;
+  flex-direction:column;
+  gap:.15rem;
+}
+
+.dogboard-composer-title{
+  font-size:1rem;
+  font-weight:800;
+  color:#fff;
+}
+
+.dogboard-composer-subtitle{
+  font-size:.82rem;
+  color:rgba(255,255,255,.62);
+}
+
+.dogboard-composer-field textarea{
+  width:100%;
+  min-height:76px;
+  border:1px solid rgba(138,123,255,.18);
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  color:#fff;
+  padding:.75rem .85rem;
+  font:inherit;
+  resize:none;
+  outline:none;
+}
+
+.dogboard-composer-field textarea::placeholder{
+  color:rgba(255,255,255,.42);
+}
+
+.dogboard-composer-actions{
+  display:flex;
+  gap:.6rem;
+  align-items:center;
+}
+
+.dogboard-composer-actions .btn{
+  flex:1 1 0;
+  justify-content:center;
+}
+
+.dogboard-composer-note{
+  font-size:.8rem;
+  color:rgba(255,255,255,.6);
+}
+
+.dogboard-photos-preview{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  min-height:6px;
 }
 
 /* ===============================
