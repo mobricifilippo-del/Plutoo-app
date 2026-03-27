@@ -1109,7 +1109,6 @@ const dogBoardPhotos = $("dogBoardPhotos");
 const dogBoardPreview = $("dogBoardPreview");
 const btnPublishDogBoard = $("btnPublishDogBoard");
 const btnRefreshDogBoard = $("btnRefreshDogBoard");
-const btnDogBoardBack = $("btnDogBoardBack");
 
   const loveCard     = $("loveCard");
   const loveImg      = $("loveImg");
