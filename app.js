@@ -5581,6 +5581,88 @@ const chatId =
   }
 }
 
+async function publishDogBoardTextOnly(){
+  try {
+    if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) return;
+    if (btnPublishDogBoard.dataset.busy === "1") return;
+
+    const text = String(dogBoardText.value || "").trim();
+    if (!text) return;
+
+    const dogId = String(window.PLUTOO_DOG_ID || "");
+    const ownerUid = String(window.PLUTOO_UID || "");
+
+    if (!dogId || !ownerUid) {
+      alert(state.lang === "it" ? "Profilo DOG non pronto" : "DOG profile not ready");
+      return;
+    }
+
+    const currentDog =
+      (Array.isArray(state.dogs) ? state.dogs : []).find(d => d && String(d.id) === dogId) || null;
+
+    if (!currentDog || !String(currentDog.name || "").trim()) {
+      alert(state.lang === "it" ? "DOG corrente non trovato" : "Current DOG not found");
+      return;
+    }
+
+    btnPublishDogBoard.dataset.busy = "1";
+    btnPublishDogBoard.disabled = true;
+
+    const now = Date.now();
+
+    const payload = {
+      dogId,
+      ownerUid,
+      dogName: String(currentDog.name || ""),
+      dogAvatar: String(currentDog.img || "./plutoo-icon-192.png"),
+      zone: "",
+      text,
+      photos: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAtClient: now
+    };
+
+    const docRef = await window.db.collection("dogBoardPosts").add(payload);
+
+    dogBoardList.insertAdjacentHTML("afterbegin", `
+      <div class="dogboard-item" data-dogboard-id="${docRef.id}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
+        <div class="dogboard-avatar">
+          <img src="${String(payload.dogAvatar || "./plutoo-icon-192.png")}" alt="${String(payload.dogName || "DOG").replace(/"/g, "&quot;")}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        </div>
+
+        <div class="dogboard-main">
+          <div class="dogboard-head">
+            <div class="dogboard-title">${String(payload.dogName || "")}</div>
+            <div class="dogboard-time">${new Date(now).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+          </div>
+
+          <div class="dogboard-text">${String(payload.text || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;")}</div>
+        </div>
+      </div>
+    `);
+
+    const emptyState = dogBoardList.querySelector(".dogboard-empty-state");
+    if (emptyState) emptyState.remove();
+
+    dogBoardText.value = "";
+  } catch (err) {
+    console.error("publishDogBoardTextOnly error", err);
+    alert(state.lang === "it" ? "Errore durante la pubblicazione" : "Publish failed");
+  } finally {
+    if (btnPublishDogBoard) {
+      btnPublishDogBoard.dataset.busy = "0";
+      btnPublishDogBoard.disabled = false;
+    }
+  }
+}
+
+btnPublishDogBoard?.addEventListener("click", publishDogBoardTextOnly);
+
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
     if (!state.plus && ["vets","groomers","shops"].includes(cat)){
