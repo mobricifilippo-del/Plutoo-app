@@ -1792,6 +1792,7 @@ display: none !important;
 .dogboard-composer{
   position:sticky;
   bottom:70px;
+  margin-bottom: 90px;
   z-index:3;
   padding-top:.75rem;
   margin-top:1rem;
