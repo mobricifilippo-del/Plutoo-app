@@ -1759,7 +1759,6 @@ display: none !important;
   flex-direction:column;
   gap:.75rem;
   min-height:180px;
-  padding-bottom: 140px;
 }
 
 .dogboard-empty-state{
@@ -1791,12 +1790,7 @@ display: none !important;
 }
 
 .dogboard-composer{
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 70px; /* spazio sopra banner */
-  z-index: 10;
-  padding: 0 12px 12px;
+  margin-top: 1.2rem;
 }
 
 .dogboard-composer-card{
