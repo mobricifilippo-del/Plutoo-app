@@ -5625,7 +5625,7 @@ async function publishDogBoardTextOnly(){
     const docRef = await window.db.collection("dogBoardPosts").add(payload);
 
     dogBoardList.insertAdjacentHTML("afterbegin", `
-      <div class="dogboard-item" data-dogboard-id="${docRef.id}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
+      <div class=" dogboard-item"data-dog-id="${payload.dogId}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
         <div class="dogboard-avatar">
           <img src="${String(payload.dogAvatar || "./plutoo-icon-192.png")}" alt="${String(payload.dogName || "DOG").replace(/"/g, "&quot;")}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
         </div>
@@ -5645,6 +5645,16 @@ async function publishDogBoardTextOnly(){
         </div>
       </div>
     `);
+
+    dogBoardList.querySelectorAll(".dogboard-item").forEach(item => {
+  item.onclick = () => {
+    const dogId = item.getAttribute("data-dog-id");
+    if (!dogId) return;
+
+    const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
+    if (dog) openChat(dog);
+  };
+});
 
     const emptyState = dogBoardList.querySelector(".dogboard-empty-state");
     if (emptyState) emptyState.remove();
