@@ -1657,7 +1657,8 @@ body.story-open #storiesBar {
 
 /* ===== MESSAGGI - HEADER & FOOTER ===== */
 
-#viewMessages {
+#viewMessages,
+#viewDogBoard {
 display: flex;
 flex-direction: column;
 height: 100vh;
