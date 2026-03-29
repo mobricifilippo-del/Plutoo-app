@@ -5615,7 +5615,7 @@ async function publishDogBoardTextOnly(){
       ownerUid,
       dogName: String(currentDog.name || ""),
       dogAvatar: String(currentDog.img || "./plutoo-icon-192.png"),
-      zone: "",
+      zone: String(currentDog.zone || currentDog.city || currentDog.location || ""),
       text,
       photos: [],
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
