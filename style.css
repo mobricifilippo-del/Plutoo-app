@@ -1866,6 +1866,86 @@ display: none !important;
   min-height:6px;
 }
 
+.dogboard-item{
+  display:flex;
+  align-items:flex-start;
+  gap:.75rem;
+  padding:.85rem;
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(138,123,255,.14);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.dogboard-avatar{
+  flex:0 0 52px;
+  width:52px;
+  height:52px;
+  border-radius:999px;
+  overflow:hidden;
+  border:2px solid rgba(138,123,255,.45);
+  box-shadow:0 0 14px rgba(138,123,255,.18);
+  background:rgba(255,255,255,.04);
+}
+
+.dogboard-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.dogboard-main{
+  flex:1 1 auto;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:.35rem;
+}
+
+.dogboard-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.6rem;
+}
+
+.dogboard-title{
+  font-size:.98rem;
+  font-weight:800;
+  color:#fff;
+  line-height:1.2;
+}
+
+.dogboard-time{
+  flex:0 0 auto;
+  font-size:.78rem;
+  color:rgba(255,255,255,.55);
+}
+
+.dogboard-text{
+  font-size:.95rem;
+  line-height:1.45;
+  color:rgba(255,255,255,.88);
+  word-break:break-word;
+}
+
+.dogboard-photos{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  margin-top:.15rem;
+}
+
+.dogboard-photo{
+  width:84px;
+  height:84px;
+  object-fit:cover;
+  border-radius:12px;
+  display:block;
+  border:1px solid rgba(138,123,255,.16);
+}
+
 /* ===============================
    INSTAGRAM-LIKE LIST (msg-item)
    =============================== */
