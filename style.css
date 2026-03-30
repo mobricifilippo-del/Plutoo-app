@@ -743,7 +743,7 @@ body.story-open #storiesBar {
   display:flex;
   flex-direction:column;
   min-height:0;
-  overflow:hidden;
+  overflow:visible;
 }
 
 .view{display:none}
