@@ -1588,6 +1588,7 @@ body.story-open #storiesBar {
   background:#fff;margin:.3rem auto;
 }
 .sponsor-copy{color:var(--muted);font-size:.93rem}
+
 .ad-banner{
   position: relative;
   width: 100%;
@@ -1600,7 +1601,7 @@ body.story-open #storiesBar {
   font-size: .9rem;
   color: var(--muted);
   text-align: center;
-  margin-top: 2.5rem;
+  margin-top: 0;
 }
 
 /* Nasconde lo sponsor globale quando è attiva la Home */
