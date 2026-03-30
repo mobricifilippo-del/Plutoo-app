@@ -1674,7 +1674,6 @@ body.story-open #storiesBar {
 }
 
 #viewDogBoard{
-  display:flex;
   flex-direction:column;
   padding-top:0 !important;
   margin-top:0 !important;
