@@ -1662,15 +1662,22 @@ body.story-open #storiesBar {
 
 /* ===== MESSAGGI - HEADER & FOOTER ===== */
 
-#viewMessages,
-#viewDogBoard {
-display: flex;
-flex-direction: column;
-height: 100vh;
-padding-top: 0 !important;
-margin-top: 0 !important;
-background: #0d021a !important;
-overflow: hidden;
+#viewMessages {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  background: #0d021a !important;
+  overflow: hidden;
+}
+
+#viewDogBoard{
+  display:flex;
+  flex-direction:column;
+  padding-top:0 !important;
+  margin-top:0 !important;
+  background:#0d021a !important;
 }
 
 /* barra messaggi ATTACCATA in alto */
