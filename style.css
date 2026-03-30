@@ -746,12 +746,6 @@ body.story-open #storiesBar {
   overflow:hidden;
 }
 
-#viewDogBoard.active ~ .ad-banner,
-#viewDogBoard.active ~ .legal-links{
-  position:sticky;
-  bottom:0;
-}
-
 .view{display:none}
 
 .view.active{display:block}
