@@ -2387,6 +2387,17 @@ if (name === "profile" || name === "messages" || name === "dogboard") {
   mainTopbar?.classList.remove("hidden");
 }
 
+const globalAdBanner = document.getElementById("adBanner");
+const globalLegalLinks = document.querySelector("#appScreen > .legal-links.legal-purple");
+
+if (name === "dogboard") {
+  globalAdBanner?.classList.add("hidden");
+  globalLegalLinks?.classList.add("hidden");
+} else {
+  globalAdBanner?.classList.remove("hidden");
+  globalLegalLinks?.classList.remove("hidden");
+}
+
 const storiesBar = $("storiesBar");
 if (storiesBar) {
   storiesBar.classList.toggle("hidden", name !== "nearby");
