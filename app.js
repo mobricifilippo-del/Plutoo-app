@@ -2451,6 +2451,46 @@ document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "a
 document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 
 window.scrollTo({top:0, behavior:"smooth"});
+  window.scrollTo({top:0, behavior:"smooth"});
+
+setTimeout(() => {
+  try {
+    const root = document.documentElement;
+    const body = document.body;
+    const app = document.querySelector(".app");
+    const view = document.getElementById("viewDogBoard");
+    const mb = view?.querySelector(".messages-body");
+    const list = document.getElementById("dogBoardList");
+    const comp = view?.querySelector(".dogboard-composer");
+    const banner = view?.querySelector(".ad-banner");
+    const legal = view?.querySelector(".legal-links");
+
+    const H = (el) => el ? {
+      client: el.clientHeight,
+      scroll: el.scrollHeight,
+      offset: el.offsetHeight
+    } : null;
+
+    console.log("=== DOGBOARD LAYOUT DEBUG ===");
+    console.log("viewport:", window.innerHeight);
+    console.log("html:", H(root));
+    console.log("body:", H(body));
+    console.log(".app:", H(app));
+    console.log("#viewDogBoard:", H(view));
+    console.log(".messages-body:", H(mb));
+    console.log("#dogBoardList:", H(list));
+    console.log("composer:", H(comp));
+    console.log("banner:", H(banner));
+    console.log("legal:", H(legal));
+
+    if (banner && legal) {
+      const b = banner.getBoundingClientRect();
+      const l = legal.getBoundingClientRect();
+      console.log("banner bottom:", b.bottom, "viewport:", window.innerHeight);
+      console.log("legal bottom:", l.bottom, "viewport:", window.innerHeight);
+    }
+  } catch(e){ console.error(e); }
+}, 300);
 
 }
 
