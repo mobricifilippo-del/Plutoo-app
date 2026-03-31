@@ -1769,7 +1769,7 @@ border-color: rgba(177, 154, 255, 0.4);
 }
 
 #viewDogBoard #dogBoardList{
-  flex:1 1 0;
+  flex:1 1 auto;
   display:flex;
   flex-direction:column;
   overflow-y:auto;
