@@ -405,6 +405,20 @@ a{color:inherit;text-decoration:none}
   text-decoration:underline;
 }
 
+#viewDogBoard .ad-banner{
+  position:static;
+  flex:0 0 auto;
+  width:100%;
+  height:56px;
+  margin-top:0;
+}
+
+#viewDogBoard .legal-links{
+  flex:0 0 auto;
+  width:100%;
+  margin:.45rem 0 .7rem;
+}
+
 /* ================= APP / NAVBAR ================= */
 .app{
   min-height:100vh;
