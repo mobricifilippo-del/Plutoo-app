@@ -2458,6 +2458,7 @@ setTimeout(() => {
   const banner = document.querySelector("#viewDogBoard .ad-banner");
   const legal = document.querySelector("#viewDogBoard .legal-links");
   const list = document.getElementById("dogBoardList");
+  const messagesBody = document.querySelector("#viewDogBoard .messages-body");
 
   let msg = "";
 
@@ -2480,6 +2481,7 @@ setTimeout(() => {
   if (list) {
     msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
     msg += "LIST clientHeight: " + list.clientHeight + "\n";
+    msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
   }
 
   alert(msg);
