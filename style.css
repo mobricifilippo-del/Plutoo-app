@@ -1764,7 +1764,7 @@ border-color: rgba(177, 154, 255, 0.4);
 #viewDogBoard .messages-body{
   display:flex;
   flex-direction:column;
-  flex:1 1 auto;
+  flex:1 1 0;
   min-height:0;
   overflow:hidden;
 }
