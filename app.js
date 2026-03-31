@@ -2447,7 +2447,10 @@ if (name === "dogboard") {
   }
 }
 
-document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
+if (appScreen) {
+  appScreen.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
+}
+
 window.scrollTo({top:0, behavior:"smooth"});
 
 }
