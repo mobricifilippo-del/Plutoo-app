@@ -1771,13 +1771,11 @@ border-color: rgba(177, 154, 255, 0.4);
 }
 
 #viewDogBoard #dogBoardList{
-  flex:1 1 auto;
+  flex:1 1 0;
+  min-height:0;
+  overflow-y:auto;
   display:flex;
   flex-direction:column;
-  overflow-y:auto;
-  min-height:0;
-  padding-bottom:.75rem;
-  -webkit-overflow-scrolling:touch;
 }
 
 #viewDogBoard .dogboard-composer{
