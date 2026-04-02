@@ -2458,6 +2458,7 @@ setTimeout(() => {
   const list = document.getElementById("dogBoardList");
   const messagesBody = document.querySelector("#viewDogBoard .messages-body");
   const content = document.querySelector(".content");
+  const app = document.querySelector(".app");
 
   let msg = "";
 
@@ -2482,7 +2483,9 @@ setTimeout(() => {
     msg += "LIST clientHeight: " + list.clientHeight + "\n";
     msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
     msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
-msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
+    msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
+    msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
+    msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
   }
 
   alert(msg);
