@@ -1780,6 +1780,7 @@ border-color: rgba(177, 154, 255, 0.4);
 #viewDogBoard .dogboard-composer{
   flex:0 0 auto;
   margin-top:auto;
+  margin-bottom:.8rem;
   bottom:auto;
 }
 
