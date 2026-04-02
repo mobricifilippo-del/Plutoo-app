@@ -2445,6 +2445,27 @@ if (name === "dogboard") {
     viewDogBoard.classList.remove("hidden");
     viewDogBoard.classList.add("active");
   }
+
+  setTimeout(() => {
+    try {
+      const composer = document.querySelector("#viewDogBoard .dogboard-composer");
+      const banner = document.querySelector("#viewDogBoard .ad-banner");
+      const legal = document.querySelector("#viewDogBoard .legal-links");
+
+      const composerRect = composer ? composer.getBoundingClientRect() : null;
+      const bannerRect = banner ? banner.getBoundingClientRect() : null;
+      const legalRect = legal ? legal.getBoundingClientRect() : null;
+
+      alert([
+        `VIEWPORT=${window.innerHeight}`,
+        `COMPOSER bottom=${composerRect ? Math.round(composerRect.bottom) : "NA"}`,
+        `BANNER top=${bannerRect ? Math.round(bannerRect.top) : "NA"}`,
+        `BANNER bottom=${bannerRect ? Math.round(bannerRect.bottom) : "NA"}`,
+        `LEGAL top=${legalRect ? Math.round(legalRect.top) : "NA"}`,
+        `LEGAL bottom=${legalRect ? Math.round(legalRect.bottom) : "NA"}`
+      ].join("\n"));
+    } catch (_) {}
+  }, 80);
 }
 
 document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
