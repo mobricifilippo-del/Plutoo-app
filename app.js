@@ -2450,6 +2450,16 @@ if (name === "dogboard") {
 document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 
+if (appScreen) {
+  if (name === "dogboard") {
+    appScreen.style.height = `${window.innerHeight}px`;
+    appScreen.style.overflow = "hidden";
+  } else {
+    appScreen.style.height = "";
+    appScreen.style.overflow = "";
+  }
+}
+
 window.scrollTo({top:0, behavior:"smooth"});
 
 setTimeout(() => {
