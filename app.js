@@ -2445,7 +2445,29 @@ if (name === "dogboard") {
     viewDogBoard.classList.remove("hidden");
     viewDogBoard.classList.add("active");
   }
- }
+
+  setTimeout(() => {
+    try {
+      const composer = document.querySelector("#viewDogBoard .dogboard-composer");
+      const banner = document.querySelector("#viewDogBoard .ad-banner");
+
+      const legal = document.querySelector("#viewDogBoard .legal-links");
+      const legalRect = legal ? legal.getBoundingClientRect() : null;
+      const legalStyle = legal ? window.getComputedStyle(legal) : null;
+
+      alert([
+        `VIEWPORT=${window.innerHeight}`,
+        `LEGAL top=${legalRect ? Math.round(legalRect.top) : "NA"}`,
+        `LEGAL bottom=${legalRect ? Math.round(legalRect.bottom) : "NA"}`,
+        `LEGAL height=${legalRect ? Math.round(legalRect.height) : "NA"}`,
+        `LEGAL display=${legalStyle ? legalStyle.display : "NA"}`,
+        `LEGAL visibility=${legalStyle ? legalStyle.visibility : "NA"}`,
+        `LEGAL opacity=${legalStyle ? legalStyle.opacity : "NA"}`,
+        `LEGAL color=${legalStyle ? legalStyle.color : "NA"}`
+      ].join("\n"));
+      
+    } catch (_) {}
+  }, 80);
 }
 
 document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
@@ -2462,6 +2484,49 @@ if (appScreen) {
 }
 
 window.scrollTo({top:0, behavior:"smooth"});
+
+setTimeout(() => {
+  const banner = document.querySelector("#viewDogBoard .ad-banner");
+  const legal = document.querySelector("#viewDogBoard .legal-links");
+  const list = document.getElementById("dogBoardList");
+  const messagesBody = document.querySelector("#viewDogBoard .messages-body");
+  const content = document.querySelector(".content");
+  const app = document.querySelector(".app");
+
+  let msg = "";
+
+  if (banner) {
+    const b = banner.getBoundingClientRect();
+    msg += "BANNER bottom: " + Math.round(b.bottom) + "\n";
+  } else {
+    msg += "BANNER: null\n";
+  }
+
+  if (legal) {
+    const l = legal.getBoundingClientRect();
+    
+    msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
+  } else {
+    msg += "LEGAL: null\n";
+  }
+
+  msg += "VIEWPORT: " + window.innerHeight + "\n";
+
+  if (list) {
+    msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
+    msg += "LIST clientHeight: " + list.clientHeight + "\n";
+    msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
+    msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
+    msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
+    msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
+    msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
+  }
+
+  alert(msg);
+
+}, 500);
+
+}
 
   btnBack?.addEventListener("click", ()=> goBack() );
 btnBackLove?.addEventListener("click", ()=> goBack() );
@@ -5683,6 +5748,32 @@ async function publishDogBoardTextOnly(){
     if (emptyState) emptyState.remove();
 
     dogBoardText.value = "";
+
+    setTimeout(() => {
+      try {
+        const bodyEl = viewDogBoard?.querySelector(".messages-body");
+        const composerEl = document.getElementById("dogBoardComposer");
+        const bannerEl = adBanner;
+        const legalEl = document.querySelector(".legal-links.legal-purple");
+
+        alert([
+          "[DOGBOARD DEBUG]",
+          `window.scrollY=${window.scrollY}`,
+          `viewDogBoard.h=${viewDogBoard?.offsetHeight || 0}`,
+          `messagesBody.h=${bodyEl?.offsetHeight || 0}`,
+          `messagesBody.scrollH=${bodyEl?.scrollHeight || 0}`,
+          `messagesBody.overflowY=${bodyEl ? getComputedStyle(bodyEl).overflowY : "NA"}`,
+          `dogBoardList.h=${dogBoardList?.offsetHeight || 0}`,
+          `dogBoardList.scrollH=${dogBoardList?.scrollHeight || 0}`,
+          `dogBoardList.scrollTop=${dogBoardList?.scrollTop || 0}`,
+          `dogBoardList.overflowY=${dogBoardList ? getComputedStyle(dogBoardList).overflowY : "NA"}`,
+          `composer.top=${composerEl ? Math.round(composerEl.getBoundingClientRect().top) : 0}`,
+          `composer.bottom=${composerEl ? Math.round(composerEl.getBoundingClientRect().bottom) : 0}`,
+          `banner.top=${bannerEl ? Math.round(bannerEl.getBoundingClientRect().top) : 0}`,
+          `legal.top=${legalEl ? Math.round(legalEl.getBoundingClientRect().top) : 0}`
+        ].join("\n"));
+      } catch (_) {}
+    }, 80);
 
   } catch (err) {
     
