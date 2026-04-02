@@ -2462,15 +2462,6 @@ if (appScreen) {
 
 window.scrollTo({top:0, behavior:"smooth"});
 
-setTimeout(() => {
-  const banner = document.querySelector("#viewDogBoard .ad-banner");
-  const legal = document.querySelector("#viewDogBoard .legal-links");
-  const list = document.getElementById("dogBoardList");
-  const messagesBody = document.querySelector("#viewDogBoard .messages-body");
-  const content = document.querySelector(".content");
-  const app = document.querySelector(".app");
-}
-
   btnBack?.addEventListener("click", ()=> goBack() );
 btnBackLove?.addEventListener("click", ()=> goBack() );
 btnMsgBack?.addEventListener("click", () => {
