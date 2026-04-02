@@ -2454,16 +2454,21 @@ if (name === "dogboard") {
 
       const composerRect = composer ? composer.getBoundingClientRect() : null;
       const bannerRect = banner ? banner.getBoundingClientRect() : null;
-      const legalRect = legal ? legal.getBoundingClientRect() : null;
+      const legal = document.querySelector("#viewDogBoard .legal-links");
+const legalRect = legal ? legal.getBoundingClientRect() : null;
+const legalStyle = legal ? window.getComputedStyle(legal) : null;
 
-      alert([
-        `VIEWPORT=${window.innerHeight}`,
-        `COMPOSER bottom=${composerRect ? Math.round(composerRect.bottom) : "NA"}`,
-        `BANNER top=${bannerRect ? Math.round(bannerRect.top) : "NA"}`,
-        `BANNER bottom=${bannerRect ? Math.round(bannerRect.bottom) : "NA"}`,
-        `LEGAL top=${legalRect ? Math.round(legalRect.top) : "NA"}`,
-        `LEGAL bottom=${legalRect ? Math.round(legalRect.bottom) : "NA"}`
-      ].join("\n"));
+alert([
+  `VIEWPORT=${window.innerHeight}`,
+  `LEGAL top=${legalRect ? Math.round(legalRect.top) : "NA"}`,
+  `LEGAL bottom=${legalRect ? Math.round(legalRect.bottom) : "NA"}`,
+  `LEGAL height=${legalRect ? Math.round(legalRect.height) : "NA"}`,
+  `LEGAL display=${legalStyle ? legalStyle.display : "NA"}`,
+  `LEGAL visibility=${legalStyle ? legalStyle.visibility : "NA"}`,
+  `LEGAL opacity=${legalStyle ? legalStyle.opacity : "NA"}`,
+  `LEGAL color=${legalStyle ? legalStyle.color : "NA"}`
+].join("\n"));
+      
     } catch (_) {}
   }, 80);
 }
