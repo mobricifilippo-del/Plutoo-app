@@ -2481,6 +2481,13 @@ setTimeout(() => {
 
   if (legal) {
     const l = legal.getBoundingClientRect();
+
+    msg += "LEGAL top: " + Math.round(l.top) + "\n";
+msg += "LEGAL height: " + Math.round(l.height) + "\n";
+msg += "LEGAL display: " + getComputedStyle(legal).display + "\n";
+msg += "LEGAL visibility: " + getComputedStyle(legal).visibility + "\n";
+msg += "LEGAL opacity: " + getComputedStyle(legal).opacity + "\n";
+    
     msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
   } else {
     msg += "LEGAL: null\n";
