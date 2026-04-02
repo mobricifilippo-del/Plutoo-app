@@ -2450,9 +2450,8 @@ if (name === "dogboard") {
     try {
       const composer = document.querySelector("#viewDogBoard .dogboard-composer");
       const banner = document.querySelector("#viewDogBoard .ad-banner");
-      const legal = document.querySelector("#viewDogBoard .legal-links");
 
-    const legal = document.querySelector("#viewDogBoard .legal-links");
+      const legal = document.querySelector("#viewDogBoard .legal-links");
       const legalRect = legal ? legal.getBoundingClientRect() : null;
       const legalStyle = legal ? window.getComputedStyle(legal) : null;
 
