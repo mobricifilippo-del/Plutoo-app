@@ -2469,40 +2469,6 @@ setTimeout(() => {
   const messagesBody = document.querySelector("#viewDogBoard .messages-body");
   const content = document.querySelector(".content");
   const app = document.querySelector(".app");
-
-  let msg = "";
-
-  if (banner) {
-    const b = banner.getBoundingClientRect();
-    msg += "BANNER bottom: " + Math.round(b.bottom) + "\n";
-  } else {
-    msg += "BANNER: null\n";
-  }
-
-  if (legal) {
-    const l = legal.getBoundingClientRect();
-    
-    msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
-  } else {
-    msg += "LEGAL: null\n";
-  }
-
-  msg += "VIEWPORT: " + window.innerHeight + "\n";
-
-  if (list) {
-    msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
-    msg += "LIST clientHeight: " + list.clientHeight + "\n";
-    msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
-    msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
-    msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
-    msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
-    msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
-  }
-
-  alert(msg);
-
-}, 500);
-
 }
 
   btnBack?.addEventListener("click", ()=> goBack() );
