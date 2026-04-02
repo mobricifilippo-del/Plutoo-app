@@ -2452,22 +2452,20 @@ if (name === "dogboard") {
       const banner = document.querySelector("#viewDogBoard .ad-banner");
       const legal = document.querySelector("#viewDogBoard .legal-links");
 
-      const composerRect = composer ? composer.getBoundingClientRect() : null;
-      const bannerRect = banner ? banner.getBoundingClientRect() : null;
-      const legal = document.querySelector("#viewDogBoard .legal-links");
-const legalRect = legal ? legal.getBoundingClientRect() : null;
-const legalStyle = legal ? window.getComputedStyle(legal) : null;
+    const legal = document.querySelector("#viewDogBoard .legal-links");
+      const legalRect = legal ? legal.getBoundingClientRect() : null;
+      const legalStyle = legal ? window.getComputedStyle(legal) : null;
 
-alert([
-  `VIEWPORT=${window.innerHeight}`,
-  `LEGAL top=${legalRect ? Math.round(legalRect.top) : "NA"}`,
-  `LEGAL bottom=${legalRect ? Math.round(legalRect.bottom) : "NA"}`,
-  `LEGAL height=${legalRect ? Math.round(legalRect.height) : "NA"}`,
-  `LEGAL display=${legalStyle ? legalStyle.display : "NA"}`,
-  `LEGAL visibility=${legalStyle ? legalStyle.visibility : "NA"}`,
-  `LEGAL opacity=${legalStyle ? legalStyle.opacity : "NA"}`,
-  `LEGAL color=${legalStyle ? legalStyle.color : "NA"}`
-].join("\n"));
+      alert([
+        `VIEWPORT=${window.innerHeight}`,
+        `LEGAL top=${legalRect ? Math.round(legalRect.top) : "NA"}`,
+        `LEGAL bottom=${legalRect ? Math.round(legalRect.bottom) : "NA"}`,
+        `LEGAL height=${legalRect ? Math.round(legalRect.height) : "NA"}`,
+        `LEGAL display=${legalStyle ? legalStyle.display : "NA"}`,
+        `LEGAL visibility=${legalStyle ? legalStyle.visibility : "NA"}`,
+        `LEGAL opacity=${legalStyle ? legalStyle.opacity : "NA"}`,
+        `LEGAL color=${legalStyle ? legalStyle.color : "NA"}`
+      ].join("\n"));
       
     } catch (_) {}
   }, 80);
