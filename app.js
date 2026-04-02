@@ -2445,6 +2445,7 @@ if (name === "dogboard") {
     viewDogBoard.classList.remove("hidden");
     viewDogBoard.classList.add("active");
   }
+ }
 }
 
 document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
