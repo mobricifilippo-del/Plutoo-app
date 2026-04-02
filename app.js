@@ -2450,8 +2450,6 @@ if (name === "dogboard") {
 document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 
-  window.scrollTo({top:0, behavior:"smooth"});
-
 window.scrollTo({top:0, behavior:"smooth"});
 
 setTimeout(() => {
