@@ -5758,6 +5758,41 @@ async function publishDogBoardTextOnly(){
   }
 }
 
+let dogBoardSelectedPhotos = [];
+
+dogBoardPhotos?.addEventListener("change", () => {
+  try {
+    const files = Array.from(dogBoardPhotos.files || [])
+      .filter(file => file && String(file.type || "").startsWith("image/"))
+      .slice(0, 3);
+
+    dogBoardSelectedPhotos = files;
+
+    if (dogBoardPreview) {
+      dogBoardPreview.innerHTML = "";
+    }
+
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (!dogBoardPreview) return;
+
+        const img = document.createElement("img");
+        img.src = String(reader.result || "");
+        img.alt = `preview-${index + 1}`;
+        img.className = "dogboard-photo";
+
+        dogBoardPreview.appendChild(img);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  } catch (e) {
+    console.error("DogBoard photo preview error:", e);
+  }
+});
+
 btnPublishDogBoard?.addEventListener("click", () => {
   try {
     const isPlus = localStorage.getItem("plutoo_plus") === "yes";
