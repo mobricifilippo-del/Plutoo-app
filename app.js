@@ -5758,7 +5758,29 @@ async function publishDogBoardTextOnly(){
   }
 }
 
-btnPublishDogBoard?.addEventListener("click", publishDogBoardTextOnly);
+btnPublishDogBoard?.addEventListener("click", () => {
+  try {
+    const isPlus = localStorage.getItem("plutoo_plus") === "yes";
+
+    if (isPlus) {
+      publishDogBoardTextOnly();
+      return;
+    }
+
+    // UTENTE NON PLUS → reward prima della pubblicazione
+    if (typeof window.showRewardAd === "function") {
+      window.showRewardAd(() => {
+        publishDogBoardTextOnly();
+      });
+    } else {
+      // fallback sicurezza: pubblica comunque
+      publishDogBoardTextOnly();
+    }
+
+  } catch (e) {
+    console.error("DogBoard publish error:", e);
+  }
+});
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
