@@ -2454,17 +2454,6 @@ if (name === "dogboard") {
       const legal = document.querySelector("#viewDogBoard .legal-links");
       const legalRect = legal ? legal.getBoundingClientRect() : null;
       const legalStyle = legal ? window.getComputedStyle(legal) : null;
-
-      alert([
-        `VIEWPORT=${window.innerHeight}`,
-        `LEGAL top=${legalRect ? Math.round(legalRect.top) : "NA"}`,
-        `LEGAL bottom=${legalRect ? Math.round(legalRect.bottom) : "NA"}`,
-        `LEGAL height=${legalRect ? Math.round(legalRect.height) : "NA"}`,
-        `LEGAL display=${legalStyle ? legalStyle.display : "NA"}`,
-        `LEGAL visibility=${legalStyle ? legalStyle.visibility : "NA"}`,
-        `LEGAL opacity=${legalStyle ? legalStyle.opacity : "NA"}`,
-        `LEGAL color=${legalStyle ? legalStyle.color : "NA"}`
-      ].join("\n"));
       
     } catch (_) {}
   }, 80);
@@ -2521,8 +2510,6 @@ setTimeout(() => {
     msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
     msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
   }
-
-  alert(msg);
 
 }, 500);
 
