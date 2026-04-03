@@ -5756,22 +5756,6 @@ async function publishDogBoardTextOnly(){
         const bannerEl = adBanner;
         const legalEl = document.querySelector(".legal-links.legal-purple");
 
-        alert([
-          "[DOGBOARD DEBUG]",
-          `window.scrollY=${window.scrollY}`,
-          `viewDogBoard.h=${viewDogBoard?.offsetHeight || 0}`,
-          `messagesBody.h=${bodyEl?.offsetHeight || 0}`,
-          `messagesBody.scrollH=${bodyEl?.scrollHeight || 0}`,
-          `messagesBody.overflowY=${bodyEl ? getComputedStyle(bodyEl).overflowY : "NA"}`,
-          `dogBoardList.h=${dogBoardList?.offsetHeight || 0}`,
-          `dogBoardList.scrollH=${dogBoardList?.scrollHeight || 0}`,
-          `dogBoardList.scrollTop=${dogBoardList?.scrollTop || 0}`,
-          `dogBoardList.overflowY=${dogBoardList ? getComputedStyle(dogBoardList).overflowY : "NA"}`,
-          `composer.top=${composerEl ? Math.round(composerEl.getBoundingClientRect().top) : 0}`,
-          `composer.bottom=${composerEl ? Math.round(composerEl.getBoundingClientRect().bottom) : 0}`,
-          `banner.top=${bannerEl ? Math.round(bannerEl.getBoundingClientRect().top) : 0}`,
-          `legal.top=${legalEl ? Math.round(legalEl.getBoundingClientRect().top) : 0}`
-        ].join("\n"));
       } catch (_) {}
     }, 80);
 
