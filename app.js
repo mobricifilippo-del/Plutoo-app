@@ -5767,15 +5767,14 @@ btnPublishDogBoard?.addEventListener("click", () => {
       return;
     }
 
-    // UTENTE NON PLUS → reward prima della pubblicazione
-    if (typeof window.showRewardAd === "function") {
-      window.showRewardAd(() => {
+    if (typeof showRewardVideoMock === "function") {
+      showRewardVideoMock("dogboard_publish", () => {
         publishDogBoardTextOnly();
       });
-    } else {
-      // fallback sicurezza: pubblica comunque
-      publishDogBoardTextOnly();
+      return;
     }
+
+    publishDogBoardTextOnly();
 
   } catch (e) {
     console.error("DogBoard publish error:", e);
