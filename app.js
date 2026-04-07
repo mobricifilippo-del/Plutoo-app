@@ -2439,11 +2439,14 @@ if (name === "messages") {
   }
 }
 
-if (name === "dogboard") {
+  if (name === "dogboard") {
   const viewDogBoard = document.getElementById("viewDogBoard");
   if (viewDogBoard) {
     viewDogBoard.classList.remove("hidden");
     viewDogBoard.classList.add("active");
+  }
+
+  loadDogBoardPosts();
   }
 
   setTimeout(() => {
