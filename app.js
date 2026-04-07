@@ -5817,11 +5817,19 @@ alert(
     // ================= UPLOAD FOTO (FILE -> STORAGE -> URL) =================
 let photoUrls = [];
 
-if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
+  if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
   for (let i = 0; i < dogBoardSelectedPhotos.length; i++) {
     const file = dogBoardSelectedPhotos[i];
 
     try {
+      alert(
+        "[DOGBOARD DEBUG 4]\n" +
+        "upload loop index=" + i + "\n" +
+        "name=" + String(file?.name || "") + "\n" +
+        "type=" + String(file?.type || "") + "\n" +
+        "size=" + String(file?.size || "")
+      );
+
       const blob = file;
       const path = `dogBoard/${window.PLUTOO_UID}/${Date.now()}_${i}.jpg`;
       const storageRef = window.storage.ref().child(path);
@@ -5830,11 +5838,14 @@ if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
       const url = await storageRef.getDownloadURL();
 
       photoUrls.push(url);
+
+      alert("[DOGBOARD DEBUG 4A]\nupload ok\nurl=" + String(url || ""));
     } catch (e) {
+      alert("[DOGBOARD DEBUG 4E]\nupload catch\n" + String(e && e.message ? e.message : e));
       console.error("DogBoard upload error:", e);
     }
   }
-}
+  }
 
 const payload = {
   dogId,
