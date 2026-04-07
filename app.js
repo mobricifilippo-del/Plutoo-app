@@ -5822,62 +5822,7 @@ const docRef = await window.db.collection("dogBoardPosts").add(payload);
 if (dogBoardPreview) dogBoardPreview.innerHTML = "";
 if (dogBoardPhotos) dogBoardPhotos.value = "";
 
-    dogBoardList.insertAdjacentHTML("afterbegin", `
-  <div class="dogboard-item" data-dog-id="${payload.dogId}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
-    <div class="dogboard-avatar">
-      <img src="${String(payload.dogAvatar || "./plutoo-icon-192.png")}" alt="${String(payload.dogName || "DOG").replace(/"/g, "&quot;")}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-    </div>
-
-    <div class="dogboard-main">
-      <div class="dogboard-head">
-        <div class="dogboard-title">${String(payload.dogName || "")}</div>
-        <div class="dogboard-time">${new Date(now).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
-      </div>
-
-      ${String(payload.zone || "").trim()
-        ? `<div class="dogboard-zone">${String(payload.zone)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;")}</div>`
-        : ""}
-
-      <div class="dogboard-text">${String(payload.text || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;")}</div>
-
-      ${Array.isArray(payload.photos) && payload.photos.length
-        ? `<div class="dogboard-photos">
-            ${payload.photos.map(url => `
-              <img
-                src="${String(url).replace(/"/g, "&quot;")}"
-                class="dogboard-photo"
-                alt="Foto annuncio"
-                onerror="this.style.display='none';"
-              >
-            `).join("")}
-          </div>`
-        : ""}
-    </div>
-  </div>
-`);
-
-    dogBoardList.querySelectorAll(".dogboard-item").forEach(item => {
-  item.onclick = () => {
-    const dogId = item.getAttribute("data-dog-id");
-    if (!dogId) return;
-
-    const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
-    if (dog) openChat(dog);
-  };
-});
-
-    const emptyState = dogBoardList.querySelector(".dogboard-empty-state");
-    if (emptyState) emptyState.remove();
+   renderDogBoardItem(payload, now, "prepend"); 
 
     dogBoardText.value = "";
 
