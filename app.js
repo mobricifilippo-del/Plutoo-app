@@ -5702,18 +5702,28 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
 
       <div class="dogboard-text">${escapeDogBoardHtml(payload.text || "")}</div>
 
-      ${Array.isArray(payload.photos) && payload.photos.length
+      ${Array.isArray(post.photos)
+  ? (() => {
+      const validUrls = post.photos.filter(p =>
+        typeof p === "string" &&
+        p.startsWith("http")
+      );
+
+      return validUrls.length
         ? `<div class="dogboard-photos">
-            ${payload.photos.map(url => `
+            ${validUrls.map(url => `
               <img
-                src="${String(url).replace(/"/g, "&quot;")}"
+                src="${url.replace(/"/g, "&quot;")}"
                 class="dogboard-photo"
                 alt="Foto annuncio"
                 onerror="this.style.display='none';"
               >
             `).join("")}
           </div>`
-        : ""}
+        : "";
+    })()
+  : ""}
+        
     </div>
   </div>
   `;
