@@ -5765,54 +5765,28 @@ async function loadDogBoardPosts(){
 
     async function publishDogBoardTextOnly(){
 try {
-alert(
-  "[DOGBOARD DEBUG 2]\n" +
-  "entered publishDogBoardTextOnly\n" +
-  "busy(before)=" + String(btnPublishDogBoard?.dataset?.busy || "0")
-);
 
 if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) {
-  alert("[DOGBOARD DEBUG 2A]\nmissing refs/db -> return");
-  return;
-}
+
 if (btnPublishDogBoard.dataset.busy === "1") {
-  alert("[DOGBOARD DEBUG 2B]\nbusy=1 -> return");
-  return;
-}
 
 const text = String(dogBoardText.value || "").trim();
 if (!text) {
-  alert("[DOGBOARD DEBUG 2C]\nempty text -> return");
-  return;
-}
 
 const dogId = String(window.PLUTOO_DOG_ID || "");
 const ownerUid = String(window.PLUTOO_UID || "");
 
 if (!dogId || !ownerUid) {
-  alert(state.lang === "it" ? "Profilo DOG non pronto" : "DOG profile not ready");
-  return;
-}
 
 const currentDog =
   (Array.isArray(state.dogs) ? state.dogs : []).find(d => d && String(d.id) === dogId) || null;
 
 if (!currentDog || !String(currentDog.name || "").trim()) {
-  alert(state.lang === "it" ? "DOG corrente non trovato" : "Current DOG not found");
-  return;
-}
 
 btnPublishDogBoard.dataset.busy = "1";
 btnPublishDogBoard.disabled = true;
 
 const now = Date.now();
-
-alert(
-  "[DOGBOARD DEBUG 3]\n" +
-  "before upload block\n" +
-  "selectedPhotos=" + String(Array.isArray(dogBoardSelectedPhotos) ? dogBoardSelectedPhotos.length : "null") + "\n" +
-  "storage=" + (!!window.storage)
-); 
 
     // ================= UPLOAD FOTO (FILE -> STORAGE -> URL) =================
 let photoUrls = [];
@@ -5822,13 +5796,6 @@ let photoUrls = [];
     const file = dogBoardSelectedPhotos[i];
 
     try {
-      alert(
-        "[DOGBOARD DEBUG 4]\n" +
-        "upload loop index=" + i + "\n" +
-        "name=" + String(file?.name || "") + "\n" +
-        "type=" + String(file?.type || "") + "\n" +
-        "size=" + String(file?.size || "")
-      );
 
       const blob = file;
       const path = `dogs/${dogId}/dogBoard/${Date.now()}_${i}.jpg`;
@@ -5839,15 +5806,12 @@ let photoUrls = [];
 
       photoUrls.push(url);
 
-      alert("[DOGBOARD DEBUG 4A]\nupload ok\nurl=" + String(url || ""));
     } catch (e) {
-      alert("[DOGBOARD DEBUG 4E]\nupload catch\n" + String(e && e.message ? e.message : e));
+    
       console.error("DogBoard upload error:", e);
     }
   }
   }
-
-  alert("[DOGBOARD DEBUG 5]\nafter upload block\nphotoUrls=" + JSON.stringify(photoUrls));
 
 const payload = {
   dogId,
@@ -5862,10 +5826,7 @@ const payload = {
   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   createdAtClient: now
 };
-
-alert("[DOGBOARD DEBUG 6]\nbefore add(payload)\nphotos=" + JSON.stringify(payload.photos));
 const docRef = await window.db.collection("dogBoardPosts").add(payload);
-alert("[DOGBOARD DEBUG 7]\nafter add(payload)\ndocId=" + String(docRef?.id || "null"));
 
     dogBoardSelectedPhotos = [];
 if (dogBoardPreview) dogBoardPreview.innerHTML = "";
@@ -5886,7 +5847,7 @@ if (dogBoardPhotos) dogBoardPhotos.value = "";
     }, 80);
 
   } catch (err) {
-  alert("[DOGBOARD DEBUG 8]\npublish catch\n" + String(err && err.message ? err.message : err));
+  
   console.error("publishDogBoardTextOnly error", err);
 
   alert(
