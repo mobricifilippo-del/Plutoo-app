@@ -5656,6 +5656,101 @@ const chatId =
   }
 }
 
+function escapeDogBoardHtml(value){
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function bindDogBoardItems(){
+  dogBoardList?.querySelectorAll(".dogboard-item").forEach(item => {
+    item.onclick = () => {
+      const dogId = item.getAttribute("data-dog-id");
+      if (!dogId) return;
+
+      const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
+      if (dog) openChat(dog);
+    };
+  });
+}
+
+function renderDogBoardItem(payload, nowValue, mode = "prepend"){
+  if (!dogBoardList || !payload) return;
+
+  const nowTime = new Date(nowValue).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const html = `
+  <div class="dogboard-item" data-dog-id="${payload.dogId}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
+    <div class="dogboard-avatar">
+      <img src="${String(payload.dogAvatar || "./plutoo-icon-192.png")}" alt="${String(payload.dogName || "DOG").replace(/"/g, "&quot;")}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+    </div>
+
+    <div class="dogboard-main">
+      <div class="dogboard-head">
+        <div class="dogboard-title">${String(payload.dogName || "")}</div>
+        <div class="dogboard-time">${nowTime}</div>
+      </div>
+
+      ${String(payload.zone || "").trim()
+        ? `<div class="dogboard-zone">${escapeDogBoardHtml(payload.zone)}</div>`
+        : ""}
+
+      <div class="dogboard-text">${escapeDogBoardHtml(payload.text || "")}</div>
+
+      ${Array.isArray(payload.photos) && payload.photos.length
+        ? `<div class="dogboard-photos">
+            ${payload.photos.map(url => `
+              <img
+                src="${String(url).replace(/"/g, "&quot;")}"
+                class="dogboard-photo"
+                alt="Foto annuncio"
+                onerror="this.style.display='none';"
+              >
+            `).join("")}
+          </div>`
+        : ""}
+    </div>
+  </div>
+  `;
+
+  if (mode === "append") {
+    dogBoardList.insertAdjacentHTML("beforeend", html);
+  } else {
+    dogBoardList.insertAdjacentHTML("afterbegin", html);
+  }
+
+  const emptyState = dogBoardList.querySelector(".dogboard-empty-state");
+  if (emptyState) emptyState.remove();
+
+  bindDogBoardItems();
+}
+
+async function loadDogBoardPosts(){
+  try {
+    if (!dogBoardList || !window.db) return;
+
+    dogBoardList.innerHTML = "";
+
+    const snap = await window.db
+      .collection("dogBoardPosts")
+      .orderBy("createdAt", "desc")
+      .limit(50)
+      .get();
+
+    snap.forEach(doc => {
+      const post = doc.data() || {};
+      const nowValue = post.createdAtClient || Date.now();
+      renderDogBoardItem(post, nowValue, "append");
+    });
+
+  } catch (e) {
+    console.error("DogBoard load error:", e);
+  }
+}
+
 async function publishDogBoardTextOnly(){
   try {
     if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) return;
