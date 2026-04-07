@@ -5764,75 +5764,75 @@ async function loadDogBoardPosts(){
 }
 
     async function publishDogBoardTextOnly(){
-try {
+  try {
+    if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) return;
+    if (btnPublishDogBoard.dataset.busy === "1") return;
 
-if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) {
+    const text = String(dogBoardText.value || "").trim();
+    if (!text) return;
 
-if (btnPublishDogBoard.dataset.busy === "1") {
+    const dogId = String(window.PLUTOO_DOG_ID || "");
+    const ownerUid = String(window.PLUTOO_UID || "");
 
-const text = String(dogBoardText.value || "").trim();
-if (!text) {
+    if (!dogId || !ownerUid) {
+      alert(state.lang === "it" ? "Profilo DOG non pronto" : "DOG profile not ready");
+      return;
+    }
 
-const dogId = String(window.PLUTOO_DOG_ID || "");
-const ownerUid = String(window.PLUTOO_UID || "");
+    const currentDog =
+      (Array.isArray(state.dogs) ? state.dogs : []).find(d => d && String(d.id) === dogId) || null;
 
-if (!dogId || !ownerUid) {
+    if (!currentDog || !String(currentDog.name || "").trim()) {
+      alert(state.lang === "it" ? "DOG corrente non trovato" : "Current DOG not found");
+      return;
+    }
 
-const currentDog =
-  (Array.isArray(state.dogs) ? state.dogs : []).find(d => d && String(d.id) === dogId) || null;
+    btnPublishDogBoard.dataset.busy = "1";
+    btnPublishDogBoard.disabled = true;
 
-if (!currentDog || !String(currentDog.name || "").trim()) {
-
-btnPublishDogBoard.dataset.busy = "1";
-btnPublishDogBoard.disabled = true;
-
-const now = Date.now();
+    const now = Date.now();
 
     // ================= UPLOAD FOTO (FILE -> STORAGE -> URL) =================
-let photoUrls = [];
+    let photoUrls = [];
 
-  if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
-  for (let i = 0; i < dogBoardSelectedPhotos.length; i++) {
-    const file = dogBoardSelectedPhotos[i];
+    if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
+      for (let i = 0; i < dogBoardSelectedPhotos.length; i++) {
+        const file = dogBoardSelectedPhotos[i];
 
-    try {
+        try {
+          const blob = file;
+          const path = `dogs/${dogId}/dogBoard/${Date.now()}_${i}.jpg`;
+          const storageRef = window.storage.ref().child(path);
 
-      const blob = file;
-      const path = `dogs/${dogId}/dogBoard/${Date.now()}_${i}.jpg`;
-      const storageRef = window.storage.ref().child(path);
+          await storageRef.put(blob);
+          const url = await storageRef.getDownloadURL();
 
-      await storageRef.put(blob);
-      const url = await storageRef.getDownloadURL();
-
-      photoUrls.push(url);
-
-    } catch (e) {
-    
-      console.error("DogBoard upload error:", e);
+          photoUrls.push(url);
+        } catch (e) {
+          console.error("DogBoard upload error:", e);
+        }
+      }
     }
-  }
-  }
 
-const payload = {
-  dogId,
-  ownerUid,
-  dogName: String(currentDog.name || ""),
-  dogAvatar: String(currentDog.img || "./plutoo-icon-192.png"),
-  zone: String(currentDog.zone || currentDog.city || currentDog.location || ""),
-  text,
+    const payload = {
+      dogId,
+      ownerUid,
+      dogName: String(currentDog.name || ""),
+      dogAvatar: String(currentDog.img || "./plutoo-icon-192.png"),
+      zone: String(currentDog.zone || currentDog.city || currentDog.location || ""),
+      text,
+      photos: photoUrls,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAtClient: now
+    };
 
-  photos: photoUrls,
-
-  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  createdAtClient: now
-};
-const docRef = await window.db.collection("dogBoardPosts").add(payload);
+    const docRef = await window.db.collection("dogBoardPosts").add(payload);
 
     dogBoardSelectedPhotos = [];
-if (dogBoardPreview) dogBoardPreview.innerHTML = "";
-if (dogBoardPhotos) dogBoardPhotos.value = "";
+    if (dogBoardPreview) dogBoardPreview.innerHTML = "";
+    if (dogBoardPhotos) dogBoardPhotos.value = "";
 
-   renderDogBoardItem(payload, now, "prepend"); 
+    renderDogBoardItem(payload, now, "prepend");
 
     dogBoardText.value = "";
 
@@ -5842,20 +5842,17 @@ if (dogBoardPhotos) dogBoardPhotos.value = "";
         const composerEl = document.getElementById("dogBoardComposer");
         const bannerEl = adBanner;
         const legalEl = document.querySelector(".legal-links.legal-purple");
-
       } catch (_) {}
     }, 80);
 
   } catch (err) {
-  
-  console.error("publishDogBoardTextOnly error", err);
+    console.error("publishDogBoardTextOnly error", err);
 
-  alert(
-  (state.lang === "it" ? "Errore durante la pubblicazione:\n" : "Publish failed:\n") +
-  String((err && (err.message || err.code)) || err || "errore sconosciuto")
-);
-
-} finally {
+    alert(
+      (state.lang === "it" ? "Errore durante la pubblicazione:\n" : "Publish failed:\n") +
+      String((err && (err.message || err.code)) || err || "errore sconosciuto")
+    );
+  } finally {
     if (btnPublishDogBoard) {
       btnPublishDogBoard.dataset.busy = "0";
       btnPublishDogBoard.disabled = false;
@@ -5875,7 +5872,6 @@ dogBoardPhotos?.addEventListener("change", () => {
     renderDogBoardPreview();
 
     dogBoardPhotos.value = "";
-
   } catch (e) {
     console.error("DogBoard photo select error:", e);
   }
@@ -5931,13 +5927,13 @@ btnPublishDogBoard?.addEventListener("click", () => {
     }
 
     if (typeof showRewardVideoMock === "function") {
-
       showRewardVideoMock("dogboard_publish", () => {
-    
         publishDogBoardTextOnly();
       });
       return;
     }
+
+    publishDogBoardTextOnly();
 
   } catch (e) {
     console.error("DogBoard publish error:", e);
