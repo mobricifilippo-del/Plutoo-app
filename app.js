@@ -5831,7 +5831,7 @@ let photoUrls = [];
       );
 
       const blob = file;
-      const path = `dogBoard/${window.PLUTOO_UID}/${Date.now()}_${i}.jpg`;
+      const path = `dogs/${dogId}/dogBoard/${Date.now()}_${i}.jpg`;
       const storageRef = window.storage.ref().child(path);
 
       await storageRef.put(blob);
