@@ -5847,6 +5847,8 @@ let photoUrls = [];
   }
   }
 
+  alert("[DOGBOARD DEBUG 5]\nafter upload block\nphotoUrls=" + JSON.stringify(photoUrls));
+
 const payload = {
   dogId,
   ownerUid,
@@ -5861,7 +5863,9 @@ const payload = {
   createdAtClient: now
 };
 
+alert("[DOGBOARD DEBUG 6]\nbefore add(payload)\nphotos=" + JSON.stringify(payload.photos));
 const docRef = await window.db.collection("dogBoardPosts").add(payload);
+alert("[DOGBOARD DEBUG 7]\nafter add(payload)\ndocId=" + String(docRef?.id || "null"));
 
     dogBoardSelectedPhotos = [];
 if (dogBoardPreview) dogBoardPreview.innerHTML = "";
