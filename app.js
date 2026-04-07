@@ -5702,9 +5702,9 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
 
       <div class="dogboard-text">${escapeDogBoardHtml(payload.text || "")}</div>
 
-      ${Array.isArray(post.photos)
+      ${Array.isArray(payload.photos)
   ? (() => {
-      const validUrls = post.photos.filter(p =>
+      const validUrls = payload.photos.filter(p =>
         typeof p === "string" &&
         p.startsWith("http")
       );
