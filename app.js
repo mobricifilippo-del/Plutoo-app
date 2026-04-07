@@ -5692,7 +5692,13 @@ async function publishDogBoardTextOnly(){
       dogAvatar: String(currentDog.img || "./plutoo-icon-192.png"),
       zone: String(currentDog.zone || currentDog.city || currentDog.location || ""),
       text,
-      photos: [],
+      
+      photos: dogBoardSelectedPhotos.map(file => ({
+  name: file.name,
+  size: file.size,
+  type: file.type
+  })),
+      
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       createdAtClient: now
     };
