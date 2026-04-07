@@ -5762,36 +5762,59 @@ let dogBoardSelectedPhotos = [];
 
 dogBoardPhotos?.addEventListener("change", () => {
   try {
-    const files = Array.from(dogBoardPhotos.files || [])
-      .filter(file => file && String(file.type || "").startsWith("image/"))
-      .slice(0, 3);
+    const newFiles = Array.from(dogBoardPhotos.files || [])
+      .filter(f => f && String(f.type || "").startsWith("image/"));
 
-    dogBoardSelectedPhotos = files;
+    dogBoardSelectedPhotos = [...dogBoardSelectedPhotos, ...newFiles].slice(0, 3);
 
-    if (dogBoardPreview) {
-      dogBoardPreview.innerHTML = "";
-    }
+    renderDogBoardPreview();
 
-    files.forEach((file, index) => {
+    dogBoardPhotos.value = "";
+
+  } catch (e) {
+    console.error("DogBoard photo select error:", e);
+  }
+});
+
+function renderDogBoardPreview(){
+  try {
+    if (!dogBoardPreview) return;
+
+    dogBoardPreview.innerHTML = "";
+
+    dogBoardSelectedPhotos.forEach((file, index) => {
       const reader = new FileReader();
 
       reader.onload = () => {
-        if (!dogBoardPreview) return;
+        const wrapper = document.createElement("div");
+        wrapper.className = "dogboard-photo-wrapper";
 
         const img = document.createElement("img");
         img.src = String(reader.result || "");
-        img.alt = `preview-${index + 1}`;
         img.className = "dogboard-photo";
 
-        dogBoardPreview.appendChild(img);
+        const btnRemove = document.createElement("button");
+        btnRemove.textContent = "✕";
+        btnRemove.className = "dogboard-photo-remove";
+
+        btnRemove.onclick = () => {
+          dogBoardSelectedPhotos = dogBoardSelectedPhotos.filter((_, i) => i !== index);
+          renderDogBoardPreview();
+        };
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(btnRemove);
+
+        dogBoardPreview.appendChild(wrapper);
       };
 
       reader.readAsDataURL(file);
     });
+
   } catch (e) {
-    console.error("DogBoard photo preview error:", e);
+    console.error("DogBoard preview error:", e);
   }
-});
+}
 
 btnPublishDogBoard?.addEventListener("click", () => {
   try {
