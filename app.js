@@ -5849,10 +5849,15 @@ if (dogBoardPhotos) dogBoardPhotos.value = "";
     }, 80);
 
   } catch (err) {
-    
-    console.error("publishDogBoardTextOnly error", err);
-    alert(state.lang === "it" ? "Errore durante la pubblicazione" : "Publish failed");
-  } finally {
+
+  console.error("publishDogBoardTextOnly error", err);
+
+  alert(
+    (state.lang === "it" ? "Errore durante la pubblicazione:\n" : "Publish failed:\n") +
+    String((err && (err.message || err.code)) || err || "errore sconosciuto")
+  );
+
+} finally {
     if (btnPublishDogBoard) {
       btnPublishDogBoard.dataset.busy = "0";
       btnPublishDogBoard.disabled = false;
