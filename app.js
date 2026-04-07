@@ -5964,36 +5964,21 @@ btnPublishDogBoard?.addEventListener("click", () => {
   try {
     const isPlus = localStorage.getItem("plutoo_plus") === "yes";
 
-    alert(
-      "[DOGBOARD DEBUG 1]\n" +
-      "click btnPublishDogBoard\n" +
-      "isPlus=" + isPlus + "\n" +
-      "busy=" + String(btnPublishDogBoard?.dataset?.busy || "0") + "\n" +
-      "selectedPhotos=" + String(Array.isArray(dogBoardSelectedPhotos) ? dogBoardSelectedPhotos.length : "null") + "\n" +
-      "window.db=" + (!!window.db) + "\n" +
-      "window.storage=" + (!!window.storage)
-    );
-
     if (isPlus) {
-      alert("[DOGBOARD DEBUG 1A]\nPLUS -> publishDogBoardTextOnly()");
       publishDogBoardTextOnly();
       return;
     }
 
     if (typeof showRewardVideoMock === "function") {
-      alert("[DOGBOARD DEBUG 1B]\nNON PLUS -> showRewardVideoMock()");
+
       showRewardVideoMock("dogboard_publish", () => {
-        alert("[DOGBOARD DEBUG 1C]\nreward callback -> publishDogBoardTextOnly()");
+    
         publishDogBoardTextOnly();
       });
       return;
     }
 
-    alert("[DOGBOARD DEBUG 1D]\nreward missing -> publishDogBoardTextOnly()");
-    publishDogBoardTextOnly();
-
   } catch (e) {
-    alert("[DOGBOARD DEBUG 1E]\nlistener catch\n" + String(e && e.message ? e.message : e));
     console.error("DogBoard publish error:", e);
   }
 });
