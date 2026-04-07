@@ -5705,6 +5705,10 @@ async function publishDogBoardTextOnly(){
 
     const docRef = await window.db.collection("dogBoardPosts").add(payload);
 
+    dogBoardSelectedPhotos = [];
+if (dogBoardPreview) dogBoardPreview.innerHTML = "";
+if (dogBoardPhotos) dogBoardPhotos.value = "";
+
     dogBoardList.insertAdjacentHTML("afterbegin", `
       <div class=" dogboard-item"data-dog-id="${payload.dogId}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
         <div class="dogboard-avatar">
