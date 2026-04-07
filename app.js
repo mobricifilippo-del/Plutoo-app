@@ -2460,7 +2460,6 @@ if (name === "messages") {
       
     } catch (_) {}
   }, 80);
-}
 
 document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
