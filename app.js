@@ -5886,11 +5886,9 @@ if (dogBoardPhotos) dogBoardPhotos.value = "";
     }, 80);
 
   } catch (err) {
-
+  alert("[DOGBOARD DEBUG 8]\npublish catch\n" + String(err && err.message ? err.message : err));
   console.error("publishDogBoardTextOnly error", err);
-
-  alert(
-    (state.lang === "it" ? "Errore durante la pubblicazione:\n" : "Publish failed:\n") +
+  alert(state.lang === "it" ? "Errore durante la pubblicazione" : "Publish failed") +
     String((err && (err.message || err.code)) || err || "errore sconosciuto")
   );
 
