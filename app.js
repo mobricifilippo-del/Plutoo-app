@@ -5685,25 +5685,43 @@ async function publishDogBoardTextOnly(){
 
     const now = Date.now();
 
-    const payload = {
-      dogId,
-      ownerUid,
-      dogName: String(currentDog.name || ""),
-      dogAvatar: String(currentDog.img || "./plutoo-icon-192.png"),
-      zone: String(currentDog.zone || currentDog.city || currentDog.location || ""),
-      text,
-      
-      photos: dogBoardSelectedPhotos.map(file => ({
-  name: file.name,
-  size: file.size,
-  type: file.type
-  })),
-      
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      createdAtClient: now
-    };
+    // ================= UPLOAD FOTO (FILE -> STORAGE -> URL) =================
+let photoUrls = [];
 
-    const docRef = await window.db.collection("dogBoardPosts").add(payload);
+if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
+  for (let i = 0; i < dogBoardSelectedPhotos.length; i++) {
+    const file = dogBoardSelectedPhotos[i];
+
+    try {
+      const blob = file;
+      const path = `dogBoard/${window.PLUTOO_UID}/${Date.now()}_${i}.jpg`;
+      const storageRef = window.storage.ref().child(path);
+
+      await storageRef.put(blob);
+      const url = await storageRef.getDownloadURL();
+
+      photoUrls.push(url);
+    } catch (e) {
+      console.error("DogBoard upload error:", e);
+    }
+  }
+}
+
+const payload = {
+  dogId,
+  ownerUid,
+  dogName: String(currentDog.name || ""),
+  dogAvatar: String(currentDog.img || "./plutoo-icon-192.png"),
+  zone: String(currentDog.zone || currentDog.city || currentDog.location || ""),
+  text,
+
+  photos: photoUrls,
+
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  createdAtClient: now
+};
+
+const docRef = await window.db.collection("dogBoardPosts").add(payload);
 
     dogBoardSelectedPhotos = [];
 if (dogBoardPreview) dogBoardPreview.innerHTML = "";
