@@ -5763,34 +5763,56 @@ async function loadDogBoardPosts(){
   }
 }
 
-async function publishDogBoardTextOnly(){
-  try {
-    if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) return;
-    if (btnPublishDogBoard.dataset.busy === "1") return;
+    async function publishDogBoardTextOnly(){
+try {
+alert(
+  "[DOGBOARD DEBUG 2]\n" +
+  "entered publishDogBoardTextOnly\n" +
+  "busy(before)=" + String(btnPublishDogBoard?.dataset?.busy || "0")
+);
 
-    const text = String(dogBoardText.value || "").trim();
-    if (!text) return;
+if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) {
+  alert("[DOGBOARD DEBUG 2A]\nmissing refs/db -> return");
+  return;
+}
+if (btnPublishDogBoard.dataset.busy === "1") {
+  alert("[DOGBOARD DEBUG 2B]\nbusy=1 -> return");
+  return;
+}
 
-    const dogId = String(window.PLUTOO_DOG_ID || "");
-    const ownerUid = String(window.PLUTOO_UID || "");
+const text = String(dogBoardText.value || "").trim();
+if (!text) {
+  alert("[DOGBOARD DEBUG 2C]\nempty text -> return");
+  return;
+}
 
-    if (!dogId || !ownerUid) {
-      alert(state.lang === "it" ? "Profilo DOG non pronto" : "DOG profile not ready");
-      return;
-    }
+const dogId = String(window.PLUTOO_DOG_ID || "");
+const ownerUid = String(window.PLUTOO_UID || "");
 
-    const currentDog =
-      (Array.isArray(state.dogs) ? state.dogs : []).find(d => d && String(d.id) === dogId) || null;
+if (!dogId || !ownerUid) {
+  alert(state.lang === "it" ? "Profilo DOG non pronto" : "DOG profile not ready");
+  return;
+}
 
-    if (!currentDog || !String(currentDog.name || "").trim()) {
-      alert(state.lang === "it" ? "DOG corrente non trovato" : "Current DOG not found");
-      return;
-    }
+const currentDog =
+  (Array.isArray(state.dogs) ? state.dogs : []).find(d => d && String(d.id) === dogId) || null;
 
-    btnPublishDogBoard.dataset.busy = "1";
-    btnPublishDogBoard.disabled = true;
+if (!currentDog || !String(currentDog.name || "").trim()) {
+  alert(state.lang === "it" ? "DOG corrente non trovato" : "Current DOG not found");
+  return;
+}
 
-    const now = Date.now();
+btnPublishDogBoard.dataset.busy = "1";
+btnPublishDogBoard.disabled = true;
+
+const now = Date.now();
+
+alert(
+  "[DOGBOARD DEBUG 3]\n" +
+  "before upload block\n" +
+  "selectedPhotos=" + String(Array.isArray(dogBoardSelectedPhotos) ? dogBoardSelectedPhotos.length : "null") + "\n" +
+  "storage=" + (!!window.storage)
+); 
 
     // ================= UPLOAD FOTO (FILE -> STORAGE -> URL) =================
 let photoUrls = [];
@@ -5927,21 +5949,36 @@ btnPublishDogBoard?.addEventListener("click", () => {
   try {
     const isPlus = localStorage.getItem("plutoo_plus") === "yes";
 
+    alert(
+      "[DOGBOARD DEBUG 1]\n" +
+      "click btnPublishDogBoard\n" +
+      "isPlus=" + isPlus + "\n" +
+      "busy=" + String(btnPublishDogBoard?.dataset?.busy || "0") + "\n" +
+      "selectedPhotos=" + String(Array.isArray(dogBoardSelectedPhotos) ? dogBoardSelectedPhotos.length : "null") + "\n" +
+      "window.db=" + (!!window.db) + "\n" +
+      "window.storage=" + (!!window.storage)
+    );
+
     if (isPlus) {
+      alert("[DOGBOARD DEBUG 1A]\nPLUS -> publishDogBoardTextOnly()");
       publishDogBoardTextOnly();
       return;
     }
 
     if (typeof showRewardVideoMock === "function") {
+      alert("[DOGBOARD DEBUG 1B]\nNON PLUS -> showRewardVideoMock()");
       showRewardVideoMock("dogboard_publish", () => {
+        alert("[DOGBOARD DEBUG 1C]\nreward callback -> publishDogBoardTextOnly()");
         publishDogBoardTextOnly();
       });
       return;
     }
 
+    alert("[DOGBOARD DEBUG 1D]\nreward missing -> publishDogBoardTextOnly()");
     publishDogBoardTextOnly();
 
   } catch (e) {
+    alert("[DOGBOARD DEBUG 1E]\nlistener catch\n" + String(e && e.message ? e.message : e));
     console.error("DogBoard publish error:", e);
   }
 });
