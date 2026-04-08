@@ -5685,7 +5685,7 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
   const nowTime = new Date(nowValue).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   const html = `
-  <div class="dogboard-item" data-dog-id="${payload.dogId}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
+  <div class="dogboard-item" data-dog-id="${payload.dogId}"
     <div class="dogboard-avatar">
       <img src="${String(payload.dogAvatar || "./plutoo-icon-192.png")}" alt="${String(payload.dogName || "DOG").replace(/"/g, "&quot;")}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
     </div>
@@ -5723,6 +5723,12 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
         : "";
     })()
   : ""}
+
+  <div class="dogboard-actions">
+  <button class="dogboard-reply-btn" data-dog-id="${payload.dogId}">
+    Rispondi
+  </button>
+</div>
         
     </div>
   </div>
