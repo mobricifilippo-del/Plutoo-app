@@ -5722,14 +5722,19 @@ function bindDogBoardItems(){
 
   dogBoardList.onclick = (e) => {
 
-    const item = e.target.closest(".dogboard-item");
-    if (!item) return;
+  let item = e.target;
 
-    const dogId = item.getAttribute("data-dog-id");
-    if (!dogId) return;
+  while (item && !item.classList?.contains("dogboard-item")) {
+    item = item.parentElement;
+  }
 
-    openDogBoardViewer(dogId);
-  };
+  if (!item) return;
+
+  const dogId = item.getAttribute("data-dog-id");
+  if (!dogId) return;
+
+  openDogBoardViewer(dogId);
+};
 
 }
 
