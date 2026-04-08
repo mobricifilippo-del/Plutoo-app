@@ -5718,13 +5718,14 @@ function openDogBoardViewer(dogId){
 
 function bindDogBoardItems(){
   dogBoardList?.querySelectorAll(".dogboard-item").forEach(item => {
-    item.onclick = () => {
-      const dogId = item.getAttribute("data-dog-id");
-      if (!dogId) return;
 
-      const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
-      if (dog) openChat(dog);
-    };
+    item.onclick = () => {
+  const dogId = item.getAttribute("data-dog-id");
+  if (!dogId) return;
+
+  openDogBoardViewer(dogId);
+};
+    
   });
 }
 
