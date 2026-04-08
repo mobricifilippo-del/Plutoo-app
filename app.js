@@ -5710,8 +5710,8 @@ list.innerHTML = `
 
 alert("PRIMA DI MOSTRARE PANE");
 
-// mostra pane  
-pane.classList.remove("hidden");  
+pane.classList.remove("hidden");
+pane.classList.add("show");  
 
 // CTA risposta  
 const replyBtn = document.getElementById("dogboardViewerReply");  
