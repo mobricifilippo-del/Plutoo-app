@@ -5667,6 +5667,55 @@ function escapeDogBoardHtml(value){
     .replace(/'/g, "&#39;");
 }
 
+function openDogBoardViewer(dogId){
+  try {
+    const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
+    if (!dog) return;
+
+    // usa chatPane come base viewer
+    const pane = document.getElementById("chatPane");
+    const list = document.getElementById("chatList");
+    const header = pane?.querySelector(".chat-header span");
+
+    if (!pane || !list) return;
+
+    // header
+    if (header) header.textContent = dog.name || "DOG";
+
+    // contenuto viewer (NON chat)
+    list.innerHTML = `
+      <div class="dogboard-viewer">
+
+        <div class="dogboard-viewer-avatar">
+          <img src="${String(dog.img || "./plutoo-icon-192.png")}" 
+               onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        </div>
+
+        <div class="dogboard-viewer-name">${String(dog.name || "")}</div>
+
+        <button id="dogboardViewerReply" class="btn primary">
+          Rispondi
+        </button>
+
+      </div>
+    `;
+
+    // mostra pane
+    pane.classList.remove("hidden");
+
+    // CTA risposta
+    const replyBtn = document.getElementById("dogboardViewerReply");
+    if (replyBtn){
+      replyBtn.onclick = () => {
+        openChat(dog);
+      };
+    }
+
+  } catch(e){
+    console.error("openDogBoardViewer error:", e);
+  }
+}
+
 function bindDogBoardItems(){
   dogBoardList?.querySelectorAll(".dogboard-item").forEach(item => {
     item.onclick = () => {
