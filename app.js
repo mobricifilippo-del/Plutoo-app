@@ -5668,52 +5668,62 @@ function escapeDogBoardHtml(value){
 }
 
 function openDogBoardViewer(dogId){
-  try {
-    const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
-    if (!dog) return;
+try {
+alert("ENTER VIEWER");
 
-    // usa chatPane come base viewer
-    const pane = document.getElementById("chatPane");
-    const list = document.getElementById("chatList");
-    const header = pane?.querySelector(".chat-header span");
+const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
+if (!dog) {
+alert("DOG NON TROVATO");
+return;
+}
 
-    if (!pane || !list) return;
+// usa chatPane come base viewer  
+const pane = document.getElementById("chatPane");  
+const list = document.getElementById("chatList");  
+const header = pane?.querySelector(".chat-header span");  
 
-    // header
-    if (header) header.textContent = dog.name || "DOG";
+if (!pane || !list) {
+alert("PANE O LIST NON TROVATI");
+return;
+}
 
-    // contenuto viewer (NON chat)
-    list.innerHTML = `
-      <div class="dogboard-viewer">
+// header  
+if (header) header.textContent = dog.name || "DOG";  
 
-        <div class="dogboard-viewer-avatar">
-          <img src="${String(dog.img || "./plutoo-icon-192.png")}" 
-               onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-        </div>
+// contenuto viewer (NON chat)  
+list.innerHTML = `  
+  <div class="dogboard-viewer">  
 
-        <div class="dogboard-viewer-name">${String(dog.name || "")}</div>
+    <div class="dogboard-viewer-avatar">  
+      <img src="${String(dog.img || "./plutoo-icon-192.png")}"   
+           onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">  
+    </div>  
 
-        <button id="dogboardViewerReply" class="btn primary">
-          Rispondi
-        </button>
+    <div class="dogboard-viewer-name">${String(dog.name || "")}</div>  
 
-      </div>
-    `;
+    <button id="dogboardViewerReply" class="btn primary">  
+      Rispondi  
+    </button>  
 
-    // mostra pane
-    pane.classList.remove("hidden");
+  </div>  
+`;  
 
-    // CTA risposta
-    const replyBtn = document.getElementById("dogboardViewerReply");
-    if (replyBtn){
-      replyBtn.onclick = () => {
-        openChat(dog);
-      };
-    }
+alert("PRIMA DI MOSTRARE PANE");
 
-  } catch(e){
-    console.error("openDogBoardViewer error:", e);
-  }
+// mostra pane  
+pane.classList.remove("hidden");  
+
+// CTA risposta  
+const replyBtn = document.getElementById("dogboardViewerReply");  
+if (replyBtn){  
+  replyBtn.onclick = () => {  
+    openChat(dog);  
+  };  
+}
+
+} catch(e){
+console.error("openDogBoardViewer error:", e);
+}
 }
 
 function bindDogBoardItems(){
