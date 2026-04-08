@@ -5722,8 +5722,6 @@ function bindDogBoardItems(){
 
   dogBoardList.onclick = (e) => {
 
-    alert("CLICK ARRIVATO");
-
     const item = e.target.closest(".dogboard-item");
     if (!item) return;
 
