@@ -5717,16 +5717,20 @@ function openDogBoardViewer(dogId){
 }
 
 function bindDogBoardItems(){
-  dogBoardList?.querySelectorAll(".dogboard-item").forEach(item => {
 
-    item.onclick = () => {
-  const dogId = item.getAttribute("data-dog-id");
-  if (!dogId) return;
+  if (!dogBoardList) return;
 
-  openDogBoardViewer(dogId);
-};
-    
-  });
+  dogBoardList.onclick = (e) => {
+
+    const item = e.target.closest(".dogboard-item");
+    if (!item) return;
+
+    const dogId = item.getAttribute("data-dog-id");
+    if (!dogId) return;
+
+    openDogBoardViewer(dogId);
+  };
+
 }
 
 function renderDogBoardItem(payload, nowValue, mode = "prepend"){
