@@ -5819,7 +5819,12 @@ async function loadDogBoardPosts(){
     if (btnPublishDogBoard.dataset.busy === "1") return;
 
     const text = String(dogBoardText.value || "").trim();
-    if (!text) return;
+
+const hasPhotos =
+  Array.isArray(dogBoardSelectedPhotos) &&
+  dogBoardSelectedPhotos.length > 0;
+
+if (!text && !hasPhotos) return;
 
     const dogId = String(window.PLUTOO_DOG_ID || "");
     const ownerUid = String(window.PLUTOO_UID || "");
