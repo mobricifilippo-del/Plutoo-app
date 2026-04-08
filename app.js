@@ -5668,14 +5668,18 @@ function escapeDogBoardHtml(value){
 }
 
 function bindDogBoardItems(){
-  dogBoardList?.querySelectorAll(".dogboard-item").forEach(item => {
-    item.onclick = () => {
-      const dogId = item.getAttribute("data-dog-id");
+  dogBoardList?.querySelectorAll(".dogboard-reply-btn").forEach(btn => {
+
+    btn.onclick = (e) => {
+      e.stopPropagation();
+
+      const dogId = btn.getAttribute("data-dog-id");
       if (!dogId) return;
 
       const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
       if (dog) openChat(dog);
     };
+
   });
 }
 
