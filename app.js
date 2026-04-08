@@ -5667,85 +5667,111 @@ function escapeDogBoardHtml(value){
     .replace(/'/g, "&#39;");
 }
 
-function openDogBoardViewer(dogId){
-try {
-alert("ENTER VIEWER");
+function openDogBoardViewer(post){
+  try {
+    if (!post || !post.dogId) return;
 
-const dog = (state.dogs || []).find(d => String(d.id) === String(dogId));
-if (!dog) {
-alert("DOG NON TROVATO");
-return;
-}
+    const dog = (state.dogs || []).find(d => String(d.id) === String(post.dogId)) || null;
 
-// usa chatPane come base viewer  
-const pane = document.getElementById("chatPane");  
-const list = document.getElementById("chatList");  
-const header = pane?.querySelector(".chat-header span");  
+    const pane = document.getElementById("chatPane");
+    const list = document.getElementById("chatList");
+    const header = pane?.querySelector(".chat-header span");
 
-if (!pane || !list) {
-alert("PANE O LIST NON TROVATI");
-return;
-}
+    if (!pane || !list) return;
 
-// header  
-if (header) header.textContent = dog.name || "DOG";  
+    if (header) header.textContent = String(post.dogName || "Annuncio");
 
-// contenuto viewer (NON chat)  
-list.innerHTML = `  
-  <div class="dogboard-viewer">  
+    const photoUrls = Array.isArray(post.photos)
+      ? post.photos.filter(p => typeof p === "string" && p.startsWith("http"))
+      : [];
 
-    <div class="dogboard-viewer-avatar">  
-      <img src="${String(dog.img || "./plutoo-icon-192.png")}"   
-           onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">  
-    </div>  
+    const mainPhoto = photoUrls[0] || String(post.dogAvatar || "./plutoo-icon-192.png");
 
-    <div class="dogboard-viewer-name">${String(dog.name || "")}</div>  
+    list.innerHTML = `
+      <div class="dogboard-viewer">
 
-    <button id="dogboardViewerReply" class="btn primary">  
-      Rispondi  
-    </button>  
+        <div class="dogboard-viewer-avatar">
+          <img src="${mainPhoto.replace(/"/g, "&quot;")}"
+               onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        </div>
 
-  </div>  
-`;  
+        <div class="dogboard-viewer-name">${String(post.dogName || "")}</div>
 
-alert("PRIMA DI MOSTRARE PANE");
+        ${String(post.zone || "").trim()
+          ? `<div class="dogboard-zone">${String(post.zone)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;")}</div>`
+          : ""}
 
-pane.classList.remove("hidden");
-pane.classList.add("show");  
+        ${String(post.text || "").trim()
+          ? `<div class="dogboard-text">${String(post.text)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;")}</div>`
+          : ""}
 
-// CTA risposta  
-const replyBtn = document.getElementById("dogboardViewerReply");  
-if (replyBtn){  
-  replyBtn.onclick = () => {  
-    openChat(dog);  
-  };  
-}
+        ${photoUrls.length > 1
+          ? `<div class="dogboard-photos">
+              ${photoUrls.map(url => `
+                <img
+                  src="${String(url).replace(/"/g, "&quot;")}"
+                  class="dogboard-photo"
+                  alt="Foto annuncio"
+                  onerror="this.style.display='none';"
+                >
+              `).join("")}
+            </div>`
+          : ""}
 
-} catch(e){
-console.error("openDogBoardViewer error:", e);
-}
+        <button id="dogboardViewerReply" class="btn primary">
+          Rispondi
+        </button>
+
+      </div>
+    `;
+
+    pane.classList.remove("hidden");
+    pane.classList.add("show");
+
+    const replyBtn = document.getElementById("dogboardViewerReply");
+    if (replyBtn){
+      replyBtn.onclick = () => {
+        if (dog) openChat(dog);
+      };
+    }
+
+  } catch(e){
+    console.error("openDogBoardViewer error:", e);
+  }
 }
 
 function bindDogBoardItems(){
-
   if (!dogBoardList) return;
 
   dogBoardList.onclick = (e) => {
+    let item = e.target;
 
-  let item = e.target;
+    while (item && !item.classList?.contains("dogboard-item")) {
+      item = item.parentElement;
+    }
 
-  while (item && !item.classList?.contains("dogboard-item")) {
-    item = item.parentElement;
-  }
+    if (!item) return;
 
-  if (!item) return;
+    const rawPost = item.getAttribute("data-post");
+    if (!rawPost) return;
 
-  const dogId = item.getAttribute("data-dog-id");
-  if (!dogId) return;
-
-  openDogBoardViewer(dogId);
-};
-
+    try {
+      const post = JSON.parse(decodeURIComponent(rawPost));
+      openDogBoardViewer(post);
+    } catch (err) {
+      console.error("DogBoard item parse error:", err);
+    }
+  };
 }
 
 function renderDogBoardItem(payload, nowValue, mode = "prepend"){
@@ -5754,7 +5780,20 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
   const nowTime = new Date(nowValue).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   const html = `
-  <div class="dogboard-item" data-dog-id="${payload.dogId}" role="button" tabindex="0" aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
+  <div class="dogboard-item"
+     data-dog-id="${payload.dogId}"
+     data-post="${encodeURIComponent(JSON.stringify({
+       dogId: String(payload.dogId || ""),
+       dogName: String(payload.dogName || ""),
+       dogAvatar: String(payload.dogAvatar || "./plutoo-icon-192.png"),
+       zone: String(payload.zone || ""),
+       text: String(payload.text || ""),
+       photos: Array.isArray(payload.photos) ? payload.photos.filter(p => typeof p === "string" && p.startsWith("http")) : [],
+       createdAtClient: nowValue
+     }))}"
+     role="button"
+     tabindex="0"
+     aria-label="Apri annuncio ${String(payload.dogName || "").replace(/"/g, "&quot;")}">
     <div class="dogboard-avatar">
       <img src="${String(payload.dogAvatar || "./plutoo-icon-192.png")}" alt="${String(payload.dogName || "DOG").replace(/"/g, "&quot;")}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
     </div>
