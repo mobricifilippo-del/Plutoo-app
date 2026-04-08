@@ -1993,6 +1993,67 @@ display: none !important;
   margin-top:.15rem;
 }
 
+/* ================= VIEWER ANNUNCIO (BACHECA DOG) ================= */
+
+.dogboard-viewer{
+  display:flex;
+  flex-direction:column;
+  gap:.7rem;
+  padding:.4rem .2rem .2rem;
+}
+
+/* immagine principale (post) */
+.dogboard-viewer-avatar{
+  width:100%;
+  border-radius:16px;
+  overflow:hidden;
+  background:#0b0b0f;
+  border:1px solid rgba(138,123,255,.14);
+}
+
+.dogboard-viewer-avatar img{
+  width:100%;
+  display:block;
+  max-height:260px;
+  object-fit:cover;
+}
+
+/* nome DOG */
+.dogboard-viewer-name{
+  font-size:1.05rem;
+  font-weight:900;
+  color:var(--violet-glow);
+  line-height:1.2;
+  margin-top:.2rem;
+}
+
+/* riuso .dogboard-zone esistente → NON duplicata */
+/* la rendiamo solo più coerente nel viewer */
+.dogboard-viewer .dogboard-zone{
+  margin-top:-.1rem;
+  opacity:.85;
+}
+
+/* testo annuncio nel viewer */
+.dogboard-viewer .dogboard-text{
+  font-size:.95rem;
+  line-height:1.5;
+  color:var(--text);
+  margin-top:.1rem;
+}
+
+/* eventuali foto extra sotto */
+.dogboard-viewer .dogboard-photos{
+  margin-top:.2rem;
+  gap:.35rem;
+}
+
+/* CTA Rispondi già esistente */
+.dogboard-viewer .btn{
+  margin-top:.35rem;
+  align-self:flex-start;
+}
+
 .dogboard-photo{
   width:84px;
   height:84px;
