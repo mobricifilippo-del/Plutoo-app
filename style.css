@@ -1673,7 +1673,8 @@ body.story-open #storiesBar {
 #viewMessages {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
   padding-top: 0 !important;
   margin-top: 0 !important;
   background: #0d021a !important;
