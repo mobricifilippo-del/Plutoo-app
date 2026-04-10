@@ -2731,8 +2731,3 @@ display: none !important;
 .story-delete-btn.hidden{
   display:none;
 }
-
-.app-footer{
-  margin-top:auto;
-  flex:0 0 auto;
-}
