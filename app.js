@@ -450,148 +450,149 @@ enterBtn.classList.add("enter-glow");
 }
 
 btnEnter?.addEventListener("click", async (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+e.preventDefault();
+e.stopPropagation();
 
-  // sicurezza extra
-  if (!window.auth || !window.auth.currentUser) {
-    openAuth("login");
-    return;
-  }
+// sicurezza extra
+if (!window.auth || !window.auth.currentUser) {
+openAuth("login");
+return;
+}
 
-  // ✨ rimuove il glow SOLO quando clicco ENTRA
-  btnEnter.classList.remove("enter-glow");
+// ✨ rimuove il glow SOLO quando clicco ENTRA
+btnEnter.classList.remove("enter-glow");
 
-  // ✅ ENTRA definitivo (WOW)
-  try { localStorage.setItem("entered", "1"); } catch (err) {}
-  state.entered = true;
+// ✅ ENTRA definitivo (WOW)
+try { localStorage.setItem("entered", "1"); } catch (err) {}
+state.entered = true;
 
-  const bark = document.getElementById("dogBark");
-  if (bark) {
-    bark.currentTime = 0;
-    bark.volume = 0.5;
-    const playPromise = bark.play();
-    if (playPromise && typeof playPromise.then === "function") {
-      playPromise.catch(() => {
-        // in produzione niente alert
-      });
-    }
-  }
+const bark = document.getElementById("dogBark");
+if (bark) {
+bark.currentTime = 0;
+bark.volume = 0.5;
+const playPromise = bark.play();
+if (playPromise && typeof playPromise.then === "function") {
+playPromise.catch(() => {
+// in produzione niente alert
+});
+}
+}
 
-  if (heroLogo) {
-    heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
-    void heroLogo.offsetWidth;
-    heroLogo.classList.add("heartbeat-violet-wow");
-  }
+if (heroLogo) {
+heroLogo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+void heroLogo.offsetWidth;
+heroLogo.classList.add("heartbeat-violet-wow");
+}
 
-  const flash = document.getElementById("whiteFlash");
-  if (flash) {
-    flash.classList.add("active");
-  }
+const flash = document.getElementById("whiteFlash");
+if (flash) {
+flash.classList.add("active");
+}
 
-  const targetView = state.currentView || "nearby";
+const targetView = state.currentView || "nearby";
 
-  setTimeout(() => {
+setTimeout(() => {
 
-    appScreen?.classList.remove("hidden");
-    document.body.classList.remove("story-open");
+homeScreen?.classList.add("hidden");
+appScreen?.classList.remove("hidden");  
+document.body.classList.remove("story-open");  
 
-    if (typeof initStories === "function") {
-      initStories();
-    }
+if (typeof initStories === "function") {  
+  initStories();  
+}  
 
-    // vista normale
-    setActiveView(targetView);
-    try { state.currentView = targetView; } catch (_) {}
+// vista normale  
+setActiveView(targetView);  
+try { state.currentView = targetView; } catch (_) {}
 
 // =========================
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
 // =========================
 try {
-  if (
-  window.PLUTOO_READONLY &&
-  state.currentDogProfile?.id !== "__create__"
+if (
+window.PLUTOO_READONLY &&
+state.currentDogProfile?.id !== "create"
 ) {
-    document.body.classList.add("plutoo-readonly");
+document.body.classList.add("plutoo-readonly");
 
-    // ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)
-    const idsToDisable = [
-      "uploadSelfie",
-      "publishStory"
-    ];
-    idsToDisable.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.disabled = true;
-    });
+// ✅ disabilita SOLO azioni di UPLOAD (non chat/like/follow/tabs)  
+const idsToDisable = [  
+  "uploadSelfie",  
+  "publishStory"  
+];  
+idsToDisable.forEach((id) => {  
+  const el = document.getElementById(id);  
+  if (el) el.disabled = true;  
+});  
 
-    // ✅ intercetta SOLO click su upload foto/documenti
-    if (!window.__plutooReadonlyBound) {
-      window.__plutooReadonlyBound = true;
+// ✅ intercetta SOLO click su upload foto/documenti  
+if (!window.__plutooReadonlyBound) {  
+  window.__plutooReadonlyBound = true;  
 
-      document.addEventListener("click", (ev) => {
-        try {
-          if (!window.PLUTOO_READONLY || state.currentDogProfile?.id === "__create__") return;
+  document.addEventListener("click", (ev) => {  
+    try {  
+      if (!window.PLUTOO_READONLY || state.currentDogProfile?.id === "__create__") return;  
 
-          const t = ev.target;
-          if (!t) return;
+      const t = ev.target;  
+      if (!t) return;  
 
-          const node = (t.closest ? t.closest("button,a,label,input,div,span") : null) || t;
-          const id = node && node.id ? String(node.id) : "";
+      const node = (t.closest ? t.closest("button,a,label,input,div,span") : null) || t;  
+      const id = node && node.id ? String(node.id) : "";  
 
-          // blocca anche classi note (UI)
-          const isAddPhoto = !!(node && node.classList && node.classList.contains("add-photo"));
-          const isDocItem  = !!(node && node.classList && node.classList.contains("doc-item"));
+      // blocca anche classi note (UI)  
+      const isAddPhoto = !!(node && node.classList && node.classList.contains("add-photo"));  
+      const isDocItem  = !!(node && node.classList && node.classList.contains("doc-item"));  
 
-          // blocca anche click su input file (se presente)
-          const isFileInput = !!(node && node.tagName === "INPUT" && String(node.type).toLowerCase() === "file");
+      // blocca anche click su input file (se presente)  
+      const isFileInput = !!(node && node.tagName === "INPUT" && String(node.type).toLowerCase() === "file");  
 
-          const isBlocked =
-            isAddPhoto ||
-            isDocItem ||
-            isFileInput ||
-            id === "uploadSelfie" ||
-            id === "publishStory";
+      const isBlocked =  
+        isAddPhoto ||  
+        isDocItem ||  
+        isFileInput ||  
+        id === "uploadSelfie" ||  
+        id === "publishStory";  
 
-          if (!isBlocked) return; // ✅ tutto il resto resta cliccabile
+      if (!isBlocked) return; // ✅ tutto il resto resta cliccabile  
 
-          ev.preventDefault();
-          ev.stopPropagation();
-          ev.stopImmediatePropagation();
+      ev.preventDefault();  
+      ev.stopPropagation();  
+      ev.stopImmediatePropagation();  
 
-          const msg2 = state.lang === "it"
-            ? "🔒 Per caricare foto o documenti devi creare il profilo DOG"
-            : "🔒 To upload photos or documents you must create your DOG profile";
-          if (typeof showToast === "function") showToast(msg2);
-          return false;
-        } catch (_) {}
-      }, true);
-    }
-  } else {
-    document.body.classList.remove("plutoo-readonly");
-  }
+      const msg2 = state.lang === "it"  
+        ? "🔒 Per caricare foto o documenti devi creare il profilo DOG"  
+        : "🔒 To upload photos or documents you must create your DOG profile";  
+      if (typeof showToast === "function") showToast(msg2);  
+      return false;  
+    } catch (_) {}  
+  }, true);  
+}
+
+} else {
+document.body.classList.remove("plutoo-readonly");
+}
 } catch (_) {}
-  }, 500);
+}, 500);
 
-  setTimeout(() => {
-    homeScreen?.classList.add("hidden");
-    const flash2 = document.getElementById("whiteFlash");
-    if (flash2) {
-      flash2.classList.remove("active");
-    }
-    if (heroLogo) {
-      heroLogo.style.transition = "opacity 1.5s ease-out";
-      heroLogo.style.opacity = "0";
-      showAdBanner();
-    }
-  }, 2000);
+setTimeout(() => {
+const flash2 = document.getElementById("whiteFlash");
+if (flash2) {
+flash2.classList.remove("active");
+}
+if (heroLogo) {
+heroLogo.style.transition = "opacity 1.5s ease-out";
+heroLogo.style.opacity = "0";
+showAdBanner();
+}
+}, 2000);
 
-  setTimeout(() => {
-    if (heroLogo) {
-      heroLogo.classList.remove("heartbeat-violet-wow");
-      heroLogo.style.opacity = "";
-      heroLogo.style.transition = "";
-    }
-  }, 3500);
+setTimeout(() => {
+if (heroLogo) {
+heroLogo.classList.remove("heartbeat-violet-wow");
+heroLogo.style.opacity = "";
+heroLogo.style.transition = "";
+}
+}, 3500);
 });
 }); // <-- CHIUDE
 
