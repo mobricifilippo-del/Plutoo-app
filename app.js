@@ -2437,9 +2437,70 @@ if (name === "messages") {
     viewMessages.classList.remove("hidden");
     viewMessages.classList.add("active");
   }
+
+  setTimeout(() => {
+    try {
+      const appEl = document.querySelector(".app");
+      const contentEl = document.querySelector(".content");
+      const msgEl = document.getElementById("viewMessages");
+      const footerEl = document.querySelector(".app-footer");
+      const messagesBodyEl = document.querySelector("#viewMessages .messages-body");
+
+      const rect = (el) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return {
+          top: Math.round(r.top),
+          bottom: Math.round(r.bottom),
+          height: Math.round(r.height)
+        };
+      };
+
+      const data = {
+        viewportHeight: window.innerHeight,
+
+        app: rect(appEl),
+        content: rect(contentEl),
+        viewMessages: rect(msgEl),
+        footer: rect(footerEl),
+        messagesBody: rect(messagesBodyEl),
+
+        scroll: {
+          html: {
+            scrollHeight: document.documentElement.scrollHeight,
+            clientHeight: document.documentElement.clientHeight,
+            scrollTop: document.documentElement.scrollTop,
+            overflowY: getComputedStyle(document.documentElement).overflowY
+          },
+          body: {
+            scrollHeight: document.body.scrollHeight,
+            clientHeight: document.body.clientHeight,
+            scrollTop: document.body.scrollTop,
+            overflowY: getComputedStyle(document.body).overflowY
+          },
+          content: contentEl ? {
+            scrollHeight: contentEl.scrollHeight,
+            clientHeight: contentEl.clientHeight,
+            scrollTop: contentEl.scrollTop,
+            overflowY: getComputedStyle(contentEl).overflowY
+          } : null,
+          messagesBody: messagesBodyEl ? {
+            scrollHeight: messagesBodyEl.scrollHeight,
+            clientHeight: messagesBodyEl.clientHeight,
+            scrollTop: messagesBodyEl.scrollTop,
+            overflowY: getComputedStyle(messagesBodyEl).overflowY
+          } : null
+        }
+      };
+
+      alert("PLUTOO MESSAGES DEBUG\n\n" + JSON.stringify(data, null, 2));
+    } catch (e) {
+      alert("PLUTOO MESSAGES DEBUG ERROR\n\n" + (e && e.message ? e.message : e));
+    }
+  }, 300);
 }
 
-  if (name === "dogboard") {
+if (name === "dogboard") {
   const viewDogBoard = document.getElementById("viewDogBoard");
   if (viewDogBoard) {
     viewDogBoard.classList.remove("hidden");
@@ -2447,19 +2508,19 @@ if (name === "messages") {
   }
 
   loadDogBoardPosts();
-  }
+}
 
-  setTimeout(() => {
-    try {
-      const composer = document.querySelector("#viewDogBoard .dogboard-composer");
-      const banner = document.querySelector("#viewDogBoard .ad-banner");
+setTimeout(() => {
+  try {
+    const composer = document.querySelector("#viewDogBoard .dogboard-composer");
+    const banner = document.querySelector("#viewDogBoard .ad-banner");
 
-      const legal = document.querySelector("#viewDogBoard .legal-links");
-      const legalRect = legal ? legal.getBoundingClientRect() : null;
-      const legalStyle = legal ? window.getComputedStyle(legal) : null;
-      
-    } catch (_) {}
-  }, 80);
+    const legal = document.querySelector("#viewDogBoard .legal-links");
+    const legalRect = legal ? legal.getBoundingClientRect() : null;
+    const legalStyle = legal ? window.getComputedStyle(legal) : null;
+
+  } catch (_) {}
+}, 80);
 
 document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
@@ -2495,7 +2556,7 @@ setTimeout(() => {
 
   if (legal) {
     const l = legal.getBoundingClientRect();
-    
+
     msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
   } else {
     msg += "LEGAL: null\n";
