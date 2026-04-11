@@ -27,7 +27,7 @@ html,body{
 
 body{
   min-height:100vh;
-  overflow-y:auto;
+  overflow-y:hidden;
   padding-top: env(safe-area-inset-top);
   padding-bottom: calc(env(safe-area-inset-bottom) + 40px);
 }
