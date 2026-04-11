@@ -493,13 +493,6 @@ const targetView = state.currentView || "nearby";
 
 setTimeout(() => {
 
-if (homeScreen) {
-homeScreen.style.position = "absolute";
-homeScreen.style.inset = "0";
-homeScreen.style.width = "100%";
-homeScreen.style.zIndex = "1";
-}
-
 appScreen?.classList.remove("hidden");  
 document.body.classList.remove("story-open");  
 
@@ -582,12 +575,7 @@ document.body.classList.remove("plutoo-readonly");
 
 setTimeout(() => {
 homeScreen?.classList.add("hidden");
-if (homeScreen) {
-homeScreen.style.position = "";
-homeScreen.style.inset = "";
-homeScreen.style.width = "";
-homeScreen.style.zIndex = "";
-}
+
 const flash2 = document.getElementById("whiteFlash");
 if (flash2) {
 flash2.classList.remove("active");
