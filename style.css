@@ -308,7 +308,7 @@ a{color:inherit;text-decoration:none}
   min-height:auto;
   display:flex;
   flex-direction:column;
-  margin-bottom: 80px;
+  margin-bottom: 0;
   padding:1.2rem;
 }
 
