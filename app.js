@@ -2499,13 +2499,7 @@ const storiesEl = document.getElementById("storiesBar");
           } : null
         }
       };
-
-      alert("PLUTOO MESSAGES DEBUG\n\n" + JSON.stringify(data, null, 2));
-    } catch (e) {
-      alert("PLUTOO MESSAGES DEBUG ERROR\n\n" + (e && e.message ? e.message : e));
     }
-  }, 300);
-}
 
 if (name === "dogboard") {
   const viewDogBoard = document.getElementById("viewDogBoard");
