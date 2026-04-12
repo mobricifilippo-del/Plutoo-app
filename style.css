@@ -740,13 +740,13 @@ body.story-open #storiesBar {
 }
 
 /* ================= CONTENT ================= */
+
 .content{
   flex:1;
   padding:.6rem;
   display:flex;
   flex-direction:column;
   min-height:0;
-  overflow:hidden;
 }
 
 .view{display:none}
