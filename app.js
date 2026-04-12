@@ -2339,243 +2339,179 @@ msgLists.forEach((list) => {
 }
 
  function setActiveTabUI(name){
-tabNearby?.classList.remove("active");
-tabLove?.classList.remove("active");
-tabLuoghi?.classList.remove("active");
-document.getElementById("btnDogBoard")?.classList.remove("active");
-if (tabPlay) tabPlay.classList.remove("active");
+  tabNearby?.classList.remove("active");
+  tabLove?.classList.remove("active");
+  tabLuoghi?.classList.remove("active");
+  document.getElementById("btnDogBoard")?.classList.remove("active");
+  if (tabPlay) tabPlay.classList.remove("active");
 
-if (name === "nearby") tabNearby?.classList.add("active");
-if (name === "love") tabLove?.classList.add("active");
-if (name === "luoghi") tabLuoghi?.classList.add("active");
-if (name === "dogboard") document.getElementById("btnDogBoard")?.classList.add("active");
+  if (name === "nearby") tabNearby?.classList.add("active");
+  if (name === "love") tabLove?.classList.add("active");
+  if (name === "luoghi") tabLuoghi?.classList.add("active");
+  if (name === "dogboard") document.getElementById("btnDogBoard")?.classList.add("active");
 }
 
 function setActiveView(name){
-// ✅ GUARD: se arriva una view sconosciuta (es. "notifications"), non lasciare schermo nero
-try {
-const allowed = { nearby:1, love:1, dogboard:1, play:1, profile:1, messages:1 };
-if (!allowed[String(name || "")]) name = "nearby";
-} catch (_) {
-name = "nearby";
-}
-
-localStorage.setItem("currentView", name);
-
-if (state.currentView !== name && state.currentView){
-  state.viewHistory.push(state.currentView);
-}
-
-if ((name === "messages" || name === "dogboard") && state.currentView !== name){
-  state.previousViewForMessages = state.currentView || "nearby";
-}
-
-state.currentView = name;
-// 🔄 Mantieni allineato lo stato delle Stories
-
-try {
-StoriesState.loadStories();
-} catch (e) {}
-
-[viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), profilePage].forEach(v => {
-if (!v) return;
-v.classList.remove("active");
-v.classList.add("hidden");
-});
-
-if (name === "profile" || name === "messages" || name === "dogboard") {
-  mainTopbar?.classList.add("hidden");
-} else {
-  mainTopbar?.classList.remove("hidden");
-}
-
-const globalAdBanner = document.getElementById("adBanner");
-const globalLegalLinks = document.querySelector("#appScreen > .legal-links.legal-purple");
-
-if (name === "dogboard") {
-  globalAdBanner?.classList.add("hidden");
-  globalLegalLinks?.classList.add("hidden");
-} else {
-  globalAdBanner?.classList.remove("hidden");
-  globalLegalLinks?.classList.remove("hidden");
-}
-
-const storiesBar = $("storiesBar");
-if (storiesBar) {
-  storiesBar.classList.toggle("hidden", name !== "nearby");
-}
-
-setActiveTabUI(name);
-
-if (name === "nearby") {
-if (viewNearby) {
-viewNearby.classList.remove("hidden");
-viewNearby.classList.add("active");
-}
-renderNearby();
-renderStoriesBar();
-window.renderStories && window.renderStories();
-if (btnSearchPanel) btnSearchPanel.disabled = false;
-}
-
-if (name === "love") {
-  if (viewLove) {
-    viewLove.classList.remove("hidden");
-    viewLove.classList.add("active");
+  // ✅ GUARD: se arriva una view sconosciuta (es. "notifications"), non lasciare schermo nero
+  try {
+    const allowed = { nearby:1, love:1, dogboard:1, play:1, profile:1, messages:1 };
+    if (!allowed[String(name || "")]) name = "nearby";
+  } catch (_) {
+    name = "nearby";
   }
-  renderSwipe("love");
-}
 
-if (name === "profile") {
+  localStorage.setItem("currentView", name);
 
-if (profilePage) {
-profilePage.classList.remove("hidden");
-profilePage.classList.add("active");
-}
-}
+  if (state.currentView !== name && state.currentView){
+    state.viewHistory.push(state.currentView);
+  }
 
-if (name === "messages") {
-  if (viewMessages) {
-    viewMessages.classList.remove("hidden");
-    viewMessages.classList.add("active");
+  if ((name === "messages" || name === "dogboard") && state.currentView !== name){
+    state.previousViewForMessages = state.currentView || "nearby";
+  }
+
+  state.currentView = name;
+
+  // 🔄 Mantieni allineato lo stato delle Stories
+  try {
+    StoriesState.loadStories();
+  } catch (e) {}
+
+  [viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), profilePage].forEach(v => {
+    if (!v) return;
+    v.classList.remove("active");
+    v.classList.add("hidden");
+  });
+
+  if (name === "profile" || name === "messages" || name === "dogboard") {
+    mainTopbar?.classList.add("hidden");
+  } else {
+    mainTopbar?.classList.remove("hidden");
+  }
+
+  const globalAdBanner = document.getElementById("adBanner");
+  const globalLegalLinks = document.querySelector("#appScreen > .legal-links.legal-purple");
+
+  if (name === "dogboard") {
+    globalAdBanner?.classList.add("hidden");
+    globalLegalLinks?.classList.add("hidden");
+  } else {
+    globalAdBanner?.classList.remove("hidden");
+    globalLegalLinks?.classList.remove("hidden");
+  }
+
+  const storiesBar = $("storiesBar");
+  if (storiesBar) {
+    storiesBar.classList.toggle("hidden", name !== "nearby");
+  }
+
+  setActiveTabUI(name);
+
+  if (name === "nearby") {
+    if (viewNearby) {
+      viewNearby.classList.remove("hidden");
+      viewNearby.classList.add("active");
+    }
+    renderNearby();
+    renderStoriesBar();
+    window.renderStories && window.renderStories();
+    if (btnSearchPanel) btnSearchPanel.disabled = false;
+  }
+
+  if (name === "love") {
+    if (viewLove) {
+      viewLove.classList.remove("hidden");
+      viewLove.classList.add("active");
+    }
+    renderSwipe("love");
+  }
+
+  if (name === "profile") {
+    if (profilePage) {
+      profilePage.classList.remove("hidden");
+      profilePage.classList.add("active");
+    }
+  }
+
+  if (name === "messages") {
+    if (viewMessages) {
+      viewMessages.classList.remove("hidden");
+      viewMessages.classList.add("active");
+    }
+  }
+
+  if (name === "dogboard") {
+    const viewDogBoard = document.getElementById("viewDogBoard");
+    if (viewDogBoard) {
+      viewDogBoard.classList.remove("hidden");
+      viewDogBoard.classList.add("active");
+    }
+
+    loadDogBoardPosts();
   }
 
   setTimeout(() => {
     try {
-      const appEl = document.querySelector(".app");
-const contentEl = document.querySelector(".content");
-const msgEl = document.getElementById("viewMessages");
-const footerEl = document.querySelector(".app-footer");
-const messagesBodyEl = document.querySelector("#viewMessages .messages-body");
-const topbarEl = document.getElementById("mainTopbar");
-const storiesEl = document.getElementById("storiesBar");
+      const composer = document.querySelector("#viewDogBoard .dogboard-composer");
+      const banner = document.querySelector("#viewDogBoard .ad-banner");
 
-      const rect = (el) => {
-        if (!el) return null;
-        const r = el.getBoundingClientRect();
-        return {
-          top: Math.round(r.top),
-          bottom: Math.round(r.bottom),
-          height: Math.round(r.height)
-        };
-      };
+      const legal = document.querySelector("#viewDogBoard .legal-links");
+      const legalRect = legal ? legal.getBoundingClientRect() : null;
+      const legalStyle = legal ? window.getComputedStyle(legal) : null;
+    } catch (_) {}
+  }, 80);
 
-      const data = {
-  viewportHeight: window.innerHeight,
+  document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
+  document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 
-  app: rect(appEl),
-  content: rect(contentEl),
-  viewMessages: rect(msgEl),
-  footer: rect(footerEl),
-  messagesBody: rect(messagesBodyEl),
-  topbar: rect(topbarEl),
-  storiesBar: rect(storiesEl),
-
-  scroll: {
-          
-          html: {
-            scrollHeight: document.documentElement.scrollHeight,
-            clientHeight: document.documentElement.clientHeight,
-            scrollTop: document.documentElement.scrollTop,
-            overflowY: getComputedStyle(document.documentElement).overflowY
-          },
-          body: {
-            scrollHeight: document.body.scrollHeight,
-            clientHeight: document.body.clientHeight,
-            scrollTop: document.body.scrollTop,
-            overflowY: getComputedStyle(document.body).overflowY
-          },
-          content: contentEl ? {
-            scrollHeight: contentEl.scrollHeight,
-            clientHeight: contentEl.clientHeight,
-            scrollTop: contentEl.scrollTop,
-            overflowY: getComputedStyle(contentEl).overflowY
-          } : null,
-          messagesBody: messagesBodyEl ? {
-            scrollHeight: messagesBodyEl.scrollHeight,
-            clientHeight: messagesBodyEl.clientHeight,
-            scrollTop: messagesBodyEl.scrollTop,
-            overflowY: getComputedStyle(messagesBodyEl).overflowY
-          } : null
-        }
-      };
-
-if (name === "dogboard") {
-  const viewDogBoard = document.getElementById("viewDogBoard");
-  if (viewDogBoard) {
-    viewDogBoard.classList.remove("hidden");
-    viewDogBoard.classList.add("active");
+  if (appScreen) {
+    if (name === "dogboard") {
+      appScreen.style.height = `${window.innerHeight}px`;
+      appScreen.style.overflow = "hidden";
+    } else {
+      appScreen.style.height = "";
+      appScreen.style.overflow = "";
+    }
   }
 
-  loadDogBoardPosts();
-}
+  window.scrollTo({ top:0, behavior:"smooth" });
 
-setTimeout(() => {
-  try {
-    const composer = document.querySelector("#viewDogBoard .dogboard-composer");
+  setTimeout(() => {
     const banner = document.querySelector("#viewDogBoard .ad-banner");
-
     const legal = document.querySelector("#viewDogBoard .legal-links");
-    const legalRect = legal ? legal.getBoundingClientRect() : null;
-    const legalStyle = legal ? window.getComputedStyle(legal) : null;
+    const list = document.getElementById("dogBoardList");
+    const messagesBody = document.querySelector("#viewDogBoard .messages-body");
+    const content = document.querySelector(".content");
+    const app = document.querySelector(".app");
 
-  } catch (_) {}
-}, 80);
+    let msg = "";
 
-document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
-document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
+    if (banner) {
+      const b = banner.getBoundingClientRect();
+      msg += "BANNER bottom: " + Math.round(b.bottom) + "\n";
+    } else {
+      msg += "BANNER: null\n";
+    }
 
-if (appScreen) {
-  if (name === "dogboard" || name === "messages") {
-    appScreen.style.height = `${window.innerHeight}px`;
-    appScreen.style.overflow = "hidden";
-  } else {
-    appScreen.style.height = "";
-    appScreen.style.overflow = "";
-  }
-}
+    if (legal) {
+      const l = legal.getBoundingClientRect();
+      msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
+    } else {
+      msg += "LEGAL: null\n";
+    }
 
-window.scrollTo({top:0, behavior:"smooth"});
+    msg += "VIEWPORT: " + window.innerHeight + "\n";
 
-setTimeout(() => {
-  const banner = document.querySelector("#viewDogBoard .ad-banner");
-  const legal = document.querySelector("#viewDogBoard .legal-links");
-  const list = document.getElementById("dogBoardList");
-  const messagesBody = document.querySelector("#viewDogBoard .messages-body");
-  const content = document.querySelector(".content");
-  const app = document.querySelector(".app");
-
-  let msg = "";
-
-  if (banner) {
-    const b = banner.getBoundingClientRect();
-    msg += "BANNER bottom: " + Math.round(b.bottom) + "\n";
-  } else {
-    msg += "BANNER: null\n";
-  }
-
-  if (legal) {
-    const l = legal.getBoundingClientRect();
-
-    msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
-  } else {
-    msg += "LEGAL: null\n";
-  }
-
-  msg += "VIEWPORT: " + window.innerHeight + "\n";
-
-  if (list) {
-    msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
-    msg += "LIST clientHeight: " + list.clientHeight + "\n";
-    msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
-    msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
-    msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
-    msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
-    msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
-  }
-
-}, 500);
-
+    if (list) {
+      msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
+      msg += "LIST clientHeight: " + list.clientHeight + "\n";
+      msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
+      msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
+      msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
+      msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
+      msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
+    }
+  }, 500);
 }
 
   btnBack?.addEventListener("click", ()=> goBack() );
