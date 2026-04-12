@@ -2528,7 +2528,7 @@ document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "a
 document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
 
 if (appScreen) {
-  if (name === "dogboard") {
+  if (name === "dogboard" || name === "messages") {
     appScreen.style.height = `${window.innerHeight}px`;
     appScreen.style.overflow = "hidden";
   } else {
