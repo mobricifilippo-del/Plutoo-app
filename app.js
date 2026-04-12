@@ -2443,10 +2443,12 @@ if (name === "messages") {
   setTimeout(() => {
     try {
       const appEl = document.querySelector(".app");
-      const contentEl = document.querySelector(".content");
-      const msgEl = document.getElementById("viewMessages");
-      const footerEl = document.querySelector(".app-footer");
-      const messagesBodyEl = document.querySelector("#viewMessages .messages-body");
+const contentEl = document.querySelector(".content");
+const msgEl = document.getElementById("viewMessages");
+const footerEl = document.querySelector(".app-footer");
+const messagesBodyEl = document.querySelector("#viewMessages .messages-body");
+const topbarEl = document.getElementById("mainTopbar");
+const storiesEl = document.getElementById("storiesBar");
 
       const rect = (el) => {
         if (!el) return null;
@@ -2459,15 +2461,18 @@ if (name === "messages") {
       };
 
       const data = {
-        viewportHeight: window.innerHeight,
+  viewportHeight: window.innerHeight,
 
-        app: rect(appEl),
-        content: rect(contentEl),
-        viewMessages: rect(msgEl),
-        footer: rect(footerEl),
-        messagesBody: rect(messagesBodyEl),
+  app: rect(appEl),
+  content: rect(contentEl),
+  viewMessages: rect(msgEl),
+  footer: rect(footerEl),
+  messagesBody: rect(messagesBodyEl),
+  topbar: rect(topbarEl),
+  storiesBar: rect(storiesEl),
 
-        scroll: {
+  scroll: {
+          
           html: {
             scrollHeight: document.documentElement.scrollHeight,
             clientHeight: document.documentElement.clientHeight,
