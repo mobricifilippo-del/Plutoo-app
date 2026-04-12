@@ -2499,7 +2499,6 @@ const storiesEl = document.getElementById("storiesBar");
           } : null
         }
       };
-    }
 
 if (name === "dogboard") {
   const viewDogBoard = document.getElementById("viewDogBoard");
