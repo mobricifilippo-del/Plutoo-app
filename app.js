@@ -2434,10 +2434,27 @@ function setActiveView(name){
   }
 
   if (name === "messages") {
-    if (viewMessages) {
-      viewMessages.classList.remove("hidden");
-      viewMessages.classList.add("active");
-    }
+  if (viewMessages) {
+    viewMessages.classList.remove("hidden");
+    viewMessages.classList.add("active");
+  }
+
+  // DEBUG RECT NODI MESSAGES
+  const rect = (el) => el ? el.getBoundingClientRect() : null;
+
+  const data = {
+    mainTopbar: rect(document.getElementById("mainTopbar")),
+    storiesBar: rect(document.getElementById("storiesBar")),
+    content: rect(document.querySelector(".content")),
+    viewMessages: rect(document.getElementById("viewMessages")),
+    messagesTopbar: rect(document.querySelector(".messages-topbar")),
+    messagesBody: rect(document.querySelector(".messages-body")),
+    appFooter: rect(document.querySelector(".app-footer")),
+    adBanner: rect(document.getElementById("adBanner")),
+    legalLinks: rect(document.querySelector(".legal-links"))
+  };
+
+  console.log("MESSAGES RECT DEBUG:", data);
   }
 
   if (name === "dogboard") {
