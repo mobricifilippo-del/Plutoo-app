@@ -2516,67 +2516,134 @@ const legalEl = footerEl ? footerEl.querySelector(".legal-links") : null;
   }
 
   setTimeout(() => {
-    try {
-      const composer = document.querySelector("#viewDogBoard .dogboard-composer");
-      const banner = document.querySelector("#viewDogBoard .ad-banner");
+  const rect = (el) => {
+    if (!el) return "null";
+    const r = el.getBoundingClientRect();
+    return `${Math.round(r.top)} / ${Math.round(r.bottom)} / ${Math.round(r.height)}`;
+  };
 
-      const legal = document.querySelector("#viewDogBoard .legal-links");
-      const legalRect = legal ? legal.getBoundingClientRect() : null;
-      const legalStyle = legal ? window.getComputedStyle(legal) : null;
-    } catch (_) {}
-  }, 80);
+  const shortHTML = (el) => {
+    if (!el) return "null";
+    return el.innerHTML.replace(/\s+/g, " ").trim().slice(0, 220);
+  };
 
-  document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
-  document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
-
-  if (appScreen) {
-    if (name === "dogboard") {
-      appScreen.style.height = `${window.innerHeight}px`;
-      appScreen.style.overflow = "hidden";
-    } else {
-      appScreen.style.height = "";
-      appScreen.style.overflow = "";
+  const info = (el) => {
+    if (!el) {
+      return {
+        found: false,
+        className: null,
+        parentClassName: null,
+        rect: "null",
+        display: null,
+        visibility: null,
+        opacity: null,
+        position: null,
+        overflow: null,
+        height: null,
+        offsetHeight: null,
+        clientHeight: null
+      };
     }
+
+    const cs = getComputedStyle(el);
+
+    return {
+      found: true,
+      className: el.className || "",
+      parentClassName: el.parentElement ? (el.parentElement.className || "") : null,
+      rect: rect(el),
+      display: cs.display,
+      visibility: cs.visibility,
+      opacity: cs.opacity,
+      position: cs.position,
+      overflow: cs.overflow,
+      height: cs.height,
+      offsetHeight: el.offsetHeight,
+      clientHeight: el.clientHeight
+    };
+  };
+
+  const footerEl = document.querySelector(".app-footer");
+  const bannerEl = footerEl ? footerEl.querySelector("#adBanner") : null;
+  const legalEl = footerEl ? footerEl.querySelector(".legal-links") : null;
+
+  const data = {
+    footer: info(footerEl),
+    banner: info(bannerEl),
+    legal: info(legalEl),
+    footerHTML: shortHTML(footerEl),
+    bannerHTML: shortHTML(bannerEl),
+    legalHTML: shortHTML(legalEl)
+  };
+
+  let debugBox = document.getElementById("messagesFooterDebug");
+  if (!debugBox) {
+    debugBox = document.createElement("div");
+    debugBox.id = "messagesFooterDebug";
+    debugBox.style.position = "fixed";
+    debugBox.style.top = "6px";
+    debugBox.style.left = "6px";
+    debugBox.style.right = "6px";
+    debugBox.style.zIndex = "9999";
+    debugBox.style.fontSize = "10px";
+    debugBox.style.lineHeight = "1.2";
+    debugBox.style.padding = "6px 8px";
+    debugBox.style.borderRadius = "8px";
+    debugBox.style.background = "rgba(0,0,0,0.82)";
+    debugBox.style.color = "#fff";
+    debugBox.style.pointerEvents = "none";
+    debugBox.style.whiteSpace = "pre-wrap";
+    debugBox.style.maxHeight = "160px";
+    debugBox.style.overflow = "hidden";
+    document.body.appendChild(debugBox);
   }
 
-  window.scrollTo({ top:0, behavior:"smooth" });
+  debugBox.textContent =
+    "[FOOTER]\n" +
+    "found: " + data.footer.found + "\n" +
+    "className: " + data.footer.className + "\n" +
+    "parentClassName: " + data.footer.parentClassName + "\n" +
+    "rect: " + data.footer.rect + "\n" +
+    "display: " + data.footer.display + "\n" +
+    "visibility: " + data.footer.visibility + "\n" +
+    "opacity: " + data.footer.opacity + "\n" +
+    "position: " + data.footer.position + "\n" +
+    "overflow: " + data.footer.overflow + "\n" +
+    "height: " + data.footer.height + "\n" +
+    "offsetHeight: " + data.footer.offsetHeight + "\n" +
+    "clientHeight: " + data.footer.clientHeight + "\n" +
+    "html: " + data.footerHTML + "\n\n" +
 
-  setTimeout(() => {
-    const banner = document.querySelector("#viewDogBoard .ad-banner");
-    const legal = document.querySelector("#viewDogBoard .legal-links");
-    const list = document.getElementById("dogBoardList");
-    const messagesBody = document.querySelector("#viewDogBoard .messages-body");
-    const content = document.querySelector(".content");
-    const app = document.querySelector(".app");
+    "[BANNER]\n" +
+    "found: " + data.banner.found + "\n" +
+    "className: " + data.banner.className + "\n" +
+    "parentClassName: " + data.banner.parentClassName + "\n" +
+    "rect: " + data.banner.rect + "\n" +
+    "display: " + data.banner.display + "\n" +
+    "visibility: " + data.banner.visibility + "\n" +
+    "opacity: " + data.banner.opacity + "\n" +
+    "position: " + data.banner.position + "\n" +
+    "overflow: " + data.banner.overflow + "\n" +
+    "height: " + data.banner.height + "\n" +
+    "offsetHeight: " + data.banner.offsetHeight + "\n" +
+    "clientHeight: " + data.banner.clientHeight + "\n" +
+    "html: " + data.bannerHTML + "\n\n" +
 
-    let msg = "";
-
-    if (banner) {
-      const b = banner.getBoundingClientRect();
-      msg += "BANNER bottom: " + Math.round(b.bottom) + "\n";
-    } else {
-      msg += "BANNER: null\n";
-    }
-
-    if (legal) {
-      const l = legal.getBoundingClientRect();
-      msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
-    } else {
-      msg += "LEGAL: null\n";
-    }
-
-    msg += "VIEWPORT: " + window.innerHeight + "\n";
-
-    if (list) {
-      msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
-      msg += "LIST clientHeight: " + list.clientHeight + "\n";
-      msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
-      msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
-      msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
-      msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
-      msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
-    }
-  }, 500);
+    "[LEGAL]\n" +
+    "found: " + data.legal.found + "\n" +
+    "className: " + data.legal.className + "\n" +
+    "parentClassName: " + data.legal.parentClassName + "\n" +
+    "rect: " + data.legal.rect + "\n" +
+    "display: " + data.legal.display + "\n" +
+    "visibility: " + data.legal.visibility + "\n" +
+    "opacity: " + data.legal.opacity + "\n" +
+    "position: " + data.legal.position + "\n" +
+    "overflow: " + data.legal.overflow + "\n" +
+    "height: " + data.legal.height + "\n" +
+    "offsetHeight: " + data.legal.offsetHeight + "\n" +
+    "clientHeight: " + data.legal.clientHeight + "\n" +
+    "html: " + data.legalHTML;
+}, 500);
 }
 
   btnBack?.addEventListener("click", ()=> goBack() );
