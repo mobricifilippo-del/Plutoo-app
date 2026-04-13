@@ -2502,6 +2502,7 @@ function setActiveView(name){
     } catch (e) {}
   }, 300);
   }
+  }
 
   if (name === "dogboard") {
     const viewDogBoard = document.getElementById("viewDogBoard");
