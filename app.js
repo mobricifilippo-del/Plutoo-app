@@ -2446,17 +2446,41 @@ function setActiveView(name){
     return `${Math.round(r.top)} / ${Math.round(r.bottom)} / ${Math.round(r.height)}`;
   };
 
-  const msg =
-    "TOPBAR: " + rect(document.getElementById("mainTopbar")) + "\n" +
-    "STORIES: " + rect(document.getElementById("storiesBar")) + "\n" +
-    "CONTENT: " + rect(document.querySelector(".content")) + "\n" +
-    "MESSAGES: " + rect(document.getElementById("viewMessages")) + "\n" +
-    "BODY: " + rect(document.querySelector(".messages-body")) + "\n" +
-    "FOOTER: " + rect(document.querySelector(".app-footer")) + "\n" +
-    "BANNER: " + rect(document.getElementById("adBanner")) + "\n" +
-    "LEGAL: " + rect(document.querySelector(".legal-links"));
+  const legalEl = document.querySelector(".legal-links");
 
-  alert(msg);
+  const data = {
+    legalLinks: rect(legalEl),
+    legalDisplay: legalEl ? getComputedStyle(legalEl).display : null,
+    legalVisibility: legalEl ? getComputedStyle(legalEl).visibility : null,
+    legalOpacity: legalEl ? getComputedStyle(legalEl).opacity : null
+  };
+
+  let debugBox = document.getElementById("messagesLegalDebug");
+  if (!debugBox) {
+    debugBox = document.createElement("div");
+    debugBox.id = "messagesLegalDebug";
+    debugBox.style.position = "fixed";
+    debugBox.style.top = "6px";
+    debugBox.style.left = "6px";
+    debugBox.style.right = "6px";
+    debugBox.style.zIndex = "9999";
+    debugBox.style.fontSize = "11px";
+    debugBox.style.lineHeight = "1.25";
+    debugBox.style.padding = "6px 8px";
+    debugBox.style.borderRadius = "8px";
+    debugBox.style.background = "rgba(0,0,0,0.78)";
+    debugBox.style.color = "#fff";
+    debugBox.style.pointerEvents = "none";
+    debugBox.style.whiteSpace = "pre-wrap";
+    document.body.appendChild(debugBox);
+  }
+
+  debugBox.textContent =
+    "legalLinks: " + JSON.stringify(data.legalLinks) + "\n" +
+    "legalDisplay: " + data.legalDisplay + "\n" +
+    "legalVisibility: " + data.legalVisibility + "\n" +
+    "legalOpacity: " + data.legalOpacity;
+
 }, 500);
   }
 
