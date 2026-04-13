@@ -2439,57 +2439,68 @@ function setActiveView(name){
     viewMessages.classList.add("active");
   }
 
+  if (name === "messages") {
+  setActiveTabUI("messages");
+
   setTimeout(() => {
-  const rect = (el) => {
-    if (!el) return "null";
-    const r = el.getBoundingClientRect();
-    return `${Math.round(r.top)} / ${Math.round(r.bottom)} / ${Math.round(r.height)}`;
-  };
+    try {
+      const rect = (el) => {
+        if (!el) return "0 / 0 / 0";
+        const r = el.getBoundingClientRect();
+        return `${Math.round(r.top)} / ${Math.round(r.bottom)} / ${Math.round(r.height)}`;
+      };
 
-  const legalEl = document.querySelector(".legal-links");
+      const legalEl = document.querySelector(".legal-links");
 
-  const data = {
-    legalLinks: rect(legalEl),
-    legalDisplay: legalEl ? getComputedStyle(legalEl).display : null,
-    legalVisibility: legalEl ? getComputedStyle(legalEl).visibility : null,
-    legalOpacity: legalEl ? getComputedStyle(legalEl).opacity : null,
-    legalOffsetHeight: legalEl ? legalEl.offsetHeight : null,
-    legalOffsetWidth: legalEl ? legalEl.offsetWidth : null,
-    legalClientHeight: legalEl ? legalEl.clientHeight : null,
-    legalClientWidth: legalEl ? legalEl.clientWidth : null
-  };
+      const data = {
+        legalLinks: rect(legalEl),
+        legalDisplay: legalEl ? getComputedStyle(legalEl).display : null,
+        legalVisibility: legalEl ? getComputedStyle(legalEl).visibility : null,
+        legalOpacity: legalEl ? getComputedStyle(legalEl).opacity : null,
+        legalOffsetHeight: legalEl ? legalEl.offsetHeight : null,
+        legalOffsetWidth: legalEl ? legalEl.offsetWidth : null,
+        legalClientHeight: legalEl ? legalEl.clientHeight : null,
+        legalClientWidth: legalEl ? legalEl.clientWidth : null,
 
-  let debugBox = document.getElementById("messagesLegalDebug");
-  if (!debugBox) {
-    debugBox = document.createElement("div");
-    debugBox.id = "messagesLegalDebug";
-    debugBox.style.position = "fixed";
-    debugBox.style.top = "6px";
-    debugBox.style.left = "6px";
-    debugBox.style.right = "6px";
-    debugBox.style.zIndex = "9999";
-    debugBox.style.fontSize = "11px";
-    debugBox.style.lineHeight = "1.25";
-    debugBox.style.padding = "6px 8px";
-    debugBox.style.borderRadius = "8px";
-    debugBox.style.background = "rgba(0,0,0,0.78)";
-    debugBox.style.color = "#fff";
-    debugBox.style.pointerEvents = "none";
-    debugBox.style.whiteSpace = "pre-wrap";
-    document.body.appendChild(debugBox);
-  }
+        // NUOVO
+        legalParent: legalEl && legalEl.parentElement ? legalEl.parentElement.className : null,
+        footerRect: rect(document.querySelector(".app-footer"))
+      };
 
-  debugBox.textContent =
-    "legalLinks: " + data.legalLinks + "\n" +
-    "legalDisplay: " + data.legalDisplay + "\n" +
-    "legalVisibility: " + data.legalVisibility + "\n" +
-    "legalOpacity: " + data.legalOpacity + "\n" +
-    "legalOffsetHeight: " + data.legalOffsetHeight + "\n" +
-    "legalOffsetWidth: " + data.legalOffsetWidth + "\n" +
-    "legalClientHeight: " + data.legalClientHeight + "\n" +
-    "legalClientWidth: " + data.legalClientWidth;
+      let debugBox = document.getElementById("messagesLegalDebug");
+      if (!debugBox) {
+        debugBox = document.createElement("div");
+        debugBox.id = "messagesLegalDebug";
+        debugBox.style.position = "fixed";
+        debugBox.style.top = "6px";
+        debugBox.style.left = "6px";
+        debugBox.style.right = "6px";
+        debugBox.style.zIndex = "9999";
+        debugBox.style.fontSize = "11px";
+        debugBox.style.lineHeight = "1.25";
+        debugBox.style.padding = "6px 8px";
+        debugBox.style.borderRadius = "8px";
+        debugBox.style.background = "rgba(0,0,0,0.78)";
+        debugBox.style.color = "#fff";
+        debugBox.style.pointerEvents = "none";
+        debugBox.style.whiteSpace = "pre-wrap";
+        document.body.appendChild(debugBox);
+      }
 
-}, 500);
+      debugBox.textContent =
+        "legalLinks: " + data.legalLinks + "\n" +
+        "legalDisplay: " + data.legalDisplay + "\n" +
+        "legalVisibility: " + data.legalVisibility + "\n" +
+        "legalOpacity: " + data.legalOpacity + "\n" +
+        "legalOffsetHeight: " + data.legalOffsetHeight + "\n" +
+        "legalOffsetWidth: " + data.legalOffsetWidth + "\n" +
+        "legalClientHeight: " + data.legalClientHeight + "\n" +
+        "legalClientWidth: " + data.legalClientWidth + "\n" +
+        "legalParent: " + data.legalParent + "\n" +
+        "footerRect: " + data.footerRect;
+
+    } catch (e) {}
+  }, 300);
   }
 
   if (name === "dogboard") {
