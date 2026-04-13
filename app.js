@@ -2439,22 +2439,25 @@ function setActiveView(name){
     viewMessages.classList.add("active");
   }
 
-  // DEBUG RECT NODI MESSAGES
-  const rect = (el) => el ? el.getBoundingClientRect() : null;
-
-  const data = {
-    mainTopbar: rect(document.getElementById("mainTopbar")),
-    storiesBar: rect(document.getElementById("storiesBar")),
-    content: rect(document.querySelector(".content")),
-    viewMessages: rect(document.getElementById("viewMessages")),
-    messagesTopbar: rect(document.querySelector(".messages-topbar")),
-    messagesBody: rect(document.querySelector(".messages-body")),
-    appFooter: rect(document.querySelector(".app-footer")),
-    adBanner: rect(document.getElementById("adBanner")),
-    legalLinks: rect(document.querySelector(".legal-links"))
+  setTimeout(() => {
+  const rect = (el) => {
+    if (!el) return "null";
+    const r = el.getBoundingClientRect();
+    return `${Math.round(r.top)} / ${Math.round(r.bottom)} / ${Math.round(r.height)}`;
   };
 
-  console.log("MESSAGES RECT DEBUG:", data);
+  const msg =
+    "TOPBAR: " + rect(document.getElementById("mainTopbar")) + "\n" +
+    "STORIES: " + rect(document.getElementById("storiesBar")) + "\n" +
+    "CONTENT: " + rect(document.querySelector(".content")) + "\n" +
+    "MESSAGES: " + rect(document.getElementById("viewMessages")) + "\n" +
+    "BODY: " + rect(document.querySelector(".messages-body")) + "\n" +
+    "FOOTER: " + rect(document.querySelector(".app-footer")) + "\n" +
+    "BANNER: " + rect(document.getElementById("adBanner")) + "\n" +
+    "LEGAL: " + rect(document.querySelector(".legal-links"));
+
+  alert(msg);
+}, 500);
   }
 
   if (name === "dogboard") {
