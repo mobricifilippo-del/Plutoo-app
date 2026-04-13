@@ -2452,7 +2452,11 @@ function setActiveView(name){
     legalLinks: rect(legalEl),
     legalDisplay: legalEl ? getComputedStyle(legalEl).display : null,
     legalVisibility: legalEl ? getComputedStyle(legalEl).visibility : null,
-    legalOpacity: legalEl ? getComputedStyle(legalEl).opacity : null
+    legalOpacity: legalEl ? getComputedStyle(legalEl).opacity : null,
+    legalOffsetHeight: legalEl ? legalEl.offsetHeight : null,
+    legalOffsetWidth: legalEl ? legalEl.offsetWidth : null,
+    legalClientHeight: legalEl ? legalEl.clientHeight : null,
+    legalClientWidth: legalEl ? legalEl.clientWidth : null
   };
 
   let debugBox = document.getElementById("messagesLegalDebug");
@@ -2476,10 +2480,14 @@ function setActiveView(name){
   }
 
   debugBox.textContent =
-    "legalLinks: " + JSON.stringify(data.legalLinks) + "\n" +
+    "legalLinks: " + data.legalLinks + "\n" +
     "legalDisplay: " + data.legalDisplay + "\n" +
     "legalVisibility: " + data.legalVisibility + "\n" +
-    "legalOpacity: " + data.legalOpacity;
+    "legalOpacity: " + data.legalOpacity + "\n" +
+    "legalOffsetHeight: " + data.legalOffsetHeight + "\n" +
+    "legalOffsetWidth: " + data.legalOffsetWidth + "\n" +
+    "legalClientHeight: " + data.legalClientHeight + "\n" +
+    "legalClientWidth: " + data.legalClientWidth;
 
 }, 500);
   }
