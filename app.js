@@ -2450,7 +2450,8 @@ function setActiveView(name){
         return `${Math.round(r.top)} / ${Math.round(r.bottom)} / ${Math.round(r.height)}`;
       };
 
-      const legalEl = document.querySelector(".legal-links");
+      const footerEl = document.querySelector(".app-footer");
+const legalEl = footerEl ? footerEl.querySelector(".legal-links") : null;
 
       const data = {
         legalLinks: rect(legalEl),
