@@ -1673,14 +1673,14 @@ body.story-open #storiesBar {
 /* ===== MESSAGGI - HEADER & FOOTER ===== */
 
 #viewMessages {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  padding-top: 0 !important;
-  margin-top: 0 !important;
-  background: #0d021a !important;
-  overflow: hidden;
+display: flex;
+flex-direction: column;
+flex: 1;
+min-height: 0;
+padding-top: 0 !important;
+margin-top: 0 !important;
+background: #0d021a !important;
+overflow: visible;
 }
 
 #viewDogBoard{
