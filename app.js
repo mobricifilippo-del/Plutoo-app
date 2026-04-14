@@ -2438,18 +2438,13 @@ function setActiveView(name){
     viewMessages.classList.remove("hidden");
     viewMessages.classList.add("active");
   }
-}
+  }
 
   btnBack?.addEventListener("click", ()=> goBack() );
 btnBackLove?.addEventListener("click", ()=> goBack() );
 btnMsgBack?.addEventListener("click", () => {
   const prev = state.previousViewForMessages || "nearby";
   setActiveView(prev);
-});
-
-const btnDogBoard = document.getElementById("btnDogBoard");
-btnDogBoard?.addEventListener("click", () => {
-  setActiveView("dogboard");
 });
 
 const btnDogBoardBack = document.getElementById("btnDogBoardBack");
