@@ -2393,8 +2393,6 @@ function setActiveView(name){
   const globalLegalLinks = document.querySelector("#appScreen > .legal-links.legal-purple");
 
   if (name === "dogboard") {
-    globalAdBanner?.classList.add("hidden");
-    globalLegalLinks?.classList.add("hidden");
   } else {
     globalAdBanner?.classList.remove("hidden");
     globalLegalLinks?.classList.remove("hidden");
