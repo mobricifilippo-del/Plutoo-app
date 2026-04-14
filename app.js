@@ -2438,13 +2438,109 @@ function setActiveView(name){
     viewMessages.classList.remove("hidden");
     viewMessages.classList.add("active");
   }
+
+  // DEBUG RECT NODI MESSAGES
+  const rect = (el) => el ? el.getBoundingClientRect() : null;
+
+  const data = {
+    mainTopbar: rect(document.getElementById("mainTopbar")),
+    storiesBar: rect(document.getElementById("storiesBar")),
+    content: rect(document.querySelector(".content")),
+    viewMessages: rect(document.getElementById("viewMessages")),
+    messagesTopbar: rect(document.querySelector(".messages-topbar")),
+    messagesBody: rect(document.querySelector(".messages-body")),
+    appFooter: rect(document.querySelector(".app-footer")),
+    adBanner: rect(document.getElementById("adBanner")),
+    legalLinks: rect(document.querySelector(".legal-links"))
+  };
+
+  console.log("MESSAGES RECT DEBUG:", data);
   }
+
+  if (name === "dogboard") {
+    const viewDogBoard = document.getElementById("viewDogBoard");
+    if (viewDogBoard) {
+      viewDogBoard.classList.remove("hidden");
+      viewDogBoard.classList.add("active");
+    }
+
+    loadDogBoardPosts();
+  }
+
+  setTimeout(() => {
+    try {
+      const composer = document.querySelector("#viewDogBoard .dogboard-composer");
+      const banner = document.querySelector("#viewDogBoard .ad-banner");
+
+      const legal = document.querySelector("#viewDogBoard .legal-links");
+      const legalRect = legal ? legal.getBoundingClientRect() : null;
+      const legalStyle = legal ? window.getComputedStyle(legal) : null;
+    } catch (_) {}
+  }, 80);
+
+  document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
+  document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
+
+  if (appScreen) {
+    if (name === "dogboard") {
+      appScreen.style.height = `${window.innerHeight}px`;
+      appScreen.style.overflow = "hidden";
+    } else {
+      appScreen.style.height = "";
+      appScreen.style.overflow = "";
+    }
+  }
+
+  window.scrollTo({ top:0, behavior:"smooth" });
+
+  setTimeout(() => {
+    const banner = document.querySelector("#viewDogBoard .ad-banner");
+    const legal = document.querySelector("#viewDogBoard .legal-links");
+    const list = document.getElementById("dogBoardList");
+    const messagesBody = document.querySelector("#viewDogBoard .messages-body");
+    const content = document.querySelector(".content");
+    const app = document.querySelector(".app");
+
+    let msg = "";
+
+    if (banner) {
+      const b = banner.getBoundingClientRect();
+      msg += "BANNER bottom: " + Math.round(b.bottom) + "\n";
+    } else {
+      msg += "BANNER: null\n";
+    }
+
+    if (legal) {
+      const l = legal.getBoundingClientRect();
+      msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
+    } else {
+      msg += "LEGAL: null\n";
+    }
+
+    msg += "VIEWPORT: " + window.innerHeight + "\n";
+
+    if (list) {
+      msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
+      msg += "LIST clientHeight: " + list.clientHeight + "\n";
+      msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
+      msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
+      msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
+      msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
+      msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
+    }
+  }, 500);
+}
 
   btnBack?.addEventListener("click", ()=> goBack() );
 btnBackLove?.addEventListener("click", ()=> goBack() );
 btnMsgBack?.addEventListener("click", () => {
   const prev = state.previousViewForMessages || "nearby";
   setActiveView(prev);
+});
+
+const btnDogBoard = document.getElementById("btnDogBoard");
+btnDogBoard?.addEventListener("click", () => {
+  setActiveView("dogboard");
 });
 
 const btnDogBoardBack = document.getElementById("btnDogBoardBack");
