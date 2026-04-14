@@ -2476,18 +2476,18 @@ function setActiveView(name){
     } catch (_) {}
   }, 80);
 
-  document.documentElement.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
-  document.body.style.overflowY = (name === "dogboard") ? "hidden" : "auto";
+  document.documentElement.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
+document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
 
-  if (appScreen) {
-    if (name === "dogboard") {
-      appScreen.style.height = `${window.innerHeight}px`;
-      appScreen.style.overflow = "hidden";
-    } else {
-      appScreen.style.height = "";
-      appScreen.style.overflow = "";
-    }
+if (appScreen) {
+  if (name === "dogboard" || name === "messages") {
+    appScreen.style.height = `${window.innerHeight}px`;
+    appScreen.style.overflow = "hidden";
+  } else {
+    appScreen.style.height = "";
+    appScreen.style.overflow = "";
   }
+}
 
   window.scrollTo({ top:0, behavior:"smooth" });
 
