@@ -29,7 +29,7 @@ body{
   min-height:100vh;
   overflow-y:hidden;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: calc(env(safe-area-inset-bottom) + 40px);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 img{display:block;max-width:100%}
