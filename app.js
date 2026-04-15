@@ -2452,7 +2452,10 @@ function setActiveView(name){
 
     const appEl = document.getElementById("appScreen");
     const contentEl = document.querySelector(".content");
+    const nearbyEl = document.getElementById("viewNearby");
+    const loveEl = document.getElementById("viewLove");
     const messagesEl = document.getElementById("viewMessages");
+    const dogBoardEl = document.getElementById("viewDogBoard");
     const topbarEl = document.querySelector(".messages-topbar");
     const msgBodyEl = document.querySelector(".messages-body");
     const footerEl = document.querySelector(".app-footer");
@@ -2476,7 +2479,7 @@ function setActiveView(name){
       box1.style.color = "#fff";
       box1.style.pointerEvents = "none";
       box1.style.whiteSpace = "pre-wrap";
-      box1.style.maxHeight = "150px";
+      box1.style.maxHeight = "170px";
       box1.style.overflow = "hidden";
       document.body.appendChild(box1);
     }
@@ -2486,7 +2489,7 @@ function setActiveView(name){
       box2 = document.createElement("div");
       box2.id = "messagesRuntimeDebug2";
       box2.style.position = "fixed";
-      box2.style.top = "164px";
+      box2.style.top = "184px";
       box2.style.left = "6px";
       box2.style.right = "6px";
       box2.style.zIndex = "99999";
@@ -2498,7 +2501,7 @@ function setActiveView(name){
       box2.style.color = "#fff";
       box2.style.pointerEvents = "none";
       box2.style.whiteSpace = "pre-wrap";
-      box2.style.maxHeight = "170px";
+      box2.style.maxHeight = "150px";
       box2.style.overflow = "hidden";
       document.body.appendChild(box2);
     }
@@ -2507,7 +2510,10 @@ function setActiveView(name){
       "VIEWPORT: " + window.innerHeight + "\n" +
       "APP: " + rectLine(appEl) + "\n" +
       "CONTENT: " + rectLine(contentEl) + "\n" +
+      "NEARBY: " + rectLine(nearbyEl) + "\n" +
+      "LOVE: " + rectLine(loveEl) + "\n" +
       "MESSAGES: " + rectLine(messagesEl) + "\n" +
+      "DOGBOARD: " + rectLine(dogBoardEl) + "\n" +
       "TOPBAR: " + rectLine(topbarEl) + "\n" +
       "BODY: " + rectLine(msgBodyEl) + "\n" +
       "FOOTER: " + rectLine(footerEl) + "\n" +
