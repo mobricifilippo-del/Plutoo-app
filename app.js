@@ -2437,22 +2437,90 @@ function setActiveView(name){
     viewMessages.classList.add("active");
   }
 
-  // DEBUG RECT NODI MESSAGES
-  const rect = (el) => el ? el.getBoundingClientRect() : null;
+  setTimeout(() => {
+    const rectLine = (el) => {
+      if (!el) return "null";
+      const r = el.getBoundingClientRect();
+      return `${Math.round(r.top)} / ${Math.round(r.bottom)} / ${Math.round(r.height)}`;
+    };
 
-  const data = {
-    mainTopbar: rect(document.getElementById("mainTopbar")),
-    storiesBar: rect(document.getElementById("storiesBar")),
-    content: rect(document.querySelector(".content")),
-    viewMessages: rect(document.getElementById("viewMessages")),
-    messagesTopbar: rect(document.querySelector(".messages-topbar")),
-    messagesBody: rect(document.querySelector(".messages-body")),
-    appFooter: rect(document.querySelector(".app-footer")),
-    adBanner: rect(document.getElementById("adBanner")),
-    legalLinks: rect(document.querySelector(".legal-links"))
-  };
+    const scrollLine = (el) => {
+      if (!el) return "null";
+      const cs = window.getComputedStyle(el);
+      return `${el.scrollHeight} / ${el.clientHeight} / ${cs.overflowY}`;
+    };
 
-  console.log("MESSAGES RECT DEBUG:", data);
+    const appEl = document.getElementById("appScreen");
+    const contentEl = document.querySelector(".content");
+    const messagesEl = document.getElementById("viewMessages");
+    const topbarEl = document.querySelector(".messages-topbar");
+    const msgBodyEl = document.querySelector(".messages-body");
+    const footerEl = document.querySelector(".app-footer");
+    const bannerEl = document.getElementById("adBanner");
+    const legalEl = footerEl ? footerEl.querySelector(".legal-links.legal-purple") : null;
+
+    let box1 = document.getElementById("messagesRuntimeDebug1");
+    if (!box1) {
+      box1 = document.createElement("div");
+      box1.id = "messagesRuntimeDebug1";
+      box1.style.position = "fixed";
+      box1.style.top = "6px";
+      box1.style.left = "6px";
+      box1.style.right = "6px";
+      box1.style.zIndex = "99999";
+      box1.style.fontSize = "10px";
+      box1.style.lineHeight = "1.25";
+      box1.style.padding = "6px 8px";
+      box1.style.borderRadius = "8px";
+      box1.style.background = "rgba(0,0,0,0.84)";
+      box1.style.color = "#fff";
+      box1.style.pointerEvents = "none";
+      box1.style.whiteSpace = "pre-wrap";
+      box1.style.maxHeight = "150px";
+      box1.style.overflow = "hidden";
+      document.body.appendChild(box1);
+    }
+
+    let box2 = document.getElementById("messagesRuntimeDebug2");
+    if (!box2) {
+      box2 = document.createElement("div");
+      box2.id = "messagesRuntimeDebug2";
+      box2.style.position = "fixed";
+      box2.style.top = "164px";
+      box2.style.left = "6px";
+      box2.style.right = "6px";
+      box2.style.zIndex = "99999";
+      box2.style.fontSize = "10px";
+      box2.style.lineHeight = "1.25";
+      box2.style.padding = "6px 8px";
+      box2.style.borderRadius = "8px";
+      box2.style.background = "rgba(0,0,0,0.84)";
+      box2.style.color = "#fff";
+      box2.style.pointerEvents = "none";
+      box2.style.whiteSpace = "pre-wrap";
+      box2.style.maxHeight = "170px";
+      box2.style.overflow = "hidden";
+      document.body.appendChild(box2);
+    }
+
+    box1.textContent =
+      "VIEWPORT: " + window.innerHeight + "\n" +
+      "APP: " + rectLine(appEl) + "\n" +
+      "CONTENT: " + rectLine(contentEl) + "\n" +
+      "MESSAGES: " + rectLine(messagesEl) + "\n" +
+      "TOPBAR: " + rectLine(topbarEl) + "\n" +
+      "BODY: " + rectLine(msgBodyEl) + "\n" +
+      "FOOTER: " + rectLine(footerEl) + "\n" +
+      "BANNER: " + rectLine(bannerEl) + "\n" +
+      "LEGAL: " + rectLine(legalEl);
+
+    box2.textContent =
+      "HTML sh/ch/ovY: " + scrollLine(document.documentElement) + "\n" +
+      "BODY sh/ch/ovY: " + scrollLine(document.body) + "\n" +
+      "CONTENT sh/ch/ovY: " + scrollLine(contentEl) + "\n" +
+      "MESSAGES sh/ch/ovY: " + scrollLine(messagesEl) + "\n" +
+      "MSGBODY sh/ch/ovY: " + scrollLine(msgBodyEl);
+  }, 80);
   }
 
   if (name === "dogboard") {
