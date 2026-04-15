@@ -2556,6 +2556,8 @@ document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "
 if (appScreen) {
   if (name === "dogboard" || name === "messages") {
     appScreen.style.height = `${window.innerHeight}px`;
+    console.log("SET HEIGHT:", window.innerHeight);
+    console.log("APPLIED HEIGHT:", appScreen.style.height);
     appScreen.style.overflow = "hidden";
   } else {
     appScreen.style.height = "";
