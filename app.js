@@ -2442,55 +2442,16 @@ function setActiveView(name){
 document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
 
 if (appScreen) {
-  if (name === "messages") {
-    appScreen.style.minHeight = "0px";
+  if (name === "dogboard") {
     appScreen.style.height = `${window.innerHeight}px`;
     appScreen.style.overflow = "hidden";
   } else {
-    appScreen.style.minHeight = "";
     appScreen.style.height = "";
     appScreen.style.overflow = "";
   }
 }
 
   window.scrollTo({ top:0, behavior:"smooth" });
-
-  setTimeout(() => {
-    const banner = document.querySelector("#viewDogBoard .ad-banner");
-    const legal = document.querySelector("#viewDogBoard .legal-links");
-    const list = document.getElementById("dogBoardList");
-    const messagesBody = document.querySelector("#viewDogBoard .messages-body");
-    const content = document.querySelector(".content");
-    const app = document.querySelector(".app");
-
-    let msg = "";
-
-    if (banner) {
-      const b = banner.getBoundingClientRect();
-      msg += "BANNER bottom: " + Math.round(b.bottom) + "\n";
-    } else {
-      msg += "BANNER: null\n";
-    }
-
-    if (legal) {
-      const l = legal.getBoundingClientRect();
-      msg += "LEGAL bottom: " + Math.round(l.bottom) + "\n";
-    } else {
-      msg += "LEGAL: null\n";
-    }
-
-    msg += "VIEWPORT: " + window.innerHeight + "\n";
-
-    if (list) {
-      msg += "LIST scrollHeight: " + list.scrollHeight + "\n";
-      msg += "LIST clientHeight: " + list.clientHeight + "\n";
-      msg += "MB height: " + (messagesBody ? messagesBody.clientHeight : "null") + "\n";
-      msg += "CONTENT height: " + (content ? Math.round(content.getBoundingClientRect().height) : "null") + "\n";
-      msg += "CONTENT bottom: " + (content ? Math.round(content.getBoundingClientRect().bottom) : "null") + "\n";
-      msg += "APP height: " + Math.round(app.getBoundingClientRect().height) + "\n";
-      msg += "APP bottom: " + Math.round(app.getBoundingClientRect().bottom) + "\n";
-    }
-  }, 500);
 }
 
   btnBack?.addEventListener("click", ()=> goBack() );
