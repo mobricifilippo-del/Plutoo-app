@@ -2442,7 +2442,7 @@ function setActiveView(name){
 document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
 
 if (appScreen) {
-  if (name === "dogboard" || name === "messages") {
+  if (name === "messages") {
     appScreen.style.minHeight = "0px";
     appScreen.style.height = `${window.innerHeight}px`;
     appScreen.style.overflow = "hidden";
