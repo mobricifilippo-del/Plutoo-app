@@ -2384,65 +2384,10 @@ function setActiveView(name){
  if (name === "dogboard") {
   const el = document.getElementById("viewDogBoard");
 
-  if (!el) {
-    alert("DOGBOARD: ELEMENTO NON TROVATO");
-    return;
-  }
+  if (!el) return;
 
-  // ✅ ATTIVAZIONE VIEW (MANCAVA)
   el.classList.remove("hidden");
   el.classList.add("active");
-
-  const rect = el.getBoundingClientRect();
-  const style = window.getComputedStyle(el);
-
-  const parent = el.parentElement;
-  const parentRect = parent ? parent.getBoundingClientRect() : null;
-
-  alert(
-`DOGBOARD DEBUG
-
-=== CLASSI ===
-${el.className}
-
-=== DISPLAY / VISIBILITY ===
-display: ${style.display}
-visibility: ${style.visibility}
-opacity: ${style.opacity}
-
-=== FLEX ===
-flex: ${style.flex}
-flex-grow: ${style.flexGrow}
-flex-shrink: ${style.flexShrink}
-
-=== SIZE ===
-height: ${style.height}
-min-height: ${style.minHeight}
-max-height: ${style.maxHeight}
-
-=== POSITION ===
-position: ${style.position}
-top: ${style.top}
-bottom: ${style.bottom}
-
-=== RECT ===
-top: ${rect.top}
-bottom: ${rect.bottom}
-height: ${rect.height}
-
-=== PARENT RECT (.content) ===
-${parentRect ? `top: ${parentRect.top}
-bottom: ${parentRect.bottom}
-height: ${parentRect.height}` : "NO PARENT"}
-
-=== HTML STATE ===
-innerHTML length: ${el.innerHTML.length}
-children: ${el.children.length}
-
-=== ACTIVE CHECK ===
-has .active: ${el.classList.contains("active")}
-`
-  );
  }
 
   const storiesBar = $("storiesBar");
