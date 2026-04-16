@@ -2327,17 +2327,6 @@ msgLists.forEach((list) => {
   });
 });
 
-  function setActiveTabUI(name){
-  tabNearby?.classList.remove("active");
-  tabLove?.classList.remove("active");
-  tabLuoghi?.classList.remove("active");
-  if (tabPlay) tabPlay.classList.remove("active");
-
-  if (name === "nearby") tabNearby?.classList.add("active");
-  if (name === "love") tabLove?.classList.add("active");
-  if (name === "luoghi") tabLuoghi?.classList.add("active");
-}
-
  function setActiveTabUI(name){
   tabNearby?.classList.remove("active");
   tabLove?.classList.remove("active");
