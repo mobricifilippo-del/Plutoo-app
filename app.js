@@ -2402,11 +2402,21 @@ function setActiveView(name){
     alert("ERRORE: viewDogBoard NON trovato");
   } else {
     const r = el.getBoundingClientRect();
+
+    const cs = window.getComputedStyle(el);
+
     alert(
       "RECT:\n" +
       "top: " + Math.round(r.top) + "\n" +
       "bottom: " + Math.round(r.bottom) + "\n" +
       "height: " + Math.round(r.height)
+    );
+
+    alert(
+      "STYLE:\n" +
+      "display: " + cs.display + "\n" +
+      "flex: " + cs.flex + "\n" +
+      "height: " + cs.height
     );
   }
 
