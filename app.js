@@ -2389,6 +2389,10 @@ function setActiveView(name){
     return;
   }
 
+  // ✅ ATTIVAZIONE VIEW (MANCAVA)
+  el.classList.remove("hidden");
+  el.classList.add("active");
+
   const rect = el.getBoundingClientRect();
   const style = window.getComputedStyle(el);
 
