@@ -2393,9 +2393,26 @@ function setActiveView(name){
   const globalLegalLinks = document.querySelector("#appScreen > .legal-links.legal-purple");
 
   if (name === "dogboard") {
+
+  alert("DOGBOARD CLICK");
+
+  const el = document.getElementById("viewDogBoard");
+
+  if (!el) {
+    alert("ERRORE: viewDogBoard NON trovato");
   } else {
-    globalAdBanner?.classList.remove("hidden");
-    globalLegalLinks?.classList.remove("hidden");
+    const r = el.getBoundingClientRect();
+    alert(
+      "RECT:\n" +
+      "top: " + Math.round(r.top) + "\n" +
+      "bottom: " + Math.round(r.bottom) + "\n" +
+      "height: " + Math.round(r.height)
+    );
+  }
+
+} else {
+  globalAdBanner?.classList.remove("hidden");
+  globalLegalLinks?.classList.remove("hidden");
   }
 
   const storiesBar = $("storiesBar");
