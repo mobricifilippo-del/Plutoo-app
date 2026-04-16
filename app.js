@@ -2392,38 +2392,65 @@ function setActiveView(name){
   const globalAdBanner = document.getElementById("adBanner");
   const globalLegalLinks = document.querySelector("#appScreen > .legal-links.legal-purple");
 
-  if (name === "dogboard") {
-
-  alert("DOGBOARD CLICK");
-
+ if (name === "dogboard") {
   const el = document.getElementById("viewDogBoard");
 
   if (!el) {
-    alert("ERRORE: viewDogBoard NON trovato");
-  } else {
-    const r = el.getBoundingClientRect();
-
-    const cs = window.getComputedStyle(el);
-
-    alert(
-      "RECT:\n" +
-      "top: " + Math.round(r.top) + "\n" +
-      "bottom: " + Math.round(r.bottom) + "\n" +
-      "height: " + Math.round(r.height)
-    );
-
-    alert(
-      "STYLE:\n" +
-      "display: " + cs.display + "\n" +
-      "flex: " + cs.flex + "\n" +
-      "height: " + cs.height
-    );
+    alert("DOGBOARD: ELEMENTO NON TROVATO");
+    return;
   }
 
-} else {
-  globalAdBanner?.classList.remove("hidden");
-  globalLegalLinks?.classList.remove("hidden");
-  }
+  const rect = el.getBoundingClientRect();
+  const style = window.getComputedStyle(el);
+
+  const parent = el.parentElement;
+  const parentRect = parent ? parent.getBoundingClientRect() : null;
+
+  alert(
+`DOGBOARD DEBUG
+
+=== CLASSI ===
+${el.className}
+
+=== DISPLAY / VISIBILITY ===
+display: ${style.display}
+visibility: ${style.visibility}
+opacity: ${style.opacity}
+
+=== FLEX ===
+flex: ${style.flex}
+flex-grow: ${style.flexGrow}
+flex-shrink: ${style.flexShrink}
+
+=== SIZE ===
+height: ${style.height}
+min-height: ${style.minHeight}
+max-height: ${style.maxHeight}
+
+=== POSITION ===
+position: ${style.position}
+top: ${style.top}
+bottom: ${style.bottom}
+
+=== RECT ===
+top: ${rect.top}
+bottom: ${rect.bottom}
+height: ${rect.height}
+
+=== PARENT RECT (.content) ===
+${parentRect ? `top: ${parentRect.top}
+bottom: ${parentRect.bottom}
+height: ${parentRect.height}` : "NO PARENT"}
+
+=== HTML STATE ===
+innerHTML length: ${el.innerHTML.length}
+children: ${el.children.length}
+
+=== ACTIVE CHECK ===
+has .active: ${el.classList.contains("active")}
+`
+  );
+ }
 
   const storiesBar = $("storiesBar");
   if (storiesBar) {
