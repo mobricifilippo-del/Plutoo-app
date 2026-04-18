@@ -5586,14 +5586,20 @@ try {
     }
 
   } catch (err) {
-    console.error("Errore Firestore sendChatMessage", err);
-    // errore -> icona warning sulla bolla
-    try {
-      const statusEl = bubble.querySelector(".msg-status");
-      statusEl.textContent = "⚠️";
-      statusEl.dataset.status = "error";
-    } catch (_) {}
+  console.error("🔥 ERRORE FIRESTORE:", err);
+
+  alert(
+    "ERRORE FIRESTORE:\n" +
+    (err && err.message ? err.message : JSON.stringify(err))
+  );
+
+  try {
+    const statusEl = bubble.querySelector(".msg-status");
+    statusEl.textContent = "⚠️";
+    statusEl.dataset.status = "error";
+  } catch (_) {}
   }
+  
 }
 
 function escapeDogBoardHtml(value){
