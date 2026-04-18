@@ -5504,10 +5504,7 @@ if (isShowcaseDog) {
   return;
 }
 
-const chatId =
-  (chatPane && chatPane.dataset && chatPane.dataset.chatId)
-    ? chatPane.dataset.chatId
-    : `${selfUid}_${safeDogId}`;
+const chatId = `${selfUid}_${safeDogId}`;
 
     let dogName = null;
 let dogAvatar = null;
