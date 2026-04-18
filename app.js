@@ -5509,12 +5509,22 @@ const chatId =
     ? chatPane.dataset.chatId
     : `${selfUid}_${safeDogId}`;
 
-    const dogProfile =
-      state.currentDogProfile || DOGS.find(d => d.id === safeDogId) || {};
+    let dogName = null;
+let dogAvatar = null;
 
-    const dogName = dogProfile.name || null;
-    const dogAvatar =
-      dogProfile.img || dogProfile.avatar || dogProfile.photoUrl || null;
+try {
+  const dogSnap = await db.collection("dogs").doc(String(safeDogId)).get();
+  const dogData = dogSnap && dogSnap.exists ? (dogSnap.data() || {}) : {};
+
+  dogName = dogData.name || null;
+  dogAvatar =
+    dogData.photoUrl ||
+    dogData.img ||
+    dogData.avatar ||
+    null;
+} catch (e) {
+  console.error("Errore lettura dog Firestore:", e);
+}
 
     // 1) Messaggio (salvo ref per aggiornare ✓✓ quando diventa letto)
     const msgRef = await db.collection("messages").add({
