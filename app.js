@@ -5332,8 +5332,23 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
     }
   }
 
-  // ChatId UNICO e deterministico: sempre selfUid_dogId
-  chatId = `${selfUid}_${dogId}`;
+  let otherUid = "";
+
+if (typeof chatIdOrDog === "object" && chatIdOrDog) {
+  dog = chatIdOrDog;
+  dogId = dog.id || "";
+  otherUid = dog.ownerUid || "";
+} else {
+  chatId = chatIdOrDog || "";
+  dogId = maybeDogId || "";
+  otherUid = maybeOtherUid || "";
+}
+
+// ChatId UNICO e deterministico basato sui 2 partecipanti
+if (selfUid && otherUid) {
+  const pair = [String(selfUid), String(otherUid)].sort();
+  chatId = `${pair[0]}__${pair[1]}`;
+}
 
   // Trova DOG coerente (evita fallback strani)
   dog = dog || (DOGS.find(d => d.id === dogId) || null);
@@ -5346,6 +5361,7 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   // Salva metadati correnti
   chatPane.dataset.dogId = dogId;
   chatPane.dataset.chatId = chatId;
+  chatPane.dataset.otherUid = otherUid;
   chatPane.dataset.hasMatch = "0";
   state.currentDogId = dogId;
   state.currentChatId = chatId;
