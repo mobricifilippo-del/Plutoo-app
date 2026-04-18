@@ -2880,18 +2880,22 @@ setTimeout(() => {
   // ✅ NUOVA FUNZIONE: Consolida match su Firestore (swipe + profilo)
 async function ensureChatForMatch(dog) {
   if (!dog || !dog.id) return;
-  
+
   try {
-    const selfUid = window.PLUTOO_UID || "anonymous";
-    const dogId = dog.id;
+    const selfUid = String(window.PLUTOO_UID || "anonymous");
+    const dogId = String(dog.id || "");
     const dogName = dog.name || "";
     const dogAvatar = dog.img || dog.avatar || "";
+    const otherUid = String(dog.ownerUid || "");
 
-    // chatId deterministico (stesso formato usato ovunque)
-    const chatId = `${selfUid}_${dogId}`;
+    if (!selfUid || !dogId || !otherUid) return;
+
+    // chatId condiviso tra i 2 partecipanti reali
+    const pair = [selfUid, otherUid].sort();
+    const chatId = `${pair[0]}__${pair[1]}`;
 
     const chatPayload = {
-      members: [selfUid],
+      members: [selfUid, otherUid],
       dogId,
       dogName,
       dogAvatar,
