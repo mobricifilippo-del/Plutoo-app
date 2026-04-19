@@ -2246,7 +2246,7 @@ const isRequest =
         );
       }
 
-      if (hasMatch && dogId) {
+      if (isAccepted && dogId) {
         matchesList.appendChild(makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches", chat.dogAvatar)
         );
       }
