@@ -6123,8 +6123,9 @@ async function init(){
         if (!name) return;
 
         realDogs.push({
-          id: doc.id,
-          name: name,
+  id: doc.id,
+  ownerUid: String(data.ownerUid || ""),
+  name: name,
           breed: String(data.breed || ""),
           age: Number(data.age || 0),
           sex: String(data.sex || ""),
