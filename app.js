@@ -2227,20 +2227,19 @@ if (!snap || snap.empty) {
       // ✅ Spam: priorità assoluta (se c'è flag spam)
       const isSpam = chat.spam === true || chat.folder === "spam";
 
-      // ✅ Match: verità = Firestore match, con fallback alla cache locale (se esiste)
-      const hasMatch = (chat.match === true) || (state.matches && state.matches[dogId] === true);
+      const isAccepted = chat.status === "accepted";
 
-      // ✅ Ricevuti: se NON è mio, ha testo, NON è spam, e ho match
-      const isInbox =
-      hasText &&
-      !isSpam &&
-      hasMatch;
+// ✅ Ricevuti: ha testo, NON è spam, ed è accepted
+const isInbox =
+  hasText &&
+  !isSpam &&
+  isAccepted;
 
-      // ✅ Richieste: se NON è mio, ha testo, NON è spam, e NON ho match
-      const isRequest =
-        hasText &&
-        !isSpam &&
-        !hasMatch;
+// ✅ Richieste: ha testo, NON è spam, e NON è accepted
+const isRequest =
+  hasText &&
+  !isSpam &&
+  !isAccepted;
 
       if (isInbox) {
         inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", chat.dogAvatar)
