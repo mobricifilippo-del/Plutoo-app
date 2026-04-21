@@ -5523,9 +5523,22 @@ if (isShowcaseDog) {
   return;
 }
 
-const chatId = `${selfUid}_${safeDogId}`;
+const otherUid =
+  (chatPane && chatPane.dataset && chatPane.dataset.otherUid)
+    ? String(chatPane.dataset.otherUid)
+    : "";
 
-    let dogName = null;
+if (!otherUid) {
+  console.error("sendChatMessage: otherUid mancante");
+  statusEl.textContent = "⚠️";
+  statusEl.dataset.status = "error";
+  return;
+}
+
+const pair = [String(selfUid), String(otherUid)].sort();
+const chatId = `${pair[0]}__${pair[1]}`;
+
+let dogName = null;
 let dogAvatar = null;
 
 try {
@@ -5542,67 +5555,68 @@ try {
   console.error("Errore lettura dog Firestore:", e);
 }
 
-    // 1) Messaggio (salvo ref per aggiornare ✓✓ quando diventa letto)
-    const msgRef = await db.collection("messages").add({
-      chatId,
-      senderUid: selfUid,
-      text,
-      type: "text",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      isRead: false
-    });
+// 1) Messaggio (salvo ref per aggiornare ✓✓ quando diventa letto)
+const msgRef = await db.collection("messages").add({
+  chatId,
+  senderUid: selfUid,
+  text,
+  type: "text",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  isRead: false
+});
 
-    // ✓ inviato
-    statusEl.textContent = "✓";
-    statusEl.dataset.status = "sent";
+// ✓ inviato
+statusEl.textContent = "✓";
+statusEl.dataset.status = "sent";
 
-    // Listener: quando isRead diventa true -> ✓✓
-    // (NB: lo diventerà true SOLO se l’altro apre da "Ricevuti", come hai deciso tu)
-    msgRef.onSnapshot((doc) => {
-      const m = doc && doc.exists ? (doc.data() || {}) : {};
-      if (m.isRead === true) {
-        statusEl.textContent = "✓✓";
-        statusEl.dataset.status = "read";
-      }
-    }, () => {});
+// Listener: quando isRead diventa true -> ✓✓
+// (NB: lo diventerà true SOLO se l’altro apre da "Ricevuti", come hai deciso tu)
+msgRef.onSnapshot((doc) => {
+  const m = doc && doc.exists ? (doc.data() || {}) : {};
+  if (m.isRead === true) {
+    statusEl.textContent = "✓✓";
+    statusEl.dataset.status = "read";
+  }
+}, () => {});
 
-    // 2) Meta chat (NON tocchiamo match)
-    await db.collection("chats").doc(chatId).set({
-      // IMPORTANTISSIMO: non sovrascrivo più members (così non perdo l’altro UID)
-      members: firebase.firestore.FieldValue.arrayUnion(selfUid),
-      dogId: safeDogId,
-      dogName,
-      dogAvatar,
-      lastMessageText: text,
-      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-      lastSenderUid: selfUid
-    }, { merge: true });
+// 2) Meta chat: source of truth conversazione
+await db.collection("chats").doc(chatId).set({
+  members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
+  dogId: safeDogId,
+  dogName,
+  dogAvatar,
+  lastMessageText: text,
+  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+  lastSenderUid: selfUid,
+  status: "request"
+}, { merge: true });
 
-    if (typeof loadMessagesLists === "function") loadMessagesLists();
+if (typeof loadMessagesLists === "function") loadMessagesLists();
 
-    // Contatore coerente
-    state.chatMessagesSent[safeDogId] =
-      (state.chatMessagesSent[safeDogId] || 0) + 1;
+// Contatore coerente
+state.chatMessagesSent[safeDogId] =
+  (state.chatMessagesSent[safeDogId] || 0) + 1;
 
-    localStorage.setItem(
-      "chatMessagesSent",
-      JSON.stringify(state.chatMessagesSent)
-    );
+localStorage.setItem(
+  "chatMessagesSent",
+  JSON.stringify(state.chatMessagesSent)
+);
 
-    // Regole input
-    if (!state.plus && !hasMatch && state.chatMessagesSent[safeDogId] >= 1) {
-      chatInput.disabled = true;
-      chatInput.placeholder =
-        state.lang === "it"
-          ? "Match necessario per continuare"
-          : "Match needed to continue";
-    } else {
-      chatInput.disabled = false;
-      chatInput.placeholder =
-        state.lang === "it"
-          ? "Scrivi un messaggio…"
-          : "Type a message…";
-    }
+// Regole input
+if (!state.plus && !hasMatch && state.chatMessagesSent[safeDogId] >= 1) {
+  chatInput.disabled = true;
+  chatInput.placeholder =
+    state.lang === "it"
+      ? "Match necessario per continuare"
+      : "Match needed to continue";
+} else {
+  chatInput.disabled = false;
+  chatInput.placeholder =
+    state.lang === "it"
+      ? "Scrivi un messaggio…"
+      : "Type a message…";
+}
+        
 
   } catch (err) {
   console.error("🔥 ERRORE FIRESTORE:", err);
