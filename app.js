@@ -5598,8 +5598,8 @@ msgRef.onSnapshot((doc) => {
  await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
   dogId: safeDogId,
-  names: { [selfUid]: dogName },
-  avatars: { [selfUid]: dogAvatar },
+  names: { [otherUid]: dogName },
+  avatars: { [otherUid]: dogAvatar },
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
   lastSenderUid: selfUid,
