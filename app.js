@@ -5593,11 +5593,12 @@ msgRef.onSnapshot((doc) => {
 }, () => {});
 
 // 2) Meta chat: source of truth conversazione
-await db.collection("chats").doc(chatId).set({
+    
+ await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
   dogId: safeDogId,
-  dogName,
-  dogAvatar,
+  names: { [selfUid]: dogName },
+  avatars: { [selfUid]: dogAvatar },
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
   lastSenderUid: selfUid,
