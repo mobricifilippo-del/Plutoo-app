@@ -2218,7 +2218,10 @@ if (!snap || snap.empty) {
       const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
       const dogId = chat.dogId || null;
 
-      const dogName = chat.dogName || (state.lang === "en" ? "DOG" : "Dog");
+      const dogName =
+  (chat.names && chat.names[otherUid]) ||
+  (state.lang === "en" ? "DOG" : "Dog");
+      
       const text = (chat.lastMessageText || "").trim();
       const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
 
