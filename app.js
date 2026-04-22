@@ -5660,16 +5660,16 @@ try {
     
  await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
-  dogId: safeDogId,
-  names: {
-  [selfUid]: selfDogName || null,
-  [otherUid]: dogName || null
-},
 
-avatars: {
-  [selfUid]: selfDogAvatar || null,
-  [otherUid]: dogAvatar || null
-},
+  [`names.${selfUid}`]: selfDogName,
+  [`names.${otherUid}`]: dogName,
+
+  [`avatars.${selfUid}`]: selfDogAvatar,
+  [`avatars.${otherUid}`]: dogAvatar,
+
+  [`dogIds.${selfUid}`]: selfDogId,
+  [`dogIds.${otherUid}`]: safeDogId,
+
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
   lastSenderUid: selfUid,
