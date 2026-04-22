@@ -5326,21 +5326,6 @@ function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   let dogId = "";
   let chatId = "";
 
-  // Caso 1: openChat(dog) dal profilo
-  if (typeof chatIdOrDog === "object" && chatIdOrDog) {
-    dog = chatIdOrDog;
-    dogId = dog.id || "";
-  } else {
-    // Caso 2: openChat(chatId, dogId, otherUid) da lista Messaggi
-    chatId = chatIdOrDog || "";
-    dogId = maybeDogId || "";
-
-    // Se dogId non arriva, ricavalo da chatId (formato: selfUid_dogId)
-    if (!dogId && chatId && chatId.startsWith(selfUid + "_")) {
-      dogId = chatId.slice((selfUid + "_").length);
-    }
-  }
-
   let otherUid = "";
 
 if (typeof chatIdOrDog === "object" && chatIdOrDog) {
