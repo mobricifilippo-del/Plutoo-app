@@ -2234,7 +2234,15 @@ if (!snap || snap.empty) {
   // PRIORITÀ 1: SPAM
   if (chat.spam === true || chat.folder === "spam") {
     spamList.appendChild(
-      makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam", dogAvatar)
+      makeRow(
+        `${dogName}${text ? " - " + text : ""}`,
+        dateText,
+        chat.id,
+        dogId,
+        otherUid,
+        "spam",
+        dogAvatar
+      )
     );
     return;
   }
@@ -2244,12 +2252,28 @@ if (!snap || snap.empty) {
   // PRIORITÀ 2: ACCETTATI (INBOX + MATCH)
   if (isAccepted) {
     inboxList.appendChild(
-      makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", dogAvatar)
+      makeRow(
+        `${dogName}${text ? " - " + text : ""}`,
+        dateText,
+        chat.id,
+        dogId,
+        otherUid,
+        "inbox",
+        dogAvatar
+      )
     );
 
     if (dogId) {
       matchesList.appendChild(
-        makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches", dogAvatar)
+        makeRow(
+          `${dogName}`,
+          dateText,
+          chat.id,
+          dogId,
+          otherUid,
+          "matches",
+          dogAvatar
+        )
       );
     }
 
@@ -2258,7 +2282,15 @@ if (!snap || snap.empty) {
 
   // PRIORITÀ 3: TUTTO IL RESTO → REQUESTS
   requestsList.appendChild(
-    makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests", dogAvatar)
+    makeRow(
+      `${dogName}${text ? " - " + text : ""}`,
+      dateText,
+      chat.id,
+      dogId,
+      otherUid,
+      "requests",
+      dogAvatar
+    )
   );
 });
 
