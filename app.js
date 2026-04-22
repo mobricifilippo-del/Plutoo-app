@@ -2215,53 +2215,58 @@ if (!snap || snap.empty) {
 };
 
     chats.forEach((chat) => {
-      const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
-      const dogId = chat.dogId || null;
+  const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
+  const dogId = chat.dogId || null;
 
-    const dogName = chat.dogName || (state.lang === "en" ? "DOG" : "Dog");
-      
-      const text = (chat.lastMessageText || "").trim();
-      const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
+  const dogName =
+    (otherUid && chat.names && chat.names[otherUid]) ||
+    chat.dogName ||
+    (state.lang === "en" ? "DOG" : "Dog");
 
-      const hasText = text !== "";
+  const dogAvatar =
+    (otherUid && chat.avatars && chat.avatars[otherUid]) ||
+    chat.dogAvatar ||
+    null;
 
-      // ✅ Spam: priorità assoluta (se c'è flag spam)
-      const isSpam = chat.spam === true || chat.folder === "spam";
+  const text = (chat.lastMessageText || "").trim();
+  const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
 
-      const isAccepted = chat.status === "accepted";
+  const hasText = text !== "";
 
-// ✅ Ricevuti: ha testo, NON è spam, ed è accepted
-const isInbox =
-  hasText &&
-  !isSpam &&
-  isAccepted;
+  const isSpam = chat.spam === true || chat.folder === "spam";
 
-// ✅ Richieste: ha testo, NON è spam, e NON è accepted
-const isRequest =
-  hasText &&
-  !isSpam &&
-  !isAccepted;
+  const isAccepted = chat.status === "accepted";
 
-      if (isInbox) {
-        inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", chat.dogAvatar)
-        );
-      }
+  const isInbox =
+    hasText &&
+    !isSpam &&
+    isAccepted;
 
-      if (isAccepted && dogId) {
-        matchesList.appendChild(makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches", chat.dogAvatar)
-        );
-      }
+  const isRequest =
+    hasText &&
+    !isSpam &&
+    !isAccepted;
 
-      if (isRequest) {
-      requestsList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests", chat.dogAvatar)
-        );
-      }
+  if (isInbox) {
+    inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", dogAvatar)
+    );
+  }
 
-      if (isSpam) {
-        spamList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam", chat.dogAvatar)
-        );
-      }
-    });
+  if (isAccepted && dogId) {
+    matchesList.appendChild(makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches", dogAvatar)
+    );
+  }
+
+  if (isRequest) {
+    requestsList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests", dogAvatar)
+    );
+  }
+
+  if (isSpam) {
+    spamList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam", dogAvatar)
+    );
+  }
+});
 
     // Aggiorno gli "empty state" in base alla presenza di msg-item
     msgLists.forEach((list) => {
