@@ -2144,21 +2144,21 @@ if (!snap || snap.empty) {
         lastAt = lastAt.toDate();
       }
 
-      chats.push({
-        id: docSnap.id || null,
-        dogId: data.dogId || null,
-        members: Array.isArray(data.members) ? data.members : [],
-        lastMessageText: (data.lastMessageText || ""),
-        lastMessageAt: lastAt,
-        lastSenderUid: data.lastSenderUid || null,
-        dogName: data.dogName || null,
-        dogAvatar: data.dogAvatar || null,
-        match: data.match === true,
-
-        // opzionali: se non esistono su Firestore -> null/false
-        folder: data.folder || null,     // es: "requests" | "spam"
-        spam: data.spam === true
-      });
+     chats.push({
+  id: docSnap.id || null,
+  dogId: data.dogId || null,
+  members: Array.isArray(data.members) ? data.members : [],
+  lastMessageText: (data.lastMessageText || ""),
+  lastMessageAt: lastAt,
+  lastSenderUid: data.lastSenderUid || null,
+  dogName: data.dogName || null,
+  dogAvatar: data.dogAvatar || null,
+  names: data.names || {},
+  avatars: data.avatars || {},
+  match: data.match === true,
+  folder: data.folder || null,
+  spam: data.spam === true
+});
     });
 
     // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
