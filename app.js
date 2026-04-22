@@ -2215,6 +2215,27 @@ if (!snap || snap.empty) {
 };
 
     chats.forEach((chat) => {
+
+      const debugSelfUid = selfUid;
+const debugMembers = chat.members || [];
+
+const debugOtherUid = debugMembers.find((uid) => uid !== debugSelfUid) || null;
+
+const debugNames = chat.names || {};
+
+const debugDogName =
+  (debugOtherUid && debugNames && debugNames[debugOtherUid]) ||
+  chat.dogName ||
+  (state.lang === "en" ? "DOG" : "Dog");
+
+alert(
+  "selfUid: " + debugSelfUid +
+  "\nmembers: " + JSON.stringify(debugMembers) +
+  "\notherUid: " + debugOtherUid +
+  "\nnames: " + JSON.stringify(debugNames) +
+  "\ndogName: " + debugDogName
+);
+      
   const otherUid = chat.members.find((uid) => uid !== selfUid) || null;
   const dogId = chat.dogId || null;
 
