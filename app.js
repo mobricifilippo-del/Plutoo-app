@@ -2231,41 +2231,35 @@ if (!snap || snap.empty) {
   const text = (chat.lastMessageText || "").trim();
   const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
 
-  const hasText = text !== "";
-
-  const isSpam = chat.spam === true || chat.folder === "spam";
+  // PRIORITÀ 1: SPAM
+  if (chat.spam === true || chat.folder === "spam") {
+    spamList.appendChild(
+      makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam", dogAvatar)
+    );
+    return;
+  }
 
   const isAccepted = chat.status === "accepted";
 
-  const isInbox =
-    hasText &&
-    !isSpam &&
-    isAccepted;
-
-  const isRequest =
-    hasText &&
-    !isSpam &&
-    !isAccepted;
-
-  if (isInbox) {
-    inboxList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", dogAvatar)
+  // PRIORITÀ 2: ACCETTATI (INBOX + MATCH)
+  if (isAccepted) {
+    inboxList.appendChild(
+      makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "inbox", dogAvatar)
     );
+
+    if (dogId) {
+      matchesList.appendChild(
+        makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches", dogAvatar)
+      );
+    }
+
+    return;
   }
 
-  if (isAccepted && dogId) {
-    matchesList.appendChild(makeRow(`${dogName}`, dateText, chat.id, dogId, otherUid, "matches", dogAvatar)
-    );
-  }
-
-  if (isRequest) {
-    requestsList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests", dogAvatar)
-    );
-  }
-
-  if (isSpam) {
-    spamList.appendChild(makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "spam", dogAvatar)
-    );
-  }
+  // PRIORITÀ 3: TUTTO IL RESTO → REQUESTS
+  requestsList.appendChild(
+    makeRow(`${dogName} - ${text}`, dateText, chat.id, dogId, otherUid, "requests", dogAvatar)
+  );
 });
 
     // Aggiorno gli "empty state" in base alla presenza di msg-item
