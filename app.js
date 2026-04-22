@@ -5676,6 +5676,18 @@ avatars: {
   status: "request"
 }, { merge: true });
 
+    const debugChatSnap = await db.collection("chats").doc(chatId).get();
+const debugChatData = debugChatSnap && debugChatSnap.exists ? (debugChatSnap.data() || {}) : {};
+
+alert(
+  "DEBUG CHAT DOPO SET\n\n" +
+  "chatId: " + chatId +
+  "\nmembers: " + JSON.stringify(debugChatData.members || []) +
+  "\nnames: " + JSON.stringify(debugChatData.names || {}) +
+  "\navatars: " + JSON.stringify(debugChatData.avatars || {}) +
+  "\ndogIds: " + JSON.stringify(debugChatData.dogIds || {})
+);
+
 if (typeof loadMessagesLists === "function") loadMessagesLists();
 
 // Contatore coerente
