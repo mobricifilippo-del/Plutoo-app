@@ -5656,6 +5656,18 @@ try {
   console.error("Errore lettura self dog Firestore:", e);
 }
 
+    // DEBUG PRIMA DEL SET
+console.log("WRITE DEBUG:", {
+  selfUid,
+  otherUid,
+  selfDogName,
+  dogName,
+  selfDogAvatar,
+  dogAvatar,
+  selfDogId,
+  safeDogId
+});
+
 // 2) Meta chat: source of truth conversazione
     
  await db.collection("chats").doc(chatId).set({
