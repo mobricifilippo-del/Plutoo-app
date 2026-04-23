@@ -6636,10 +6636,6 @@ function deleteCurrentStoryMedia() {
     setTimeout(() => el.classList.remove("active"), 900);
   }
 
-  function playStoryMusic(musicId) {
-    console.log("🎵 Playing music:", musicId);
-  }
-
   document.addEventListener("click", (e) => {
     if (e.target.closest("#storiesBar")) return;
     const el = e.target.closest(".story-circle");
