@@ -2138,8 +2138,7 @@ if (!snap || snap.empty) {
     const chats = [];
     snap.forEach((docSnap) => {
       const data = docSnap.data() || {};
-      console.log("DOC ID:", docSnap.id);
-      console.log("CHAT SNAP DEBUG", docSnap.id, data.names || {});
+      alert("DOC ID: " + docSnap.id + "\nNAMES: " + JSON.stringify(data.names || {}));
 
       let lastAt = data.lastMessageAt || null;
       if (lastAt && typeof lastAt.toDate === "function") {
