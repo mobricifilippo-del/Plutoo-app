@@ -2269,29 +2269,35 @@ if (!snap || snap.empty) {
     );
 
     if (dogId) {
-  matchesList.appendChild((() => {
-    alert("MATCH ITEMS: " + matchesList.querySelectorAll(".msg-item").length);
-    const row = document.createElement("div");
-    row.className = "match-item";
+  const row = makeRow(
+    `${dogName}`,
+    "",
+    chat.id,
+    dogId,
+    otherUid,
+    "matches",
+    dogAvatar
+  );
 
-    const avatar = dogAvatar
-      ? `<img src="${dogAvatar}" class="match-avatar" alt="dog">`
-      : ``;
+  const previewEl = row.querySelector(".msg-preview");
+  if (previewEl) previewEl.remove();
 
-    row.innerHTML = `
-      ${avatar}
-      <div class="match-main">
-        <div class="match-name">${dogName}</div>
-      </div>
-    `;
+  const metaEl = row.querySelector(".msg-meta");
+  if (metaEl) metaEl.remove();
 
-    row.addEventListener("click", () => {
-      const dog = { id: dogId, name: dogName, img: dogAvatar, ownerUid: otherUid };
-      openProfilePage(dog);
-    });
+  row.onclick = () => {
+    const dog = {
+      id: dogId,
+      name: dogName,
+      img: dogAvatar,
+      avatar: dogAvatar,
+      ownerUid: otherUid
+    };
 
-    return row;
-  })());
+    openProfilePage(dog);
+  };
+
+  matchesList.appendChild(row);
     }
 
     return;
