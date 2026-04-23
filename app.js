@@ -2228,8 +2228,20 @@ if (!snap || snap.empty) {
 };
 
     chats.forEach((chat) => {
+  const otherUid =
+    (Array.isArray(chat.members) ? chat.members : []).find((uid) => uid !== selfUid) || null;
 
-    const dogAvatar =
+  const dogId =
+    (otherUid && chat.dogIds && chat.dogIds[otherUid]) ||
+    chat.dogId ||
+    null;
+
+  const dogName =
+    (otherUid && chat.names && chat.names[otherUid]) ||
+    chat.dogName ||
+    (state.lang === "en" ? "DOG" : "Dog");
+
+  const dogAvatar =
     (otherUid && chat.avatars && chat.avatars[otherUid]) ||
     chat.dogAvatar ||
     null;
