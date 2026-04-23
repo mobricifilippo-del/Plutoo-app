@@ -2252,7 +2252,7 @@ if (!snap || snap.empty) {
     return;
   }
 
-  const isAccepted = chat.status === "accepted";
+  const isAccepted = chat.status === "accepted" || chat.match === true;
 
   // PRIORITÀ 2: ACCETTATI (INBOX + MATCH)
   if (isAccepted) {
