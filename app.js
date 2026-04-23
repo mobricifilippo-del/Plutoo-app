@@ -5674,6 +5674,13 @@ console.log("WRITE DEBUG:", {
  await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
 
+  lastMessageText: text,
+  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+  lastSenderUid: selfUid,
+  status: "request"
+}, { merge: true });
+
+await db.collection("chats").doc(chatId).update({
   [`names.${selfUid}`]: selfDogName,
   [`names.${otherUid}`]: dogName,
 
@@ -5681,25 +5688,8 @@ console.log("WRITE DEBUG:", {
   [`avatars.${otherUid}`]: dogAvatar,
 
   [`dogIds.${selfUid}`]: selfDogId,
-  [`dogIds.${otherUid}`]: safeDogId,
-
-  lastMessageText: text,
-  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-  lastSenderUid: selfUid,
-  status: "request"
-}, { merge: true });
-
-    const debugChatSnap = await db.collection("chats").doc(chatId).get();
-const debugChatData = debugChatSnap && debugChatSnap.exists ? (debugChatSnap.data() || {}) : {};
-
-alert(
-  "DEBUG CHAT DOPO SET\n\n" +
-  "chatId: " + chatId +
-  "\nmembers: " + JSON.stringify(debugChatData.members || []) +
-  "\nnames: " + JSON.stringify(debugChatData.names || {}) +
-  "\navatars: " + JSON.stringify(debugChatData.avatars || {}) +
-  "\ndogIds: " + JSON.stringify(debugChatData.dogIds || {})
-);
+  [`dogIds.${otherUid}`]: safeDogId
+});
 
 if (typeof loadMessagesLists === "function") loadMessagesLists();
 
