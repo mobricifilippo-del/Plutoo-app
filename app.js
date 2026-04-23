@@ -2235,6 +2235,19 @@ if (!snap || snap.empty) {
   const text = (chat.lastMessageText || "").trim();
   const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
 
+      alert(
+  "DEBUG CLASSIFICAZIONE\n\n" +
+  "chat.id: " + (chat.id || "NULL") + "\n" +
+  "status: " + String(chat.status) + "\n" +
+  "match: " + String(chat.match === true) + "\n" +
+  "spam: " + String(chat.spam === true) + "\n" +
+  "folder: " + String(chat.folder || "") + "\n" +
+  "otherUid: " + String(otherUid || "") + "\n" +
+  "dogId: " + String(dogId || "") + "\n" +
+  "dogName: " + String(dogName || "") + "\n" +
+  "isAccepted: " + String(chat.status === "accepted")
+);
+
   // PRIORITÀ 1: SPAM
   if (chat.spam === true || chat.folder === "spam") {
     spamList.appendChild(
