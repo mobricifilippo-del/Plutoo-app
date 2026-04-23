@@ -2270,6 +2270,7 @@ if (!snap || snap.empty) {
 
     if (dogId) {
   matchesList.appendChild((() => {
+    alert("MATCH ITEMS: " + matchesList.querySelectorAll(".msg-item").length);
     const row = document.createElement("div");
     row.className = "match-item";
 
