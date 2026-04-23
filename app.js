@@ -5510,24 +5510,39 @@ async function sendChatMessage(text, dogId, hasMatch, msgCount) {
   const statusEl = bubble.querySelector(".msg-status");
 
   try {
-    const selfUid = window.PLUTOO_UID || "anonymous";
+  const selfUid = window.PLUTOO_UID || "anonymous";
 
-    let otherUid =
-  (chatPane && chatPane.dataset && chatPane.dataset.otherUid)
-    ? chatPane.dataset.otherUid
-    : "MANCANTE";
+  const otherUid =
+    (chatPane && chatPane.dataset && chatPane.dataset.otherUid)
+      ? String(chatPane.dataset.otherUid)
+      : "";
 
-    const safeDogId =
-      (chatPane && chatPane.dataset && chatPane.dataset.dogId)
-        ? chatPane.dataset.dogId
-        : (dogId || "");
+  const safeDogId =
+    (chatPane && chatPane.dataset && chatPane.dataset.dogId)
+      ? chatPane.dataset.dogId
+      : (dogId || "");
 
-    if (!safeDogId) {
-  console.error("sendChatMessage: dogId mancante");
-  statusEl.textContent = "⚠️";
-  statusEl.dataset.status = "error";
-  return;
-}
+  if (!safeDogId) {
+    console.error("sendChatMessage: dogId mancante");
+    statusEl.textContent = "⚠️";
+    statusEl.dataset.status = "error";
+    return;
+  }
+
+  const isShowcaseDog = !!DOGS.find(d => d && String(d.id) === String(safeDogId));
+  if (isShowcaseDog) {
+    console.warn("sendChatMessage: DOG vetrina, niente persistenza chat");
+    statusEl.textContent = "⚠️";
+    statusEl.dataset.status = "error";
+    return;
+  }
+
+  if (!otherUid) {
+    console.error("sendChatMessage: otherUid mancante");
+    statusEl.textContent = "⚠️";
+    statusEl.dataset.status = "error";
+    return;
+  }
 
 const isShowcaseDog = !!DOGS.find(d => d && String(d.id) === String(safeDogId));
 if (isShowcaseDog) {
