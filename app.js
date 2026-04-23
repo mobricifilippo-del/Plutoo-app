@@ -5545,14 +5545,6 @@ async function sendChatMessage(text, dogId, hasMatch, msgCount) {
     ? chatPane.dataset.otherUid
     : "MANCANTE";
 
-alert(
-  "DEBUG MESSAGGI\n\n" +
-  "selfUid: " + selfUid + "\n" +
-  "otherUid: " + debugOtherUid + "\n" +
-  "dogId: " + (chatPane?.dataset?.dogId || "MANCANTE") + "\n" +
-  "chatId ATTUALE: " + (chatPane?.dataset?.chatId || "MANCANTE")
-);
-
     const safeDogId =
       (chatPane && chatPane.dataset && chatPane.dataset.dogId)
         ? chatPane.dataset.dogId
@@ -5654,18 +5646,6 @@ try {
 } catch (e) {
   console.error("Errore lettura self dog Firestore:", e);
 }
-
-    // DEBUG PRIMA DEL SET
-console.log("WRITE DEBUG:", {
-  selfUid,
-  otherUid,
-  selfDogName,
-  dogName,
-  selfDogAvatar,
-  dogAvatar,
-  selfDogId,
-  safeDogId
-});
 
 // 2) Meta chat: source of truth conversazione
     
