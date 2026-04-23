@@ -5512,11 +5512,6 @@ async function sendChatMessage(text, dogId, hasMatch, msgCount) {
   try {
   const selfUid = window.PLUTOO_UID || "anonymous";
 
-  const otherUid =
-    (chatPane && chatPane.dataset && chatPane.dataset.otherUid)
-      ? String(chatPane.dataset.otherUid)
-      : "";
-
   const safeDogId =
     (chatPane && chatPane.dataset && chatPane.dataset.dogId)
       ? chatPane.dataset.dogId
