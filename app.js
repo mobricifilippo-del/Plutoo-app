@@ -5544,26 +5544,6 @@ async function sendChatMessage(text, dogId, hasMatch, msgCount) {
     return;
   }
 
-const isShowcaseDog = !!DOGS.find(d => d && String(d.id) === String(safeDogId));
-if (isShowcaseDog) {
-  console.warn("sendChatMessage: DOG vetrina, niente persistenza chat");
-  statusEl.textContent = "⚠️";
-  statusEl.dataset.status = "error";
-  return;
-}
-
-const otherUid =
-  (chatPane && chatPane.dataset && chatPane.dataset.otherUid)
-    ? String(chatPane.dataset.otherUid)
-    : "";
-
-if (!otherUid) {
-  console.error("sendChatMessage: otherUid mancante");
-  statusEl.textContent = "⚠️";
-  statusEl.dataset.status = "error";
-  return;
-}
-
 const pair = [String(selfUid), String(otherUid)].sort();
 const chatId = `${pair[0]}__${pair[1]}`;
 
