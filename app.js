@@ -2279,13 +2279,18 @@ if (!snap || snap.empty) {
     dogAvatar
   );
 
-  const previewEl = row.querySelector(".msg-preview");
+  const cleanRow = row.cloneNode(true);
+
+  const previewEl = cleanRow.querySelector(".msg-preview");
   if (previewEl) previewEl.remove();
 
-  const metaEl = row.querySelector(".msg-meta");
+  const metaEl = cleanRow.querySelector(".msg-meta");
   if (metaEl) metaEl.remove();
 
-  row.onclick = () => {
+  cleanRow.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     const dog = {
       id: dogId,
       name: dogName,
@@ -2295,9 +2300,9 @@ if (!snap || snap.empty) {
     };
 
     openProfilePage(dog);
-  };
+  });
 
-  matchesList.appendChild(row);
+  matchesList.appendChild(cleanRow);
     }
 
     return;
