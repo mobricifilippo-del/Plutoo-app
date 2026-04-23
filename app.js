@@ -2269,17 +2269,28 @@ if (!snap || snap.empty) {
     );
 
     if (dogId) {
-      matchesList.appendChild(
-        makeRow(
-          `${dogName}`,
-          dateText,
-          chat.id,
-          dogId,
-          otherUid,
-          "matches",
-          dogAvatar
-        )
-      );
+  matchesList.appendChild((() => {
+    const row = document.createElement("div");
+    row.className = "match-item";
+
+    const avatar = dogAvatar
+      ? `<img src="${dogAvatar}" class="match-avatar" alt="dog">`
+      : ``;
+
+    row.innerHTML = `
+      ${avatar}
+      <div class="match-main">
+        <div class="match-name">${dogName}</div>
+      </div>
+    `;
+
+    row.addEventListener("click", () => {
+      const dog = { id: dogId, name: dogName, img: dogAvatar, ownerUid: otherUid };
+      openProfilePage(dog);
+    });
+
+    return row;
+  })());
     }
 
     return;
