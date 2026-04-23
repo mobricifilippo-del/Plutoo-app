@@ -5643,8 +5643,8 @@ try {
 
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-  lastSenderUid: selfUid,
-  status: "request"
+  lastSenderUid: selfUid
+
 }, { merge: true });
 
 await db.collection("chats").doc(chatId).update({
