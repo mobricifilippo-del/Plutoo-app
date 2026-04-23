@@ -2143,7 +2143,7 @@ if (!snap || snap.empty) {
         lastAt = lastAt.toDate();
       }
 
-     chats.push({
+    chats.push({
   id: docSnap.id || null,
   dogId: data.dogId || null,
   members: Array.isArray(data.members) ? data.members : [],
@@ -2154,11 +2154,11 @@ if (!snap || snap.empty) {
   dogAvatar: data.dogAvatar || null,
   names: data.names || {},
   avatars: data.avatars || {},
+  status: data.status || null,
   match: data.match === true,
   folder: data.folder || null,
   spam: data.spam === true
 });
-    });
 
     // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
     if (!chats.length) {
