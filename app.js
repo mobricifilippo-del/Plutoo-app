@@ -2944,15 +2944,16 @@ async function ensureChatForMatch(dog) {
     const chatId = `${pair[0]}__${pair[1]}`;
 
     const chatPayload = {
-      members: [selfUid, otherUid],
-      dogId,
-      dogName,
-      dogAvatar,
-      match: true,
-      lastMessageText: "",
-      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    };
+  members: [selfUid, otherUid],
+  dogId,
+  dogName,
+  dogAvatar,
+  match: true,
+  status: "accepted", // ← AGGIUNTA
+  lastMessageText: "",
+  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+  updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+};
 
     await db.collection("chats").doc(chatId).set(chatPayload, { merge: true });
   } catch (err) {
