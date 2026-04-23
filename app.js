@@ -2160,20 +2160,6 @@ if (!snap || snap.empty) {
 });
     });
 
-    alert(
-  "DEBUG LISTE\n\n" +
-  "chats.length: " + chats.length + "\n" +
-  "ids: " + JSON.stringify((chats || []).map(c => c.id || null)) + "\n" +
-  "folders: " + JSON.stringify((chats || []).map(c => ({
-    id: c.id || null,
-    folder: c.folder || null,
-    spam: c.spam === true,
-    match: c.match === true,
-    lastSenderUid: c.lastSenderUid || null,
-    lastMessageText: c.lastMessageText || ""
-  })))
-);
-
     // Se non ci sono chat → mostro i testi "vuoti" e mi fermo
     if (!chats.length) {
       msgLists.forEach((list) => {
