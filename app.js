@@ -5550,9 +5550,14 @@ async function sendChatMessage(text, dogId, hasMatch, msgCount) {
   const selfUid = window.PLUTOO_UID || "anonymous";
 
   const safeDogId =
-    (chatPane && chatPane.dataset && chatPane.dataset.dogId)
-      ? chatPane.dataset.dogId
-      : (dogId || "");
+  (chatPane && chatPane.dataset && chatPane.dataset.dogId)
+    ? chatPane.dataset.dogId
+    : (dogId || "");
+
+const otherUid =
+  (chatPane && chatPane.dataset && chatPane.dataset.otherUid)
+    ? String(chatPane.dataset.otherUid)
+    : "";
 
   if (!safeDogId) {
     console.error("sendChatMessage: dogId mancante");
