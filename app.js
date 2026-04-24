@@ -1787,8 +1787,6 @@ function initMessagesBadge() {
       if (sender !== myUid) unread++;
     });
 
-    alert("BADGE snap size: " + snap.size + " | unread: " + unread);
-
     __setMsgBadge(unread);
   }, (e) => {
     alert("❌ MSG BADGE onSnapshot\n" + (e && e.message ? e.message : String(e)));
