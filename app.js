@@ -1779,7 +1779,7 @@ function initMessagesBadge() {
       if (sender !== myUid) unread++;
     });
 
-    console.log("BADGE snap size:", snap.size, "unread calcolato:", unread);
+    alert("BADGE snap size: " + snap.size + " | unread: " + unread);
 
     __setMsgBadge(unread);
   }, (e) => {
