@@ -1745,15 +1745,7 @@ function __setMsgBadge(n) {
   const c = Math.max(0, parseInt(n || 0, 10) || 0);
   msgBadge.textContent = String(c);
   msgBadge.classList.toggle("hidden", c === 0);
-
-  alert(
-  "BADGE DOM\n" +
-  "textContent: " + msgBadge.textContent + "\n" +
-  "className: " + msgBadge.className + "\n" +
-  "hidden presente: " + msgBadge.classList.contains("hidden")
-);
-  
-}
+  }
 
 function initMessagesBadge() {
   // aspetta UID + db
