@@ -1756,33 +1756,34 @@ function initMessagesBadge() {
 
   // kill vecchio listener
   try { if (typeof __msgBadgeUnsub === "function") __msgBadgeUnsub(); } catch (_) {}
-  __msgBadgeUnsub = null;
-
-  // chatId prefix = "<UID>_" (come nei tuoi screenshot)
-  const prefix = String(window.PLUTOO_UID) + "_";
 
   __msgBadgeUnsub = db
   .collection("messages")
-  .orderBy("chatId")
-  .startAt(prefix)
-  .endAt(prefix + "\uf8ff")
+  .where("isRead", "==", false)
   .onSnapshot((snap) => {
-      let unread = 0;
+    let unread = 0;
+    const myUid = String(window.PLUTOO_UID || "");
+
     snap.forEach((d) => {
-  const x = d.data() || {};
-  const myUid = String(window.PLUTOO_UID || "");
-  const sender = String(x.senderUid || "");
+      const x = d.data() || {};
+      const sender = String(x.senderUid || "");
+      const chatId = String(x.chatId || "");
 
-  // se manca senderUid, NON lo considero unread (evita badge falso)
-  if (!sender) return;
+      if (!sender || !chatId || !myUid) return;
 
-  // unread = solo messaggi NON miei e NON letti
-  if (sender !== myUid && x.isRead !== true) unread++;
-});
-      __setMsgBadge(unread);
-    }, (e) => {
-      alert("❌ MSG BADGE onSnapshot\n" + (e && e.message ? e.message : String(e)));
+      const parts = chatId.split("__");
+      if (parts.length !== 2) return;
+
+      if (parts[0] !== myUid && parts[1] !== myUid) return;
+
+      if (sender !== myUid) unread++;
     });
+
+    __setMsgBadge(unread);
+  }, (e) => {
+    alert("❌ MSG BADGE onSnapshot\n" + (e && e.message ? e.message : String(e)));
+  });
+  
 }
 
 // avvia subito
