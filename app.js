@@ -2628,7 +2628,7 @@ if(!d) return;
 
       <div class="card-info">
         <h3>${d.name} ${d.verified?"✅":""}</h3>
-        <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}</p>
+        <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${d.zone || fmtKm(d.km)}</p>
         <p class="bio">${d.bio||""}</p>
       </div>
     </article>`;
