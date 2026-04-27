@@ -4405,6 +4405,7 @@ const newDogId = dogRef.id;
         age: parseInt(age, 10),
         sex: sex,
         bio: bio || "",
+        zone: zone || "",
         km: 0,
         verified: false,
         photoUrl: photoUrl,
