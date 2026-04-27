@@ -4996,6 +4996,7 @@ nameInput.style.color = "inherit";
 
         btnSave.addEventListener("click", async () => {
           const newBio = String(bio.value || "").trim();
+          const newName = String(nameInput.value || "").trim();
 
           feedback.style.display = "block";
           feedback.style.border = "1px solid rgba(205,164,52,.35)";
@@ -5012,15 +5013,17 @@ nameInput.style.color = "inherit";
               const ts = (window.firebase && firebase.firestore && firebase.firestore.FieldValue && firebase.firestore.FieldValue.serverTimestamp)
                 ? firebase.firestore.FieldValue.serverTimestamp()
                 : new Date();
-              await dogRef.set({ bio: newBio, updatedAt: ts }, { merge: true });
+              await dogRef.set({ name: newName, bio: newBio, updatedAt: ts }, { merge: true });
             }
-
+            
+            d.name = newName;
             d.bio = newBio;
 
             try {
               if (Array.isArray(state.dogs)) {
                 const idx = state.dogs.findIndex(x => String(x && x.id) === String(d.id));
                 if (idx >= 0) {
+                  state.dogs[idx].name = newName;
                   state.dogs[idx].bio = newBio;
                   localStorage.setItem("dogs", JSON.stringify(state.dogs));
                 }
@@ -5050,6 +5053,8 @@ nameInput.style.color = "inherit";
         row.appendChild(btnSave);
 
         card.appendChild(title);
+        card.appendChild(nameLabel);
+        card.appendChild(nameInput);
         card.appendChild(bioLabel);
         card.appendChild(bio);
         card.appendChild(feedback);
