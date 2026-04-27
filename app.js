@@ -4299,6 +4299,7 @@ if (btnSaveDogDraft0 && isCreate) {
     const ageInput = document.getElementById("createDogAge");
     const sexSelect = document.getElementById("createDogSex");
     const bioInput = document.getElementById("createDogBio");
+    const zoneInput = document.getElementById("createDogZone");
     const errorDiv = document.getElementById("createDogErrors");
 
     const name = nameInput ? nameInput.value.trim() : "";
