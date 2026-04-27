@@ -2650,6 +2650,16 @@ try { realDogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) {
 }
 if (!Array.isArray(realDogs)) realDogs = [];
 
+    const testDog = realDogs.find(x => x && x.name === "Filippo");
+
+alert(
+  "FILTERED DOG CHECK\n\n" +
+  "name: " + (testDog && testDog.name) + "\n" +
+  "zone: " + (testDog && testDog.zone) + "\n" +
+  "km: " + (testDog && testDog.km) + "\n" +
+  "id: " + (testDog && testDog.id)
+);
+
 const sourceDogs = [...realDogs, ...DOGS];
 const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
 
