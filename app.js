@@ -3786,7 +3786,7 @@ setActiveView("profile");
     <div class="pp-badges" style="margin-top:.75rem">
       <span class="badge">${d.breed}</span>
       <span class="badge">${d.age} ${t("years")}</span>
-      <span class="badge">${fmtKm(d.km)}</span>
+      <span class="badge">${d.zone || fmtKm(d.km)}</span>
       <span class="badge">${d.sex === "M" ? (state.lang === "it" ? "Maschio" : "Male") : (state.lang === "it" ? "Femmina" : "Female")}</span>
     </div>
 
