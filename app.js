@@ -4612,40 +4612,93 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
           }
 
           if (pubBtn) {
-            pubBtn.onclick = () => {
-              if (!pendingFiles.length) return;
+  pubBtn.onclick = () => {
+    const c = document.getElementById("plutooGalleryPendingCount");
 
-              const remaining = maxPhotos - images.length;
-              const toAdd = pendingFiles.slice(0, remaining);
-              if (!toAdd.length) {
-                pendingFiles = [];
-                const c = document.getElementById("plutooGalleryPendingCount");
-                if (c) c.textContent = "";
-                publishBar.style.display = "none";
-                return;
-              }
+    if (!pendingFiles.length) return;
 
-              let pending = toAdd.length;
+    if (!window.db || !window.storage) {
+      if (c) c.textContent = state.lang === "it" ? " — Errore Firebase" : " — Firebase error";
+      return;
+    }
 
-              toAdd.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                  images.push(e.target.result);
-                  pending--;
-                  if (pending === 0) {
-                    try { localStorage.setItem(storageKey, JSON.stringify(images)); } catch (err) {}
-                    pendingFiles = [];
-                    const c = document.getElementById("plutooGalleryPendingCount");
-                    if (c) c.textContent = "";
-                    publishBar.style.display = "none";
-                    renderGallery();
-                  }
-                };
-                reader.readAsDataURL(file);
-              });
-            };
+    if (c) c.textContent = state.lang === "it" ? " — Caricamento in corso..." : " — Uploading...";
+
+    const dogRef = window.db.collection("dogs").doc(String(dogId));
+
+    dogRef.get().then((dogSnap) => {
+      const data = (dogSnap && dogSnap.exists) ? (dogSnap.data() || {}) : {};
+      const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
+
+      const remaining = maxPhotos - currentGallery.length;
+      const toAdd = pendingFiles.slice(0, remaining);
+
+      if (!toAdd.length) {
+        pendingFiles = [];
+        if (c) c.textContent = "";
+        publishBar.style.display = "none";
+        return;
+      }
+
+      const uploads = toAdd.map((file, index) => {
+        const ext = (file.type && file.type.includes("png")) ? "png" : "jpg";
+        const fileName = "gallery_" + Date.now() + "_" + index + "." + ext;
+        const storagePath = `dogs/${dogId}/gallery/${fileName}`;
+        const storageRef = window.storage.ref().child(storagePath);
+
+        return storageRef.put(file, { contentType: file.type || "image/jpeg" })
+          .then(() => storageRef.getDownloadURL())
+          .then((downloadUrl) => ({
+            index: index,
+            item: {
+              url: downloadUrl,
+              storagePath: storagePath,
+              createdAt: new Date().toISOString()
+            }
+          }))
+          .catch(() => null);
+      });
+
+      Promise.all(uploads).then((results) => {
+        const newItems = results
+          .filter(x => x && x.item)
+          .sort((a, b) => a.index - b.index)
+          .map(x => x.item);
+
+        if (!newItems.length) {
+          pendingFiles = [];
+          if (c) c.textContent = state.lang === "it" ? " — Errore caricamento" : " — Upload error";
+          publishBar.style.display = "none";
+          return;
+        }
+
+        const nextGallery = currentGallery.concat(newItems);
+
+        dogRef.set({ gallery: nextGallery }, { merge: true }).then(() => {
+          images = nextGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
+
+          pendingFiles = [];
+          if (c) c.textContent = state.lang === "it" ? " — Foto pubblicate" : " — Photos published";
+
+          setTimeout(() => {
+            if (c) c.textContent = "";
+            publishBar.style.display = "none";
+          }, 700);
+
+          renderGallery();
+        }).catch(() => {
+          pendingFiles = [];
+          if (c) c.textContent = state.lang === "it" ? " — Errore salvataggio" : " — Save error";
+          publishBar.style.display = "none";
+        });
+      });
+    }).catch(() => {
+      pendingFiles = [];
+      if (c) c.textContent = state.lang === "it" ? " — Errore lettura profilo" : " — Profile read error";
+      publishBar.style.display = "none";
+    });
+  };
           }
-        };
 
         const showPublishBar = () => {
           ensurePublishBar();
