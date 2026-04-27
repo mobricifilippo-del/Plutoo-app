@@ -1503,15 +1503,6 @@ const DOGS = [
     ].sort();
   });
 
-  // ============ Geolocalizzazione ============
-  if (navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      p=>{ state.geo = { lat:p.coords.latitude, lon:p.coords.longitude }; },
-      ()=>{}, { enableHighAccuracy:true, timeout:5000, maximumAge:60000 }
-    );
-  }
-
-  
   // =========== Restore in APP ===========
 if (state.entered) {
   homeScreen.classList.add("hidden");
