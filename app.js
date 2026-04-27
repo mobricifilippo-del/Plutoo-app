@@ -4475,6 +4475,15 @@ try {
     // cache locale (solo UI/velocità; source of truth = Firestore)
 if (!state.dogs) state.dogs = [];
 state.dogs = state.dogs.filter(d => !(d && String(d.id) === String(newDogId)));
+
+    alert(
+  "NEWDOG CHECK\n\n" +
+  "name: " + newDog.name + "\n" +
+  "zone: " + newDog.zone + "\n" +
+  "km: " + newDog.km + "\n" +
+  "id: " + newDog.id
+);
+    
 state.dogs.push(newDog);
 localStorage.setItem("dogs", JSON.stringify(state.dogs));
 
