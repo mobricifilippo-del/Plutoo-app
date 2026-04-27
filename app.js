@@ -5163,7 +5163,7 @@ if (btnSettings0) {
           if (!uid) throw new Error("Login richiesto");
 
           const ext = selectedProfilePhotoFile.type && selectedProfilePhotoFile.type.includes("png") ? "png" : "jpg";
-          const storageRef = storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.${ext}`);
+          const storageRef = storage.ref().child(`dogs/${uid}/profile.${ext}`);
 
           await storageRef.put(selectedProfilePhotoFile, { contentType: selectedProfilePhotoFile.type || "image/jpeg" });
           nextPhotoUrl = await storageRef.getDownloadURL();
