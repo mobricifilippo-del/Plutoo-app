@@ -5225,6 +5225,12 @@ if (btnSettings0) {
               }
 
               localStorage.setItem("dogs", JSON.stringify(state.dogs));
+              window.PLUTOO_DOG_NAME = newName;
+localStorage.setItem("plutoo_dog_name", newName);
+
+if (typeof window.refreshCreateDogCTA === "function") {
+  window.refreshCreateDogCTA();
+}
               if (typeof renderNearby === "function") {
               renderNearby();
               }
