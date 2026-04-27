@@ -4933,6 +4933,21 @@ if (!isOwnerViewing) return;
         title.style.fontSize = "1.05rem";
         title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
 
+        const nameLabel = document.createElement("div");
+nameLabel.style.opacity = ".85";
+nameLabel.style.fontWeight = "800";
+nameLabel.textContent = (state.lang === "it") ? "Nome DOG" : "DOG name";
+
+const nameInput = document.createElement("input");
+nameInput.type = "text";
+nameInput.value = String(d.name || "");
+nameInput.style.width = "100%";
+nameInput.style.background = "transparent";
+nameInput.style.border = "1px solid rgba(255,255,255,.12)";
+nameInput.style.borderRadius = "14px";
+nameInput.style.padding = "10px 12px";
+nameInput.style.color = "inherit";
+
         const bioLabel = document.createElement("div");
         bioLabel.style.opacity = ".85";
         bioLabel.style.fontWeight = "800";
