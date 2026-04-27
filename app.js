@@ -5225,6 +5225,9 @@ if (btnSettings0) {
               }
 
               localStorage.setItem("dogs", JSON.stringify(state.dogs));
+              if (typeof renderNearby === "function") {
+              renderNearby();
+              }
             }
           }
         } catch (_) {}
