@@ -4894,176 +4894,270 @@ if (!isOwnerViewing) return;
     };
 
     // =========================
-    // 1) IMPOSTAZIONI PROFILO (full screen stabile, no router)
-    // =========================
-    const btnSettings0 = document.getElementById("btnProfileSettings");
-    if (btnSettings0) {
-      const btnSettings = btnSettings0.cloneNode(true);
-      btnSettings0.parentNode.replaceChild(btnSettings, btnSettings0);
+// 1) IMPOSTAZIONI PROFILO (full screen stabile, no router)
+// =========================
+const btnSettings0 = document.getElementById("btnProfileSettings");
+if (btnSettings0) {
+  const btnSettings = btnSettings0.cloneNode(true);
+  btnSettings0.parentNode.replaceChild(btnSettings, btnSettings0);
 
-      btnSettings.addEventListener("click", () => {
-        closeExisting("plutooProfileSettingsView");
+  btnSettings.addEventListener("click", () => {
+    closeExisting("plutooProfileSettingsView");
 
-        const wrap = document.createElement("div");
-        wrap.id = "plutooProfileSettingsView";
-        wrap.style.position = "fixed";
-        wrap.style.left = "0";
-        wrap.style.top = "0";
-        wrap.style.right = "0";
-        wrap.style.bottom = "0";
-        wrap.style.zIndex = "99999";
-        wrap.style.background = "rgba(0,0,0,.86)";
-        wrap.style.display = "flex";
-        wrap.style.flexDirection = "column";
+    const wrap = document.createElement("div");
+    wrap.id = "plutooProfileSettingsView";
+    wrap.style.position = "fixed";
+    wrap.style.left = "0";
+    wrap.style.top = "0";
+    wrap.style.right = "0";
+    wrap.style.bottom = "0";
+    wrap.style.zIndex = "99999";
+    wrap.style.background = "rgba(0,0,0,.86)";
+    wrap.style.display = "flex";
+    wrap.style.flexDirection = "column";
 
-        const card = document.createElement("div");
-        card.style.margin = "12px";
-        card.style.borderRadius = "18px";
-        card.style.border = "1px solid rgba(255,255,255,.10)";
-        card.style.background = "#121218";
-        card.style.padding = "14px";
-        card.style.display = "flex";
-        card.style.flexDirection = "column";
-        card.style.gap = "10px";
-        card.style.flex = "1";
-        card.style.overflow = "auto";
+    const card = document.createElement("div");
+    card.style.margin = "12px";
+    card.style.borderRadius = "18px";
+    card.style.border = "1px solid rgba(255,255,255,.10)";
+    card.style.background = "#121218";
+    card.style.padding = "14px";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    card.style.gap = "10px";
+    card.style.flex = "1";
+    card.style.overflow = "auto";
 
-        const title = document.createElement("div");
-        title.style.fontWeight = "900";
-        title.style.fontSize = "1.05rem";
-        title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
+    const title = document.createElement("div");
+    title.style.fontWeight = "900";
+    title.style.fontSize = "1.05rem";
+    title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
 
-        const nameLabel = document.createElement("div");
-nameLabel.style.opacity = ".85";
-nameLabel.style.fontWeight = "800";
-nameLabel.textContent = (state.lang === "it") ? "Nome DOG" : "DOG name";
+    const nameLabel = document.createElement("div");
+    nameLabel.style.opacity = ".85";
+    nameLabel.style.fontWeight = "800";
+    nameLabel.textContent = (state.lang === "it") ? "Nome DOG" : "DOG name";
 
-const nameInput = document.createElement("input");
-nameInput.type = "text";
-nameInput.value = String(d.name || "");
-nameInput.style.width = "100%";
-nameInput.style.background = "transparent";
-nameInput.style.border = "1px solid rgba(255,255,255,.12)";
-nameInput.style.borderRadius = "14px";
-nameInput.style.padding = "10px 12px";
-nameInput.style.color = "inherit";
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.value = String(d.name || "");
+    nameInput.style.width = "100%";
+    nameInput.style.background = "transparent";
+    nameInput.style.border = "1px solid rgba(255,255,255,.12)";
+    nameInput.style.borderRadius = "14px";
+    nameInput.style.padding = "10px 12px";
+    nameInput.style.color = "inherit";
 
-        const bioLabel = document.createElement("div");
-        bioLabel.style.opacity = ".85";
-        bioLabel.style.fontWeight = "800";
-        bioLabel.textContent = (state.lang === "it") ? "Bio del DOG" : "DOG bio";
+    const breedLabel = document.createElement("div");
+    breedLabel.style.opacity = ".85";
+    breedLabel.style.fontWeight = "800";
+    breedLabel.textContent = (state.lang === "it") ? "Razza" : "Breed";
 
-        const bio = document.createElement("textarea");
-        bio.rows = 5;
-        bio.value = String(d.bio || "");
-        bio.placeholder = (state.lang === "it")
-          ? "Scrivi una breve descrizione del tuo DOG…"
-          : "Write a short description of your DOG…";
-        bio.style.width = "100%";
-        bio.style.background = "transparent";
-        bio.style.border = "1px solid rgba(255,255,255,.12)";
-        bio.style.borderRadius = "14px";
-        bio.style.padding = "10px 12px";
-        bio.style.color = "inherit";
-        bio.style.resize = "vertical";
-        bio.style.minHeight = "120px";
+    const breedInput = document.createElement("input");
+    breedInput.type = "text";
+    breedInput.value = String(d.breed || "");
+    breedInput.style.width = "100%";
+    breedInput.style.background = "transparent";
+    breedInput.style.border = "1px solid rgba(255,255,255,.12)";
+    breedInput.style.borderRadius = "14px";
+    breedInput.style.padding = "10px 12px";
+    breedInput.style.color = "inherit";
 
-        const feedback = document.createElement("div");
-        feedback.style.display = "none";
-        feedback.style.padding = ".65rem .8rem";
-        feedback.style.borderRadius = "14px";
-        feedback.style.fontWeight = "900";
+    const ageLabel = document.createElement("div");
+    ageLabel.style.opacity = ".85";
+    ageLabel.style.fontWeight = "800";
+    ageLabel.textContent = (state.lang === "it") ? "Età" : "Age";
 
-        const row = document.createElement("div");
-        row.style.display = "flex";
-        row.style.gap = ".6rem";
-        row.style.marginTop = "8px";
+    const ageInput = document.createElement("input");
+    ageInput.type = "number";
+    ageInput.min = "0";
+    ageInput.step = "1";
+    ageInput.value = String(d.age || "");
+    ageInput.style.width = "100%";
+    ageInput.style.background = "transparent";
+    ageInput.style.border = "1px solid rgba(255,255,255,.12)";
+    ageInput.style.borderRadius = "14px";
+    ageInput.style.padding = "10px 12px";
+    ageInput.style.color = "inherit";
 
-        const btnBack = document.createElement("button");
-        btnBack.type = "button";
-        btnBack.className = "btn ghost";
-        btnBack.style.flex = "1";
-        btnBack.textContent = (state.lang === "it") ? "← Indietro" : "← Back";
+    const sexLabel = document.createElement("div");
+    sexLabel.style.opacity = ".85";
+    sexLabel.style.fontWeight = "800";
+    sexLabel.textContent = (state.lang === "it") ? "Sesso" : "Sex";
 
-        const btnSave = document.createElement("button");
-        btnSave.type = "button";
-        btnSave.className = "btn accent";
-        btnSave.style.flex = "1";
-        btnSave.textContent = (state.lang === "it") ? "Salva" : "Save";
+    const sexInput = document.createElement("select");
+    sexInput.innerHTML = `
+      <option value="">${state.lang === "it" ? "Sesso" : "Sex"}</option>
+      <option value="M">${state.lang === "it" ? "Maschio" : "Male"}</option>
+      <option value="F">${state.lang === "it" ? "Femmina" : "Female"}</option>
+    `;
+    sexInput.value = String(d.sex || "");
+    sexInput.style.width = "100%";
+    sexInput.style.background = "transparent";
+    sexInput.style.border = "1px solid rgba(255,255,255,.12)";
+    sexInput.style.borderRadius = "14px";
+    sexInput.style.padding = "10px 12px";
+    sexInput.style.color = "inherit";
 
-        btnBack.addEventListener("click", () => closeExisting("plutooProfileSettingsView"));
-        wrap.addEventListener("click", (e) => { if (e.target === wrap) closeExisting("plutooProfileSettingsView"); });
+    const zoneLabel = document.createElement("div");
+    zoneLabel.style.opacity = ".85";
+    zoneLabel.style.fontWeight = "800";
+    zoneLabel.textContent = (state.lang === "it") ? "Zona" : "Area";
 
-        btnSave.addEventListener("click", async () => {
-          const newBio = String(bio.value || "").trim();
-          const newName = String(nameInput.value || "").trim();
+    const zoneInput = document.createElement("input");
+    zoneInput.type = "text";
+    zoneInput.value = String(d.zone || "");
+    zoneInput.style.width = "100%";
+    zoneInput.style.background = "transparent";
+    zoneInput.style.border = "1px solid rgba(255,255,255,.12)";
+    zoneInput.style.borderRadius = "14px";
+    zoneInput.style.padding = "10px 12px";
+    zoneInput.style.color = "inherit";
 
-          feedback.style.display = "block";
-          feedback.style.border = "1px solid rgba(205,164,52,.35)";
-          feedback.style.background = "rgba(205,164,52,.10)";
-          feedback.style.color = "#CDA434";
-          feedback.textContent = (state.lang === "it") ? "Salvataggio in corso..." : "Saving...";
+    const bioLabel = document.createElement("div");
+    bioLabel.style.opacity = ".85";
+    bioLabel.style.fontWeight = "800";
+    bioLabel.textContent = (state.lang === "it") ? "Bio del DOG" : "DOG bio";
 
-          try {
-            const db = window.db || null;
+    const bio = document.createElement("textarea");
+    bio.rows = 5;
+    bio.value = String(d.bio || "");
+    bio.placeholder = (state.lang === "it")
+      ? "Scrivi una breve descrizione del tuo DOG…"
+      : "Write a short description of your DOG…";
+    bio.style.width = "100%";
+    bio.style.background = "transparent";
+    bio.style.border = "1px solid rgba(255,255,255,.12)";
+    bio.style.borderRadius = "14px";
+    bio.style.padding = "10px 12px";
+    bio.style.color = "inherit";
+    bio.style.resize = "vertical";
+    bio.style.minHeight = "120px";
 
-            // dogs/{uid} => docId = d.id (owner viewing)
-            if (db) {
-              const dogRef = db.collection("dogs").doc(String(d.id));
-              const ts = (window.firebase && firebase.firestore && firebase.firestore.FieldValue && firebase.firestore.FieldValue.serverTimestamp)
-                ? firebase.firestore.FieldValue.serverTimestamp()
-                : new Date();
-              await dogRef.set({ name: newName, bio: newBio, updatedAt: ts }, { merge: true });
+    const feedback = document.createElement("div");
+    feedback.style.display = "none";
+    feedback.style.padding = ".65rem .8rem";
+    feedback.style.borderRadius = "14px";
+    feedback.style.fontWeight = "900";
+
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.gap = ".6rem";
+    row.style.marginTop = "8px";
+
+    const btnBack = document.createElement("button");
+    btnBack.type = "button";
+    btnBack.className = "btn ghost";
+    btnBack.style.flex = "1";
+    btnBack.textContent = (state.lang === "it") ? "← Indietro" : "← Back";
+
+    const btnSave = document.createElement("button");
+    btnSave.type = "button";
+    btnSave.className = "btn accent";
+    btnSave.style.flex = "1";
+    btnSave.textContent = (state.lang === "it") ? "Salva" : "Save";
+
+    btnBack.addEventListener("click", () => closeExisting("plutooProfileSettingsView"));
+    wrap.addEventListener("click", (e) => { if (e.target === wrap) closeExisting("plutooProfileSettingsView"); });
+
+    btnSave.addEventListener("click", async () => {
+      const newBio = String(bio.value || "").trim();
+      const newName = String(nameInput.value || "").trim();
+      const newBreed = String(breedInput.value || "").trim();
+      const newAge = parseInt(String(ageInput.value || "0"), 10);
+      const newSex = String(sexInput.value || "").trim();
+      const newZone = String(zoneInput.value || "").trim();
+
+      feedback.style.display = "block";
+      feedback.style.border = "1px solid rgba(205,164,52,.35)";
+      feedback.style.background = "rgba(205,164,52,.10)";
+      feedback.style.color = "#CDA434";
+      feedback.textContent = (state.lang === "it") ? "Salvataggio in corso..." : "Saving...";
+
+      try {
+        const db = window.db || null;
+
+        if (db) {
+          const dogRef = db.collection("dogs").doc(String(d.id));
+          const ts = (window.firebase && firebase.firestore && firebase.firestore.FieldValue && firebase.firestore.FieldValue.serverTimestamp)
+            ? firebase.firestore.FieldValue.serverTimestamp()
+            : new Date();
+
+          await dogRef.set({
+            name: newName,
+            breed: newBreed,
+            age: newAge,
+            sex: newSex,
+            zone: newZone,
+            bio: newBio,
+            updatedAt: ts
+          }, { merge: true });
+        }
+
+        d.name = newName;
+        d.breed = newBreed;
+        d.age = newAge;
+        d.sex = newSex;
+        d.zone = newZone;
+        d.bio = newBio;
+
+        try {
+          if (Array.isArray(state.dogs)) {
+            const idx = state.dogs.findIndex(x => String(x && x.id) === String(d.id));
+            if (idx >= 0) {
+              state.dogs[idx].name = newName;
+              state.dogs[idx].breed = newBreed;
+              state.dogs[idx].age = newAge;
+              state.dogs[idx].sex = newSex;
+              state.dogs[idx].zone = newZone;
+              state.dogs[idx].bio = newBio;
+              localStorage.setItem("dogs", JSON.stringify(state.dogs));
             }
-            
-            d.name = newName;
-            d.bio = newBio;
-
-            try {
-              if (Array.isArray(state.dogs)) {
-                const idx = state.dogs.findIndex(x => String(x && x.id) === String(d.id));
-                if (idx >= 0) {
-                  state.dogs[idx].name = newName;
-                  state.dogs[idx].bio = newBio;
-                  localStorage.setItem("dogs", JSON.stringify(state.dogs));
-                }
-              }
-            } catch (_) {}
-
-            feedback.style.border = "1px solid rgba(60,200,120,.45)";
-            feedback.style.background = "rgba(60,200,120,.10)";
-            feedback.style.color = "#bff7d6";
-            feedback.textContent = (state.lang === "it") ? "✅ Bio salvata" : "✅ Bio saved";
-
-            setTimeout(() => {
-              closeExisting("plutooProfileSettingsView");
-              if (typeof window.openProfilePage === "function") window.openProfilePage(d);
-            }, 450);
-
-          } catch (e) {
-            try { console.error("Profile bio save error:", e); } catch (_) {}
-            feedback.style.border = "1px solid rgba(255,80,80,.45)";
-            feedback.style.background = "rgba(255,0,0,.08)";
-            feedback.style.color = "#ffb3b3";
-            feedback.textContent = (state.lang === "it") ? "❌ Errore salvataggio bio" : "❌ Bio save error";
           }
-        });
+        } catch (_) {}
 
-        row.appendChild(btnBack);
-        row.appendChild(btnSave);
+        feedback.style.border = "1px solid rgba(60,200,120,.45)";
+        feedback.style.background = "rgba(60,200,120,.10)";
+        feedback.style.color = "#bff7d6";
+        feedback.textContent = (state.lang === "it") ? "✅ Profilo salvato" : "✅ Profile saved";
 
-        card.appendChild(title);
-        card.appendChild(nameLabel);
-        card.appendChild(nameInput);
-        card.appendChild(bioLabel);
-        card.appendChild(bio);
-        card.appendChild(feedback);
-        card.appendChild(row);
+        setTimeout(() => {
+          closeExisting("plutooProfileSettingsView");
+          if (typeof window.openProfilePage === "function") window.openProfilePage(d);
+        }, 450);
 
-        wrap.appendChild(card);
-        document.body.appendChild(wrap);
-      });
-    }
+      } catch (e) {
+        try { console.error("Profile bio save error:", e); } catch (_) {}
+        feedback.style.border = "1px solid rgba(255,80,80,.45)";
+        feedback.style.background = "rgba(255,0,0,.08)";
+        feedback.style.color = "#ffb3b3";
+        feedback.textContent = (state.lang === "it") ? "❌ Errore salvataggio profilo" : "❌ Profile save error";
+      }
+    });
+
+    row.appendChild(btnBack);
+    row.appendChild(btnSave);
+
+    card.appendChild(title);
+    card.appendChild(nameLabel);
+    card.appendChild(nameInput);
+    card.appendChild(breedLabel);
+    card.appendChild(breedInput);
+    card.appendChild(ageLabel);
+    card.appendChild(ageInput);
+    card.appendChild(sexLabel);
+    card.appendChild(sexInput);
+    card.appendChild(zoneLabel);
+    card.appendChild(zoneInput);
+    card.appendChild(bioLabel);
+    card.appendChild(bio);
+    card.appendChild(feedback);
+    card.appendChild(row);
+
+    wrap.appendChild(card);
+    document.body.appendChild(wrap);
+  });
+}
 
     // =========================
     // 2) MODIFICA SOCIAL (sheet leggero stabile)
