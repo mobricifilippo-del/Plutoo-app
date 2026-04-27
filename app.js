@@ -6300,6 +6300,7 @@ async function init(){
           img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
           verified: !!data.verified,
           bio: String(data.bio || ""),
+          zone: String(data.zone || ""),
           km: Number(data.km || 0),
           weight: Number(data.weight || 0),
           height: Number(data.height || 0),
