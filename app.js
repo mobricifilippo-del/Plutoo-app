@@ -4933,6 +4933,83 @@ if (btnSettings0) {
     title.style.fontSize = "1.05rem";
     title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
 
+    let selectedProfilePhotoFile = null;
+    let removeProfilePhoto = false;
+
+    const photoLabel = document.createElement("div");
+    photoLabel.style.opacity = ".85";
+    photoLabel.style.fontWeight = "800";
+    photoLabel.textContent = (state.lang === "it") ? "Foto profilo" : "Profile photo";
+
+    const photoPreview = document.createElement("img");
+    photoPreview.src = String(d.img || d.photoUrl || "./plutoo-icon-192.png");
+    photoPreview.alt = "";
+    photoPreview.style.width = "100%";
+    photoPreview.style.height = "220px";
+    photoPreview.style.objectFit = "cover";
+    photoPreview.style.objectPosition = "center";
+    photoPreview.style.borderRadius = "18px";
+    photoPreview.style.border = "1px solid rgba(255,255,255,.12)";
+    photoPreview.style.background = "#0b0b0f";
+    photoPreview.onerror = () => { photoPreview.src = "./plutoo-icon-192.png"; };
+
+    const photoInput = document.createElement("input");
+    photoInput.type = "file";
+    photoInput.accept = "image/*";
+    photoInput.style.display = "none";
+
+    const photoRow = document.createElement("div");
+    photoRow.style.display = "flex";
+    photoRow.style.gap = ".6rem";
+
+    const btnChangePhoto = document.createElement("button");
+    btnChangePhoto.type = "button";
+    btnChangePhoto.className = "btn accent";
+    btnChangePhoto.style.flex = "1";
+    btnChangePhoto.textContent = (state.lang === "it") ? "Cambia foto" : "Change photo";
+
+    const btnRemovePhoto = document.createElement("button");
+    btnRemovePhoto.type = "button";
+    btnRemovePhoto.className = "btn ghost";
+    btnRemovePhoto.style.flex = "1";
+    btnRemovePhoto.textContent = (state.lang === "it") ? "Rimuovi foto" : "Remove photo";
+
+    btnChangePhoto.addEventListener("click", () => {
+      photoInput.value = "";
+      photoInput.click();
+    });
+
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files && photoInput.files[0] ? photoInput.files[0] : null;
+      if (!file) return;
+
+      selectedProfilePhotoFile = file;
+      removeProfilePhoto = false;
+      photoPreview.src = URL.createObjectURL(file);
+
+      feedback.style.display = "block";
+      feedback.style.border = "1px solid rgba(205,164,52,.35)";
+      feedback.style.background = "rgba(205,164,52,.10)";
+      feedback.style.color = "#CDA434";
+      feedback.textContent = (state.lang === "it") ? "Foto selezionata" : "Photo selected";
+    });
+
+    btnRemovePhoto.addEventListener("click", () => {
+      selectedProfilePhotoFile = null;
+      removeProfilePhoto = true;
+      photoInput.value = "";
+      photoPreview.src = "./plutoo-icon-192.png";
+
+      feedback.style.display = "block";
+      feedback.style.border = "1px solid rgba(205,164,52,.35)";
+      feedback.style.background = "rgba(205,164,52,.10)";
+      feedback.style.color = "#CDA434";
+      feedback.textContent = (state.lang === "it") ? "Foto rimossa, salva per confermare" : "Photo removed, save to confirm";
+    });
+
+    photoRow.appendChild(btnChangePhoto);
+    photoRow.appendChild(btnRemovePhoto);
+
     const nameLabel = document.createElement("div");
     nameLabel.style.opacity = ".85";
     nameLabel.style.fontWeight = "800";
@@ -5076,6 +5153,25 @@ if (btnSettings0) {
 
       try {
         const db = window.db || null;
+        const storage = window.storage || null;
+        let nextPhotoUrl = null;
+
+        if (selectedProfilePhotoFile) {
+          if (!storage) throw new Error("Storage non pronto");
+
+          const uid = (window.PLUTOO_UID) || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
+          if (!uid) throw new Error("Login richiesto");
+
+          const ext = selectedProfilePhotoFile.type && selectedProfilePhotoFile.type.includes("png") ? "png" : "jpg";
+          const storageRef = storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.${ext}`);
+
+          await storageRef.put(selectedProfilePhotoFile, { contentType: selectedProfilePhotoFile.type || "image/jpeg" });
+          nextPhotoUrl = await storageRef.getDownloadURL();
+        }
+
+        if (removeProfilePhoto) {
+          nextPhotoUrl = "";
+        }
 
         if (db) {
           const dogRef = db.collection("dogs").doc(String(d.id));
@@ -5083,7 +5179,7 @@ if (btnSettings0) {
             ? firebase.firestore.FieldValue.serverTimestamp()
             : new Date();
 
-          await dogRef.set({
+          const updateData = {
             name: newName,
             breed: newBreed,
             age: newAge,
@@ -5091,7 +5187,13 @@ if (btnSettings0) {
             zone: newZone,
             bio: newBio,
             updatedAt: ts
-          }, { merge: true });
+          };
+
+          if (nextPhotoUrl !== null) {
+            updateData.photoUrl = nextPhotoUrl;
+          }
+
+          await dogRef.set(updateData, { merge: true });
         }
 
         d.name = newName;
@@ -5100,6 +5202,11 @@ if (btnSettings0) {
         d.sex = newSex;
         d.zone = newZone;
         d.bio = newBio;
+
+        if (nextPhotoUrl !== null) {
+          d.img = nextPhotoUrl;
+          d.photoUrl = nextPhotoUrl;
+        }
 
         try {
           if (Array.isArray(state.dogs)) {
@@ -5111,6 +5218,12 @@ if (btnSettings0) {
               state.dogs[idx].sex = newSex;
               state.dogs[idx].zone = newZone;
               state.dogs[idx].bio = newBio;
+
+              if (nextPhotoUrl !== null) {
+                state.dogs[idx].img = nextPhotoUrl;
+                state.dogs[idx].photoUrl = nextPhotoUrl;
+              }
+
               localStorage.setItem("dogs", JSON.stringify(state.dogs));
             }
           }
@@ -5139,6 +5252,10 @@ if (btnSettings0) {
     row.appendChild(btnSave);
 
     card.appendChild(title);
+    card.appendChild(photoLabel);
+    card.appendChild(photoPreview);
+    card.appendChild(photoInput);
+    card.appendChild(photoRow);
     card.appendChild(nameLabel);
     card.appendChild(nameInput);
     card.appendChild(breedLabel);
