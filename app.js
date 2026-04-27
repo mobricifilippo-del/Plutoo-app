@@ -4448,6 +4448,7 @@ try {
       img: data.photoUrl || "",
       verified: !!data.verified,
       bio: data.bio || "",
+      zone: data.zone || "",
       km: data.km || 0
     };
   }
