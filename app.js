@@ -4261,6 +4261,24 @@ if (createDogZoneInput && isCreate) {
         };
 
         createDogZoneInput.value = state.lang === "it" ? "Posizione rilevata" : "Location detected";
+
+fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo.lat}&lon=${state.geo.lon}&addressdetails=1&accept-language=it`)
+  .then(r => {
+    if (!r.ok) throw new Error();
+    return r.json();
+  })
+  .then(data => {
+    const a = data && data.address ? data.address : {};
+    const city = a.city || a.town || a.village || a.municipality || "";
+    const region = a.region || a.state || "";
+    const label = [city, region].filter(Boolean).join(", ");
+
+    if (label) {
+      createDogZoneInput.value = label;
+    }
+  })
+  .catch(() => {});
+        
       },
       () => {
         createDogZoneInput.value = "";
