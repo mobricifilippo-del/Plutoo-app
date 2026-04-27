@@ -4243,6 +4243,33 @@ location.reload();
 }
 })();
 
+  const createDogZoneInput = document.getElementById("createDogZone");
+if (createDogZoneInput && isCreate) {
+  createDogZoneInput.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      createDogZoneInput.value = state.lang === "it" ? "Geolocalizzazione non disponibile" : "Geolocation unavailable";
+      return;
+    }
+
+    createDogZoneInput.value = state.lang === "it" ? "Rilevamento posizione..." : "Detecting location...";
+
+    navigator.geolocation.getCurrentPosition(
+      p => {
+        state.geo = {
+          lat: p.coords.latitude,
+          lon: p.coords.longitude
+        };
+
+        createDogZoneInput.value = state.lang === "it" ? "Posizione rilevata" : "Location detected";
+      },
+      () => {
+        createDogZoneInput.value = "";
+      },
+      { enableHighAccuracy:true, timeout:5000, maximumAge:60000 }
+    );
+  });
+}
+
       const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
