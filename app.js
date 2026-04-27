@@ -4307,6 +4307,7 @@ if (btnSaveDogDraft0 && isCreate) {
     const age = ageInput ? ageInput.value : "";
     const sex = sexSelect ? sexSelect.value : "";
     const bio = bioInput ? bioInput.value.trim() : "";
+    const zone = zoneInput ? zoneInput.value.trim() : "";
 
     const errors = [];
     if (!name) errors.push(state.lang === "it" ? "Nome DOG mancante" : "DOG name missing");
