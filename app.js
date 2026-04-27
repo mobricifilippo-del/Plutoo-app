@@ -3684,14 +3684,6 @@ setActiveView("profile");
   const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
-  alert(
-  "ZONE CHECK PROFILE\n\n" +
-  "name: " + (d && d.name) + "\n" +
-  "zone: " + (d && d.zone) + "\n" +
-  "km: " + (d && d.km) + "\n" +
-  "id: " + (d && d.id)
-);
-
  profileContent.innerHTML = `
 
   <div class="pp-hero">
