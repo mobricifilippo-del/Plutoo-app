@@ -981,16 +981,139 @@ if (isAndroidWebView) {
 }
 
   // ============ Helpers ============
-  const $  = (id) => document.getElementById(id);
-  const qs = (s, r=document) => r.querySelector(s);
-  const qa = (s, r=document) => r ? Array.from(r.querySelectorAll(s)) : [];
-  const $all = qa;
+const $  = (id) => document.getElementById(id);
+const qs = (s, r=document) => r.querySelector(s);
+const qa = (s, r=document) => r ? Array.from(r.querySelectorAll(s)) : [];
+const $all = qa;
 
-  function autodetectLang(){
-    return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
-  }
+function showPlutooModal(options = {}) {
+  return new Promise((resolve) => {
+    const title = options.title || "Plutoo";
+    const message = options.message || "";
+    const confirmText = options.confirmText || "OK";
+    const cancelText = options.cancelText || "";
+    const danger = options.danger === true;
 
-  let CURRENT_USER_DOG_ID =
+    const modal = document.createElement("div");
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.style.position = "fixed";
+    modal.style.inset = "0";
+    modal.style.zIndex = "99999";
+    modal.style.background = "rgba(0,0,0,.62)";
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+    modal.style.padding = "18px";
+    modal.style.boxSizing = "border-box";
+
+    const box = document.createElement("div");
+    box.style.width = "min(92vw,380px)";
+    box.style.maxHeight = "82vh";
+    box.style.overflow = "auto";
+    box.style.background = "#171022";
+    box.style.border = "1px solid rgba(205,164,52,.45)";
+    box.style.borderRadius = "18px";
+    box.style.padding = "18px";
+    box.style.boxShadow = "0 18px 45px rgba(0,0,0,.45)";
+    box.style.color = "#fff";
+    box.style.boxSizing = "border-box";
+
+    const titleEl = document.createElement("div");
+    titleEl.style.fontWeight = "900";
+    titleEl.style.fontSize = "1.1rem";
+    titleEl.style.marginBottom = "8px";
+    titleEl.style.color = "#CDA434";
+    titleEl.textContent = title;
+
+    const messageEl = document.createElement("div");
+    messageEl.style.fontWeight = "700";
+    messageEl.style.marginBottom = "16px";
+    messageEl.style.lineHeight = "1.35";
+    messageEl.textContent = message;
+
+    const actions = document.createElement("div");
+    actions.style.display = "flex";
+    actions.style.gap = "10px";
+    actions.style.justifyContent = "flex-end";
+    actions.style.flexWrap = "wrap";
+
+    let cancelBtn = null;
+
+    if (cancelText) {
+      cancelBtn = document.createElement("button");
+      cancelBtn.type = "button";
+      cancelBtn.className = "btn ghost small";
+      cancelBtn.textContent = cancelText;
+      actions.appendChild(cancelBtn);
+    }
+
+    const confirmBtn = document.createElement("button");
+    confirmBtn.type = "button";
+    confirmBtn.className = "btn " + (danger ? "danger" : "accent") + " small";
+    confirmBtn.textContent = confirmText;
+
+    actions.appendChild(confirmBtn);
+
+    box.appendChild(titleEl);
+    box.appendChild(messageEl);
+    box.appendChild(actions);
+    modal.appendChild(box);
+
+    const close = (value) => {
+      if (modal.parentNode) modal.parentNode.removeChild(modal);
+      resolve(value);
+    };
+
+    modal.addEventListener("click", (ev) => {
+      if (ev.target === modal && cancelText) close(false);
+    });
+
+    modal.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape" && cancelText) close(false);
+    });
+
+    if (cancelBtn) {
+      cancelBtn.onclick = () => {
+        close(false);
+      };
+    }
+
+    confirmBtn.onclick = () => {
+      close(true);
+    };
+
+    document.body.appendChild(modal);
+
+    setTimeout(() => {
+      confirmBtn.focus();
+    }, 0);
+  });
+}
+
+function showPlutooAlert(message, options = {}) {
+  return showPlutooModal({
+    title: options.title || "Plutoo",
+    message: message || "",
+    confirmText: options.confirmText || "OK"
+  });
+}
+
+function showPlutooConfirm(message, options = {}) {
+  return showPlutooModal({
+    title: options.title || "Plutoo",
+    message: message || "",
+    cancelText: options.cancelText || "Annulla",
+    confirmText: options.confirmText || "Conferma",
+    danger: options.danger === true
+  });
+}
+
+function autodetectLang(){
+  return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
+}
+
+let CURRENT_USER_DOG_ID =
 String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "");
 
   // ============ Stato (caricato da localStorage dove possibile) ============
