@@ -4769,38 +4769,84 @@ del.onclick = (ev) => {
   ev.preventDefault();
   ev.stopPropagation();
 
-  if (!confirm("Vuoi eliminare questa foto?")) return;
+  const modal = document.createElement("div");
+  modal.style.position = "fixed";
+  modal.style.inset = "0";
+  modal.style.zIndex = "99999";
+  modal.style.background = "rgba(0,0,0,.62)";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.padding = "18px";
 
-  if (!window.db || !dogId) return;
+  modal.innerHTML = `
+    <div style="width:min(92vw,360px);background:#171022;border:1px solid rgba(205,164,52,.45);border-radius:18px;padding:18px;box-shadow:0 18px 45px rgba(0,0,0,.45);color:#fff;">
+      <div style="font-weight:900;font-size:1.1rem;margin-bottom:8px;color:#CDA434;">Plutoo</div>
+      <div style="font-weight:700;margin-bottom:16px;">Vuoi eliminare questa foto?</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button type="button" id="plutooCancelDeletePhoto" class="btn ghost small">Annulla</button>
+        <button type="button" id="plutooConfirmDeletePhoto" class="btn accent small">Elimina</button>
+      </div>
+    </div>
+  `;
 
-  const dogRef = window.db.collection("dogs").doc(String(dogId));
+  document.body.appendChild(modal);
 
-  dogRef.get()
-    .then((dogSnap) => {
-      if (!dogSnap || !dogSnap.exists) return;
+  const cancelBtn = modal.querySelector("#plutooCancelDeletePhoto");
+  const confirmBtn = modal.querySelector("#plutooConfirmDeletePhoto");
 
-      const data = dogSnap.data() || {};
-      const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
-      const itemToDelete = currentGallery[i] || null;
-      const nextGallery = currentGallery.filter((_, idx) => idx !== i);
+  if (cancelBtn) {
+    cancelBtn.onclick = () => {
+      modal.remove();
+    };
+  }
 
-      const deleteStoragePromise =
-        itemToDelete && itemToDelete.storagePath && window.storage
-          ? window.storage.ref().child(itemToDelete.storagePath).delete().catch(() => {})
-          : Promise.resolve();
+  if (confirmBtn) {
+    confirmBtn.onclick = () => {
+      modal.remove();
 
-      return deleteStoragePromise
-        .then(() => dogRef.set({ gallery: nextGallery }, { merge: true }))
-        .then(() => {
-          images = nextGallery
-            .map(x => x && x.url ? x.url : "")
-            .filter(Boolean)
-            .slice(0, maxPhotos);
+      if (!window.db || !dogId) return;
 
-          renderGallery();
+      const dogRef = window.db.collection("dogs").doc(String(dogId));
+
+      dogRef.get()
+        .then((dogSnap) => {
+          if (!dogSnap || !dogSnap.exists) return;
+
+          const data = dogSnap.data() || {};
+          const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
+          const itemToDelete = currentGallery[i] || null;
+          const nextGallery = currentGallery.filter((_, idx) => idx !== i);
+
+          const deleteStoragePromise =
+            itemToDelete && itemToDelete.storagePath && window.storage
+              ? window.storage
+                  .ref()
+                  .child(itemToDelete.storagePath)
+                  .delete()
+                  .catch(() => {})
+              : Promise.resolve();
+
+          return deleteStoragePromise
+            .then(() => {
+              return dogRef.set(
+                { gallery: nextGallery },
+                { merge: true }
+              );
+            })
+            .then(() => {
+              images = nextGallery
+                .map(x => x && x.url ? x.url : "")
+                .filter(Boolean)
+                .slice(0, maxPhotos);
+
+              renderGallery();
+            });
+        })
+        .catch(() => {
         });
-    })
-    .catch(() => {});
+    };
+  }
 };
 
       ph.appendChild(img);
