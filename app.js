@@ -4751,9 +4751,53 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
         openLightbox(img.getAttribute("src"));
       };
 
+      const del = document.createElement("button");
+del.type = "button";
+del.textContent = "🗑️";
+del.setAttribute("aria-label", "Remove photo");
+del.style.position = "absolute";
+del.style.right = "10px";
+del.style.bottom = "10px";
+del.style.zIndex = "5";
+del.style.border = "0";
+del.style.borderRadius = "999px";
+del.style.padding = "8px 10px";
+del.style.background = "rgba(0,0,0,.55)";
+del.style.color = "#fff";
+
+del.onclick = (ev) => {
+  ev.preventDefault();
+  ev.stopPropagation();
+
+  if (!window.db || !dogId) return;
+
+  const dogRef = window.db.collection("dogs").doc(String(dogId));
+
+  dogRef.get()
+    .then((dogSnap) => {
+      if (!dogSnap || !dogSnap.exists) return;
+
+      const data = dogSnap.data() || {};
+      const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
+
+      const nextGallery = currentGallery.filter((_, idx) => idx !== i);
+
+      return dogRef.set({ gallery: nextGallery }, { merge: true })
+        .then(() => {
+          images = nextGallery
+            .map(x => x && x.url ? x.url : "")
+            .filter(Boolean)
+            .slice(0, maxPhotos);
+
+          renderGallery();
+        });
+    })
+    .catch(() => {});
+};
+
       ph.appendChild(img);
-      galleryBlock.appendChild(ph);
-    }
+ph.appendChild(del);
+galleryBlock.appendChild(ph);
 
     const addPh = document.createElement("div");
     addPh.className = "ph";
