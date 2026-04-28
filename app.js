@@ -5205,7 +5205,10 @@ if (btnSettings0) {
     photoPreview.src = String(d.img || d.photoUrl || "./plutoo-icon-192.png");
     photoPreview.alt = "";
     photoPreview.style.width = "100%";
-    photoPreview.style.height = "220px";
+    photoPreview.style.height = "150px";
+photoPreview.style.maxWidth = "220px";
+photoPreview.style.alignSelf = "center";
+photoPreview.style.boxShadow = "0 14px 34px rgba(0,0,0,.35)";
     photoPreview.style.objectFit = "cover";
     photoPreview.style.objectPosition = "center";
     photoPreview.style.borderRadius = "18px";
