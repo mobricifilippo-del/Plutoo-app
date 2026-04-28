@@ -4769,6 +4769,8 @@ del.onclick = (ev) => {
   ev.preventDefault();
   ev.stopPropagation();
 
+  if (!confirm("Vuoi eliminare questa foto?")) return;
+
   if (!window.db || !dogId) return;
 
   const dogRef = window.db.collection("dogs").doc(String(dogId));
