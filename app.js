@@ -5472,7 +5472,7 @@ zoneInput.addEventListener("click", () => {
     const bioLabel = document.createElement("div");
     bioLabel.style.opacity = ".85";
     bioLabel.style.fontWeight = "800";
-    bioLabel.textContent = (state.lang === "it") ? "Bio del DOG" : "DOG bio";
+    bioLabel.textContent = "Bio";
 
     const bio = document.createElement("textarea");
     bio.rows = 5;
