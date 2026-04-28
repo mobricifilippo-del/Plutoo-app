@@ -5190,7 +5190,10 @@ if (btnSettings0) {
 
     const title = document.createElement("div");
 title.style.fontWeight = "900";
-title.style.fontSize = "1.05rem";
+title.style.fontSize = "1.28rem";
+title.style.textAlign = "center";
+title.style.textShadow = "0 0 14px rgba(205,164,52,.18)";
+title.style.marginBottom = "10px";
 title.style.color = "#CDA434";
 title.textContent = (state.lang === "it") ? "Impostazioni" : "Settings";
 
