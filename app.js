@@ -4779,10 +4779,16 @@ del.onclick = (ev) => {
 
       const data = dogSnap.data() || {};
       const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
-
+      const itemToDelete = currentGallery[i] || null;
       const nextGallery = currentGallery.filter((_, idx) => idx !== i);
 
-      return dogRef.set({ gallery: nextGallery }, { merge: true })
+      const deleteStoragePromise =
+        itemToDelete && itemToDelete.storagePath && window.storage
+          ? window.storage.ref().child(itemToDelete.storagePath).delete().catch(() => {})
+          : Promise.resolve();
+
+      return deleteStoragePromise
+        .then(() => dogRef.set({ gallery: nextGallery }, { merge: true }))
         .then(() => {
           images = nextGallery
             .map(x => x && x.url ? x.url : "")
