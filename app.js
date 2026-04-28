@@ -5200,6 +5200,7 @@ let removeProfilePhoto = false;
 const photoLabel = document.createElement("div");
 photoLabel.style.opacity = ".85";
 photoLabel.style.fontWeight = "800";
+photoLabel.style.display = "none";
 photoLabel.style.color = "#CDA434";
 photoLabel.textContent = (state.lang === "it") ? "Foto" : "Photo";
 
