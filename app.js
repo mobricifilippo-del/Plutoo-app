@@ -5409,6 +5409,61 @@ document.addEventListener("click", (e) => {
     zoneInput.style.padding = "10px 12px";
     zoneInput.style.color = "inherit";
 
+    zoneInput.readOnly = true;
+zoneInput.style.cursor = "pointer";
+
+zoneInput.addEventListener("click", () => {
+  if (!navigator.geolocation) return;
+
+  zoneInput.value = state.lang === "it"
+    ? "Rilevamento posizione..."
+    : "Detecting location...";
+
+  navigator.geolocation.getCurrentPosition(
+    (p) => {
+      const lat = p.coords.latitude;
+      const lon = p.coords.longitude;
+
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=${state.lang === "it" ? "it" : "en"}`)
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(data => {
+          const a = data && data.address ? data.address : {};
+
+          const city =
+            a.city ||
+            a.town ||
+            a.village ||
+            a.hamlet ||
+            "";
+
+          const region =
+            a.state ||
+            a.county ||
+            "";
+
+          const label = [city, region].filter(Boolean).join(", ");
+
+          zoneInput.value = label || (state.lang === "it" ? "Posizione trovata" : "Location found");
+        })
+        .catch(() => {
+          zoneInput.value = state.lang === "it"
+            ? "Posizione non trovata"
+            : "Location not found";
+        });
+    },
+    () => {
+      zoneInput.value = state.lang === "it"
+        ? "Permesso negato"
+        : "Permission denied";
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+});
+
     const bioLabel = document.createElement("div");
     bioLabel.style.opacity = ".85";
     bioLabel.style.fontWeight = "800";
