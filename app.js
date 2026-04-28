@@ -5189,58 +5189,60 @@ if (btnSettings0) {
     card.style.overflow = "auto";
 
     const title = document.createElement("div");
-    title.style.fontWeight = "900";
-    title.style.fontSize = "1.05rem";
-    title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
+title.style.fontWeight = "900";
+title.style.fontSize = "1.05rem";
+title.style.color = "#CDA434";
+title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
 
-    let selectedProfilePhotoFile = null;
-    let removeProfilePhoto = false;
+let selectedProfilePhotoFile = null;
+let removeProfilePhoto = false;
 
-    const photoLabel = document.createElement("div");
-    photoLabel.style.opacity = ".85";
-    photoLabel.style.fontWeight = "800";
-    photoLabel.textContent = (state.lang === "it") ? "Foto profilo" : "Profile photo";
+const photoLabel = document.createElement("div");
+photoLabel.style.opacity = ".85";
+photoLabel.style.fontWeight = "800";
+photoLabel.style.color = "#CDA434";
+photoLabel.textContent = (state.lang === "it") ? "Foto profilo" : "Profile photo";
 
-    const photoPreview = document.createElement("img");
-    photoPreview.src = String(d.img || d.photoUrl || "./plutoo-icon-192.png");
-    photoPreview.alt = "";
-    photoPreview.style.width = "100%";
-    photoPreview.style.height = "150px";
+const photoPreview = document.createElement("img");
+photoPreview.src = String(d.img || d.photoUrl || "./plutoo-icon-192.png");
+photoPreview.alt = "";
+photoPreview.style.width = "100%";
+photoPreview.style.height = "150px";
 photoPreview.style.maxWidth = "220px";
 photoPreview.style.alignSelf = "center";
 photoPreview.style.boxShadow = "0 14px 34px rgba(0,0,0,.35)";
-    photoPreview.style.objectFit = "cover";
-    photoPreview.style.objectPosition = "center";
-    photoPreview.style.borderRadius = "18px";
-    photoPreview.style.border = "1px solid rgba(255,255,255,.12)";
-    photoPreview.style.background = "#0b0b0f";
-    photoPreview.onerror = () => { photoPreview.src = "./plutoo-icon-192.png"; };
+photoPreview.style.objectFit = "cover";
+photoPreview.style.objectPosition = "center";
+photoPreview.style.borderRadius = "18px";
+photoPreview.style.border = "1px solid rgba(255,255,255,.12)";
+photoPreview.style.background = "#0b0b0f";
+photoPreview.onerror = () => { photoPreview.src = "./plutoo-icon-192.png"; };
 
-    const photoInput = document.createElement("input");
-    photoInput.type = "file";
-    photoInput.accept = "image/*";
-    photoInput.style.display = "none";
+const photoInput = document.createElement("input");
+photoInput.type = "file";
+photoInput.accept = "image/*";
+photoInput.style.display = "none";
 
-    const photoRow = document.createElement("div");
-    photoRow.style.display = "flex";
-    photoRow.style.gap = ".6rem";
+const photoRow = document.createElement("div");
+photoRow.style.display = "flex";
+photoRow.style.gap = ".6rem";
 
-    const btnChangePhoto = document.createElement("button");
-    btnChangePhoto.type = "button";
-    btnChangePhoto.className = "btn accent";
-    btnChangePhoto.style.flex = "1";
-    btnChangePhoto.textContent = (state.lang === "it") ? "Cambia foto" : "Change photo";
+const btnChangePhoto = document.createElement("button");
+btnChangePhoto.type = "button";
+btnChangePhoto.className = "btn accent";
+btnChangePhoto.style.flex = "1";
+btnChangePhoto.textContent = (state.lang === "it") ? "Cambia foto" : "Change photo";
 
-    const btnRemovePhoto = document.createElement("button");
-    btnRemovePhoto.type = "button";
-    btnRemovePhoto.className = "btn ghost";
-    btnRemovePhoto.style.flex = "1";
-    btnRemovePhoto.textContent = (state.lang === "it") ? "Rimuovi foto" : "Remove photo";
+const btnRemovePhoto = document.createElement("button");
+btnRemovePhoto.type = "button";
+btnRemovePhoto.className = "btn ghost";
+btnRemovePhoto.style.flex = "1";
+btnRemovePhoto.textContent = (state.lang === "it") ? "Rimuovi foto" : "Remove photo";
 
-    btnChangePhoto.addEventListener("click", () => {
-      photoInput.value = "";
-      photoInput.click();
-    });
+btnChangePhoto.addEventListener("click", () => {
+  photoInput.value = "";
+  photoInput.click();
+});
 
     photoInput.addEventListener("change", () => {
       const file = photoInput.files && photoInput.files[0] ? photoInput.files[0] : null;
