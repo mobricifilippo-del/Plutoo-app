@@ -4798,6 +4798,7 @@ del.onclick = (ev) => {
       ph.appendChild(img);
 ph.appendChild(del);
 galleryBlock.appendChild(ph);
+    }
 
     const addPh = document.createElement("div");
     addPh.className = "ph";
