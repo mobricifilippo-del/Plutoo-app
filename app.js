@@ -5192,7 +5192,7 @@ if (btnSettings0) {
 title.style.fontWeight = "900";
 title.style.fontSize = "1.05rem";
 title.style.color = "#CDA434";
-title.textContent = (state.lang === "it") ? "Impostazioni profilo" : "Profile settings";
+title.textContent = (state.lang === "it") ? "Impostazioni" : "Settings";
 
 let selectedProfilePhotoFile = null;
 let removeProfilePhoto = false;
@@ -5201,7 +5201,7 @@ const photoLabel = document.createElement("div");
 photoLabel.style.opacity = ".85";
 photoLabel.style.fontWeight = "800";
 photoLabel.style.color = "#CDA434";
-photoLabel.textContent = (state.lang === "it") ? "Foto profilo" : "Profile photo";
+photoLabel.textContent = (state.lang === "it") ? "Foto" : "Photo";
 
 const photoPreview = document.createElement("img");
 photoPreview.src = String(d.img || d.photoUrl || "./plutoo-icon-192.png");
