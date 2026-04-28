@@ -4529,248 +4529,286 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
       // Se non ho un DOG reale, NON inietto note e NON disabilito bottoni.
       if (!window.PLUTOO_HAS_DOG) return;
 
-      // ==== GALLERIA PROFILO (max 5 foto, salvate in localStorage)
-      (function () {
-        if (!d || !profileContent) return;
+      // ==== GALLERIA PROFILO (max 5 foto, Firebase-first)
+(function () {
+  if (!d || !profileContent) return;
 
-        const galleryBlock = qs("#dogGallery", profileContent) || qs(".gallery", profileContent);
-        if (!galleryBlock) return;
+  const galleryBlock = qs("#dogGallery", profileContent) || qs(".gallery", profileContent);
+  if (!galleryBlock) return;
 
-        // ✅ bind-once: se già agganciata per questo dogId, basta
-        const bindKey = `galleryBound_${d.id}`;
-        if (galleryBlock.dataset && galleryBlock.dataset[bindKey] === "1") return;
-        if (galleryBlock.dataset) galleryBlock.dataset[bindKey] = "1";
+  const bindKey = `galleryBound_${d.id}`;
+  if (galleryBlock.dataset && galleryBlock.dataset[bindKey] === "1") return;
+  if (galleryBlock.dataset) galleryBlock.dataset[bindKey] = "1";
 
-        const maxPhotos = 5;
-        const dogId = d.id;
-        const storageKey = "gallery_" + dogId;
+  const maxPhotos = 5;
+  const dogId = d.id;
 
-        let images = [];
-        try {
-          const raw = localStorage.getItem(storageKey);
-          images = raw ? JSON.parse(raw) : [];
-        } catch (e) {
-          images = [];
+  let images = [];
+
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.multiple = true;
+  input.style.display = "none";
+  document.body.appendChild(input);
+
+  let pendingFiles = [];
+  let publishBar = null;
+
+  const ensurePublishBar = () => {
+    if (publishBar && publishBar.parentNode) return;
+
+    publishBar = document.createElement("div");
+    publishBar.id = "plutooGalleryPublishBar";
+    publishBar.style.margin = ".55rem 0 .15rem";
+    publishBar.style.padding = ".65rem .75rem";
+    publishBar.style.border = "1px solid rgba(205,164,52,.35)";
+    publishBar.style.borderRadius = "14px";
+    publishBar.style.background = "rgba(205,164,52,.08)";
+    publishBar.style.display = "none";
+    publishBar.style.gap = ".55rem";
+    publishBar.style.alignItems = "center";
+    publishBar.style.justifyContent = "space-between";
+
+    publishBar.innerHTML = `
+      <div style="font-weight:900;">
+        ${state.lang === "it" ? "Foto pronte ✅" : "Photos ready ✅"}
+        <span id="plutooGalleryPendingCount" style="opacity:.8;font-weight:800;"></span>
+      </div>
+      <div style="display:flex;gap:.5rem;">
+        <button type="button" id="plutooGalleryPublishBtn" class="btn accent small">
+          ${state.lang === "it" ? "Pubblica" : "Publish"}
+        </button>
+        <button type="button" id="plutooGalleryCancelBtn" class="btn ghost small">
+          ${state.lang === "it" ? "Annulla" : "Cancel"}
+        </button>
+      </div>
+    `;
+
+    galleryBlock.parentNode.insertBefore(publishBar, galleryBlock);
+
+    const pubBtn = document.getElementById("plutooGalleryPublishBtn");
+    const cancelBtn = document.getElementById("plutooGalleryCancelBtn");
+
+    if (cancelBtn) {
+      cancelBtn.onclick = () => {
+        pendingFiles = [];
+        const c = document.getElementById("plutooGalleryPendingCount");
+        if (c) c.textContent = "";
+        publishBar.style.display = "none";
+      };
+    }
+
+    if (pubBtn) {
+      pubBtn.onclick = () => {
+        if (!pendingFiles.length) return;
+
+        const c = document.getElementById("plutooGalleryPendingCount");
+
+        if (!window.db || !window.storage) {
+          if (c) c.textContent = state.lang === "it" ? " — Errore Firebase" : " — Firebase error";
+          return;
         }
-        if (!Array.isArray(images)) images = [];
 
-        // input unico
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.multiple = true;
-        input.style.display = "none";
-        document.body.appendChild(input);
+        if (c) c.textContent = state.lang === "it" ? " — Caricamento in corso..." : " — Uploading...";
 
-        // ===== UI: pannello "Pubblica" (creato via JS, non tocchiamo HTML)
-        let pendingFiles = [];
-        let publishBar = null;
+        const dogRef = window.db.collection("dogs").doc(String(dogId));
 
-        const ensurePublishBar = () => {
-          if (publishBar && publishBar.parentNode) return;
+        dogRef.get()
+          .then((dogSnap) => {
+            const data = (dogSnap && dogSnap.exists) ? (dogSnap.data() || {}) : {};
+            const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
 
-          publishBar = document.createElement("div");
-          publishBar.id = "plutooGalleryPublishBar";
-          publishBar.style.margin = ".55rem 0 .15rem";
-          publishBar.style.padding = ".65rem .75rem";
-          publishBar.style.border = "1px solid rgba(205,164,52,.35)";
-          publishBar.style.borderRadius = "14px";
-          publishBar.style.background = "rgba(205,164,52,.08)";
-          publishBar.style.display = "none";
-          publishBar.style.gap = ".55rem";
-          publishBar.style.alignItems = "center";
-          publishBar.style.justifyContent = "space-between";
+            const remaining = maxPhotos - currentGallery.length;
+            const toAdd = pendingFiles.slice(0, remaining);
 
-          publishBar.innerHTML = `
-            <div style="font-weight:900;">
-              ${state.lang === "it" ? "Foto pronte ✅" : "Photos ready ✅"}
-              <span id="plutooGalleryPendingCount" style="opacity:.8;font-weight:800;"></span>
-            </div>
-            <div style="display:flex;gap:.5rem;">
-              <button type="button" id="plutooGalleryPublishBtn" class="btn accent small">
-                ${state.lang === "it" ? "Pubblica" : "Publish"}
-              </button>
-              <button type="button" id="plutooGalleryCancelBtn" class="btn ghost small">
-                ${state.lang === "it" ? "Annulla" : "Cancel"}
-              </button>
-            </div>
-          `;
-
-          // metto la bar prima della galleria
-          galleryBlock.parentNode.insertBefore(publishBar, galleryBlock);
-
-          const pubBtn = document.getElementById("plutooGalleryPublishBtn");
-          const cancelBtn = document.getElementById("plutooGalleryCancelBtn");
-
-          if (cancelBtn) {
-            cancelBtn.onclick = () => {
+            if (!toAdd.length) {
               pendingFiles = [];
-              const c = document.getElementById("plutooGalleryPendingCount");
               if (c) c.textContent = "";
               publishBar.style.display = "none";
-            };
-          }
+              return;
+            }
 
-      if (pubBtn) {
-            pubBtn.onclick = () => {
-              if (!pendingFiles.length) return;
+            const stamp = Date.now();
 
-              const remaining = maxPhotos - images.length;
-              const toAdd = pendingFiles.slice(0, remaining);
-              if (!toAdd.length) {
-                pendingFiles = [];
-                const c = document.getElementById("plutooGalleryPendingCount");
-                if (c) c.textContent = "";
-                publishBar.style.display = "none";
-                return;
-              }
+            const uploads = toAdd.map((file, index) => {
+              const ext = (file.type && file.type.includes("png")) ? "png" : "jpg";
+              const fileName = "gallery_" + stamp + "_" + index + "." + ext;
+              const storagePath = `dogs/${dogId}/gallery/${fileName}`;
+              const storageRef = window.storage.ref().child(storagePath);
 
-              let pending = toAdd.length;
-
-              toAdd.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                  images.push(e.target.result);
-                  pending--;
-                  if (pending === 0) {
-                    try { localStorage.setItem(storageKey, JSON.stringify(images)); } catch (err) {}
-                    pendingFiles = [];
-                    const c = document.getElementById("plutooGalleryPendingCount");
-                    if (c) c.textContent = "";
-                    publishBar.style.display = "none";
-                    renderGallery();
+              return storageRef.put(file, { contentType: file.type || "image/jpeg" })
+                .then(() => storageRef.getDownloadURL())
+                .then((downloadUrl) => ({
+                  index: index,
+                  item: {
+                    url: downloadUrl,
+                    storagePath: storagePath,
+                    createdAt: new Date().toISOString()
                   }
-                };
-                reader.readAsDataURL(file);
+                }))
+                .catch(() => null);
+            });
+
+            Promise.all(uploads)
+              .then((results) => {
+                const newItems = results
+                  .filter(x => x && x.item)
+                  .sort((a, b) => a.index - b.index)
+                  .map(x => x.item);
+
+                if (!newItems.length) {
+                  pendingFiles = [];
+                  if (c) c.textContent = state.lang === "it" ? " — Errore caricamento" : " — Upload error";
+                  publishBar.style.display = "none";
+                  return;
+                }
+
+                const nextGallery = currentGallery.concat(newItems).slice(0, maxPhotos);
+
+                dogRef.set({ gallery: nextGallery }, { merge: true })
+                  .then(() => {
+                    images = nextGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
+
+                    pendingFiles = [];
+                    if (c) c.textContent = state.lang === "it" ? " — Foto pubblicate" : " — Photos published";
+
+                    setTimeout(() => {
+                      if (c) c.textContent = "";
+                      publishBar.style.display = "none";
+                    }, 700);
+
+                    renderGallery();
+                  })
+                  .catch(() => {
+                    pendingFiles = [];
+                    if (c) c.textContent = state.lang === "it" ? " — Errore salvataggio" : " — Save error";
+                    publishBar.style.display = "none";
+                  });
               });
-            };
-          }
-        };
+          })
+          .catch(() => {
+            pendingFiles = [];
+            if (c) c.textContent = state.lang === "it" ? " — Errore lettura profilo" : " — Profile read error";
+            publishBar.style.display = "none";
+          });
+      };
+    }
+  };
 
-        const showPublishBar = () => {
-          ensurePublishBar();
-          const c = document.getElementById("plutooGalleryPendingCount");
-          if (c) c.textContent = `(${pendingFiles.length}/${maxPhotos - images.length})`;
-          publishBar.style.display = "flex";
-        };
+  const showPublishBar = () => {
+    ensurePublishBar();
+    const c = document.getElementById("plutooGalleryPendingCount");
+    if (c) c.textContent = `(${pendingFiles.length}/${maxPhotos - images.length})`;
+    publishBar.style.display = "flex";
+  };
 
-        // ===== Lightbox semplice (solo foto + X + tap fuori)
-        const openLightbox = (src) => {
-          if (!src) return;
+  const openLightbox = (src) => {
+    if (!src) return;
 
-          const old = document.querySelector(".lightbox");
-          if (old && old.parentNode) old.parentNode.removeChild(old);
+    const old = document.querySelector(".lightbox");
+    if (old && old.parentNode) old.parentNode.removeChild(old);
 
-          const lb = document.createElement("div");
-          lb.className = "lightbox";
-          lb.innerHTML = `
-            <button type="button" class="close" aria-label="Close">✕</button>
-            <img class="lightbox-img" src="${src}" alt="">
-          `;
-          document.body.appendChild(lb);
+    const lb = document.createElement("div");
+    lb.className = "lightbox";
+    lb.innerHTML = `
+      <button type="button" class="close" aria-label="Close">✕</button>
+      <img class="lightbox-img" src="${src}" alt="">
+    `;
+    document.body.appendChild(lb);
 
-          const closeBtn = qs(".close", lb);
-          if (closeBtn) closeBtn.onclick = () => lb.remove();
-          lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
-        };
+    const closeBtn = qs(".close", lb);
+    if (closeBtn) closeBtn.onclick = () => lb.remove();
+    lb.addEventListener("click", (e) => { if (e.target === lb) lb.remove(); });
+  };
 
-        const renderGallery = () => {
-          // pulisco tutto
-          galleryBlock.innerHTML = "";
+  const renderGallery = () => {
+    galleryBlock.innerHTML = "";
 
-          // render immagini
-          const limit = Math.min(images.length, maxPhotos);
-          for (let i = 0; i < limit; i++) {
-            const src = images[i];
+    const limit = Math.min(images.length, maxPhotos);
+    for (let i = 0; i < limit; i++) {
+      const src = images[i];
 
-            const ph = document.createElement("div");
-            ph.className = "ph";
-            ph.dataset.upload = "1";
-            ph.style.position = "relative";
+      const ph = document.createElement("div");
+      ph.className = "ph";
+      ph.dataset.upload = "1";
+      ph.style.position = "relative";
 
-            const img = document.createElement("img");
-            img.src = src;
-            img.className = "pp-gallery-img";
-            img.style.width = "100%";
-            img.style.height = "100%";
-            img.style.objectFit = "cover";
-            img.style.objectPosition = "center";
-            img.style.display = "block";
-            img.style.cursor = "pointer";
-            img.onerror = () => { img.src = "./plutoo-icon-192.png"; };
+      const img = document.createElement("img");
+      img.src = src;
+      img.className = "pp-gallery-img";
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.objectFit = "cover";
+      img.style.objectPosition = "center";
+      img.style.display = "block";
+      img.style.cursor = "pointer";
+      img.onerror = () => { img.src = "./plutoo-icon-192.png"; };
 
-            // ✅ click apre lightbox (sempre)
-            img.onclick = (ev) => {
-              ev.preventDefault();
-              ev.stopPropagation();
-              openLightbox(img.getAttribute("src"));
-            };
+      img.onclick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        openLightbox(img.getAttribute("src"));
+      };
 
-            // ✅ rimuovi (🗑️) per singola foto
-            const del = document.createElement("button");
-            del.type = "button";
-            del.textContent = "🗑️";
-            del.setAttribute("aria-label", "Remove photo");
-            del.style.position = "absolute";
-            del.style.right = "10px";
-            del.style.bottom = "10px";
-            del.style.zIndex = "5";
-            del.style.border = "0";
-            del.style.borderRadius = "999px";
-            del.style.padding = "8px 10px";
-            del.style.background = "rgba(0,0,0,.55)";
-            del.style.color = "#fff";
+      ph.appendChild(img);
+      galleryBlock.appendChild(ph);
+    }
 
-            del.onclick = (ev) => {
-              ev.preventDefault();
-              ev.stopPropagation();
+    const addPh = document.createElement("div");
+    addPh.className = "ph";
 
-              images.splice(i, 1);
-              try { localStorage.setItem(storageKey, JSON.stringify(images)); } catch (err) {}
-              renderGallery();
-            };
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "add-photo";
+    addBtn.textContent = "+ " + (state.lang === "it" ? "Aggiungi" : "Add");
 
-            ph.appendChild(img);
-            ph.appendChild(del);
-            galleryBlock.appendChild(ph);
-          }
+    addBtn.disabled = images.length >= maxPhotos;
 
-          // slot ADD (sempre ultimo)
-          const addPh = document.createElement("div");
-          addPh.className = "ph";
+    addBtn.onclick = () => {
+      if (images.length >= maxPhotos) return;
+      input.value = "";
+      input.click();
+    };
 
-          const addBtn = document.createElement("button");
-          addBtn.type = "button";
-          addBtn.className = "add-photo";
-          addBtn.textContent = "+ " + (state.lang === "it" ? "Aggiungi" : "Add");
+    addPh.appendChild(addBtn);
+    galleryBlock.appendChild(addPh);
+  };
 
-          addBtn.disabled = images.length >= maxPhotos;
+  input.onchange = () => {
+    const files = Array.from(input.files || []);
+    if (!files.length) return;
 
-          // ✅ evita duplicazioni: onclick (sostituisce)
-          addBtn.onclick = () => {
-            if (images.length >= maxPhotos) return;
-            input.value = "";
-            input.click();
-          };
+    const remaining = maxPhotos - images.length;
+    const toQueue = files.slice(0, remaining);
+    if (!toQueue.length) return;
 
-          addPh.appendChild(addBtn);
-          galleryBlock.appendChild(addPh);
-        };
+    pendingFiles = toQueue;
+    showPublishBar();
+  };
 
-        input.onchange = () => {
-          const files = Array.from(input.files || []);
-          if (!files.length) return;
+  renderGallery();
 
-          const remaining = maxPhotos - images.length;
-          const toQueue = files.slice(0, remaining);
-          if (!toQueue.length) return;
+  try {
+    if (window.db) {
+      window.db.collection("dogs").doc(String(dogId)).get()
+        .then((dogSnap) => {
+          if (!dogSnap || !dogSnap.exists) return;
 
-          pendingFiles = toQueue;
-          showPublishBar();
-        };
+          const data = dogSnap.data() || {};
+          const gallery = Array.isArray(data.gallery) ? data.gallery : [];
 
-        renderGallery();
-      })();
+          images = gallery
+            .map(x => x && x.url ? x.url : "")
+            .filter(Boolean)
+            .slice(0, maxPhotos);
+
+          renderGallery();
+        })
+        .catch(() => {});
+    }
+  } catch (_) {}
+})();
 
       // ✅ safe: update follower UI
       if (typeof updateFollowerUI === "function") updateFollowerUI(d);
