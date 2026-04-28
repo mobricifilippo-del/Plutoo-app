@@ -5300,6 +5300,64 @@ if (btnSettings0) {
     breedInput.style.padding = "10px 12px";
     breedInput.style.color = "inherit";
 
+    const profileBreedsList = document.createElement("div");
+profileBreedsList.className = "breeds-list";
+profileBreedsList.style.display = "none";
+
+breedInput.addEventListener("input", () => {
+  const raw = (breedInput.value || "").trim();
+  const v = raw.toLowerCase();
+
+  profileBreedsList.innerHTML = "";
+  profileBreedsList.style.display = "none";
+  breedInput.dataset.canonical = "";
+
+  if (!v) return;
+
+  const mixedBreedLabel =
+    state.lang === "it" ? "Razza mista" : "Mixed Breed";
+
+  const ALIAS = state.lang === "it"
+    ? { "razza mista": { label: mixedBreedLabel, canonical: "Mixed Breed" } }
+    : { "mixed breed": { label: mixedBreedLabel, canonical: "Mixed Breed" } };
+
+  const aliasHit = ALIAS[v] || null;
+  const query = ((aliasHit ? aliasHit.canonical : raw) || "").toLowerCase();
+
+  let matches = state.breeds
+    .filter(b => (b || "").toLowerCase().startsWith(query))
+    .slice(0, 16);
+
+  if (aliasHit) matches = [aliasHit.canonical];
+
+  if (!matches.length) return;
+
+  profileBreedsList.innerHTML = matches.map(b => {
+    const canonical = b;
+    const label = aliasHit ? aliasHit.label : b;
+    return `<div class="item" data-label="${label}" data-canonical="${canonical}">${label}</div>`;
+  }).join("");
+
+  profileBreedsList.style.display = "block";
+
+  qa(".item", profileBreedsList).forEach(it => it.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    breedInput.value = it.getAttribute("data-label") || it.textContent;
+    breedInput.dataset.canonical = it.getAttribute("data-canonical") || it.textContent;
+
+    profileBreedsList.style.display = "none";
+    breedInput.blur();
+  }));
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target !== breedInput && !profileBreedsList.contains(e.target)) {
+    profileBreedsList.style.display = "none";
+  }
+});
+
     const ageLabel = document.createElement("div");
     ageLabel.style.opacity = ".85";
     ageLabel.style.fontWeight = "800";
@@ -5400,7 +5458,9 @@ if (btnSettings0) {
     btnSave.addEventListener("click", async () => {
       const newBio = String(bio.value || "").trim();
       const newName = String(nameInput.value || "").trim();
-      const newBreed = String(breedInput.value || "").trim();
+      const newBreed = String(
+  breedInput.dataset.canonical || breedInput.value || ""
+).trim();
       const newAge = parseInt(String(ageInput.value || "0"), 10);
       const newSex = String(sexInput.value || "").trim();
       const newZone = String(zoneInput.value || "").trim();
@@ -5529,6 +5589,7 @@ if (typeof window.refreshCreateDogCTA === "function") {
     card.appendChild(nameInput);
     card.appendChild(breedLabel);
     card.appendChild(breedInput);
+    card.appendChild(profileBreedsList);
     card.appendChild(ageLabel);
     card.appendChild(ageInput);
     card.appendChild(sexLabel);
