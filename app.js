@@ -7184,14 +7184,25 @@ circle.innerHTML = `
 
   // ✅ mostra "Elimina" solo sui tuoi aggiornamenti
   const deleteBtn = $("deleteStoryBtn");
+    
   if (deleteBtn) {
-    if (story.userId === "currentUser") {
-      deleteBtn.classList.remove("hidden");
-      deleteBtn.onclick = deleteCurrentStoryMedia;
-    } else {
-      deleteBtn.classList.add("hidden");
-      deleteBtn.onclick = null;
-    }
+  const currentUid =
+    (window.auth &&
+      window.auth.currentUser &&
+      window.auth.currentUser.uid)
+      ? String(window.auth.currentUser.uid)
+      : String(window.PLUTOO_UID || "");
+
+  const isOwner =
+    String(story.ownerUid || "") === currentUid;
+
+  if (isOwner) {
+    deleteBtn.classList.remove("hidden");
+    deleteBtn.onclick = deleteCurrentStoryMedia;
+  } else {
+    deleteBtn.classList.add("hidden");
+    deleteBtn.onclick = null;
+  }
   }
 
   renderProgressBars(visibleMedia.length);
