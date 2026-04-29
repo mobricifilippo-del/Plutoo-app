@@ -7005,10 +7005,29 @@ async function init(){
   });
   }
 
-  function initStories() {
+  async function initStories() {
+  let loaded = false;
+
+  try {
+    const ok = await StoriesState.loadStoriesFromFirestore();
+
+    if (
+      ok === true &&
+      Array.isArray(StoriesState.stories) &&
+      StoriesState.stories.length > 0
+    ) {
+      loaded = true;
+    }
+  } catch (e) {
+    loaded = false;
+  }
+
+  if (!loaded) {
     StoriesState.loadStories();
-    renderStoriesBar();
-    setupStoriesEvents();
+  }
+
+  renderStoriesBar();
+  setupStoriesEvents();
   }
 
   // ===== STORIES — eventi, bar, viewer, navigazione =====
