@@ -2726,6 +2726,9 @@ display: none !important;
   display:flex;
   align-items:center;
   gap:.55rem;
+  position:absolute;
+  top:22px;
+  right:18px;
 }
 
 .story-delete-btn{
