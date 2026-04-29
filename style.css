@@ -647,11 +647,6 @@ padding: 0 .5rem;
   z-index:906;
   padding:.8rem 1rem;
   background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,transparent 100%);
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
 }
 
 .story-progress-bars{display:flex;gap:4px;margin-bottom:.7rem}
@@ -699,6 +694,7 @@ padding: 0 .5rem;
   position:absolute;top:0;bottom:0;width:35%;background:transparent;
   border:0;cursor:pointer;z-index:904;outline:none;
 }
+
 .story-nav-prev{left:0}
 .story-nav-next{right:0}
 .story-privacy-badge{
@@ -707,6 +703,7 @@ padding: 0 .5rem;
   padding:.5rem .9rem;border-radius:20px;font-size:.85rem;color:#fff;
   border:1px solid rgba(138,123,255,.4);
 }
+
 .story-like-btn{
   position:absolute;
   bottom:1.4rem;
