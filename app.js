@@ -7107,12 +7107,19 @@ async function init(){
       const circle = document.createElement("button");
       circle.className = `story-circle ${allViewed ? "viewed" : ""}`;
       circle.type = "button";
-      circle.innerHTML = `
-        <div class="story-avatar">
-          <img src="${story.avatar}" alt="${story.userName}" />
-        </div>
-        <span class="story-name">${story.userName}</span>
-      `;
+      
+      const previewSrc =
+  (visibleMedia[visibleMedia.length - 1] &&
+   visibleMedia[visibleMedia.length - 1].url)
+    ? visibleMedia[visibleMedia.length - 1].url
+    : story.avatar;
+
+circle.innerHTML = `
+      <div class="story-avatar">
+        <img src="${previewSrc}" alt="${story.userName}" />
+      </div>
+      <span class="story-name">${story.userName}</span>
+    `;
 
       circle.addEventListener("click", (e) => {
         e.preventDefault();
