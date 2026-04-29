@@ -1393,7 +1393,28 @@ const STORIES_CONFIG = {
     story.media.sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0));
   });
 
-  this.stories = Object.values(grouped);
+  let realStories = Object.values(grouped);
+
+// 👉 aggiunta DEMO se feed povero
+const DEMO_MIN = 5;
+
+if (realStories.length < DEMO_MIN) {
+  const demos = (typeof this.generateMockStories === "function")
+    ? this.generateMockStories()
+    : [];
+
+  // evita duplicati (dogId/userId già presenti)
+  const existingIds = new Set(realStories.map(s => String(s.userId)));
+
+  const filteredDemos = demos.filter(d => {
+    const id = String(d.userId || d.dogId || "");
+    return id && !existingIds.has(id);
+  });
+
+  realStories = realStories.concat(filteredDemos);
+}
+
+this.stories = realStories;
   return true;
 },
     
