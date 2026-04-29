@@ -7883,6 +7883,14 @@ function setupFiltersGrid() {
 }
 
 async function publishStory() {
+
+  const publishBtn = document.getElementById("publishStory");
+if (publishBtn) {
+  publishBtn.disabled = true;
+  publishBtn.dataset.oldText = publishBtn.textContent;
+  publishBtn.textContent = state.lang === "it" ? "Pubblicazione..." : "Publishing...";
+}
+  
   // 🔒 VETRINA: blocca pubblicazione story
   if (window.PLUTOO_READONLY) {
     const msg = state.lang === "it"
@@ -8115,8 +8123,15 @@ async function publishStory() {
     else alert(msg);
 
   } finally {
-    StoriesState.__publishing = false;
+  StoriesState.__publishing = false;
+
+  const publishBtn = document.getElementById("publishStory");
+  if (publishBtn) {
+    publishBtn.disabled = false;
+    publishBtn.textContent = publishBtn.dataset.oldText || "Pubblica 🚀";
   }
+  }
+  
 }
 
 function showToast(message, type = "success") {
