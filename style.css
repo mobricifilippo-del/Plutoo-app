@@ -638,19 +638,33 @@ padding: 0 .5rem;
   position:fixed;inset:0;z-index:9999;
   background:#000;display:flex;flex-direction:column;
 }
+
 .story-header{
-  position:absolute;top:0;left:0;right:0;z-index:906;padding:.8rem 1rem;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  z-index:906;
+  padding:.8rem 1rem;
   background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,transparent 100%);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
 }
+
 .story-progress-bars{display:flex;gap:4px;margin-bottom:.7rem}
 .story-progress-bar{
   flex:1;height:3px;background:rgba(255,255,255,.3);border-radius:2px;
   overflow:hidden;position:relative;
 }
+
 .story-progress-fill{
   position:absolute;left:0;top:0;height:100%;background:#fff;width:0%;
   transition:width .1s linear;
 }
+
 .story-progress-bar.active .story-progress-fill{
   animation:progressFill 15s linear forwards;
 }
