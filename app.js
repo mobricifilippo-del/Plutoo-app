@@ -1417,9 +1417,30 @@ async loadStoriesFromFirestore() {
       if (!userStory) return 0;
       return userStory.media.filter(m => new Date(m.timestamp).toDateString() === today).length;
     },
-    canUploadStory() { 
-  return !!state.plus; 
-    },
+    
+    canUploadStory() {
+  if (state.plus) return true;
+
+  const now = Date.now();
+  const uid = window.PLUTOO_DOG_ID || window.PLUTOO_UID || "currentUser";
+
+  const myStory = this.stories.find((s) => {
+    return String(s.userId) === String(uid) || String(s.dogId) === String(uid);
+  });
+
+  if (!myStory || !Array.isArray(myStory.media)) return true;
+
+  return !myStory.media.some((m) => {
+    const ts = Number(m.timestamp || 0);
+    const exp = Number(m.expiresAt || 0);
+
+    if (exp && exp > now) return true;
+    if (ts && (now - ts) < STORIES_CONFIG.STORY_LIFETIME) return true;
+
+    return false;
+  });
+},
+    
     generateMockStories() {
       return [
        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true, isDemo:true,
