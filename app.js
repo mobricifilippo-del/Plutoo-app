@@ -1336,7 +1336,64 @@ const STORIES_CONFIG = {
         this.saveStories();
       }
     },
+    
     saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
+
+async loadStoriesFromFirestore() {
+  if (!window.db) return false;
+
+  const now = Date.now();
+
+  const snap = await window.db
+    .collection("stories")
+    .where("active", "==", true)
+    .where("expiresAt", ">", now)
+    .orderBy("expiresAt", "asc")
+    .orderBy("timestamp", "desc")
+    .limit(30)
+    .get();
+
+  const grouped = {};
+
+  snap.forEach((doc) => {
+    const s = doc.data() || {};
+    const dogId = String(s.dogId || s.ownerUid || "");
+
+    if (!dogId) return;
+
+    if (!grouped[dogId]) {
+      grouped[dogId] = {
+        userId: dogId,
+        dogId: dogId,
+        ownerUid: s.ownerUid || "",
+        userName: s.dogName || "DOG",
+        avatar: s.dogAvatar || "plutoo-icon-192.png",
+        verified: !!s.verified,
+        media: []
+      };
+    }
+
+    grouped[dogId].media.push({
+      id: s.storyId || doc.id,
+      type: "image",
+      url: s.url || "",
+      storagePath: s.storagePath || "",
+      timestamp: s.timestamp || 0,
+      expiresAt: s.expiresAt || 0,
+      text: s.text || "",
+      textColor: s.textColor || "#ffffff",
+      textX: Number.isFinite(Number(s.textX)) ? Number(s.textX) : 0.5,
+      textY: Number.isFinite(Number(s.textY)) ? Number(s.textY) : 0.8,
+      filter: "none",
+      viewed: false,
+      privacy: "public"
+    });
+  });
+
+  this.stories = Object.values(grouped);
+  return true;
+},
+    
     cleanExpiredStories() {
   const now = Date.now();
 
