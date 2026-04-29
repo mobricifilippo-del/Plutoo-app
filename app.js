@@ -7375,7 +7375,7 @@ if (media.text && media.text.trim() !== "") {
     renderStoriesBar();
   }
 
-function deleteCurrentStoryMedia() {
+  async function deleteCurrentStoryMedia() {
   const story = StoriesState.stories.find(
     (s) => s.userId === StoriesState.currentStoryUserId
   );
@@ -7392,10 +7392,47 @@ function deleteCurrentStoryMedia() {
   );
   if (!ok) return;
 
-  // rimuove il media corrente usando l'id
+  const storyId = String(currentMedia.id || "");
+  const storagePath = String(currentMedia.storagePath || "");
+
+  try {
+    if (window.db && storyId) {
+      const storyRef = window.db.collection("stories").doc(storyId);
+
+      try {
+        const likesSnap = await storyRef.collection("likes").get();
+        const batch = window.db.batch();
+
+        likesSnap.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+
+        batch.delete(storyRef);
+        await batch.commit();
+      } catch (e) {
+        await storyRef.delete();
+      }
+    }
+
+    if (window.storage && storagePath) {
+      try {
+        await window.storage.ref().child(storagePath).delete();
+      } catch (e) {}
+    }
+  } catch (e) {
+    if (typeof showToast === "function") {
+      showToast(
+        state.lang === "it"
+          ? "Errore eliminazione aggiornamento. Riprova."
+          : "Update delete error. Please retry.",
+        "error"
+      );
+    }
+    return;
+  }
+
   story.media = (story.media || []).filter(m => m && m.id !== currentMedia.id);
 
-  // se non resta nulla, rimuove tutta la story dell'utente
   if (!story.media.length) {
     StoriesState.stories = StoriesState.stories.filter(
       s => s.userId !== StoriesState.currentStoryUserId
@@ -7406,7 +7443,6 @@ function deleteCurrentStoryMedia() {
     return;
   }
 
-  // se l'indice attuale supera il nuovo totale, torna all'ultimo valido
   const newVisible = getVisibleMediaList(story);
   if (StoriesState.currentMediaIndex >= newVisible.length) {
     StoriesState.currentMediaIndex = Math.max(0, newVisible.length - 1);
@@ -7415,7 +7451,7 @@ function deleteCurrentStoryMedia() {
   StoriesState.saveStories();
   renderStoryViewer();
   renderStoriesBar();
-}
+  }
 
   function getTimeAgo(timestamp) {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
