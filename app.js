@@ -7163,8 +7163,6 @@ if (media.text && media.text.trim() !== "") {
       storyLikeBtn.onclick = () => toggleStoryLike(media.id);
       updateStoryLikeUI(media.id);
     }
-
-    if (media.music) playStoryMusic(media.music);
   }
 
   function startStoryProgress() {
