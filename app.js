@@ -1339,7 +1339,7 @@ const STORIES_CONFIG = {
     
     saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
 
-async loadStoriesFromFirestore() {
+   async loadStoriesFromFirestore() {
   if (!window.db) return false;
 
   const now = Date.now();
@@ -1347,18 +1347,17 @@ async loadStoriesFromFirestore() {
   const snap = await window.db
     .collection("stories")
     .where("active", "==", true)
-    .where("expiresAt", ">", now)
-    .orderBy("expiresAt", "asc")
-    .orderBy("timestamp", "desc")
-    .limit(30)
+    .limit(50)
     .get();
 
   const grouped = {};
 
   snap.forEach((doc) => {
     const s = doc.data() || {};
-    const dogId = String(s.dogId || s.ownerUid || "");
 
+    if (!(Number(s.expiresAt || 0) > now)) return;
+
+    const dogId = String(s.dogId || s.ownerUid || "");
     if (!dogId) return;
 
     if (!grouped[dogId]) {
@@ -1388,6 +1387,10 @@ async loadStoriesFromFirestore() {
       viewed: false,
       privacy: "public"
     });
+  });
+
+  Object.values(grouped).forEach((story) => {
+    story.media.sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0));
   });
 
   this.stories = Object.values(grouped);
