@@ -2732,3 +2732,10 @@ display: none !important;
 .story-delete-btn.hidden{
   display:none;
 }
+
+.story-delete-floating{
+  position:absolute;
+  top:70px;
+  right:14px;
+  z-index:9999;
+}
