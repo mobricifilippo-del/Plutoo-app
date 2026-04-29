@@ -8038,12 +8038,15 @@ async function publishStory() {
 
     if (!userStory) {
       userStory = {
-        userId: uid,
-        userName: dogName,
-        avatar: dogAvatar,
-        verified: false,
-        media: []
-      };
+  userId: uid,
+  dogId: uid,
+  ownerUid: uid,
+  userName: dogName,
+  avatar: dogAvatar,
+  verified: false,
+  media: []
+};
+      
       StoriesState.stories.unshift(userStory);
     }
 
