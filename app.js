@@ -8161,36 +8161,47 @@ if (loader) loader.classList.add("hidden");
   
 }
 
-function plutooConfirm(message) {
+function plutooConfirmDelete(message) {
   return new Promise((resolve) => {
-    const old = document.getElementById("plutooConfirmModal");
-    if (old) old.remove();
-
     const modal = document.createElement("div");
-    modal.id = "plutooConfirmModal";
+    modal.style.position = "fixed";
+    modal.style.inset = "0";
+    modal.style.zIndex = "99999";
+    modal.style.background = "rgba(0,0,0,.62)";
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+    modal.style.padding = "18px";
+
     modal.innerHTML = `
-      <div class="plutoo-confirm-backdrop"></div>
-      <div class="plutoo-confirm-box">
-        <h3>Plutoo</h3>
-        <p>${message}</p>
-        <div class="plutoo-confirm-actions">
-          <button type="button" id="plutooConfirmCancel">Annulla</button>
-          <button type="button" id="plutooConfirmOk">Elimina</button>
+      <div style="width:min(92vw,360px);background:#171022;border:1px solid rgba(205,164,52,.45);border-radius:18px;padding:18px;box-shadow:0 18px 45px rgba(0,0,0,.45);color:#fff;">
+        <div style="font-weight:900;font-size:1.1rem;margin-bottom:8px;color:#CDA434;">Plutoo</div>
+        <div style="font-weight:700;margin-bottom:16px;">${message}</div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <button type="button" id="plutooCancelDelete" class="btn ghost small">Annulla</button>
+          <button type="button" id="plutooConfirmDelete" class="btn accent small">Elimina</button>
         </div>
       </div>
     `;
 
     document.body.appendChild(modal);
 
-    document.getElementById("plutooConfirmCancel").onclick = () => {
-      modal.remove();
-      resolve(false);
-    };
+    const cancelBtn = modal.querySelector("#plutooCancelDelete");
+    const confirmBtn = modal.querySelector("#plutooConfirmDelete");
 
-    document.getElementById("plutooConfirmOk").onclick = () => {
-      modal.remove();
-      resolve(true);
-    };
+    if (cancelBtn) {
+      cancelBtn.onclick = () => {
+        modal.remove();
+        resolve(false);
+      };
+    }
+
+    if (confirmBtn) {
+      confirmBtn.onclick = () => {
+        modal.remove();
+        resolve(true);
+      };
+    }
   });
 }
 
