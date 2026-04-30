@@ -2647,7 +2647,9 @@ function setActiveView(name){
 
   // 🔄 Mantieni allineato lo stato delle Stories
   try {
-    StoriesState.loadStories();
+    if (!Array.isArray(StoriesState.stories) || StoriesState.stories.length === 0) {
+      StoriesState.loadStories();
+    }
   } catch (e) {}
 
   [viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), profilePage].forEach(v => {
