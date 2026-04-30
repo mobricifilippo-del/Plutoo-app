@@ -8161,6 +8161,39 @@ if (loader) loader.classList.add("hidden");
   
 }
 
+function plutooConfirm(message) {
+  return new Promise((resolve) => {
+    const old = document.getElementById("plutooConfirmModal");
+    if (old) old.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "plutooConfirmModal";
+    modal.innerHTML = `
+      <div class="plutoo-confirm-backdrop"></div>
+      <div class="plutoo-confirm-box">
+        <h3>Plutoo</h3>
+        <p>${message}</p>
+        <div class="plutoo-confirm-actions">
+          <button type="button" id="plutooConfirmCancel">Annulla</button>
+          <button type="button" id="plutooConfirmOk">Elimina</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById("plutooConfirmCancel").onclick = () => {
+      modal.remove();
+      resolve(false);
+    };
+
+    document.getElementById("plutooConfirmOk").onclick = () => {
+      modal.remove();
+      resolve(true);
+    };
+  });
+}
+
 function showToast(message, type = "success") {
   let toast = document.getElementById("plutoo-toast");
 
