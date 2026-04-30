@@ -7443,29 +7443,7 @@ if (!ok) return;
   const storagePath = String(currentMedia.storagePath || "");
 
   try {
-    if (window.db && storyId) {
-      const storyRef = window.db.collection("stories").doc(storyId);
-
-      try {
-        const likesSnap = await storyRef.collection("likes").get();
-        const batch = window.db.batch();
-
-        likesSnap.forEach((doc) => {
-          batch.delete(doc.ref);
-        });
-
-        batch.delete(storyRef);
-        await batch.commit();
-      } catch (e) {
-        await storyRef.delete();
-      }
-    }
-
-    if (window.storage && storagePath) {
-      try {
-        await window.storage.ref().child(storagePath).delete();
-      } catch (e) {}
-    }
+    await deleteStoryFromFirebase(storyId, storagePath);
   } catch (e) {
     if (typeof showToast === "function") {
       showToast(
