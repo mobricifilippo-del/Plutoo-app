@@ -7583,7 +7583,6 @@ function resetUploadModalUI() {
   if (window.StoriesState) {
     StoriesState.uploadedFile = null;
     StoriesState.selectedFilter = StoriesState.selectedFilter || "none";
-    StoriesState.selectedMusic = StoriesState.selectedMusic || "";
     StoriesState.__publishing = false;
   }
 }
