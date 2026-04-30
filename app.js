@@ -1307,10 +1307,7 @@ if (state.entered === true) {
 // ============ STORIES – Config & State ============
 const STORIES_CONFIG = {
     PHOTO_DURATION: 15000,
-    VIDEO_MAX_DURATION_FREE: 15,
-    VIDEO_MAX_DURATION_PLUS: 90,
     MAX_PHOTO_SIZE: 10 * 1024 * 1024,
-    MAX_VIDEO_SIZE: 50 * 1024 * 1024,
     STORY_LIFETIME: 24 * 60 * 60 * 1000,
     FREE_DAILY_LIMIT: 3,
     REWARD_VIDEO_DURATION: 15
