@@ -8149,6 +8149,9 @@ if (loader) loader.classList.remove("hidden");
   } finally {
   StoriesState.__publishing = false;
 
+    const loader = document.getElementById("storyPublishLoader");
+if (loader) loader.classList.add("hidden");
+
   const publishBtn = document.getElementById("publishStory");
   if (publishBtn) {
     publishBtn.disabled = false;
