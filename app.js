@@ -8045,7 +8045,6 @@ if (loader) loader.classList.remove("hidden");
       textY: Number.isFinite(textY) ? textY : 0.8,
 
       filter: "none",
-      music: "",
       viewed: false,
       privacy: "public",
       active: true
@@ -8092,7 +8091,6 @@ if (loader) loader.classList.remove("hidden");
       textY: Number.isFinite(textY) ? textY : 0.8,
 
       filter: "none",
-      music: "",
       viewed: false,
       privacy: "public"
     };
@@ -8146,8 +8144,7 @@ if (loader) loader.classList.add("hidden");
     publishBtn.textContent = publishBtn.dataset.oldText || "Pubblica 🚀";
   }
   }
-  
-}
+  }
 
 function plutooConfirmDelete(message) {
   return new Promise((resolve) => {
