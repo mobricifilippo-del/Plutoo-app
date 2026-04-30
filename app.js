@@ -7292,14 +7292,6 @@ if (media.text && media.text.trim() !== "") {
 
   content.appendChild(text);
 }
-    } else if (media.type === "video") {
-      const video = document.createElement("video");
-      video.src = media.url;
-      video.autoplay = true;
-      video.muted = false;
-      video.className = `filter-${media.filter}`;
-      video.addEventListener("ended", nextStoryMedia);
-      content.appendChild(video);
     }
 
     if (storyLikeBtn && media.id) {
