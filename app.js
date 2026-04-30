@@ -8115,7 +8115,6 @@ if (loader) loader.classList.remove("hidden");
 
     StoriesState.uploadedFile = null;
     StoriesState.selectedFilter = "none";
-    StoriesState.selectedMusic = "";
 
     if (storyTextEl) {
       storyTextEl.value = "";
