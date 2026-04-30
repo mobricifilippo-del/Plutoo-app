@@ -7397,7 +7397,7 @@ if (media.text && media.text.trim() !== "") {
   }
 
   async function deleteCurrentStoryMedia() {
-  const story = StoriesState.stories.find(
+    const story = StoriesState.stories.find(
     (s) => s.userId === StoriesState.currentStoryUserId
   );
   if (!story) return;
@@ -7406,12 +7406,12 @@ if (media.text && media.text.trim() !== "") {
   const currentMedia = visibleMedia[StoriesState.currentMediaIndex];
   if (!currentMedia) return;
 
-  const ok = confirm(
-    state.lang === "it"
-      ? "Vuoi eliminare questo aggiornamento?"
-      : "Do you want to delete this update?"
-  );
-  if (!ok) return;
+  const ok = await plutooConfirm(
+  state.lang === "it"
+    ? "Vuoi eliminare questo aggiornamento?"
+    : "Do you want to delete this update?"
+);
+if (!ok) return;
 
   const storyId = String(currentMedia.id || "");
   const storagePath = String(currentMedia.storagePath || "");
