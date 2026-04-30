@@ -7907,14 +7907,6 @@ function showUploadStep() {
 }
 
 function setupFiltersGrid() {
-  // ✅ Rimane la chiamata (stessa struttura), ma non attiviamo nulla nel modello definitivo
-  // (Filtri/Musica verranno tolti dal markup quando decidi tu, in uno step dedicato)
-  const musicSelect = $("storyMusicSelect");
-  if (musicSelect) {
-    musicSelect.onchange = () => {
-      StoriesState.selectedMusic = musicSelect.value || "";
-    };
-  }
 }
 
 async function publishStory() {
