@@ -7396,6 +7396,32 @@ if (media.text && media.text.trim() !== "") {
     renderStoriesBar();
   }
 
+async function deleteStoryFromFirebase(storyId, storagePath) {
+  if (window.db && storyId) {
+    const storyRef = window.db.collection("stories").doc(storyId);
+
+    try {
+      const likesSnap = await storyRef.collection("likes").get();
+      const batch = window.db.batch();
+
+      likesSnap.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      batch.delete(storyRef);
+      await batch.commit();
+    } catch (e) {
+      await storyRef.delete();
+    }
+  }
+
+  if (window.storage && storagePath) {
+    try {
+      await window.storage.ref().child(storagePath).delete();
+    } catch (e) {}
+  }
+}
+
   async function deleteCurrentStoryMedia() {
     const story = StoriesState.stories.find(
     (s) => s.userId === StoriesState.currentStoryUserId
