@@ -1323,7 +1323,6 @@ const STORIES_CONFIG = {
     progressInterval: null,
     uploadedFile: null,
     selectedFilter: "none",
-    selectedMusic: "",
     openedFrom: null,
 
     loadStories() {
