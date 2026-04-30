@@ -1352,13 +1352,24 @@ const STORIES_CONFIG = {
 
   const grouped = {};
 
-  snap.forEach((doc) => {
+  for (const doc of snap.docs) {
     const s = doc.data() || {};
 
-    if (!(Number(s.expiresAt || 0) > now)) return;
+    // 👉 AUTO DELETE SCADUTE
+    if (!(Number(s.expiresAt || 0) > now)) {
+      try {
+        await deleteStoryFromFirebase(
+          String(s.storyId || doc.id || ""),
+          String(s.storagePath || "")
+        );
+      } catch (e) {
+        console.error("auto-delete error:", e);
+      }
+      continue;
+    }
 
     const dogId = String(s.dogId || s.ownerUid || "");
-    if (!dogId) return;
+    if (!dogId) continue;
 
     if (!grouped[dogId]) {
       grouped[dogId] = {
@@ -1387,7 +1398,7 @@ const STORIES_CONFIG = {
       viewed: false,
       privacy: "public"
     });
-  });
+  }
 
   Object.values(grouped).forEach((story) => {
     story.media.sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0));
@@ -1395,28 +1406,27 @@ const STORIES_CONFIG = {
 
   let realStories = Object.values(grouped);
 
-// 👉 aggiunta DEMO se feed povero
-const DEMO_MIN = 5;
+  // 👉 DEMO SE FEED POVERO
+  const DEMO_MIN = 5;
 
-if (realStories.length < DEMO_MIN) {
-  const demos = (typeof this.generateMockStories === "function")
-    ? this.generateMockStories()
-    : [];
+  if (realStories.length < DEMO_MIN) {
+    const demos = (typeof this.generateMockStories === "function")
+      ? this.generateMockStories()
+      : [];
 
-  // evita duplicati (dogId/userId già presenti)
-  const existingIds = new Set(realStories.map(s => String(s.userId)));
+    const existingIds = new Set(realStories.map(s => String(s.userId)));
 
-  const filteredDemos = demos.filter(d => {
-    const id = String(d.userId || d.dogId || "");
-    return id && !existingIds.has(id);
-  });
+    const filteredDemos = demos.filter(d => {
+      const id = String(d.userId || d.dogId || "");
+      return id && !existingIds.has(id);
+    });
 
-  realStories = realStories.concat(filteredDemos);
-}
+    realStories = realStories.concat(filteredDemos);
+  }
 
-this.stories = realStories;
+  this.stories = realStories;
   return true;
-},
+}
     
     cleanExpiredStories() {
   const now = Date.now();
