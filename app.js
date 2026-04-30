@@ -7406,7 +7406,7 @@ if (media.text && media.text.trim() !== "") {
   const currentMedia = visibleMedia[StoriesState.currentMediaIndex];
   if (!currentMedia) return;
 
-  const ok = await plutooConfirm(
+  const ok = await plutooConfirmDelete(
   state.lang === "it"
     ? "Vuoi eliminare questo aggiornamento?"
     : "Do you want to delete this update?"
