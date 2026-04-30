@@ -1422,7 +1422,7 @@ const STORIES_CONFIG = {
 
   this.stories = realStories;
   return true;
-}
+},
     
     cleanExpiredStories() {
   const now = Date.now();
