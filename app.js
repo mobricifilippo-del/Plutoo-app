@@ -7911,6 +7911,9 @@ if (publishBtn) {
   publishBtn.dataset.oldText = publishBtn.textContent;
   publishBtn.textContent = state.lang === "it" ? "Pubblicazione..." : "Publishing...";
 }
+
+  const loader = document.getElementById("storyPublishLoader");
+if (loader) loader.classList.remove("hidden");
   
   // 🔒 VETRINA: blocca pubblicazione story
   if (window.PLUTOO_READONLY) {
