@@ -7122,8 +7122,6 @@ async function init(){
     $("nextToCustomize")?.addEventListener("click", showCustomizeStep);
     $("backToUpload")?.addEventListener("click", showUploadStep);
     $("publishStory")?.addEventListener("click", publishStory);
-
-    setupFiltersGrid();
   }
 
   function renderStoriesBar() {
@@ -7904,9 +7902,6 @@ function showUploadStep() {
 
   step2.classList.remove("active");
   step1.classList.add("active");
-}
-
-function setupFiltersGrid() {
 }
 
 async function publishStory() {
