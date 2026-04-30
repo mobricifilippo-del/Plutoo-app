@@ -2791,3 +2791,67 @@ display: none !important;
   right:14px;
   z-index:9999;
 }
+
+/* ===== PLUTOO CONFIRM MODAL ===== */
+#plutooConfirmModal{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.plutoo-confirm-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+}
+
+.plutoo-confirm-box{
+  position:relative;
+  z-index:2;
+  width:90%;
+  max-width:320px;
+  background:#1b1028;
+  border-radius:18px;
+  padding:18px 16px;
+  text-align:center;
+  box-shadow:0 12px 35px rgba(0,0,0,.4);
+}
+
+.plutoo-confirm-box h3{
+  margin:0 0 8px;
+  font-size:16px;
+  color:#CDA434;
+}
+
+.plutoo-confirm-box p{
+  margin:0 0 16px;
+  font-size:14px;
+  color:#fff;
+}
+
+.plutoo-confirm-actions{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+}
+
+.plutoo-confirm-actions button{
+  flex:1;
+  padding:10px;
+  border-radius:12px;
+  font-weight:700;
+  border:none;
+}
+
+#plutooConfirmCancel{
+  background:#2a1b3d;
+  color:#fff;
+}
+
+#plutooConfirmOk{
+  background:#e54848;
+  color:#fff;
+}
