@@ -4110,45 +4110,6 @@ setActiveView("profile");
     }
   `;
 
-  // === DOG STORY SLOT RENDER ===
-try {
-  const slot = document.getElementById("dogStorySlot");
-
-  if (!slot || !d || !window.StoriesState) return;
-
-  const userStory = (StoriesState.stories || []).find(s => 
-    s.userId === d.id || s.dogId === d.id
-  );
-
-  if (!userStory) return;
-
-  const visible = typeof getVisibleMediaList === "function"
-    ? getVisibleMediaList(userStory)
-    : (userStory.media || []);
-
-  if (!visible || !visible.length) return;
-
-  const circle = document.createElement("button");
-  circle.className = "story-circle";
-  circle.type = "button";
-
-  circle.innerHTML = `
-    <img src="${userStory.avatar || "./plutoo-icon-192.png"}"
-         style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
-  `;
-
-  circle.onclick = () => {
-    if (typeof openStoryViewerFromBar === "function") {
-      openStoryViewerFromBar(userStory);
-    }
-  };
-
-  slot.appendChild(circle);
-
-} catch (e) {
-  console.warn("dogStorySlot render error", e);
-}
-
   // ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
 if (isCreate) {
   const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
