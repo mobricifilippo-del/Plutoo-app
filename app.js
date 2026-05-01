@@ -3978,13 +3978,14 @@ setActiveView("profile");
     ? ``
     : `
 
-    <span class="pp-follow-stats">  
-  <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>  
-  <span class="pp-follow-dot">·</span>  
-  <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>  
-</span>  
-    '  
-}
+    <span class="pp-follow-stats">
+        <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
+        <span class="pp-follow-dot">·</span>
+        <button type="button" id="followingCount" class="pp-follow-count">0 seguiti</button>
+      </span>
+    `
+    }
+    
 
   </div>${ isCreate ? ` <div class="pp-badges pp-create-inline" style="margin-top:.75rem"> <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Nome DOG" : "DOG name"}" style="padding:.45rem .55rem;flex:1;min-width:42%"> <input id="createDogName" type="text" value="" placeholder="${state.lang === "it" ? "Nome DOG *" : "DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%"> </span>
 
