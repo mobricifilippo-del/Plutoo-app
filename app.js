@@ -5246,7 +5246,7 @@ if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
         };
 
         refreshFollowBtn();
-      } catch(e) {}
+      }
 
       const followersCountEl = $("followersCount");
       const followingCountEl = $("followingCount");
