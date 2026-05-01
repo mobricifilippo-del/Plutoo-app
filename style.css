@@ -903,11 +903,33 @@ body.story-open #storiesBar {
 .pp-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.4rem 0 .7rem 0}
 .pp-name{font-size:1.5rem;font-weight:900;color:var(--violet-glow);margin:0}
 .pp-badges{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap}
+
 .badge{
   display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .5rem;
   border-radius:10px;background:#24243a;border:1px solid rgba(138,123,255,.25);
   font-size:.85rem;color:var(--text);
 }
+
+.pp-bio-block{
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.04);
+}
+
+.pp-bio-title{
+  font-size:13px;
+  font-weight:800;
+  color:#CDA434;
+  margin-bottom:6px;
+}
+
+.pp-bio-text{
+  font-size:14px;
+  line-height:1.45;
+  color:#fff;
+}
+
 .pp-meta{color:var(--muted);font-size:.98rem;margin:.15rem 0 .8rem 0}
 .pp-bio{margin:.5rem 0 1.2rem 0;line-height:1.5}
 
