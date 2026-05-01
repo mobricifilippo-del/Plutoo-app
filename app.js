@@ -5195,18 +5195,6 @@ try {
   const stats = document.getElementById("followersCount")?.closest(".pp-follow-stats");
   const existingBtn = document.getElementById("followBtn");
 
-  alert(
-    "FOLLOW DEBUG\n\n" +
-    "isCreate: " + isCreate + "\n" +
-    "CURRENT_USER_DOG_ID: " + CURRENT_USER_DOG_ID + "\n" +
-    "d.id: " + (d && d.id) + "\n" +
-    "stats trovato: " + (!!stats) + "\n" +
-    "followBtn già presente: " + (!!existingBtn)
-  );
-} catch(e) {
-  alert("FOLLOW DEBUG ERROR: " + e.message);
-}
-
       // ✅ restore minimo CURRENT_USER_DOG_ID da cache esistente
 if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
   const cachedDogId = localStorage.getItem("plutoo_dog_id") || "";
