@@ -3495,7 +3495,7 @@ _db.collection("notifications").doc(notifId).set({
 }, { merge: true }).catch((e) => {
   console.error("followDog notification Firestore:", e);
 });
-  if (typeof showToast === "function") showToast("FOLLOW: salvato su Firestore ✅");
+  if (typeof showToast === "function") showToast("Hai iniziato a seguire 🐕");
 })
 .catch((e) => {
   console.error("followDog Firestore:", e);
