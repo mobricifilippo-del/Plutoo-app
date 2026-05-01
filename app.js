@@ -4112,13 +4112,6 @@ setActiveView("profile");
     }
   `;
 
-  const btn = slot.querySelector(".story-circle");
-if (btn && typeof openStoryViewerFromBar === "function") {
-  btn.onclick = function () {
-    openStoryViewerFromBar(story.userId);
-  };
-}
-
   const slot = document.getElementById("dogStorySlot");
 if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
 
@@ -4135,6 +4128,13 @@ if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
         </div>
       </button>
     `;
+
+    const btn = slot.querySelector(".story-circle");
+if (btn && typeof openStoryViewerFromBar === "function") {
+  btn.onclick = function () {
+    openStoryViewerFromBar(story.userId);
+  };
+}
 
   } else {
     slot.innerHTML = "";
