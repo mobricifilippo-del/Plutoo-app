@@ -4027,7 +4027,12 @@ setActiveView("profile");
       <span class="badge">${d.sex === "M" ? (state.lang === "it" ? "Maschio" : "Male") : (state.lang === "it" ? "Femmina" : "Female")}</span>
     </div>
 
-    ${d.bio || ""}
+    ${d.bio ? `
+  <div class="pp-bio-block">
+    <div class="pp-bio-title">${state.lang === "it" ? "Bio" : "Bio"}</div>
+    <div class="pp-bio-text">${d.bio}</div>
+  </div>
+` : ""}
 
     ${""}
 
