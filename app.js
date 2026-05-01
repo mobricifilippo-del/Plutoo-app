@@ -5207,6 +5207,15 @@ try {
   alert("FOLLOW DEBUG ERROR: " + e.message);
 }
 
+      // ✅ restore minimo CURRENT_USER_DOG_ID da cache esistente
+if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
+  const cachedDogId = localStorage.getItem("plutoo_dog_id") || "";
+  if (cachedDogId) {
+    window.CURRENT_USER_DOG_ID = cachedDogId;
+    CURRENT_USER_DOG_ID = cachedDogId;
+  }
+}
+
       const followBtn = $("followBtn");
       if (followBtn) {
         const refreshFollowBtn = () => {
