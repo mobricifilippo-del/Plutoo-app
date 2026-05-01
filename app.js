@@ -4112,6 +4112,28 @@ setActiveView("profile");
     }
   `;
 
+  const slot = document.getElementById("dogStorySlot");
+if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
+
+  const story = StoriesState.stories.find(s => String(s.userId) === String(d.id));
+
+  if (story && Array.isArray(story.media) && story.media.length > 0) {
+
+    const last = story.media[0]; // già ordinato desc
+
+    slot.innerHTML = `
+      <button class="story-circle" type="button" style="margin:10px 0;">
+        <div class="story-avatar">
+          <img src="${last.url}" alt="" />
+        </div>
+      </button>
+    `;
+
+  } else {
+    slot.innerHTML = "";
+  }
+}
+
   // ✅ ATTACH LOGICA CARICAMENTO FOTO PROFILO (solo in modalità CREATE)
 if (isCreate) {
   const btnPickCreateDogPhoto = document.getElementById("btnPickCreateDogPhoto");
