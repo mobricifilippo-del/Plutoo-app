@@ -3474,12 +3474,13 @@ if (!selfUid || !_db) {
 
 const docId = `${String(selfDogId)}_${String(targetDogId)}`;
 
-_db.collection("followers").doc(docId).set({
+db.collection("followers").doc(docId).set({
   followerUid: String(selfUid),
   followerDogId: String(selfDogId),
   targetDogId: String(targetDogId),
   createdAt: firebase.firestore.FieldValue.serverTimestamp()
 }, { merge: true })
+  
 .then(() => {
   console.log("FOLLOW Firestore OK:", docId);
   
