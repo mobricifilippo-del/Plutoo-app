@@ -901,13 +901,28 @@ body.story-open #storiesBar {
  }
 
 .pp-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.4rem 0 .7rem 0}
+
 .pp-name{font-size:1.5rem;font-weight:900;color:var(--violet-glow);margin:0}
-.pp-badges{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap}
+
+.pp-badges{
+  display:flex;
+  gap:.55rem;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
 
 .badge{
-  display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .5rem;
-  border-radius:10px;background:#24243a;border:1px solid rgba(138,123,255,.25);
-  font-size:.85rem;color:var(--text);
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  padding:.4rem .65rem;
+  border-radius:12px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(205,164,52,0.25);
+  font-size:.85rem;
+  color:#fff;
+  font-weight:600;
 }
 
 .pp-bio-block{
