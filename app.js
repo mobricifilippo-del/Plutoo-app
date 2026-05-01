@@ -5190,6 +5190,17 @@ galleryBlock.appendChild(ph);
       // ✅ safe: update follower UI
       if (typeof updateFollowerUI === "function") updateFollowerUI(d);
 
+      // ✅ inject followBtn SOLO su profilo altri DOG (no template string → zero crash)
+if (!isCreate && typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID && CURRENT_USER_DOG_ID !== d.id) {
+  const stats = document.getElementById("followersCount")?.closest(".pp-follow-stats");
+  if (stats && !document.getElementById("followBtn")) {
+    const wrap = document.createElement("div");
+    wrap.className = "pp-follow-action";
+    wrap.innerHTML = `<button type="button" id="followBtn" class="btn primary small">Segui 🐕🐾</button>`;
+    stats.parentNode.insertBefore(wrap, stats.nextSibling);
+  }
+}
+
       const followBtn = $("followBtn");
       if (followBtn) {
         const refreshFollowBtn = () => {
