@@ -5198,6 +5198,13 @@ try {
       // ✅ restore minimo CURRENT_USER_DOG_ID da cache esistente
 if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
   const cachedDogId = localStorage.getItem("plutoo_dog_id") || "";
+
+  alert(
+  "DOG CACHE DEBUG\n\n" +
+  "plutoo_dog_id: " + localStorage.getItem("plutoo_dog_id") + "\n" +
+  "CURRENT_USER_DOG_ID prima: " + CURRENT_USER_DOG_ID
+);
+  
   if (cachedDogId) {
     window.CURRENT_USER_DOG_ID = cachedDogId;
     CURRENT_USER_DOG_ID = cachedDogId;
