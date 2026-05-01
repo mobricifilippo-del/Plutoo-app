@@ -768,7 +768,9 @@ const dogName = hasDog ? String(data.name || "").trim() : "";
 
 // Stato globale (runtime)  
 window.PLUTOO_HAS_DOG = hasDog;  
-window.PLUTOO_DOG_ID = dogId;  
+window.PLUTOO_DOG_ID = dogId;
+window.CURRENT_USER_DOG_ID = dogId || "";
+CURRENT_USER_DOG_ID = dogId || "";
 window.PLUTOO_DOG_NAME = dogName;  
 
 // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)  
