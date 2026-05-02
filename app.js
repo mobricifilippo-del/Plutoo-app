@@ -3650,7 +3650,6 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     followingList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun DOG seguito" : "No following yet"}</p>`;
   } else {
     followingList.innerHTML = `<p class="sheet-empty">DEBUG ELSE OK — elementi: ${following.length}</p>`;
-return;
     following.forEach(id => {
       const fDog = DOGS.find(x => x.id === id);
       if (!fDog) return;
