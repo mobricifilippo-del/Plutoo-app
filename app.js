@@ -3637,34 +3637,55 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
   }
 
   function openFollowingList(dogOrId) {
-    const dog = targetDogDogOrId(dogOrId);
-    if (!dog || !followingOverlay || !followingList) return;
+  const dog = targetDogDogOrId(dogOrId);
+  if (!dog || !followingOverlay || !followingList) return;
 
-    const dogId = (typeof dog === "string") ? dog : dog.id;
-    if (!dogId) return;
+  const dogId = (typeof dog === "string") ? dog : dog.id;
+  if (!dogId) return;
 
-    const following = getFollowing(dogId);
+  const following = getFollowing(dogId);
+  followingList.innerHTML = "";
 
-    if (!following.length) {
-      followingList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun DOG seguito" : "No following yet"}</p>`;
-    } else {
-      followingList.innerHTML = following.map(id => {
-        const fDog = DOGS.find(x => x.id === id);
-        if (!fDog) return "";
-        return `
-          <div class="sheet-item">
-            <img class="sheet-avatar" src="${fDog.img}" alt="${fDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-            <div class="sheet-info">
-              <div class="sheet-name">${fDog.name} ${fDog.verified ? "✅" : ""}</div>
-              <div class="sheet-meta">${fDog.breed || ""}</div>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
+  if (!following.length) {
+    followingList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun DOG seguito" : "No following yet"}</p>`;
+  } else {
+    following.forEach(id => {
+      const fDog = DOGS.find(x => x.id === id);
+      if (!fDog) return;
 
-    followingOverlay.classList.remove("hidden");
-    requestAnimationFrame(() => followingOverlay.classList.add("show"));
+      const row = document.createElement("div");
+      row.className = "sheet-item";
+      row.innerHTML = `
+        <img class="sheet-avatar" src="${fDog.img}" alt="${fDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        <div class="sheet-info">
+          <div class="sheet-name">${fDog.name} ${fDog.verified ? "✅" : ""}</div>
+          <div class="sheet-meta">${fDog.breed || ""}</div>
+        </div>
+      `;
+
+      row.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const dog = {
+          id: fDog.id,
+          name: fDog.name,
+          img: fDog.img,
+          avatar: fDog.img,
+          breed: fDog.breed || "",
+          verified: !!fDog.verified
+        };
+
+        closeFollowingOverlay();
+        openProfilePage(dog);
+      });
+
+      followingList.appendChild(row);
+    });
+  }
+
+  followingOverlay.classList.remove("hidden");
+  requestAnimationFrame(() => followingOverlay.classList.add("show"));
   }
 
   function closeFollowersOverlay() {
