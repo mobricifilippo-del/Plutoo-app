@@ -3693,6 +3693,7 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
       e.preventDefault();
       e.stopPropagation();
       closeFollowingOverlay();
+      state._previousProfileDog = state.currentDogProfile;
       openProfilePage(realDog);
     });
 
