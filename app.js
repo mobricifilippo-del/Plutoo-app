@@ -8271,6 +8271,7 @@ function showToast(message, type = "success") {
     toast.style.boxShadow = "0 8px 25px rgba(0,0,0,0.25)";
     toast.style.opacity = "0";
     toast.style.transition = "opacity 0.25s ease";
+    toast.style.pointerEvents = "none";
 
     document.body.appendChild(toast);
   }
