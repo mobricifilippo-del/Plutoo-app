@@ -3619,7 +3619,7 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     } else {
       followersList.innerHTML = followers.map(id => {
         const fDog = DOGS.find(x => x.id === id);
-        if (!fDog) return "";
+        if (!fDog) return `<p class="sheet-empty">DOG non trovato: ${id}</p>`;
         return `
           <div class="sheet-item">
             <img class="sheet-avatar" src="${fDog.img}" alt="${fDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
