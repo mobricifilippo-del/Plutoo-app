@@ -3680,16 +3680,16 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
   }
 
   followersOverlay?.addEventListener("click", (e) => {
-    followingOverlay?.addEventListener("click", (e) => {
+  if (e.target === followersOverlay || e.target.classList.contains("sheet-close")) {
+    closeFollowersOverlay();
+  }
+});
+
+followingOverlay?.addEventListener("click", (e) => {
   if (e.target === followingOverlay || e.target.classList.contains("sheet-close")) {
     closeFollowingOverlay();
   }
 });
-    
-    if (e.target === followersOverlay || e.target.classList.contains("sheet-close")) {
-      closeFollowersOverlay();
-    }
-  });
 
   // ============ LIKE FOTO PROFILO ============
   function isDogPhotoLiked(dogId) {
