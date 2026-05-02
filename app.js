@@ -768,7 +768,9 @@ const dogName = hasDog ? String(data.name || "").trim() : "";
 
 // Stato globale (runtime)  
 window.PLUTOO_HAS_DOG = hasDog;  
-window.PLUTOO_DOG_ID = dogId;  
+window.PLUTOO_DOG_ID = dogId;
+window.CURRENT_USER_DOG_ID = dogId || "";
+CURRENT_USER_DOG_ID = dogId || "";
 window.PLUTOO_DOG_NAME = dogName;  
 
 // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)  
@@ -3493,7 +3495,7 @@ _db.collection("notifications").doc(notifId).set({
 }, { merge: true }).catch((e) => {
   console.error("followDog notification Firestore:", e);
 });
-  if (typeof showToast === "function") showToast("FOLLOW: salvato su Firestore ✅");
+  if (typeof showToast === "function") showToast("Hai iniziato a seguire 🐕");
 })
 .catch((e) => {
   console.error("followDog Firestore:", e);
@@ -5188,70 +5190,56 @@ galleryBlock.appendChild(ph);
 })();
 
       // ✅ safe: update follower UI
-      if (typeof updateFollowerUI === "function") updateFollowerUI(d);
+if (typeof updateFollowerUI === "function") updateFollowerUI(d);
 
-      // 🔎 DEBUG FOLLOW BTN
-try {
-  const stats = document.getElementById("followersCount")?.closest(".pp-follow-stats");
-  const existingBtn = document.getElementById("followBtn");
+// ✅ crea followBtn dopo il render profilo, senza toccare template string
+if (!isCreate && d && d.id && CURRENT_USER_DOG_ID && CURRENT_USER_DOG_ID !== d.id) {
+  const followStatsEl = document.getElementById("followersCount")?.closest(".pp-follow-stats");
 
-  alert(
-    "FOLLOW DEBUG\n\n" +
-    "isCreate: " + isCreate + "\n" +
-    "CURRENT_USER_DOG_ID: " + CURRENT_USER_DOG_ID + "\n" +
-    "d.id: " + (d && d.id) + "\n" +
-    "stats trovato: " + (!!stats) + "\n" +
-    "followBtn già presente: " + (!!existingBtn)
-  );
-} catch(e) {
-  alert("FOLLOW DEBUG ERROR: " + e.message);
-}
-
-      // ✅ restore minimo CURRENT_USER_DOG_ID da cache esistente
-if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
-  const cachedDogId = localStorage.getItem("plutoo_dog_id") || "";
-  if (cachedDogId) {
-    window.CURRENT_USER_DOG_ID = cachedDogId;
-    CURRENT_USER_DOG_ID = cachedDogId;
+  if (followStatsEl && !document.getElementById("followBtn")) {
+    const followWrap = document.createElement("div");
+    followWrap.className = "pp-follow-action";
+    followWrap.innerHTML = '<button type="button" id="followBtn" class="btn primary small">Segui 🐕🐾</button>';
+    followStatsEl.insertAdjacentElement("afterend", followWrap);
   }
 }
 
-      const followBtn = $("followBtn");
-      if (followBtn) {
-        const refreshFollowBtn = () => {
-          const myFollowing =
-            (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)
-              ? getFollowing(CURRENT_USER_DOG_ID)
-              : [];
-          const isFollowing = myFollowing.includes(d.id);
+const followBtn = $("followBtn");
+if (followBtn) {
+  const refreshFollowBtn = () => {
+    const myFollowing =
+      (typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)
+        ? getFollowing(CURRENT_USER_DOG_ID)
+        : [];
+    const isFollowing = myFollowing.includes(d.id);
 
-          if (state.lang === "it") {
-            followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
-          } else {
-            followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
-          }
-          followBtn.classList.toggle("is-following", isFollowing);
-          followBtn.disabled = !(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID);
-        };
+    if (state.lang === "it") {
+      followBtn.textContent = isFollowing ? "Seguito 🐕🐾" : "Segui 🐕🐾";
+    } else {
+      followBtn.textContent = isFollowing ? "Following 🐕🐾" : "Follow 🐕🐾";
+    }
+    followBtn.classList.toggle("is-following", isFollowing);
+    followBtn.disabled = !(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID);
+  };
 
-        followBtn.onclick = () => {
-          if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
-            console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
-            refreshFollowBtn();
-            return;
-          }
+  followBtn.onclick = () => {
+    if (!(typeof CURRENT_USER_DOG_ID === "string" && CURRENT_USER_DOG_ID)) {
+      console.error("FOLLOW blocked: CURRENT_USER_DOG_ID mancante");
+      refreshFollowBtn();
+      return;
+    }
 
-          const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
-          const isFollowing = myFollowing.includes(d.id);
+    const myFollowing = getFollowing(CURRENT_USER_DOG_ID);
+    const isFollowing = myFollowing.includes(d.id);
 
-          if (isFollowing) unfollowDog(d.id);
-          else followDog(d.id);
+    if (isFollowing) unfollowDog(d.id);
+    else followDog(d.id);
 
-          refreshFollowBtn();
-        };
+    refreshFollowBtn();
+  };
 
-        refreshFollowBtn();
-      }
+  refreshFollowBtn();
+}
 
       const followersCountEl = $("followersCount");
       const followingCountEl = $("followingCount");
