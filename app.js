@@ -6171,11 +6171,18 @@ if (typeof window.refreshCreateDogCTA === "function") {
   if (profileClose) profileClose.onclick = () => closeProfilePage();
 
   window.closeProfilePage = () => {
-    profilePage.classList.add("hidden");
-    const previousView = state.viewHistory.pop() || "nearby";
-    setActiveView(previousView);
-    state.currentDogProfile = null;
-  };
+  if (state._previousProfileDog) {
+    const previousDog = state._previousProfileDog;
+    state._previousProfileDog = null;
+    openProfilePage(previousDog);
+    return;
+  }
+
+  profilePage.classList.add("hidden");
+  const previousView = state.viewHistory.pop() || "nearby";
+  setActiveView(previousView);
+  state.currentDogProfile = null;
+};
 
   function isSelfieUnlocked(id) {
     return Date.now() < (state.selfieUntilByDog[id] || 0);
