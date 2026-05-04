@@ -6256,6 +6256,29 @@ if (typeof window.refreshCreateDogCTA === "function") {
     fileInput.click();
   };
 
+  const deleteSelfieBtn = $("deleteSelfie");
+  if (deleteSelfieBtn) deleteSelfieBtn.onclick = () => {
+    const d = state.currentDogProfile;
+    if (!d) return;
+
+    const storageRef = window.storage.ref().child(`dogs/${d.id}/selfie/selfie.jpg`);
+
+    storageRef.delete()
+      .catch(() => {})
+      .then(() => {
+        return window.db.collection("dogs").doc(d.id).set({
+          selfieUrl: firebase.firestore.FieldValue.delete()
+        }, { merge: true });
+      })
+      .then(() => {
+        d.selfieUrl = "";
+        const img = qs(".selfie .img", profileContent);
+        if (img) img.src = "./plutoo-icon-192.png";
+        deleteSelfieBtn.style.display = "none";
+      })
+      .catch(() => {});
+  };
+
   const unlockSelfieBtn = $("unlockSelfie");
   if (unlockSelfieBtn) unlockSelfieBtn.onclick = () => {
     if (!isSelfieUnlocked(d.id)) {
