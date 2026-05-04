@@ -6220,12 +6220,33 @@ if (typeof window.refreshCreateDogCTA === "function") {
       const reader = new FileReader();
       reader.onload = e => {
         const dataUrl   = e.target.result;
-        const selfieKey = `selfieImage_${d.id}`;
 
-        localStorage.setItem(selfieKey, dataUrl);
+        const parts = String(dataUrl || "").split(",");
+        const meta = parts[0] || "";
+        const b64 = parts[1] || "";
+        const mimeMatch = meta.match(/data:([^;]+);base64/i);
+        const mime = (mimeMatch && mimeMatch[1]) ? mimeMatch[1] : "image/jpeg";
+        const bin = atob(b64);
+        const len = bin.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
 
-        const img = qs(".selfie .img", profileContent);
-        if (img) img.src = dataUrl;
+        const blob = new Blob([bytes], { type: mime });
+        const storageRef = window.storage.ref().child(`dogs/${d.id}/selfie/selfie.jpg`);
+
+        storageRef.put(blob, { contentType: mime })
+          .then(() => storageRef.getDownloadURL())
+          .then((url) => {
+            return window.db.collection("dogs").doc(d.id).set({
+              selfieUrl: url
+            }, { merge: true }).then(() => url);
+          })
+          .then((url) => {
+            d.selfieUrl = url;
+            const img = qs(".selfie .img", profileContent);
+            if (img) img.src = url;
+          })
+          .catch(() => {});
       };
 
       reader.readAsDataURL(file);
