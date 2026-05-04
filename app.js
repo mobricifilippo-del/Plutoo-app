@@ -3605,35 +3605,72 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     }
   }
 
-  function openFollowersList(dogOrId) {
-    const dog = targetDogDogOrId(dogOrId);
-    if (!dog || !followersOverlay || !followersList) return;
+  async function openFollowersList(dogOrId) {
+  const dog = targetDogDogOrId(dogOrId);
+  if (!dog || !followersOverlay || !followersList) return;
 
-    const dogId = (typeof dog === "string") ? dog : dog.id;
-    if (!dogId) return;
+  const dogId = (typeof dog === "string") ? dog : dog.id;
+  if (!dogId) return;
 
-    const followers = getFollowers(dogId);
+  followersList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Caricamento..." : "Loading..."}</p>`;
 
-    if (!followers.length) {
-      followersList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun follower" : "No followers yet"}</p>`;
-    } else {
-      followersList.innerHTML = followers.map(id => {
-        const fDog = DOGS.find(x => x.id === id);
-        if (!fDog) return `<p class="sheet-empty">DOG non trovato: ${id}</p>`;
-        return `
-          <div class="sheet-item">
-            <img class="sheet-avatar" src="${fDog.img}" alt="${fDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-            <div class="sheet-info">
-              <div class="sheet-name">${fDog.name} ${fDog.verified ? "✅" : ""}</div>
-              <div class="sheet-meta">${fDog.breed || ""}</div>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
+  followersOverlay.classList.remove("hidden");
+  requestAnimationFrame(() => followersOverlay.classList.add("show"));
 
-    followersOverlay.classList.remove("hidden");
-    requestAnimationFrame(() => followersOverlay.classList.add("show"));
+  const snap = await db.collection("followers")
+    .where("targetDogId", "==", String(dogId))
+    .get();
+
+  followersList.innerHTML = "";
+
+  if (snap.empty) {
+    followersList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun follower" : "No followers yet"}</p>`;
+    return;
+  }
+
+  for (const doc of snap.docs) {
+    const data = doc.data() || {};
+    const followerDogId = String(data.followerDogId || "");
+    if (!followerDogId) continue;
+
+    const dogSnap = await db.collection("dogs").doc(followerDogId).get();
+    if (!dogSnap.exists) continue;
+
+    const dogData = dogSnap.data() || {};
+
+    const realDog = {
+      id: followerDogId,
+      name: String(dogData.name || "DOG"),
+      img: String(dogData.photoUrl || dogData.img || "./plutoo-icon-192.png"),
+      avatar: String(dogData.photoUrl || dogData.img || "./plutoo-icon-192.png"),
+      breed: String(dogData.breed || ""),
+      verified: !!dogData.verified,
+      ownerUid: String(dogData.ownerUid || "")
+    };
+
+    const row = document.createElement("div");
+    row.className = "sheet-item";
+    row.innerHTML = `
+      <img class="sheet-avatar" src="${realDog.img}" alt="${realDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+      <div class="sheet-info">
+        <div class="sheet-name">${realDog.name} ${realDog.verified ? "✅" : ""}</div>
+        <div class="sheet-meta">${realDog.breed}</div>
+      </div>
+    `;
+
+    row.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeFollowersOverlay();
+      openProfilePage(realDog);
+    });
+
+    followersList.appendChild(row);
+  }
+
+  if (!followersList.children.length) {
+    followersList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Nessun follower" : "No followers yet"}</p>`;
+  }
   }
 
   async function openFollowingList(dogOrId) {
