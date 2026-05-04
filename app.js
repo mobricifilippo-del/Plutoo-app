@@ -3644,8 +3644,6 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
   const dogId = (typeof dog === "string") ? dog : dog.id;
   if (!dogId) return;
 
-  followersList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Caricamento..." : "Loading..."}</p>`;
-
   followersOverlay.classList.remove("hidden");
   requestAnimationFrame(() => followersOverlay.classList.add("show"));
 
