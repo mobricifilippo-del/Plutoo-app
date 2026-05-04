@@ -5295,6 +5295,8 @@ galleryBlock.appendChild(ph);
     showPublishBar();
   };
 
+  renderGallery();
+
   try {
     if (window.db) {
       window.db.collection("dogs").doc(String(dogId)).get()
