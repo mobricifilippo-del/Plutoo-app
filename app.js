@@ -7248,20 +7248,21 @@ async function init(){
   id: doc.id,
   ownerUid: String(data.ownerUid || ""),
   name: name,
-          breed: String(data.breed || ""),
-          age: Number(data.age || 0),
-          sex: String(data.sex || ""),
-          img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
-          verified: !!data.verified,
-          bio: String(data.bio || ""),
-          zone: String(data.zone || ""),
-          km: Number(data.km || 0),
-          weight: Number(data.weight || 0),
-          height: Number(data.height || 0),
-          pedigree: !!data.pedigree,
-          breeding: !!data.breeding,
-          size: String(data.size || "")
-        });
+  breed: String(data.breed || ""),
+  age: Number(data.age || 0),
+  sex: String(data.sex || ""),
+  img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
+  selfieUrl: String(data.selfieUrl || ""),
+  verified: !!data.verified,
+  bio: String(data.bio || ""),
+  zone: String(data.zone || ""),
+  km: Number(data.km || 0),
+  weight: Number(data.weight || 0),
+  height: Number(data.height || 0),
+  pedigree: !!data.pedigree,
+  breeding: !!data.breeding,
+  size: String(data.size || "")
+});
       });
 
       state.dogs = realDogs;
