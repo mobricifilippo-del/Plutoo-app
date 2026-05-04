@@ -4155,6 +4155,9 @@ setActiveView("profile");
     <div class="gallery" id="dogGallery"></div>
 
     <h3 class="section-title">Selfie</h3>
+    <p style="font-size:.9rem;color:var(--muted);margin:.25rem 0 .6rem;font-weight:700;">
+      ${state.lang === "it" ? "Il selfie deve includere cane e proprietario" : "The selfie must include dog and owner"}
+    </p>
     <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
       <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie" style="cursor:pointer;">
       <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
