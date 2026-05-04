@@ -952,6 +952,8 @@ const linkRegister = document.getElementById("linkRegister");
 
     runPresenceAfterAuth();
 
+    if (typeof rebuildFollowersStateFromFirestore === "function") rebuildFollowersStateFromFirestore();
+
     if (!window.__booted) {
       window.__booted = true;
       if (typeof init === "function") init();
