@@ -3404,6 +3404,36 @@ function generateSocialSection(d) {
 }
 
   // ============ FOLLOW / SEGUI TI (mock locale) ============
+async function rebuildFollowersStateFromFirestore() {
+  if (!db) return;
+
+  state.followersByDog = {};
+  state.followingByDog = {};
+
+  const snap = await db.collection("followers").get();
+
+  snap.forEach((doc) => {
+    const data = doc.data() || {};
+    const followerDogId = String(data.followerDogId || "");
+    const targetDogId = String(data.targetDogId || "");
+
+    if (!followerDogId || !targetDogId) return;
+
+    if (!state.followingByDog[followerDogId]) state.followingByDog[followerDogId] = [];
+    if (!state.followersByDog[targetDogId]) state.followersByDog[targetDogId] = [];
+
+    if (!state.followingByDog[followerDogId].includes(targetDogId)) {
+      state.followingByDog[followerDogId].push(targetDogId);
+    }
+
+    if (!state.followersByDog[targetDogId].includes(followerDogId)) {
+      state.followersByDog[targetDogId].push(followerDogId);
+    }
+  });
+
+  persistFollowState();
+}
+
   function persistFollowState() {
     localStorage.setItem("followersByDog", JSON.stringify(state.followersByDog || {}));
     localStorage.setItem("followingByDog", JSON.stringify(state.followingByDog || {}));
