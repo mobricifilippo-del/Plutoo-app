@@ -3712,8 +3712,6 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
   const dogId = (typeof dog === "string") ? dog : dog.id;
   if (!dogId) return;
 
-  followingList.innerHTML = `<p class="sheet-empty">${state.lang === "it" ? "Caricamento..." : "Loading..."}</p>`;
-
   followingOverlay.classList.remove("hidden");
   requestAnimationFrame(() => followingOverlay.classList.add("show"));
 
