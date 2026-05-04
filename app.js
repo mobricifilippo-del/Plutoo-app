@@ -4158,6 +4158,7 @@ setActiveView("profile");
     </p>
     <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
       <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie" style="cursor:pointer;">
+      <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
       <div class="over">
   <button id="unlockSelfie" class="btn pill">${state.lang === "it" ? "Sblocca selfie" : "Unlock selfie"}</button>
   <button id="uploadSelfie" class="btn pill ghost">${state.lang === "it" ? "Carica selfie" : "Upload selfie"}</button>
