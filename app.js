@@ -4481,43 +4481,24 @@ if (btnDel) {
         if (!uid || !user || !db) return Promise.resolve();  
 
         // a) elimina dogs dell'ownerUid  
-        const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()
-  .then((snap) => {
-    const jobs = [];
+        const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()  
+          .then((snap) => {  
+            const jobs = [];  
+            snap.forEach((doc) => {  
+              jobs.push(doc.ref.delete().catch(() => {}));  
+            });  
+            return Promise.all(jobs);  
+          })  
+          .catch(() => {});  
 
-    snap.forEach((doc) => {
-      const dogId = doc.id;
+        // b) elimina users/{uid}  
+        const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});  
 
-      jobs.push(
-        db.collection("followers").where("targetDogId", "==", dogId).get()
-          .then((fsnap) => {
-            const followerJobs = [];
-            fsnap.forEach((fdoc) => {
-              followerJobs.push(fdoc.ref.delete().catch(() => {}));
-            });
-            return Promise.all(followerJobs);
-          })
-          .catch(() => {})
-      );
+        // c) elimina Auth user (può richiedere recent login)  
+        const delAuth = user.delete();  
 
-      jobs.push(
-        db.collection("followers").where("followerDogId", "==", dogId).get()
-          .then((fsnap) => {
-            const followerJobs = [];
-            fsnap.forEach((fdoc) => {
-              followerJobs.push(fdoc.ref.delete().catch(() => {}));
-            });
-            return Promise.all(followerJobs);
-          })
-          .catch(() => {})
-      );
-
-      jobs.push(doc.ref.delete().catch(() => {}));
-    });
-
-    return Promise.all(jobs);
-  })
-  .catch(() => {});  
+        return Promise.all([delDogs, delUserDoc, delAuth]).then(() => {}).catch((err) => { throw err; });  
+      };  
 
       deleteFromFirebase()  
         .then(() => {  
