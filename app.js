@@ -4165,6 +4165,8 @@ setActiveView("profile");
   ${d.selfieUrl ? `<button id="deleteSelfie" class="btn pill danger">${state.lang === "it" ? "Elimina selfie" : "Delete selfie"}</button>` : ``}
 </div>
 
+</div>
+
 <div id="selfieFeedback" style="
   display:none;
   margin-top:8px;
@@ -4172,7 +4174,6 @@ setActiveView("profile");
   font-weight:600;
   color:#CDA434;
 "></div>
-    </div>
 
     <h3 class="section-title">${state.lang === "it" ? "Documenti" : "Documents"}</h3>
 
