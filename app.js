@@ -4481,15 +4481,30 @@ if (btnDel) {
         if (!uid || !user || !db) return Promise.resolve();  
 
         // a) elimina dogs dell'ownerUid  
-        const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()  
-          .then((snap) => {  
-            const jobs = [];  
-            snap.forEach((doc) => {  
-              jobs.push(doc.ref.delete().catch(() => {}));  
-            });  
-            return Promise.all(jobs);  
-          })  
-          .catch(() => {});  
+        const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()
+.then((snap) => {
+const jobs = [];
+snap.forEach((doc) => {
+const dogId = doc.id;
+jobs.push(db.collection("followers").where("targetDogId", "==", dogId).get().then((fsnap) => {
+const followerJobs = [];
+fsnap.forEach((fdoc) => {
+followerJobs.push(fdoc.ref.delete().catch(() => {}));
+});
+return Promise.all(followerJobs);
+}).catch(() => {}));
+jobs.push(db.collection("followers").where("followerDogId", "==", dogId).get().then((fsnap) => {
+const followerJobs = [];
+fsnap.forEach((fdoc) => {
+followerJobs.push(fdoc.ref.delete().catch(() => {}));
+});
+return Promise.all(followerJobs);
+}).catch(() => {}));
+jobs.push(doc.ref.delete().catch(() => {}));
+});
+return Promise.all(jobs);
+})
+.catch(() => {});
 
         // b) elimina users/{uid}  
         const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});  
