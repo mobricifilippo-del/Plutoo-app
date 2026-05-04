@@ -3990,9 +3990,7 @@ setActiveView("profile");
   const ownerDocs = state.ownerDocsUploaded[d.id] || {};
   const dogDocs = state.dogDocsUploaded[d.id] || {};
 
-  const selfieKey = `selfieImage_${d.id}`;
-  const selfieStored = localStorage.getItem(selfieKey);
-  const selfieSrc = selfieStored || "./plutoo-icon-192.png";
+  const selfieSrc = d.selfieUrl || "./plutoo-icon-192.png";
 
   const dogStories =
     (window.StoriesState && Array.isArray(window.StoriesState.stories))
