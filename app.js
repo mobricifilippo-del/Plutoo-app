@@ -674,8 +674,6 @@ const clickHandler = async (ev) => {
   km: (data.km || 0),
   img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
   verified: !!data.verified,
-
-  dogDocs: data.dogDocs || {}
 };
           
           // memorizza nome per CTA  
