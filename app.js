@@ -6158,15 +6158,40 @@ if (typeof window.refreshCreateDogCTA === "function") {
             if (!file) return;
 
             if (docCategory === "owner") {
-              if (!state.ownerDocsUploaded[d.id]) state.ownerDocsUploaded[d.id] = {};
-              state.ownerDocsUploaded[d.id].identity = true;
-              localStorage.setItem("ownerDocsUploaded", JSON.stringify(state.ownerDocsUploaded));
+  const dogId = d.id;
+  const storagePath = `dogs/${dogId}/ownerDocs/identity`;
+  const storageRef = window.storage.ref().child(storagePath);
 
-              if (!d.verified) {
-                d.verified = true;
-                alert(state.lang === "it" ? "Badge verificato ottenuto! ✅" : "Verified badge obtained! ✅");
-              }
-            } else if (docCategory === "dog") {
+  storageRef.put(file)
+    .then(() => storageRef.getDownloadURL())
+    .then((url) => {
+      return window.db.collection("dogs").doc(dogId).set({
+        ownerDocs: {
+          identity: {
+            url,
+            storagePath,
+            uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }
+        }
+      }, { merge: true });
+    })
+    .then(() => {
+      if (typeof showToast === "function") {
+        showToast("✅ Documento proprietario caricato");
+      }
+      openProfilePage(d);
+    })
+    .catch((err) => {
+      console.error("owner document upload error:", err);
+      if (typeof showToast === "function") {
+        showToast("❌ Errore caricamento documento");
+      }
+    });
+
+  return;
+            }
+            
+            else if (docCategory === "dog") {
               if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
               const docName = docType.replace("dog-", "");
               state.dogDocsUploaded[d.id][docName] = true;
