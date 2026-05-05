@@ -4241,22 +4241,6 @@ profileContent.innerHTML = `
     }
   `;
 
-  const heroEl = profileContent.querySelector(".pp-hero img");
-if (heroEl) {
-  const t0 = Date.now();
-  alert("HERO src: " + heroEl.src.slice(0, 60) + "\ncomplete: " + heroEl.complete);
-  heroEl.addEventListener("load", () => {
-    alert("HERO load: " + (Date.now() - t0) + "ms");
-  });
-}
-
-  fetch(heroEl.src, { method: "HEAD" })
-  .then(r => {
-    const bytes = Number(r.headers.get("content-length") || 0);
-    alert("HERO size: " + Math.round(bytes / 1024) + " KB");
-  })
-  .catch(() => alert("HERO size: non leggibile"));
-
   const slot = document.getElementById("dogStorySlot");
 if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
 
@@ -5162,18 +5146,6 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
 
       const img = document.createElement("img");
       const t0Gallery = Date.now();
-alert("GALLERY src: " + String(src || "").slice(0, 60));
-
-img.addEventListener("load", () => {
-  alert("GALLERY load: " + (Date.now() - t0Gallery) + "ms");
-});
-
-      fetch(src, { method: "HEAD" })
-  .then(r => {
-    const bytes = Number(r.headers.get("content-length") || 0);
-    alert("GALLERY size: " + Math.round(bytes / 1024) + " KB");
-  })
-  .catch(() => alert("GALLERY size: non leggibile"));
 
 img.src = src;
       img.className = "pp-gallery-img";
