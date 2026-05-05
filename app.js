@@ -6140,6 +6140,12 @@ if (typeof window.refreshCreateDogCTA === "function") {
         if (item.dataset) item.dataset.docBound = "1";
 
         item.addEventListener("click", (e) => {
+          const statusEl = item.querySelector(".doc-status");
+if (statusEl) {
+  statusEl.textContent = "⏳ Caricamento...";
+  statusEl.classList.remove("uploaded");
+  statusEl.classList.add("pending");
+}
           if (window.PLUTOO_READONLY && d.id !== "__create__") {
             e.preventDefault();
             e.stopPropagation();
