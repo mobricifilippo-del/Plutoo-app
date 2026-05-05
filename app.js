@@ -6192,10 +6192,39 @@ if (typeof window.refreshCreateDogCTA === "function") {
             }
             
             else if (docCategory === "dog") {
-              if (!state.dogDocsUploaded[d.id]) state.dogDocsUploaded[d.id] = {};
-              const docName = docType.replace("dog-", "");
-              state.dogDocsUploaded[d.id][docName] = true;
-              localStorage.setItem("dogDocsUploaded", JSON.stringify(state.dogDocsUploaded));
+  const dogId = d.id;
+  const docName = docType.replace("dog-", "");
+  const storagePath = `dogs/${dogId}/dogDocs/${docName}`;
+  const storageRef = window.storage.ref().child(storagePath);
+
+  storageRef.put(file)
+    .then(() => storageRef.getDownloadURL())
+    .then((url) => {
+      return window.db.collection("dogs").doc(dogId).set({
+        dogDocs: {
+          [docName]: {
+            url,
+            storagePath,
+            uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }
+        },
+        dogDocsStatus: "uploaded"
+      }, { merge: true });
+    })
+    .then(() => {
+      if (typeof showToast === "function") {
+        showToast("✅ Documento DOG caricato");
+      }
+      openProfilePage(d);
+    })
+    .catch((err) => {
+      console.error("dog document upload error:", err);
+      if (typeof showToast === "function") {
+        showToast("❌ Errore caricamento documento DOG");
+      }
+    });
+
+  return;
             }
 
             openProfilePage(d);
