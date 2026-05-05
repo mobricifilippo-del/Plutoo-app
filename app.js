@@ -5168,6 +5168,13 @@ img.addEventListener("load", () => {
   alert("GALLERY load: " + (Date.now() - t0Gallery) + "ms");
 });
 
+      fetch(src, { method: "HEAD" })
+  .then(r => {
+    const bytes = Number(r.headers.get("content-length") || 0);
+    alert("GALLERY size: " + Math.round(bytes / 1024) + " KB");
+  })
+  .catch(() => alert("GALLERY size: non leggibile"));
+
 img.src = src;
       img.className = "pp-gallery-img";
       img.style.width = "100%";
