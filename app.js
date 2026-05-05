@@ -4250,6 +4250,13 @@ if (heroEl) {
   });
 }
 
+  fetch(heroEl.src, { method: "HEAD" })
+  .then(r => {
+    const bytes = Number(r.headers.get("content-length") || 0);
+    alert("HERO size: " + Math.round(bytes / 1024) + " KB");
+  })
+  .catch(() => alert("HERO size: non leggibile"));
+
   const slot = document.getElementById("dogStorySlot");
 if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
 
