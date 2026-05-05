@@ -807,6 +807,9 @@ try {
     pedigree: !!data.pedigree,
     breeding: !!data.breeding,
     size: String(data.size || "")
+    dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
+ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
+selfieUrl: String(data.selfieUrl || ""),
   });
  }
   
