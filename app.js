@@ -5154,7 +5154,14 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
       ph.style.position = "relative";
 
       const img = document.createElement("img");
-      img.src = src;
+      const t0Gallery = Date.now();
+alert("GALLERY src: " + String(src || "").slice(0, 60));
+
+img.addEventListener("load", () => {
+  alert("GALLERY load: " + (Date.now() - t0Gallery) + "ms");
+});
+
+img.src = src;
       img.className = "pp-gallery-img";
       img.style.width = "100%";
       img.style.height = "100%";
