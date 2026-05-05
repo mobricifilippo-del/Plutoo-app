@@ -6237,6 +6237,13 @@ if (statusEl) {
             openProfilePage(d);
           };
 
+          const statusEl = item.querySelector(".doc-status");
+if (statusEl) {
+  statusEl.textContent = "⏳ Caricamento...";
+  statusEl.classList.remove("uploaded");
+  statusEl.classList.add("pending");
+}
+
           docFileInput.click();
         });
       });
