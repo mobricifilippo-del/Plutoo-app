@@ -663,17 +663,21 @@ const clickHandler = async (ev) => {
         const doc = await window.db.collection("dogs").doc(myId).get();  
         if (doc && doc.exists) {  
           const data = doc.data() || {};  
-          myDog = {  
-            id: doc.id,  
-            name: (data.name || ""),  
-            breed: (data.breed || ""),  
-            age: (data.age || ""),  
-            sex: (data.sex || ""),  
-            bio: (data.bio || ""),  
-            km: (data.km || 0),  
-            img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),  
-            verified: !!data.verified  
-          };  
+
+          myDog = {
+  id: doc.id,
+  name: (data.name || ""),
+  breed: (data.breed || ""),
+  age: (data.age || ""),
+  sex: (data.sex || ""),
+  bio: (data.bio || ""),
+  km: (data.km || 0),
+  img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
+  verified: !!data.verified,
+
+  dogDocs: data.dogDocs || {}
+};
+          
           // memorizza nome per CTA  
           try { window.PLUTOO_DOG_NAME = (myDog.name || "").trim(); } catch (_) {}  
         }  
