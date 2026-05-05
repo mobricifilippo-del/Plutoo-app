@@ -4241,6 +4241,15 @@ profileContent.innerHTML = `
     }
   `;
 
+  const heroEl = profileContent.querySelector(".pp-hero img");
+if (heroEl) {
+  const t0 = Date.now();
+  alert("HERO src: " + heroEl.src.slice(0, 60) + "\ncomplete: " + heroEl.complete);
+  heroEl.addEventListener("load", () => {
+    alert("HERO load: " + (Date.now() - t0) + "ms");
+  });
+}
+
   const slot = document.getElementById("dogStorySlot");
 if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
 
