@@ -4180,40 +4180,40 @@ profileContent.innerHTML = `
     <h3 class="section-title">${state.lang === "it" ? "Documenti" : "Documents"}</h3>
 
     <div class="pp-docs-section">
-      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti Proprietario DOG" : "DOG Owner Documents"}</h4>
-      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Obbligatorio per ottenere il badge verificato ✅" : "Required to get verified badge ✅"}</p>
-      <div class="pp-docs-grid">
-        <div class="doc-item" data-doc="owner-identity" data-type="owner">
-          <div class="doc-icon">🪪</div>
-          <div class="doc-label">${state.lang === "it" ? "Carta d'identità" : "Identity Card"}</div>
-          <div class="doc-status ${ownerDocs.identity ? "uploaded" : "pending"}">${ownerDocs.identity ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
-        </div>
-      </div>
+  <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti Proprietario DOG" : "DOG Owner Documents"}</h4>
+  <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Obbligatorio per ottenere il badge verificato ✅" : "Required to get verified badge ✅"}</p>
+  <div class="pp-docs-grid">
+    <div class="doc-item" data-doc="owner-identity" data-type="owner">
+      <div class="doc-icon">🪪</div>
+      <div class="doc-label">${state.lang === "it" ? "Carta d'identità" : "Identity Card"}</div>
+      <div class="doc-status ${ownerDocs.identity && ownerDocs.identity.url ? "uploaded" : "pending"}">${ownerDocs.identity && ownerDocs.identity.url ? (state.lang === "it" ? "✓ Verificato" : "✓ Verified") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+    </div>
+  </div>
+</div>
+
+<div class="pp-docs-section" style="margin-top:1.2rem">
+  <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti DOG" : "DOG Documents"}</h4>
+  <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Facoltativi (vaccini, pedigree, microchip)" : "Optional (vaccines, pedigree, microchip)"}</p>
+  <div class="pp-docs-grid">
+    <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
+      <div class="doc-icon">💉</div>
+      <div class="doc-label">${state.lang === "it" ? "Vaccini" : "Vaccines"}</div>
+      <div class="doc-status ${dogDocs.vaccines && dogDocs.vaccines.url ? "uploaded" : "pending"}">${dogDocs.vaccines && dogDocs.vaccines.url ? (state.lang === "it" ? "✓ Verificato" : "✓ Verified") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
     </div>
 
-    <div class="pp-docs-section" style="margin-top:1.2rem">
-      <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti DOG" : "DOG Documents"}</h4>
-      <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Facoltativi (vaccini, pedigree, microchip)" : "Optional (vaccines, pedigree, microchip)"}</p>
-      <div class="pp-docs-grid">
-        <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
-          <div class="doc-icon">💉</div>
-          <div class="doc-label">${state.lang === "it" ? "Vaccini" : "Vaccines"}</div>
-          <div class="doc-status ${dogDocs.vaccines ? "uploaded" : "pending"}">${dogDocs.vaccines ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
-        </div>
-
-        <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
-          <div class="doc-icon">📜</div>
-          <div class="doc-label">${state.lang === "it" ? "Pedigree" : "Pedigree"}</div>
-          <div class="doc-status ${dogDocs.pedigree ? "uploaded" : "pending"}">${dogDocs.pedigree ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
-        </div>
-
-        <div class="doc-item" data-doc="dog-microchip" data-type="dog">
-          <div class="doc-icon">🔬</div>
-          <div class="doc-label">${state.lang === "it" ? "Microchip" : "Microchip"}</div>
-          <div class="doc-status ${dogDocs.microchip ? "uploaded" : "pending"}">${dogDocs.microchip ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
-        </div>
-      </div>
+    <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
+      <div class="doc-icon">📜</div>
+      <div class="doc-label">${state.lang === "it" ? "Pedigree" : "Pedigree"}</div>
+      <div class="doc-status ${dogDocs.pedigree && dogDocs.pedigree.url ? "uploaded" : "pending"}">${dogDocs.pedigree && dogDocs.pedigree.url ? (state.lang === "it" ? "✓ Verificato" : "✓ Verified") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
     </div>
+
+    <div class="doc-item" data-doc="dog-microchip" data-type="dog">
+      <div class="doc-icon">🔬</div>
+      <div class="doc-label">${state.lang === "it" ? "Microchip" : "Microchip"}</div>
+      <div class="doc-status ${dogDocs.microchip && dogDocs.microchip.url ? "uploaded" : "pending"}">${dogDocs.microchip && dogDocs.microchip.url ? (state.lang === "it" ? "✓ Verificato" : "✓ Verified") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+    </div>
+  </div>
+</div>
 
           ${generateSocialSection(d)}
 
