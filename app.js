@@ -4952,7 +4952,8 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
   const maxPhotos = 5;
   const dogId = d.id;
 
-  let images = [];
+  const _existingGallery = Array.isArray(d.gallery) ? d.gallery : [];
+let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
 
   const input = document.createElement("input");
   input.type = "file";
