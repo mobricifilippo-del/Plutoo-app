@@ -6126,128 +6126,144 @@ if (typeof window.refreshCreateDogCTA === "function") {
         if (item.dataset) item.dataset.docBound = "1";
 
         item.addEventListener("click", (e) => {
-          const statusEl = item.querySelector(".doc-status");
-          if (window.PLUTOO_READONLY && d.id !== "__create__") {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            const msg = state.lang === "it"
-              ? "🔒 Crea il profilo DOG per caricare i documenti"
-              : "🔒 Create your DOG profile to upload documents";
-            if (typeof showToast === "function") showToast(msg);
-            return;
-          }
+  const statusEl = item.querySelector(".doc-status");
 
-          const docType = item.getAttribute("data-doc");
-          const docCategory = item.getAttribute("data-type");
-
-          docFileInput.onchange = () => {
-            const file = docFileInput.files && docFileInput.files[0];
-            if (!file) return;
-
-            if (docCategory === "owner") {
-  const dogId = d.id;
-  const storagePath = `dogs/${dogId}/ownerDocs/identity`;
-  const storageRef = window.storage.ref().child(storagePath);
-
-  storageRef.put(file)
-    .then(() => storageRef.getDownloadURL())
-    .then((url) => {
-      return window.db.collection("dogs").doc(dogId).set({
-        ownerDocs: {
-          identity: {
-            url,
-            storagePath,
-            uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }
-        }
-      }, { merge: true });
-    })
-    .then(() => {
-      if (typeof showToast === "function") {
-        showToast("✅ Documento proprietario caricato");
-      }
-      openProfilePage(d);
-    })
-    .catch((err) => {
-      console.error("owner document upload error:", err);
-      if (typeof showToast === "function") {
-        showToast("❌ Errore caricamento documento");
-      }
-    });
-
-  return;
-            }
-            
-        else if (docCategory === "dog") {
-  const dogId = d.id;
-  const docName = docType.replace("dog-", "");
-  const storagePath = `dogs/${dogId}/dogDocs/${docName}`;
-  const storageRef = window.storage.ref().child(storagePath);
-
-  if (statusEl) {
-    statusEl.textContent = "⏳ Caricamento...";
-    statusEl.classList.remove("uploaded");
-    statusEl.classList.add("pending");
+  if (window.PLUTOO_READONLY && d.id !== "__create__") {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    const msg = state.lang === "it"
+      ? "🔒 Crea il profilo DOG per caricare i documenti"
+      : "🔒 Create your DOG profile to upload documents";
+    if (typeof showToast === "function") showToast(msg);
+    return;
   }
 
-  storageRef.put(file)
-    .then(() => storageRef.getDownloadURL())
-    .then((url) => {
-      return window.db.collection("dogs").doc(dogId).set({
-        dogDocs: {
-          [docName]: {
-            url,
-            storagePath,
-            uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }
-        },
-        dogDocsStatus: "uploaded"
-      }, { merge: true });
-    })
-    .then(() => {
-      if (statusEl) {
-        statusEl.textContent = "✓ Caricato";
-        statusEl.classList.remove("pending");
-        statusEl.classList.add("uploaded");
-      }
+  const docType = item.getAttribute("data-doc");
+  const docCategory = item.getAttribute("data-type");
 
-      if (typeof showToast === "function") {
-        showToast("✅ Documento DOG caricato");
-      }
+  if (docCategory === "dog") {
+    const dogId = d.id;
+    const docName = docType.replace("dog-", "");
+    const existingDoc = d.dogDocs && d.dogDocs[docName] && d.dogDocs[docName].url;
 
-      window.db.collection("dogs").doc(dogId).get()
-  .then((snap) => {
-    const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
-    openProfilePage(fresh);
-  })
-  .catch(() => {
-    openProfilePage(d);
-  });
-      
-    })
-    .catch((err) => {
-      console.error("dog document upload error:", err);
+    // 👉 DOCUMENTO ESISTE → ELIMINA
+    if (existingDoc) {
+      const ok = confirm("Vuoi eliminare questo documento DOG?");
+      if (!ok) return;
+
+      const storagePath = d.dogDocs[docName].storagePath;
 
       if (statusEl) {
-        statusEl.textContent = "❌ Errore caricamento";
+        statusEl.textContent = "⏳ Eliminazione...";
         statusEl.classList.remove("uploaded");
         statusEl.classList.add("pending");
       }
 
-      if (typeof showToast === "function") {
-        showToast("❌ Errore caricamento documento DOG");
-      }
-    });
+      const deleteStorage = storagePath
+        ? window.storage.ref().child(storagePath).delete().catch(() => null)
+        : Promise.resolve();
 
-  return;
-        }
+      deleteStorage
+        .then(() => {
+          return window.db.collection("dogs").doc(dogId).set({
+            dogDocs: {
+              [docName]: firebase.firestore.FieldValue.delete()
+            }
+          }, { merge: true });
+        })
+        .then(() => {
+          if (typeof showToast === "function") {
+            showToast("✅ Documento DOG eliminato");
+          }
 
-            openProfilePage(d);
-          };
-
-          docFileInput.click();
+          return window.db.collection("dogs").doc(dogId).get();
+        })
+        .then((snap) => {
+          const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
+          openProfilePage(fresh);
+        })
+        .catch((err) => {
+          console.error("dog document delete error:", err);
+          if (typeof showToast === "function") {
+            showToast("❌ Errore eliminazione documento DOG");
+          }
         });
+
+      return;
+    }
+  }
+
+  // 👉 UPLOAD (documento NON esiste)
+  docFileInput.onchange = () => {
+    const file = docFileInput.files && docFileInput.files[0];
+    if (!file) return;
+
+    if (docCategory === "dog") {
+      const dogId = d.id;
+      const docName = docType.replace("dog-", "");
+      const storagePath = `dogs/${dogId}/dogDocs/${docName}`;
+      const storageRef = window.storage.ref().child(storagePath);
+
+      if (statusEl) {
+        statusEl.textContent = "⏳ Caricamento...";
+        statusEl.classList.remove("uploaded");
+        statusEl.classList.add("pending");
+      }
+
+      storageRef.put(file)
+        .then(() => storageRef.getDownloadURL())
+        .then((url) => {
+          return window.db.collection("dogs").doc(dogId).set({
+            dogDocs: {
+              [docName]: {
+                url,
+                storagePath,
+                uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+              }
+            },
+            dogDocsStatus: "uploaded"
+          }, { merge: true });
+        })
+        .then(() => {
+          if (statusEl) {
+            statusEl.textContent = "✓ Caricato";
+            statusEl.classList.remove("pending");
+            statusEl.classList.add("uploaded");
+          }
+
+          if (typeof showToast === "function") {
+            showToast("✅ Documento DOG caricato");
+          }
+
+          return window.db.collection("dogs").doc(dogId).get();
+        })
+        .then((snap) => {
+          const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
+          openProfilePage(fresh);
+        })
+        .catch((err) => {
+          console.error("dog document upload error:", err);
+
+          if (statusEl) {
+            statusEl.textContent = "❌ Errore caricamento";
+            statusEl.classList.remove("uploaded");
+            statusEl.classList.add("pending");
+          }
+
+          if (typeof showToast === "function") {
+            showToast("❌ Errore caricamento documento DOG");
+          }
+        });
+
+      return;
+    }
+
+    openProfilePage(d);
+  };
+
+  docFileInput.click();
+});
       });
 
       qa(".social-btn", profileContent).forEach(btn => {
