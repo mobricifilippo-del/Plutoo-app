@@ -4028,7 +4028,7 @@ setActiveView("profile");
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
  alert("DEBUG PROFILE\nimg: " + d.img + "\ngallery: " + JSON.stringify(d.gallery));
-profileContent.innerHTML =
+profileContent.innerHTML = `
 
   <div class="pp-hero">
     ${
