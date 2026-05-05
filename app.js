@@ -5044,23 +5044,62 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
             const stamp = Date.now();
 
             const uploads = toAdd.map((file, index) => {
-              const ext = (file.type && file.type.includes("png")) ? "png" : "jpg";
-              const fileName = "gallery_" + stamp + "_" + index + "." + ext;
-              const storagePath = `dogs/${dogId}/gallery/${fileName}`;
-              const storageRef = window.storage.ref().child(storagePath);
+  const ext = (file.type && file.type.includes("png")) ? "png" : "jpg";
+  const fileName = "gallery_" + stamp + "_" + index + "." + ext;
+  const storagePath = `dogs/${dogId}/gallery/${fileName}`;
+  const storageRef = window.storage.ref().child(storagePath);
 
-              return storageRef.put(file, { contentType: file.type || "image/jpeg" })
-                .then(() => storageRef.getDownloadURL())
-                .then((downloadUrl) => ({
-                  index: index,
-                  item: {
-                    url: downloadUrl,
-                    storagePath: storagePath,
-                    createdAt: new Date().toISOString()
-                  }
-                }))
-                .catch(() => null);
-            });
+  const optimizeImage = (file) => new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const maxSide = 1280;
+      let w = img.width;
+      let h = img.height;
+
+      if (w > h && w > maxSide) {
+        h = Math.round(h * maxSide / w);
+        w = maxSide;
+      } else if (h > maxSide) {
+        w = Math.round(w * maxSide / h);
+        h = maxSide;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(url);
+        resolve(blob || file);
+      }, "image/jpeg", 0.82);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+
+    img.src = url;
+  });
+
+  return optimizeImage(file)
+    .then((optimizedFile) => storageRef.put(optimizedFile, { contentType: "image/jpeg" }))
+    .then(() => storageRef.getDownloadURL())
+    .then((downloadUrl) => ({
+      index: index,
+      item: {
+        url: downloadUrl,
+        storagePath: storagePath,
+        createdAt: new Date().toISOString()
+      }
+    }))
+    .catch(() => null);
+});
 
             Promise.all(uploads)
               .then((results) => {
