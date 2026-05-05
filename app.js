@@ -4185,19 +4185,19 @@ profileContent.innerHTML = `
     <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
       <div class="doc-icon">💉</div>
       <div class="doc-label">${state.lang === "it" ? "Vaccini" : "Vaccines"}</div>
-      <div class="doc-status ${dogDocs.vaccines && dogDocs.vaccines.url ? "uploaded" : "pending"}">${dogDocs.vaccines && dogDocs.vaccines.url ? (state.lang === "it" ? "✓ Verificato" : "✓ Verified") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+      <div class="doc-status ${dogDocs.vaccines && dogDocs.vaccines.url ? "uploaded" : "pending"}">${dogDocs.vaccines && dogDocs.vaccines.url ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
     </div>
 
     <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
       <div class="doc-icon">📜</div>
       <div class="doc-label">${state.lang === "it" ? "Pedigree" : "Pedigree"}</div>
-      <div class="doc-status ${dogDocs.pedigree && dogDocs.pedigree.url ? "uploaded" : "pending"}">${dogDocs.pedigree && dogDocs.pedigree.url ? (state.lang === "it" ? "✓ Verificato" : "✓ Verified") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+      <div class="doc-status ${dogDocs.pedigree && dogDocs.pedigree.url ? "uploaded" : "pending"}">${dogDocs.pedigree && dogDocs.pedigree.url ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
     </div>
 
     <div class="doc-item" data-doc="dog-microchip" data-type="dog">
       <div class="doc-icon">🔬</div>
       <div class="doc-label">${state.lang === "it" ? "Microchip" : "Microchip"}</div>
-      <div class="doc-status ${dogDocs.microchip && dogDocs.microchip.url ? "uploaded" : "pending"}">${dogDocs.microchip && dogDocs.microchip.url ? (state.lang === "it" ? "✓ Verificato" : "✓ Verified") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+      <div class="doc-status ${dogDocs.microchip && dogDocs.microchip.url ? "uploaded" : "pending"}">${dogDocs.microchip && dogDocs.microchip.url ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
     </div>
   </div>
 </div>
