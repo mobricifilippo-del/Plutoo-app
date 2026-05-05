@@ -4027,8 +4027,15 @@ setActiveView("profile");
   const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
- alert("DEBUG PROFILE\nimg: " + d.img + "\ngallery: " + JSON.stringify(d.gallery));
 profileContent.innerHTML = `
+const heroEl = profileContent.querySelector("img");
+if (heroEl) {
+  const t0 = Date.now();
+  alert("HERO src: " + heroEl.src.slice(0, 60) + "\ncomplete: " + heroEl.complete);
+  heroEl.addEventListener("load", () => {
+    alert("HERO load: " + (Date.now() - t0) + "ms");
+  });
+}
 
   <div class="pp-hero">
     ${
