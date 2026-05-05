@@ -6179,11 +6179,17 @@ if (typeof window.refreshCreateDogCTA === "function") {
   return;
             }
             
-            else if (docCategory === "dog") {
+        else if (docCategory === "dog") {
   const dogId = d.id;
   const docName = docType.replace("dog-", "");
   const storagePath = `dogs/${dogId}/dogDocs/${docName}`;
   const storageRef = window.storage.ref().child(storagePath);
+
+  if (statusEl) {
+    statusEl.textContent = "⏳ Caricamento...";
+    statusEl.classList.remove("uploaded");
+    statusEl.classList.add("pending");
+  }
 
   storageRef.put(file)
     .then(() => storageRef.getDownloadURL())
@@ -6200,6 +6206,12 @@ if (typeof window.refreshCreateDogCTA === "function") {
       }, { merge: true });
     })
     .then(() => {
+      if (statusEl) {
+        statusEl.textContent = "✓ Caricato";
+        statusEl.classList.remove("pending");
+        statusEl.classList.add("uploaded");
+      }
+
       if (typeof showToast === "function") {
         showToast("✅ Documento DOG caricato");
       }
@@ -6207,13 +6219,20 @@ if (typeof window.refreshCreateDogCTA === "function") {
     })
     .catch((err) => {
       console.error("dog document upload error:", err);
+
+      if (statusEl) {
+        statusEl.textContent = "❌ Errore caricamento";
+        statusEl.classList.remove("uploaded");
+        statusEl.classList.add("pending");
+      }
+
       if (typeof showToast === "function") {
         showToast("❌ Errore caricamento documento DOG");
       }
     });
 
   return;
-            }
+        }
 
             openProfilePage(d);
           };
