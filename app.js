@@ -6215,7 +6215,16 @@ if (typeof window.refreshCreateDogCTA === "function") {
       if (typeof showToast === "function") {
         showToast("✅ Documento DOG caricato");
       }
-      openProfilePage(d);
+
+      window.db.collection("dogs").doc(dogId).get()
+  .then((snap) => {
+    const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
+    openProfilePage(fresh);
+  })
+  .catch(() => {
+    openProfilePage(d);
+  });
+      
     })
     .catch((err) => {
       console.error("dog document upload error:", err);
