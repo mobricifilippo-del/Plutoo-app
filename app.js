@@ -4064,7 +4064,18 @@ profileContent.innerHTML = `
 </div>
         `
         : `
-        <img src="${heroImg}" alt="${d.name}" loading="eager" fetchpriority="high" decoding="sync" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;">
+
+        <img
+  src="${heroImg}"
+  alt="${d.name}"
+  loading="eager"
+  fetchpriority="high"
+  decoding="sync"
+  style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;opacity:0;transition:opacity .18s ease;"
+  onload="this.style.opacity='1'"
+  onerror="this.onerror=null;this.src='./plutoo-icon-192.png';this.style.opacity='1';"
+/>
+
         `
     }
   </div>
