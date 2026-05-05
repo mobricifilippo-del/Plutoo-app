@@ -5186,7 +5186,6 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
       ph.style.position = "relative";
 
       const img = document.createElement("img");
-      const t0Gallery = Date.now();
 
 img.src = src;
       img.className = "pp-gallery-img";
