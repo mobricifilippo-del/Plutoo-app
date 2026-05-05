@@ -7278,6 +7278,7 @@ async function init(){
   sex: String(data.sex || ""),
   img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
   selfieUrl: String(data.selfieUrl || ""),
+gallery: Array.isArray(data.gallery) ? data.gallery : [],
   verified: !!data.verified,
   bio: String(data.bio || ""),
   zone: String(data.zone || ""),
