@@ -4081,15 +4081,6 @@ profileContent.innerHTML = `
     ? ``
     : `
 
-    const heroEl = profileContent.querySelector(".pp-hero img");
-if (heroEl) {
-  const t0 = Date.now();
-  alert("HERO src: " + heroEl.src.slice(0, 60) + "\ncomplete: " + heroEl.complete);
-  heroEl.addEventListener("load", () => {
-    alert("HERO load: " + (Date.now() - t0) + "ms");
-  });
-}
-
     <span class="pp-follow-stats">
         <button type="button" id="followersCount" class="pp-follow-count">0 follower</button>
         <span class="pp-follow-dot">·</span>
