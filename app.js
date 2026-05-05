@@ -8206,6 +8206,7 @@ function showUploadStep() {
 }
 
 async function publishStory() {
+  alert("PUBLISH CLICK");
 
   const publishBtn = document.getElementById("publishStory");
 if (publishBtn) {
