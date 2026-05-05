@@ -3987,8 +3987,9 @@ setActiveView("profile");
 
   const selfieUnlocked = isSelfieUnlocked(d.id);
   if (!state.selfieUntilByDog || typeof state.selfieUntilByDog !== "object") state.selfieUntilByDog = {};
-  const ownerDocs = state.ownerDocsUploaded[d.id] || {};
-  const dogDocs = state.dogDocsUploaded[d.id] || {};
+
+  const ownerDocs = d.ownerDocs || {};
+const dogDocs = d.dogDocs || {};
 
   const selfieSrc = d.selfieUrl || "./plutoo-icon-192.png";
 
