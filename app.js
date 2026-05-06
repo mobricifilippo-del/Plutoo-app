@@ -646,50 +646,93 @@ const clickHandler = async (ev) => {
   }  
 
   // ✅ se hai già un DOG: apri "Il mio profilo"  
-  if (window.PLUTOO_HAS_DOG === true && window.PLUTOO_DOG_ID) {  
-    const myId = String(window.PLUTOO_DOG_ID);  
+  if (window.PLUTOO_HAS_DOG === true && window.PLUTOO_DOG_ID) {
+  const myId = String(window.PLUTOO_DOG_ID);
 
-    // 1) prova da state/local  
-    let dogs = [];  
-    try { dogs = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : []; } catch (_) {}  
-    if (!dogs.length) {  
-      try { dogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) { dogs = []; }  
-    }  
-    let myDog = (Array.isArray(dogs) ? dogs : []).find(x => x && String(x.id) === myId) || null;  
+  // 1) base locale immediata (fallback)
+  let dogs = [];
+  try {
+    dogs = (window.state && Array.isArray(window.state.dogs))
+      ? window.state.dogs
+      : [];
+  } catch (_) {}
 
-    // 2) fallback Firestore se manca  
-    if (!myDog && window.db) {  
-      try {  
-        const doc = await window.db.collection("dogs").doc(myId).get();  
-        if (doc && doc.exists) {  
-          const data = doc.data() || {};  
+  if (!dogs.length) {
+    try {
+      dogs = JSON.parse(localStorage.getItem("dogs") || "[]");
+    } catch (_) {
+      dogs = [];
+    }
+  }
 
-          myDog = {
-  id: doc.id,
-  name: (data.name || ""),
-  breed: (data.breed || ""),
-  age: (data.age || ""),
-  sex: (data.sex || ""),
-  bio: (data.bio || ""),
-  km: (data.km || 0),
-  img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
-  verified: !!data.verified,
-};
-          
-          // memorizza nome per CTA  
-          try { window.PLUTOO_DOG_NAME = (myDog.name || "").trim(); } catch (_) {}  
-        }  
-      } catch (_) {}  
-    }  
+  let myDog =
+    (Array.isArray(dogs) ? dogs : []).find(
+      x => x && String(x.id) === myId
+    ) || null;
 
-    if (typeof window.openProfilePage === "function") {  
-      window.openProfilePage(myDog || { id: myId });  
-    }  
+  // 2) 🔥 Firestore SEMPRE (source of truth)
+  if (window.db) {
+    try {
+      const doc = await window.db.collection("dogs").doc(myId).get();
 
-    // riallineo CTA (sicurezza)  
-    if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
-    return;  
-  }  
+      if (doc && doc.exists) {
+        const data = doc.data() || {};
+
+        myDog = {
+          id: doc.id,
+          name: String(data.name || ""),
+          breed: String(data.breed || ""),
+          age: Number(data.age || 0),
+          sex: String(data.sex || ""),
+          bio: String(data.bio || ""),
+          km: Number(data.km || 0),
+          img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
+          verified: !!data.verified,
+
+          // ✅ campi mancanti reali
+          dogDocs: (data.dogDocs && typeof data.dogDocs === "object")
+            ? data.dogDocs
+            : {},
+
+          ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object")
+            ? data.ownerSocial
+            : {},
+
+          selfieUrl: String(data.selfieUrl || "")
+        };
+
+        // aggiorna cache runtime
+        try {
+          if (!Array.isArray(state.dogs)) state.dogs = [];
+
+          state.dogs = state.dogs.filter(
+            x => !(x && String(x.id) === myId)
+          );
+
+          state.dogs.push(myDog);
+
+          localStorage.setItem("dogs", JSON.stringify(state.dogs));
+        } catch (_) {}
+
+        // memorizza nome CTA
+        try {
+          window.PLUTOO_DOG_NAME = (myDog.name || "").trim();
+        } catch (_) {}
+      }
+    } catch (_) {}
+  }
+
+  if (typeof window.openProfilePage === "function") {
+    window.openProfilePage(myDog || { id: myId });
+  }
+
+  // riallineo CTA
+  if (typeof window.refreshCreateDogCTA === "function") {
+    window.refreshCreateDogCTA();
+  }
+
+  return;
+}
 
   // ✅ se NON hai un DOG: apri create
   localStorage.setItem("currentView", "profile");
