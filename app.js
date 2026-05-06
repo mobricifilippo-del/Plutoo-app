@@ -6195,54 +6195,61 @@ if (typeof window.refreshCreateDogCTA === "function") {
     const docName = docType.replace("dog-", "");
     const existingDoc = d.dogDocs && d.dogDocs[docName] && d.dogDocs[docName].url;
 
-    // 👉 DOCUMENTO ESISTE → ELIMINA
-    if (existingDoc) {
-      const ok = confirm("Vuoi eliminare questo documento DOG?");
-if (!ok) return;
+  // 👉 DOCUMENTO ESISTE → ELIMINA
+if (existingDoc) {
 
-      const storagePath = d.dogDocs[docName].storagePath;
+  showPlutooConfirm("Vuoi eliminare questo documento DOG?", {
+    confirmText: "Elimina",
+    cancelText: "Annulla",
+    danger: true
+  }).then((ok) => {
 
-      if (statusEl) {
-        statusEl.textContent = "⏳ Eliminazione...";
-        statusEl.classList.remove("uploaded");
-        statusEl.classList.add("pending");
-      }
+    if (!ok) return;
 
-      const deleteStorage = storagePath
-        ? window.storage.ref().child(storagePath).delete().catch(() => null)
-        : Promise.resolve();
+    const storagePath = d.dogDocs[docName].storagePath;
 
-      deleteStorage
-        .then(() => {
-          return window.db.collection("dogs").doc(dogId).set({
-            dogDocs: {
-              [docName]: firebase.firestore.FieldValue.delete()
-            }
-          }, { merge: true });
-        })
-        .then(() => {
-          if (typeof showToast === "function") {
-            showToast("✅ Documento DOG eliminato");
+    if (statusEl) {
+      statusEl.textContent = "⏳ Eliminazione...";
+      statusEl.classList.remove("uploaded");
+      statusEl.classList.add("pending");
+    }
+
+    const deleteStorage = storagePath
+      ? window.storage.ref().child(storagePath).delete().catch(() => null)
+      : Promise.resolve();
+
+    deleteStorage
+      .then(() => {
+        return window.db.collection("dogs").doc(dogId).set({
+          dogDocs: {
+            [docName]: firebase.firestore.FieldValue.delete()
           }
+        }, { merge: true });
+      })
+      .then(() => {
+        if (typeof showToast === "function") {
+          showToast("✅ Documento DOG eliminato");
+        }
 
-          return window.db.collection("dogs").doc(dogId).get();
-        })
-        .then((snap) => {
-
+        return window.db.collection("dogs").doc(dogId).get();
+      })
+      .then((snap) => {
         const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
         fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
         openProfilePage(fresh);
-           })
-        
-        .catch((err) => {
-          console.error("dog document delete error:", err);
-          if (typeof showToast === "function") {
-            showToast("❌ Errore eliminazione documento DOG");
-          }
-        });
+      })
+      .catch((err) => {
+        console.error("dog document delete error:", err);
 
-      return;
-    }
+        if (typeof showToast === "function") {
+          showToast("❌ Errore eliminazione documento DOG");
+        }
+      });
+
+  });
+
+  return;
+}
   }
 
   // 👉 UPLOAD (documento NON esiste)
