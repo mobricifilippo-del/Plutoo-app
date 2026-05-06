@@ -6197,8 +6197,16 @@ if (typeof window.refreshCreateDogCTA === "function") {
 
     // 👉 DOCUMENTO ESISTE → ELIMINA
     if (existingDoc) {
-      const ok = confirm("Vuoi eliminare questo documento DOG?");
-      if (!ok) return;
+      const ok = await showPlutooConfirm(
+  "Vuoi eliminare questo documento DOG?",
+  {
+    confirmText: "Elimina",
+    cancelText: "Annulla",
+    danger: true
+  }
+);
+
+if (!ok) return;
 
       const storagePath = d.dogDocs[docName].storagePath;
 
