@@ -6201,7 +6201,7 @@ if (existingDoc) {
   showPlutooConfirm("Vuoi eliminare questo documento DOG?", {
     confirmText: "Elimina",
     cancelText: "Annulla",
-    danger: true
+    danger: false
   }).then((ok) => {
 
     if (!ok) return;
