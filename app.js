@@ -6479,7 +6479,7 @@ showPlutooConfirm(
   {
     confirmText: state.lang === "it" ? "Elimina" : "Delete",
     cancelText: state.lang === "it" ? "Annulla" : "Cancel",
-    danger: true
+    danger: false
   }
 ).then((ok) => {
 if (!ok) return;
