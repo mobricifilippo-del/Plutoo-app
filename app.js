@@ -6288,7 +6288,8 @@ if (typeof window.refreshCreateDogCTA === "function") {
         })
         .then((snap) => {
           const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
-          openProfilePage(fresh);
+fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
+openProfilePage(fresh);
         })
         .catch((err) => {
           console.error("dog document upload error:", err);
