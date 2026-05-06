@@ -6228,8 +6228,22 @@ if (typeof window.refreshCreateDogCTA === "function") {
           return window.db.collection("dogs").doc(dogId).get();
         })
         .then((snap) => {
+
           const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
-          openProfilePage(fresh);
+
+alert(
+  "DELETE DOG DOC DEBUG\n" +
+  "dogId: " + dogId + "\n" +
+  "docName: " + docName + "\n" +
+  "fresh.photoUrl: " + String(fresh.photoUrl || "") + "\n" +
+  "fresh.img: " + String(fresh.img || "") + "\n" +
+  "d.photoUrl: " + String(d.photoUrl || "") + "\n" +
+  "d.img: " + String(d.img || "") + "\n" +
+  "fresh.keys: " + Object.keys(fresh).join(",")
+);
+
+openProfilePage(fresh);
+          
         })
         .catch((err) => {
           console.error("dog document delete error:", err);
