@@ -3996,6 +3996,12 @@ setActiveView("profile");
   const ownerDocs = d.ownerDocs || {};
 const dogDocs = d.dogDocs || {};
 
+  alert(
+  "DOGDOCS DEBUG\n" +
+  "dogId: " + (d && d.id) + "\n" +
+  "dogDocs: " + JSON.stringify(dogDocs)
+);
+
   const selfieSrc = d.selfieUrl || "./plutoo-icon-192.png";
 
   const dogStories =
