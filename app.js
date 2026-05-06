@@ -6229,22 +6229,11 @@ if (typeof window.refreshCreateDogCTA === "function") {
         })
         .then((snap) => {
 
-          const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
-
-alert(
-  "DELETE DOG DOC DEBUG\n" +
-  "dogId: " + dogId + "\n" +
-  "docName: " + docName + "\n" +
-  "fresh.photoUrl: " + String(fresh.photoUrl || "") + "\n" +
-  "fresh.img: " + String(fresh.img || "") + "\n" +
-  "d.photoUrl: " + String(d.photoUrl || "") + "\n" +
-  "d.img: " + String(d.img || "") + "\n" +
-  "fresh.keys: " + Object.keys(fresh).join(",")
-);
-
-openProfilePage(fresh);
-          
-        })
+        const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
+        fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
+        openProfilePage(fresh);
+           })
+        
         .catch((err) => {
           console.error("dog document delete error:", err);
           if (typeof showToast === "function") {
