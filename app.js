@@ -6070,7 +6070,11 @@ if (typeof window.refreshCreateDogCTA === "function") {
 
         setTimeout(() => {
           closeExisting("plutooProfileSettingsView");
-          if (typeof window.openProfilePage === "function") window.openProfilePage(d);
+          if (typeof window.openFreshDogProfile === "function") {
+  window.openFreshDogProfile(d.id, d);
+} else if (typeof window.openProfilePage === "function") {
+  window.openProfilePage(d);
+          }
         }, 450);
 
       } catch (e) {
