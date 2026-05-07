@@ -2888,7 +2888,7 @@ if(!d) return;
           card.classList.add("flash-violet");
           setTimeout(()=>{
             card.classList.remove("flash-violet");
-            openProfilePage(d);
+            window.openFreshDogProfile(d.id, d);
           }, 500);
         });
       });
