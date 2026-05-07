@@ -3385,6 +3385,16 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
   // ============ Sezione Social nel profilo ============
 function generateSocialSection(d) {
 
+  alert(
+  "SOCIAL DEBUG\n" +
+  "profile d.id: " + (d && d.id) + "\n" +
+  "profile d.name: " + (d && d.name) + "\n" +
+  "d.ownerSocial: " + JSON.stringify((d && d.ownerSocial) || {}) + "\n" +
+  "state.ownerSocialByDog[d.id]: " + JSON.stringify((state.ownerSocialByDog && d && state.ownerSocialByDog[d.id]) || {}) + "\n" +
+  "CURRENT_USER_DOG_ID: " + String(window.CURRENT_USER_DOG_ID || "") + "\n" +
+  "PLUTOO_DOG_ID: " + String(window.PLUTOO_DOG_ID || "")
+);
+
   const saved = (d && d.ownerSocial) ? d.ownerSocial : (state.ownerSocialByDog?.[d.id] || {});
 
   const links = {
