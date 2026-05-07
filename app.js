@@ -2576,7 +2576,7 @@ if (!snap || snap.empty) {
       ownerUid: otherUid
     };
 
-    openProfilePage(dog);
+    window.openFreshDogProfile(dog.id, dog);
   });
 
   matchesList.appendChild(cleanRow);
