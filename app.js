@@ -6146,7 +6146,9 @@ if (typeof window.refreshCreateDogCTA === "function") {
             }, { merge: true })
               .then(() => window.db.collection("dogs").doc(d.id).get())
               .then((snap) => {
-                const freshDog = snap.exists ? { id: snap.id, ...snap.data() } : { ...d, ownerSocial: next };
+
+               const freshDog = snap.exists ? { id: snap.id, ...snap.data() } : { ...d, ownerSocial: next };
+freshDog.img = String(freshDog.photoUrl || freshDog.img || d.img || "./plutoo-icon-192.png"); 
 
                 state.ownerSocialByDog[d.id] = next;
 
