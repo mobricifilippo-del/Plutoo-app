@@ -6430,7 +6430,9 @@ openProfilePage(fresh);
         if (btn.dataset && btn.dataset.socialBound === "1") return;
         if (btn.dataset) btn.dataset.socialBound = "1";
 
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
          const finalUrl = btn.getAttribute("href");
 
          if (!finalUrl) return; 
