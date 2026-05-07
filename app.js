@@ -3758,7 +3758,7 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
       e.preventDefault();
       e.stopPropagation();
       closeFollowersOverlay();
-      openProfilePage(realDog);
+      window.openFreshDogProfile(realDog.id, realDog);
     });
 
     followersList.appendChild(row);
@@ -3825,7 +3825,7 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
       e.stopPropagation();
       closeFollowingOverlay();
       state._previousProfileDog = state.currentDogProfile;
-      openProfilePage(realDog);
+      window.openFreshDogProfile(realDog.id, realDog);
     });
 
     followingList.appendChild(row);
