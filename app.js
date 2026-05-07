@@ -3385,7 +3385,7 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
   // ============ Sezione Social nel profilo ============
 function generateSocialSection(d) {
 
-  const saved = state.ownerSocialByDog?.[d.id] || {};
+  const saved = (d && d.ownerSocial) ? d.ownerSocial : (state.ownerSocialByDog?.[d.id] || {});
 
   const links = {
     facebook: saved.facebook && saved.facebook.trim() ? saved.facebook.trim() : null,
