@@ -6417,7 +6417,7 @@ openProfilePage(fresh);
       return;
     }
 
-    openProfilePage(d);
+    window.openFreshDogProfile(d.id, d);
   };
 
   docFileInput.click();
