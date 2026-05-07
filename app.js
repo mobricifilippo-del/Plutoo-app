@@ -4005,6 +4005,53 @@ followingOverlay?.addEventListener("click", (e) => {
   }
 
   // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
+
+window.openFreshDogProfile = function openFreshDogProfile(dogId, fallbackDog) {
+  const id = String(dogId || "").trim();
+  const fallback = (fallbackDog && typeof fallbackDog === "object") ? fallbackDog : {};
+
+  if (!id) return;
+
+  const openFallback = () => {
+    if (typeof window.openProfilePage === "function") {
+      window.openProfilePage({ ...fallback, id });
+    }
+  };
+
+  if (!window.db) {
+    openFallback();
+    return;
+  }
+
+  window.db.collection("dogs").doc(id).get()
+    .then((snap) => {
+      if (!snap || !snap.exists) {
+        openFallback();
+        return;
+      }
+
+      const data = snap.data() || {};
+
+      const freshDog = {
+        ...fallback,
+        ...data,
+        id: snap.id,
+        img: String(data.photoUrl || data.img || fallback.img || "./plutoo-icon-192.png"),
+        avatar: String(data.photoUrl || data.img || fallback.avatar || fallback.img || "./plutoo-icon-192.png"),
+        dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
+        ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
+        selfieUrl: String(data.selfieUrl || "")
+      };
+
+      if (typeof window.openProfilePage === "function") {
+        window.openProfilePage(freshDog);
+      }
+    })
+    .catch(() => {
+      openFallback();
+    });
+};
+
 window.openProfilePage = (d) => {
 
   // ✅ GUARD-RAIL (anti crash da notifiche/fallback)
