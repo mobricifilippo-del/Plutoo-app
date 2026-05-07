@@ -1818,53 +1818,107 @@ if (state.entered) {
 
   } else {
 
-    const fallbackDog = (() => {
-  try {
-    const dogsLocal = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : [];
-    const fromState = dogsLocal.find(x => x && String(x.id) === String(savedId)) || null;
-    if (fromState) return fromState;
-  } catch (_) {}
+  const dog = DOGS.find(d => d.id == savedId);
 
-  try {
-    const dogsLS = JSON.parse(localStorage.getItem("dogs") || "[]");
-    const fromLS = (Array.isArray(dogsLS) ? dogsLS : []).find(x => x && String(x.id) === String(savedId)) || null;
-    if (fromLS) return fromLS;
-  } catch (_) {}
+if (dog && window.openProfilePage) {
 
-  try {
-    return DOGS.find(x => x && String(x.id) === String(savedId)) || { id: String(savedId) };
-  } catch (_) {}
-
-  return { id: String(savedId) };
-})();
-
+setTimeout(() => {
 if (typeof window.openFreshDogProfile === "function") {
-
-  setTimeout(() => {
-    window.openFreshDogProfile(savedId, fallbackDog);
-  }, 0);
-
-} else if (window.openProfilePage) {
-
-  setTimeout(() => {
-    if (typeof window.openProfilePage === "function") {
-      window.openProfilePage(fallbackDog);
-    }
-  }, 0);
+window.openFreshDogProfile(savedId, dog);
+} else if (typeof window.openProfilePage === "function") {
+window.openProfilePage(dog);
+}
+}, 0);
 
 } else {
-  setActiveView("nearby");
-}
 
-   } else {
-  setActiveView("nearby");
-    }
+// ramo DOG vetrina ELIMINATO dal restore:
 
-  } else {
-    setActiveView(viewToRestore);
+// i DOG demo restano nella lista, ma non sono più profili persistenti al refresh
+
+// ✅ se NON è un DOG demo, provo cache locale e poi Firestore  
+      let myDog = null;  
+
+      // 1) prova state/local  
+      try {  
+        const dogsLocal = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : [];  
+        myDog = dogsLocal.find(x => x && String(x.id) === String(savedId)) || null;  
+      } catch (_) {}  
+
+      // 2) fallback localStorage "dogs"  
+      if (!myDog) {  
+        try {  
+          const dogsLS = JSON.parse(localStorage.getItem("dogs") || "[]");  
+          myDog = (Array.isArray(dogsLS) ? dogsLS : []).find(x => x && String(x.id) === String(savedId)) || null;  
+        } catch (_) { myDog = null; }  
+      }  
+
+      // 3) se ho già dati → apro profilo  
+      if (myDog && window.openProfilePage) {  
+
+        if (typeof window.openFreshDogProfile === "function") {
+          window.openFreshDogProfile(savedId, myDog);
+        } else {
+          window.openProfilePage(myDog);
+        }
+
+      } else if (window.db) {  
+
+        // 4) Firestore (no await)  
+        try {  
+          window.db.collection("dogs").doc(String(savedId)).get()  
+            .then((doc) => {  
+              if (doc && doc.exists && window.openProfilePage) {  
+                const data = doc.data() || {};  
+
+                const freshDog = {
+                  id: doc.id,
+                  name: (data.name || ""),
+                  breed: (data.breed || ""),
+                  age: (data.age || ""),
+                  sex: (data.sex || ""),
+                  bio: (data.bio || ""),
+                  km: (data.km || 0),
+                  img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
+                  verified: !!data.verified,
+                  ownerSocial: (data.ownerSocial || {}),
+                  dogDocs: (data.dogDocs || {}),
+                  selfieUrl: (data.selfieUrl || "")
+                };
+
+                if (typeof window.openFreshDogProfile === "function") {
+                  window.openFreshDogProfile(savedId, freshDog);
+                } else {
+                  window.openProfilePage(freshDog);
+                }
+
+              } else {  
+                setActiveView("nearby");  
+              }  
+            })  
+          .catch(() => {  
+            setActiveView("nearby");  
+          });    
+            
+        } catch (_) {  
+          setActiveView("nearby");  
+        }  
+
+      } else {  
+        setActiveView("nearby");  
+      }  
+    }  
   }
 
-  showAdBanner();
+} else {
+setActiveView("nearby");
+}
+
+} else {
+setActiveView(viewToRestore);
+}
+
+showAdBanner();
 }
 
   function openSponsor(){
