@@ -3755,11 +3755,12 @@ _db.collection("notifications").doc(notifId).delete().catch((e) => {
     `;
 
     row.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      closeFollowersOverlay();
-      window.openFreshDogProfile(realDog.id, realDog);
-    });
+  e.preventDefault();
+  e.stopPropagation();
+  closeFollowersOverlay();
+  state._previousProfileDog = state.currentDogProfile;
+  window.openFreshDogProfile(realDog.id, realDog);
+});
 
     followersList.appendChild(row);
   }
