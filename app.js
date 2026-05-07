@@ -6624,7 +6624,7 @@ storageRef.delete()
   if (state._previousProfileDog) {
     const previousDog = state._previousProfileDog;
     state._previousProfileDog = null;
-    openProfilePage(previousDog);
+    window.openFreshDogProfile(previousDog.id, previousDog);
     return;
   }
 
