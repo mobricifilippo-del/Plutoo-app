@@ -6437,7 +6437,7 @@ openProfilePage(fresh);
 
           const rewardKey = finalUrl;
           if (state.plus || state.socialRewardViewed[rewardKey]) {
-            window.open(finalUrl, "_blank", "noopener");
+           window.location.href = finalUrl;
             return;
           }
           if (state.rewardOpen) return;
@@ -6447,7 +6447,7 @@ openProfilePage(fresh);
             state.rewardOpen = false;
             state.socialRewardViewed[rewardKey] = true;
             localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
-            window.open(finalUrl, "_blank", "noopener");
+            window.location.href = finalUrl;
           });
         });
       });
