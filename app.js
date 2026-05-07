@@ -6609,7 +6609,7 @@ storageRef.delete()
       const unlock = () => {
         state.selfieUntilByDog[d.id] = Date.now() + 24 * 60 * 60 * 1000;
         localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
-        openProfilePage(d);
+        window.openFreshDogProfile(d.id, d);
       };
       if (!state.plus) showRewardVideoMock("selfie", unlock);
       else unlock();
