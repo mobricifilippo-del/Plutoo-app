@@ -6131,21 +6131,49 @@ if (typeof window.refreshCreateDogCTA === "function") {
               tiktok:    normalizeUrl(ttEl ? ttEl.value : "")
             };
 
-            state.ownerSocialByDog[d.id] = next;
-            try { localStorage.setItem("ownerSocialByDog", JSON.stringify(state.ownerSocialByDog)); } catch (_) {}
+            saveBtn.disabled = true;
 
             if (fbk) {
               fbk.style.display = "block";
-              fbk.style.border = "1px solid rgba(60,200,120,.45)";
-              fbk.style.background = "rgba(60,200,120,.10)";
-              fbk.style.color = "#bff7d6";
-              fbk.textContent = (state.lang === "it") ? "✅ Social salvati" : "✅ Social saved";
+              fbk.style.border = "1px solid rgba(255,255,255,.16)";
+              fbk.style.background = "rgba(255,255,255,.08)";
+              fbk.style.color = "#fff";
+              fbk.textContent = (state.lang === "it") ? "⏳ Salvataggio..." : "⏳ Saving...";
             }
 
-            setTimeout(() => {
-              closeExisting("plutooEditSocialSheet");
-              if (typeof window.openProfilePage === "function") window.openProfilePage(d);
-            }, 450);
+            window.db.collection("dogs").doc(d.id).set({
+              ownerSocial: next
+            }, { merge: true })
+              .then(() => window.db.collection("dogs").doc(d.id).get())
+              .then((snap) => {
+                const freshDog = snap.exists ? { id: snap.id, ...snap.data() } : { ...d, ownerSocial: next };
+
+                state.ownerSocialByDog[d.id] = next;
+
+                if (fbk) {
+                  fbk.style.border = "1px solid rgba(60,200,120,.45)";
+                  fbk.style.background = "rgba(60,200,120,.10)";
+                  fbk.style.color = "#bff7d6";
+                  fbk.textContent = (state.lang === "it") ? "✅ Social salvati" : "✅ Social saved";
+                }
+
+                setTimeout(() => {
+                  closeExisting("plutooEditSocialSheet");
+                  if (typeof window.openProfilePage === "function") window.openProfilePage(freshDog);
+                }, 450);
+              })
+              .catch((err) => {
+                console.error("save ownerSocial error:", err);
+                saveBtn.disabled = false;
+
+                if (fbk) {
+                  fbk.style.display = "block";
+                  fbk.style.border = "1px solid rgba(255,80,80,.45)";
+                  fbk.style.background = "rgba(255,80,80,.10)";
+                  fbk.style.color = "#ffd0d0";
+                  fbk.textContent = (state.lang === "it") ? "❌ Errore salvataggio social" : "❌ Social save error";
+                }
+              });
           };
         }
       });
