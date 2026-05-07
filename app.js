@@ -3121,7 +3121,7 @@ function attachSwipeWithClick(card, dogData, onSwipe){
       card.classList.add("flash-violet");
       setTimeout(()=>{
         card.classList.remove("flash-violet");
-        openProfilePage(dogData);
+        window.openFreshDogProfile(dogData.id, dogData);
       }, 500);
       resetCard(card);
       return;
