@@ -6431,20 +6431,9 @@ openProfilePage(fresh);
         if (btn.dataset) btn.dataset.socialBound = "1";
 
         btn.addEventListener("click", () => {
-          const baseUrl   = btn.getAttribute("data-url");
-          const dogId     = btn.getAttribute("data-dog-id");
-          const socialKey = btn.getAttribute("data-social");
+         const finalUrl = btn.getAttribute("href");
 
-          let finalUrl = baseUrl;
-
-          if (dogId && state.ownerSocialByDog && state.ownerSocialByDog[dogId]) {
-            const ownerSocial = state.ownerSocialByDog[dogId];
-            if (socialKey === "social-fb" && ownerSocial.facebook) finalUrl = ownerSocial.facebook;
-            else if (socialKey === "social-ig" && ownerSocial.instagram) finalUrl = ownerSocial.instagram;
-            else if (socialKey === "social-tt" && ownerSocial.tiktok) finalUrl = ownerSocial.tiktok;
-          }
-
-          if (!finalUrl) return;
+         if (!finalUrl) return; 
 
           const rewardKey = `${dogId}_${socialKey}`;
           if (state.plus || state.socialRewardViewed[rewardKey]) {
