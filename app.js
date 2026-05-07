@@ -6435,7 +6435,7 @@ openProfilePage(fresh);
 
          if (!finalUrl) return; 
 
-          const rewardKey = `${dogId}_${socialKey}`;
+          const rewardKey = finalUrl;
           if (state.plus || state.socialRewardViewed[rewardKey]) {
             window.open(finalUrl, "_blank", "noopener");
             return;
