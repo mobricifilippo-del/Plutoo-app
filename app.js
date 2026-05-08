@@ -2985,44 +2985,38 @@ return d.size === f.size;
   }
 
 // ============ Swipe ============
-  function renderSwipe(mode){
+  async function renderSwipe(mode){
   const realDogs = Array.isArray(state.dogs) ? state.dogs : [];
   const myDogId = String(window.PLUTOO_DOG_ID || "");
   const myUid = String(window.PLUTOO_UID || "");
 
-  let deck = realDogs
+  let swipedIds = [];
+
+  if (mode === "love" && myDogId && db) {
+    try {
+      const snap = await db
+        .collection("swipes")
+        .where("fromDogId", "==", myDogId)
+        .get();
+
+      snap.forEach(doc => {
+        const x = doc.data() || {};
+        if (x.toDogId) swipedIds.push(String(x.toDogId));
+      });
+    } catch (e) {
+      console.error("load swipes Firestore error:", e);
+    }
+  }
+
+  const deck = realDogs
     .filter(d=>mode==="love" ? true : d.mode===mode)
     .filter(d=>{
       if (!d) return false;
       if (myDogId && String(d.id || "") === myDogId) return false;
       if (myUid && String(d.ownerUid || "") === myUid) return false;
+      if (swipedIds.includes(String(d.id || ""))) return false;
       return true;
     });
-
-  if (!deck.length) {
-    deck = DOGS.filter(d=>mode==="love" ? d.mode===mode : d.mode===mode);
-  }
-
-    alert(
-  "SWIPE DEBUG\n" +
-  "REAL: " + realDogs.length + "\n" +
-  "DECK: " + deck.length + "\n" +
-  "MYDOG: " + myDogId + "\n" +
-  "MYUID: " + myUid + "\n" +
-  "DOGS: " + deck.map(d =>
-    (d.name || "?") +
-    " | id:" + (d.id || "?") +
-    " | owner:" + (d.ownerUid || "?") +
-    " | zone:" + (d.zone || "?") +
-    " | mode:" + (d.mode || "?")
-  ).join("\n")
-);
-
-  if(!deck.length) return;
-
-  const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
-  const d = deck[idx];
-  if(!d) return;
 
   const img   = mode==="love" ? loveImg : playImg;
   const title = mode==="love" ? loveTitleTxt : playTitleTxt;
@@ -3034,13 +3028,35 @@ return d.size === f.size;
 
   if(!img || !title || !meta || !bio || !card) return;
 
+  if(!deck.length){
+    img.removeAttribute("src");
+    title.textContent = "Non ci sono DOG nelle vicinanze";
+    meta.textContent = "";
+    bio.textContent = "";
+
+    if(yesBtn) yesBtn.onclick = null;
+    if(noBtn) noBtn.onclick = null;
+    if(yesBtn) yesBtn.disabled = true;
+    if(noBtn) noBtn.disabled = true;
+
+    if(card._cleanup) card._cleanup();
+    resetCard(card);
+    return;
+  }
+
+  if(yesBtn) yesBtn.disabled = false;
+  if(noBtn) noBtn.disabled = false;
+
+  const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
+  const d = deck[idx];
+  if(!d) return;
+
   img.src = d.img;
   title.textContent = `${d.name} ${d.verified?"✅":""}`;
 
   const metaParts = [
     d.breed ? String(d.breed) : "",
-    d.age ? `${d.age} ${t("years")}` : "",
-    d.zone ? String(d.zone) : ""
+    d.age ? `${d.age} ${t("years")}` : ""
   ].filter(Boolean);
 
   meta.textContent = metaParts.join(" · ");
