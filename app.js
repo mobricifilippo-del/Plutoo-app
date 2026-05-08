@@ -6127,7 +6127,9 @@ if (typeof window.refreshCreateDogCTA === "function") {
       btnSocial.addEventListener("click", () => {
         closeExisting("plutooEditSocialSheet");
 
-        const saved = (state.ownerSocialByDog && state.ownerSocialByDog[d.id]) ? state.ownerSocialByDog[d.id] : {};
+        const saved = (d && d.ownerSocial && typeof d.ownerSocial === "object")
+  ? d.ownerSocial
+  : ((state.ownerSocialByDog && state.ownerSocialByDog[d.id]) ? state.ownerSocialByDog[d.id] : {});
 
         const wrap = document.createElement("div");
         wrap.id = "plutooEditSocialSheet";
