@@ -3426,7 +3426,7 @@ function generateSocialSection(d) {
   }
 
   return `
-    <div class="pp-social-section">
+   <div class="pp-social-section">
       <h4 class="section-title" style="margin-top:0;font-size:1rem">
         ${state.lang==="it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
       </h4>
@@ -3436,8 +3436,9 @@ function generateSocialSection(d) {
         ${links.facebook ? `
           <a class="social-btn social-fb" href="${links.facebook}" target="_blank">
             <div class="social-icon">
-              <svg class="social-svg" viewBox="0 0 24 24">
-                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="11.5" fill="#1877F2"/>
+                <path fill="#fff" d="M13.5 20v-7h2.35l.35-2.73h-2.7V8.53c0-.79.22-1.33 1.35-1.33h1.44V4.76c-.25-.03-1.1-.1-2.1-.1-2.08 0-3.5 1.27-3.5 3.6v2.01H8.64V13h2.35v7h2.51z"/>
               </svg>
             </div>
             <span>Facebook</span>
@@ -3447,8 +3448,18 @@ function generateSocialSection(d) {
         ${links.instagram ? `
           <a class="social-btn social-ig" href="${links.instagram}" target="_blank">
             <div class="social-icon">
-              <svg class="social-svg" viewBox="0 0 24 24">
-                <path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/>
+              <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <defs>
+                  <linearGradient id="igGradient" x1="0" y1="24" x2="24" y2="0">
+                    <stop offset="0%" stop-color="#FEDA75"/>
+                    <stop offset="35%" stop-color="#FA7E1E"/>
+                    <stop offset="65%" stop-color="#D62976"/>
+                    <stop offset="100%" stop-color="#4F5BD5"/>
+                  </linearGradient>
+                </defs>
+                <rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.4" fill="url(#igGradient)"/>
+                <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/>
+                <circle cx="17.2" cy="6.8" r="1.25" fill="#fff"/>
               </svg>
             </div>
             <span>Instagram</span>
@@ -3458,8 +3469,10 @@ function generateSocialSection(d) {
         ${links.tiktok ? `
           <a class="social-btn social-tt" href="${links.tiktok}" target="_blank">
             <div class="social-icon">
-              <svg class="social-svg" viewBox="0 0 24 24">
-                <path fill="#FFFFFF" d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+              <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#25F4EE" d="M15.2 2c.35 2.42 1.7 4.04 4.1 4.2v3.1c-1.38.08-2.63-.32-3.83-1.1v6.1c0 3.08-1.9 5.7-5.46 5.7-3.12 0-5.31-2.08-5.31-4.92 0-3.18 2.77-5.22 6.08-4.63v3.18c-1.38-.43-2.63.32-2.63 1.62 0 1.08.85 1.82 1.9 1.82 1.22 0 1.98-.78 1.98-2.3V2h3.17z" opacity=".9"/>
+                <path fill="#FE2C55" d="M16.1 2c.35 2.42 1.7 4.04 4.1 4.2v3.1c-1.38.08-2.63-.32-3.83-1.1v6.1c0 3.08-1.9 5.7-5.46 5.7-3.12 0-5.31-2.08-5.31-4.92 0-3.18 2.77-5.22 6.08-4.63v3.18c-1.38-.43-2.63.32-2.63 1.62 0 1.08.85 1.82 1.9 1.82 1.22 0 1.98-.78 1.98-2.3V2h3.17z" transform="translate(-.7 .55)" opacity=".9"/>
+                <path fill="#fff" d="M15.45 2c.35 2.42 1.7 4.04 4.1 4.2v3.1c-1.38.08-2.63-.32-3.83-1.1v6.1c0 3.08-1.9 5.7-5.46 5.7-3.12 0-5.31-2.08-5.31-4.92 0-3.18 2.77-5.22 6.08-4.63v3.18c-1.38-.43-2.63.32-2.63 1.62 0 1.08.85 1.82 1.9 1.82 1.22 0 1.98-.78 1.98-2.3V2h3.17z"/>
               </svg>
             </div>
             <span>TikTok</span>
