@@ -2987,10 +2987,10 @@ return d.size === f.size;
 // ============ Swipe ============
   function renderSwipe(mode){
   const realDogs = Array.isArray(state.dogs) ? state.dogs : [];
-  const sourceDeck = realDogs.length ? realDogs : DOGS;
   const myDogId = String(window.PLUTOO_DOG_ID || "");
   const myUid = String(window.PLUTOO_UID || "");
-  const deck = sourceDeck
+
+  let deck = realDogs
     .filter(d=>mode==="love" ? true : d.mode===mode)
     .filter(d=>{
       if (!d) return false;
@@ -2998,6 +2998,11 @@ return d.size === f.size;
       if (myUid && String(d.ownerUid || "") === myUid) return false;
       return true;
     });
+
+  if (!deck.length) {
+    deck = DOGS.filter(d=>mode==="love" ? d.mode===mode : d.mode===mode);
+  }
+
   if(!deck.length) return;
 
   const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
@@ -3016,8 +3021,15 @@ return d.size === f.size;
 
   img.src = d.img;
   title.textContent = `${d.name} ${d.verified?"✅":""}`;
-  meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${d.zone ? d.zone : fmtKm(d.km)}`;
-  bio.textContent   = d.bio || "";
+
+  const metaParts = [
+    d.breed ? String(d.breed) : "",
+    d.age ? `${d.age} ${t("years")}` : "",
+    d.zone ? String(d.zone) : ""
+  ].filter(Boolean);
+
+  meta.textContent = metaParts.join(" · ");
+  bio.textContent = "";
 
   if(yesBtn) yesBtn.onclick = null;
   if(noBtn) noBtn.onclick = null;
