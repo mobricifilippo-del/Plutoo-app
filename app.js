@@ -3003,19 +3003,20 @@ return d.size === f.size;
     deck = DOGS.filter(d=>mode==="love" ? d.mode===mode : d.mode===mode);
   }
 
-    console.log("SWIPE DEBUG", {
-  realDogsLength: realDogs.length,
-  deckLength: deck.length,
-  myDogId,
-  myUid,
-  deckDogs: deck.map(d => ({
-    id: d?.id || null,
-    name: d?.name || null,
-    ownerUid: d?.ownerUid || null,
-    zone: d?.zone || null,
-    mode: d?.mode || null
-  }))
-});
+    alert(
+  "SWIPE DEBUG\n" +
+  "REAL: " + realDogs.length + "\n" +
+  "DECK: " + deck.length + "\n" +
+  "MYDOG: " + myDogId + "\n" +
+  "MYUID: " + myUid + "\n" +
+  "DOGS: " + deck.map(d =>
+    (d.name || "?") +
+    " | id:" + (d.id || "?") +
+    " | owner:" + (d.ownerUid || "?") +
+    " | zone:" + (d.zone || "?") +
+    " | mode:" + (d.mode || "?")
+  ).join("\n")
+);
 
   if(!deck.length) return;
 
