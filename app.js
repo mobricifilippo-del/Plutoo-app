@@ -3437,8 +3437,7 @@ function generateSocialSection(d) {
           <a class="social-btn social-fb" href="${links.facebook}" target="_blank">
             <div class="social-icon">
               <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="11.5" fill="#1877F2"/>
-                <path fill="#fff" d="M13.5 20v-7h2.35l.35-2.73h-2.7V8.53c0-.79.22-1.33 1.35-1.33h1.44V4.76c-.25-.03-1.1-.1-2.1-.1-2.08 0-3.5 1.27-3.5 3.6v2.01H8.64V13h2.35v7h2.51z"/>
+                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
             </div>
             <span>Facebook</span>
@@ -3450,16 +3449,18 @@ function generateSocialSection(d) {
             <div class="social-icon">
               <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
                 <defs>
-                  <linearGradient id="igGradient" x1="0" y1="24" x2="24" y2="0">
+                  <radialGradient id="igGradient_${d.id}" cx="30%" cy="107%" r="120%">
                     <stop offset="0%" stop-color="#FEDA75"/>
-                    <stop offset="35%" stop-color="#FA7E1E"/>
-                    <stop offset="65%" stop-color="#D62976"/>
+                    <stop offset="25%" stop-color="#FA7E1E"/>
+                    <stop offset="50%" stop-color="#D62976"/>
+                    <stop offset="75%" stop-color="#962FBF"/>
                     <stop offset="100%" stop-color="#4F5BD5"/>
-                  </linearGradient>
+                  </radialGradient>
                 </defs>
-                <rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.4" fill="url(#igGradient)"/>
-                <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/>
-                <circle cx="17.2" cy="6.8" r="1.25" fill="#fff"/>
+                <rect x="2" y="2" width="20" height="20" rx="5.5" fill="url(#igGradient_${d.id})"/>
+                <rect x="6.4" y="6.4" width="11.2" height="11.2" rx="3.2" fill="none" stroke="#fff" stroke-width="1.9"/>
+                <circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" stroke-width="1.9"/>
+                <circle cx="16.35" cy="7.65" r="1.15" fill="#fff"/>
               </svg>
             </div>
             <span>Instagram</span>
@@ -3470,9 +3471,9 @@ function generateSocialSection(d) {
           <a class="social-btn social-tt" href="${links.tiktok}" target="_blank">
             <div class="social-icon">
               <svg class="social-svg" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="#25F4EE" d="M15.2 2c.35 2.42 1.7 4.04 4.1 4.2v3.1c-1.38.08-2.63-.32-3.83-1.1v6.1c0 3.08-1.9 5.7-5.46 5.7-3.12 0-5.31-2.08-5.31-4.92 0-3.18 2.77-5.22 6.08-4.63v3.18c-1.38-.43-2.63.32-2.63 1.62 0 1.08.85 1.82 1.9 1.82 1.22 0 1.98-.78 1.98-2.3V2h3.17z" opacity=".9"/>
-                <path fill="#FE2C55" d="M16.1 2c.35 2.42 1.7 4.04 4.1 4.2v3.1c-1.38.08-2.63-.32-3.83-1.1v6.1c0 3.08-1.9 5.7-5.46 5.7-3.12 0-5.31-2.08-5.31-4.92 0-3.18 2.77-5.22 6.08-4.63v3.18c-1.38-.43-2.63.32-2.63 1.62 0 1.08.85 1.82 1.9 1.82 1.22 0 1.98-.78 1.98-2.3V2h3.17z" transform="translate(-.7 .55)" opacity=".9"/>
-                <path fill="#fff" d="M15.45 2c.35 2.42 1.7 4.04 4.1 4.2v3.1c-1.38.08-2.63-.32-3.83-1.1v6.1c0 3.08-1.9 5.7-5.46 5.7-3.12 0-5.31-2.08-5.31-4.92 0-3.18 2.77-5.22 6.08-4.63v3.18c-1.38-.43-2.63.32-2.63 1.62 0 1.08.85 1.82 1.9 1.82 1.22 0 1.98-.78 1.98-2.3V2h3.17z"/>
+                <path fill="#25F4EE" d="M16.1 2.2c.3 2.35 1.65 3.75 3.9 3.9v3.15c-1.3.05-2.45-.3-3.55-1.05v6.05c0 3.15-2.15 5.55-5.6 5.55-3.05 0-5.1-2.05-5.1-4.75 0-3.1 2.65-5.1 5.85-4.6v3.25c-1.35-.4-2.5.25-2.5 1.45 0 .95.75 1.6 1.75 1.6 1.2 0 1.9-.75 1.9-2.2V2.2h3.35z"/>
+                <path fill="#FE2C55" d="M15.25 2.2c.3 2.35 1.65 3.75 3.9 3.9v3.15c-1.3.05-2.45-.3-3.55-1.05v6.05c0 3.15-2.15 5.55-5.6 5.55-3.05 0-5.1-2.05-5.1-4.75 0-3.1 2.65-5.1 5.85-4.6v3.25c-1.35-.4-2.5.25-2.5 1.45 0 .95.75 1.6 1.75 1.6 1.2 0 1.9-.75 1.9-2.2V2.2h3.35z"/>
+                <path fill="#fff" d="M15.68 2.2c.3 2.35 1.65 3.75 3.9 3.9v3.15c-1.3.05-2.45-.3-3.55-1.05v6.05c0 3.15-2.15 5.55-5.6 5.55-3.05 0-5.1-2.05-5.1-4.75 0-3.1 2.65-5.1 5.85-4.6v3.25c-1.35-.4-2.5.25-2.5 1.45 0 .95.75 1.6 1.75 1.6 1.2 0 1.9-.75 1.9-2.2V2.2h3.35z"/>
               </svg>
             </div>
             <span>TikTok</span>
