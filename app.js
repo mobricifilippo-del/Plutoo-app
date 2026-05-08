@@ -2986,7 +2986,9 @@ return d.size === f.size;
 
 // ============ Swipe ============
   function renderSwipe(mode){
-  const deck = DOGS.filter(d=>d.mode===mode);
+  const realDogs = Array.isArray(state.dogs) ? state.dogs : [];
+  const sourceDeck = realDogs.length ? realDogs : DOGS;
+  const deck = sourceDeck.filter(d=>mode==="love" ? true : d.mode===mode);
   if(!deck.length) return;
 
   const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
@@ -3005,7 +3007,7 @@ return d.size === f.size;
 
   img.src = d.img;
   title.textContent = `${d.name} ${d.verified?"✅":""}`;
-  meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${fmtKm(d.km)}`;
+  meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${d.zone || fmtKm(d.km)}`;
   bio.textContent   = d.bio || "";
 
   if(yesBtn) yesBtn.onclick = null;
