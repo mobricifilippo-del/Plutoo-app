@@ -2988,7 +2988,16 @@ return d.size === f.size;
   function renderSwipe(mode){
   const realDogs = Array.isArray(state.dogs) ? state.dogs : [];
   const sourceDeck = realDogs.length ? realDogs : DOGS;
-  const deck = sourceDeck.filter(d=>mode==="love" ? true : d.mode===mode);
+  const myDogId = String(window.PLUTOO_DOG_ID || "");
+  const myUid = String(window.PLUTOO_UID || "");
+  const deck = sourceDeck
+    .filter(d=>mode==="love" ? true : d.mode===mode)
+    .filter(d=>{
+      if (!d) return false;
+      if (myDogId && String(d.id || "") === myDogId) return false;
+      if (myUid && String(d.ownerUid || "") === myUid) return false;
+      return true;
+    });
   if(!deck.length) return;
 
   const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
@@ -3007,7 +3016,7 @@ return d.size === f.size;
 
   img.src = d.img;
   title.textContent = `${d.name} ${d.verified?"✅":""}`;
-  meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${d.zone || fmtKm(d.km)}`;
+  meta.textContent  = `${d.breed} · ${d.age} ${t("years")} · ${d.zone ? d.zone : fmtKm(d.km)}`;
   bio.textContent   = d.bio || "";
 
   if(yesBtn) yesBtn.onclick = null;
@@ -3019,6 +3028,30 @@ return d.size === f.size;
   async function handleSwipeComplete(direction){
     if(state.processingSwipe) return;
     state.processingSwipe = true;
+
+    const action = direction === "right" ? "like" : "skip";
+
+    try {
+      const fromDogId = String(window.PLUTOO_DOG_ID || (typeof CURRENT_USER_DOG_ID !== "undefined" ? CURRENT_USER_DOG_ID : "") || "");
+      const toDogId = String(d.id || "");
+      const fromUid = String(window.PLUTOO_UID || "");
+      const toUid = String(d.ownerUid || "");
+
+      if (fromDogId && toDogId && fromUid && toUid && db) {
+        const swipeId = `${fromDogId}_${toDogId}`;
+
+        await db.collection("swipes").doc(swipeId).set({
+          fromDogId,
+          toDogId,
+          fromUid,
+          toUid,
+          action,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
+    } catch (e) {
+      console.error("save swipe Firestore error:", e);
+    }
 
     if (direction === "right"){
       if (mode === "love") {
