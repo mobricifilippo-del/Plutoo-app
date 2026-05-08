@@ -2984,7 +2984,7 @@ return d.size === f.size;
 });
   }
 
-  // ============ Swipe ============
+// ============ Swipe ============
   function renderSwipe(mode){
   const deck = DOGS.filter(d=>d.mode===mode);
   if(!deck.length) return;
@@ -3019,7 +3019,28 @@ return d.size === f.size;
     state.processingSwipe = true;
 
     if (direction === "right"){
-      if (mode !== "love") {
+      if (mode === "love") {
+        try {
+          const fromDogId = String(window.PLUTOO_DOG_ID || (typeof CURRENT_USER_DOG_ID !== "undefined" ? CURRENT_USER_DOG_ID : "") || "");
+          const toDogId = String(d.id || "");
+          const fromUid = String(window.PLUTOO_UID || "");
+          const toUid = String(d.ownerUid || "");
+
+          if (fromDogId && toDogId && fromUid && toUid && db) {
+            const likeId = `${fromDogId}_${toDogId}`;
+
+            await db.collection("likes").doc(likeId).set({
+              fromDogId,
+              toDogId,
+              fromUid,
+              toUid,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          }
+        } catch (e) {
+          console.error("save like Firestore error:", e);
+        }
+      } else {
         state.friendships[d.id] = true;
         localStorage.setItem("friendships", JSON.stringify(state.friendships));
       }
