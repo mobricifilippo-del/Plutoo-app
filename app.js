@@ -3019,30 +3019,10 @@ return d.size === f.size;
     state.processingSwipe = true;
 
     if (direction === "right"){
-      const dogId = d.id;
-      
-      // Salva match locale
-      if (mode === "love") {
-        state.matches[dogId] = true;
-        localStorage.setItem("matches", JSON.stringify(state.matches));
-    // ✅ CONSOLIDA MATCH SU FIRESTORE (PRIMA di tutto)
-if (typeof ensureChatForMatch === "function") {
-  try {
-    await ensureChatForMatch(d);
-  } catch (e) {
-    console.error("ensureChatForMatch FALLITA:", e);
-  }
-}
-      } else {
-        state.friendships[dogId] = true;
+      if (mode !== "love") {
+        state.friendships[d.id] = true;
         localStorage.setItem("friendships", JSON.stringify(state.friendships));
       }
-
-      // Animazione match
-      showMatchAnimation(d.name, nextMatchColor);
-      state.matchCount++;
-      localStorage.setItem("matchCount", String(state.matchCount));
-      nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
     }
 
     if (mode==="love") state.currentLoveIdx++; else state.currentPlayIdx++;
@@ -3089,7 +3069,7 @@ if (typeof ensureChatForMatch === "function") {
   // ✅ FIX: Passa l'oggetto DOG CORRENTE, non una closure
   attachSwipeWithClick(card, d, handleSwipeComplete);
   }
-
+  
 function attachSwipeWithClick(card, dogData, onSwipe){
   let startX = 0;
   let startY = 0;
