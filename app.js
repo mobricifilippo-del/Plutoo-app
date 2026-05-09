@@ -6655,10 +6655,22 @@ openProfilePage(fresh);
   })();
 
   // Azioni nel profilo DOG (chat + like/match)
-  const openChatBtn = $("btnOpenChat");
-  if (openChatBtn) {
-    openChatBtn.onclick = () => openChat(d);
-  }
+ const openChatBtn = $("btnOpenChat");
+if (openChatBtn) {
+  openChatBtn.onclick = () => {
+    const otherUid = String(d && d.ownerUid ? d.ownerUid : "");
+    const selfUid = String(window.PLUTOO_UID || "");
+
+    if (!otherUid || !selfUid || otherUid === selfUid) {
+      if (typeof showToast === "function") {
+        showToast("Chat non disponibile per questo profilo");
+      }
+      return;
+    }
+
+    openChat(d);
+  };
+}
 
   const likeDogBtn = $("btnLikeDog");
 if (likeDogBtn) {
