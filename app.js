@@ -3069,6 +3069,18 @@ return d.size === f.size;
   const d = deck[idx];
   if(!d) return;
 
+    img.style.display = "";
+
+if(yesBtn) {
+  yesBtn.disabled = false;
+  yesBtn.classList.remove("swipe-disabled");
+}
+
+if(noBtn) {
+  noBtn.disabled = false;
+  noBtn.classList.remove("swipe-disabled");
+}
+
   img.src = d.img;
   title.textContent = `${d.name} ${d.verified?"✅":""}`;
 
