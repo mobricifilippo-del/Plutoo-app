@@ -3014,7 +3014,10 @@ return d.size === f.size;
       if (!d) return false;
       if (myDogId && String(d.id || "") === myDogId) return false;
       if (myUid && String(d.ownerUid || "") === myUid) return false;
-      if (swipedIds.includes(String(d.id || ""))) return false;
+
+      // TEMP TEST: filtro swipes disattivato per verificare scrittura Firestore
+// if (swipedIds.includes(String(d.id || ""))) return false;
+      
       return true;
     });
 
