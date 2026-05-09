@@ -7184,7 +7184,11 @@ try {
 
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-  lastSenderUid: selfUid
+  lastSenderUid: selfUid,
+
+  match: hasMatch === true,
+  status: hasMatch === true ? "accepted" : "pending",
+  folder: hasMatch === true ? "inbox" : "requests"
 
 }, { merge: true });
 
