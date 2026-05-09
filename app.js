@@ -963,6 +963,8 @@ const linkRegister = document.getElementById("linkRegister");
 
     window.PLUTOO_UID = user.uid;
 
+    if (typeof initMessagesBadge === "function") initMessagesBadge();
+
     if (linkLogin) {
       linkLogin.removeAttribute("data-i18n");
       linkLogin.textContent = "Logout";
