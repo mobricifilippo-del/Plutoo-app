@@ -6661,20 +6661,41 @@ openProfilePage(fresh);
   }
 
   const likeDogBtn = $("btnLikeDog");
-  if (likeDogBtn) {
-    // ✅ evita accumulo: onclick invece di addEventListener
-    likeDogBtn.onclick = async () => {
-      if (!d || !d.id) return;
+if (likeDogBtn) {
+  likeDogBtn.onclick = async () => {
+    if (!d || !d.id) return;
 
-      state.matches[d.id] = true;
-      localStorage.setItem("matches", JSON.stringify(state.matches));
+    const fromDogId = String(window.PLUTOO_DOG_ID || (typeof CURRENT_USER_DOG_ID !== "undefined" ? CURRENT_USER_DOG_ID : "") || "");
+    const toDogId = String(d.id || "");
+    const fromUid = String(window.PLUTOO_UID || "");
+    const toUid = String(d.ownerUid || "");
+
+    if (!fromDogId || !toDogId || !fromUid || !toUid || !db) return;
+
+    const likeId = `${fromDogId}_${toDogId}`;
+
+    await db.collection("likes").doc(likeId).set({
+      fromDogId,
+      toDogId,
+      fromUid,
+      toUid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    const inverseLike = await db.collection("likes").doc(`${toDogId}_${fromDogId}`).get();
+
+    if (inverseLike && inverseLike.exists) {
+      const matchId = [fromDogId, toDogId].sort().join("_");
+
+      await db.collection("matches").doc(matchId).set({
+        dogIds: [fromDogId, toDogId].sort(),
+        uids: [fromUid, toUid].sort(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: "matched"
+      }, { merge: true });
 
       if (typeof ensureChatForMatch === "function") {
-        try {
-          await ensureChatForMatch(d);
-        } catch (e) {
-          console.error("ensureChatForMatch PROFILO FALLITA:", e);
-        }
+        await ensureChatForMatch(d);
       }
 
       const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
@@ -6684,8 +6705,11 @@ openProfilePage(fresh);
       localStorage.setItem("matchCount", String(state.matchCount));
 
       nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
-    };
-  }
+    } else {
+      showSmallLikeAnimation();
+    }
+  };
+}
 
   // ✅ FIX CRASH: in create mode uploadSelfie/unlockSelfie non esistono
   const uploadSelfieBtn = $("uploadSelfie");
