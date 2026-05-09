@@ -2070,15 +2070,6 @@ function initMessagesBadge() {
 
       if (parts[0] !== myUid && parts[1] !== myUid) return;
 
-      alert(
-  "BADGE DOC DEBUG\n" +
-  "myUid=" + myUid + "\n" +
-  "sender=" + sender + "\n" +
-  "chatId=" + chatId + "\n" +
-  "parts0=" + parts[0] + "\n" +
-  "parts1=" + parts[1]
-);
-
       if (sender !== myUid) unread++;
     });
 
