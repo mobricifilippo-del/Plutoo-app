@@ -3162,6 +3162,9 @@ if (inverseLike && inverseLike.exists) {
   }
 
   showMatchAnimation(d.name, nextMatchColor);
+
+} else {
+  showSmallLikeAnimation(card);
 }
           }
         } catch (e) {
