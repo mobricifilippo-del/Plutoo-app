@@ -3381,7 +3381,7 @@ setTimeout(() => {
 }, 1700);
 }
 
-  // ✅ NUOVA FUNZIONE: Consolida match su Firestore (swipe + profilo)
+ // ✅ NUOVA FUNZIONE: Consolida match su Firestore (swipe + profilo)
 async function ensureChatForMatch(dog) {
   if (!dog || !dog.id) return;
 
@@ -3394,27 +3394,60 @@ async function ensureChatForMatch(dog) {
 
     if (!selfUid || !dogId || !otherUid) return;
 
+    let selfDogName = "";
+    let selfDogAvatar = "";
+    let selfDogId = selfUid;
+
+    try {
+      const selfDogSnap = await db.collection("dogs").doc(String(selfUid)).get();
+      const selfDogData = selfDogSnap && selfDogSnap.exists ? (selfDogSnap.data() || {}) : {};
+
+      selfDogName = selfDogData.name || "";
+      selfDogAvatar =
+        selfDogData.photoUrl ||
+        selfDogData.img ||
+        selfDogData.avatar ||
+        "";
+    } catch (e) {
+      console.error("ensureChatForMatch self dog read error:", e);
+    }
+
     // chatId condiviso tra i 2 partecipanti reali
     const pair = [selfUid, otherUid].sort();
     const chatId = `${pair[0]}__${pair[1]}`;
 
     const chatPayload = {
-  members: [selfUid, otherUid],
-  dogId,
-  dogName,
-  dogAvatar,
-  match: true,
-  status: "accepted", // ← AGGIUNTA
-  lastMessageText: "",
-  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-  updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-};
+      members: [selfUid, otherUid],
+      dogId,
+      dogName,
+      dogAvatar,
+      match: true,
+      status: "accepted",
+      lastMessageText: "",
+      lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+      names: {
+        [selfUid]: selfDogName,
+        [otherUid]: dogName
+      },
+
+      avatars: {
+        [selfUid]: selfDogAvatar,
+        [otherUid]: dogAvatar
+      },
+
+      dogIds: {
+        [selfUid]: selfDogId,
+        [otherUid]: dogId
+      }
+    };
 
     await db.collection("chats").doc(chatId).set(chatPayload, { merge: true });
   } catch (err) {
     console.error("Errore ensureChatForMatch:", err);
   }
-}
+} 
 
   // ============ Ricerca ============
   if (btnSearchPanel) {
