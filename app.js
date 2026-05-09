@@ -2073,6 +2073,14 @@ function initMessagesBadge() {
       if (sender !== myUid) unread++;
     });
 
+    alert(
+  "BADGE DEBUG\n" +
+  "unread=" + unread + "\n" +
+  "text=" + msgBadge.textContent + "\n" +
+  "class=" + msgBadge.className + "\n" +
+  "display=" + getComputedStyle(msgBadge).display
+);
+
     __setMsgBadge(unread);
   }, (e) => {
     alert("❌ MSG BADGE onSnapshot\n" + (e && e.message ? e.message : String(e)));
