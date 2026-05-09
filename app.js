@@ -3028,22 +3028,6 @@ return d.size === f.size;
 
   if(!img || !title || !meta || !bio || !card) return;
 
-    alert(
-  "SWIPE EMPTY DEBUG\n" +
-  "REAL: " + realDogs.length + "\n" +
-  "SWIPED: " + swipedIds.length + "\n" +
-  "MYDOG: " + myDogId + "\n" +
-  "MYUID: " + myUid + "\n" +
-  "DECK: " + deck.length + "\n" +
-  "SWIPED IDS: " + swipedIds.join(",") + "\n\n" +
-  "REAL DOGS:\n" +
-  realDogs.map(d =>
-    (d?.name || "?") +
-    " | id:" + (d?.id || "?") +
-    " | owner:" + (d?.ownerUid || "?")
-  ).join("\n")
-);
-
   if(!deck.length){
     img.removeAttribute("src");
     title.textContent = "Non ci sono DOG nelle vicinanze";
@@ -3095,6 +3079,15 @@ return d.size === f.size;
       const toDogId = String(d.id || "");
       const fromUid = String(window.PLUTOO_UID || "");
       const toUid = String(d.ownerUid || "");
+
+      alert(
+  "SWIPE SAVE DEBUG\n\n" +
+  "fromDogId: " + fromDogId + "\n" +
+  "toDogId: " + toDogId + "\n" +
+  "fromUid: " + fromUid + "\n" +
+  "toUid: " + toUid + "\n" +
+  "db: " + (!!db)
+);
 
       if (fromDogId && toDogId && fromUid && toUid && db) {
         const swipeId = `${fromDogId}_${toDogId}`;
