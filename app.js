@@ -3334,19 +3334,17 @@ function attachSwipeWithClick(card, dogData, onSwipe){
   }
 
 function showSmallLikeAnimation(card) {
-  if (!card) return;
-
-  const old = card.querySelector(".small-like-heart");
+  const old = document.querySelector(".small-like-overlay");
   if (old) old.remove();
 
-  const heart = document.createElement("div");
-  heart.className = "small-like-heart";
-  heart.textContent = "💛";
+  const overlay = document.createElement("div");
+  overlay.className = "small-like-overlay";
+  overlay.innerHTML = `<div class="small-like-heart">💛</div>`;
 
-  card.appendChild(heart);
+  document.body.appendChild(overlay);
 
   setTimeout(() => {
-    heart.remove();
+    overlay.remove();
   }, 700);
 }
 
