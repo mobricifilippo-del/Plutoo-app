@@ -2612,6 +2612,24 @@ display: none !important;
 
 /* === MATCH FLASH – STILE COME ENTRA MA GIALLO === */
 
+.small-like-heart{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.75);
+  z-index:20;
+  font-size:58px;
+  pointer-events:none;
+  animation:smallLikePop .65s ease-out forwards;
+  filter:drop-shadow(0 8px 20px rgba(205,164,52,.55));
+}
+
+@keyframes smallLikePop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-58%) scale(.9)}
+}
+
 .match-overlay{
   position: fixed;
   inset: 0;
