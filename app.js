@@ -3333,6 +3333,23 @@ function attachSwipeWithClick(card, dogData, onSwipe){
     if(card._cleanup) card._cleanup();
   }
 
+function showSmallLikeAnimation(card) {
+  if (!card) return;
+
+  const old = card.querySelector(".small-like-heart");
+  if (old) old.remove();
+
+  const heart = document.createElement("div");
+  heart.className = "small-like-heart";
+  heart.textContent = "💛";
+
+  card.appendChild(heart);
+
+  setTimeout(() => {
+    heart.remove();
+  }, 700);
+}
+
 function showMatchAnimation(dogName, color) {
   const overlay = document.getElementById("matchOverlay") || document.querySelector(".match-overlay");
   if (!overlay) return;
