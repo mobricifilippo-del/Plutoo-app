@@ -3030,19 +3030,36 @@ return d.size === f.size;
   if(!img || !title || !meta || !bio || !card) return;
 
   if(!deck.length){
-    img.removeAttribute("src");
-    title.textContent = "Non ci sono DOG nelle vicinanze";
-    meta.textContent = "";
-    bio.textContent = "";
+  img.removeAttribute("src");
+  img.removeAttribute("alt");
+  img.style.display = "none";
 
-    if(yesBtn) yesBtn.onclick = null;
-    if(noBtn) noBtn.onclick = null;
-    if(yesBtn) yesBtn.disabled = true;
-    if(noBtn) noBtn.disabled = true;
+  title.innerHTML = `
+    <div class="swipe-empty-state">
+      <img src="plutoo-icon-192.png" alt="Plutoo" class="swipe-empty-logo">
+      <div class="swipe-empty-title">Non ci sono DOG nelle vicinanze</div>
+      <div class="swipe-empty-subtitle">Torna più tardi per scoprire nuovi DOG</div>
+    </div>
+  `;
 
-    if(card._cleanup) card._cleanup();
-    resetCard(card);
-    return;
+  meta.textContent = "";
+  bio.textContent = "";
+
+  if(yesBtn) {
+    yesBtn.onclick = null;
+    yesBtn.disabled = true;
+    yesBtn.classList.add("swipe-disabled");
+  }
+
+  if(noBtn) {
+    noBtn.onclick = null;
+    noBtn.disabled = true;
+    noBtn.classList.add("swipe-disabled");
+  }
+
+  if(card._cleanup) card._cleanup();
+  resetCard(card);
+  return;
   }
 
   if(yesBtn) yesBtn.disabled = false;
