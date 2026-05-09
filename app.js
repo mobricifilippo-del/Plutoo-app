@@ -3014,9 +3014,7 @@ return d.size === f.size;
       if (!d) return false;
       if (myDogId && String(d.id || "") === myDogId) return false;
       if (myUid && String(d.ownerUid || "") === myUid) return false;
-
-      // TEMP TEST: filtro swipes disattivato per verificare scrittura Firestore
-// if (swipedIds.includes(String(d.id || ""))) return false;
+      if (swipedIds.includes(String(d.id || ""))) return false;
       
       return true;
     });
@@ -3082,15 +3080,6 @@ return d.size === f.size;
       const toDogId = String(d.id || "");
       const fromUid = String(window.PLUTOO_UID || "");
       const toUid = String(d.ownerUid || "");
-
-      alert(
-  "SWIPE SAVE DEBUG\n\n" +
-  "fromDogId: " + fromDogId + "\n" +
-  "toDogId: " + toDogId + "\n" +
-  "fromUid: " + fromUid + "\n" +
-  "toUid: " + toUid + "\n" +
-  "db: " + (!!db)
-);
 
       if (fromDogId && toDogId && fromUid && toUid && db) {
         const swipeId = `${fromDogId}_${toDogId}`;
