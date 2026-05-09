@@ -3198,7 +3198,7 @@ if (inverseLike && inverseLike.exists) {
         state.processingSwipe = false;
         renderSwipe(mode);
       }
-    }, 600);
+    }, 800);
   }
 
   if (yesBtn) {
