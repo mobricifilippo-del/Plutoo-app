@@ -3144,6 +3144,25 @@ if(noBtn) {
               toUid,
               createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
+
+            const inverseLike = await db.collection("likes").doc(`${toDogId}_${fromDogId}`).get();
+
+if (inverseLike && inverseLike.exists) {
+  const matchId = [fromDogId, toDogId].sort().join("_");
+
+  await db.collection("matches").doc(matchId).set({
+    dogIds: [fromDogId, toDogId].sort(),
+    uids: [fromUid, toUid].sort(),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    status: "matched"
+  }, { merge: true });
+
+  if (typeof ensureChatForMatch === "function") {
+    await ensureChatForMatch(d);
+  }
+
+  showMatchAnimation(d.name, nextMatchColor);
+}
           }
         } catch (e) {
           console.error("save like Firestore error:", e);
