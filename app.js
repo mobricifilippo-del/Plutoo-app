@@ -7164,6 +7164,17 @@ const otherUid =
   }
 
   const isShowcaseDog = !!DOGS.find(d => d && String(d.id) === String(safeDogId));
+
+    alert(
+  "DEBUG SEND CHAT\n" +
+  "selfUid: " + selfUid + "\n" +
+  "safeDogId: " + safeDogId + "\n" +
+  "otherUid: " + otherUid + "\n" +
+  "isShowcaseDog: " + isShowcaseDog + "\n" +
+  "dataset.dogId: " + ((chatPane && chatPane.dataset) ? chatPane.dataset.dogId : "") + "\n" +
+  "dataset.otherUid: " + ((chatPane && chatPane.dataset) ? chatPane.dataset.otherUid : "")
+);
+    
   if (isShowcaseDog) {
     console.warn("sendChatMessage: DOG vetrina, niente persistenza chat");
     statusEl.textContent = "⚠️";
