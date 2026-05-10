@@ -7098,7 +7098,6 @@ if (selfUid && otherUid) {
   closeChat?.addEventListener("click", closeChatPane);
 
   chatComposer?.addEventListener("submit", (e) => {
-    alert("DEBUG SUBMIT CHAT");
   e.preventDefault();
 
   const text = chatInput.value.trim();
@@ -7109,14 +7108,6 @@ if (selfUid && otherUid) {
 
   const hasMatch = (chatPane.dataset.hasMatch === "1") || !!(state.matches && state.matches[dogId]);
   const msgCount = state.chatMessagesSent[dogId] || 0;
-
-    alert(
-  "DEBUG CHAT FLOW\n" +
-  "text: " + text + "\n" +
-  "dogId: " + dogId + "\n" +
-  "msgCount: " + msgCount + "\n" +
-  "hasMatch: " + hasMatch
-);
 
   if (!state.plus) {
     if (msgCount === 0) {
@@ -7174,16 +7165,6 @@ const otherUid =
   }
 
   const isShowcaseDog = !!DOGS.find(d => d && String(d.id) === String(safeDogId));
-
-    alert(
-  "DEBUG SEND CHAT\n" +
-  "selfUid: " + selfUid + "\n" +
-  "safeDogId: " + safeDogId + "\n" +
-  "otherUid: " + otherUid + "\n" +
-  "isShowcaseDog: " + isShowcaseDog + "\n" +
-  "dataset.dogId: " + ((chatPane && chatPane.dataset) ? chatPane.dataset.dogId : "") + "\n" +
-  "dataset.otherUid: " + ((chatPane && chatPane.dataset) ? chatPane.dataset.otherUid : "")
-);
     
   if (isShowcaseDog) {
     console.warn("sendChatMessage: DOG vetrina, niente persistenza chat");
