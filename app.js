@@ -2451,6 +2451,7 @@ if (!snap || snap.empty) {
   dogAvatar: data.dogAvatar || null,
   names: data.names || {},
   avatars: data.avatars || {},
+  dogIds: data.dogIds || {},
   status: data.status || null,
   match: data.match === true,
   folder: data.folder || null,
