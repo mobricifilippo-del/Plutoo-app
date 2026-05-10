@@ -6727,9 +6727,12 @@ if (likeDogBtn) {
 
   // ✅ FIX CRASH: in create mode uploadSelfie/unlockSelfie non esistono
   const uploadSelfieBtn = $("uploadSelfie");
-  if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
+if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
     const d = state.currentDogProfile;
     if (!d) return;
+
+    const isOwner = !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID;
+    if (!isOwner) return;
 
     const fileInput = $("selfieFileInput");
     if (!fileInput) return;
@@ -6772,8 +6775,12 @@ if (likeDogBtn) {
     })
     .then((url) => {
       d.selfieUrl = url;
-      const img = qs(".selfie .img", profileContent);
-      if (img) img.src = url;
+const img = qs(".selfie .img", profileContent);
+if (img) img.src = url;
+const deleteSelfieBtn = $("deleteSelfie");
+if (deleteSelfieBtn && !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID) {
+  deleteSelfieBtn.style.display = "";
+}
       if (selfieFeedback) {
         selfieFeedback.textContent = state.lang === "it" ? "Selfie pubblicato con successo" : "Selfie uploaded successfully";
         selfieFeedback.style.display = "block";
@@ -6794,7 +6801,12 @@ if (likeDogBtn) {
   };
 
   const deleteSelfieBtn = $("deleteSelfie");
-if (deleteSelfieBtn) deleteSelfieBtn.onclick = () => {
+if (deleteSelfieBtn) {
+const d = state.currentDogProfile;
+const isOwner = !!d && !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID;
+deleteSelfieBtn.style.display = isOwner && d.selfieUrl ? "" : "none";
+
+deleteSelfieBtn.onclick = () => {
 const d = state.currentDogProfile;
 if (!d) return;
 
@@ -6829,6 +6841,7 @@ storageRef.delete()
 });
 
 };
+}
 
   const unlockSelfieBtn = $("unlockSelfie");
   if (unlockSelfieBtn) unlockSelfieBtn.onclick = () => {
