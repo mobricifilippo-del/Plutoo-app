@@ -7097,6 +7097,7 @@ if (selfUid && otherUid) {
   closeChat?.addEventListener("click", closeChatPane);
 
   chatComposer?.addEventListener("submit", (e) => {
+    alert("DEBUG SUBMIT CHAT");
   e.preventDefault();
 
   const text = chatInput.value.trim();
