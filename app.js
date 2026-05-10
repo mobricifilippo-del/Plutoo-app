@@ -4294,7 +4294,8 @@ setActiveView("profile");
   history.pushState({ view: "profile", dogId: d.id }, "", "");
   profilePage.classList.remove("hidden");
 
-  const selfieUnlocked = isSelfieUnlocked(d.id);
+  const isOwner = !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID;
+const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
   if (!state.selfieUntilByDog || typeof state.selfieUntilByDog !== "object") state.selfieUntilByDog = {};
 
   const ownerDocs = d.ownerDocs || {};
@@ -4471,10 +4472,18 @@ profileContent.innerHTML = `
     <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
       <img class="img" src="${selfieSrc || "./plutoo-icon-192.png"}" alt="Selfie" style="cursor:pointer;">
       <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
+
       <div class="over">
-  <button id="unlockSelfie" class="btn pill">${state.lang === "it" ? "Sblocca selfie" : "Unlock selfie"}</button>
-  <button id="uploadSelfie" class="btn pill ghost">${state.lang === "it" ? "Carica selfie" : "Upload selfie"}</button>
-  ${d.selfieUrl ? `<button id="deleteSelfie" class="btn pill danger">${state.lang === "it" ? "Elimina selfie" : "Delete selfie"}</button>` : ``}
+  ${
+    isOwner
+      ? `
+        <button id="uploadSelfie" class="btn pill ghost">${state.lang === "it" ? "Carica selfie" : "Upload selfie"}</button>
+        ${d.selfieUrl ? `<button id="deleteSelfie" class="btn pill danger">${state.lang === "it" ? "Elimina selfie" : "Delete selfie"}</button>` : ``}
+      `
+      : `
+        <button id="unlockSelfie" class="btn pill">${state.lang === "it" ? "Sblocca selfie" : "Unlock selfie"}</button>
+      `
+  }
 </div>
 
 </div>
