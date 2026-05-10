@@ -7109,6 +7109,14 @@ if (selfUid && otherUid) {
   const hasMatch = (chatPane.dataset.hasMatch === "1") || !!(state.matches && state.matches[dogId]);
   const msgCount = state.chatMessagesSent[dogId] || 0;
 
+    alert(
+  "DEBUG CHAT FLOW\n" +
+  "text: " + text + "\n" +
+  "dogId: " + dogId + "\n" +
+  "msgCount: " + msgCount + "\n" +
+  "hasMatch: " + hasMatch
+);
+
   if (!state.plus) {
     if (msgCount === 0) {
       if (state.rewardOpen) return;
