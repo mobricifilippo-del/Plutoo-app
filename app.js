@@ -4294,7 +4294,7 @@ setActiveView("profile");
   history.pushState({ view: "profile", dogId: d.id }, "", "");
   profilePage.classList.remove("hidden");
 
-  const isOwner = !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID;
+  const isOwner = d.id === (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id"));
 const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
   
   if (!state.selfieUntilByDog || typeof state.selfieUntilByDog !== "object") state.selfieUntilByDog = {};
