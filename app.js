@@ -4489,6 +4489,9 @@ profileContent.innerHTML = `
     <div class="gallery" id="dogGallery"></div>
 
     <h3 class="section-title">Selfie</h3>
+
+    ${debugSelfieOwner}
+    
     <p style="font-size:.9rem;color:var(--muted);margin:.25rem 0 .6rem;font-weight:700;">
       ${state.lang === "it" ? "Il selfie deve includere DOG e proprietario" : "The selfie must include DOG and owner"}
     </p>
