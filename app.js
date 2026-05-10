@@ -7781,9 +7781,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
     };
     const text = (msg[state.lang] && msg[state.lang][type]) || (msg.it && msg.it[type]) || "Ad";
     alert(text);
-    alert("DEBUG REWARD BEFORE CALLBACK");
 if (onClose) onClose();
-alert("DEBUG REWARD AFTER CALLBACK");
   }
 
   // ============ Init ============
