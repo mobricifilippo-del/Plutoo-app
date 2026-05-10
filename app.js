@@ -4480,7 +4480,7 @@ profileContent.innerHTML = `
     isOwner
       ? `
         <button id="uploadSelfie" class="btn pill ghost">${state.lang === "it" ? "Carica selfie" : "Upload selfie"}</button>
-        <button id="deleteSelfie" class="btn pill danger" style="${d.selfieUrl ? "" : "display:none"}">${state.lang === "it" ? "Elimina selfie" : "Delete selfie"}</button>
+        <button id="deleteSelfie" class="btn pill danger">
       `
       : (
         !selfieUnlocked
