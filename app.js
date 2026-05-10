@@ -4296,28 +4296,6 @@ setActiveView("profile");
 
   const isOwner = !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID;
 const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
-
-  const debugSelfieOwner = `
-<div style="
-margin:.6rem 0;
-padding:.65rem;
-border:1px solid rgba(205,164,52,.35);
-border-radius:12px;
-background:rgba(0,0,0,.35);
-font-size:.82rem;
-line-height:1.45;
-color:#fff;
-word-break:break-word;
-">
-<b>SELFIE DEBUG</b><br>
-dogId: ${d.id}<br>
-ownerUid: ${d.ownerUid}<br>
-PLUTOO_UID: ${window.PLUTOO_UID}<br>
-PLUTOO_DOG_ID: ${window.PLUTOO_DOG_ID}<br>
-localDogId: ${localStorage.getItem("plutoo_dog_id")}<br>
-isOwner: ${isOwner}
-</div>
-`;
   
   if (!state.selfieUntilByDog || typeof state.selfieUntilByDog !== "object") state.selfieUntilByDog = {};
 
