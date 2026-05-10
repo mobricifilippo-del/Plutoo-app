@@ -6821,7 +6821,7 @@ if (deleteSelfieBtn && !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID) 
   const deleteSelfieBtn = $("deleteSelfie");
 if (deleteSelfieBtn) {
 const d = state.currentDogProfile;
-const isOwner = !!d && !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID;
+const isOwner = !!d && d.id === (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id"));
 deleteSelfieBtn.style.display = isOwner && d.selfieUrl ? "" : "none";
 
 deleteSelfieBtn.onclick = () => {
