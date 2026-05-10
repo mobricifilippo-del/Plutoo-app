@@ -6798,6 +6798,8 @@ if (deleteSelfieBtn) deleteSelfieBtn.onclick = () => {
 const d = state.currentDogProfile;
 if (!d) return;
 
+  if (!window.PLUTOO_UID || d.ownerUid !== window.PLUTOO_UID) return;
+
 showPlutooConfirm(
   state.lang === "it" ? "Eliminare il selfie?" : "Delete selfie?",
   {
