@@ -6742,7 +6742,7 @@ if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
     const d = state.currentDogProfile;
     if (!d) return;
 
-    const isOwner = !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID;
+    const isOwner = d.id === (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id"));
     if (!isOwner) return;
 
     const fileInput = $("selfieFileInput");
