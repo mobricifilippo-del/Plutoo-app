@@ -5012,9 +5012,16 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
   .catch(() => {});
         
       },
-      () => {
-        createDogZoneInput.value = "";
-      },
+      
+      (err) => {
+  alert(
+    "GEO ERROR\n" +
+    "code: " + (err && err.code) + "\n" +
+    "message: " + (err && err.message)
+  );
+  createDogZoneInput.value = "";
+},
+      
       { enableHighAccuracy:true, timeout:5000, maximumAge:60000 }
     );
   });
