@@ -4792,7 +4792,7 @@ if (selfieEl) {
 // Elimina account (locale)  
 const btnDel = document.getElementById("btnDeleteAccount");  
 if (btnDel) {  
-  btnDel.addEventListener("click", () => {  
+  btnDel.addEventListener("click", async () => {  
     const ok = confirm(state.lang === "it"  
       ? "Eliminare l'account? (Cancella profilo e dati da Firebase + TUTTI i dati Plutoo su questo dispositivo)"  
       : "Delete account? (Deletes profile/data from Firebase + ALL Plutoo data on this device)");  
