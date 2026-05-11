@@ -4991,6 +4991,8 @@ if (createDogZoneInput && isCreate) {
 
         createDogZoneInput.value = state.lang === "it" ? "Posizione rilevata" : "Location detected";
 
+        alert("CREATE ZONE BEFORE FETCH");
+
 fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo.lat}&lon=${state.geo.lon}&addressdetails=1&accept-language=it`)
   .then(r => {
     if (!r.ok) throw new Error();
