@@ -8500,7 +8500,16 @@ function handleFileSelect(e) {
   reader.onload = function (event) {
     const dataUrl = event && event.target ? event.target.result : "";
     if (!dataUrl) {
-      alert(state.lang === "it" ? "Errore nel caricamento del file. Riprova." : "File load error. Retry.");
+
+      showPlutooAlert(
+  state.lang === "it"
+    ? "Errore nel caricamento del file. Riprova."
+    : "File load error. Retry.",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
       return;
     }
 
