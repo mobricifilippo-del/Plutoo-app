@@ -4998,7 +4998,6 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
   })
   .then(data => {
     const a = data && data.address ? data.address : {};
-    alert(JSON.stringify(a));
     const city = a.city || a.town || a.village || a.municipality || "";
     const region = a.region || a.state || "";
     const label = [city, region].filter(Boolean).join(", ");
