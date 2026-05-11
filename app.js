@@ -5280,6 +5280,11 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
   document.body.appendChild(input);
 
   let pendingFiles = [];
+
+  const isGalleryOwner =
+  ((window.PLUTOO_HAS_DOG === true || localStorage.getItem("plutoo_has_dog") === "1") &&
+  (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id);
+  
   let publishBar = null;
 
   const ensurePublishBar = () => {
