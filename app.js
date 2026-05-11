@@ -8539,7 +8539,17 @@ function handleFileSelect(e) {
   };
 
   reader.onerror = function () {
-    alert(state.lang === "it" ? "Errore nel caricamento del file. Riprova." : "File load error. Retry.");
+
+    showPlutooAlert(
+  state.lang === "it"
+    ? "Errore nel caricamento del file. Riprova."
+    : "File load error. Retry.",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
+    
     StoriesState.uploadedFile = null;
 
     preview.innerHTML = "";
