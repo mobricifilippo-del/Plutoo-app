@@ -5043,6 +5043,7 @@ if (btnSaveDogDraft0 && isCreate) {
     if (!breed) errors.push(state.lang === "it" ? "Razza mancante" : "Breed missing");
     if (!age) errors.push(state.lang === "it" ? "Età mancante" : "Age missing");
     if (!sex) errors.push(state.lang === "it" ? "Sesso mancante" : "Sex missing");
+    if (!zone) errors.push(state.lang === "it" ? "Zona mancante" : "Zone missing");
     if (!state.createDogDraft || !state.createDogDraft.photoDataUrl) {
       errors.push(state.lang === "it" ? "Foto profilo mancante" : "Profile photo missing");
     }
