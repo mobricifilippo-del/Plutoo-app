@@ -4412,7 +4412,7 @@ profileContent.innerHTML = `
       </span>
 
  <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Zona" : "Area"}" style="padding:.45rem .55rem;flex:1;min-width:42%">
-  <input id="createDogZone" type="text" value="" placeholder="${state.lang === "it" ? "Zona *" : "Area *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%">
+  <input id="createDogZone" type="text" value="" readonly inputmode="none" placeholder="${state.lang === "it" ? "Zona *" : "Area *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%">
 </span>
 
       <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Età" : "Age"}" style="padding:.45rem .55rem;flex:1;min-width:42%">
