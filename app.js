@@ -4798,7 +4798,7 @@ if (btnDel) {
     ? "Eliminare l'account? Cancellerà profilo e dati da Firebase + tutti i dati Plutoo su questo dispositivo."
     : "Delete account? This will delete profile/data from Firebase + all Plutoo data on this device.",
   {
-    title: state.lang === "it" ? "Elimina account" : "Delete account",
+    title: "Plutoo",
     confirmText: state.lang === "it" ? "Elimina" : "Delete",
     cancelText: state.lang === "it" ? "Annulla" : "Cancel",
     danger: false
