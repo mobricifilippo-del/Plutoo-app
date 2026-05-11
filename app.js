@@ -5577,6 +5577,8 @@ del.onclick = (ev) => {
     confirmBtn.onclick = () => {
       modal.remove();
 
+      if (!isGalleryOwner) return;
+
       if (!window.db || !dogId) return;
 
       const dogRef = window.db.collection("dogs").doc(String(dogId));
