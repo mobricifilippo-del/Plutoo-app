@@ -5007,9 +5007,7 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
     }
     
   })
-  .catch((e) => {
-    alert("ZONE FETCH CATCH: " + (e && e.message ? e.message : String(e)));
-  });
+  .catch(() => {});
         
       },
       () => {
