@@ -4963,7 +4963,10 @@ location.reload();
 return;
 }
 
-alert("Errore eliminazione account. Ti riporto alla Home senza bloccare l'app.");
+showPlutooAlert("Errore eliminazione account. Ti riporto alla Home senza bloccare l'app.", {
+  title: "Plutoo",
+  confirmText: "OK"
+});
 
 // ✅ forza ritorno HOME al reload
 try {
