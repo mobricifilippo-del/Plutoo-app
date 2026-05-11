@@ -4944,7 +4944,11 @@ return Promise.all(jobs);
 
 const code = (err && err.code) ? err.code : "";
 if (code === "auth/requires-recent-login") {
-alert("Per eliminare l’account serve un login recente. Ti disconnetto: rientra e riprova.");
+
+  showPlutooAlert("Per eliminare l’account serve un login recente. Ti disconnetto: rientra e riprova.", {
+  title: "Plutoo",
+  confirmText: "OK"
+});
 
 // ✅ forza ritorno HOME al reload
 try {
