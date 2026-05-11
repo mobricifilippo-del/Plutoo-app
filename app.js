@@ -5622,7 +5622,11 @@ del.onclick = (ev) => {
 };
 
       ph.appendChild(img);
-ph.appendChild(del);
+      
+if (isGalleryOwner) {
+  ph.appendChild(del);
+}
+      
 galleryBlock.appendChild(ph);
     }
 
