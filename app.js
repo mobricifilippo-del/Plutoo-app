@@ -4793,10 +4793,19 @@ if (selfieEl) {
 const btnDel = document.getElementById("btnDeleteAccount");  
 if (btnDel) {  
   btnDel.addEventListener("click", async () => {  
-    const ok = confirm(state.lang === "it"  
-      ? "Eliminare l'account? (Cancella profilo e dati da Firebase + TUTTI i dati Plutoo su questo dispositivo)"  
-      : "Delete account? (Deletes profile/data from Firebase + ALL Plutoo data on this device)");  
-    if (!ok) return;  
+    const ok = await showPlutooConfirm(
+  state.lang === "it"
+    ? "Eliminare l'account? Cancellerà profilo e dati da Firebase + tutti i dati Plutoo su questo dispositivo."
+    : "Delete account? This will delete profile/data from Firebase + all Plutoo data on this device.",
+  {
+    title: state.lang === "it" ? "Elimina account" : "Delete account",
+    confirmText: state.lang === "it" ? "Elimina" : "Delete",
+    cancelText: state.lang === "it" ? "Annulla" : "Cancel",
+    danger: false
+  }
+);
+
+if (!ok) return;  
 
     try {  
       // ✅ 1) Cancellazione Firebase (NO await: solo Promise chain)  
