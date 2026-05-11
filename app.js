@@ -4795,8 +4795,8 @@ if (btnDel) {
   btnDel.addEventListener("click", async () => {  
     const ok = await showPlutooConfirm(
   state.lang === "it"
-    ? "Eliminare l'account? Cancellerà profilo e dati da Firebase + tutti i dati Plutoo su questo dispositivo."
-    : "Delete account? This will delete profile/data from Firebase + all Plutoo data on this device.",
+    ? "Eliminare l'account?\nCancellerà profilo e tutti i dati del DOG dalla piattaforma."
+    : "Delete account?\nThis will remove the profile and all DOG data from the platform."
   {
     title: "Plutoo",
     confirmText: state.lang === "it" ? "Elimina" : "Delete",
