@@ -8486,7 +8486,17 @@ function handleFileSelect(e) {
 
   // ✅ MODELLO DEFINITIVO: solo immagini (Aggiornamenti DOG)
   if (!isImage) {
-    alert(state.lang === "it" ? "Formato non supportato. Usa solo una FOTO." : "Unsupported format. Use PHOTO only.");
+
+    showPlutooAlert(
+  state.lang === "it"
+    ? "Formato non supportato. Usa solo una FOTO."
+    : "Unsupported format. Use only a PHOTO.",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
+    
     return;
   }
 
