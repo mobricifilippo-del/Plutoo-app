@@ -8820,7 +8820,16 @@ if (loader) loader.classList.remove("hidden");
 
     // blocco se davvero non esiste media
     if (!StoriesState.uploadedFile) {
-      alert(state.lang === "it" ? "Seleziona prima una foto" : "Select a photo first");
+
+      showPlutooAlert(
+  state.lang === "it"
+    ? "Seleziona prima una foto"
+    : "Select a photo first",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
       StoriesState.__publishing = false;
       return;
     }
