@@ -5005,8 +5005,11 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
     if (label) {
       createDogZoneInput.value = label;
     }
+    
   })
-  .catch(() => {});
+  .catch((e) => {
+    alert("ZONE FETCH CATCH: " + (e && e.message ? e.message : String(e)));
+  });
         
       },
       () => {
