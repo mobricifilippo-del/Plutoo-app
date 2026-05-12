@@ -985,6 +985,23 @@ const linkRegister = document.getElementById("linkRegister");
         const ref = db.collection("users").doc(uid);
         const snap = await ref.get();
 
+        const snap = await ref.get();
+
+const userData = snap && snap.exists ? (snap.data() || {}) : {};
+const userPlusActive = userData.plus === true && userData.plusStatus === "active";
+
+state.plus = userPlusActive;
+
+if (userData.plusPlan) {
+  state.plusPlan = String(userData.plusPlan);
+}
+
+if (typeof updatePlusUI === "function") {
+  updatePlusUI();
+}
+
+const base = {
+
         const base = {
           email: (user && user.email) ? String(user.email) : "",
           userAgent: (navigator && navigator.userAgent) ? String(navigator.userAgent) : "",
