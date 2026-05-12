@@ -1960,45 +1960,139 @@ showAdBanner();
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
   // ============ PLUS ============
-  btnPlus?.addEventListener("click", ()=> openPlusModal() );
-  closePlus?.addEventListener("click", ()=> closePlusModal() );
-  cancelPlus?.addEventListener("click", ()=> closePlusModal() );
+btnPlus?.addEventListener("click", ()=> openPlusModal() );
+closePlus?.addEventListener("click", ()=> closePlusModal() );
+cancelPlus?.addEventListener("click", ()=> closePlusModal() );
 
-  planMonthly?.addEventListener("click", ()=>{
-    state.plusPlan = "monthly";
-    updatePlanSelector();
-  });
-  planYearly?.addEventListener("click", ()=>{
-    state.plusPlan = "yearly";
-    updatePlanSelector();
-  });
+planMonthly?.addEventListener("click", ()=>{
+  if (state.plus === true) return;
+  state.plusPlan = "monthly";
+  updatePlanSelector();
+});
 
-  function updatePlanSelector(){
-    if(planMonthly && planYearly){
-      planMonthly.classList.toggle("active", state.plusPlan === "monthly");
-      planYearly.classList.toggle("active", state.plusPlan === "yearly");
-    }
+planYearly?.addEventListener("click", ()=>{
+  if (state.plus === true) return;
+  state.plusPlan = "yearly";
+  updatePlanSelector();
+});
+
+function updatePlanSelector(){
+  if(planMonthly && planYearly){
+    planMonthly.classList.toggle("active", state.plusPlan === "monthly");
+    planYearly.classList.toggle("active", state.plusPlan === "yearly");
   }
+}
 
-  activatePlus?.addEventListener("click", ()=> {
+activatePlus?.addEventListener("click", async ()=> {
+  try {
+    const uid = window.PLUTOO_UID || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
+
+    if (!uid || !window.db) {
+      await showPlutooAlert("Login richiesto per gestire Plutoo Plus.", {
+        title: "Plutoo",
+        confirmText: "OK"
+      });
+      return;
+    }
+
+    const ref = window.db.collection("users").doc(String(uid));
+    const snap = await ref.get();
+    const data = snap && snap.exists ? (snap.data() || {}) : {};
+
+    if (state.plus === true) {
+      const ok = await showPlutooConfirm("Vuoi disattivare Plutoo Plus?", {
+        title: "Plutoo",
+        confirmText: "Disattiva",
+        cancelText: "Annulla"
+      });
+
+      if (!ok) return;
+
+      await ref.set({
+        plus: false,
+        plusStatus: "cancelled",
+        plusAutoRenewing: false,
+        plusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      state.plus = false;
+      updatePlusUI();
+      closePlusModal();
+
+      await showPlutooAlert("Plutoo Plus disattivato.", {
+        title: "Plutoo",
+        confirmText: "OK"
+      });
+
+      return;
+    }
+
+    const plan = state.plusPlan || "monthly";
+    const price = plan === "yearly" ? "€40/anno" : "€4.99/mese";
+
+    const ok = await showPlutooConfirm(`Attivare Plutoo Plus?\nPiano scelto: ${price}`, {
+      title: "Plutoo",
+      confirmText: "Attiva",
+      cancelText: "Annulla"
+    });
+
+    if (!ok) return;
+
+    const payload = {
+      plus: true,
+      plusPlan: plan,
+      plusProvider: "manual_beta",
+      plusStatus: "active",
+      plusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      plusExpireAt: null,
+      plusAutoRenewing: false
+    };
+
+    if (!data.plusSince) {
+      payload.plusSince = firebase.firestore.FieldValue.serverTimestamp();
+    }
+
+    await ref.set(payload, { merge: true });
+
     state.plus = true;
-    localStorage.setItem("plutoo_plus", "yes");
-    localStorage.setItem("plusPlan", state.plusPlan);
-    closePlusModal();
+    state.plusPlan = plan;
     updatePlusUI();
-    const price = state.plusPlan === "yearly" ? "€40/anno" : "€4.99/mese";
-    alert(
-      state.lang === "it"
-        ? `Plutoo Plus attivato! 💎\nPiano scelto: ${price}`
-        : `Plutoo Plus activated! 💎\nSelected plan: ${price}`
-    );
-  });
+    closePlusModal();
 
-  function openPlusModal(){ plusModal?.classList.remove("hidden"); updatePlanSelector(); }
-  function closePlusModal(){ plusModal?.classList.add("hidden"); }
+    await showPlutooAlert(`Plutoo Plus attivato! 💎\nPiano scelto: ${price}`, {
+      title: "Plutoo",
+      confirmText: "OK"
+    });
 
-  function updatePlusUI(){
-  const goldInputs = [onlyVerified, ageMin, ageMax, weightInput, heightInput, pedigreeFilter, breedingFilter, sizeFilter];
+  } catch (e) {
+    await showPlutooAlert("Errore gestione Plutoo Plus.", {
+      title: "Plutoo",
+      confirmText: "OK"
+    });
+  }
+});
+
+function openPlusModal(){ 
+  plusModal?.classList.remove("hidden"); 
+  updatePlanSelector(); 
+  updatePlusUI();
+}
+
+function closePlusModal(){ 
+  plusModal?.classList.add("hidden"); 
+}
+
+function updatePlusUI(){
+  const goldInputs = [
+    onlyVerified,
+    ageMin,
+    ageMax,
+    weightInput,
+    heightInput,
+    pedigreeFilter,
+    breedingFilter,
+    sizeFilter
+  ];
 
   goldInputs.forEach(inp => {
     if (inp) inp.disabled = !state.plus;
@@ -2013,7 +2107,12 @@ showAdBanner();
       ? "Disattiva Plus"
       : "Attiva Plutoo Plus";
   }
+
+  if (planMonthly && planYearly) {
+    planMonthly.disabled = state.plus === true;
+    planYearly.disabled = state.plus === true;
   }
+}
 
   // ============ Tabs ============
 tabNearby?.addEventListener("click", ()=>setActiveView("nearby"));
