@@ -4694,6 +4694,26 @@ profileContent.innerHTML = `
     }
   `;
 
+  try {
+  const plusBadgeEl = document.getElementById("dogPlusBadge");
+  const ownerUid = String(d.ownerUid || "");
+
+  if (plusBadgeEl && ownerUid && window.db) {
+    window.db.collection("users").doc(ownerUid).get()
+      .then((snap) => {
+        const u = snap && snap.exists ? (snap.data() || {}) : {};
+        const isPlusDogOwner = u.plus === true && u.plusStatus === "active";
+
+        plusBadgeEl.textContent = isPlusDogOwner
+          ? " 💎 Utente Plus"
+          : "";
+      })
+      .catch(() => {
+        plusBadgeEl.textContent = "";
+      });
+  }
+} catch (_) {}
+
   const slot = document.getElementById("dogStorySlot");
 if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
 
