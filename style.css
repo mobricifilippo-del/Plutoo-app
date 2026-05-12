@@ -2489,10 +2489,15 @@ display: none !important;
   gap:.35rem;
   font-size:.9rem;
   color:var(--muted);
+  flex:0 0 auto;
+  max-width:100%;
+  white-space:nowrap;
 }
+
 .pp-follow-dot{
   opacity:.6;
 }
+
 .pp-follow-count{
   background:transparent;
   border:0;
@@ -2504,6 +2509,7 @@ display: none !important;
   align-items:center;
   cursor:pointer;
 }
+
 .pp-follow-count:hover{
   color:var(--violet-glow);
   text-decoration:underline;
