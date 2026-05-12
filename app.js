@@ -1998,9 +1998,21 @@ showAdBanner();
   function closePlusModal(){ plusModal?.classList.add("hidden"); }
 
   function updatePlusUI(){
-    const goldInputs = [onlyVerified, ageMin, ageMax, weightInput, heightInput, pedigreeFilter, breedingFilter, sizeFilter];
-    goldInputs.forEach(inp => { if (inp) inp.disabled = !state.plus; });
-    if (adBanner) adBanner.style.display = state.plus ? "none" : "";
+  const goldInputs = [onlyVerified, ageMin, ageMax, weightInput, heightInput, pedigreeFilter, breedingFilter, sizeFilter];
+
+  goldInputs.forEach(inp => {
+    if (inp) inp.disabled = !state.plus;
+  });
+
+  if (adBanner) {
+    adBanner.style.display = state.plus ? "none" : "";
+  }
+
+  if (activatePlus) {
+    activatePlus.textContent = state.plus
+      ? "Disattiva Plus"
+      : "Attiva Plutoo Plus";
+  }
   }
 
   // ============ Tabs ============
