@@ -2109,9 +2109,33 @@ function updatePlusUI(){
   }
 
   if (planMonthly && planYearly) {
-    planMonthly.disabled = state.plus === true;
-    planYearly.disabled = state.plus === true;
+  const monthlyActive = state.plusPlan === "monthly";
+  const yearlyActive = state.plusPlan === "yearly";
+
+  planMonthly.classList.toggle(
+    "plus-active-plan",
+    state.plus === true && monthlyActive
+  );
+
+  planYearly.classList.toggle(
+    "plus-active-plan",
+    state.plus === true && yearlyActive
+  );
+
+  planMonthly.classList.toggle(
+    "plus-plan-disabled",
+    state.plus === true && !monthlyActive
+  );
+
+  planYearly.classList.toggle(
+    "plus-plan-disabled",
+    state.plus === true && !yearlyActive
+  );
+
+  planMonthly.disabled = state.plus === true;
+  planYearly.disabled = state.plus === true;
   }
+  
 }
 
   // ============ Tabs ============
