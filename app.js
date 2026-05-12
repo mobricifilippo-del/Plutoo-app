@@ -4533,7 +4533,7 @@ profileContent.innerHTML = `
     }
   </div>
   
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.8rem">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem;margin-top:.8rem;flex-wrap:wrap">
     <div style="font-weight:900;font-size:1.15rem;line-height:1.2">
       ${
         isCreate
