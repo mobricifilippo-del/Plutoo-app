@@ -4525,7 +4525,7 @@ profileContent.innerHTML = `
       ${
         isCreate
           ? (state.lang === "it" ? "Nuovo profilo" : "New profile")
-          : `${d.name} ${d.verified ? "✅" : ""}`
+          : `${d.name} <span id="dogPlusBadge"></span> ${d.verified ? "✅" : ""}`
       }
     </div>${
   isCreate
