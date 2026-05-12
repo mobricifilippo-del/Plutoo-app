@@ -985,8 +985,6 @@ const linkRegister = document.getElementById("linkRegister");
         const ref = db.collection("users").doc(uid);
         const snap = await ref.get();
 
-        const snap = await ref.get();
-
 const userData = snap && snap.exists ? (snap.data() || {}) : {};
 const userPlusActive = userData.plus === true && userData.plusStatus === "active";
 
