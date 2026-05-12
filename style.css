@@ -1454,6 +1454,24 @@ padding:24px;
   transform:scale(1.03);
 }
 
+.plan-card.plus-plan-disabled{
+  opacity:.38;
+  filter:grayscale(.65);
+  cursor:not-allowed;
+  box-shadow:none;
+  transform:scale(.96);
+  pointer-events:none;
+}
+
+.plan-card.plus-active-plan{
+  opacity:1;
+  filter:none;
+  cursor:default;
+  border-color:var(--gold);
+  box-shadow:0 0 24px rgba(205,164,52,.8);
+  transform:scale(1.03);
+}
+
 .plan-name{
   font-size:.95rem;
   font-weight:800;
