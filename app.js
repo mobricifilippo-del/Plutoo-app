@@ -4534,7 +4534,7 @@ profileContent.innerHTML = `
   </div>
   
   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem;margin-top:.8rem;flex-wrap:wrap">
-    <div style="font-weight:900;font-size:1.15rem;line-height:1.2">
+    <div style="font-weight:900;font-size:1.15rem;line-height:1.2;min-width:0;flex:1 1 180px;word-break:break-word">
       ${
         isCreate
           ? (state.lang === "it" ? "Nuovo profilo" : "New profile")
