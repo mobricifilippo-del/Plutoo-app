@@ -7739,7 +7739,7 @@ function renderDogBoardPreview(){
 
 btnPublishDogBoard?.addEventListener("click", () => {
   try {
-    const isPlus = localStorage.getItem("plutoo_plus") === "yes";
+    const isPlus = !!state.plus;
 
     if (isPlus) {
       publishDogBoardTextOnly();
