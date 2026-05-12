@@ -998,8 +998,6 @@ if (typeof updatePlusUI === "function") {
   updatePlusUI();
 }
 
-const base = {
-
         const base = {
           email: (user && user.email) ? String(user.email) : "",
           userAgent: (navigator && navigator.userAgent) ? String(navigator.userAgent) : "",
