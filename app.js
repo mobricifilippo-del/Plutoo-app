@@ -838,6 +838,7 @@ try {
  if (hasDog) {
   state.dogs.push({
     id: String(uid),
+    ownerUid: String(data.ownerUid || uid || ""),
     name: String(data.name || ""),
     breed: String(data.breed || ""),
     age: Number(data.age || 0),
