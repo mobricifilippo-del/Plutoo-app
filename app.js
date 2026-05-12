@@ -4696,7 +4696,7 @@ profileContent.innerHTML = `
 
   try {
   const plusBadgeEl = document.getElementById("dogPlusBadge");
-  const ownerUid = String(d.ownerUid || "");
+  const ownerUid = String(d.ownerUid || d.id || "");
 
   if (plusBadgeEl && ownerUid && window.db) {
     window.db.collection("users").doc(ownerUid).get()
