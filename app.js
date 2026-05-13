@@ -7620,16 +7620,23 @@ function openDogBoardViewer(post){
       </div>
     `;
 
-    if (input) {
-      input.value = "";
-      input.placeholder = "Rispondi all’annuncio";
-    }
+   const composerEl = input?.closest(".chat-composer");
 
-    if (sendBtn) {
-      sendBtn.onclick = () => {
-        return;
-      };
-    }
+if (composerEl) {
+  composerEl.style.display = isOwner ? "none" : "";
+}
+
+if (input) {
+  input.value = "";
+  input.placeholder = "Rispondi all’annuncio";
+}
+
+if (sendBtn) {
+  sendBtn.style.display = isOwner ? "none" : "";
+  sendBtn.onclick = () => {
+    return;
+  };
+}
 
     const closeViewer = () => {
       pane.classList.remove("show");
