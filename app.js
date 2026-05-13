@@ -7633,8 +7633,55 @@ if (input) {
 
 if (sendBtn) {
   sendBtn.style.display = isOwner ? "none" : "";
-  sendBtn.onclick = () => {
-    return;
+  sendBtn.onclick = async () => {
+    try {
+      if (isOwner) return;
+      if (!input || !window.db) return;
+
+      const text = String(input.value || "").trim();
+      if (!text) return;
+
+      const selfUid = String(window.PLUTOO_UID || "");
+      const otherUid = String(post.ownerUid || "");
+      const dogId = String(post.dogId || "");
+
+      if (!selfUid || !otherUid || !dogId) return;
+
+      const pair = [selfUid, otherUid].sort();
+      const chatId = `${pair[0]}__${pair[1]}`;
+
+      await window.db.collection("messages").add({
+        chatId,
+        senderUid: selfUid,
+        text,
+        type: "text",
+        source: "dogboard",
+        dogBoardPostId: String(post.id || ""),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        isRead: false
+      });
+
+      await window.db.collection("chats").doc(chatId).set({
+        members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
+        lastMessageText: text,
+        lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastSenderUid: selfUid,
+        match: false,
+        status: "pending",
+        folder: "requests",
+        source: "dogboard",
+        dogBoardPostId: String(post.id || "")
+      }, { merge: true });
+
+      input.value = "";
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Inviato";
+
+      if (typeof loadMessagesLists === "function") loadMessagesLists();
+
+    } catch (e) {
+      console.error("DogBoard viewer send error:", e);
+    }
   };
 }
 
