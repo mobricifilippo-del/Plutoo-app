@@ -7474,17 +7474,40 @@ try {
 }
 
 // 2) Meta chat: source of truth conversazione
-    
- await db.collection("chats").doc(chatId).set({
+
+let nextMatch = hasMatch === true;
+let nextStatus = hasMatch === true ? "accepted" : "pending";
+let nextFolder = hasMatch === true ? "inbox" : "requests";
+
+try {
+  const chatSnap = await db.collection("chats").doc(chatId).get();
+  const chatData = chatSnap && chatSnap.exists ? (chatSnap.data() || {}) : {};
+
+  const wasPendingRequest =
+    chatData.status === "pending" &&
+    chatData.folder === "requests" &&
+    chatData.lastSenderUid &&
+    chatData.lastSenderUid !== selfUid;
+
+  if (wasPendingRequest) {
+    nextMatch = true;
+    nextStatus = "accepted";
+    nextFolder = "inbox";
+  }
+} catch (e) {
+  console.error("read chat status failed:", e);
+}
+
+await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
 
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
   lastSenderUid: selfUid,
 
-  match: hasMatch === true,
-  status: hasMatch === true ? "accepted" : "pending",
-  folder: hasMatch === true ? "inbox" : "requests"
+  match: nextMatch,
+  status: nextStatus,
+  folder: nextFolder
 
 }, { merge: true });
 
