@@ -7566,19 +7566,12 @@ function openDogBoardViewer(post){
 
     if (header) header.textContent = String(post.dogName || "Annuncio");
 
-    const photoUrls = Array.isArray(post.photos)
-      ? post.photos.filter(p => typeof p === "string" && p.startsWith("http"))
-      : [];
-
-    const mainPhoto = photoUrls[0] || String(post.dogAvatar || "./plutoo-icon-192.png");
+    const isOwner =
+      String(post.ownerUid || "") &&
+      String(post.ownerUid || "") === String(window.PLUTOO_UID || "");
 
     list.innerHTML = `
       <div class="dogboard-viewer">
-
-        <div class="dogboard-viewer-avatar">
-          <img src="${mainPhoto.replace(/"/g, "&quot;")}"
-               onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-        </div>
 
         <div class="dogboard-viewer-name">${String(post.dogName || "")}</div>
 
@@ -7600,33 +7593,37 @@ function openDogBoardViewer(post){
               .replace(/'/g, "&#39;")}</div>`
           : ""}
 
-        ${photoUrls.length > 1
-          ? `<div class="dogboard-photos">
-              ${photoUrls.map(url => `
-                <img
-                  src="${String(url).replace(/"/g, "&quot;")}"
-                  class="dogboard-photo"
-                  alt="Foto annuncio"
-                  onerror="this.style.display='none';"
-                >
-              `).join("")}
-            </div>`
+        ${isOwner && String(post.id || "")
+          ? `<button id="dogboardDeletePost" class="btn danger" type="button">
+              🗑️ Elimina annuncio
+            </button>`
           : ""}
-
-        <button id="dogboardViewerReply" class="btn primary">
-          Rispondi
-        </button>
 
       </div>
     `;
 
+    const chatInputEl = document.getElementById("chatInput");
+    if (chatInputEl) {
+      chatInputEl.placeholder = "Rispondi all’annuncio";
+    }
+
     pane.classList.remove("hidden");
     pane.classList.add("show");
 
-    const replyBtn = document.getElementById("dogboardViewerReply");
-    if (replyBtn){
-      replyBtn.onclick = () => {
-        if (dog) openChat(dog);
+    const deleteBtn = document.getElementById("dogboardDeletePost");
+    if (deleteBtn){
+      deleteBtn.onclick = () => {
+        if (!post.id || !window.db) return;
+
+        window.db.collection("dogBoardPosts").doc(String(post.id)).delete()
+          .then(() => {
+            pane.classList.remove("show");
+            pane.classList.add("hidden");
+            if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
+          })
+          .catch((e) => {
+            console.error("DogBoard delete post error:", e);
+          });
       };
     }
 
