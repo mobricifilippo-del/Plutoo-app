@@ -7556,8 +7556,6 @@ function openDogBoardViewer(post){
   try {
     if (!post || !post.dogId) return;
 
-    const dog = (state.dogs || []).find(d => String(d.id) === String(post.dogId)) || null;
-
     const pane = document.getElementById("chatPane");
     const list = document.getElementById("chatList");
     const header = pane?.querySelector(".chat-header span");
@@ -7569,6 +7567,10 @@ function openDogBoardViewer(post){
     const isOwner =
       String(post.ownerUid || "") &&
       String(post.ownerUid || "") === String(window.PLUTOO_UID || "");
+
+    const photoUrls = Array.isArray(post.photos)
+      ? post.photos.filter(p => typeof p === "string" && p.startsWith("http"))
+      : [];
 
     list.innerHTML = `
       <div class="dogboard-viewer">
@@ -7593,9 +7595,22 @@ function openDogBoardViewer(post){
               .replace(/'/g, "&#39;")}</div>`
           : ""}
 
+        ${photoUrls.length
+          ? `<div class="dogboard-photos">
+              ${photoUrls.map(url => `
+                <img
+                  src="${String(url).replace(/"/g, "&quot;")}"
+                  class="dogboard-photo"
+                  alt="Foto annuncio"
+                  onerror="this.style.display='none';"
+                >
+              `).join("")}
+            </div>`
+          : ""}
+
         ${isOwner && String(post.id || "")
-          ? `<button id="dogboardDeletePost" class="btn danger" type="button">
-              🗑️ Elimina annuncio
+          ? `<button id="dogboardDeletePost" class="btn danger small" type="button">
+              🗑️ Elimina
             </button>`
           : ""}
 
