@@ -7668,6 +7668,8 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
   <div class="dogboard-item"
      data-dog-id="${payload.dogId}"
      data-post="${encodeURIComponent(JSON.stringify({
+       id: String(payload.id || ""),
+       ownerUid: String(payload.ownerUid || ""),
        dogId: String(payload.dogId || ""),
        dogName: String(payload.dogName || ""),
        dogAvatar: String(payload.dogAvatar || "./plutoo-icon-192.png"),
