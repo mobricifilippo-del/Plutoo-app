@@ -7746,7 +7746,10 @@ async function loadDogBoardPosts(){
       .get();
 
     snap.forEach(doc => {
-      const post = doc.data() || {};
+      const post = {
+  id: doc.id,
+  ...(doc.data() || {})
+};
       const nowValue = post.createdAtClient || Date.now();
       renderDogBoardItem(post, nowValue, "append");
     });
