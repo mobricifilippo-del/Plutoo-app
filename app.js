@@ -4607,7 +4607,12 @@ profileContent.innerHTML = `
     <div class="pp-bio-title">${state.lang === "it" ? "Bio" : "Bio"}</div>
     <div class="pp-bio-text">${d.bio}</div>
   </div>
-` : ""}
+` : `
+  <div class="pp-bio-block pp-bio-empty">
+    <div class="pp-bio-title">${state.lang === "it" ? "Bio" : "Bio"}</div>
+    <div class="pp-bio-text">${state.lang === "it" ? "Nessuna bio aggiunta" : "No bio added"}</div>
+  </div>
+`}
 
     ${""}
 
