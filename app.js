@@ -7556,13 +7556,16 @@ function openDogBoardViewer(post){
   try {
     if (!post || !post.dogId) return;
 
-    const pane = document.getElementById("chatPane");
-    const list = document.getElementById("chatList");
-    const header = pane?.querySelector(".chat-header span");
+    const pane = document.getElementById("dogBoardViewerPane");
+    const title = document.getElementById("dogBoardViewerTitle");
+    const content = document.getElementById("dogBoardViewerContent");
+    const input = document.getElementById("dogBoardViewerInput");
+    const sendBtn = document.getElementById("dogBoardViewerSend");
+    const closeBtn = document.getElementById("closeDogBoardViewer");
 
-    if (!pane || !list) return;
+    if (!pane || !content) return;
 
-    if (header) header.textContent = String(post.dogName || "Annuncio");
+    if (title) title.textContent = String(post.dogName || "Annuncio");
 
     const isOwner =
       String(post.ownerUid || "") &&
@@ -7572,7 +7575,7 @@ function openDogBoardViewer(post){
       ? post.photos.filter(p => typeof p === "string" && p.startsWith("http"))
       : [];
 
-    list.innerHTML = `
+    content.innerHTML = `
       <div class="dogboard-viewer">
 
         <div class="dogboard-viewer-name">${String(post.dogName || "")}</div>
@@ -7617,9 +7620,25 @@ function openDogBoardViewer(post){
       </div>
     `;
 
-    const chatInputEl = document.getElementById("chatInput");
-    if (chatInputEl) {
-      chatInputEl.placeholder = "Rispondi all’annuncio";
+    if (input) {
+      input.value = "";
+      input.placeholder = "Rispondi all’annuncio";
+    }
+
+    if (sendBtn) {
+      sendBtn.onclick = () => {
+        return;
+      };
+    }
+
+    const closeViewer = () => {
+      pane.classList.remove("show");
+      pane.classList.add("hidden");
+      if (input) input.value = "";
+    };
+
+    if (closeBtn) {
+      closeBtn.onclick = closeViewer;
     }
 
     pane.classList.remove("hidden");
@@ -7632,8 +7651,7 @@ function openDogBoardViewer(post){
 
         window.db.collection("dogBoardPosts").doc(String(post.id)).delete()
           .then(() => {
-            pane.classList.remove("show");
-            pane.classList.add("hidden");
+            closeViewer();
             if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
           })
           .catch((e) => {
