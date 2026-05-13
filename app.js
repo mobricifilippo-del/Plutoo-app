@@ -2896,6 +2896,10 @@ function setActiveView(name){
 
   el.classList.remove("hidden");
   el.classList.add("active");
+
+  if (typeof loadDogBoardPosts === "function") {
+    loadDogBoardPosts();
+  }
  }
 
   const storiesBar = $("storiesBar");
