@@ -7678,6 +7678,10 @@ if (sendBtn) {
       sendBtn.textContent = "Inviato";
 
       if (typeof loadMessagesLists === "function") loadMessagesLists();
+      await showPlutooAlert("Messaggio inviato", {
+  title: "Plutoo",
+  confirmText: "OK"
+});
 
     } catch (e) {
       console.error("DogBoard viewer send error:", e);
