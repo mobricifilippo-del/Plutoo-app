@@ -3109,7 +3109,7 @@ if(!d) return;
       <div class="card-info">
         <h3>${d.name} ${d.verified?"✅":""}</h3>
         <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${d.zone || fmtKm(d.km)}</p>
-<p class="meta">DEBUG PLUS: ${String(d.plus)} / ${String(d.plusStatus)}</p>
+       <p class="meta">DEBUG: id=${String(d.id)} owner=${String(d.ownerUid)} plus=${String(d.plus)} / ${String(d.plusStatus)}</p>
         <p class="bio">${d.bio||""}</p>
       </div>
     </article>`;
