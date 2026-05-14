@@ -3108,7 +3108,8 @@ if(!d) return;
       />
 
       <div class="card-info">
-        <h3>${d.name} ${d.verified?"✅":""}</h3>
+        <h3>${d.name} ${d.verified?"✅":""} ${d.plus === true && d.plusStatus === "active" ? "💎" : ""}</h3>
+${d.plus === true && d.plusStatus === "active" ? `<p class="meta">💎 Utente Plus</p>` : ""}
         <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${d.zone || fmtKm(d.km)}</p>
         <p class="bio">${d.bio||""}</p>
       </div>
@@ -3134,13 +3135,6 @@ if (!Array.isArray(realDogs)) realDogs = [];
     const testDog = realDogs.find(x => x && x.name === "Filippo");
 
 const sourceDogs = [...realDogs, ...DOGS];
-
-    alert(
-  "DOG DEBUG\n" +
-  "realDogs=" + realDogs.length + "\n" +
-  "firstPlus=" + String(realDogs[0]?.plus) + "\n" +
-  "firstPlusStatus=" + String(realDogs[0]?.plusStatus)
-);
     
 const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
 
