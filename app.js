@@ -4722,24 +4722,39 @@ profileContent.innerHTML = `
 <div class="pp-docs-section ${d.plus === true && d.plusStatus === "active" ? "pp-docs-plus" : ""}" style="margin-top:1.2rem">
   <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti DOG" : "DOG Documents"}</h4>
   <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Facoltativi (vaccini, pedigree, microchip)" : "Optional (vaccines, pedigree, microchip)"}</p>
+
   <div class="pp-docs-grid">
-    <div class="doc-item" data-doc="dog-vaccines" data-type="dog">
+
+    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-vaccines" data-type="dog">
       <div class="doc-icon">💉</div>
       <div class="doc-label">${state.lang === "it" ? "Vaccini" : "Vaccines"}</div>
-      <div class="doc-status ${dogDocs.vaccines && dogDocs.vaccines.url ? "uploaded" : "pending"}">${dogDocs.vaccines && dogDocs.vaccines.url ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+      <div class="doc-status ${dogDocs.vaccines && dogDocs.vaccines.url ? "uploaded" : "pending"}">
+        ${dogDocs.vaccines && dogDocs.vaccines.url
+          ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
+          : (state.lang === "it" ? "Da caricare" : "Upload")}
+      </div>
     </div>
 
-    <div class="doc-item" data-doc="dog-pedigree" data-type="dog">
+    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-pedigree" data-type="dog">
       <div class="doc-icon">📜</div>
       <div class="doc-label">${state.lang === "it" ? "Pedigree" : "Pedigree"}</div>
-      <div class="doc-status ${dogDocs.pedigree && dogDocs.pedigree.url ? "uploaded" : "pending"}">${dogDocs.pedigree && dogDocs.pedigree.url ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+      <div class="doc-status ${dogDocs.pedigree && dogDocs.pedigree.url ? "uploaded" : "pending"}">
+        ${dogDocs.pedigree && dogDocs.pedigree.url
+          ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
+          : (state.lang === "it" ? "Da caricare" : "Upload")}
+      </div>
     </div>
 
-    <div class="doc-item" data-doc="dog-microchip" data-type="dog">
+    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-microchip" data-type="dog">
       <div class="doc-icon">🔬</div>
       <div class="doc-label">${state.lang === "it" ? "Microchip" : "Microchip"}</div>
-      <div class="doc-status ${dogDocs.microchip && dogDocs.microchip.url ? "uploaded" : "pending"}">${dogDocs.microchip && dogDocs.microchip.url ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded") : (state.lang === "it" ? "Da caricare" : "Upload")}</div>
+      <div class="doc-status ${dogDocs.microchip && dogDocs.microchip.url ? "uploaded" : "pending"}">
+        ${dogDocs.microchip && dogDocs.microchip.url
+          ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
+          : (state.lang === "it" ? "Da caricare" : "Upload")}
+      </div>
     </div>
+
   </div>
 </div>
 
