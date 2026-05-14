@@ -1285,6 +1285,40 @@ body.story-open #storiesBar {
   box-shadow:0 8px 20px rgba(0,0,0,.4), inset 0 0 0 1px rgba(138,123,255,.16);
 }
 
+.selfie-plus{
+  border-color:#CDA434;
+
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.46),
+    0 0 18px rgba(205,164,52,.16),
+    inset 0 0 0 1px rgba(205,164,52,.22);
+
+  animation:plusSelfieBreath 5.2s ease-in-out infinite;
+}
+
+@keyframes plusSelfieBreath{
+  0%{
+    box-shadow:
+      0 10px 22px rgba(0,0,0,.44),
+      0 0 12px rgba(205,164,52,.10),
+      inset 0 0 0 1px rgba(205,164,52,.16);
+  }
+
+  50%{
+    box-shadow:
+      0 10px 26px rgba(0,0,0,.48),
+      0 0 22px rgba(205,164,52,.24),
+      inset 0 0 0 1px rgba(205,164,52,.28);
+  }
+
+  100%{
+    box-shadow:
+      0 10px 22px rgba(0,0,0,.44),
+      0 0 12px rgba(205,164,52,.10),
+      inset 0 0 0 1px rgba(205,164,52,.16);
+  }
+}
+
 .selfie .img{
   display:block;
   width:100%;
