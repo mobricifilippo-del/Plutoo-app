@@ -3264,7 +3264,8 @@ if(noBtn) {
 
   const metaParts = [
     d.breed ? String(d.breed) : "",
-    d.age ? `${d.age} ${t("years")}` : ""
+    d.age ? `${d.age} ${t("years")}` : "",
+    d.zone ? String(d.zone) : fmtKm(d.km)
   ].filter(Boolean);
 
   meta.innerHTML =
