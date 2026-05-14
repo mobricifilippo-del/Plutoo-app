@@ -4406,7 +4406,7 @@ window.openFreshDogProfile = function openFreshDogProfile(dogId, fallbackDog) {
   }
 
   window.db.collection("dogs").doc(id).get()
-    .then((snap) => {
+  .then(async (snap) => {
       if (!snap || !snap.exists) {
         openFallback();
         return;
