@@ -835,6 +835,23 @@ try {
 
   state.dogs = state.dogs.filter(d => !(d && String(d.id) === String(uid)));
 
+  let dogPlus = false;
+let dogPlusStatus = "";
+
+try {
+  const ownerUid = String(data.ownerUid || uid || "");
+  if (ownerUid && window.db) {
+    const userSnap = await window.db.collection("users").doc(ownerUid).get();
+    const userData = userSnap && userSnap.exists ? (userSnap.data() || {}) : {};
+
+    dogPlus = userData.plus === true && userData.plusStatus === "active";
+    dogPlusStatus = String(userData.plusStatus || "");
+  }
+} catch (_) {
+  dogPlus = false;
+  dogPlusStatus = "";
+}
+
  if (hasDog) {
   state.dogs.push({
     id: String(uid),
