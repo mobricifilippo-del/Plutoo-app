@@ -1234,6 +1234,36 @@ body.story-open #storiesBar {
   color:var(--muted);font-size:.9rem;
 }
 
+.gallery-plus .ph{
+  border-color:#CDA434;
+
+  box-shadow:
+    0 0 14px rgba(205,164,52,.14),
+    inset 0 0 0 1px rgba(205,164,52,.18);
+
+  animation:plusGalleryBreath 5.2s ease-in-out infinite;
+}
+
+@keyframes plusGalleryBreath{
+  0%{
+    box-shadow:
+      0 0 10px rgba(205,164,52,.10),
+      inset 0 0 0 1px rgba(205,164,52,.14);
+  }
+
+  50%{
+    box-shadow:
+      0 0 18px rgba(205,164,52,.22),
+      inset 0 0 0 1px rgba(205,164,52,.24);
+  }
+
+  100%{
+    box-shadow:
+      0 0 10px rgba(205,164,52,.10),
+      inset 0 0 0 1px rgba(205,164,52,.14);
+  }
+}
+
 .gallery img{
   width:100%;
   height:100%;
