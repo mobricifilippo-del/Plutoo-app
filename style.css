@@ -941,6 +941,39 @@ body.story-open #storiesBar {
   cursor:pointer;
  }
 
+.pp-hero-plus{
+  border-color:#CDA434;
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.48),
+    0 0 18px rgba(205,164,52,.16),
+    inset 0 0 0 1px rgba(205,164,52,.22);
+
+  animation:plusHeroBreath 5.8s ease-in-out infinite;
+}
+
+@keyframes plusHeroBreath{
+  0%{
+    box-shadow:
+      0 10px 26px rgba(0,0,0,.48),
+      0 0 14px rgba(205,164,52,.12),
+      inset 0 0 0 1px rgba(205,164,52,.18);
+  }
+
+  50%{
+    box-shadow:
+      0 10px 28px rgba(0,0,0,.5),
+      0 0 24px rgba(205,164,52,.24),
+      inset 0 0 0 1px rgba(205,164,52,.3);
+  }
+
+  100%{
+    box-shadow:
+      0 10px 26px rgba(0,0,0,.48),
+      0 0 14px rgba(205,164,52,.12),
+      inset 0 0 0 1px rgba(205,164,52,.18);
+  }
+}
+
 .pp-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.4rem 0 .7rem 0}
 
 .pp-name{font-size:1.5rem;font-weight:900;color:var(--violet-glow);margin:0}
