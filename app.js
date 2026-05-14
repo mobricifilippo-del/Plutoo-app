@@ -4645,7 +4645,7 @@ profileContent.innerHTML = `
     <div id="dogStorySlot"></div>
 
     <h3 class="section-title">${state.lang === "it" ? "Galleria" : "Gallery"}</h3>
-    <div class="gallery" id="dogGallery"></div>
+    <div class="gallery ${d.plus === true && d.plusStatus === "active" ? "gallery-plus" : ""}" id="dogGallery"></div>
 
     <h3 class="section-title">Selfie</h3>
     
