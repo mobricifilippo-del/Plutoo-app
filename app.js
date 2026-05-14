@@ -3260,14 +3260,16 @@ if(noBtn) {
 }
 
   img.src = d.img;
-  title.textContent = `${d.name} ${d.verified?"✅":""}`;
+  title.textContent = `${d.name}`;
 
   const metaParts = [
     d.breed ? String(d.breed) : "",
     d.age ? `${d.age} ${t("years")}` : ""
   ].filter(Boolean);
 
-  meta.textContent = metaParts.join(" · ");
+  meta.innerHTML =
+  `${d.plus === true && d.plusStatus === "active" ? "💎 Utente Plus<br>" : ""}` +
+  metaParts.join(" · ");
   bio.textContent = "";
 
   if(yesBtn) yesBtn.onclick = null;
