@@ -678,6 +678,23 @@ const clickHandler = async (ev) => {
       if (doc && doc.exists) {
         const data = doc.data() || {};
 
+        const ownerUid = String(data.ownerUid || myId || "");
+let plus = false;
+let plusStatus = "";
+
+try {
+  if (ownerUid && window.db) {
+    const userSnap = await window.db.collection("users").doc(ownerUid).get();
+    const userData = userSnap && userSnap.exists ? (userSnap.data() || {}) : {};
+
+    plus = userData.plus === true;
+    plusStatus = String(userData.plusStatus || "");
+  }
+} catch (_) {
+  plus = false;
+  plusStatus = "";
+}
+
         myDog = {
           id: doc.id,
           name: String(data.name || ""),
