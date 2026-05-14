@@ -4519,7 +4519,7 @@ const dogDocs = d.dogDocs || {};
 
 profileContent.innerHTML = `
 
-  <div class="pp-hero">
+  <div class="pp-hero ${d.plus === true && d.plusStatus === "active" ? "pp-hero-plus" : ""}">
     ${
       isCreate
         ? `
