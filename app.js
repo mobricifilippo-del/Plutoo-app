@@ -8182,32 +8182,57 @@ async function init(){
       const snap = await window.db.collection("dogs").get();
       const realDogs = [];
 
-      snap.forEach((doc) => {
-        const data = doc.data() || {};
-        const name = String(data.name || "").trim();
-        if (!name) return;
+      for (const doc of snap.docs) {
+  const data = doc.data() || {};
+  const name = String(data.name || "").trim();
+  if (!name) continue;
 
-        realDogs.push({
-  id: doc.id,
-  ownerUid: String(data.ownerUid || ""),
-  name: name,
-  breed: String(data.breed || ""),
-  age: Number(data.age || 0),
-  sex: String(data.sex || ""),
-  img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
-  selfieUrl: String(data.selfieUrl || ""),
-gallery: Array.isArray(data.gallery) ? data.gallery : [],
-  verified: !!data.verified,
-  bio: String(data.bio || ""),
-  zone: String(data.zone || ""),
-  km: Number(data.km || 0),
-  weight: Number(data.weight || 0),
-  height: Number(data.height || 0),
-  pedigree: !!data.pedigree,
-  breeding: !!data.breeding,
-  size: String(data.size || "")
-});
-      });
+  const ownerUid = String(data.ownerUid || "");
+
+  let dogPlus = false;
+  let dogPlusStatus = "";
+
+  try {
+    if (ownerUid && window.db) {
+      const userSnap = await window.db.collection("users").doc(ownerUid).get();
+      const userData = userSnap && userSnap.exists
+        ? (userSnap.data() || {})
+        : {};
+
+      dogPlus =
+        userData.plus === true &&
+        userData.plusStatus === "active";
+
+      dogPlusStatus = String(userData.plusStatus || "");
+    }
+  } catch (_) {
+    dogPlus = false;
+    dogPlusStatus = "";
+  }
+
+  realDogs.push({
+    id: doc.id,
+    ownerUid: ownerUid,
+    plus: dogPlus,
+    plusStatus: dogPlusStatus,
+    name: name,
+    breed: String(data.breed || ""),
+    age: Number(data.age || 0),
+    sex: String(data.sex || ""),
+    img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
+    selfieUrl: String(data.selfieUrl || ""),
+    gallery: Array.isArray(data.gallery) ? data.gallery : [],
+    verified: !!data.verified,
+    bio: String(data.bio || ""),
+    zone: String(data.zone || ""),
+    km: Number(data.km || 0),
+    weight: Number(data.weight || 0),
+    height: Number(data.height || 0),
+    pedigree: !!data.pedigree,
+    breeding: !!data.breeding,
+    size: String(data.size || "")
+  });
+      }
 
       state.dogs = realDogs;
       localStorage.setItem("dogs", JSON.stringify(realDogs));
