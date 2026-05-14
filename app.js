@@ -844,8 +844,17 @@ try {
     const userSnap = await window.db.collection("users").doc(ownerUid).get();
     const userData = userSnap && userSnap.exists ? (userSnap.data() || {}) : {};
 
-    dogPlus = userData.plus === true && userData.plusStatus === "active";
-    dogPlusStatus = String(userData.plusStatus || "");
+alert(
+  "PLUS DEBUG\n" +
+  "ownerUid=" + ownerUid + "\n" +
+  "exists=" + String(userSnap && userSnap.exists) + "\n" +
+  "plus=" + String(userData.plus) + "\n" +
+  "plusStatus=" + String(userData.plusStatus)
+);
+
+dogPlus = userData.plus === true && userData.plusStatus === "active";
+dogPlusStatus = String(userData.plusStatus || "");
+    
   }
 } catch (_) {
   dogPlus = false;
