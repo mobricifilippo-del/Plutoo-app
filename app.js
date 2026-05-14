@@ -698,7 +698,10 @@ const clickHandler = async (ev) => {
             ? data.ownerSocial
             : {},
 
-          selfieUrl: String(data.selfieUrl || "")
+          selfieUrl: String(data.selfieUrl || ""),
+          ownerUid,
+          plus,
+          plusStatus
         };
 
         // aggiorna cache runtime
