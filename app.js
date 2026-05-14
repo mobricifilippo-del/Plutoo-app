@@ -856,6 +856,8 @@ try {
   state.dogs.push({
     id: String(uid),
     ownerUid: String(data.ownerUid || uid || ""),
+    plus: dogPlus,
+    plusStatus: dogPlusStatus,
     name: String(data.name || ""),
     breed: String(data.breed || ""),
     age: Number(data.age || 0),
