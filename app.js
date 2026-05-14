@@ -4642,8 +4642,6 @@ profileContent.innerHTML = `
   </div>
 `}
 
-    ${""}
-
     <div id="dogStorySlot"></div>
 
     <h3 class="section-title">${state.lang === "it" ? "Galleria" : "Gallery"}</h3>
