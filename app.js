@@ -3094,7 +3094,7 @@ if(!d) return;
   const srcValue = rawImg.startsWith("http") ? rawImg : `./${rawImg}`;
 
   return `
-    <article class="card dog-card" data-id="${d.id}">
+    <article class="card dog-card ${d.plus === true && d.plusStatus === "active" ? "card-plus" : ""}" data-id="${d.id}">
       <img
         src="${srcValue}"
         alt="${d.name}"
