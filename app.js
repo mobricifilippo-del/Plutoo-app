@@ -3134,6 +3134,14 @@ if (!Array.isArray(realDogs)) realDogs = [];
     const testDog = realDogs.find(x => x && x.name === "Filippo");
 
 const sourceDogs = [...realDogs, ...DOGS];
+
+    alert(
+  "DOG DEBUG\n" +
+  "realDogs=" + realDogs.length + "\n" +
+  "firstPlus=" + String(realDogs[0]?.plus) + "\n" +
+  "firstPlusStatus=" + String(realDogs[0]?.plusStatus)
+);
+    
 const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
 
 return sourceDogs
