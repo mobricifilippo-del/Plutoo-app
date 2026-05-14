@@ -3268,9 +3268,8 @@ if(noBtn) {
   ].filter(Boolean);
 
   meta.innerHTML =
-  `${d.plus === true && d.plusStatus === "active" ? '<span class="plus-badge-card">💎 Utente Plus</span><br>' : ""}`
+  `${d.plus === true && d.plusStatus === "active" ? '<span class="plus-badge-card">💎 Utente Plus</span><br>' : ""}` +
   metaParts.join(" · ");
-  bio.textContent = "";
 
   if(yesBtn) yesBtn.onclick = null;
   if(noBtn) noBtn.onclick = null;
