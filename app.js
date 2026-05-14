@@ -4685,7 +4685,7 @@ profileContent.innerHTML = `
     <p style="font-size:.9rem;color:var(--muted);margin:.25rem 0 .6rem;font-weight:700;">
       ${state.lang === "it" ? "Il selfie deve includere DOG e proprietario" : "The selfie must include DOG and owner"}
     </p>
-    <div class="selfie ${selfieUnlocked ? "unlocked" : ""}">
+    <div class="selfie ${selfieUnlocked ? "unlocked" : ""} ${d.plus === true && d.plusStatus === "active" ? "selfie-plus" : ""}">
      <img class="img ${!d.selfieUrl ? "placeholder" : ""}" src="${selfieSrc || "./plutoo-icon-192.png"}"  alt="Selfie" style="cursor:pointer;">
       <input type="file" id="selfieFileInput" accept="image/*" style="display:none" />
 
