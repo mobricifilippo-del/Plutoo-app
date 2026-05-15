@@ -238,7 +238,7 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ===== CTA: lampeggio "Crea profilo DOG" ===== */
-#btnCreateDogInline{
+#btnCreateDogInline.cta-pulse{
   animation: plutooCtaPulse 1.1s ease-in-out infinite;
 }
 
