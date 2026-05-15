@@ -4770,7 +4770,7 @@ profileContent.innerHTML = `
         <button id="btnProfileSettings" class="btn accent ${d.plus === true && d.plusStatus === "active" ? "profile-action-plus" : ""}" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Impostazioni profilo" : "Profile settings"}
         </button>
-        <button id="btnEditSocial" class="btn outline" style="position:relative;z-index:50;">
+        <button id="btnEditSocial" class="btn outline ${d.plus === true && d.plusStatus === "active" ? "profile-outline-plus" : ""}" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Modifica social" : "Edit socials"}
         </button>
         <button id="btnDeleteAccount" class="btn ghost" style="position:relative;z-index:50;">
