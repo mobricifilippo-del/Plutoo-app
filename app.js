@@ -5151,7 +5151,26 @@ if (!ok) return;
       });
 
       jobs.push(deleteQuery(db.collection("matches").where("uids", "array-contains", uid)));
-      jobs.push(deleteQuery(db.collection("chats").where("uids", "array-contains", uid)));
+
+      jobs.push(
+  db.collection("chats").where("members", "array-contains", uid).get()
+    .then((csnap) => {
+      const chatJobs = [];
+
+      csnap.forEach((chatDoc) => {
+        const chatId = String(chatDoc.id);
+
+        chatJobs.push(
+          deleteQuery(db.collection("messages").where("chatId", "==", chatId))
+        );
+
+        chatJobs.push(chatDoc.ref.delete().catch(() => {}));
+      });
+
+      return Promise.all(chatJobs);
+    })
+    .catch(() => {})
+);
 
       return Promise.all(jobs);
     })
