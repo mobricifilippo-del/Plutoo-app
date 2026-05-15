@@ -3265,6 +3265,11 @@ return d.size === f.size;
 
   const idx = (mode==="love"?state.currentLoveIdx:state.currentPlayIdx) % deck.length;
   const d = deck[idx];
+
+    if (card) {
+  card.classList.toggle("card-plus", d.plus === true && d.plusStatus === "active");
+    }
+    
   if(!d) return;
 
     img.style.display = "";
