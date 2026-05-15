@@ -3793,7 +3793,7 @@ function generateSocialSection(d) {
   // Nessun social → non mostrare niente
   if (!links.facebook && !links.instagram && !links.tiktok) {
     return `
-      <div class="pp-social-section">
+      <div class="pp-social-section ${d.plus === true && d.plusStatus === "active" ? "pp-social-plus" : ""}">
         <h4 class="section-title" style="margin-top:0;font-size:1rem">
           ${state.lang==="it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
         </h4>
@@ -3805,7 +3805,7 @@ function generateSocialSection(d) {
   }
 
   return `
-   <div class="pp-social-section">
+   <div class="pp-social-section ${d.plus === true && d.plusStatus === "active" ? "pp-social-plus" : ""}">
       <h4 class="section-title" style="margin-top:0;font-size:1rem">
         ${state.lang==="it" ? "📱 Social Proprietario" : "📱 Owner's Social"}
       </h4>
