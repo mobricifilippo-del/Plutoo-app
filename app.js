@@ -5315,8 +5315,19 @@ createDogZoneInput.dataset.geoTestId = String(zoneNodeId);
 
     createDogZoneInput.value = state.lang === "it" ? "Rilevamento posizione..." : "Detecting location...";
 
-    navigator.geolocation.getCurrentPosition(
+    let geoWatchId = null;
+let geoDone = false;
+
+geoWatchId = navigator.geolocation.watchPosition(
       p => {
+
+        if (geoDone) return;
+        geoDone = true;
+
+        if (geoWatchId !== null) {
+          navigator.geolocation.clearWatch(geoWatchId);
+        }
+
         state.geo = {
           lat: p.coords.latitude,
           lon: p.coords.longitude
@@ -5345,12 +5356,20 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
       },
       
       (err) => {
+
+  if (geoDone) return;
+  geoDone = true;
+
+  if (geoWatchId !== null) {
+    navigator.geolocation.clearWatch(geoWatchId);
+  }
+
   createDogZoneInput.value = state.lang === "it"
   ? "Posizione non rilevata"
   : "Location not detected";
 },
 
-      { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
+      { enableHighAccuracy:true, timeout:20000, maximumAge:0 }
       
     );
   });
