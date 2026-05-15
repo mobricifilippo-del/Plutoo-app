@@ -630,6 +630,12 @@ window.__createDogBindDone = true;
     inlineBtn.dataset.mode = "create";
     inlineBtn.textContent = (lang === "it") ? "Crea profilo DOG" : "Create DOG profile";
   }
+
+    if (!hasDog || state.plus === true) {
+  inlineBtn.classList.add("cta-pulse");
+} else {
+  inlineBtn.classList.remove("cta-pulse");
+    }
 };
 
 // prima passata (stato corrente)  
