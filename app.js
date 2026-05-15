@@ -5345,18 +5345,9 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
       },
       
       (err) => {
-
-        showPlutooAlert(
-  "GEO ERROR\n" +
-  "code: " + (err && err.code) + "\n" +
-  "message: " + (err && err.message),
-  {
-    title: "Plutoo",
-    confirmText: "OK"
-  }
-);
-        
-  createDogZoneInput.value = "";
+  createDogZoneInput.value = state.lang === "it"
+    ? "Posizione non rilevata"
+    : "Location not detected";
 },
       
       { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
