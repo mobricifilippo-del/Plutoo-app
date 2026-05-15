@@ -5314,20 +5314,18 @@ return;
 showPlutooAlert("Errore eliminazione account. Ti riporto alla Home senza bloccare l'app.", {
   title: "Plutoo",
   confirmText: "OK"
-}).then(() => {
-  // ✅ forza ritorno HOME al reload
-  try {
-    localStorage.removeItem("entered");
-    localStorage.removeItem("currentView");
-    localStorage.setItem("entered", "0");
-    localStorage.setItem("currentView", "home");
-  } catch (_) {}
+});
 
-  try {
-    if (window.auth) window.auth.signOut().catch(() => {});
-  } catch (_) {}
+// ✅ forza ritorno HOME al reload
+try {
+localStorage.removeItem("entered");
+localStorage.removeItem("currentView");
+localStorage.setItem("entered", "0");
+localStorage.setItem("currentView", "home");
+} catch (_) {}
 
-  location.reload();
+try { if (window.auth) window.auth.signOut().catch(() => {}); } catch (_) {}
+location.reload();
 });
 
 } catch (_) {}  
