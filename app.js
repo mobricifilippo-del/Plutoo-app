@@ -5345,8 +5345,10 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
       },
       
       (err) => {
-  createDogZoneInput.value = "ERR code:" + err.code + " " + err.message;
-      }
+  createDogZoneInput.value = state.lang === "it"
+  ? "Posizione non rilevata"
+  : "Location not detected";
+},
 
       { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
       
