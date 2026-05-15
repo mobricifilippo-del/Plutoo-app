@@ -4767,7 +4767,7 @@ profileContent.innerHTML = `
   ${
     ((window.PLUTOO_HAS_DOG === true || localStorage.getItem("plutoo_has_dog") === "1") && (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id)
       ? `
-        <button id="btnProfileSettings" class="btn accent" style="position:relative;z-index:50;">
+        <button id="btnProfileSettings" class="btn accent ${d.plus === true && d.plusStatus === "active" ? "profile-action-plus" : ""}" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Impostazioni profilo" : "Profile settings"}
         </button>
         <button id="btnEditSocial" class="btn outline" style="position:relative;z-index:50;">
