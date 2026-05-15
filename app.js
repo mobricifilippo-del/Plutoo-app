@@ -5159,7 +5159,9 @@ if (!ok) return;
 
   const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});
 
-  const delAuth = user.delete();
+  const delAuth = user.delete().catch((err) => {
+  return Promise.reject(err);
+});
 
   return Promise.all([delDogs, delUserDoc, delAuth])
     .then(() => {})
