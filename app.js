@@ -5349,8 +5349,9 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
     ? "Posizione non rilevata"
     : "Location not detected";
 },
+
+      { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
       
-      { enableHighAccuracy:false, timeout:15000, maximumAge:300000 }
     );
   });
 }
