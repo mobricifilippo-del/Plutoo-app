@@ -6740,7 +6740,11 @@ freshDog.img = String(freshDog.photoUrl || freshDog.img || d.img || "./plutoo-ic
 
                 setTimeout(() => {
                   closeExisting("plutooEditSocialSheet");
-                  if (typeof window.openProfilePage === "function") window.openProfilePage(freshDog);
+                  if (typeof window.openFreshDogProfile === "function") {
+  window.openFreshDogProfile(d.id, freshDog);
+} else if (typeof window.openProfilePage === "function") {
+  window.openProfilePage(freshDog);
+                  }
                 }, 450);
               })
               .catch((err) => {
