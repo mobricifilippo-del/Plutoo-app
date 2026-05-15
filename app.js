@@ -5164,7 +5164,20 @@ if (!ok) return;
           deleteQuery(db.collection("messages").where("chatId", "==", chatId))
         );
 
-        chatJobs.push(chatDoc.ref.delete().catch(() => {}));
+        chatJobs.push(
+  chatDoc.ref.delete().catch((err) => {
+    showPlutooAlert(
+      "CHAT DELETE ERROR\n" +
+      "code: " + (err && err.code ? err.code : "") + "\n" +
+      "message: " + (err && err.message ? err.message : ""),
+      {
+        title: "Plutoo",
+        confirmText: "OK"
+      }
+    );
+  })
+);
+        
       });
 
       return Promise.all(chatJobs);
