@@ -4455,7 +4455,10 @@ try {
         avatar: String(data.photoUrl || data.img || fallback.avatar || fallback.img || "./plutoo-icon-192.png"),
         dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
         ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
-        selfieUrl: String(data.selfieUrl || "")
+        selfieUrl: String(data.selfieUrl || ""),
+ownerUid,
+plus,
+plusStatus
       };
 
       if (typeof window.openProfilePage === "function") {
