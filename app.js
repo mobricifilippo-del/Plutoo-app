@@ -2076,6 +2076,11 @@ activatePlus?.addEventListener("click", async ()=> {
       }, { merge: true });
 
       state.plus = false;
+
+      if (typeof window.refreshCreateDogCTA === "function") {
+  window.refreshCreateDogCTA();
+      }
+      
       updatePlusUI();
       closePlusModal();
 
@@ -2115,6 +2120,11 @@ activatePlus?.addEventListener("click", async ()=> {
     await ref.set(payload, { merge: true });
 
     state.plus = true;
+    
+    if (typeof window.refreshCreateDogCTA === "function") {
+  window.refreshCreateDogCTA();
+    }
+    
     state.plusPlan = plan;
     updatePlusUI();
     closePlusModal();
