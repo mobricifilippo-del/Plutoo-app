@@ -5085,44 +5085,86 @@ if (!ok) return;
       const user = (window.auth && window.auth.currentUser) ? window.auth.currentUser : null;  
       const db = window.db || null;  
 
-      const deleteFromFirebase = () => {  
-        // Se non ho auth/db, salto (non blocco mai l'app)  
-        if (!uid || !user || !db) return Promise.resolve();  
+      const deleteFromFirebase = () => {
+  if (!uid || !user || !db) return Promise.resolve();
 
-        // a) elimina dogs dell'ownerUid  
-        const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()
-.then((snap) => {
-const jobs = [];
-snap.forEach((doc) => {
-const dogId = doc.id;
-jobs.push(db.collection("followers").where("targetDogId", "==", dogId).get().then((fsnap) => {
-const followerJobs = [];
-fsnap.forEach((fdoc) => {
-followerJobs.push(fdoc.ref.delete().catch(() => {}));
-});
-return Promise.all(followerJobs);
-}).catch(() => {}));
-jobs.push(db.collection("followers").where("followerDogId", "==", dogId).get().then((fsnap) => {
-const followerJobs = [];
-fsnap.forEach((fdoc) => {
-followerJobs.push(fdoc.ref.delete().catch(() => {}));
-});
-return Promise.all(followerJobs);
-}).catch(() => {}));
-jobs.push(doc.ref.delete().catch(() => {}));
-});
-return Promise.all(jobs);
-})
-.catch(() => {});
+  const deleteQuery = (query) => {
+    return query.get()
+      .then((snap) => {
+        const jobs = [];
+        snap.forEach((doc) => {
+          jobs.push(doc.ref.delete().catch(() => {}));
+        });
+        return Promise.all(jobs);
+      })
+      .catch(() => {});
+  };
 
-        // b) elimina users/{uid}  
-        const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});  
+  const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()
+    .then((snap) => {
+      const dogIds = [];
+      const jobs = [];
 
-        // c) elimina Auth user (può richiedere recent login)  
-        const delAuth = user.delete();  
+      snap.forEach((doc) => {
+        const dogId = String(doc.id);
+        dogIds.push(dogId);
 
-        return Promise.all([delDogs, delUserDoc, delAuth]).then(() => {}).catch((err) => { throw err; });  
-      };  
+        jobs.push(deleteQuery(db.collection("followers").where("targetDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("followers").where("followerDogId", "==", dogId)));
+
+        jobs.push(deleteQuery(db.collection("dogBoardPosts").where("dogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("dogBoardPosts").where("ownerUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("dogBoardPosts").where("uid", "==", uid)));
+
+        jobs.push(deleteQuery(db.collection("likes").where("fromDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("likes").where("toDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("likes").where("fromUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("likes").where("toUid", "==", uid)));
+
+        jobs.push(deleteQuery(db.collection("swipes").where("fromDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("swipes").where("toDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("swipes").where("fromUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("swipes").where("toUid", "==", uid)));
+
+        jobs.push(deleteQuery(db.collection("notifications").where("fromDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("notifications").where("toDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("notifications").where("fromUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("notifications").where("toUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("notifications").where("uid", "==", uid)));
+
+        jobs.push(deleteQuery(db.collection("stories").where("dogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("stories").where("ownerUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("stories").where("uid", "==", uid)));
+
+        jobs.push(deleteQuery(db.collection("messages").where("senderUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("messages").where("receiverUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("messages").where("fromUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("messages").where("toUid", "==", uid)));
+
+        jobs.push(doc.ref.delete().catch(() => {}));
+      });
+
+      dogIds.forEach((dogId) => {
+        jobs.push(deleteQuery(db.collection("matches").where("dogIds", "array-contains", dogId)));
+        jobs.push(deleteQuery(db.collection("chats").where("dogIds", "array-contains", dogId)));
+        jobs.push(deleteQuery(db.collection("messages").where("dogIds", "array-contains", dogId)));
+      });
+
+      jobs.push(deleteQuery(db.collection("matches").where("uids", "array-contains", uid)));
+      jobs.push(deleteQuery(db.collection("chats").where("uids", "array-contains", uid)));
+
+      return Promise.all(jobs);
+    })
+    .catch(() => {});
+
+  const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});
+
+  const delAuth = user.delete();
+
+  return Promise.all([delDogs, delUserDoc, delAuth])
+    .then(() => {})
+    .catch((err) => { throw err; });
+};
 
       deleteFromFirebase()  
         .then(() => {  
