@@ -1105,6 +1105,52 @@ body.story-open #storiesBar {
   margin: 1.2rem 0;
 }
 
+.pp-social-plus{
+  border-color:#CDA434;
+
+  box-shadow:
+    0 0 18px rgba(205,164,52,.12),
+    inset 0 0 0 1px rgba(205,164,52,.16);
+
+  animation:plusSocialBreath 5.2s ease-in-out infinite;
+}
+
+.pp-social-plus .social-btn{
+  border-color:rgba(205,164,52,.30);
+
+  box-shadow:
+    0 0 10px rgba(205,164,52,.08),
+    inset 0 0 0 1px rgba(205,164,52,.10);
+}
+
+.pp-social-plus .social-btn:hover{
+  border-color:#CDA434;
+
+  box-shadow:
+    0 0 18px rgba(205,164,52,.18),
+    inset 0 0 0 1px rgba(205,164,52,.16);
+}
+
+@keyframes plusSocialBreath{
+  0%{
+    box-shadow:
+      0 0 10px rgba(205,164,52,.08),
+      inset 0 0 0 1px rgba(205,164,52,.10);
+  }
+
+  50%{
+    box-shadow:
+      0 0 20px rgba(205,164,52,.18),
+      inset 0 0 0 1px rgba(205,164,52,.18);
+  }
+
+  100%{
+    box-shadow:
+      0 0 10px rgba(205,164,52,.08),
+      inset 0 0 0 1px rgba(205,164,52,.10);
+  }
+}
+
 .pp-social-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
