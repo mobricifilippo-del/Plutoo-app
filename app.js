@@ -4773,7 +4773,7 @@ profileContent.innerHTML = `
         <button id="btnEditSocial" class="btn outline ${d.plus === true && d.plusStatus === "active" ? "profile-outline-plus" : ""}" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Modifica social" : "Edit socials"}
         </button>
-        <button id="btnDeleteAccount" class="btn ghost" style="position:relative;z-index:50;">
+        <button id="btnDeleteAccount" class="btn ghost ${d.plus === true && d.plusStatus === "active" ? "profile-delete-plus" : "profile-delete-standard"}" style="position:relative;z-index:50;">
           ${state.lang === "it" ? "Elimina account" : "Delete account"}
         </button>
       `
