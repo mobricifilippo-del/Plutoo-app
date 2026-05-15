@@ -882,6 +882,49 @@ body.story-open #storiesBar {
   transition:all .25s ease;cursor:pointer;
 }
 
+.card-plus{
+  border-color:#CDA434 !important;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.42),
+    0 0 16px rgba(205,164,52,.14),
+    inset 0 0 0 1px rgba(205,164,52,.18) !important;
+
+  animation:plusCardBreath 5.2s ease-in-out infinite;
+}
+
+.card-plus:hover{
+  border-color:#E8CE7A !important;
+
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.50),
+    0 0 22px rgba(205,164,52,.22),
+    inset 0 0 0 1px rgba(205,164,52,.24) !important;
+}
+
+@keyframes plusCardBreath{
+  0%{
+    box-shadow:
+      0 8px 20px rgba(0,0,0,.42),
+      0 0 10px rgba(205,164,52,.10),
+      inset 0 0 0 1px rgba(205,164,52,.14);
+  }
+
+  50%{
+    box-shadow:
+      0 8px 22px rgba(0,0,0,.46),
+      0 0 20px rgba(205,164,52,.22),
+      inset 0 0 0 1px rgba(205,164,52,.22);
+  }
+
+  100%{
+    box-shadow:
+      0 8px 20px rgba(0,0,0,.42),
+      0 0 10px rgba(205,164,52,.10),
+      inset 0 0 0 1px rgba(205,164,52,.14);
+  }
+}
+
 .card:hover{
   transform:translateY(-2px);
   box-shadow:0 12px 28px rgba(0,0,0,.5), inset 0 0 0 1px rgba(138,123,255,.25);
