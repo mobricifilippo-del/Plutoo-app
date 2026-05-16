@@ -8304,7 +8304,12 @@ btnPublishDogBoard?.addEventListener("click", () => {
       }
     };
     const text = (msg[state.lang] && msg[state.lang][type]) || (msg.it && msg.it[type]) || "Ad";
-    alert(text);
+
+    showPlutooAlert(text, {
+  title: "Plutoo",
+  confirmText: "OK"
+});
+    
 if (onClose) onClose();
   }
 
