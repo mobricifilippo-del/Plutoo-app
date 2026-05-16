@@ -6153,10 +6153,11 @@ if (followBtn) {
       if (followingCountEl) followingCountEl.onclick = () => openFollowingList(d.id);
 
       // ✅ FIX: nessun ReferenceError (se non esiste, è null e basta)
-      const profileLikeBtn = $("profileLikeBtn");
       if (profileLikeBtn) {
-        profileLikeBtn.onclick = () => togglePhotoLike(d.id);
-        updatePhotoLikeUI(d.id);
+  profileLikeBtn.onclick = null;
+  profileLikeBtn.classList.remove("liked", "heart-anim");
+  profileLikeBtn.textContent = "";
+  profileLikeBtn.style.display = "none";
       }
 
       if (dogStories) {
