@@ -9379,6 +9379,19 @@ if (loader) loader.classList.remove("hidden");
     return;
   }
 
+  if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
+    await showPlutooAlert(
+      state.lang === "it"
+        ? "Per pubblicare Aggiornamenti DOG crea il tuo profilo DOG"
+        : "To publish DOG Updates, create your DOG profile",
+      {
+        title: "Plutoo",
+        confirmText: "OK"
+      }
+    );
+    return;
+  }
+
   // ✅ anti multi-click / doppio binding
   if (StoriesState.__publishing === true) return;
   StoriesState.__publishing = true;
