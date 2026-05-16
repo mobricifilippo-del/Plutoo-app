@@ -3427,11 +3427,16 @@ if (inverseLike && inverseLike.exists) {
   }
 
   if (yesBtn) {
-    yesBtn.onclick = () => {
-      if (state.processingSwipe) return;
-      card.classList.add("swipe-out-right");
-    void handleSwipeComplete("right");
-    };
+    yesBtn.onclick = (e) => {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  if (state.processingSwipe) return;
+  card.classList.add("swipe-out-right");
+  void handleSwipeComplete("right");
+};
   }
   
   if(noBtn){
