@@ -3200,9 +3200,13 @@ return d.size === f.size;
 
 // ============ Swipe ============
   async function renderSwipe(mode){
-  const realDogs = Array.isArray(state.dogs) ? state.dogs : [];
-  const myDogId = String(window.PLUTOO_DOG_ID || "");
-  const myUid = String(window.PLUTOO_UID || "");
+
+    const realDogs = Array.isArray(state.dogs) ? state.dogs : [];
+const hasDog = window.PLUTOO_HAS_DOG === true && window.PLUTOO_DOG_ID;
+const swipeSourceDogs = hasDog && realDogs.length ? realDogs : DOGS;
+
+const myDogId = String(window.PLUTOO_DOG_ID || "");
+const myUid = String(window.PLUTOO_UID || "");
 
   let swipedIds = [];
 
