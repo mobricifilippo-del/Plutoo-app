@@ -8945,10 +8945,8 @@ function resetUploadModalUI() {
   if (step2) step2.classList.remove("active");
 
   // ripristina upload zone (se era stata nascosta dopo selezione)
-  try {
-    const zone = step1 ? qs(".upload-zone", step1) : null;
-    if (zone) zone.style.display = "";
-  } catch (_) {}
+  const zone = step1 ? qs(".upload-zone", step1) : null;
+if (zone) zone.style.display = "";
 
   const preview = $("uploadPreview");
   if (preview) {
@@ -8961,10 +8959,8 @@ function resetUploadModalUI() {
   }
 
   // preview nello step 2 (div .upload-preview senza id)
-  try {
-    const step2Preview = $("uploadStoryStep2") ? qs(".upload-preview", $("uploadStoryStep2")) : null;
-    if (step2Preview) step2Preview.innerHTML = "";
-  } catch (_) {}
+  const step2Preview = $("uploadStoryStep2") ? qs(".upload-preview", $("uploadStoryStep2")) : null;
+if (step2Preview) step2Preview.innerHTML = "";
 
   const nextBtn = $("nextToCustomize");
   if (nextBtn) nextBtn.disabled = true;
@@ -9085,11 +9081,9 @@ function handleFileSelect(e) {
     preview.dataset.mediaMime = file.type || "image/*";
 
     // ✅ dopo selezione: sparisce box upload, resta solo foto
-    try {
-      const step1 = $("uploadStoryStep1");
-      const zone = step1 ? qs(".upload-zone", step1) : null;
-      if (zone) zone.style.display = "none";
-    } catch (_) {}
+    const step1 = $("uploadStoryStep1");
+const zone = step1 ? qs(".upload-zone", step1) : null;
+if (zone) zone.style.display = "none";
 
     const nextBtn = $("nextToCustomize");
     if (nextBtn) nextBtn.disabled = false;
