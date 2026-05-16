@@ -8162,15 +8162,6 @@ if (!text && !hasPhotos) return;
 
     dogBoardText.value = "";
 
-    setTimeout(() => {
-      try {
-        const bodyEl = viewDogBoard?.querySelector(".messages-body");
-        const composerEl = document.getElementById("dogBoardComposer");
-        const bannerEl = adBanner;
-        const legalEl = document.querySelector(".legal-links.legal-purple");
-      } catch (_) {}
-    }, 80);
-
   } catch (err) {
     console.error("publishDogBoardTextOnly error", err);
 
