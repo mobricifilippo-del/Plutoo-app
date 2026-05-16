@@ -4395,6 +4395,20 @@ followingOverlay?.addEventListener("click", (e) => {
 
   function toggleStoryLike(mediaId) {
     if (!mediaId) return;
+
+    if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
+    showPlutooAlert(
+      state.lang === "it"
+        ? "Per mettere Mi Piace agli Aggiornamenti DOG crea il tuo profilo DOG"
+        : "To like DOG Updates, create your DOG profile",
+      {
+        title: "Plutoo",
+        confirmText: "OK"
+      }
+    );
+    return;
+    }
+    
     if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
 
     const wasLiked = isStoryLiked(mediaId);
