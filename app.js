@@ -7865,6 +7865,19 @@ if (sendBtn) {
 
       if (!selfUid || !otherUid || !dogId) return;
 
+      if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
+        await showPlutooAlert(
+          state.lang === "it"
+            ? "Per rispondere agli annunci crea il tuo profilo DOG"
+            : "To reply to ads, create your DOG profile",
+          {
+            title: "Plutoo",
+            confirmText: "OK"
+          }
+        );
+        return;
+      }
+
       const pair = [selfUid, otherUid].sort();
       const chatId = `${pair[0]}__${pair[1]}`;
 
