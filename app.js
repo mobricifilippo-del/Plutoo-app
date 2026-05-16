@@ -8103,8 +8103,14 @@ if (!text && !hasPhotos) return;
       (Array.isArray(state.dogs) ? state.dogs : []).find(d => d && String(d.id) === dogId) || null;
 
     if (!currentDog || !String(currentDog.name || "").trim()) {
-      alert(state.lang === "it" ? "DOG corrente non trovato" : "Current DOG not found");
-      return;
+  showPlutooAlert(
+    state.lang === "it" ? "DOG corrente non trovato" : "Current DOG not found",
+    {
+      title: "Plutoo",
+      confirmText: "OK"
+    }
+  );
+  return;
     }
 
     btnPublishDogBoard.dataset.busy = "1";
