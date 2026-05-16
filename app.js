@@ -4519,33 +4519,6 @@ const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
       ? window.StoriesState.stories.find(s => s.userId === d.id)
       : null;
 
-  const storiesHTML = dogStories
-    ? `
-      <div class="pp-stories-section">
-        <div class="pp-stories-header">
-          <h4 class="section-title" style="margin:0">${state.lang === "it" ? "Stories" : "Stories"}</h4>
-          <button id="uploadDogStory" class="btn accent small">📸 ${state.lang === "it" ? "Carica Story" : "Upload Story"}</button>
-        </div>
-        <div class="pp-stories-grid" id="dogStoriesGrid">
-          ${dogStories.media.map((m, idx) => `
-  <div class="pp-story-item" data-story-index="${idx}">
-    <img src="${m.url}" alt="Story" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" />
-    <span class="pp-story-time">${getTimeAgo(m.timestamp)}</span>
-  </div>
-`).join("")}
-        </div>
-      </div>
-    `
-    : `
-      <div class="pp-stories-section">
-        <div class="pp-stories-header">
-          <h4 class="section-title" style="margin:0">${state.lang === "it" ? "Stories" : "Stories"}</h4>
-          <button id="uploadDogStory" class="btn accent small">📸 ${state.lang === "it" ? "Carica Story" : "Upload Story"}</button>
-        </div>
-        <p style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem 0">${state.lang === "it" ? "Nessuna story disponibile" : "No stories available"}</p>
-      </div>
-    `;
-
   const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
