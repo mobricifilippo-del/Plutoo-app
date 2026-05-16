@@ -9267,8 +9267,15 @@ function showCustomizeStep() {
         if (ta && (ta.value || "").trim() !== "") {
           overlay.innerText = ta.value;
         }
-      } catch (_) {}
-      // ====== /EDITOR TESTO OVERLAY ======
+
+        } catch (e) {
+  console.error("STORY OVERLAY EDITOR ERROR:", e);
+  showPlutooAlert("Errore editor testo Story", {
+    title: "Plutoo",
+    confirmText: "OK"
+  });
+}
+// ====== /EDITOR TESTO OVERLAY ======
     }
   } catch (_) {}
 
