@@ -9352,7 +9352,11 @@ if (loader) loader.classList.remove("hidden");
       ? "🔒 Crea il profilo DOG per pubblicare un aggiornamento"
       : "🔒 Create your DOG profile to publish an update";
     if (typeof showToast === "function") showToast(msg, "error");
-    else alert(msg);
+
+    else showPlutooAlert(msg, {
+  title: "Plutoo",
+  confirmText: "OK"
+});
     return;
   }
 
@@ -9600,7 +9604,16 @@ return;
     if (typeof showToast === "function") {
       showToast(state.lang === "it" ? "Aggiornamento pubblicato ✓" : "Update published ✓");
     } else {
-      alert(state.lang === "it" ? "Aggiornamento pubblicato ✓" : "Update published ✓");
+
+     showPlutooAlert(
+  state.lang === "it"
+    ? "Aggiornamento pubblicato ✓"
+    : "Update published ✓",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+); 
     }
 
   } catch (err) {
@@ -9611,7 +9624,10 @@ return;
       : "Update publish error. Please retry.";
 
     if (typeof showToast === "function") showToast(msg, "error");
-    else alert(msg);
+    else showPlutooAlert(msg, {
+  title: "Plutoo",
+  confirmText: "OK"
+});
 
   } finally {
   StoriesState.__publishing = false;
