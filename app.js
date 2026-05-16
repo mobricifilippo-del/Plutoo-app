@@ -5589,7 +5589,7 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
       }
 
       // segnala cambio stato (se qualcuno ascolta)
-      try { window.dispatchEvent(new Event("plutoo:dog-changed")); } catch (_) {}
+      window.dispatchEvent(new Event("plutoo:dog-changed"));
     } catch (_) {}
 
     // feedback inline
