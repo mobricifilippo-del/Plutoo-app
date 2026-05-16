@@ -8083,8 +8083,16 @@ if (!text && !hasPhotos) return;
     const dogId = String(window.PLUTOO_DOG_ID || "");
     const ownerUid = String(window.PLUTOO_UID || "");
 
-    if (!dogId || !ownerUid) {
-      alert(state.lang === "it" ? "Profilo DOG non pronto" : "DOG profile not ready");
+    if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID || !dogId || !ownerUid) {
+      showPlutooAlert(
+        state.lang === "it"
+          ? "Per pubblicare in Bacheca DOG crea il tuo profilo DOG"
+          : "To publish in DOG Board, create your DOG profile",
+        {
+          title: "Plutoo",
+          confirmText: "OK"
+        }
+      );
       return;
     }
 
