@@ -7519,10 +7519,18 @@ if (selfUid && otherUid) {
       });
       return;
     } else if (!hasMatch && msgCount >= 1) {
-      alert(state.lang === "it"
-        ? "Serve un match per continuare"
-        : "Match required to continue");
-      return;
+
+      showPlutooAlert(
+  state.lang === "it"
+    ? "Serve un match per continuare"
+    : "Match required to continue",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
+return;
+      
     }
   }
 
