@@ -3427,12 +3427,7 @@ if (inverseLike && inverseLike.exists) {
   }
 
   if (yesBtn) {
-    yesBtn.onclick = (e) => {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
+    yesBtn.onclick = () => {
   if (state.processingSwipe) return;
   card.classList.add("swipe-out-right");
   void handleSwipeComplete("right");
