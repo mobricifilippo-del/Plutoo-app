@@ -5146,48 +5146,42 @@ if (!ok) return;
 
       dogIds.forEach((dogId) => {
         jobs.push(deleteQuery(db.collection("matches").where("dogIds", "array-contains", dogId)));
-        jobs.push(deleteQuery(db.collection("chats").where("dogIds", "array-contains", dogId)));
-        jobs.push(deleteQuery(db.collection("messages").where("dogIds", "array-contains", dogId)));
       });
 
       jobs.push(deleteQuery(db.collection("matches").where("uids", "array-contains", uid)));
 
       jobs.push(
-  db.collection("chats").where("members", "array-contains", uid).get()
-    .then((csnap) => {
-      const chatJobs = [];
+        db.collection("chats").where("members", "array-contains", uid).get()
+          .then((csnap) => {
+            const chatJobs = [];
 
-      csnap.forEach((chatDoc) => {
-        const chatId = String(chatDoc.id);
+            csnap.forEach((chatDoc) => {
+              const chatId = String(chatDoc.id);
 
-        chatJobs.push(
-          deleteQuery(db.collection("messages").where("chatId", "==", chatId))
-        );
+              chatJobs.push(
+                deleteQuery(db.collection("messages").where("chatId", "==", chatId))
+              );
 
-        chatJobs.push(
-  chatDoc.ref.delete().catch((err) => {
-    showPlutooAlert(
-      "CHAT DELETE ERROR\n" +
-      "code: " + (err && err.code ? err.code : "") + "\n" +
-      "message: " + (err && err.message ? err.message : ""),
-      {
-        title: "Plutoo",
-        confirmText: "OK"
-      }
-    );
-  })
-);
-        
-      });
+              chatJobs.push(
+                chatDoc.ref.delete().catch((err) => {
+                  showPlutooAlert(
+                    "CHAT DELETE ERROR\n" +
+                    "code: " + (err && err.code ? err.code : "") + "\n" +
+                    "message: " + (err && err.message ? err.message : ""),
+                    {
+                      title: "Plutoo",
+                      confirmText: "OK"
+                    }
+                  );
 
-      return Promise.all(chatJobs);
-    })
-    .catch(() => {})
-);
+                  return Promise.reject(err);
+                })
+              );
+            });
 
-      return Promise.all(jobs);
-    })
-    .catch(() => {});
+            return Promise.all(chatJobs);
+          })
+      );
 
   const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});
 
