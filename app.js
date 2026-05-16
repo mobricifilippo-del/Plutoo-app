@@ -7511,6 +7511,19 @@ if (selfUid && otherUid) {
   const dogId = chatPane.dataset.dogId || "";
   if (!dogId) return;
 
+    if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
+    showPlutooAlert(
+      state.lang === "it"
+        ? "Per inviare messaggi crea il tuo profilo DOG"
+        : "To send messages, create your DOG profile",
+      {
+        title: "Plutoo",
+        confirmText: "OK"
+      }
+    );
+    return;
+    }
+
   const hasMatch = (chatPane.dataset.hasMatch === "1") || !!(state.matches && state.matches[dogId]);
   const msgCount = state.chatMessagesSent[dogId] || 0;
 
