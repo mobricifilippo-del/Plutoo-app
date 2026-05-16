@@ -7689,10 +7689,15 @@ if (!state.plus && !hasMatch && state.chatMessagesSent[safeDogId] >= 1) {
   } catch (err) {
   console.error("🔥 ERRORE FIRESTORE:", err);
 
-  alert(
-    "ERRORE FIRESTORE:\n" +
-    (err && err.message ? err.message : JSON.stringify(err))
-  );
+  showPlutooAlert(
+  (err && err.message)
+    ? err.message
+    : "Errore Firestore durante invio messaggio",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
 
   try {
     const statusEl = bubble.querySelector(".msg-status");
