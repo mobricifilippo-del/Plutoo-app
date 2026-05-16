@@ -3514,9 +3514,12 @@ function attachSwipeWithClick(card, dogData, onSwipe){
 
   // ✅ Handler nominati (necessari per removeEventListener)
   const onTouchStart = (e) => {
-    const touch = e.touches[0];
-    start(touch.clientX, touch.clientY);
-  };
+  const target = e && e.target;
+  if (target && target.closest && target.closest("button,.action-btn,.yes-btn,.no-btn")) return;
+
+  const touch = e.touches[0];
+  start(touch.clientX, touch.clientY);
+};
 
   const onTouchMove = (e) => {
     const touch = e.touches[0];
@@ -3525,7 +3528,13 @@ function attachSwipeWithClick(card, dogData, onSwipe){
 
   const onTouchEnd = () => end();
 
-  const onMouseDown = (e) => start(e.clientX, e.clientY);
+  const onMouseDown = (e) => {
+  const target = e && e.target;
+  if (target && target.closest && target.closest("button,.action-btn,.yes-btn,.no-btn")) return;
+
+  start(e.clientX, e.clientY);
+};
+  
   const handleMouseMove = (e) => move(e.clientX);
   const handleMouseUp = () => end();
 
