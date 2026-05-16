@@ -8174,10 +8174,15 @@ if (!text && !hasPhotos) return;
   } catch (err) {
     console.error("publishDogBoardTextOnly error", err);
 
-    alert(
-      (state.lang === "it" ? "Errore durante la pubblicazione:\n" : "Publish failed:\n") +
-      String((err && (err.message || err.code)) || err || "errore sconosciuto")
-    );
+    showPlutooAlert(
+  (state.lang === "it" ? "Errore durante la pubblicazione:\n" : "Publish failed:\n") +
+  String((err && (err.message || err.code)) || err || "errore sconosciuto"),
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
+    
   } finally {
     if (btnPublishDogBoard) {
       btnPublishDogBoard.dataset.busy = "0";
