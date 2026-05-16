@@ -1399,7 +1399,6 @@ const btnRefreshDogBoard = $("btnRefreshDogBoard");
   const profileBack = $("profileBack");
   const profileClose = $("profileClose");
   const profileContent = $("profileContent");
-  const profileLikeBtn = $("profileLikeBtn");
 
   const followersOverlay = $("followersOverlay");
   const followingOverlay = $("followingOverlay");
