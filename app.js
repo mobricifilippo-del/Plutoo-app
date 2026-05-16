@@ -2545,7 +2545,7 @@ if (notifBtn && notifOverlay) {
   notifBtn.addEventListener("click", async (e) => {
     
     // UI immediata: nascondi pallino subito (Firestore aggiorna poi lo stato reale)
-    if (notifDot) notifDot.classList.remove("hidden"); // TEST MANUALE
+    if (notifDot) notifDot.classList.remove("hidden");
 if (notifDot) notifDot.classList.add("hidden");
     e.preventDefault();
     e.stopPropagation();
