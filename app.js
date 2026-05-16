@@ -3334,6 +3334,11 @@ if(noBtn) {
       const toDogId = String(d.id || "");
       const fromUid = String(window.PLUTOO_UID || "");
       const toUid = String(d.ownerUid || "");
+      const isDemoDog = Array.isArray(DOGS) && DOGS.some(x => x && String(x.id) === toDogId);
+
+if (action === "like" && isDemoDog && typeof showSmallLikeAnimation === "function") {
+  showSmallLikeAnimation(card);
+}
 
       if (fromDogId && toDogId && fromUid && toUid && db) {
         const swipeId = `${fromDogId}_${toDogId}`;
