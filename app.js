@@ -8987,8 +8987,11 @@ function openUploadModal() {
     const msg = state.lang === "it"
       ? "Gli Aggiornamenti DOG sono disponibili con Plutoo Plus.\nAttiva Plus per pubblicare aggiornamenti del tuo DOG."
       : "DOG Updates are available with Plutoo Plus.\nActivate Plus to publish updates of your DOG.";
-    if (typeof showToast === "function") showToast(msg, "error");
-    else alert(msg);
+
+    showPlutooAlert(msg, {
+  title: "Plutoo",
+  confirmText: "OK"
+});
     return;
   }
 
