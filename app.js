@@ -7574,7 +7574,6 @@ const otherUid =
   const isShowcaseDog = !!DOGS.find(d => d && String(d.id) === String(safeDogId));
     
   if (isShowcaseDog) {
-    console.warn("sendChatMessage: DOG vetrina, niente persistenza chat");
     statusEl.textContent = "⚠️";
     statusEl.dataset.status = "error";
     return;
