@@ -3382,7 +3382,7 @@ if (action === "like" && isDemoDog && typeof showSmallLikeAnimation === "functio
           const fromUid = String(window.PLUTOO_UID || "");
           const toUid = String(d.ownerUid || "");
 
-          if (fromDogId && toDogId && fromUid && toUid && db) {
+          if (canWriteSwipeFirestore && fromDogId && toDogId && fromUid && toUid && db) {
             const likeId = `${fromDogId}_${toDogId}`;
 
             await db.collection("likes").doc(likeId).set({
