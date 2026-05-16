@@ -4021,7 +4021,6 @@ _db.collection("followers").doc(docId).set({
   createdAt: firebase.firestore.FieldValue.serverTimestamp()
 }, { merge: true })
 .then(() => {
-  console.log("FOLLOW Firestore OK:", docId);
   
   // ✅ NOTIFICA (source of truth): follow
 const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
