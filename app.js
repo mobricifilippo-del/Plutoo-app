@@ -5183,17 +5183,20 @@ if (!ok) return;
           })
       );
 
+      return Promise.all(jobs);
+    });
+
   const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});
 
   const delAuth = user.delete().catch((err) => {
-  return Promise.reject(err);
-});
+    return Promise.reject(err);
+  });
 
   return Promise.all([delDogs, delUserDoc, delAuth])
     .then(() => {})
     .catch((err) => { throw err; });
 };
-
+      
       deleteFromFirebase()  
         .then(() => {  
           // ✅ wipe mirato: rimuovo tutte le chiavi Plutoo + per-dog (gallery_, selfieImage_, docs, stories, ecc.)  
