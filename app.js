@@ -4082,10 +4082,12 @@ if (!selfDogId) {
     const selfUid = window.PLUTOO_UID;
     const _db = (window.db || (typeof db !== "undefined" ? db : null));
     if (!selfUid || !_db) {
-  alert(
-    "FIRESTORE BLOCCATO:\n" +
-    "selfUid=" + selfUid + "\n" +
-    "db=" + _db
+  showPlutooAlert(
+    "Firestore non pronto. Riprova tra un attimo.",
+    {
+      title: "Plutoo",
+      confirmText: "OK"
+    }
   );
   return;
     }
