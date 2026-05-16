@@ -1329,7 +1329,7 @@ const state = {
 
   const tabNearby    = $("tabNearby");
   const tabLove      = $("tabLove");
-  const tabPlay      = $("tabPlay"); // (anche se la tab Giochiamo è stata rimossa dal layout, teniamo il ref)
+  const tabPlay      = $("tabPlay");
   const tabLuoghi    = $("tabLuoghi");
   const luoghiMenu   = $("luoghiMenu");
 
