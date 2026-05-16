@@ -1228,7 +1228,9 @@ function autodetectLang(){
 }
 
 let CURRENT_USER_DOG_ID =
-String(localStorage.getItem("currentDogId") || localStorage.getItem("dogId") || "");
+window.PLUTOO_DOG_ID ||
+localStorage.getItem("plutoo_dog_id") ||
+"";
 
   // ============ Stato (caricato da localStorage dove possibile) ============
 const state = {
