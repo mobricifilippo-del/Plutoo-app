@@ -8148,7 +8148,7 @@ if (!text && !hasPhotos) return;
       createdAtClient: now
     };
 
-    const docRef = await window.db.collection("dogBoardPosts").add(payload);
+    await window.db.collection("dogBoardPosts").add(payload);
 
     dogBoardSelectedPhotos = [];
     if (dogBoardPreview) dogBoardPreview.innerHTML = "";
