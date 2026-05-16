@@ -4105,15 +4105,16 @@ if (!selfDogId) {
     }
 
     const docId = `${String(selfDogId)}_${String(targetDogId)}`;
-    _db.collection("followers").doc(docId).delete().catch((e) => {
-      
-// ✅ NOTIFICA: rimuovi follow
 const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
-_db.collection("notifications").doc(notifId).delete().catch((e) => {
-  console.error("unfollowDog notification delete:", e);
-});
-      console.error("unfollowDog Firestore:", e);
-    });
+
+_db.collection("followers").doc(docId).delete()
+  .then(() => {
+    return _db.collection("notifications").doc(notifId).delete();
+  })
+  .catch((e) => {
+    console.error("unfollowDog Firestore:", e);
+  });
+    
   } catch (e) {
     console.error("unfollowDog Firestore:", e);
   }
