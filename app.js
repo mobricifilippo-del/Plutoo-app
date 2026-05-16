@@ -9425,8 +9425,12 @@ return;
       const msg = state.lang === "it"
         ? "Firebase non pronto. Riprova tra un attimo."
         : "Firebase not ready. Please retry in a moment.";
-      if (typeof showToast === "function") showToast(msg, "error");
-      else alert(msg);
+
+      showPlutooAlert(msg, {
+  title: "Plutoo",
+  confirmText: "OK"
+});
+      
       StoriesState.__publishing = false;
       return;
     }
@@ -9437,8 +9441,12 @@ return;
       const msg = state.lang === "it"
         ? "Devi essere autenticato per pubblicare un aggiornamento."
         : "You must be logged in to publish an update.";
-      if (typeof showToast === "function") showToast(msg, "error");
-      else alert(msg);
+
+      showPlutooAlert(msg, {
+  title: "Plutoo",
+  confirmText: "OK"
+});
+      
       StoriesState.__publishing = false;
       return;
     }
