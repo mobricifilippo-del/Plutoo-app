@@ -2544,7 +2544,17 @@ if (notifDot) {
         __renderNotifs(items);
       }
     }, (e) => {
-      alert("❌ NOTIFS onSnapshot\n" + (e && e.code ? ("code: " + e.code + "\n") : "") + (e && e.message ? ("msg: " + e.message) : String(e)));
+
+    showPlutooAlert(
+  (e && e.message)
+    ? e.message
+    : "Errore aggiornamento notifiche",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
+    
     });
 }
 
