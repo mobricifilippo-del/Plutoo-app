@@ -9395,9 +9395,18 @@ if (loader) loader.classList.remove("hidden");
 
     // solo immagini
     if (StoriesState.uploadedFile.type !== "image") {
-      alert(state.lang === "it" ? "Formato non supportato. Usa solo una FOTO." : "Unsupported format. Use PHOTO only.");
-      StoriesState.__publishing = false;
-      return;
+      await showPlutooAlert(
+  state.lang === "it"
+    ? "Formato non supportato. Usa solo una FOTO."
+    : "Unsupported format. Use PHOTO only.",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
+
+StoriesState.__publishing = false;
+return;
     }
 
     // ✅ Firebase pronto obbligatorio
