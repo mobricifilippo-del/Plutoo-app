@@ -502,7 +502,7 @@ if (typeof initStories === "function") {
 
 // vista normale  
 setActiveView(targetView);  
-try { state.currentView = targetView; } catch (_) {}
+state.currentView = targetView;
 
 // =========================
 // ✅ VETRINA: blocco interazioni (definitivo) — SOLO BLOCCO UPLOAD
