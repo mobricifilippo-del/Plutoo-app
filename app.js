@@ -3336,6 +3336,10 @@ if(noBtn) {
 
     const action = direction === "right" ? "like" : "skip";
 
+    const canWriteSwipeFirestore =
+  window.PLUTOO_HAS_DOG === true &&
+  !!window.PLUTOO_DOG_ID;
+
     try {
       const fromDogId = String(window.PLUTOO_DOG_ID || (typeof CURRENT_USER_DOG_ID !== "undefined" ? CURRENT_USER_DOG_ID : "") || "");
       const toDogId = String(d.id || "");
