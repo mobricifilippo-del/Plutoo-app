@@ -7110,19 +7110,6 @@ if (likeDogBtn) {
 
     const isDemoDog = !d.ownerUid;
 
-if ((window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) && !isDemoDog) {
-  showPlutooAlert(
-    state.lang === "it"
-      ? "Per mettere Mi Piace crea il tuo profilo DOG"
-      : "To like profiles, create your DOG profile",
-    {
-      title: "Plutoo",
-      confirmText: "OK"
-    }
-  );
-  return;
-}
-
     if (!fromDogId || !toDogId || !fromUid || !toUid || !db) return;
 
     const likeId = `${fromDogId}_${toDogId}`;
