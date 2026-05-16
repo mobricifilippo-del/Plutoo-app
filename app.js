@@ -9037,8 +9037,16 @@ function handleFileSelect(e) {
   }
 
   if (file.size > STORIES_CONFIG.MAX_PHOTO_SIZE) {
-    alert(state.lang === "it" ? "Foto troppo grande. Riduci la dimensione e riprova." : "Photo too large. Reduce size and retry.");
-    return;
+  showPlutooAlert(
+    state.lang === "it"
+      ? "Foto troppo grande. Riduci la dimensione e riprova."
+      : "Photo too large. Reduce size and retry.",
+    {
+      title: "Plutoo",
+      confirmText: "OK"
+    }
+  );
+  return;
   }
 
   const reader = new FileReader();
