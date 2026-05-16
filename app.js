@@ -1298,7 +1298,7 @@ const state = {
   currentDogProfile: null,
   previousViewForMessages: "nearby",
 
-  // Follow / seguiti (mock locale)
+  // Follow / seguiti
   followersByDog: JSON.parse(localStorage.getItem("followersByDog") || "{}"),
   followingByDog: JSON.parse(localStorage.getItem("followingByDog") || "{}"),
   ownerSocialByDog: JSON.parse(localStorage.getItem("ownerSocialByDog") || "{}"),
