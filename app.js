@@ -1758,7 +1758,7 @@ const STORIES_CONFIG = {
   localStorage.setItem("lang","it");
 
   // ✅ rende disponibile sempre la lingua anche alle funzioni che leggono window.state.lang
-  try { window.state = state; } catch (_) {}
+  window.state = state;
 
   applyTranslations();
 
@@ -1773,7 +1773,7 @@ $("langEN")?.addEventListener("click", ()=>{
   localStorage.setItem("lang","en");
 
   // ✅ rende disponibile sempre la lingua anche alle funzioni che leggono window.state.lang
-  try { window.state = state; } catch (_) {}
+  window.state = state;
 
   applyTranslations();
 
