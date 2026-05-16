@@ -2934,9 +2934,6 @@ function setActiveView(name){
     mainTopbar?.classList.remove("hidden");
   }
 
-  const globalAdBanner = document.getElementById("adBanner");
-  const globalLegalLinks = document.querySelector("#appScreen > .legal-links.legal-purple");
-
  if (name === "dogboard") {
   const el = document.getElementById("viewDogBoard");
 
