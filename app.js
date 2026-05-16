@@ -7178,7 +7178,10 @@ if (deleteSelfieBtn && !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID) 
         selfieFeedback.style.display = "block";
       }
     })
-    .catch(() => {
+
+        .catch((err) => {
+  console.error("SELFIE UPLOAD ERROR:", err);
+          
       if (selfieFeedback) {
         selfieFeedback.textContent = state.lang === "it" ? "Errore caricamento selfie" : "Selfie upload error";
         selfieFeedback.style.display = "block";
