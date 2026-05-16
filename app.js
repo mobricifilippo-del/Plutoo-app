@@ -1303,9 +1303,6 @@ const state = {
   followingByDog: JSON.parse(localStorage.getItem("followingByDog") || "{}"),
   ownerSocialByDog: JSON.parse(localStorage.getItem("ownerSocialByDog") || "{}"),
 
-  // Like foto profilo
-  photoLikesByDog: JSON.parse(localStorage.getItem("photoLikesByDog") || "{}"),
-
   // Like stories (per media id)
   storyLikesByMedia: JSON.parse(localStorage.getItem("storyLikesByMedia") || "{}"),
 };
