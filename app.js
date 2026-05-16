@@ -5476,7 +5476,7 @@ const newDogId = dogRef.id;
       photoUrl = await storageRef.getDownloadURL();
 
       } catch (e) {
-  try { console.error("Storage upload error:", e); } catch (_) {}
+     console.error("Storage upload error:", e);
 
   const code = (e && e.code) ? String(e.code) : "";
   const msg  = (e && e.message) ? String(e.message) : "";
