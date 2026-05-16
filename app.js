@@ -3351,7 +3351,14 @@ if (action === "like" && isDemoDog && typeof showSmallLikeAnimation === "functio
   showSmallLikeAnimation(card);
 }
 
-      if (fromDogId && toDogId && fromUid && toUid && db) {
+     if (
+  canWriteSwipeFirestore &&
+  fromDogId &&
+  toDogId &&
+  fromUid &&
+  toUid &&
+  db
+) {
         const swipeId = `${fromDogId}_${toDogId}`;
 
         await db.collection("swipes").doc(swipeId).set({
