@@ -6674,7 +6674,7 @@ if (typeof window.refreshCreateDogCTA === "function") {
         }, 450);
 
       } catch (e) {
-        try { console.error("Profile bio save error:", e); } catch (_) {}
+        console.error("Profile bio save error:", e);
         feedback.style.border = "1px solid rgba(255,80,80,.45)";
         feedback.style.background = "rgba(255,0,0,.08)";
         feedback.style.color = "#ffb3b3";
