@@ -3893,7 +3893,7 @@ function generateSocialSection(d) {
   `;
 }
 
-  // ============ FOLLOW / SEGUI TI (mock locale) ============
+  // ============ FOLLOW / SEGUITI ============
 async function rebuildFollowersStateFromFirestore() {
   if (!db) return;
 
