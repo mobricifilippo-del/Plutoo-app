@@ -3958,6 +3958,19 @@ async function rebuildFollowersStateFromFirestore() {
   if (!state.followersByDog || typeof state.followersByDog !== "object") state.followersByDog = {};
   if (!state.followingByDog || typeof state.followingByDog !== "object") state.followingByDog = {};
 
+    if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
+  showPlutooAlert(
+    state.lang === "it"
+      ? "Per seguire un DOG crea il tuo profilo DOG"
+      : "To follow a DOG, create your DOG profile",
+    {
+      title: "Plutoo",
+      confirmText: "OK"
+    }
+  );
+  return;
+    }
+
   const targetDog = targetDogDogOrId(targetDogOrId);
   const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
   if (!targetDogId) return;
