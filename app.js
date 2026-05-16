@@ -6079,14 +6079,6 @@ if (followBtn) {
       if (followersCountEl) followersCountEl.onclick = () => openFollowersList(d.id);
       if (followingCountEl) followingCountEl.onclick = () => openFollowingList(d.id);
 
-      // ✅ FIX: nessun ReferenceError (se non esiste, è null e basta)
-      if (profileLikeBtn) {
-  profileLikeBtn.onclick = null;
-  profileLikeBtn.classList.remove("liked", "heart-anim");
-  profileLikeBtn.textContent = "";
-  profileLikeBtn.style.display = "none";
-      }
-
       if (dogStories) {
         qa(".pp-story-item", profileContent).forEach(item => {
           item.onclick = () => {
