@@ -5312,8 +5312,6 @@ location.reload();
 if (createDogZoneInput && isCreate) {
   createDogZoneInput.addEventListener("click", () => {
 
-    const zoneNodeId = Date.now();
-createDogZoneInput.dataset.geoTestId = String(zoneNodeId);
     if (!navigator.geolocation) {
       createDogZoneInput.value = state.lang === "it" ? "Geolocalizzazione non disponibile" : "Geolocation unavailable";
       return;
