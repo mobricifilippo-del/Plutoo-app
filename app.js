@@ -4510,8 +4510,7 @@ const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
   
   if (!state.selfieUntilByDog || typeof state.selfieUntilByDog !== "object") state.selfieUntilByDog = {};
 
-  const ownerDocs = d.ownerDocs || {};
-const dogDocs = d.dogDocs || {};
+  const dogDocs = d.dogDocs || {};
 
   const selfieSrc = d.selfieUrl || "./plutoo-icon-192.png";
 
