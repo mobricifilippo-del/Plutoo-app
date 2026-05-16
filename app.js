@@ -7108,9 +7108,9 @@ if (likeDogBtn) {
     const fromUid = String(window.PLUTOO_UID || "");
     const toUid = String(d.ownerUid || "");
 
-    if (!fromDogId || !toDogId || !fromUid || !toUid || !db) return;
+    const isDemoDog = !d.ownerUid;
 
-    if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
+if ((window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) && !isDemoDog) {
   showPlutooAlert(
     state.lang === "it"
       ? "Per mettere Mi Piace crea il tuo profilo DOG"
@@ -7121,7 +7121,9 @@ if (likeDogBtn) {
     }
   );
   return;
-    }
+}
+
+    if (!fromDogId || !toDogId || !fromUid || !toUid || !db) return;
 
     const likeId = `${fromDogId}_${toDogId}`;
 
