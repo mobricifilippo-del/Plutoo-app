@@ -7216,7 +7216,21 @@ storageRef.delete()
     if (img) img.src = "./plutoo-icon-192.png";  
     deleteSelfieBtn.style.display = "none";  
   })  
-  .catch(() => {});
+
+  .catch((e) => {
+  console.error("SELFIE DELETE ERROR:", e);
+
+  showPlutooAlert(
+    state.lang === "it"
+      ? "Errore eliminazione selfie"
+      : "Selfie delete error",
+    {
+      title: "Plutoo",
+      confirmText: "OK"
+    }
+  );
+});
+  
 });
 
 };
