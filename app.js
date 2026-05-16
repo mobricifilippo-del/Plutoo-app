@@ -2274,7 +2274,17 @@ function initMessagesBadge() {
 
     __setMsgBadge(unread);
   }, (e) => {
-    alert("❌ MSG BADGE onSnapshot\n" + (e && e.message ? e.message : String(e)));
+
+   showPlutooAlert(
+  (e && e.message)
+    ? e.message
+    : "Errore aggiornamento badge messaggi",
+  {
+    title: "Plutoo",
+    confirmText: "OK"
+  }
+);
+    
   });
   
 }
