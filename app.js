@@ -3226,7 +3226,7 @@ const myUid = String(window.PLUTOO_UID || "");
     }
   }
 
-  const deck = realDogs
+   const deck = swipeSourceDogs
     .filter(d=>mode==="love" ? true : d.mode===mode)
     .filter(d=>{
       if (!d) return false;
