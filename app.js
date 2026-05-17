@@ -4101,7 +4101,7 @@ if (!selfDogId) {
   getFollowing(selfDogId).filter(id => id !== targetDogId);
 
   state.followersByDog[targetDogId] =
-    getFollowers(targetDogId).filter(id => id !== CURRENT_USER_DOG_ID);
+    getFollowers(targetDogId).filter(id => id !== selfDogId);
 
   persistFollowState();
   updateFollowerUI(targetDogId);
