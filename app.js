@@ -2550,8 +2550,9 @@ async function __markAllNotifsRead(toDogId) {
 
 const unreadCount = items.filter((x) => x && x.read !== true).length;
 
- showToast("UNREAD=" + unreadCount);
-__setNotifBadge(unreadCount);
+ requestAnimationFrame(() => {
+  __setNotifBadge(unreadCount);
+});
 
 // se overlay aperto, aggiorna live  
   if (notifOverlay && !notifOverlay.classList.contains("hidden")) {  
