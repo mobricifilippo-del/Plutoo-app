@@ -2499,9 +2499,10 @@ async function __markAllNotifsRead(toDogId) {
   }
 
   if (!toDogId) {
-    __notifInited = false;
-    __notifDogId = null;
-    return;
+  __notifInited = false;
+  __notifDogId = null;
+  setTimeout(() => { try { initNotificationsFeed(); } catch (_) {} }, 350);
+  return;
   }
 
   if (typeof db === "undefined" || !db || !window.PLUTOO_UID) {
