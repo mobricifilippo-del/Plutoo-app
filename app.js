@@ -2535,6 +2535,12 @@ function initNotificationsFeed() {
       __notifLast = items;
 
       const unreadCount = items.filter((x) => x && x.read !== true).length;
+
+showToast(
+  "Unread: " + unreadCount +
+  " | Items: " + items.length
+);
+
 if (notifDot) {
   notifDot.textContent = unreadCount > 0 ? String(unreadCount) : "";
   notifDot.classList.toggle("hidden", unreadCount === 0);
