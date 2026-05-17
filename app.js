@@ -2534,7 +2534,6 @@ function initNotificationsFeed() {
 
       __notifLast = items;
 
-      const unreadCount = items.filter((x) => x && x.read !== true).length;
 const unreadCount = items.filter((x) => x && x.read !== true).length;
 
 showToast(
@@ -2548,15 +2547,15 @@ showToast(
 );
 
 if (notifDot) {
-  notifDot.textContent = unreadCount > 0 ? String(unreadCount) : "";
-  notifDot.classList.toggle("hidden", unreadCount === 0);
+notifDot.textContent = unreadCount > 0 ? String(unreadCount) : "";
+notifDot.classList.toggle("hidden", unreadCount === 0);
 }
 
-      // se overlay aperto, aggiorna live
-      if (notifOverlay && !notifOverlay.classList.contains("hidden")) {
-        __renderNotifs(items);
-      }
-    }, (e) => {
+// se overlay aperto, aggiorna live  
+  if (notifOverlay && !notifOverlay.classList.contains("hidden")) {  
+    __renderNotifs(items);  
+  }  
+}, (e) => {
 
     showPlutooAlert(
   (e && e.message)
