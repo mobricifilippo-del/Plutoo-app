@@ -4097,8 +4097,8 @@ if (!selfDogId) {
   return;
 }
 
-  state.followingByDog[CURRENT_USER_DOG_ID] =
-    getFollowing(CURRENT_USER_DOG_ID).filter(id => id !== targetDogId);
+  state.followingByDog[selfDogId] =
+  getFollowing(selfDogId).filter(id => id !== targetDogId);
 
   state.followersByDog[targetDogId] =
     getFollowers(targetDogId).filter(id => id !== CURRENT_USER_DOG_ID);
