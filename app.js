@@ -5350,7 +5350,10 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo
     }
     
   })
-  .catch(() => {});
+
+  .catch((e) => {
+  console.error("ZONE REVERSE GEOCODING ERROR:", e);
+}); 
         
       },
       
