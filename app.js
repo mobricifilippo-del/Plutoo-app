@@ -4056,7 +4056,7 @@ _db.collection("notifications").doc(notifId).set({
   toDogId: String(targetDogId),
   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   read: false
-}, { merge: true }).catch((e) => {
+}).catch((e) => {
   console.error("followDog notification Firestore:", e);
 });
   if (typeof showToast === "function") showToast("Hai iniziato a seguire 🐕");
