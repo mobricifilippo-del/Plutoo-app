@@ -2535,10 +2535,16 @@ function initNotificationsFeed() {
       __notifLast = items;
 
       const unreadCount = items.filter((x) => x && x.read !== true).length;
+const unreadCount = items.filter((x) => x && x.read !== true).length;
 
 showToast(
-  "Unread: " + unreadCount +
-  " | Items: " + items.length
+  "MONITOR | unread:" + unreadCount +
+  " | items:" + items.length +
+  " | firstRead:" + (
+    items[0]
+      ? String(items[0].read)
+      : "NOITEM"
+  )
 );
 
 if (notifDot) {
