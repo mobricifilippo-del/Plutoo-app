@@ -2302,6 +2302,7 @@ const notifDot = $("notifDot");
 let __notifUnsub = null;
 let __notifLast = []; // cache render
 let __notifInited = false;
+let __notifDogId = null;
 
 function __fmtTime(ts) {
   try {
