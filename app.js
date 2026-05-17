@@ -3995,10 +3995,7 @@ async function rebuildFollowersStateFromFirestore() {
   if (!targetDogId) return;
 
   // ✅ dogId “mio” coerente (robusto): se manca, non fare crash e non “sembra morto”
-const selfDogId =
-  (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
-    ? String(CURRENT_USER_DOG_ID)
-    : "";
+  const selfDogId = String(window.PLUTOO_DOG_ID || "");
 
 if (!selfDogId) {
   // production: feedback chiaro, niente crash silenzioso
