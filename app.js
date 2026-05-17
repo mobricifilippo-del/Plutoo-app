@@ -7096,6 +7096,17 @@ if (likeDogBtn) {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
+const likeNotifId = `like_${String(fromDogId)}_${String(toDogId)}`;
+
+await db.collection("notifications").doc(likeNotifId).set({
+  type: "like",
+  fromUid: String(fromUid),
+  fromDogId: String(fromDogId),
+  toDogId: String(toDogId),
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  read: false
+}, { merge: true });
+
     const notifId = `like_${String(fromDogId)}_${String(toDogId)}`;
 
 await db.collection("notifications").doc(notifId).set({
@@ -7118,6 +7129,17 @@ await db.collection("notifications").doc(notifId).set({
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         status: "matched"
       }, { merge: true });
+
+      const matchNotifId = `match_${String(matchId)}`;
+
+await db.collection("notifications").doc(matchNotifId).set({
+  type: "match",
+  fromUid: String(fromUid),
+  fromDogId: String(fromDogId),
+  toDogId: String(toDogId),
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  read: false
+}, { merge: true });
 
       if (typeof ensureChatForMatch === "function") {
         await ensureChatForMatch(d);
