@@ -2481,13 +2481,16 @@ async function __markAllNotifsRead(toDogId) {
   }
 }
 
-function initNotificationsFeed() {
-  if (__notifInited) return;
+  function initNotificationsFeed() {
 
-  // dogId “verità” per le notifiche (stessa logica che usi nei follow)
+  // dogId “verità” per le notifiche (stessa logica follow)
   const toDogId = window.PLUTOO_DOG_ID
   ? String(window.PLUTOO_DOG_ID)
   : null;
+
+  if (__notifInited === true && __notifDogId === String(toDogId)) {
+    return;
+  }
 
   // se non ho dogId, non “blocco” l’init: esco pulito
   if (!toDogId) { __notifInited = false; return; }
