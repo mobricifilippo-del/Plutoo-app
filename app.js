@@ -2565,9 +2565,8 @@ setTimeout(() => { try { initNotificationsFeed(); } catch (_) {} }, 0);
 if (notifBtn && notifOverlay) {
   notifBtn.addEventListener("click", async (e) => {
     
-    // UI immediata: nascondi pallino subito (Firestore aggiorna poi lo stato reale)
-    if (notifDot) notifDot.classList.remove("hidden");
-if (notifDot) notifDot.classList.add("hidden");
+    // Il pallino viene aggiornato solo dal listener Firestore dopo __markAllNotifsRead()
+    
     e.preventDefault();
     e.stopPropagation();
 
