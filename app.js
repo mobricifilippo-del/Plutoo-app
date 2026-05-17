@@ -7218,7 +7218,11 @@ if (!ok) return;
 const storageRef = window.storage.ref().child(`dogs/${d.id}/selfie/selfie.jpg`);  
 
 storageRef.delete()  
-  .catch(() => {})  
+
+  .catch((e) => {
+  console.error("SELFIE STORAGE DELETE ERROR:", e);
+})
+  
   .then(() => {  
     return window.db.collection("dogs").doc(d.id).set({  
       selfieUrl: firebase.firestore.FieldValue.delete()  
