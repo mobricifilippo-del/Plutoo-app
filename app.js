@@ -4502,11 +4502,9 @@ window.openProfilePage = (d) => {
     d.id = (d.id != null) ? String(d.id) : "";
     if (!d.id && d.id !== "__create__") return;
 
-    // state maps sempre presenti (evita TypeError su state.ownerDocsUploaded[d.id])
-    if (!state.ownerDocsUploaded || typeof state.ownerDocsUploaded !== "object") state.ownerDocsUploaded = {};
-    if (!state.dogDocsUploaded   || typeof state.dogDocsUploaded   !== "object") state.dogDocsUploaded   = {};
-    if (!state.ownerDocsUploaded[d.id] || typeof state.ownerDocsUploaded[d.id] !== "object") state.ownerDocsUploaded[d.id] = {};
-    if (!state.dogDocsUploaded[d.id]   || typeof state.dogDocsUploaded[d.id]   !== "object") state.dogDocsUploaded[d.id]   = {};
+    // state maps sempre presenti
+if (!state.dogDocsUploaded || typeof state.dogDocsUploaded !== "object") state.dogDocsUploaded = {};
+if (!state.dogDocsUploaded[d.id] || typeof state.dogDocsUploaded[d.id] !== "object") state.dogDocsUploaded[d.id] = {};
 
     // campi minimi safe (evita undefined in template)
     d.name  = (d.name  != null) ? String(d.name)  : "";
