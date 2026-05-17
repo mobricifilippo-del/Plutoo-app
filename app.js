@@ -2484,9 +2484,9 @@ function initNotificationsFeed() {
   if (__notifInited) return;
 
   // dogId “verità” per le notifiche (stessa logica che usi nei follow)
-  const toDogId = (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
-    ? String(CURRENT_USER_DOG_ID)
-    : null;
+  const toDogId = window.PLUTOO_DOG_ID
+  ? String(window.PLUTOO_DOG_ID)
+  : null;
 
   // se non ho dogId, non “blocco” l’init: esco pulito
   if (!toDogId) { __notifInited = false; return; }
@@ -2581,9 +2581,10 @@ if (notifDot) notifDot.classList.add("hidden");
     __renderNotifs(__notifLast);
 
     // segna lette (source of truth)
-    const toDogId = (typeof CURRENT_USER_DOG_ID !== "undefined" && CURRENT_USER_DOG_ID)
-      ? String(CURRENT_USER_DOG_ID)
-      : null;
+    const toDogId = window.PLUTOO_DOG_ID
+  ? String(window.PLUTOO_DOG_ID)
+  : null;
+    
     if (toDogId) __markAllNotifsRead(toDogId);
   }, { passive: false });
   
