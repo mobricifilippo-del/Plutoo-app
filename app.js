@@ -5184,8 +5184,7 @@ if (!ok) return;
               k === "dogs" ||  
               k === "matches" ||  
               k === "matchCount" ||  
-              k === "currentProfileDogId" ||  
-              k === "ownerDocsUploaded" ||  
+              k === "currentProfileDogId" ||   
               k === "dogDocsUploaded" ||  
               k === "socialRewardViewed" ||  
               k === "selfieUntilByDog" ||  
