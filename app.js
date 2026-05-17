@@ -2241,6 +2241,13 @@ function __setMsgBadge(n) {
   msgBadge.classList.toggle("hidden", c === 0);
   }
 
+function __setNotifBadge(n) {
+  if (!notifDot) return;
+  const c = Math.max(0, parseInt(n || 0, 10) || 0);
+  notifDot.textContent = String(c);
+  notifDot.classList.toggle("hidden", c === 0);
+}
+
 function initMessagesBadge() {
   // aspetta UID + db
   if (typeof db === "undefined" || !db || !window.PLUTOO_UID) {
