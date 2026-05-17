@@ -1280,7 +1280,6 @@ const state = {
   socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed") || "{}"),
 
   // Dati caricati (docs)
-  ownerDocsUploaded: JSON.parse(localStorage.getItem("ownerDocsUploaded") || "{}"),
   dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded") || "{}"),
 
   // Stories
