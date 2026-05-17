@@ -7107,17 +7107,6 @@ await db.collection("notifications").doc(likeNotifId).set({
   read: false
 }, { merge: true });
 
-    const notifId = `like_${String(fromDogId)}_${String(toDogId)}`;
-
-await db.collection("notifications").doc(notifId).set({
-  type: "like",
-  fromUid: String(fromUid),
-  fromDogId: String(fromDogId),
-  toDogId: String(toDogId),
-  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  read: false
-}, { merge: true });
-
     const inverseLike = await db.collection("likes").doc(`${toDogId}_${fromDogId}`).get();
 
     if (inverseLike && inverseLike.exists) {
