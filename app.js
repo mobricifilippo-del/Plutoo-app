@@ -3967,7 +3967,7 @@ async function rebuildFollowersStateFromFirestore() {
 
   function getFollowing(dogId) {
     const map = state.followingByDog || {};
-    const key = dogId || CURRENT_USER_DOG_ID;
+    const key = dogId || window.PLUTOO_DOG_ID || "";
     const arr = map[key] || [];
     return Array.isArray(arr) ? arr : [];
   }
