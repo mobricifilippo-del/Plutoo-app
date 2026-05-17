@@ -4006,15 +4006,15 @@ if (!selfDogId) {
 }
 
   // followingByDog[currentDogId] = [dogId...]
-  state.followingByDog[CURRENT_USER_DOG_ID] = getFollowing(CURRENT_USER_DOG_ID);
-  if (!state.followingByDog[CURRENT_USER_DOG_ID].includes(targetDogId)) {
-    state.followingByDog[CURRENT_USER_DOG_ID].push(targetDogId);
+  state.followingByDog[selfDogId] = getFollowing(selfDogId);
+  if (!state.followingByDog[selfDogId].includes(targetDogId)) {
+  state.followingByDog[selfDogId].push(targetDogId);
   }
 
   // followersByDog[targetDogId] = [currentDogId...]
   state.followersByDog[targetDogId] = getFollowers(targetDogId);
-  if (!state.followersByDog[targetDogId].includes(CURRENT_USER_DOG_ID)) {
-    state.followersByDog[targetDogId].push(CURRENT_USER_DOG_ID);
+  if (!state.followersByDog[targetDogId].includes(selfDogId)) {
+  state.followersByDog[targetDogId].push(selfDogId);
   }
 
   persistFollowState();
