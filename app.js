@@ -2541,16 +2541,6 @@ async function __markAllNotifsRead(toDogId) {
 
 const unreadCount = items.filter((x) => x && x.read !== true).length;
 
-showToast(
-  "MONITOR | unread:" + unreadCount +
-  " | items:" + items.length +
-  " | firstRead:" + (
-    items[0]
-      ? String(items[0].read)
-      : "NOITEM"
-  )
-);
-
 if (notifDot) {
 notifDot.textContent = unreadCount > 0 ? String(unreadCount) : "";
 notifDot.classList.toggle("hidden", unreadCount === 0);
