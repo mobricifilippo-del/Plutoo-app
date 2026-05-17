@@ -2503,6 +2503,7 @@ async function __markAllNotifsRead(toDogId) {
   }
 
   __notifInited = true;
+    __notifDogId = String(toDogId);
 
   // kill eventuale vecchio listener
   try { if (typeof __notifUnsub === "function") __notifUnsub(); } catch (_) {}
