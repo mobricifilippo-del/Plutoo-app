@@ -2337,66 +2337,77 @@ function __renderNotifs(items) {
     const row = document.createElement("div");
     row.className = "notif-item" + (n.read ? "" : " unread");
 
-    const main = (n.type === "follow")
-      ? "Nuovo FOLLOW"
-      : (n.type ? String(n.type) : "Notifica");
-
     const fromId = String(n.fromDogId || n.fromdogId || n.followerDogId || n.actorDogId || n.dogId || "").trim();
 
-let fromDogName = "";
+    let fromDogName = "";
+    let fromDogAvatar = "./plutoo-icon-192.png";
 
-try {
-  if (typeof state !== "undefined" && state && Array.isArray(state.dogs)) {
-    const sd = state.dogs.find(d => d && String(d.id) === fromId);
-    if (sd && sd.name) fromDogName = String(sd.name);
-  }
+    try {
+      let dog = null;
 
-  if (!fromDogName && typeof DOGS !== "undefined" && Array.isArray(DOGS)) {
-    const dd = DOGS.find(d => d && String(d.id) === fromId);
-    if (dd && dd.name) fromDogName = String(dd.name);
-  }
-} catch (_) {}
+      if (typeof state !== "undefined" && state && Array.isArray(state.dogs)) {
+        dog = state.dogs.find(d => d && String(d.id) === fromId) || null;
+      }
 
-const sub = (fromId ? `Da DOG: ${fromDogName || fromId}` : "");
+      if (!dog && typeof DOGS !== "undefined" && Array.isArray(DOGS)) {
+        dog = DOGS.find(d => d && String(d.id) === fromId) || null;
+      }
+
+      if (dog) {
+        if (dog.name) fromDogName = String(dog.name);
+        fromDogAvatar = String(dog.photoUrl || dog.img || dog.avatar || "./plutoo-icon-192.png");
+      }
+    } catch (_) {}
+
+    const dogLabel = fromDogName || fromId || "DOG";
+
+    const main =
+      n.type === "like"
+        ? `Like da ${dogLabel}`
+        : n.type === "match"
+          ? `Match con ${dogLabel}`
+          : n.type === "follow"
+            ? `Nuovo follower: ${dogLabel}`
+            : "Notifica";
 
     row.innerHTML = `
+      <img class="notif-ava" src="${fromDogAvatar}" alt="${dogLabel}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
       <div class="notif-txt">
         <div class="notif-main">${main}</div>
-        ${sub ? `<div class="notif-sub">${sub}</div>` : ``}
       </div>
       <div class="notif-time">${__fmtTime(n.createdAt)}</div>
     `;
 
- // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
-row.addEventListener("click", function (e) {
-  e.stopPropagation();
+    // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
+    row.addEventListener("click", function (e) {
+      e.stopPropagation();
 
-  row.style.outline = "2px solid #a855f7";
-  row.style.background = "rgba(168,85,247,0.12)";
-  if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch (_) {} }
+      row.style.outline = "2px solid #a855f7";
+      row.style.background = "rgba(168,85,247,0.12)";
+      if (navigator && navigator.vibrate) { try { navigator.vibrate(20); } catch (_) {} }
 
-  try {
-    var id = String(n.fromDogId || "");
-    if (!id) return;
+      try {
+        var id = String(n.fromDogId || "");
+        if (!id) return;
 
-    if (typeof __openDogProfileById === "function") {
-      Promise.resolve(__openDogProfileById(id))
-        .then(function (opened) {
-          if (opened) {
-            var no = document.getElementById("notifOverlay");
-            if (no) {
-              no.classList.remove("show");
-              no.setAttribute("aria-hidden", "true");
-              setTimeout(function () { no.classList.add("hidden"); }, 200);
-            }
-          }
-        })
-        .catch(function () {});
-    }
-  } catch (_) {}
-});
-  
-  frag.appendChild(row);
+        if (typeof __openDogProfileById === "function") {
+          Promise.resolve(__openDogProfileById(id))
+            .then(function (opened) {
+              if (opened) {
+                var no = document.getElementById("notifOverlay");
+                if (no) {
+                  no.classList.remove("show");
+                  no.setAttribute("aria-hidden", "true");
+                  setTimeout(function () { no.classList.add("hidden"); }, 200);
+                }
+              }
+            })
+            .catch(function () {});
+        }
+      } catch (_) {}
+    });
+
+    frag.appendChild(row);
   });
 
   notifList.appendChild(frag);
