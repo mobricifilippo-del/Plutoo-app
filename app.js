@@ -2342,7 +2342,22 @@ function __renderNotifs(items) {
       : (n.type ? String(n.type) : "Notifica");
 
     const fromId = String(n.fromDogId || n.fromdogId || n.followerDogId || n.actorDogId || n.dogId || "").trim();
-    const sub = (fromId ? `Da DOG: ${fromId}` : "");
+
+let fromDogName = "";
+
+try {
+  if (typeof state !== "undefined" && state && Array.isArray(state.dogs)) {
+    const sd = state.dogs.find(d => d && String(d.id) === fromId);
+    if (sd && sd.name) fromDogName = String(sd.name);
+  }
+
+  if (!fromDogName && typeof DOGS !== "undefined" && Array.isArray(DOGS)) {
+    const dd = DOGS.find(d => d && String(d.id) === fromId);
+    if (dd && dd.name) fromDogName = String(dd.name);
+  }
+} catch (_) {}
+
+const sub = (fromId ? `Da DOG: ${fromDogName || fromId}` : "");
 
     row.innerHTML = `
       <div class="notif-txt">
