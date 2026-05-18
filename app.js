@@ -4500,6 +4500,31 @@ followingOverlay?.addEventListener("click", (e) => {
       }
     } catch (e) {
       console.error("storyLike write fatal error:", e);
+
+      const currentStory =
+  (StoriesState.stories || []).find(story =>
+    Array.isArray(story.media) &&
+    story.media.some(m => String(m.id) === String(mediaId))
+  );
+
+const targetDogId = String(currentStory?.userId || "");
+
+if (targetDogId && targetDogId !== String(window.PLUTOO_DOG_ID || "")) {
+
+  const notifId =
+    `story_like_${String(mediaId)}_${String(window.PLUTOO_DOG_ID || "")}`;
+
+  _db.collection("notifications").doc(notifId).set({
+    type: "story_like",
+    fromUid: String(uid),
+    fromDogId: String(window.PLUTOO_DOG_ID || ""),
+    toDogId: targetDogId,
+    mediaId: String(mediaId),
+    createdAt: ts,
+    read: false
+  }, { merge: true }).catch(() => {});
+}
+      
     }
   }
 
