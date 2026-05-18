@@ -3431,6 +3431,17 @@ if (inverseLike && inverseLike.exists) {
     status: "matched"
   }, { merge: true });
 
+  const matchNotifId = `match_${String(matchId)}`;
+
+await db.collection("notifications").doc(matchNotifId).set({
+  type: "match",
+  fromUid: String(fromUid),
+  fromDogId: String(fromDogId),
+  toDogId: String(toDogId),
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  read: false
+}, { merge: true });
+
   if (typeof ensureChatForMatch === "function") {
     await ensureChatForMatch(d);
   }
