@@ -7176,8 +7176,19 @@ await db.collection("notifications").doc(matchNotifId).set({
       localStorage.setItem("matchCount", String(state.matchCount));
 
       nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
-    } else {
-      showSmallLikeAnimation();
+  } else {
+  const likeNotifId = `like_${String(fromDogId)}_${String(toDogId)}`;
+
+  await db.collection("notifications").doc(likeNotifId).set({
+    type: "like",
+    fromUid: String(fromUid),
+    fromDogId: String(fromDogId),
+    toDogId: String(toDogId),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    read: false
+  }, { merge: true });
+
+  showSmallLikeAnimation();
     }
   };
 }
