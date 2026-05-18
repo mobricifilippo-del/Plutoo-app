@@ -8529,6 +8529,11 @@ async function init(){
 
       state.dogs = realDogs;
       localStorage.setItem("dogs", JSON.stringify(realDogs));
+
+      if (state.entered && typeof renderNearby === "function") {
+  renderNearby();
+      }
+      
     }
   } catch (e) {
     console.error("Nearby real dogs load error:", e);
