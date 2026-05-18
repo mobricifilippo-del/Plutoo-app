@@ -3468,6 +3468,9 @@ await db.collection("notifications").doc(matchNotifId).set({
   read: false
 }, { merge: true });
 
+  const oldLikeNotifId = `like_${String(toDogId)}_${String(fromDogId)}`;
+await db.collection("notifications").doc(oldLikeNotifId).delete().catch(() => {});
+
   if (typeof ensureChatForMatch === "function") {
     await ensureChatForMatch(d);
   }
