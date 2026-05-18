@@ -3243,6 +3243,17 @@ const myUid = String(window.PLUTOO_UID || "");
         const x = doc.data() || {};
         if (x.toDogId) swipedIds.push(String(x.toDogId));
       });
+
+      const likesSnap = await db
+  .collection("likes")
+  .where("fromDogId", "==", myDogId)
+  .get();
+
+likesSnap.forEach(doc => {
+  const x = doc.data() || {};
+  if (x.toDogId) swipedIds.push(String(x.toDogId));
+});
+      
     } catch (e) {
       console.error("load swipes Firestore error:", e);
     }
