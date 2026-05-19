@@ -8621,6 +8621,8 @@ async function init(){
 
   // ===== STORIES — eventi, bar, viewer, navigazione =====
   function setupStoriesEvents() {
+    if (window.__storiesEventsBound) return;
+    window.__storiesEventsBound = true;
     $("addStoryBtn")?.addEventListener("click", openUploadModal);
 
     const closeBtn = $("closeStoryViewer");
