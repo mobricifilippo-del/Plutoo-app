@@ -2362,13 +2362,15 @@ function __renderNotifs(items) {
     const dogLabel = fromDogName || fromId || "DOG";
 
     const main =
-      n.type === "like"
-        ? `Like da ${dogLabel}`
-        : n.type === "match"
-          ? `Match con ${dogLabel}`
-          : n.type === "follow"
-            ? `Nuovo follower: ${dogLabel}`
-            : "Notifica";
+  n.type === "like"
+    ? `Like da ${dogLabel}`
+    : n.type === "story_like"
+      ? `❤️ Like aggiornamento da ${dogLabel}`
+      : n.type === "match"
+        ? `Match con ${dogLabel}`
+        : n.type === "follow"
+          ? `Nuovo follower: ${dogLabel}`
+          : "Notifica";
 
     row.innerHTML = `
       <img class="notif-ava" src="${fromDogAvatar}" alt="${dogLabel}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
