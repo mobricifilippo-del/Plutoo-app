@@ -9028,15 +9028,6 @@ if (!ok) return;
     setTimeout(() => el.classList.remove("active"), 900);
   }
 
-  document.addEventListener("click", (e) => {
-    if (e.target.closest("#storiesBar")) return;
-    const el = e.target.closest(".story-circle");
-    if (!el || el.id === "addStoryBtn") return;
-    const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
-    if (!dogId) return;
-    openStoryViewerFromBar(dogId);
-  });
-
   $("storiesBar")?.addEventListener("click", (e) => {
     const el = e.target.closest(".story-circle");
     if (el?.id === "addStoryBtn") return;
