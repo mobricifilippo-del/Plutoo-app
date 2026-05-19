@@ -4070,6 +4070,16 @@ async function rebuildFollowersStateFromFirestore() {
 
   const targetDog = targetDogDogOrId(targetDogOrId);
   const targetDogId = (targetDog && typeof targetDog === "object" && targetDog.id) ? targetDog.id : targetDog;
+
+    const isDemoFollowTarget =
+  !!targetDog &&
+  typeof targetDog === "object" &&
+  (
+    targetDog.isDemo === true ||
+    String(targetDog.id || "").startsWith("d")
+  );
+
+if (isDemoFollowTarget) return;
   if (!targetDogId) return;
 
   // ✅ dogId “mio” coerente (robusto): se manca, non fare crash e non “sembra morto”
