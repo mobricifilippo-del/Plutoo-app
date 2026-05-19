@@ -3024,7 +3024,6 @@ function setActiveView(name){
     }
     renderNearby();
     renderStoriesBar();
-    window.renderStories && window.renderStories();
     if (btnSearchPanel) btnSearchPanel.disabled = false;
   }
 
