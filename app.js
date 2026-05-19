@@ -4497,11 +4497,8 @@ followingOverlay?.addEventListener("click", (e) => {
           },
           { merge: true }
         ).catch((e) => console.error("storyLike set error:", e));
-      }
-    } catch (e) {
-      console.error("storyLike write fatal error:", e);
 
-      const currentStory =
+        const currentStory =
   (StoriesState.stories || []).find(story =>
     Array.isArray(story.media) &&
     story.media.some(m => String(m.id) === String(mediaId))
@@ -4524,6 +4521,9 @@ if (targetDogId && targetDogId !== String(window.PLUTOO_DOG_ID || "")) {
     read: false
   }, { merge: true }).catch(() => {});
 }
+      }
+    } catch (e) {
+      console.error("storyLike write fatal error:", e);
       
     }
   }
