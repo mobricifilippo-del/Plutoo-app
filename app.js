@@ -4507,6 +4507,15 @@ followingOverlay?.addEventListener("click", (e) => {
 
 const targetDogId = String(currentStory?.userId || "");
 
+        const isDemoStory =
+  !!currentStory &&
+  (
+    currentStory.isDemo === true ||
+    String(currentStory.userId || "").startsWith("d")
+  );
+
+if (isDemoStory) return;
+
 if (targetDogId && targetDogId !== String(window.PLUTOO_DOG_ID || "")) {
 
   const notifId =
