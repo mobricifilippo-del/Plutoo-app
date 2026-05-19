@@ -9028,15 +9028,6 @@ if (!ok) return;
     setTimeout(() => el.classList.remove("active"), 900);
   }
 
-  $("storiesBar")?.addEventListener("click", (e) => {
-    const el = e.target.closest(".story-circle");
-    if (el?.id === "addStoryBtn") return;
-    if (!el) return;
-    const dogId = el.getAttribute("data-dog-id") || el.getAttribute("data-id");
-    if (!dogId) return;
-    openStoryViewerFromBar(dogId);
-  });
-
  // ===== STORIES — upload, filtri, pubblicazione =====
 function pruneStories24h() {
   try {
