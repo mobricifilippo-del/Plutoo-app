@@ -2365,7 +2365,7 @@ function __renderNotifs(items) {
   n.type === "like"
     ? `Like da ${dogLabel}`
     : n.type === "story_like"
-      ? `❤️ Like aggiornamento da ${dogLabel}`
+    ? `💛 Aggiornamento: ${dogLabel}`
       : n.type === "match"
         ? `Match con ${dogLabel}`
         : n.type === "follow"
