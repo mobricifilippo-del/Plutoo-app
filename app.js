@@ -3066,7 +3066,6 @@ if (appScreen) {
 
 window.scrollTo({ top:0, behavior:"smooth" });
 }
-}
 
   btnBack?.addEventListener("click", ()=> goBack() );
 btnBackLove?.addEventListener("click", ()=> goBack() );
