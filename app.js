@@ -8854,9 +8854,38 @@ if (media.text && media.text.trim() !== "") {
     }
 
     if (storyLikeBtn && media.id) {
-      storyLikeBtn.onclick = () => toggleStoryLike(media.id);
-      updateStoryLikeUI(media.id);
+  storyLikeBtn.onclick = () => toggleStoryLike(media.id);
+
+  const mediaId = String(media.id);
+  const uid = String(window.PLUTOO_UID || "");
+  const _db = (window.db || (typeof db !== "undefined" ? db : null));
+
+  if (!uid || !_db) {
+    updateStoryLikeUI(mediaId);
+  } else {
+    _db
+      .collection("stories")
+      .doc(mediaId)
+      .collection("likes")
+      .doc(uid)
+      .get()
+      .then((snap) => {
+        if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
+
+        if (snap && snap.exists) {
+          state.storyLikesByMedia[mediaId] = true;
+        } else {
+          delete state.storyLikesByMedia[mediaId];
+        }
+
+        updateStoryLikeUI(mediaId);
+      })
+      .catch(() => {
+        updateStoryLikeUI(mediaId);
+      });
+  }
     }
+    
   }
 
   function startStoryProgress() {
