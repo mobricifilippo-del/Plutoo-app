@@ -3049,9 +3049,6 @@ function setActiveView(name){
   }
   }
 
-  document.documentElement.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
-document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
-
 if (appScreen) {
   if (name === "dogboard" || name === "messages") {
     appScreen.style.minHeight = "0px";
