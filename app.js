@@ -493,6 +493,8 @@ const targetView = state.currentView || "nearby";
 
 setTimeout(() => {
 
+homeScreen?.classList.add("hidden");
+
 appScreen?.classList.remove("hidden");  
 document.body.classList.remove("story-open");  
 
