@@ -3049,11 +3049,11 @@ function setActiveView(name){
   }
   }
 
-  document.documentElement.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
-document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
+  document.documentElement.style.overflowY = (name === "dogboard" || name === "messages" || name === "nearby") ? "hidden" : "auto";
+document.body.style.overflowY = (name === "dogboard" || name === "messages" || name === "nearby") ? "hidden" : "auto";
 
 if (appScreen) {
-  if (name === "dogboard" || name === "messages") {
+  if (name === "dogboard" || name === "messages" || name === "nearby") {
     appScreen.style.minHeight = "0px";
     appScreen.style.height = `${window.innerHeight}px`;
     appScreen.style.overflow = "hidden";
@@ -3064,6 +3064,10 @@ if (appScreen) {
   }
 }
 
+if (name === "nearby") {
+  const contentEl = document.querySelector(".content");
+  if (contentEl) contentEl.scrollTop = 0;
+} else {
   window.scrollTo({ top:0, behavior:"smooth" });
 }
 
