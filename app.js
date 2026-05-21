@@ -8879,6 +8879,22 @@ if (media.text && media.text.trim() !== "") {
   const uid = String(window.PLUTOO_UID || "");
   const _db = (window.db || (typeof db !== "undefined" ? db : null));
 
+  const currentStory =
+  (StoriesState.stories || []).find(story =>
+    Array.isArray(story.media) &&
+    story.media.some(m => String(m.id) === String(mediaId))
+  );
+
+const isDemoStory =
+  !!currentStory &&
+  currentStory.isDemo === true;
+
+if (isDemoStory) {
+  if (state.storyLikesByMedia) delete state.storyLikesByMedia[mediaId];
+  updateStoryLikeUI(mediaId);
+  return;
+}
+
   if (!uid || !_db) {
     updateStoryLikeUI(mediaId);
   } else {
