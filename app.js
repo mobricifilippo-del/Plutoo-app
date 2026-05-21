@@ -1582,18 +1582,18 @@ const STORIES_CONFIG = {
   });
 },
     
-    generateMockStories() {
+  generateMockStories() {
       return [
        { userId:"d1", userName:"Luna", avatar:"dog1.jpg", verified:true, isDemo:true,
          media:[{id:"m1",type:"image",url:"dog1.jpg",timestamp:Date.now()-3600000,filter:"none",viewed:false,privacy:"public"}] },
         
-        { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true,
+        { userId:"d2", userName:"Rex", avatar:"dog2.jpg", verified:true, isDemo:true,
           media:[
             {id:"m2",type:"image",url:"dog2.jpg",timestamp:Date.now()-7200000,filter:"warm",viewed:false,privacy:"public"},
             {id:"m3",type:"image",url:"dog3.jpg",timestamp:Date.now()-5400000,filter:"sepia",viewed:false,privacy:"private"}
           ]},
         
-        { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false,
+        { userId:"d3", userName:"Maya", avatar:"dog3.jpg", verified:false, isDemo:true,
           media:[{id:"m4",type:"image",url:"dog4.jpg",timestamp:Date.now()-10800000,filter:"grayscale",viewed:false,privacy:"public"}] }
       ];
     }
