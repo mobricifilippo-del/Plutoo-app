@@ -1434,17 +1434,13 @@ const STORIES_CONFIG = {
     openedFrom: null,
 
     loadStories() {
-      const saved = localStorage.getItem("plutoo_stories");
-      if (saved) {
-        this.stories = JSON.parse(saved);
-        this.cleanExpiredStories();
-      } else {
-        this.stories = this.generateMockStories();
-        this.saveStories();
-      }
-    },
-    
-    saveStories() { localStorage.setItem("plutoo_stories", JSON.stringify(this.stories)); },
+  this.stories = this.generateMockStories();
+},
+
+saveStories() {
+  // Firestore è la source-of-truth delle Stories reali.
+  // Nessuna persistenza localStorage per plutoo_stories.
+},
 
    async loadStoriesFromFirestore() {
   if (!window.db) return false;
