@@ -512,7 +512,9 @@ a{color:inherit;text-decoration:none}
 }
 
 .topbar{
-  position:sticky;top:0;z-index:1000;
+  position:relative;
+  top:auto;
+  z-index:1000;
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto;
   align-items:start;
