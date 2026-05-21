@@ -4463,6 +4463,25 @@ followingOverlay?.addEventListener("click", (e) => {
     );
     return;
     }
+
+    const currentStory =
+  (StoriesState.stories || []).find(story =>
+    Array.isArray(story.media) &&
+    story.media.some(m => String(m.id) === String(mediaId))
+  );
+
+const isDemoStory =
+  !!currentStory &&
+  currentStory.isDemo === true;
+
+if (isDemoStory) {
+  if (storyLikeBtn) {
+    storyLikeBtn.classList.remove("heart-anim");
+    void storyLikeBtn.offsetWidth;
+    storyLikeBtn.classList.add("heart-anim");
+  }
+  return;
+}
     
     if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
 
