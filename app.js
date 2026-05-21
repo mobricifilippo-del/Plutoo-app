@@ -8913,13 +8913,16 @@ if (isDemoStory) {
       .then((snap) => {
         if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
 
-        if (snap && snap.exists) {
-          state.storyLikesByMedia[mediaId] = true;
-        } else {
-          delete state.storyLikesByMedia[mediaId];
-        }
+        const likedValue = !!(snap && snap.exists);
 
-        updateStoryLikeUI(mediaId);
+if (likedValue) {
+  state.storyLikesByMedia[mediaId] = true;
+} else {
+  delete state.storyLikesByMedia[mediaId];
+}
+
+updateStoryLikeUI(mediaId, likedValue);
+        
       })
       .catch(() => {
         updateStoryLikeUI(mediaId);
