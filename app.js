@@ -4434,7 +4434,7 @@ followingOverlay?.addEventListener("click", (e) => {
   function updateStoryLikeUI(mediaId) {
     if (!storyLikeBtn || !mediaId) return;
 
-    const liked = isStoryLiked(mediaId);
+    const liked = arguments.length > 1 ? arguments[1] === true : isStoryLiked(mediaId);
     storyLikeBtn.classList.toggle("liked", liked);
 
     storyLikeBtn.classList.remove("heart-anim");
