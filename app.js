@@ -1305,7 +1305,7 @@ const state = {
   ownerSocialByDog: JSON.parse(localStorage.getItem("ownerSocialByDog") || "{}"),
 
   // Like stories (per media id)
-  storyLikesByMedia: JSON.parse(localStorage.getItem("storyLikesByMedia") || "{}"),
+  storyLikesByMedia: {},
 };
 
 // ✅ FIX DEFINITIVO: una sola sorgente di verità per la lingua e per tutte le funzioni che usano window.state
