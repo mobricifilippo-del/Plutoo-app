@@ -4475,11 +4475,22 @@ const isDemoStory =
   currentStory.isDemo === true;
 
 if (isDemoStory) {
+  if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
+
+  if (state.storyLikesByMedia[mediaId]) {
+    delete state.storyLikesByMedia[mediaId];
+  } else {
+    state.storyLikesByMedia[mediaId] = true;
+  }
+
+  updateStoryLikeUI(mediaId);
+
   if (storyLikeBtn) {
     storyLikeBtn.classList.remove("heart-anim");
     void storyLikeBtn.offsetWidth;
     storyLikeBtn.classList.add("heart-anim");
   }
+
   return;
 }
     
