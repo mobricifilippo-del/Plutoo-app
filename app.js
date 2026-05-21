@@ -9792,9 +9792,6 @@ return;
 
     userStory.media.push(newMedia);
 
-    if (typeof StoriesState.saveStories === "function")
-      StoriesState.saveStories();
-
     StoriesState.uploadedFile = null;
     StoriesState.selectedFilter = "none";
 
