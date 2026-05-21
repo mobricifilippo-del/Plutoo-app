@@ -4499,8 +4499,7 @@ if (isDemoStory) {
     } else {
       state.storyLikesByMedia[mediaId] = true;
     }
-
-    persistStoryLikes();
+    
     updateStoryLikeUI(mediaId);
 
     // ✅ FIRESTORE (PRODUCTION): salva like/unlike (robusto, non silenzioso)
