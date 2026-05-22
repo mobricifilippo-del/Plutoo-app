@@ -3505,7 +3505,6 @@ await db.collection("notifications").doc(likeNotifId).set({
       resetCard(card);
 
       state.swipeCount++;
-      localStorage.setItem("swipes", String(state.swipeCount));
 
       if (!state.plus && state.swipeCount >= state.nextRewardAt && !state.rewardOpen){
         state.rewardOpen = true;
