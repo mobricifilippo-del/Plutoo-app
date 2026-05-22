@@ -5314,8 +5314,7 @@ if (!ok) return;
             // tutto ciò che è chiaramente Plutoo / per-dog  
             if (  
               k === "dogs" ||  
-              k === "matches" ||  
-              k === "matchCount" ||  
+              k === "matches" ||   
               k === "currentProfileDogId" ||   
               k === "socialRewardViewed" ||  
               k === "selfieUntilByDog" ||  
