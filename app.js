@@ -4540,32 +4540,28 @@ if (isDemoStory) {
     story.media.some(m => String(m.id) === String(mediaId))
   );
 
-const targetDogId = String(currentStory?.userId || "");
+  _db.collection("stories").doc(String(mediaId)).get()
+  .then((storySnap) => {
+    const storyData = (storySnap && storySnap.exists) ? (storySnap.data() || {}) : {};
+    const targetDogId = String(storyData.dogId || "");
 
-        const isDemoStory =
-  !!currentStory &&
-  (
-    currentStory.isDemo === true ||
-    String(currentStory.userId || "").startsWith("d")
-  );
+    if (!targetDogId || targetDogId === String(window.PLUTOO_DOG_ID || "")) return;
 
-if (isDemoStory) return;
+    const notifId =
+      `story_like_${String(mediaId)}_${String(window.PLUTOO_DOG_ID || "")}`;
 
-if (targetDogId && targetDogId !== String(window.PLUTOO_DOG_ID || "")) {
-
-  const notifId =
-    `story_like_${String(mediaId)}_${String(window.PLUTOO_DOG_ID || "")}`;
-
-  _db.collection("notifications").doc(notifId).set({
-    type: "story_like",
-    fromUid: String(uid),
-    fromDogId: String(window.PLUTOO_DOG_ID || ""),
-    toDogId: targetDogId,
-    mediaId: String(mediaId),
-    createdAt: ts,
-    read: false
-  }, { merge: true }).catch(() => {});
-}
+    _db.collection("notifications").doc(notifId).set({
+      type: "story_like",
+      fromUid: String(uid),
+      fromDogId: String(window.PLUTOO_DOG_ID || ""),
+      toDogId: targetDogId,
+      mediaId: String(mediaId),
+      createdAt: ts,
+      read: false
+    }, { merge: true }).catch(() => {});
+  })
+  .catch(() => {});
+        
       }
     } catch (e) {
       console.error("storyLike write fatal error:", e);
