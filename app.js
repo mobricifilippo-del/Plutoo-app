@@ -1268,7 +1268,7 @@ const state = {
 
   // Swipe & rewards
   swipeCount: 0,
-  nextRewardAt: parseInt(localStorage.getItem("nextRewardAt") || "10", 10),
+  nextRewardAt: 10,
   rewardOpen: false,
 
   // Match / amicizie / chat
