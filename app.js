@@ -1283,9 +1283,6 @@ const state = {
   // Rewards social
   socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed") || "{}"),
 
-  // Dati caricati (docs)
-  dogDocsUploaded: JSON.parse(localStorage.getItem("dogDocsUploaded") || "{}"),
-
   // Stories
   storyOpen: false,
 
