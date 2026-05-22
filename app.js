@@ -4046,8 +4046,6 @@ async function rebuildFollowersStateFromFirestore() {
 }
 
   function persistFollowState() {
-    localStorage.setItem("followersByDog", JSON.stringify(state.followersByDog || {}));
-    localStorage.setItem("followingByDog", JSON.stringify(state.followingByDog || {}));
   }
 
   function getFollowers(dogId) {
