@@ -8492,6 +8492,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
 });
 
 if (onClose) onClose();
+  }
 
   // ============ Init ============
 async function init(){
