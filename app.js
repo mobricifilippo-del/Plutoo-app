@@ -1248,7 +1248,7 @@ const state = {
   lang: localStorage.getItem("lang") || "it",
 
   // PLUS
-  plus: false,
+  plus: localStorage.getItem("plutoo_plus") === "yes",
   plusPlan: localStorage.getItem("plusPlan") || "monthly",
 
   // Filtri
