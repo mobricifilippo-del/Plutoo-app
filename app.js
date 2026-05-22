@@ -5312,8 +5312,7 @@ if (!ok) return;
             if (  
               k === "dogs" ||  
               k === "matches" ||   
-              k === "currentProfileDogId" ||   
-              k === "socialRewardViewed" ||  
+              k === "currentProfileDogId" ||    
               k === "selfieUntilByDog" ||  
               k === "plutoo_plus" ||  
               k === "plutoo_has_dog" ||  
