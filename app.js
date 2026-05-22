@@ -5359,7 +5359,6 @@ if (!ok) return;
               state.dogs = [];  
               state.matches = {};  
               state.matchCount = 0;  
-              state.dogDocsUploaded = {};  
               state.selfieUntilByDog = {};  
               state.socialRewardViewed = {};  
               state.createDogDraft = {};  
