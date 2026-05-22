@@ -5351,8 +5351,7 @@ if (!ok) return;
           try {  
             if (state) {  
               state.dogs = [];  
-              state.matches = {};  
-              state.matchCount = 0;  
+              state.matches = {}; 
               state.selfieUntilByDog = {};  
               state.socialRewardViewed = {};  
               state.createDogDraft = {};  
