@@ -4428,10 +4428,6 @@ followingOverlay?.addEventListener("click", (e) => {
     return !!(state.storyLikesByMedia && state.storyLikesByMedia[mediaId]);
   }
 
-  function persistStoryLikes() {
-    localStorage.setItem("storyLikesByMedia", JSON.stringify(state.storyLikesByMedia || {}));
-  }
-
   function updateStoryLikeUI(mediaId) {
     if (!storyLikeBtn || !mediaId) return;
 
