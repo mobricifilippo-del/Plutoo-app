@@ -1917,39 +1917,58 @@ window.openProfilePage(dog);
 
         // 4) Firestore (no await)  
         try {  
-          window.db.collection("dogs").doc(String(savedId)).get()  
-            .then((doc) => {  
-              if (doc && doc.exists && window.openProfilePage) {  
-                const data = doc.data() || {};  
+           window.db.collection("dogs").doc(String(savedId)).get()  
+  .then(async (doc) => {  
+    if (doc && doc.exists && window.openProfilePage) {  
+      const data = doc.data() || {};  
 
-                const freshDog = {
-                  id: doc.id,
-                  name: (data.name || ""),
-                  breed: (data.breed || ""),
-                  age: (data.age || ""),
-                  sex: (data.sex || ""),
-                  bio: (data.bio || ""),
-                  km: (data.km || 0),
-                  img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
-                  verified: !!data.verified,
-                  ownerSocial: (data.ownerSocial || {}),
-                  dogDocs: (data.dogDocs || {}),
-                  selfieUrl: (data.selfieUrl || "")
-                };
+      const ownerUid = String(data.ownerUid || doc.id || "");
+      let plus = false;
+      let plusStatus = "";
 
-                if (typeof window.openFreshDogProfile === "function") {
-                  window.openFreshDogProfile(savedId, freshDog);
-                } else {
-                  window.openProfilePage(freshDog);
-                }
+      try {
+        if (ownerUid && window.db) {
+          const userSnap = await window.db.collection("users").doc(ownerUid).get();
+          const userData = userSnap && userSnap.exists ? (userSnap.data() || {}) : {};
+          plus = userData.plus === true;
+          plusStatus = String(userData.plusStatus || "");
+        }
+      } catch (_) {
+        plus = false;
+        plusStatus = "";
+      }
 
-              } else {  
-                setActiveView("nearby");  
-              }  
-            })  
-          .catch(() => {  
-            setActiveView("nearby");  
-          });    
+      const freshDog = {
+        id: doc.id,
+        ownerUid,
+        plus,
+        plusStatus,
+        name: (data.name || ""),
+        breed: (data.breed || ""),
+        age: (data.age || ""),
+        sex: (data.sex || ""),
+        bio: (data.bio || ""),
+        km: (data.km || 0),
+        img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
+        verified: !!data.verified,
+        ownerSocial: (data.ownerSocial || {}),
+        dogDocs: (data.dogDocs || {}),
+        selfieUrl: (data.selfieUrl || "")
+      };
+
+      if (typeof window.openFreshDogProfile === "function") {
+        window.openFreshDogProfile(savedId, freshDog);
+      } else {
+        window.openProfilePage(freshDog);
+      }
+
+    } else {  
+      setActiveView("nearby");  
+    }  
+  })  
+.catch(() => {  
+  setActiveView("nearby");  
+});
             
         } catch (_) {  
           setActiveView("nearby");  
