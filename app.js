@@ -1301,8 +1301,8 @@ rewardOpen: false,
   previousViewForMessages: "nearby",
 
   // Follow / seguiti
-  followersByDog: JSON.parse(localStorage.getItem("followersByDog") || "{}"),
-  followingByDog: JSON.parse(localStorage.getItem("followingByDog") || "{}"),
+  followersByDog: {},
+  followingByDog: {},
   ownerSocialByDog: {},
 
   // Like stories (per media id)
