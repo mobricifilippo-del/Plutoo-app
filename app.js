@@ -9711,9 +9711,8 @@ return;
       "DOG";
 
     const dogAvatar =
-      window.PLUTOO_DOG_AVATAR ||
-      localStorage.getItem("plutoo_dog_avatar") ||
-      "plutoo-icon-192.png";
+  window.PLUTOO_DOG_AVATAR ||
+  "plutoo-icon-192.png";
 
     const storyDoc = {
       id: storyId,
