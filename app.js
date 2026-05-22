@@ -8465,7 +8465,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
     adBanner.style.display = "";
   }
 
-  function showRewardVideoMock(type, onClose){
+  async function showRewardVideoMock(type, onClose){
     const msg = {
       it: {
         swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nProssima soglia: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
@@ -8486,13 +8486,12 @@ btnPublishDogBoard?.addEventListener("click", () => {
     };
     const text = (msg[state.lang] && msg[state.lang][type]) || (msg.it && msg.it[type]) || "Ad";
 
-    showPlutooAlert(text, {
+    await showPlutooAlert(text, {
   title: "Plutoo",
   confirmText: "OK"
 });
-    
+
 if (onClose) onClose();
-  }
 
   // ============ Init ============
 async function init(){
