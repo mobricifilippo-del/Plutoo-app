@@ -1275,7 +1275,6 @@ const state = {
   matches: JSON.parse(localStorage.getItem("matches") || "{}"),
   friendships: JSON.parse(localStorage.getItem("friendships") || "{}"),
   chatMessagesSent: JSON.parse(localStorage.getItem("chatMessagesSent") || "{}"),
-  matchCount: Number(localStorage.getItem("matchCount") || "0"),
 
   // Selfie unlock (per DOG)
   selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
