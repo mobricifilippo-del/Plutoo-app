@@ -1249,7 +1249,7 @@ const state = {
 
   // PLUS
   plus: localStorage.getItem("plutoo_plus") === "yes",
-  plusPlan: localStorage.getItem("plusPlan") || "monthly",
+  plusPlan: "monthly",
 
   // Filtri
   filters: {
