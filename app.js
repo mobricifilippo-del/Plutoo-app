@@ -3511,7 +3511,6 @@ await db.collection("notifications").doc(likeNotifId).set({
         showRewardVideoMock("swipe", ()=>{
           state.rewardOpen = false;
           state.nextRewardAt += 5;
-          localStorage.setItem("nextRewardAt", String(state.nextRewardAt));
 
           state.processingSwipe = false;
           renderSwipe(mode);
