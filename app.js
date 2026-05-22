@@ -7250,7 +7250,6 @@ await db.collection("notifications").doc(oldLikeNotifId).delete().catch(() => {}
       showMatchAnimation(nameForMatch, nextMatchColor);
 
       state.matchCount++;
-      localStorage.setItem("matchCount", String(state.matchCount));
 
       nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
   } else {
