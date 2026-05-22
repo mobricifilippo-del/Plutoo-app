@@ -1279,9 +1279,6 @@ const state = {
   // Selfie unlock (per DOG)
   selfieUntilByDog: JSON.parse(localStorage.getItem("selfieUntilByDog") || "{}"),
 
-  // Rewards social
-  socialRewardViewed: JSON.parse(localStorage.getItem("socialRewardViewed") || "{}"),
-
   // Stories
   storyOpen: false,
 
