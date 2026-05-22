@@ -4643,10 +4643,6 @@ window.openProfilePage = (d) => {
     d.id = (d.id != null) ? String(d.id) : "";
     if (!d.id && d.id !== "__create__") return;
 
-    // state maps sempre presenti
-if (!state.dogDocsUploaded || typeof state.dogDocsUploaded !== "object") state.dogDocsUploaded = {};
-if (!state.dogDocsUploaded[d.id] || typeof state.dogDocsUploaded[d.id] !== "object") state.dogDocsUploaded[d.id] = {};
-
     // campi minimi safe (evita undefined in template)
     d.name  = (d.name  != null) ? String(d.name)  : "";
     d.img   = (d.img   != null) ? String(d.img)   : "";
