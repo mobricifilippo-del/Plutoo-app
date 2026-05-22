@@ -1303,7 +1303,7 @@ rewardOpen: false,
   // Follow / seguiti
   followersByDog: JSON.parse(localStorage.getItem("followersByDog") || "{}"),
   followingByDog: JSON.parse(localStorage.getItem("followingByDog") || "{}"),
-  ownerSocialByDog: JSON.parse(localStorage.getItem("ownerSocialByDog") || "{}"),
+  ownerSocialByDog: {},
 
   // Like stories (per media id)
   storyLikesByMedia: {},
