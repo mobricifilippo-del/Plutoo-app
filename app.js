@@ -848,7 +848,11 @@ window.PLUTOO_DOG_NAME = dogName;
 window.PLUTOO_READONLY = !hasDog;  
 
 // UI CTA aggiornata (mai sparire)  
-if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+
+  if (typeof initNotificationsFeed === "function") {
+  initNotificationsFeed();
+  }
 
 // Cache (non source of truth)  
 try {
