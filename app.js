@@ -7158,7 +7158,6 @@ openProfilePage(fresh);
           showRewardVideoMock("social", () => {
             state.rewardOpen = false;
             state.socialRewardViewed[rewardKey] = true;
-            localStorage.setItem("socialRewardViewed", JSON.stringify(state.socialRewardViewed));
             window.location.href = finalUrl;
           });
         });
