@@ -1267,7 +1267,7 @@ const state = {
   },
 
   // Swipe & rewards
-  swipeCount: parseInt(localStorage.getItem("swipes") || "0", 10),
+  swipeCount: 0,
   nextRewardAt: parseInt(localStorage.getItem("nextRewardAt") || "10", 10),
   rewardOpen: false,
 
