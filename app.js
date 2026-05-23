@@ -7126,6 +7126,35 @@ if (!isDocsOwner) {
     const file = docFileInput.files && docFileInput.files[0];
     if (!file) return;
 
+    const selectedFileName = String(file.name || "");
+const selectedFileSize = Number(file.size || 0);
+const selectedFileType = String(file.type || "");
+
+const duplicateDocName = Object.keys(dogDocs || {}).find((key) => {
+  if (String(key) === String(docName)) return false;
+
+  const doc = dogDocs[key] || {};
+  return (
+    String(doc.fileName || "") === selectedFileName &&
+    Number(doc.fileSize || 0) === selectedFileSize &&
+    String(doc.fileType || "") === selectedFileType
+  );
+});
+
+if (duplicateDocName) {
+  docFileInput.value = "";
+
+  if (typeof showPlutooAlert === "function") {
+    showPlutooAlert(
+      state.lang === "it"
+        ? "Documento errato"
+        : "Invalid document"
+    );
+  }
+
+  return;
+}
+
     if (docCategory === "dog") {
       const dogId = d.id;
       const docName = docType.replace("dog-", "");
