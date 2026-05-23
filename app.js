@@ -7197,7 +7197,13 @@ if (!isDocsOwner) {
   return;
 }
 
+  if (state.rewardOpen) return;
+state.rewardOpen = true;
+
+showRewardVideoMock("documents", () => {
+  state.rewardOpen = false;
   docFileInput.click();
+});
 });
       });
 
