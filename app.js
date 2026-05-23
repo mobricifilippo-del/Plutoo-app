@@ -1249,6 +1249,7 @@ const state = {
 
   // PLUS
   plus: localStorage.getItem("plutoo_plus") === "yes",
+  plusReady: false,
   plusPlan: "monthly",
 
   // Filtri
