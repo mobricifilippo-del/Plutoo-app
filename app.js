@@ -7051,6 +7051,9 @@ freshDog.img = String(freshDog.photoUrl || freshDog.img || d.img || "./plutoo-ic
   const docType = item.getAttribute("data-doc");
   const docCategory = item.getAttribute("data-type");
 
+  const isDocsOwner =
+  (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id;
+
   if (docCategory === "dog") {
     const dogId = d.id;
     const docName = docType.replace("dog-", "");
