@@ -4929,7 +4929,7 @@ profileContent.innerHTML = `
           <div class="doc-icon" style="font-size:2.2rem;line-height:1">✅</div>
         `
         : `
-          <div class="doc-status pending">${state.lang === "it" ? "Profilo base" : "Basic profile"}</div>
+          <div class="doc-status pending">${state.lang === "it" ? "Completa profilo" : "Complete profile"}</div>
         `
   }
 </div>
