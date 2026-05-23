@@ -7131,6 +7131,26 @@ if (!isDocsOwner) {
     const docName = docType.replace("dog-", "");
     if (!file) return;
 
+    const maxDocFileSize = 5 * 1024 * 1024;
+
+if (file.size > maxDocFileSize) {
+  docFileInput.value = "";
+
+  if (typeof showPlutooAlert === "function") {
+    showPlutooAlert(
+      state.lang === "it"
+        ? "Documento troppo grande. Carica un file massimo 5 MB."
+        : "Document too large. Upload a file up to 5 MB.",
+      {
+        title: "Plutoo",
+        confirmText: "OK"
+      }
+    );
+  }
+
+  return;
+}
+
     const selectedFileName = String(file.name || "");
 const selectedFileSize = Number(file.size || 0);
 const selectedFileType = String(file.type || "");
