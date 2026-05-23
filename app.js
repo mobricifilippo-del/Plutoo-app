@@ -7148,7 +7148,7 @@ if (duplicateDocName) {
   if (typeof showPlutooAlert === "function") {
     showPlutooAlert(
       state.lang === "it"
-        ? "Documento errato"
+        ? "Documento già presente nel profilo"
         : "Invalid document"
     );
   }
