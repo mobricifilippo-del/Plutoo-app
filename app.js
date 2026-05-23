@@ -8547,7 +8547,8 @@ btnPublishDogBoard?.addEventListener("click", () => {
         chat: "🎬 Reward Video Mock\n(first message)\n\nType: Chat Unlock",
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services",
         social: "🎬 Reward Video Mock\n(opening social profile)\n\nType: Social Unlock",
-        sponsor: "🎬 Reward Video Mock\n(Official sponsor)\n\nType: Sponsor"
+        sponsor: "🎬 Reward Video Mock\n(Official sponsor)\n\nType: Sponsor",
+        documents: "🎬 Reward Video Mock\n(DOG document uploaded)\n\nType: DOG Documents"
       }
     };
     const text = (msg[state.lang] && msg[state.lang][type]) || (msg.it && msg.it[type]) || "Ad";
