@@ -8538,7 +8538,8 @@ btnPublishDogBoard?.addEventListener("click", () => {
         chat: "🎬 Reward Video Mock\n(primo messaggio)\n\nTipo: Chat Unlock",
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services",
         social: "🎬 Reward Video Mock\n(apertura profilo social)\n\nTipo: Social Unlock",
-        sponsor: "🎬 Reward Video Mock\n(Sponsor ufficiale)\n\nTipo: Sponsor"
+        sponsor: "🎬 Reward Video Mock\n(Sponsor ufficiale)\n\nTipo: Sponsor",
+        documents: "🎬 Reward Video Mock\n(documento DOG caricato)\n\nTipo: Documenti DOG"
       },
       en: {
         swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nNext threshold: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
