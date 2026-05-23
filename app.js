@@ -7035,6 +7035,11 @@ freshDog.img = String(freshDog.photoUrl || freshDog.img || d.img || "./plutoo-ic
         if (item.dataset) item.dataset.docBound = "1";
 
         item.addEventListener("click", (e) => {
+          if (window.__plutooDocUploadBusy === true) {
+  e.preventDefault();
+  e.stopPropagation();
+  return;
+          }
   const statusEl = item.querySelector(".doc-status");
 
   if (window.PLUTOO_READONLY && d.id !== "__create__") {
