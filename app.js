@@ -4883,7 +4883,6 @@ profileContent.innerHTML = `
 
 <div class="pp-docs-section ${d.plus === true && d.plusStatus === "active" ? "pp-docs-plus" : ""}" style="margin-top:1.2rem">
   <h4 class="section-title" style="margin-top:0;font-size:1rem">${state.lang === "it" ? "Documenti DOG" : "DOG Documents"}</h4>
-  <p style="font-size:.88rem;color:var(--muted);margin:.3rem 0 .6rem">${state.lang === "it" ? "Facoltativi (vaccini, pedigree, microchip)" : "Optional (vaccines, pedigree, microchip)"}</p>
 
   <div class="pp-docs-grid">
 
