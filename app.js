@@ -8593,7 +8593,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
         services: "🎬 Reward Video Mock\n(veterinari/toelettature/negozi)\n\nTipo: Services",
         social: "🎬 Reward Video Mock\n(apertura profilo social)\n\nTipo: Social Unlock",
         sponsor: "🎬 Reward Video Mock\n(Sponsor ufficiale)\n\nTipo: Sponsor",
-        documents: "🎬 Reward Video Mock\n(documento DOG caricato)\n\nTipo: Documenti DOG"
+        documents: "🎬 Guarda un breve video per caricare documenti"
       },
       en: {
         swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nNext threshold: ${state.nextRewardAt}\n\nType: Swipe Unlock`,
@@ -8602,7 +8602,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
         services: "🎬 Reward Video Mock\n(vets/groomers/shops)\n\nType: Services",
         social: "🎬 Reward Video Mock\n(opening social profile)\n\nType: Social Unlock",
         sponsor: "🎬 Reward Video Mock\n(Official sponsor)\n\nType: Sponsor",
-        documents: "🎬 Reward Video Mock\n(DOG document uploaded)\n\nType: DOG Documents"
+        documents: "🎬 Watch a short video to upload documents"
       }
     };
     const text = (msg[state.lang] && msg[state.lang][type]) || (msg.it && msg.it[type]) || "Ad";
