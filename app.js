@@ -7058,6 +7058,7 @@ freshDog.img = String(freshDog.photoUrl || freshDog.img || d.img || "./plutoo-ic
 
   // 👉 DOCUMENTO ESISTE → ELIMINA
 if (existingDoc) {
+  if (!isDocsOwner) return;
 
   showPlutooConfirm("Vuoi eliminare questo documento DOG?", {
     confirmText: "Elimina",
