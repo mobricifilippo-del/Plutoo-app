@@ -4880,7 +4880,7 @@ profileContent.innerHTML = `
       <div class="doc-status ${dogDocs.vaccines && dogDocs.vaccines.url ? "uploaded" : "pending"}">
         ${dogDocs.vaccines && dogDocs.vaccines.url
           ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
-          : (state.lang === "it" ? "Da caricare" : "Upload")}
+          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : "")}
       </div>
     </div>
 
@@ -4890,7 +4890,7 @@ profileContent.innerHTML = `
       <div class="doc-status ${dogDocs.pedigree && dogDocs.pedigree.url ? "uploaded" : "pending"}">
         ${dogDocs.pedigree && dogDocs.pedigree.url
           ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
-          : (state.lang === "it" ? "Da caricare" : "Upload")}
+          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : "")}
       </div>
     </div>
 
@@ -4900,7 +4900,7 @@ profileContent.innerHTML = `
       <div class="doc-status ${dogDocs.microchip && dogDocs.microchip.url ? "uploaded" : "pending"}">
         ${dogDocs.microchip && dogDocs.microchip.url
           ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
-          : (state.lang === "it" ? "Da caricare" : "Upload")}
+          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : "")}
       </div>
     </div>
 
