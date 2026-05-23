@@ -7142,14 +7142,19 @@ if (!isDocsOwner) {
         .then(() => storageRef.getDownloadURL())
         .then((url) => {
           return window.db.collection("dogs").doc(dogId).set({
+
             dogDocs: {
-              [docName]: {
-                url,
-                storagePath,
-                uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
-              }
-            },
-            dogDocsStatus: "uploaded"
+  [docName]: {
+    url,
+    storagePath,
+    uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    fileName: file.name || "",
+    fileSize: Number(file.size || 0),
+    fileType: file.type || ""
+  }
+},
+dogDocsStatus: "uploaded"
+            
           }, { merge: true });
         })
         .then(() => {
