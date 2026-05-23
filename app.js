@@ -7076,6 +7076,9 @@ if (existingDoc) {
 
     if (!ok) return;
 
+    if (window.__plutooDocUploadBusy === true) return;
+    window.__plutooDocUploadBusy = true;
+
     const storagePath = d.dogDocs[docName].storagePath;
 
     if (statusEl) {
