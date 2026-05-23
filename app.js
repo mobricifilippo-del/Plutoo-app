@@ -7132,6 +7132,11 @@ if (existingDoc) {
   // 👉 UPLOAD (documento NON esiste)
   docFileInput.onchange = () => {
 
+    if (window.__plutooDocUploadBusy === true) {
+  docFileInput.value = "";
+  return;
+    }
+
     const isDocsOwner =
   (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id;
 
