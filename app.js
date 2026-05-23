@@ -7124,6 +7124,7 @@ if (!isDocsOwner) {
   return;
 }
     const file = docFileInput.files && docFileInput.files[0];
+    const docName = docType.replace("dog-", "");
     if (!file) return;
 
     const selectedFileName = String(file.name || "");
@@ -7157,7 +7158,6 @@ if (duplicateDocName) {
 
     if (docCategory === "dog") {
       const dogId = d.id;
-      const docName = docType.replace("dog-", "");
       const storagePath = `dogs/${dogId}/dogDocs/${docName}`;
       const storageRef = window.storage.ref().child(storagePath);
 
