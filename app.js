@@ -4696,6 +4696,9 @@ const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
   const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
+  const isDocsOwner =
+  (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id;
+
 profileContent.innerHTML = `
 
   <div class="pp-hero ${d.plus === true && d.plusStatus === "active" ? "pp-hero-plus" : ""}">
