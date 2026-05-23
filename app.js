@@ -7228,9 +7228,6 @@ openProfilePage(fresh);
     window.openFreshDogProfile(d.id, d);
   };
 
-          const isDocsOwner =
-  (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id;
-
 if (!isDocsOwner) {
   return;
 }
