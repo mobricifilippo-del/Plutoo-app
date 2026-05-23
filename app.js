@@ -4916,7 +4916,7 @@ profileContent.innerHTML = `
       </div>
     </div>
 
-    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-trust" data-type="trust">
+    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-trust" data-type="trust" style="pointer-events:none">
   ${
     docsCount >= 3
       ? `
