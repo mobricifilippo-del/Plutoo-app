@@ -1039,6 +1039,7 @@ const userData = snap && snap.exists ? (snap.data() || {}) : {};
 const userPlusActive = userData.plus === true && userData.plusStatus === "active";
 
 state.plus = userPlusActive;
+state.plusReady = true;
 
 if (userData.plusPlan) {
   state.plusPlan = String(userData.plusPlan);
