@@ -7111,13 +7111,17 @@ if (existingDoc) {
         fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
         openProfilePage(fresh);
       })
-      .catch((err) => {
-        console.error("dog document delete error:", err);
 
-        if (typeof showToast === "function") {
-          showToast("❌ Errore eliminazione documento DOG");
-        }
-      });
+    .catch((err) => {
+  console.error("dog document delete error:", err);
+
+  if (typeof showToast === "function") {
+    showToast("❌ Errore eliminazione documento DOG");
+  }
+})
+.finally(() => {
+  window.__plutooDocUploadBusy = false;
+});
 
   });
 
