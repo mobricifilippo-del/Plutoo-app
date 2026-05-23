@@ -7231,13 +7231,26 @@ if (!isDocsOwner) {
   return;
 }
 
-  if (state.rewardOpen) return;
+  const rewardUntil = Number(localStorage.getItem("plutoo_documents_reward_until") || 0);
+
+if (Date.now() < rewardUntil) {
+  docFileInput.click();
+  return;
+}
+
+if (state.rewardOpen) return;
 state.rewardOpen = true;
 
 showRewardVideoMock("documents", () => {
+  localStorage.setItem(
+    "plutoo_documents_reward_until",
+    String(Date.now() + (60 * 60 * 1000))
+  );
+
   state.rewardOpen = false;
   docFileInput.click();
 });
+          
 });
       });
 
