@@ -7208,6 +7208,8 @@ if (duplicateDocName) {
         statusEl.classList.add("pending");
       }
 
+      window.__plutooDocUploadBusy = true;
+
       storageRef.put(file)
         .then(() => storageRef.getDownloadURL())
         .then((url) => {
