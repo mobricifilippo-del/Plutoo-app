@@ -4694,12 +4694,10 @@ const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
 
 const docsTrustLabel =
   docsCount >= 3
-    ? (state.lang === "it" ? "Profilo completo" : "Complete profile")
-    : docsCount === 2
-      ? (state.lang === "it" ? "Profilo affidabile" : "Reliable profile")
-      : docsCount === 1
-        ? (state.lang === "it" ? "Profilo verificato" : "Verified profile")
-        : "";
+    ? (state.lang === "it" ? "👑 Profilo completo" : "👑 Complete profile")
+    : docsCount >= 1
+      ? "✅"
+      : "";
 
   const selfieSrc = d.selfieUrl || "./plutoo-icon-192.png";
 
