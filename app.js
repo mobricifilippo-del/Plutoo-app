@@ -7247,6 +7247,7 @@ dogDocsStatus: "uploaded"
 fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
 openProfilePage(fresh);
         })
+        
         .catch((err) => {
           console.error("dog document upload error:", err);
 
@@ -7259,6 +7260,9 @@ openProfilePage(fresh);
           if (typeof showToast === "function") {
             showToast("❌ Errore caricamento documento DOG");
           }
+        })
+        .finally(() => {
+          window.__plutooDocUploadBusy = false;
         });
 
       return;
