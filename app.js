@@ -4919,6 +4919,14 @@ profileContent.innerHTML = `
       </div>
     </div>
 
+    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-trust" data-type="trust">
+  <div class="doc-icon">🏅</div>
+  <div class="doc-label">${state.lang === "it" ? "Badge profilo" : "Profile badge"}</div>
+  <div class="doc-status ${docsCount > 0 ? "uploaded" : "pending"}">
+    ${docsTrustLabel || (state.lang === "it" ? "Profilo base" : "Basic profile")}
+  </div>
+</div>
+
   </div>
 </div>
 
