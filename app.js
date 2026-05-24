@@ -2860,6 +2860,43 @@ deleteBtn?.addEventListener("click", async (e) => {
       if (chat.deletedByUid && chat.deletedByUid[selfUid] === true) {
   return;
       }
+
+      if (chat.spamByUid && chat.spamByUid[selfUid] === true) {
+  const otherUid =
+    (Array.isArray(chat.members) ? chat.members : []).find((uid) => uid !== selfUid) || null;
+
+  const dogId =
+    (otherUid && chat.dogIds && chat.dogIds[otherUid]) ||
+    chat.dogId ||
+    null;
+
+  const dogName =
+    (otherUid && chat.names && chat.names[otherUid]) ||
+    chat.dogName ||
+    (state.lang === "en" ? "DOG" : "Dog");
+
+  const dogAvatar =
+    (otherUid && chat.avatars && chat.avatars[otherUid]) ||
+    chat.dogAvatar ||
+    null;
+
+  const text = (chat.lastMessageText || "").trim();
+  const dateText = chat.lastMessageAt ? chat.lastMessageAt.toLocaleString() : "";
+
+  spamList.appendChild(
+    makeRow(
+      `${dogName}${text ? " - " + text : ""}`,
+      dateText,
+      chat.id,
+      dogId,
+      otherUid,
+      "spam",
+      dogAvatar
+    )
+  );
+
+  return;
+      }
       
   const otherUid =
     (Array.isArray(chat.members) ? chat.members : []).find((uid) => uid !== selfUid) || null;
