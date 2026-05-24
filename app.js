@@ -2273,46 +2273,59 @@ function initMessagesBadge() {
     return;
   }
 
+  const uid = String(window.PLUTOO_UID || "");
+  if (!uid) {
+    __setMsgBadge(0);
+    return;
+  }
+
   // kill vecchio listener
   try { if (typeof __msgBadgeUnsub === "function") __msgBadgeUnsub(); } catch (_) {}
 
   __msgBadgeUnsub = db
-  .collection("messages")
-  .where("isRead", "==", false)
-  .onSnapshot((snap) => {
-    let unread = 0;
-    const myUid = String(window.PLUTOO_UID || "");
+    .collection("chats")
+    .where("members", "array-contains", uid)
+    .onSnapshot((snap) => {
+      let unread = 0;
 
-    snap.forEach((d) => {
-      const x = d.data() || {};
-      const sender = String(x.senderUid || "");
-      const chatId = String(x.chatId || "");
+      snap.forEach((docSnap) => {
+        const chat = docSnap.data() || {};
 
-      if (!sender || !chatId || !myUid) return;
+        const unreadByUid =
+          chat.unreadByUid && typeof chat.unreadByUid === "object"
+            ? chat.unreadByUid
+            : null;
 
-      const parts = chatId.split("__");
-      if (parts.length !== 2) return;
+        if (unreadByUid && unreadByUid[uid] != null) {
+          const n = parseInt(unreadByUid[uid], 10);
+          if (Number.isFinite(n) && n > 0) unread += n;
+          return;
+        }
 
-      if (parts[0] !== myUid && parts[1] !== myUid) return;
+        const legacyUnread =
+          chat.unread && typeof chat.unread === "object"
+            ? chat.unread
+            : null;
 
-      if (sender !== myUid) unread++;
+        if (legacyUnread && legacyUnread[uid] != null) {
+          const n = parseInt(legacyUnread[uid], 10);
+          if (Number.isFinite(n) && n > 0) unread += n;
+          return;
+        }
+
+        const lastSenderUid = String(chat.lastSenderUid || "");
+        const lastMessageRead = chat.lastMessageRead === true || chat.isRead === true;
+
+        if (lastSenderUid && lastSenderUid !== uid && !lastMessageRead) {
+          unread += 1;
+        }
+      });
+
+      __setMsgBadge(unread);
+    }, (e) => {
+      console.error("initMessagesBadge error:", e);
+      __setMsgBadge(0);
     });
-
-    __setMsgBadge(unread);
-  }, (e) => {
-
-   showPlutooAlert(
-  (e && e.message)
-    ? e.message
-    : "Errore aggiornamento badge messaggi",
-  {
-    title: "Plutoo",
-    confirmText: "OK"
-  }
-);
-    
-  });
-  
 }
 
 // avvia subito
