@@ -2746,7 +2746,8 @@ if (!snap || snap.empty) {
   status: data.status || null,
   folder: data.folder || null,
   spam: data.spam === true,
-  deletedByUid: data.deletedByUid || {}
+  deletedByUid: data.deletedByUid || {},
+  spamByUid: data.spamByUid || {}
 });
 });
 
