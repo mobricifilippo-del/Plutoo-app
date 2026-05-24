@@ -2291,6 +2291,14 @@ function initMessagesBadge() {
       snap.forEach((docSnap) => {
         const chat = docSnap.data() || {};
 
+        if (chat.deletedByUid && chat.deletedByUid[uid] === true) {
+  return;
+}
+
+if (chat.spamByUid && chat.spamByUid[uid] === true) {
+  return;
+}
+
         const unreadByUid =
           chat.unreadByUid && typeof chat.unreadByUid === "object"
             ? chat.unreadByUid
