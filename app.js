@@ -2803,6 +2803,11 @@ if (!snap || snap.empty) {
 };
 
     chats.forEach((chat) => {
+
+      if (chat.deletedByUid && chat.deletedByUid[selfUid] === true) {
+  return;
+      }
+      
   const otherUid =
     (Array.isArray(chat.members) ? chat.members : []).find((uid) => uid !== selfUid) || null;
 
