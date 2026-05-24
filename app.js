@@ -2772,9 +2772,8 @@ if (!snap || snap.empty) {
   row.className = "msg-item";
 
   // avatar: se c’è lo metto, se non c’è non mostro nulla (niente icona finta)
-  const avatar = dogAvatar
-    ? `<img src="${dogAvatar}" class="msg-avatar" alt="dog">`
-    : ``;
+  const safeAvatar = dogAvatar || "./plutoo-icon-192.png";
+  const avatar = `<img src="${safeAvatar}" class="msg-avatar" alt="dog" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">`;
 
   // separo "Nome - Messaggio" in modo robusto (se non c’è il trattino, preview vuota)
   let nameLine = (titleText || "").trim();
