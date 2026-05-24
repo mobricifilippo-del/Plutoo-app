@@ -8174,25 +8174,6 @@ let nextMatch = hasMatch === true;
 let nextStatus = hasMatch === true ? "accepted" : "pending";
 let nextFolder = hasMatch === true ? "inbox" : "requests";
 
-try {
-  const chatSnap = await db.collection("chats").doc(chatId).get();
-  const chatData = chatSnap && chatSnap.exists ? (chatSnap.data() || {}) : {};
-
-  const wasPendingRequest =
-    chatData.status === "pending" &&
-    chatData.folder === "requests" &&
-    chatData.lastSenderUid &&
-    chatData.lastSenderUid !== selfUid;
-
-  if (wasPendingRequest) {
-    nextMatch = true;
-    nextStatus = "accepted";
-    nextFolder = "inbox";
-  }
-} catch (e) {
-  console.error("read chat status failed:", e);
-}
-
 await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
 
