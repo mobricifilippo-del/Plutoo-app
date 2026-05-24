@@ -2795,8 +2795,12 @@ if (!snap || snap.empty) {
   </div>
 
   <button class="msg-delete-btn" title="Elimina chat">
-    🗑️
-  </button>
+  🗑️
+</button>
+
+<button class="msg-spam-btn" title="Spam">
+  🚫
+</button>
 `;
 
   const deleteBtn = row.querySelector(".msg-delete-btn");
