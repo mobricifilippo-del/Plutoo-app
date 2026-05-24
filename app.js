@@ -2847,6 +2847,49 @@ deleteBtn?.addEventListener("click", async (e) => {
   }
 });
 
+    const spamBtn = row.querySelector(".msg-spam-btn");
+
+spamBtn?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const selfUid = String(window.PLUTOO_UID || "");
+  if (!selfUid || !chatId) return;
+
+  const ok = await showPlutooConfirm(
+    "Spostare questa chat nello Spam?",
+    {
+      title: "Plutoo",
+      confirmText: "Spam",
+      cancelText: "Annulla",
+      danger: false
+    }
+  );
+
+  if (!ok) return;
+
+  try {
+    await db.collection("chats").doc(chatId).set({
+      spamByUid: {
+        [selfUid]: true
+      }
+    }, { merge: true });
+
+    loadMessagesLists();
+
+    if (typeof showToast === "function") {
+      showToast("🚫 Chat spostata in Spam");
+    }
+
+  } catch (err) {
+    console.error("spam chat error:", err);
+
+    if (typeof showToast === "function") {
+      showToast("❌ Errore spostamento Spam");
+    }
+  }
+});
+
   row.addEventListener("click", () => {
     state._openChatFromTab = sourceTab || "";
     openChat(chatId, dogId, otherUid);
