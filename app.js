@@ -2894,8 +2894,6 @@ spamBtn?.addEventListener("click", async (e) => {
   }
 });
 
-     const spamBtn = row.querySelector(".msg-spam-btn");
-
 spamBtn?.addEventListener("click", async (e) => {
   e.preventDefault();
   e.stopPropagation();
