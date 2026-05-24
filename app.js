@@ -2744,9 +2744,9 @@ if (!snap || snap.empty) {
   avatars: data.avatars || {},
   dogIds: data.dogIds || {},
   status: data.status || null,
-  match: data.match === true,
   folder: data.folder || null,
-  spam: data.spam === true
+  spam: data.spam === true,
+  deletedByUid: data.deletedByUid || {}
 });
 });
 
