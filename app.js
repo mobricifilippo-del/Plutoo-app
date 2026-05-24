@@ -2786,13 +2786,17 @@ if (!snap || snap.empty) {
   }
 
   row.innerHTML = `
-    ${avatar}
-    <div class="msg-main">
-      <div class="msg-title">${nameLine}</div>
-      ${previewLine ? `<div class="msg-preview">${previewLine}</div>` : ``}
-      <div class="msg-meta">${dateText}</div>
-    </div>
-  `;
+  ${avatar}
+  <div class="msg-main">
+    <div class="msg-title">${nameLine}</div>
+    ${previewLine ? `<div class="msg-preview">${previewLine}</div>` : ``}
+    <div class="msg-meta">${dateText}</div>
+  </div>
+
+  <button class="msg-delete-btn" title="Elimina chat">
+    🗑️
+  </button>
+`;
 
   row.addEventListener("click", () => {
     state._openChatFromTab = sourceTab || "";
