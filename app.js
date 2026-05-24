@@ -8201,8 +8201,12 @@ await db.collection("chats").doc(chatId).set({
   lastSenderUid: selfUid,
 
   match: nextMatch,
-  status: nextStatus,
-  folder: nextFolder
+status: nextStatus,
+folder: nextFolder,
+
+deletedByUid: {
+  [otherUid]: firebase.firestore.FieldValue.delete()
+}
 
 }, { merge: true });
 
