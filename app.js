@@ -2798,6 +2798,54 @@ if (!snap || snap.empty) {
   </button>
 `;
 
+  const deleteBtn = row.querySelector(".msg-delete-btn");
+
+deleteBtn?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const selfUid = String(window.PLUTOO_UID || "");
+  if (!selfUid || !chatId) return;
+
+  const ok = await showPlutooConfirm(
+    "Eliminare questa chat dalla tua lista?",
+    {
+      title: "Plutoo",
+      confirmText: "Elimina",
+      cancelText: "Annulla",
+      danger: false
+    }
+  );
+
+  if (!ok) return;
+
+  try {
+
+    await db.collection("chats").doc(chatId).set({
+      deletedByUid: {
+        [selfUid]: true
+      }
+    }, { merge: true });
+
+    loadMessagesLists();
+
+    try {
+      initMessagesBadge();
+    } catch (_) {}
+
+    if (typeof showToast === "function") {
+      showToast("🗑️ Chat eliminata");
+    }
+
+  } catch (err) {
+    console.error("delete chat error:", err);
+
+    if (typeof showToast === "function") {
+      showToast("❌ Errore eliminazione chat");
+    }
+  }
+});
+
   row.addEventListener("click", () => {
     state._openChatFromTab = sourceTab || "";
     openChat(chatId, dogId, otherUid);
