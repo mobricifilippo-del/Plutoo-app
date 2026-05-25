@@ -2874,11 +2874,6 @@ display: none !important;
   background:rgba(255,64,129,.95);
 }
 
-/* Nasconde la vecchia barra like sotto al profilo cane */
-.profile-like-btn{
-  display: none !important;
-}
-
 /* ===== STORY VIEWER – BACK BUTTON PILL ===== */
 .story-back-btn {
   background: rgba(0,0,0,0.55);
