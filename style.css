@@ -1579,10 +1579,6 @@ padding:24px;
 }
 
 .f-gold{position:relative}
-.lock-icon{
-  position:absolute;right:.6rem;top:50%;transform:translateY(-50%);
-  font-size:1.1rem;pointer-events:none;
-}
 
 .suggestions{
   background:var(--panel);border:1px solid var(--violet);border-radius:10px;
