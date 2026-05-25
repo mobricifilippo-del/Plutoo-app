@@ -1906,10 +1906,11 @@ padding:24px;
 .modal-body .btn{margin:.5rem auto;display:block;width:100%;max-width:320px}
 
 /* ================= UPLOAD STORY MODAL ================= */
-.story-upload-modal{max-width:540px}
+.upload-story-modal{max-width:540px}
 .story-modal-title{
   font-size:1.4rem;font-weight:900;color:#B4A0FF;margin:0 0 1.2rem 0;text-align:center;
 }
+
 .upload-step{display:none}
 .upload-step.active{display:block}
 .upload-zone{
@@ -1917,22 +1918,27 @@ padding:24px;
   text-align:center;background:rgba(138,123,255,.05);cursor:pointer;
   transition:all .3s ease;margin-bottom:1.2rem;
 }
+
 .upload-zone:hover{
   border-color:rgba(138,123,255,.7);background:rgba(138,123,255,.12);
 }
+
 .upload-label{cursor:pointer;display:block}
 .upload-icon{font-size:3.5rem;margin-bottom:.8rem}
 .upload-text{
   font-size:1.05rem;font-weight:700;color:#F8F8F8;margin-bottom:.5rem;
 }
+
 .upload-hint{font-size:.88rem;color:#B0B0B0}
 .upload-preview{
   margin-top:1.2rem;border-radius:16px;overflow:hidden;background:#000;
   max-height:400px;display:flex;align-items:center;justify-content:center;
 }
+
 .upload-preview img,.upload-preview video{
   width:100%;height:auto;max-height:400px;object-fit:cover;
 }
+
 .story-customize{display:flex;flex-direction:column;gap:1.5rem;padding:1rem 0}
 .customize-section{display:flex;flex-direction:column;gap:.8rem}
 .customize-title{font-size:1.05rem;font-weight:800;color:#F8F8F8;margin:0}
@@ -1940,27 +1946,33 @@ padding:24px;
 .filters-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.7rem;
 }
+
 .filter-btn{
   display:flex;flex-direction:column;align-items:center;gap:.4rem;
   background:rgba(138,123,255,.08);border:2px solid transparent;border-radius:12px;
   padding:.6rem .4rem;cursor:pointer;transition:all .2s ease;
   font-size:.8rem;color:#B0B0B0;
 }
+
 .filter-btn:hover{
   background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.3);
 }
+
 .filter-btn.active{
   border-color:#8A7BFF;background:rgba(138,123,255,.2);color:#F8F8F8;
   box-shadow:0 0 12px rgba(138,123,255,.3);
 }
+
 .filter-btn.locked{opacity:.5;cursor:not-allowed;position:relative}
 .filter-btn.locked::after{
   content:"🔒";position:absolute;top:.3rem;right:.3rem;font-size:.9rem;
 }
+
 .filter-preview{
   width:60px;height:60px;border-radius:8px;
   background:linear-gradient(135deg,#121226,#18182A);
 }
+
 .story-select{
   width:100%;padding:.7rem .9rem;background:rgba(138,123,255,.08);
   border:1px solid rgba(138,123,255,.3);border-radius:12px;color:#F8F8F8;
