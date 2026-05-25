@@ -1915,9 +1915,6 @@ padding:24px;
 
 .upload-label{cursor:pointer;display:block}
 .upload-icon{font-size:3.5rem;margin-bottom:.8rem}
-.upload-text{
-  font-size:1.05rem;font-weight:700;color:#F8F8F8;margin-bottom:.5rem;
-}
 
 .upload-hint{font-size:.88rem;color:#B0B0B0}
 .upload-preview{
