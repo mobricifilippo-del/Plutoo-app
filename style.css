@@ -2848,32 +2848,6 @@ display: none !important;
   text-decoration:underline;
 }
 
-/* ================= LIKE FOTO PROFILO ================= */
-.photo-like-btn{
-  position:absolute;
-  bottom:1.4rem;
-  left:50%;
-  transform:translateX(-50%) scale(1);
-  background:rgba(0,0,0,.8);
-  backdrop-filter:blur(10px);
-  border-radius:999px;
-  border:0;
-  padding:.6rem 1.1rem;
-  color:#fff;
-  font-size:1.25rem;
-  font-weight:700;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 10px 30px rgba(0,0,0,.45);
-  cursor:pointer;
-  z-index:9999;
-}
-
-.photo-like-btn.liked{
-  background:rgba(255,64,129,.95);
-}
-
 /* ===== STORY VIEWER – BACK BUTTON PILL ===== */
 .story-back-btn {
   background: rgba(0,0,0,0.55);
