@@ -2322,11 +2322,18 @@ if (chat.spamByUid && chat.spamByUid[uid] === true) {
         }
 
         const lastSenderUid = String(chat.lastSenderUid || "");
-        const lastMessageRead = chat.lastMessageRead === true || chat.isRead === true;
 
-        if (lastSenderUid && lastSenderUid !== uid && !lastMessageRead) {
-          unread += 1;
-        }
+const readMap =
+  chat.lastMessageReadByUid &&
+  typeof chat.lastMessageReadByUid === "object"
+    ? chat.lastMessageReadByUid
+    : {};
+
+const alreadyRead = readMap[uid] === true;
+
+if (lastSenderUid && lastSenderUid !== uid && !alreadyRead) {
+  unread += 1;
+}
       });
 
       __setMsgBadge(unread);
