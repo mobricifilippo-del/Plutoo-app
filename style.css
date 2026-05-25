@@ -795,12 +795,6 @@ padding: 0 .5rem;
 
 .story-nav-prev{left:0}
 .story-nav-next{right:0}
-.story-privacy-badge{
-  position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
-  padding:.5rem .9rem;border-radius:20px;font-size:.85rem;color:#fff;
-  border:1px solid rgba(138,123,255,.4);
-}
 
 .story-like-btn{
   position:absolute;
