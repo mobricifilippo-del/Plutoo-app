@@ -8223,7 +8223,7 @@ if (typeof loadMessagesLists === "function") loadMessagesLists();
 
 // Contatore coerente
 state.chatMessagesSent[safeDogId] =
-  (state.chatMessagesSent[safeDogId] || 0) + 1;
+  (msgCount || 0) + 1;
 
 localStorage.setItem(
   "chatMessagesSent",
