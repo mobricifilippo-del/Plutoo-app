@@ -2908,6 +2908,41 @@ spamBtn?.addEventListener("click", async (e) => {
   }
 });
 
+     const restoreBtn = row.querySelector(".msg-restore-btn");
+
+restoreBtn?.addEventListener("click", async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const selfUid = String(window.PLUTOO_UID || "");
+  if (!selfUid || !chatId) return;
+
+  try {
+    await db.collection("chats").doc(chatId).set({
+      spamByUid: {
+        [selfUid]: firebase.firestore.FieldValue.delete()
+      }
+    }, { merge: true });
+
+    loadMessagesLists();
+
+    try {
+      initMessagesBadge();
+    } catch (_) {}
+
+    if (typeof showToast === "function") {
+      showToast("↩️ Chat ripristinata");
+    }
+
+  } catch (err) {
+    console.error("restore chat error:", err);
+
+    if (typeof showToast === "function") {
+      showToast("❌ Errore ripristino chat");
+    }
+  }
+});
+
   row.addEventListener("click", () => {
     state._openChatFromTab = sourceTab || "";
     openChat(chatId, dogId, otherUid);
