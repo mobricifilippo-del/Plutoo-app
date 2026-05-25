@@ -8190,6 +8190,10 @@ let nextFolder = hasMatch === true ? "inbox" : "requests";
 await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
 
+  messageCountByUid: {
+  [selfUid]: (msgCount || 0) + 1
+},
+
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
   lastSenderUid: selfUid,
