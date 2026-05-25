@@ -362,9 +362,7 @@ a{color:inherit;text-decoration:none}
 }
 
 /* Bottone PLUS */
-.search-plus-wrapper{
-  display:flex;flex-direction:column;align-items:center;gap:.45rem;width:100%;
-}
+
 .btn.plus-btn{
   display:inline-flex;align-items:center;gap:.4rem;
   background:linear-gradient(135deg,#E8CE7A,#CDA434);
@@ -372,10 +370,12 @@ a{color:inherit;text-decoration:none}
   padding:.5rem 1.25rem;border-radius:12px;font-size:.88rem;
   box-shadow:0 4px 12px rgba(205,164,52,.35), inset 0 0 0 1px rgba(255,255,255,.25);
 }
+
 .btn.plus-btn:hover{
   filter:brightness(1.08);
   box-shadow:0 6px 16px rgba(205,164,52,.45), inset 0 0 0 1px rgba(255,255,255,.35);
 }
+
 .plus-icon{font-size:1.1rem;line-height:1}
 
 /* Cerchi swipe */
@@ -388,6 +388,7 @@ a{color:inherit;text-decoration:none}
   box-shadow:0 0 20px rgba(138,123,255,.3) inset, 0 0 24px rgba(138,123,255,.2);
   color:var(--violet-glow);transition:all .2s ease;
 }
+
 .btn.no:hover,.btn.yes:hover{
   border-color:rgba(138,123,255,.65);
   box-shadow:0 0 28px rgba(138,123,255,.4) inset, 0 0 32px rgba(138,123,255,.3);
