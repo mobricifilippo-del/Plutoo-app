@@ -1915,12 +1915,14 @@ padding:24px;
   margin-top:auto;padding:1rem;border-top:1px solid var(--line);text-align:center;
   background:rgba(18,18,38,.85);backdrop-filter:blur(6px);
 }
-.sponsor-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+
 .sponsor-title{font-weight:800;color:var(--gold);font-size:1.05rem}
+
 .sponsor-logo{
   width:56px;height:56px;object-fit:contain;border-radius:12px;
   background:#fff;margin:.3rem auto;
 }
+
 .sponsor-copy{color:var(--muted);font-size:.93rem}
 
 .ad-banner{
