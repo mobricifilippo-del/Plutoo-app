@@ -1926,36 +1926,6 @@ padding:24px;
   width:100%;height:auto;max-height:400px;object-fit:cover;
 }
 
-.filters-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.7rem;
-}
-
-.filter-btn{
-  display:flex;flex-direction:column;align-items:center;gap:.4rem;
-  background:rgba(138,123,255,.08);border:2px solid transparent;border-radius:12px;
-  padding:.6rem .4rem;cursor:pointer;transition:all .2s ease;
-  font-size:.8rem;color:#B0B0B0;
-}
-
-.filter-btn:hover{
-  background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.3);
-}
-
-.filter-btn.active{
-  border-color:#8A7BFF;background:rgba(138,123,255,.2);color:#F8F8F8;
-  box-shadow:0 0 12px rgba(138,123,255,.3);
-}
-
-.filter-btn.locked{opacity:.5;cursor:not-allowed;position:relative}
-.filter-btn.locked::after{
-  content:"🔒";position:absolute;top:.3rem;right:.3rem;font-size:.9rem;
-}
-
-.filter-preview{
-  width:60px;height:60px;border-radius:8px;
-  background:linear-gradient(135deg,#121226,#18182A);
-}
-
 .story-actions{display:flex;gap:.7rem;margin-top:1.5rem}
 .story-actions .btn{flex:1}
 
