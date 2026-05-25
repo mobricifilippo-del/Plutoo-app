@@ -1962,23 +1962,7 @@ padding:24px;
   width:60px;height:60px;border-radius:8px;
   background:linear-gradient(135deg,#121226,#18182A);
 }
-                  
-.privacy-options{display:flex;flex-direction:column;gap:.7rem}
-.privacy-option{cursor:pointer}
-.privacy-option input[type="radio"]{display:none}
-.privacy-card{
-  display:flex;align-items:center;gap:.8rem;padding:.9rem 1rem;
-  background:rgba(138,123,255,.08);border:2px solid transparent;
-  border-radius:12px;transition:all .2s ease;
-}
-.privacy-option input:checked + .privacy-card{
-  border-color:#8A7BFF;background:rgba(138,123,255,.2);
-  box-shadow:0 0 12px rgba(138,123,255,.3);
-}
-.privacy-icon{font-size:1.8rem;line-height:1}
-.privacy-info{display:flex;flex-direction:column;gap:.2rem}
-.privacy-info strong{font-size:.98rem;font-weight:700;color:#F8F8F8}
-.privacy-info span{font-size:.85rem;color:#B0B0B0}
+
 .story-actions{display:flex;gap:.7rem;margin-top:1.5rem}
 .story-actions .btn{flex:1}
 
