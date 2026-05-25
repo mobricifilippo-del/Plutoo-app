@@ -1083,10 +1083,6 @@ body.story-open #storiesBar {
   }
 }
 
-.pp-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:.4rem 0 .7rem 0}
-
-.pp-name{font-size:1.5rem;font-weight:900;color:var(--violet-glow);margin:0}
-
 .pp-badges{
   display:flex;
   gap:.55rem;
