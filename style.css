@@ -1901,10 +1901,6 @@ padding:24px;
 }
 
 /* ================= SPONSOR / BANNER ================= */
-.sponsor{
-  margin-top:auto;padding:1rem;border-top:1px solid var(--line);text-align:center;
-  background:rgba(18,18,38,.85);backdrop-filter:blur(6px);
-}
 
 .sponsor-title{font-weight:800;color:var(--gold);font-size:1.05rem}
 
