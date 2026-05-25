@@ -1968,16 +1968,7 @@ padding:24px;
   width:60px;height:60px;border-radius:8px;
   background:linear-gradient(135deg,#121226,#18182A);
 }
-
-.story-select{
-  width:100%;padding:.7rem .9rem;background:rgba(138,123,255,.08);
-  border:1px solid rgba(138,123,255,.3);border-radius:12px;color:#F8F8F8;
-  font-size:.95rem;cursor:pointer;transition:all .2s ease;
-}
-.story-select:hover,.story-select:focus{
-  background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.5);outline:none;
-}
-.story-select option{background:#18182A;color:#F8F8F8}
+                  
 .privacy-options{display:flex;flex-direction:column;gap:.7rem}
 .privacy-option{cursor:pointer}
 .privacy-option input[type="radio"]{display:none}
