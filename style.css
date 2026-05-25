@@ -1593,7 +1593,6 @@ padding:24px;
 
 .panel-actions{display:flex;gap:.7rem;margin-top:1.2rem}
 .panel-actions .btn{flex:1}
-.hint{font-size:.88rem;color:var(--muted);text-align:center;margin-top:.8rem}
 
 /* ================= MODALE ================= */
 .modal{
