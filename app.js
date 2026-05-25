@@ -7954,7 +7954,8 @@ if (selfUid && otherUid) {
 
   // Funzione locale per applicare le regole input (UNA sola fonte: hasMatch vero/falso)
   const applyChatRules = (hasMatchValue) => {
-    const msgCount = state.chatMessagesSent[dogId] || 0;
+  const msgCount =
+  Number(chatPane.dataset.msgCount || 0);
 
     if (!state.plus && !hasMatchValue && msgCount >= 1) {
       chatInput.disabled = true;
@@ -7981,6 +7982,10 @@ if (selfUid && otherUid) {
         const fsHasMatch = data.match === true;
 
         chatPane.dataset.hasMatch = fsHasMatch ? "1" : "0";
+        chatPane.dataset.msgCount =
+       String(data.messageCountByUid && data.messageCountByUid[window.PLUTOO_UID]
+    ? data.messageCountByUid[window.PLUTOO_UID]
+    : 0);
 
         // opzionale: aggiorna cache locale senza decidere nulla
         if (state.matches) {
