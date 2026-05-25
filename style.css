@@ -1926,7 +1926,6 @@ padding:24px;
   width:100%;height:auto;max-height:400px;object-fit:cover;
 }
 
-.story-customize{display:flex;flex-direction:column;gap:1.5rem;padding:1rem 0}
 .customize-section{display:flex;flex-direction:column;gap:.8rem}
 .customize-title{font-size:1.05rem;font-weight:800;color:#F8F8F8;margin:0}
 
