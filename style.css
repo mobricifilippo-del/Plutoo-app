@@ -1966,12 +1966,6 @@ padding:24px;
 .story-actions{display:flex;gap:.7rem;margin-top:1.5rem}
 .story-actions .btn{flex:1}
 
-/* CSS Filters */
-.filter-none{filter:none}
-.filter-grayscale{filter:grayscale(1)}
-.filter-sepia{filter:sepia(1)}
-.filter-warm{filter:sepia(.3) saturate(1.3) brightness(1.1)}
-
 /* ================= REWARD VIDEO MODAL ================= */
 .reward-modal{max-width:400px}
 .reward-title{color:#B4A0FF;font-size:1.3rem;margin:0 0 1rem 0;text-align:center}
