@@ -1587,9 +1587,6 @@ padding:24px;
 .suggestions .item{padding:.55rem .75rem;cursor:pointer;font-size:.9rem}
 .suggestions .item:hover{background:rgba(138,123,255,.12)}
 
-.panel-actions{display:flex;gap:.7rem;margin-top:1.2rem}
-.panel-actions .btn{flex:1}
-
 /* ================= MODALE ================= */
 .modal{
   position:fixed;inset:0;z-index:2000;
