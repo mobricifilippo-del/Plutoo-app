@@ -7950,9 +7950,11 @@ if (selfUid && otherUid) {
           const m = docSnap.data() || {};
           if (m.senderUid && m.senderUid !== selfUid) {
             docSnap.ref.update({
-              isRead: true,
-              readAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(() => {});
+  isRead: true,
+  readAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+  [`lastMessageReadByUid.${selfUid}`]: true
+}).catch(() => {});
           }
         });
       })
