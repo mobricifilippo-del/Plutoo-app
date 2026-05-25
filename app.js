@@ -3363,15 +3363,6 @@ btnDogBoardBack?.addEventListener("click", () => {
         state.entered=false;
         appScreen.classList.add("hidden");
         homeScreen.classList.remove("hidden");
-
-        document.documentElement.style.overflowY = "hidden";
-        document.body.style.overflowY = "hidden";
-
-        if (appScreen) {
-          appScreen.style.minHeight = "";
-          appScreen.style.height = "";
-          appScreen.style.overflow = "";
-        }
    }
     }
 
