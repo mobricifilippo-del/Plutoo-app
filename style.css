@@ -1574,6 +1574,9 @@ padding:24px;
 }
 .f input:disabled,.f select:disabled{opacity:.5;cursor:not-allowed}
 
+.f-row{display:flex;gap:.7rem}
+.f-row .f{flex:1;margin-top:.7rem}
+
 .f.switch{
   flex-direction:row;align-items:center;justify-content:space-between;
   padding:.6rem .8rem;border-radius:10px;background:rgba(138,123,255,.06);
