@@ -1851,11 +1851,6 @@ padding:24px;
   margin-left:.25rem;
 }
 
-.plan-period{
-  font-size:1rem;
-  color:var(--muted);
-}
-
 .modal-body .btn{margin:.5rem auto;display:block;width:100%;max-width:320px}
 
 /* ================= UPLOAD STORY MODAL ================= */
