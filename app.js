@@ -7950,6 +7950,13 @@ if (selfUid && otherUid) {
         });
       })
       .catch((e) => console.error("mark read failed:", e));
+    window.db.collection("chats").doc(chatId).set({
+  lastMessageReadByUid: {
+    [selfUid]: true
+  }
+}, { merge: true }).catch((e) => {
+  console.error("mark chat read failed:", e);
+});
   }
 
   // Funzione locale per applicare le regole input (UNA sola fonte: hasMatch vero/falso)
