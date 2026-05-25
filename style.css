@@ -401,10 +401,10 @@ a{color:inherit;text-decoration:none}
 
 /* ================= HOME ================= */
 .home{
-  min-height:auto;
+  min-height:100vh;
   display:flex;
   flex-direction:column;
-  margin-bottom: 80px;
+  margin-bottom:0;
   padding:1.2rem;
 }
 
