@@ -2806,9 +2806,15 @@ if (!snap || snap.empty) {
   🗑️
 </button>
 
-<button class="msg-spam-btn" title="Spam">
-  🚫
-</button>
+${sourceTab === "spam" ? `
+  <button class="msg-restore-btn" title="Ripristina">
+    ↩️
+  </button>
+` : `
+  <button class="msg-spam-btn" title="Spam">
+    🚫
+  </button>
+`}
 `;
 
   const deleteBtn = row.querySelector(".msg-delete-btn");
