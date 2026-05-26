@@ -2568,18 +2568,17 @@ display: none !important;
    INSTAGRAM-LIKE LIST (msg-item)
    =============================== */
 
-/* riga chat */
-.msg-item{
+ .msg-item{
   display:flex;
   align-items:center;
   gap:12px;
-  padding:12px 12px;
+  padding:11px 12px;
   border-radius:18px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  margin-bottom:10px;
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.10);
+  margin-bottom:9px;
   cursor:pointer;
-  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+  transition:transform .15s ease, background .2s ease, border-color .2s ease;
   overflow:hidden;
   position:relative;
 }
@@ -2590,7 +2589,7 @@ display: none !important;
   width:100%;
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:11px;
   transition:transform .18s ease;
   will-change:transform;
 }
@@ -2630,41 +2629,52 @@ display: none !important;
 }
 
 .msg-item:hover{
-  background: rgba(255,255,255,0.085);
-  border-color: rgba(177,154,255,0.28);
+  background:rgba(255,255,255,0.08);
+  border-color:rgba(177,154,255,0.26);
 }
 
 .msg-item:active{
-  transform: scale(0.99);
+  transform:scale(0.99);
 }
 
-/* blocco testo */
 .msg-main{
   flex:1;
   min-width:0;
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:3px;
 }
 
-/* titolo (nome + preview) */
 .msg-title{
-  color: rgba(255,255,255,0.92);
-  font-weight:800;
-  font-size: 0.98rem;
-  line-height:1.2;
-  margin-bottom:4px;
+  color:rgba(255,255,255,0.96);
+  font-weight:900;
+  font-size:.98rem;
+  line-height:1.15;
+  letter-spacing:.1px;
   overflow:hidden;
-  text-overflow: ellipsis;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
 
-/* meta (data/ora) */
-.msg-meta{
-  color: rgba(255,255,255,0.55);
-  font-size: 0.82rem;
-  white-space: nowrap;
+.msg-preview{
+  color:rgba(255,255,255,0.62);
+  font-weight:650;
+  font-size:.84rem;
+  line-height:1.18;
+  white-space:nowrap;
   overflow:hidden;
-  text-overflow: ellipsis;
+  text-overflow:ellipsis;
+  max-width:100%;
+}
+
+.msg-meta{
+  color:rgba(255,255,255,0.38);
+  font-size:.68rem;
+  line-height:1;
+  margin-top:3px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 /* separatore super leggero “tipo DM” */
