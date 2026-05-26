@@ -3142,6 +3142,7 @@ msgLists.forEach((list) => {
   msgTopTabs.forEach((btn) => {
   btn.addEventListener("click", () => {
     const targetId = btn.dataset.tab;
+    if (!targetId) return;
 
     // 🔒 MEMORIZZA DA QUALE TAB ARRIVO (logica DEFINITIVA)
     switch (targetId) {
