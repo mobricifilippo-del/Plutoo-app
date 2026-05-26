@@ -2811,19 +2811,21 @@ if (!snap || snap.empty) {
     </div>
   </div>
 
-  <button class="msg-delete-btn" title="Elimina chat">
-  🗑️
-</button>
+  <div class="msg-swipe-actions">
+    <button class="msg-delete-btn" title="Elimina chat">
+      🗑️
+    </button>
 
-${sourceTab === "spam" ? `
-  <button class="msg-restore-btn" title="Ripristina">
-    ↩️
-  </button>
-` : `
-  <button class="msg-spam-btn" title="Spam">
-    🚫
-  </button>
-`}
+    ${sourceTab === "spam" ? `
+      <button class="msg-restore-btn" title="Ripristina">
+        ↩️
+      </button>
+    ` : `
+      <button class="msg-spam-btn" title="Spam">
+        🚫
+      </button>
+    `}
+  </div>
 `;
 
   const deleteBtn = row.querySelector(".msg-delete-btn");
