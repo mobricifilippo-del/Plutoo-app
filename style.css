@@ -2563,6 +2563,8 @@ display: none !important;
   justify-content:flex-end;
   gap:6px;
   padding:6px;
+  opacity:0;
+  pointer-events:none;
 }
 
 .msg-swipe-actions button{
@@ -2576,6 +2578,11 @@ display: none !important;
 
 .msg-item.swipe-open .msg-swipe-front{
   transform:translateX(-116px);
+}
+
+.msg-item.swipe-open .msg-swipe-actions{
+  opacity:1;
+  pointer-events:auto;
 }
 
 .msg-item:hover{
