@@ -1051,16 +1051,6 @@ body.story-open #storiesBar {
   z-index:1502;
 }
 
-.ad-banner-profile{
-  min-height:52px;
-  border:1px dashed rgba(255,255,255,.12);
-  border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--muted);
-  font-size:.9rem;
-  background:rgba(18,18,38,.5);
-}
-
 .pp-hero{
   border-radius:16px;
   overflow:hidden;
