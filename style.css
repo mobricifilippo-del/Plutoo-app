@@ -1106,8 +1106,6 @@ body.story-open #storiesBar {
   }
 }
 
-.pp-name{font-size:1.5rem;font-weight:900;color:var(--violet-glow);margin:0}
-
 .pp-badges{
   display:flex;
   gap:.55rem;
