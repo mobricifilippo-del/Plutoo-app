@@ -1666,8 +1666,6 @@ padding:24px;
 .suggestions .item{padding:.55rem .75rem;cursor:pointer;font-size:.9rem}
 .suggestions .item:hover{background:rgba(138,123,255,.12)}
 
-.panel-actions{display:flex;gap:.7rem;margin-top:1.2rem}
-.panel-actions .btn{flex:1}
 .hint{font-size:.88rem;color:var(--muted);text-align:center;margin-top:.8rem}
 
 /* ================= MODALE ================= */
