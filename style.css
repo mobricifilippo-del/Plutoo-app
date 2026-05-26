@@ -1030,11 +1030,6 @@ body.story-open #storiesBar {
   box-sizing: border-box; /* AGGIUNTO */
 }
 
-.profile-title{
-  flex:1;text-align:center;font-weight:800;font-size:1.05rem;
-  color:var(--violet-glow);
-}
-
 .profile-content{
   flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:1rem;padding-bottom:72px;
