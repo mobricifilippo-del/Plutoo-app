@@ -1973,7 +1973,7 @@ padding:24px;
 }
 
 .chat-pane-inner{
-  background:var(--panel);
+  background:rgba(138,123,255,.12);
   border:2px solid var(--violet);
   border-radius:20px;
   width:100%;
