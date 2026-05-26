@@ -2688,8 +2688,8 @@ if (notifBtn && notifOverlay) {
   }
 }
 
-const msgTopTabs  = qa(".msg-top-tab");
-const msgLists    = qa(".messages-list");
+const msgTopTabs  = qa("#viewMessages .msg-top-tab");
+const msgLists    = qa("#viewMessages .messages-list");
 
 async function loadMessagesLists() { 
   try { 
