@@ -5058,7 +5058,7 @@ profileContent.innerHTML = `
         `
         : `
 
-        <img src="${heroImg}" alt="${d.name}" loading="eager" fetchpriority="high" decoding="sync" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;cursor:pointer;">
+  <img src="${heroImg}" alt="${d.name}" loading="eager" fetchpriority="high" decoding="sync" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';" style="width:100%;height:100%;object-fit:${isFallbackPhoto ? "contain" : "cover"};object-position:center;background:#0b0b0f;padding:${isFallbackPhoto ? "24px" : "0"};display:block;cursor:${isFallbackPhoto ? "default" : "pointer"};">
 
         `
     }
