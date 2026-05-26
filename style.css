@@ -363,9 +363,6 @@ a{color:inherit;text-decoration:none}
 }
 
 /* Bottone PLUS */
-.search-plus-wrapper{
-  display:flex;flex-direction:column;align-items:center;gap:.45rem;width:100%;
-}
 .btn.plus-btn{
   display:inline-flex;align-items:center;gap:.4rem;
   background:linear-gradient(135deg,#E8CE7A,#CDA434);
