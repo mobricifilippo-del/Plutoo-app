@@ -2952,10 +2952,102 @@ restoreBtn?.addEventListener("click", async (e) => {
   }
 });
 
-  row.addEventListener("click", () => {
+  let startX = 0;
+  let startY = 0;
+  let movedX = 0;
+  let movedY = 0;
+  let isSwipeLocked = false;
+  let blockNextClick = false;
+
+  const closeOtherSwipeRows = () => {
+    document.querySelectorAll(".msg-item.swipe-open").forEach((el) => {
+      if (el !== row) el.classList.remove("swipe-open");
+    });
+  };
+
+  row.addEventListener("touchstart", (e) => {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+
+    startX = t.clientX;
+    startY = t.clientY;
+    movedX = 0;
+    movedY = 0;
+    isSwipeLocked = false;
+    blockNextClick = false;
+  }, { passive: true });
+
+  row.addEventListener("touchmove", (e) => {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+
+    movedX = t.clientX - startX;
+    movedY = t.clientY - startY;
+
+    if (!isSwipeLocked && Math.abs(movedX) > 18 && Math.abs(movedX) > Math.abs(movedY) * 1.4) {
+      isSwipeLocked = true;
+    }
+
+    if (!isSwipeLocked) return;
+
+    if (movedX < -28) {
+      blockNextClick = true;
+      closeOtherSwipeRows();
+      row.classList.add("swipe-open");
+      e.preventDefault();
+    }
+
+    if (movedX > 28) {
+      blockNextClick = true;
+      row.classList.remove("swipe-open");
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  row.addEventListener("touchend", () => {
+    if (isSwipeLocked && movedX < -36) {
+      blockNextClick = true;
+      closeOtherSwipeRows();
+      row.classList.add("swipe-open");
+    }
+
+    if (isSwipeLocked && movedX > 24) {
+      blockNextClick = true;
+      row.classList.remove("swipe-open");
+    }
+
+    setTimeout(() => {
+      blockNextClick = false;
+    }, 180);
+  }, { passive: true });
+
+  row.addEventListener("click", (e) => {
+    if (blockNextClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    if (e.target && e.target.closest && e.target.closest(".msg-swipe-actions")) {
+      return;
+    }
+
     state._openChatFromTab = sourceTab || "";
     openChat(chatId, dogId, otherUid);
   });
+
+  if (!window.__msgSwipeOutsideBound) {
+    window.__msgSwipeOutsideBound = true;
+
+    document.addEventListener("click", (e) => {
+      const target = e.target;
+      if (target && target.closest && target.closest(".msg-item")) return;
+
+      document.querySelectorAll(".msg-item.swipe-open").forEach((el) => {
+        el.classList.remove("swipe-open");
+      });
+    });
+  }
 
   return row;
 };
