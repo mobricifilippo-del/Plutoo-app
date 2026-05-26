@@ -2045,10 +2045,10 @@ padding:24px;
   max-width:82%;
   padding:.72rem .92rem;
   border-radius:18px 18px 18px 6px;
-  background:rgba(255,255,255,.075);
-  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(135deg,#8A7BFF 0%,#5B4FE8 100%);
+  border:1px solid rgba(255,255,255,.14);
   color:#fff;
-  box-shadow:0 6px 16px rgba(0,0,0,.28);
+  box-shadow:0 6px 16px rgba(138,123,255,.22);
   font-size:1rem;
   line-height:1.38;
   word-break:break-word;
@@ -2059,10 +2059,10 @@ padding:24px;
   max-width:74%;
   padding:.58rem .78rem;
   border-radius:18px 18px 6px 18px;
-  background:linear-gradient(135deg,#8A7BFF 0%,#5B4FE8 100%);
-  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.075);
+  border:1px solid rgba(255,255,255,.10);
   color:#fff;
-  box-shadow:0 6px 16px rgba(138,123,255,.22);
+  box-shadow:0 6px 16px rgba(0,0,0,.28);
 }
 
 .msg-text{
