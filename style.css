@@ -3121,12 +3121,6 @@ display: none !important;
 
 /* ===== AVATAR MESSAGGI (STILE INSTAGRAM) ===== */
 
-.msg-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
 .msg-avatar {
   width: 52px;
   height: 52px;
