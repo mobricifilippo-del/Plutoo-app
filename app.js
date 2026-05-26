@@ -2802,6 +2802,7 @@ if (!snap || snap.empty) {
   }
 
   row.innerHTML = `
+  <div class="msg-swipe-front">
   ${avatar}
   <div class="msg-main">
     <div class="msg-title">${nameLine}</div>
