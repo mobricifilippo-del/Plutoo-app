@@ -5509,10 +5509,13 @@ if (isCreate) {
   } else {
     
     // PROFILO: hero img / gallery / selfie cliccabili
-const heroImgEl = profileContent.querySelector(".pp-hero img");
+
+    const heroImgEl = profileContent.querySelector(".pp-hero img");
 if (heroImgEl) {
 heroImgEl.addEventListener("click", () => {
-openPlutooImageViewer(heroImgEl.getAttribute("src"));
+const src = heroImgEl.getAttribute("src") || "";
+if (isFallbackPhoto || src === "./plutoo-icon-192.png") return;
+openPlutooImageViewer(src);
 });
 }
 
