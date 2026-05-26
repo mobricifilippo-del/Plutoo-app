@@ -2808,6 +2808,7 @@ if (!snap || snap.empty) {
     <div class="msg-title">${nameLine}</div>
     ${previewLine ? `<div class="msg-preview">${previewLine}</div>` : ``}
     <div class="msg-meta">${dateText}</div>
+    </div>
   </div>
 
   <button class="msg-delete-btn" title="Elimina chat">
