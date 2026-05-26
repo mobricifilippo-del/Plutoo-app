@@ -8011,6 +8011,23 @@ if (selfUid && otherUid) {
   dog = dog || (DOGS.find(d => d.id === dogId) || null);
   const dogName = (dog && dog.name) || (state.lang === "en" ? "DOG" : "Dog");
 
+  const chatDogName = document.getElementById("chatDogName");
+const chatDogAvatar = document.getElementById("chatDogAvatar");
+
+if (chatDogName) {
+  chatDogName.textContent = dogName;
+}
+
+if (chatDogAvatar) {
+  const avatarSrc = String(
+    (dog && (dog.img || dog.avatar || dog.photoUrl)) ||
+    "./plutoo-icon-192.png"
+  );
+
+  chatDogAvatar.src = avatarSrc;
+  chatDogAvatar.alt = dogName;
+}
+
   // Mostra pannello chat
   chatPane.classList.remove("hidden");
   chatPane.classList.add("show");
