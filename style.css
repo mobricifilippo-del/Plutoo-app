@@ -2307,23 +2307,6 @@ display: none !important;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
 }
 
-.dogboard-empty-icon{
-  font-size:1.4rem;
-  line-height:1;
-}
-
-.dogboard-empty-title{
-  font-size:1rem;
-  font-weight:800;
-  color:var(--violet-glow);
-}
-
-.dogboard-empty-text{
-  font-size:.92rem;
-  line-height:1.5;
-  color:rgba(255,255,255,.74);
-}
-
 .dogboard-composer{
   margin-top: auto;
 }
