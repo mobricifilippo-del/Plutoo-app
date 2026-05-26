@@ -2540,6 +2540,13 @@ display: none !important;
   position:relative;
 }
 
+.msg-swipe-front{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+}
+
 .msg-item:hover{
   background: rgba(255,255,255,0.085);
   border-color: rgba(177,154,255,0.28);
