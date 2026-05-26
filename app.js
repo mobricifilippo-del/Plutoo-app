@@ -5014,6 +5014,7 @@ const docsTrustLabel =
       : null;
 
   const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
+  const isFallbackPhoto = !d.img;
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
 
   const isDocsOwner =
