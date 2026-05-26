@@ -3064,11 +3064,6 @@ display: none !important;
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* se esiste ancora un titolo tipo "It's a Match! 💜", lo nascondiamo */
-.match-title{
-  display: none;
-}
-
 /* ===== AVATAR MESSAGGI (STILE INSTAGRAM) ===== */
 
 .msg-item {
