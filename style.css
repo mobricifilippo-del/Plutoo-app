@@ -1994,6 +1994,32 @@ padding:24px;
   border-radius:20px 20px 0 0;
 }
 
+.chat-dog-head{
+  display:flex;
+  align-items:center;
+  gap:.65rem;
+  min-width:0;
+}
+
+.chat-dog-avatar{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#0b0b0f;
+  border:1px solid rgba(205,164,52,.45);
+  flex-shrink:0;
+}
+
+.chat-dog-name{
+  font-weight:900;
+  color:#fff;
+  font-size:.98rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
 .chat-list{
   flex:1;
   overflow-y:auto;
