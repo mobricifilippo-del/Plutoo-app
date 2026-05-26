@@ -2536,6 +2536,8 @@ display: none !important;
   margin-bottom:10px;
   cursor:pointer;
   transition: transform .15s ease, background .2s ease, border-color .2s ease;
+  overflow:hidden;
+  position:relative;
 }
 
 .msg-item:hover{
