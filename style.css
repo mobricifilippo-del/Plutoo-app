@@ -1153,9 +1153,6 @@ body.story-open #storiesBar {
   font-style:italic;
 }
 
-.pp-meta{color:var(--muted);font-size:.98rem;margin:.15rem 0 .8rem 0}
-.pp-bio{margin:.5rem 0 1.2rem 0;line-height:1.5}
-
 .pp-actions{
   display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-top:1.2rem;
 }
