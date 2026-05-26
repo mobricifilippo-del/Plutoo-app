@@ -1216,6 +1216,33 @@ body.story-open #storiesBar {
   color:var(--violet-glow);font-weight:900;margin:1.2rem 0 .6rem 0;font-size:1.15rem;
 }
 
+.profile-plus .section-title{
+  color:#CDA434;
+  text-shadow:0 0 14px rgba(205,164,52,.32);
+}
+
+.profile-plus .add-photo{
+  border-color:#CDA434;
+  color:#CDA434;
+  box-shadow:0 0 14px rgba(205,164,52,.14);
+}
+
+.profile-plus .add-photo:hover{
+  background:rgba(205,164,52,.08);
+}
+
+.profile-plus .gallery .ph{
+  border-color:#CDA434;
+  box-shadow:
+    0 0 14px rgba(205,164,52,.14),
+    inset 0 0 0 1px rgba(205,164,52,.18);
+}
+
+.profile-plus .pp-docs-section,
+.profile-plus .pp-social-section{
+  border-color:#CDA434;
+}
+
 /* SEZIONE STORIES NEL PROFILO */
 .pp-stories-section{
   background:rgba(138,123,255,.06);
