@@ -6505,7 +6505,13 @@ galleryBlock.appendChild(ph);
     }
 
   input.onchange = () => {
+    if (!isGalleryOwner) {
+      input.value = "";
+      return;
+    }
+
     const files = Array.from(input.files || []);
+    
     if (!files.length) return;
 
     const remaining = maxPhotos - images.length;
