@@ -2646,6 +2646,18 @@ display: none !important;
   font-weight:900;
 }
 
+.msg-swipe-actions button[data-unfollow-dog]{
+  width:100%;
+  font-size:.68rem;
+  line-height:1.05;
+  white-space:nowrap;
+  padding:0 6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
 .msg-item.swipe-open .msg-swipe-front{
   transform:translateX(-116px);
 }
