@@ -4697,7 +4697,7 @@ _db.collection("followers").doc(docId).delete()
     };
 
     const row = document.createElement("div");
-    row.className = "sheet-item msg-item";
+    row.className = "msg-item";
     row.innerHTML = `
       <div class="msg-swipe-front">
         <img class="sheet-avatar" src="${realDog.img}" alt="${realDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
