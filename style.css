@@ -2646,7 +2646,9 @@ display: none !important;
   font-weight:900;
 }
 
-.msg-swipe-actions button[data-unfollow-dog]{
+.msg-swipe-actions button[data-unfollow-dog],
+.msg-swipe-actions button[data-remove-follower]{
+  
   width:100%;
   font-size:.68rem;
   line-height:1.05;
