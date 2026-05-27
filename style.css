@@ -2623,12 +2623,15 @@ display: none !important;
 }
 
 .msg-swipe-front::after{
-  content:"›";
+  content:"‹";
   position:absolute;
   right:6px;
   top:50%;
   transform:translateY(-50%);
-  opacity:.35;
+  color:var(--violet-glow);
+  opacity:.85;
+  font-size:1.35rem;
+  font-weight:900;
   pointer-events:none;
 }
 
