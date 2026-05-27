@@ -2617,8 +2617,19 @@ display: none !important;
   display:flex;
   align-items:center;
   gap:11px;
+  padding-right:22px;
   transition:transform .18s ease;
   will-change:transform;
+}
+
+.msg-swipe-front::after{
+  content:"›";
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:.35;
+  pointer-events:none;
 }
 
 .msg-swipe-actions{
