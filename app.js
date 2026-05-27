@@ -4720,7 +4720,7 @@ _db.collection("followers").doc(docId).delete()
 
     const unfollowBtn = row.querySelector('button[data-unfollow-dog]');
 
-    unfollowBtn?.addEventListener("click", (e) => {
+    unfollowBtn?.addEventListener("click", async (e) => {
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
