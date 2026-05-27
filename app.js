@@ -4697,12 +4697,17 @@ _db.collection("followers").doc(docId).delete()
     };
 
     const row = document.createElement("div");
-    row.className = "sheet-item";
+    row.className = "sheet-item msg-item";
     row.innerHTML = `
-      <img class="sheet-avatar" src="${realDog.img}" alt="${realDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
-      <div class="sheet-info">
-        <div class="sheet-name">${realDog.name} ${realDog.verified ? "✅" : ""}</div>
-        <div class="sheet-meta">${realDog.breed}</div>
+      <div class="msg-swipe-front">
+        <img class="sheet-avatar" src="${realDog.img}" alt="${realDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        <div class="sheet-info">
+          <div class="sheet-name">${realDog.name} ${realDog.verified ? "✅" : ""}</div>
+          <div class="sheet-meta">${realDog.breed}</div>
+        </div>
+      </div>
+
+      <div class="msg-swipe-actions">
       </div>
     `;
 
