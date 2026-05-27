@@ -4708,6 +4708,13 @@ _db.collection("followers").doc(docId).delete()
       </div>
 
       <div class="msg-swipe-actions">
+        <button
+          type="button"
+          class="msg-spam-btn"
+          data-unfollow-dog="${realDog.id}"
+        >
+          ${state.lang === "it" ? "Smetti di seguire" : "Unfollow"}
+        </button>
       </div>
     `;
 
