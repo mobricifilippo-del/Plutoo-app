@@ -4728,7 +4728,16 @@ _db.collection("followers").doc(docId).delete()
       try {
   await db.collection("followers").doc(`${dogId}_${targetDogId}`).delete();
 
-  openFollowingList(dogId);
+if (typeof rebuildFollowersStateFromFirestore === "function") {
+  await rebuildFollowersStateFromFirestore();
+}
+
+if (typeof updateFollowerUI === "function") {
+  updateFollowerUI(dogId);
+  updateFollowerUI(targetDogId);
+}
+
+openFollowingList(dogId);
 } catch (e) {
   console.error("following direct delete error:", e);
       }
