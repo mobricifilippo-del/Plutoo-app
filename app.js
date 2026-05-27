@@ -6500,9 +6500,11 @@ galleryBlock.appendChild(ph);
     };
 
     if (isGalleryOwner) {
-      addPh.appendChild(addBtn);
-      galleryBlock.appendChild(addPh);
-    }
+  addPh.appendChild(addBtn);
+  galleryBlock.appendChild(addPh);
+}
+
+  };
 
   input.onchange = () => {
     if (!isGalleryOwner) {
