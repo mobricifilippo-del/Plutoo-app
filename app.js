@@ -6493,14 +6493,16 @@ galleryBlock.appendChild(ph);
     addBtn.disabled = images.length >= maxPhotos;
 
     addBtn.onclick = () => {
+      if (!isGalleryOwner) return;
       if (images.length >= maxPhotos) return;
       input.value = "";
       input.click();
     };
 
-    addPh.appendChild(addBtn);
-    galleryBlock.appendChild(addPh);
-  };
+    if (isGalleryOwner) {
+      addPh.appendChild(addBtn);
+      galleryBlock.appendChild(addPh);
+    }
 
   input.onchange = () => {
     const files = Array.from(input.files || []);
