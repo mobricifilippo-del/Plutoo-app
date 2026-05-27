@@ -4651,12 +4651,37 @@ _db.collection("followers").doc(docId).delete()
       </div>
     `;
 
+    const removeFollowerBtn = row.querySelector('button[data-remove-follower]');
+
+    removeFollowerBtn?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      try {
+        await db.collection("followers").doc(`${followerDogId}_${dogId}`).delete();
+
+        if (typeof rebuildFollowersStateFromFirestore === "function") {
+          await rebuildFollowersStateFromFirestore();
+        }
+
+        if (typeof updateFollowerUI === "function") {
+          updateFollowerUI(dogId);
+          updateFollowerUI(followerDogId);
+        }
+
+        openFollowersList(dogId);
+      } catch (e) {
+        console.error("remove follower direct delete error:", e);
+      }
+    });
+
     let startX = 0;
-let startY = 0;
-let movedX = 0;
-let movedY = 0;
-let isSwipeLocked = false;
-let blockNextClick = false;
+    let startY = 0;
+    let movedX = 0;
+    let movedY = 0;
+    let isSwipeLocked = false;
+    let blockNextClick = false;
 
 const closeOtherFollowersSwipeRows = () => {
   followersList.querySelectorAll(".msg-item.swipe-open").forEach((el) => {
