@@ -6182,7 +6182,8 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
 
     if (pubBtn) {
       pubBtn.onclick = () => {
-        if (!pendingFiles.length) return;
+        if (!isGalleryOwner) return;
+if   (!pendingFiles.length) return;
 
         const c = document.getElementById("plutooGalleryPendingCount");
 
