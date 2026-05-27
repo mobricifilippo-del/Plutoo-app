@@ -4718,6 +4718,20 @@ _db.collection("followers").doc(docId).delete()
       </div>
     `;
 
+    const unfollowBtn = row.querySelector('button[data-unfollow-dog]');
+
+    unfollowBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      unfollowDog(targetDogId);
+
+      setTimeout(() => {
+        openFollowingList(dogId);
+      }, 350);
+    });
+
     let startX = 0;
     let startY = 0;
     let movedX = 0;
