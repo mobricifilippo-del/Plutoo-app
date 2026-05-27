@@ -4725,11 +4725,13 @@ _db.collection("followers").doc(docId).delete()
       e.stopPropagation();
       e.stopImmediatePropagation();
 
-      unfollowDog(targetDogId);
+      try {
+  await db.collection("followers").doc(`${dogId}_${targetDogId}`).delete();
 
-      setTimeout(() => {
-        openFollowingList(dogId);
-      }, 350);
+  openFollowingList(dogId);
+} catch (e) {
+  console.error("following direct delete error:", e);
+      }
     });
 
     let startX = 0;
