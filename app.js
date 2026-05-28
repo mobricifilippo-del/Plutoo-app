@@ -4195,8 +4195,6 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
     if (state.plus){
       state.filters.ageMin = (ageMin.value||"").trim();
       state.filters.ageMax = (ageMax.value||"").trim();
-      state.filters.weight = (weightInput.value||"").trim();
-      state.filters.height = (heightInput.value||"").trim();
       state.filters.pedigree = pedigreeFilter.value || "";
       state.filters.breeding = breedingFilter.value || "";
       state.filters.size = sizeFilter.value || "";
