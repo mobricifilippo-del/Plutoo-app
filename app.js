@@ -769,12 +769,10 @@ try {
     } catch (_) {}
   }
 
-  if (typeof window.openProfilePage === "function") {
-    if (typeof window.openFreshDogProfile === "function") {
+  if (typeof window.openFreshDogProfile === "function") {
   window.openFreshDogProfile(myId, myDog || { id: myId });
-} else {
+} else if (typeof window.openProfilePage === "function") {
   window.openProfilePage(myDog || { id: myId });
-    }
   }
 
   // riallineo CTA
