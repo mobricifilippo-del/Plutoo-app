@@ -414,6 +414,12 @@ document.getElementById("btnLogout")?.addEventListener("click", async () => {
   try {
     localStorage.setItem("currentView", "home");
     localStorage.setItem("entered", "0");
+
+    Object.keys(localStorage).forEach((k) => {
+  if (k.startsWith("f_")) {
+    localStorage.removeItem(k);
+  }
+});
   } catch (_) {}
 
   try { closeAuth(); } catch (_) {}
