@@ -3570,7 +3570,19 @@ const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_
 return sourceDogs
 .filter(d => !myDogId || String(d.id) !== myDogId)
 .filter(d => !d.km || d.km <= (f.distKm || 999))
-.filter(d => (!f.verified || !state.plus) ? true : d.verified)
+
+  .filter(d => {
+  if (!f.verified || !state.plus) return true;
+
+  const docs = d.dogDocs && typeof d.dogDocs === "object" ? d.dogDocs : {};
+
+  return !!(
+    docs.vaccines?.url ||
+    docs.pedigree?.url ||
+    docs.microchip?.url
+  );
+})
+  
 .filter(d => (!state.plus || !f.onlySelfie) ? true : !!String(d.selfieUrl || "").trim())
 .filter(d => (!f.sex) ? true : d.sex === f.sex)
 .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
