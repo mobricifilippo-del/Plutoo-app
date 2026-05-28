@@ -3576,14 +3576,18 @@ return sourceDogs
 .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
 .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
 .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
+  
 .filter(d => {
-if (!state.plus || !f.pedigree) return true;
-return f.pedigree === "yes" ? d.pedigree : true;
+  const hasPedigreeDoc = !!d.dogDocs?.pedigree?.url;
+  if (!state.plus || !f.pedigree) return true;
+  return f.pedigree === "yes" ? hasPedigreeDoc : !hasPedigreeDoc;
 })
+  
 .filter(d => {
 if (!state.plus || !f.breeding) return true;
 return f.breeding === "yes" ? d.breeding : true;
 })
+  
 .filter(d => {
 if (!state.plus || !f.size) return true;
 return d.size === f.size;
