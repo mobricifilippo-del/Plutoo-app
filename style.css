@@ -1659,6 +1659,15 @@ padding:24px;
   font-weight:800;color:var(--violet-glow);font-size:1rem;padding:0 .4rem;
 }
 .gold-filters legend{display:flex;align-items:center;gap:.4rem}
+
+.gold-filters.plus-active{
+  border-color:rgba(205,164,52,.55);
+  background:rgba(205,164,52,.06);
+  box-shadow:
+    0 0 18px rgba(205,164,52,.14),
+    inset 0 0 0 1px rgba(205,164,52,.10);
+}
+
 .gold-badge{font-size:1.1rem}
 .f{display:flex;flex-direction:column;gap:.35rem;margin-top:.7rem;position:relative}
 .f label{font-size:.9rem;font-weight:700;color:var(--text)}
@@ -1666,6 +1675,7 @@ padding:24px;
   padding:.55rem .65rem;border-radius:10px;border:1px solid rgba(138,123,255,.3);
   background:var(--bg-main);color:var(--text);font-size:.92rem;
 }
+
 .f input:focus,.f select:focus{
   outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(138,123,255,.2);
 }
