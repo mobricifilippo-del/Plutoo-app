@@ -1675,6 +1675,23 @@ padding:24px;
   box-shadow:0 0 0 3px rgba(205,164,52,.24);
 }
 
+#searchPanel.plus-active .btn.outline{
+  border-color:#CDA434;
+  color:#CDA434;
+  box-shadow:
+    0 0 14px rgba(205,164,52,.18),
+    inset 0 0 0 1px rgba(205,164,52,.10);
+}
+
+#searchPanel.plus-active .btn.outline:hover,
+#searchPanel.plus-active .btn.outline:active{
+  border-color:#E7C35A;
+  color:#E7C35A;
+  box-shadow:
+    0 0 18px rgba(205,164,52,.26),
+    inset 0 0 0 1px rgba(205,164,52,.16);
+}
+
 .panel-head{
   display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;
 }
