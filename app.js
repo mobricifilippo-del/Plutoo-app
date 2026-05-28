@@ -2174,10 +2174,16 @@ function updatePlusUI(){
   ];
 
   goldInputs.forEach(inp => {
-    if (inp) inp.disabled = !state.plus;
-  });
+  if (inp) inp.disabled = !state.plus;
+});
 
-  if (adBanner) {
+const goldFiltersBox = document.querySelector(".gold-filters");
+const unlockHint = document.querySelector(".unlock-hint");
+
+goldFiltersBox?.classList.toggle("plus-active", !!state.plus);
+unlockHint?.classList.toggle("hidden", !!state.plus);
+
+if (adBanner) {
     adBanner.style.display = state.plus ? "none" : "";
   }
 
