@@ -7814,11 +7814,23 @@ dogDocsStatus: "uploaded"
 
           return window.db.collection("dogs").doc(dogId).get();
         })
+        
         .then((snap) => {
           const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
 fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
+
+try {
+  if (Array.isArray(state.dogs)) {
+    state.dogs = state.dogs.map(dog =>
+      String(dog.id) === String(fresh.id)
+        ? { ...dog, ...fresh }
+        : dog
+    );
+    localStorage.setItem("dogs", JSON.stringify(state.dogs));
+  }
+} catch (_) {}
+
 openProfilePage(fresh);
-        })
         
         .catch((err) => {
           console.error("dog document upload error:", err);
