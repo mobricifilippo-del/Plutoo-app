@@ -3551,6 +3551,7 @@ return sourceDogs
 .filter(d => !myDogId || String(d.id) !== myDogId)
 .filter(d => !d.km || d.km <= (f.distKm || 999))
 .filter(d => (!f.verified || !state.plus) ? true : d.verified)
+.filter(d => (!state.plus || !f.onlySelfie) ? true : !!String(d.selfieUrl || "").trim())
 .filter(d => (!f.sex) ? true : d.sex === f.sex)
 .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
 .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
