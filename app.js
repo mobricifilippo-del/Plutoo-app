@@ -3596,8 +3596,17 @@ return sourceDogs
 })
   
 .filter(d => {
-if (!state.plus || !f.breeding) return true;
-return f.breeding === "yes" ? d.breeding : true;
+  if (!state.plus || !f.breeding) return true;
+
+  if (f.breeding === "breeding") {
+    return d.availability && d.availability.breeding === true;
+  }
+
+  if (f.breeding === "walks") {
+    return d.availability && d.availability.walks === true;
+  }
+
+  return true;
 })
   
 .filter(d => {
