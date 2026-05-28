@@ -6957,6 +6957,7 @@ if (btnSettings0) {
 
     const wrap = document.createElement("div");
     wrap.id = "plutooProfileSettingsView";
+    wrap.classList.toggle("profile-plus", d.plus === true && d.plusStatus === "active");
     wrap.style.position = "fixed";
     wrap.style.left = "0";
     wrap.style.top = "0";
