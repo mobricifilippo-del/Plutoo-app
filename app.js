@@ -7285,6 +7285,55 @@ zoneInput.addEventListener("click", () => {
     bio.style.resize = "vertical";
     bio.style.minHeight = "120px";
 
+    const availabilityBox = document.createElement("div");
+availabilityBox.style.display = "flex";
+availabilityBox.style.flexDirection = "column";
+availabilityBox.style.gap = "10px";
+availabilityBox.style.padding = "10px 12px";
+availabilityBox.style.border = "1px solid rgba(255,255,255,.12)";
+availabilityBox.style.borderRadius = "14px";
+availabilityBox.style.background = "rgba(255,255,255,.03)";
+
+const availabilityTitle = document.createElement("div");
+availabilityTitle.style.fontWeight = "900";
+availabilityTitle.style.color = "#CDA434";
+availabilityTitle.textContent = "Disponibilità DOG";
+
+const currentAvailability = d.availability && typeof d.availability === "object"
+  ? d.availability
+  : {};
+
+const availabilityBreedingLabel = document.createElement("label");
+availabilityBreedingLabel.style.display = "flex";
+availabilityBreedingLabel.style.alignItems = "center";
+availabilityBreedingLabel.style.justifyContent = "space-between";
+availabilityBreedingLabel.style.gap = "12px";
+availabilityBreedingLabel.innerHTML = `<span>Disponibile per accoppiamento</span>`;
+
+const availabilityBreedingInput = document.createElement("input");
+availabilityBreedingInput.type = "checkbox";
+availabilityBreedingInput.id = "availabilityBreeding";
+availabilityBreedingInput.checked = currentAvailability.breeding === true || d.breeding === true;
+
+const availabilityWalksLabel = document.createElement("label");
+availabilityWalksLabel.style.display = "flex";
+availabilityWalksLabel.style.alignItems = "center";
+availabilityWalksLabel.style.justifyContent = "space-between";
+availabilityWalksLabel.style.gap = "12px";
+availabilityWalksLabel.innerHTML = `<span>Disponibile per passeggiate</span>`;
+
+const availabilityWalksInput = document.createElement("input");
+availabilityWalksInput.type = "checkbox";
+availabilityWalksInput.id = "availabilityWalks";
+availabilityWalksInput.checked = currentAvailability.walks === true;
+
+availabilityBreedingLabel.appendChild(availabilityBreedingInput);
+availabilityWalksLabel.appendChild(availabilityWalksInput);
+
+availabilityBox.appendChild(availabilityTitle);
+availabilityBox.appendChild(availabilityBreedingLabel);
+availabilityBox.appendChild(availabilityWalksLabel);
+
     const feedback = document.createElement("div");
     feedback.style.display = "none";
     feedback.style.padding = ".65rem .8rem";
