@@ -3554,8 +3554,6 @@ return sourceDogs
 .filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
 .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
 .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
-.filter(d => { if (!state.plus || !f.weight) return true; return d.weight >= parseInt(f.weight); })
-.filter(d => { if (!state.plus || !f.height) return true; return d.height >= parseInt(f.height); })
 .filter(d => {
 if (!state.plus || !f.pedigree) return true;
 return f.pedigree === "yes" ? d.pedigree : true;
