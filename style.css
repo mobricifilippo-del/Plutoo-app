@@ -1243,6 +1243,19 @@ body.story-open #storiesBar {
   border-color:#CDA434;
 }
 
+#plutooProfileSettingsView.profile-plus .btn.accent{
+  background:linear-gradient(180deg,#E8CE7A 0%, #CDA434 50%, #B8892A 100%);
+  color:#141414;
+  border:1px solid rgba(0,0,0,.12);
+  box-shadow:
+    0 6px 16px rgba(205,164,52,.26),
+    inset 0 0 0 1px rgba(255,255,255,.25);
+}
+
+#plutooProfileSettingsView.profile-plus .btn.accent:hover{
+  filter:brightness(1.06);
+}
+
 /* SEZIONE STORIES NEL PROFILO */
 .pp-stories-section{
   background:rgba(138,123,255,.06);
