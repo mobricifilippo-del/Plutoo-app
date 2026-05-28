@@ -1686,6 +1686,14 @@ padding:24px;
 
 .f-gold{position:relative}
 
+.unlock-hint{
+  margin-top:1rem;
+  font-size:.82rem;
+  line-height:1.45;
+  opacity:.78;
+  text-align:center;
+}
+
 .suggestions{
   background:var(--panel);border:1px solid var(--violet);border-radius:10px;
   max-height:180px;overflow-y:auto;margin-top:.3rem;display:none;
