@@ -1221,19 +1221,14 @@ body.story-open #storiesBar {
   text-shadow:0 0 14px rgba(205,164,52,.32);
 }
 
-.profile-plus .add-photo,
-.profile-plus .btn.primary{
-  background:linear-gradient(180deg,#E8CE7A 0%, #CDA434 50%, #B8892A 100%);
-  color:#141414;
-  border-color:rgba(0,0,0,.12);
-  box-shadow:
-    0 6px 16px rgba(205,164,52,.26),
-    inset 0 0 0 1px rgba(255,255,255,.25);
+.profile-plus .add-photo{
+  border-color:#CDA434;
+  color:#CDA434;
+  box-shadow:0 0 14px rgba(205,164,52,.14);
 }
 
-.profile-plus .add-photo:hover,
-.profile-plus .btn.primary:hover{
-  filter:brightness(1.06);
+.profile-plus .add-photo:hover{
+  background:rgba(205,164,52,.08);
 }
 
 .profile-plus .gallery .ph{
