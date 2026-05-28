@@ -7481,6 +7481,11 @@ availabilityBox.appendChild(availabilityWalksLabel);
         d.zone = newZone;
         d.bio = newBio;
 
+        d.availability = {
+  breeding: availabilityBreedingInput.checked === true,
+  walks: availabilityWalksInput.checked === true
+};
+
         if (nextPhotoUrl !== null) {
           d.img = nextPhotoUrl;
           d.photoUrl = nextPhotoUrl;
