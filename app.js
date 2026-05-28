@@ -1264,6 +1264,7 @@ const state = {
     pedigree:     localStorage.getItem("f_pedigree") || "",
     breeding:     localStorage.getItem("f_breeding") || "",
     size:         localStorage.getItem("f_size") || "",
+    onlySelfie:   localStorage.getItem("f_onlySelfie") === "1",
   },
 
   // Swipe & rewards
