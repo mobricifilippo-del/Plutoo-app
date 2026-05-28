@@ -3547,7 +3547,20 @@ try {
 
 if (!Array.isArray(realDogs)) realDogs = [];
 
-const sourceDogs = realDogs.length ? realDogs : DOGS;
+const hasActiveFilters = !!(
+  f.breed ||
+  Number(f.distKm || 50) !== 50 ||
+  f.verified ||
+  f.onlySelfie ||
+  f.sex ||
+  f.ageMin ||
+  f.ageMax ||
+  f.pedigree ||
+  f.breeding ||
+  f.size
+);
+
+const sourceDogs = hasActiveFilters ? realDogs : [...realDogs, ...DOGS];
     
 const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
 
