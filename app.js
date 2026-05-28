@@ -9349,6 +9349,7 @@ async function init(){
     img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
     selfieUrl: String(data.selfieUrl || ""),
     gallery: Array.isArray(data.gallery) ? data.gallery : [],
+    dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
     verified: !!data.verified,
     bio: String(data.bio || ""),
     zone: String(data.zone || ""),
