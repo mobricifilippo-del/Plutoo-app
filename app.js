@@ -2165,10 +2165,9 @@ function closePlusModal(){
 function updatePlusUI(){
   const goldInputs = [
     onlyVerified,
+    onlySelfie,
     ageMin,
     ageMax,
-    weightInput,
-    heightInput,
     pedigreeFilter,
     breedingFilter,
     sizeFilter
