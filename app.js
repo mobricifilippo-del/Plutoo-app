@@ -9270,8 +9270,6 @@ async function init(){
   if (state.plus){
     if (ageMin) ageMin.value = state.filters.ageMin;
     if (ageMax) ageMax.value = state.filters.ageMax;
-    if (weightInput) weightInput.value = state.filters.weight;
-    if (heightInput) heightInput.value = state.filters.height;
     if (pedigreeFilter) pedigreeFilter.value = state.filters.pedigree;
     if (breedingFilter) breedingFilter.value = state.filters.breeding;
     if (sizeFilter) sizeFilter.value = state.filters.size;
