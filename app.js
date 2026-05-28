@@ -9370,8 +9370,18 @@ async function init(){
     weight: Number(data.weight || 0),
     height: Number(data.height || 0),
     pedigree: !!data.pedigree,
-    breeding: !!data.breeding,
-    size: String(data.size || "")
+availability: {
+  breeding: data.availability && typeof data.availability === "object"
+    ? data.availability.breeding === true
+    : data.breeding === true,
+  walks: data.availability && typeof data.availability === "object"
+    ? data.availability.walks === true
+    : false
+},
+breeding: data.availability && typeof data.availability === "object"
+  ? data.availability.breeding === true
+  : data.breeding === true,
+size: String(data.size || "")
   });
       }
 
