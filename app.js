@@ -2178,7 +2178,8 @@ function updatePlusUI(){
 });
 
 const goldFiltersBox = document.querySelector(".gold-filters");
-const unlockHint = document.querySelector(".unlock-hint");
+  const unlockHint = document.querySelector(".unlock-hint");
+  const searchPanel = document.getElementById("searchPanel");
 
 goldFiltersBox?.classList.toggle("plus-active", !!state.plus);
 unlockHint?.classList.toggle("hidden", !!state.plus);
