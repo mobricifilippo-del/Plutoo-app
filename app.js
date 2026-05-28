@@ -7828,8 +7828,10 @@ dogDocsStatus: "uploaded"
         })
         
         .then((snap) => {
-          const fresh = snap && snap.exists ? { id: snap.id, ...(snap.data() || {}) } : d;
+        const fresh = snap && snap.exists ? { ...d, id: snap.id, ...(snap.data() || {}) } : d;
 fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
+fresh.plus = d.plus === true;
+fresh.plusStatus = d.plusStatus || "";
 
 try {
   if (Array.isArray(state.dogs)) {
