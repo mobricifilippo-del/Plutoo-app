@@ -7507,6 +7507,7 @@ if (typeof window.refreshCreateDogCTA === "function") {
     card.appendChild(zoneInput);
     card.appendChild(bioLabel);
     card.appendChild(bio);
+    card.appendChild(availabilityBox);
     card.appendChild(feedback);
     card.appendChild(row);
 
