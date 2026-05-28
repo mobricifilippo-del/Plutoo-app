@@ -898,8 +898,6 @@ dogPlusStatus = String(userData.plusStatus || "");
     bio: String(data.bio || ""),
     zone: String(data.zone || ""),
     km: Number(data.km || 0),
-    weight: Number(data.weight || 0),
-    height: Number(data.height || 0),
     pedigree: !!data.pedigree,
     breeding: !!data.breeding,
     size: String(data.size || ""),
