@@ -4205,16 +4205,17 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
   resetFilters?.addEventListener("click",()=>{
     breedInput.value=""; distRange.value=50; distLabel.textContent="50 km";
     onlyVerified.checked=false; sexFilter.value="";
+    
     if (state.plus){
       ageMin.value=""; ageMax.value="";
-      weightInput.value=""; heightInput.value="";
       pedigreeFilter.value=""; breedingFilter.value=""; sizeFilter.value="";
     }
     Object.assign(state.filters,{
       breed:"",distKm:50,verified:false,sex:"",
-      ageMin:"",ageMax:"",weight:"",height:"",
+      ageMin:"",ageMax:"",
       pedigree:"",breeding:"",size:""
     });
+    
     persistFilters(); renderNearby();
   });
 
