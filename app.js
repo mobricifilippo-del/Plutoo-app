@@ -770,7 +770,11 @@ try {
   }
 
   if (typeof window.openProfilePage === "function") {
-    window.openProfilePage(myDog || { id: myId });
+    if (typeof window.openFreshDogProfile === "function") {
+  window.openFreshDogProfile(myId, myDog || { id: myId });
+} else {
+  window.openProfilePage(myDog || { id: myId });
+    }
   }
 
   // riallineo CTA
