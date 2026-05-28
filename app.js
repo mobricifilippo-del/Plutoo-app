@@ -4211,14 +4211,13 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
 
   resetFilters?.addEventListener("click",()=>{
     breedInput.value=""; distRange.value=50; distLabel.textContent="50 km";
-    onlyVerified.checked=false; sexFilter.value="";
-    
+    onlyVerified.checked=false; onlySelfie.checked=false; sexFilter.value="";
     if (state.plus){
       ageMin.value=""; ageMax.value="";
       pedigreeFilter.value=""; breedingFilter.value=""; sizeFilter.value="";
     }
     Object.assign(state.filters,{
-      breed:"",distKm:50,verified:false,sex:"",
+      breed:"",distKm:50,verified:false,onlySelfie:false,sex:"",
       ageMin:"",ageMax:"",
       pedigree:"",breeding:"",size:""
     });
