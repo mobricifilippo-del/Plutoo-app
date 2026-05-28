@@ -1261,8 +1261,6 @@ const state = {
     sex:          localStorage.getItem("f_sex") || "",
     ageMin:       localStorage.getItem("f_ageMin") || "",
     ageMax:       localStorage.getItem("f_ageMax") || "",
-    weight:       localStorage.getItem("f_weight") || "",
-    height:       localStorage.getItem("f_height") || "",
     pedigree:     localStorage.getItem("f_pedigree") || "",
     breeding:     localStorage.getItem("f_breeding") || "",
     size:         localStorage.getItem("f_size") || "",
