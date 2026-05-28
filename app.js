@@ -5262,8 +5262,8 @@ try {
   } catch (_) {}
 
   window.openProfilePage(freshDog);
+  return;
       }
-      openFallback();
     });
 };
 
