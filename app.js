@@ -4191,6 +4191,7 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
     state.filters.distKm = parseInt(distRange.value||"50");
     state.filters.sex = sexFilter.value || "";
     state.filters.verified = !!onlyVerified.checked;
+    state.filters.onlySelfie = !!onlySelfie.checked;
     if (state.plus){
       state.filters.ageMin = (ageMin.value||"").trim();
       state.filters.ageMax = (ageMax.value||"").trim();
