@@ -2182,7 +2182,8 @@ const goldFiltersBox = document.querySelector(".gold-filters");
   const searchPanel = document.getElementById("searchPanel");
 
 goldFiltersBox?.classList.toggle("plus-active", !!state.plus);
-unlockHint?.classList.toggle("hidden", !!state.plus);
+  unlockHint?.classList.toggle("hidden", !!state.plus);
+  searchPanel?.classList.toggle("plus-active", !!state.plus);
 
 if (adBanner) {
     adBanner.style.display = state.plus ? "none" : "";
