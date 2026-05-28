@@ -7502,6 +7502,11 @@ availabilityBox.appendChild(availabilityWalksLabel);
               state.dogs[idx].zone = newZone;
               state.dogs[idx].bio = newBio;
 
+              state.dogs[idx].availability = {
+  breeding: availabilityBreedingInput.checked === true,
+  walks: availabilityWalksInput.checked === true
+};
+
               if (nextPhotoUrl !== null) {
                 state.dogs[idx].img = nextPhotoUrl;
                 state.dogs[idx].photoUrl = nextPhotoUrl;
