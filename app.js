@@ -899,8 +899,18 @@ dogPlusStatus = String(userData.plusStatus || "");
     zone: String(data.zone || ""),
     km: Number(data.km || 0),
     pedigree: !!data.pedigree,
-    breeding: !!data.breeding,
-    size: String(data.size || ""),
+availability: {
+  breeding: data.availability && typeof data.availability === "object"
+    ? data.availability.breeding === true
+    : data.breeding === true,
+  walks: data.availability && typeof data.availability === "object"
+    ? data.availability.walks === true
+    : false
+},
+breeding: data.availability && typeof data.availability === "object"
+  ? data.availability.breeding === true
+  : data.breeding === true,
+size: String(data.size || ""),
     dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
     ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
     selfieUrl: String(data.selfieUrl || "")
