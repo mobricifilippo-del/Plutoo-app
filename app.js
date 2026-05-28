@@ -7831,6 +7831,7 @@ try {
 } catch (_) {}
 
 openProfilePage(fresh);
+        })
         
         .catch((err) => {
           console.error("dog document upload error:", err);
