@@ -7405,14 +7405,18 @@ availabilityBox.appendChild(availabilityWalksLabel);
             : new Date();
 
           const updateData = {
-            name: newName,
-            breed: newBreed,
-            age: newAge,
-            sex: newSex,
-            zone: newZone,
-            bio: newBio,
-            updatedAt: ts
-          };
+  name: newName,
+  breed: newBreed,
+  age: newAge,
+  sex: newSex,
+  zone: newZone,
+  bio: newBio,
+  availability: {
+    breeding: availabilityBreedingInput.checked === true,
+    walks: availabilityWalksInput.checked === true
+  },
+  updatedAt: ts
+};
 
           if (nextPhotoUrl !== null) {
             updateData.photoUrl = nextPhotoUrl;
