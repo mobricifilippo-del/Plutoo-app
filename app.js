@@ -420,6 +420,21 @@ document.getElementById("btnLogout")?.addEventListener("click", async () => {
     localStorage.removeItem(k);
   }
 });
+
+    if (window.state && window.state.filters) {
+  window.state.filters = {
+    breed: "",
+    distKm: 50,
+    verified: false,
+    sex: "",
+    ageMin: "",
+    ageMax: "",
+    pedigree: "",
+    breeding: "",
+    size: "",
+    onlySelfie: false
+  };
+    }
   } catch (_) {}
 
   try { closeAuth(); } catch (_) {}
