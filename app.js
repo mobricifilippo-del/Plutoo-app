@@ -5438,12 +5438,21 @@ profileContent.innerHTML = `
     </div>
   `
   : `
+
     <div class="pp-badges" style="margin-top:.75rem">
-      <span class="badge">${d.breed}</span>
-      <span class="badge">${d.age} ${t("years")}</span>
-     <span class="badge">${d.zone || fmtKm(d.km)}</span>
-      <span class="badge">${d.sex === "M" ? (state.lang === "it" ? "Maschio" : "Male") : (state.lang === "it" ? "Femmina" : "Female")}</span>
-    </div>
+  <span class="badge">${d.breed}</span>
+  <span class="badge">${d.age} ${t("years")}</span>
+  <span class="badge">${d.zone || fmtKm(d.km)}</span>
+  <span class="badge">${d.sex === "M" ? (state.lang === "it" ? "Maschio" : "Male") : (state.lang === "it" ? "Femmina" : "Female")}</span>
+
+  ${((d.availability && d.availability.breeding === true) || d.breeding === true)
+    ? `<span class="badge">💛 Accoppiamento</span>`
+    : ""}
+
+  ${(d.availability && d.availability.walks === true)
+    ? `<span class="badge">🐾 Passeggiate</span>`
+    : ""}
+</div>
 
     ${d.bio ? `
   <div class="pp-bio-block">
