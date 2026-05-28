@@ -5189,16 +5189,26 @@ try {
         dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
         ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
         selfieUrl: String(data.selfieUrl || ""),
-ownerUid,
-plus,
-plusStatus
+        ownerUid,
+        plus,
+        plusStatus
       };
 
       if (typeof window.openProfilePage === "function") {
-        window.openProfilePage(freshDog);
+
+  try {
+    if (Array.isArray(state.dogs)) {
+      state.dogs = state.dogs.map(dog =>
+        String(dog.id) === String(freshDog.id)
+          ? { ...dog, ...freshDog }
+          : dog
+      );
+      localStorage.setItem("dogs", JSON.stringify(state.dogs));
+    }
+  } catch (_) {}
+
+  window.openProfilePage(freshDog);
       }
-    })
-    .catch(() => {
       openFallback();
     });
 };
