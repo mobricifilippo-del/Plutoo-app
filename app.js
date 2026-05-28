@@ -3537,13 +3537,17 @@ if(!d) return;
 const f = state.filters;
 
 let realDogs = [];
-try { realDogs = (window.state && Array.isArray(window.state.dogs)) ? window.state.dogs : []; } catch (_) {}
-if (!realDogs.length) {
-try { realDogs = JSON.parse(localStorage.getItem("dogs") || "[]"); } catch (_) { realDogs = []; }
+try {
+  realDogs = (window.state && Array.isArray(window.state.dogs))
+    ? window.state.dogs
+    : [];
+} catch (_) {
+  realDogs = [];
 }
+
 if (!Array.isArray(realDogs)) realDogs = [];
 
-const sourceDogs = [...realDogs, ...DOGS];
+const sourceDogs = realDogs.length ? realDogs : DOGS;
     
 const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
 
