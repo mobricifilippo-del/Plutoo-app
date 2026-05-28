@@ -7694,6 +7694,7 @@ fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.pn
 fresh.plus = d.plus === true;
 fresh.plusStatus = d.plusStatus || "";
 openProfilePage(fresh);
+        })
 
     .catch((err) => {
   console.error("dog document delete error:", err);
