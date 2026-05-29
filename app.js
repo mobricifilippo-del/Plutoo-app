@@ -3382,9 +3382,7 @@ function setActiveView(name){
       viewNearby.classList.remove("hidden");
       viewNearby.classList.add("active");
     }
-    if (Array.isArray(state.dogs) && state.dogs.length > 0) {
-  renderNearby();
-    }
+    renderNearby();
     renderStoriesBar();
     if (btnSearchPanel) btnSearchPanel.disabled = false;
   }
