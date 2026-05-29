@@ -3775,8 +3775,11 @@ if(noBtn) {
   ].filter(Boolean);
 
   meta.innerHTML =
-  `${d.plus === true && d.plusStatus === "active" ? '<span class="plus-badge-card">💎 Utente Plus</span><br>' : ""}` +
-  metaParts.join(" · ");
+`${d.plus === true && d.plusStatus === "active" ? '<span class="plus-badge-card">💎 Utente Plus</span>' : ""}` +
+`${d.availability && d.availability.breeding === true ? '<span class="plus-badge-card">💛 Accoppiamento</span>' : ""}` +
+`${d.availability && d.availability.walks === true ? '<span class="plus-badge-card">🐾 Passeggiate</span>' : ""}` +
+`<br>` +
+metaParts.join(" · ");
 
   if(yesBtn) yesBtn.onclick = null;
   if(noBtn) noBtn.onclick = null;
