@@ -9505,7 +9505,8 @@ size: String(data.size || "")
       }
 
       state.dogs = realDogs;
-      localStorage.setItem("dogs", JSON.stringify(realDogs));
+state.realDogsReady = true;
+localStorage.setItem("dogs", JSON.stringify(realDogs));
 
       if (state.entered && typeof renderNearby === "function") {
   renderNearby();
