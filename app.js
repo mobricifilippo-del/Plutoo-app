@@ -3515,8 +3515,12 @@ btnDogBoardBack?.addEventListener("click", () => {
 
     const list = filteredDogs();
     if (!list.length){
-      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
-      return;
+  if (state.realDogsReady !== true) {
+    return;
+  }
+
+  nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
+  return;
     }
     nearGrid.innerHTML = list.map(cardHTML).join("");
 
