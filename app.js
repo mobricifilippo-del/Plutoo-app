@@ -2016,11 +2016,7 @@ setActiveView("nearby");
 }
 
 } else {
-if (viewToRestore === "nearby" && state.currentView === "nearby") {
-  renderNearby();
-} else {
-  setActiveView(viewToRestore);
-}
+    setActiveView(viewToRestore);
 }
 
 showAdBanner();
