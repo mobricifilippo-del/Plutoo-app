@@ -2467,6 +2467,7 @@ function __renderNotifs(items) {
         <div class="notif-main">${main}</div>
       </div>
       <div class="notif-time">${__fmtTime(n.createdAt)}</div>
+      <button type="button" class="notif-delete-btn">Elimina</button>
     `;
 
     // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
