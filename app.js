@@ -1282,8 +1282,7 @@ const state = {
   // PLUS
   plus: localStorage.getItem("plutoo_plus") === "yes",
   plusReady: false,
-plusPlan: "monthly",
-realDogsReady: false,
+  plusPlan: "monthly",
 
   // Filtri
   filters: {
@@ -3515,12 +3514,8 @@ btnDogBoardBack?.addEventListener("click", () => {
 
     const list = filteredDogs();
     if (!list.length){
-  if (state.realDogsReady !== true) {
-    return;
-  }
-
-  nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
-  return;
+      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
+      return;
     }
     nearGrid.innerHTML = list.map(cardHTML).join("");
 
@@ -9509,8 +9504,7 @@ size: String(data.size || "")
       }
 
       state.dogs = realDogs;
-state.realDogsReady = true;
-localStorage.setItem("dogs", JSON.stringify(realDogs));
+      localStorage.setItem("dogs", JSON.stringify(realDogs));
 
       if (state.entered && typeof renderNearby === "function") {
   renderNearby();
