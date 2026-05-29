@@ -1880,6 +1880,14 @@ if (state.entered) {
   appScreen.classList.remove("hidden");
   const viewToRestore = localStorage.getItem("currentView") || state.currentView || "nearby";
 
+  try {
+  if (viewToRestore === "nearby" && (!Array.isArray(state.dogs) || state.dogs.length === 0)) {
+    const _cached = JSON.parse(localStorage.getItem("dogs") || "[]");
+    const _real = Array.isArray(_cached) ? _cached.filter(d => d && !d.isDemo) : [];
+    if (_real.length > 0) state.dogs = _real;
+  }
+} catch (_) {}
+
   if (viewToRestore === "profile") {
   setActiveView("profile");
 
