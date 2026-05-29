@@ -8829,6 +8829,9 @@ await db.collection("chats").doc(chatId).update({
 });
 
 if (typeof loadMessagesLists === "function") loadMessagesLists();
+    if (typeof showToast === "function") {
+  showToast("✅ Messaggio inviato");
+    }
 
 // Contatore coerente
 state.chatMessagesSent[safeDogId] =
