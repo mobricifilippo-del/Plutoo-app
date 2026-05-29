@@ -8792,9 +8792,24 @@ try {
 
 // 2) Meta chat: source of truth conversazione
 
+let existingChatData = {};
+
+try {
+  const chatSnap = await db.collection("chats").doc(chatId).get();
+  existingChatData = chatSnap && chatSnap.exists ? (chatSnap.data() || {}) : {};
+} catch (_) {
+  existingChatData = {};
+}
+
+const isReplyToRequest =
+  existingChatData.status === "pending" &&
+  existingChatData.folder === "requests" &&
+  existingChatData.lastSenderUid &&
+  String(existingChatData.lastSenderUid) !== String(selfUid);
+
 let nextMatch = hasMatch === true;
-let nextStatus = hasMatch === true ? "accepted" : "pending";
-let nextFolder = hasMatch === true ? "inbox" : "requests";
+let nextStatus = hasMatch === true || isReplyToRequest ? "accepted" : "pending";
+let nextFolder = hasMatch === true || isReplyToRequest ? "inbox" : "requests";
 
 await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
