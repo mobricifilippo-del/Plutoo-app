@@ -2470,6 +2470,23 @@ function __renderNotifs(items) {
       <button type="button" class="notif-delete-btn">Elimina</button>
     `;
 
+    const deleteBtn = row.querySelector(".notif-delete-btn");
+
+deleteBtn?.addEventListener("click", async function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+
+  const notifId = String(n.id || "").trim();
+  if (!notifId || !db) return;
+
+  try {
+    await db.collection("notifications").doc(notifId).delete();
+  } catch (err) {
+    console.error("delete notification error:", err);
+  }
+});
+
     // FEEDBACK VISIVO (se non lo vedi, il click NON arriva)
     row.addEventListener("click", function (e) {
       e.stopPropagation();
