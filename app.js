@@ -2467,12 +2467,12 @@ function __renderNotifs(items) {
         <div class="notif-main">${main}</div>
       </div>
       <div class="notif-time">${__fmtTime(n.createdAt)}</div>
-      <button type="button" class="notif-delete-btn">Elimina</button>
+      <button type="button" class="notif-delete-btn" title="Elimina notifica">🗑️</button>
     `;
 
     const deleteBtn = row.querySelector(".notif-delete-btn");
 
-deleteBtn?.addEventListener("click", async function (e) {
+  deleteBtn?.addEventListener("click", async function (e) {
   e.preventDefault();
   e.stopPropagation();
   e.stopImmediatePropagation();
@@ -2480,8 +2480,24 @@ deleteBtn?.addEventListener("click", async function (e) {
   const notifId = String(n.id || "").trim();
   if (!notifId || !db) return;
 
+  const ok = await showPlutooConfirm(
+    "Vuoi eliminare questa notifica?",
+    {
+      title: "Elimina notifica",
+      confirmText: "Elimina",
+      cancelText: "Annulla",
+      danger: false
+    }
+  );
+
+  if (!ok) return;
+
   try {
     await db.collection("notifications").doc(notifId).delete();
+
+    if (typeof showToast === "function") {
+      showToast("✅ Notifica eliminata");
+    }
   } catch (err) {
     console.error("delete notification error:", err);
   }
