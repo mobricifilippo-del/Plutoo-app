@@ -3513,9 +3513,12 @@ function renderNearby(){
   if(!nearGrid) return;
 
   const list = filteredDogs();
+
   alert(
   "RENDER NEARBY\n\n" +
-  list.map(d => `${d.id} - ${d.name}`).join("\n")
+  list.map(d => `${d.id} - ${d.name}`).join("\n") +
+  "\n\nSTACK:\n" +
+  String(new Error().stack).split("\n").slice(0, 6).join("\n")
 );
 
   const nextSignature = list.map(d => String(d.id)).join("|");
