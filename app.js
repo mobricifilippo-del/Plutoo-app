@@ -3560,7 +3560,9 @@ function renderNearby(){
         loading="eager"
         fetchpriority="high"
         decoding="sync"
-        onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"
+        style="opacity:0"
+        onload="this.style.opacity='1'"
+        onerror="this.onerror=null;this.src='./plutoo-icon-192.png';this.style.opacity='1';"
       />
 
       <div class="card-info">
