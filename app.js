@@ -3509,12 +3509,14 @@ btnDogBoardBack?.addEventListener("click", () => {
 
   // ============ Nearby ============
 
-  // ============ Nearby ============
-
 function renderNearby(){
   if(!nearGrid) return;
 
   const list = filteredDogs();
+  alert(
+  "RENDER NEARBY\n\n" +
+  list.map(d => `${d.id} - ${d.name}`).join("\n")
+);
 
   const nextSignature = list.map(d => String(d.id)).join("|");
   const currentSignature = nearGrid.dataset.renderSignature || "";
