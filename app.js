@@ -3509,17 +3509,7 @@ btnDogBoardBack?.addEventListener("click", () => {
 
   // ============ Nearby ============
 
-  function renderNearby(){
-  if(!nearGrid) return;
-
-    const list = filteredDogs();
-    if (!list.length){
-      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
-      return;
-    }
-    nearGrid.innerHTML = list.map(cardHTML).join("");
-
-    setTimeout(()=>{
+  setTimeout(()=>{
       qa(".dog-card").forEach(card=>{
         const id = card.getAttribute("data-id");
 const d  = list.find(x => x && String(x.id) === String(id));
@@ -3529,7 +3519,26 @@ if(!d) return;
           card.classList.add("flash-violet");
           setTimeout(()=>{
             card.classList.remove("flash-violet");
-            window.openFreshDogProfile(d.id, d);
+            windofunction renderNearby(){
+  if(!nearGrid) return;
+
+    const list = filteredDogs();
+
+    const nextSignature = list.map(d => String(d.id)).join("|");
+    const currentSignature = nearGrid.dataset.renderSignature || "";
+
+    if (!list.length){
+      nearGrid.dataset.renderSignature = "";
+      nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
+      return;
+    }
+
+    if (nextSignature && nextSignature === currentSignature) {
+      return;
+    }
+
+    nearGrid.innerHTML = list.map(cardHTML).join("");
+    nearGrid.dataset.renderSignature = nextSignature;w.openFreshDogProfile(d.id, d);
           }, 500);
         });
       });
