@@ -9901,7 +9901,20 @@ if (media.text && media.text.trim() !== "") {
     }
 
     if (storyLikeBtn && media.id) {
-  storyLikeBtn.onclick = () => toggleStoryLike(media.id);
+  storyLikeBtn.onclick = () => {
+  const isOwnerStory =
+    currentStory &&
+    String(currentStory.ownerUid || "") === String(window.PLUTOO_UID || "");
+
+  if (isOwnerStory) {
+    if (typeof openStoryLikesList === "function") {
+      openStoryLikesList(media.id);
+    }
+    return;
+  }
+
+  toggleStoryLike(media.id);
+};
 
   const mediaId = String(media.id);
   const uid = String(window.PLUTOO_UID || "");
