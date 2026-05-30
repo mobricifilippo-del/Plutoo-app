@@ -9903,29 +9903,36 @@ if (isDemoStory) {
   if (!uid || !_db) {
     updateStoryLikeUI(mediaId);
   } else {
-    _db
+
+    const likesRef = _db
       .collection("stories")
       .doc(mediaId)
-      .collection("likes")
-      .doc(uid)
-      .get()
-      .then((snap) => {
+      .collection("likes");
+
+    Promise.all([
+      likesRef.doc(uid).get(),
+      likesRef.get()
+    ])
+      .then(([userLikeSnap, likesSnap]) => {
         if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
 
-        const likedValue = !!(snap && snap.exists);
+        const likedValue = !!(userLikeSnap && userLikeSnap.exists);
+        const likeCount = likesSnap && typeof likesSnap.size === "number"
+          ? likesSnap.size
+          : 0;
 
-if (likedValue) {
-  state.storyLikesByMedia[mediaId] = true;
-} else {
-  delete state.storyLikesByMedia[mediaId];
-}
+        if (likedValue) {
+          state.storyLikesByMedia[mediaId] = true;
+        } else {
+          delete state.storyLikesByMedia[mediaId];
+        }
 
-updateStoryLikeUI(mediaId, likedValue);
-        
+        updateStoryLikeUI(mediaId, likedValue, likeCount);
       })
       .catch(() => {
         updateStoryLikeUI(mediaId);
       });
+    
   }
     }
     
