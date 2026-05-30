@@ -10012,6 +10012,7 @@ updateStoryLikeUI(mediaId, likedValue);
     }
     document.body.classList.remove("noscroll");
     document.body.classList.remove("story-open");
+    state.storyOpen = false;
 
     if (StoriesState?.openedFrom === "profile") {
       $("profilePage")?.classList.remove("hidden");
