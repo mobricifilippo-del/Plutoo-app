@@ -1938,14 +1938,6 @@ window.openProfilePage(dog);
         myDog = dogsLocal.find(x => x && String(x.id) === String(savedId)) || null;  
       } catch (_) {}  
 
-      // 2) fallback localStorage "dogs"  
-      if (!myDog) {  
-        try {  
-          const dogsLS = JSON.parse(localStorage.getItem("dogs") || "[]");  
-          myDog = (Array.isArray(dogsLS) ? dogsLS : []).find(x => x && String(x.id) === String(savedId)) || null;  
-        } catch (_) { myDog = null; }  
-      }  
-
       // 3) se ho già dati → apro profilo  
       if (myDog && window.openProfilePage) {  
 
