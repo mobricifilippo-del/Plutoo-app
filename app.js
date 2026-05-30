@@ -9732,6 +9732,16 @@ circle.innerHTML = `
     document.body.classList.add("noscroll");
     document.body.classList.add("story-open");
 
+    state.storyOpen = true;
+
+try {
+  history.pushState(
+    { view: "storyViewer", storyOpen: true },
+    "",
+    ""
+  );
+} catch (_) {}
+
     renderStoryViewer();
     startStoryProgress();
   }
@@ -9744,6 +9754,16 @@ circle.innerHTML = `
     $("storyViewer")?.classList.remove("hidden");
     document.body.classList.add("noscroll");
     document.body.classList.add("story-open");
+
+    state.storyOpen = true;
+
+try {
+  history.pushState(
+    { view: "storyViewer", storyOpen: true },
+    "",
+    ""
+  );
+} catch (_) {}
 
     renderStoryViewer();
     startStoryProgress();
