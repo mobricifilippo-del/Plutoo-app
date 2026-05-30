@@ -8339,11 +8339,9 @@ await db.collection("notifications").doc(oldLikeNotifId).delete().catch(() => {}
       }
 
       const nameForMatch = d.name || (state.lang === "it" ? "Nuovo match" : "New match");
-      showMatchAnimation(nameForMatch, nextMatchColor);
 
-      state.matchCount++;
-
-      nextMatchColor = ["💙","💚","💛","🧡","💜","💗","💝","💖","💞","❤️"][state.matchCount % 10];
+      showMatchAnimation(nameForMatch, "❤️");
+      
   } else {
   const likeNotifId = `like_${String(fromDogId)}_${String(toDogId)}`;
 
