@@ -5111,17 +5111,19 @@ followingOverlay?.addEventListener("click", (e) => {
     return !!(state.storyLikesByMedia && state.storyLikesByMedia[mediaId]);
   }
 
-  function updateStoryLikeUI(mediaId) {
-    if (!storyLikeBtn || !mediaId) return;
+  function updateStoryLikeUI(mediaId, likedValue, likeCount) {
+  if (!storyLikeBtn || !mediaId) return;
 
-    const liked = arguments.length > 1 ? arguments[1] === true : isStoryLiked(mediaId);
-    storyLikeBtn.classList.toggle("liked", liked);
+  const liked = arguments.length > 1 ? likedValue === true : isStoryLiked(mediaId);
+  const count = Number.isFinite(Number(likeCount)) ? Number(likeCount) : 0;
 
-    storyLikeBtn.classList.remove("heart-anim");
-    void storyLikeBtn.offsetWidth;
-    storyLikeBtn.classList.add("heart-anim");
+  storyLikeBtn.classList.toggle("liked", liked);
 
-    storyLikeBtn.textContent = "❤️";
+  storyLikeBtn.classList.remove("heart-anim");
+  void storyLikeBtn.offsetWidth;
+  storyLikeBtn.classList.add("heart-anim");
+
+  storyLikeBtn.textContent = count > 0 ? `❤️ ${count}` : "❤️";
   }
 
   function toggleStoryLike(mediaId) {
