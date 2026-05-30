@@ -2974,11 +2974,6 @@ display: none !important;
 }
 
 /* evita che vecchie regole testo/emoji interferiscano */
-.notif-icon{
-  color:inherit !important;
-  -webkit-text-fill-color:inherit !important;
-  filter:none !important;
-}
 
 .notif-icon{
   color:#fff !important;
