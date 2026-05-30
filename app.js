@@ -5105,6 +5105,137 @@ followingOverlay?.addEventListener("click", (e) => {
   }
 });
 
+async function openStoryLikesList(mediaId) {
+  const _db = window.db || (typeof db !== "undefined" ? db : null);
+
+  if (!mediaId || !_db) {
+    showPlutooAlert("Firestore non pronto. Riprova tra un attimo.", {
+      title: "Plutoo",
+      confirmText: "OK"
+    });
+    return;
+  }
+
+  const modal = document.createElement("div");
+  modal.style.position = "fixed";
+  modal.style.inset = "0";
+  modal.style.zIndex = "99999";
+  modal.style.background = "rgba(0,0,0,.72)";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.padding = "18px";
+
+  modal.innerHTML = `
+    <div style="
+      width:min(92vw,390px);
+      max-height:80vh;
+      overflow:auto;
+      background:#171022;
+      border:1px solid rgba(205,164,52,.45);
+      border-radius:20px;
+      padding:16px;
+      color:#fff;
+      box-shadow:0 18px 45px rgba(0,0,0,.45);
+    ">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;">
+        <div style="font-weight:900;color:#CDA434;font-size:1.05rem;">❤️ Like ricevuti</div>
+        <button type="button" data-close="1" class="btn ghost small">✕</button>
+      </div>
+      <div data-list="1" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="color:rgba(255,255,255,.75);font-weight:700;">Caricamento...</div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const close = () => {
+    if (modal.parentNode) modal.parentNode.removeChild(modal);
+  };
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal || e.target?.getAttribute("data-close") === "1") {
+      close();
+    }
+  });
+
+  const list = modal.querySelector("[data-list='1']");
+
+  try {
+    const likesSnap = await _db
+      .collection("stories")
+      .doc(String(mediaId))
+      .collection("likes")
+      .get();
+
+    if (!likesSnap || likesSnap.empty) {
+      list.innerHTML = `<div style="color:rgba(255,255,255,.75);font-weight:700;">Nessun like ricevuto</div>`;
+      return;
+    }
+
+    list.innerHTML = "";
+
+    for (const likeDoc of likesSnap.docs) {
+      const likeData = likeDoc.data() || {};
+      const dogId = String(likeData.fromDogId || likeData.uid || likeDoc.id || "").trim();
+      if (!dogId) continue;
+
+      const dogSnap = await _db.collection("dogs").doc(dogId).get();
+      if (!dogSnap || !dogSnap.exists) continue;
+
+      const dogData = dogSnap.data() || {};
+      const fallbackDog = {
+        id: dogSnap.id,
+        name: String(dogData.name || "DOG"),
+        img: String(dogData.photoUrl || dogData.img || "./plutoo-icon-192.png"),
+        avatar: String(dogData.photoUrl || dogData.img || "./plutoo-icon-192.png"),
+        ownerUid: String(dogData.ownerUid || dogId || "")
+      };
+
+      const row = document.createElement("button");
+      row.type = "button";
+      row.style.cssText = `
+        width:100%;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        padding:10px;
+        border-radius:16px;
+        border:1px solid rgba(205,164,52,.22);
+        background:rgba(255,255,255,.06);
+        color:#fff;
+        text-align:left;
+      `;
+
+      row.innerHTML = `
+        <img src="${fallbackDog.img}" alt="${fallbackDog.name}" style="
+          width:44px;
+          height:44px;
+          border-radius:50%;
+          object-fit:cover;
+          background:#0b0b0f;
+        " onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
+        <div style="font-weight:900;">${fallbackDog.name}</div>
+      `;
+
+      row.onclick = () => {
+        close();
+        if (typeof closeStoryViewer === "function") closeStoryViewer();
+        window.openFreshDogProfile(dogSnap.id, fallbackDog);
+      };
+
+      list.appendChild(row);
+    }
+
+    if (!list.children.length) {
+      list.innerHTML = `<div style="color:rgba(255,255,255,.75);font-weight:700;">Nessun like ricevuto</div>`;
+    }
+  } catch (e) {
+    list.innerHTML = `<div style="color:rgba(255,255,255,.75);font-weight:700;">Errore caricamento like</div>`;
+  }
+}
+
   // ============ LIKE STORIES ============
   function isStoryLiked(mediaId) {
     if (!mediaId) return false;
