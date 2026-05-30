@@ -3045,14 +3045,6 @@ display: none !important;
   text-overflow:ellipsis;
 }
 
-.notif-list .notif-sub{
-  font-size:.82rem;
-  color:var(--muted);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
 .notif-list .notif-item.unread .notif-main{
   color:var(--gold);
 }
