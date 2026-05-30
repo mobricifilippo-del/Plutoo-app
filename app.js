@@ -10187,11 +10187,11 @@ if (step2Preview) step2Preview.innerHTML = "";
 function openUploadModal() {
   pruneStories24h();
 
-  // ✅ SOLO PLUS può pubblicare (messaggio definitivo)
+  // ✅ FREE: 1 aggiornamento attivo ogni 24h — PLUS: illimitati
   if (!StoriesState.canUploadStory()) {
     const msg = state.lang === "it"
-      ? "Gli Aggiornamenti DOG sono disponibili con Plutoo Plus.\nAttiva Plus per pubblicare aggiornamenti del tuo DOG."
-      : "DOG Updates are available with Plutoo Plus.\nActivate Plus to publish updates of your DOG.";
+      ? "Hai già un Aggiornamento DOG attivo.\nCon il piano Free puoi pubblicare 1 aggiornamento ogni 24h.\nCon Plutoo Plus hai aggiornamenti illimitati."
+      : "You already have an active DOG Update.\nWith the Free plan you can publish 1 update every 24h.\nWith Plutoo Plus you have unlimited updates.";
 
     showPlutooAlert(msg, {
   title: "Plutoo",
