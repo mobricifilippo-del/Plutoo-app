@@ -5127,9 +5127,9 @@ followingOverlay?.addEventListener("click", (e) => {
   }
 
   function toggleStoryLike(mediaId) {
-    if (!mediaId) return;
+  if (!mediaId) return;
 
-    if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
+  if (window.PLUTOO_HAS_DOG !== true || !window.PLUTOO_DOG_ID) {
     showPlutooAlert(
       state.lang === "it"
         ? "Per mettere Mi Piace agli Aggiornamenti DOG crea il tuo profilo DOG"
@@ -5140,115 +5140,138 @@ followingOverlay?.addEventListener("click", (e) => {
       }
     );
     return;
-    }
-
-    const currentStory =
-  (StoriesState.stories || []).find(story =>
-    Array.isArray(story.media) &&
-    story.media.some(m => String(m.id) === String(mediaId))
-  );
-
-const isDemoStory =
-  !!currentStory &&
-  currentStory.isDemo === true;
-
-if (isDemoStory) {
-  if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
-
-  if (state.storyLikesByMedia[mediaId]) {
-    delete state.storyLikesByMedia[mediaId];
-  } else {
-    state.storyLikesByMedia[mediaId] = true;
   }
 
-  updateStoryLikeUI(mediaId);
+  const currentStory =
+    (StoriesState.stories || []).find(story =>
+      Array.isArray(story.media) &&
+      story.media.some(m => String(m.id) === String(mediaId))
+    );
 
-  if (storyLikeBtn) {
-    storyLikeBtn.classList.remove("heart-anim");
-    void storyLikeBtn.offsetWidth;
-    storyLikeBtn.classList.add("heart-anim");
+  const myDogId = String(window.PLUTOO_DOG_ID || "");
+  const myUid = String(window.PLUTOO_UID || "");
+  const storyDogId = String(currentStory?.userId || currentStory?.dogId || "");
+  const storyOwnerUid = String(currentStory?.ownerUid || "");
+
+  if (
+    (myDogId && storyDogId && storyDogId === myDogId) ||
+    (myUid && storyOwnerUid && storyOwnerUid === myUid)
+  ) {
+    return;
   }
 
-  return;
-}
-    
+  const isDemoStory =
+    !!currentStory &&
+    currentStory.isDemo === true;
+
+  if (isDemoStory) {
     if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
 
-    const wasLiked = isStoryLiked(mediaId);
-
-    if (wasLiked) {
+    if (state.storyLikesByMedia[mediaId]) {
       delete state.storyLikesByMedia[mediaId];
     } else {
       state.storyLikesByMedia[mediaId] = true;
     }
-    
+
     updateStoryLikeUI(mediaId);
 
-    // ✅ FIRESTORE (PRODUCTION): salva like/unlike (robusto, non silenzioso)
-    try {
-      const uid = window.PLUTOO_UID;
-      const _db = (window.db || (typeof db !== "undefined" ? db : null));
-      if (!uid || !_db) return;
-
-      const hasFirebase =
-        (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
-
-      const ts =
-        (hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function")
-          ? firebase.firestore.FieldValue.serverTimestamp()
-          : new Date();
-
-      const ref = _db
-        .collection("stories")
-        .doc(String(mediaId))
-        .collection("likes")
-        .doc(String(uid));
-
-      if (wasLiked) {
-        ref.delete().catch((e) => console.error("storyLike delete error:", e));
-      } else {
-        ref.set(
-          {
-            uid: String(uid),
-            mediaId: String(mediaId),
-            createdAt: ts
-          },
-          { merge: true }
-        ).catch((e) => console.error("storyLike set error:", e));
-
-        const currentStory =
-  (StoriesState.stories || []).find(story =>
-    Array.isArray(story.media) &&
-    story.media.some(m => String(m.id) === String(mediaId))
-  );
-
-  _db.collection("stories").doc(String(mediaId)).get()
-  .then((storySnap) => {
-    const storyData = (storySnap && storySnap.exists) ? (storySnap.data() || {}) : {};
-    const targetDogId = String(storyData.dogId || "");
-
-    if (!targetDogId || targetDogId === String(window.PLUTOO_DOG_ID || "")) return;
-
-    const notifId =
-      `story_like_${String(mediaId)}_${String(window.PLUTOO_DOG_ID || "")}`;
-
-    _db.collection("notifications").doc(notifId).set({
-      type: "story_like",
-      fromUid: String(uid),
-      fromDogId: String(window.PLUTOO_DOG_ID || ""),
-      toDogId: targetDogId,
-      mediaId: String(mediaId),
-      createdAt: ts,
-      read: false
-    }, { merge: true }).catch(() => {});
-  })
-  .catch(() => {});
-        
-      }
-    } catch (e) {
-      console.error("storyLike write fatal error:", e);
-      
+    if (storyLikeBtn) {
+      storyLikeBtn.classList.remove("heart-anim");
+      void storyLikeBtn.offsetWidth;
+      storyLikeBtn.classList.add("heart-anim");
     }
+
+    return;
+  }
+
+  const wasLiked = isStoryLiked(mediaId);
+
+  try {
+    const uid = window.PLUTOO_UID;
+    const _db = (window.db || (typeof db !== "undefined" ? db : null));
+    if (!uid || !_db) return;
+
+    const hasFirebase =
+      (typeof firebase !== "undefined" && firebase && firebase.firestore && firebase.firestore.FieldValue);
+
+    const ts =
+      (hasFirebase && typeof firebase.firestore.FieldValue.serverTimestamp === "function")
+        ? firebase.firestore.FieldValue.serverTimestamp()
+        : new Date();
+
+    const ref = _db
+      .collection("stories")
+      .doc(String(mediaId))
+      .collection("likes")
+      .doc(String(uid));
+
+    if (wasLiked) {
+      ref.delete()
+        .then(() => ref.parent.get())
+        .then((likesSnap) => {
+          if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
+          delete state.storyLikesByMedia[mediaId];
+
+          const likeCount = likesSnap && typeof likesSnap.size === "number"
+            ? likesSnap.size
+            : 0;
+
+          updateStoryLikeUI(mediaId, false, likeCount);
+        })
+        .catch((e) => console.error("storyLike delete error:", e));
+    } else {
+      ref.set(
+        {
+          uid: String(uid),
+          mediaId: String(mediaId),
+          createdAt: ts
+        },
+        { merge: true }
+      )
+        .then(() => ref.parent.get())
+        .then((likesSnap) => {
+          if (!state.storyLikesByMedia) state.storyLikesByMedia = {};
+          state.storyLikesByMedia[mediaId] = true;
+
+          const likeCount = likesSnap && typeof likesSnap.size === "number"
+            ? likesSnap.size
+            : 0;
+
+          updateStoryLikeUI(mediaId, true, likeCount);
+        })
+        .catch((e) => console.error("storyLike set error:", e));
+
+      const currentStory =
+        (StoriesState.stories || []).find(story =>
+          Array.isArray(story.media) &&
+          story.media.some(m => String(m.id) === String(mediaId))
+        );
+
+      _db.collection("stories").doc(String(mediaId)).get()
+        .then((storySnap) => {
+          const storyData = (storySnap && storySnap.exists) ? (storySnap.data() || {}) : {};
+          const targetDogId = String(storyData.dogId || "");
+
+          if (!targetDogId || targetDogId === String(window.PLUTOO_DOG_ID || "")) return;
+
+          const notifId =
+            `story_like_${String(mediaId)}_${String(window.PLUTOO_DOG_ID || "")}`;
+
+          _db.collection("notifications").doc(notifId).set({
+            type: "story_like",
+            fromUid: String(uid),
+            fromDogId: String(window.PLUTOO_DOG_ID || ""),
+            toDogId: targetDogId,
+            mediaId: String(mediaId),
+            createdAt: ts,
+            read: false
+          }, { merge: true }).catch(() => {});
+        })
+        .catch(() => {});
+    }
+  } catch (e) {
+    console.error("storyLike write fatal error:", e);
+  }
   }
 
   // ========== Profilo DOG (con Stories + Social + Follow + Like foto) ============
