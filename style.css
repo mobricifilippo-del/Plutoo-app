@@ -3058,13 +3058,6 @@ display: none !important;
   text-overflow:ellipsis;
 }
 
-.notif-list .notif-time{
-  margin-left:auto;
-  font-size:.78rem;
-  color:var(--muted);
-  opacity:.85;
-}
-
 .notif-list .notif-item.unread .notif-main{
   color:var(--gold);
 }
