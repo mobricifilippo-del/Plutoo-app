@@ -1343,8 +1343,6 @@ rewardOpen: false,
 // ✅ FIX DEFINITIVO: una sola sorgente di verità per la lingua e per tutte le funzioni che usano window.state
   window.state = state;
 
- let nextMatchColor = ["🩵","🩷","💛","🧡","💚","💙","💜","💗","🫶","❤️"][state.matchCount % 10];
-
   // ============ DOM refs ============
   const homeScreen   = $("homeScreen");
   const appScreen    = $("appScreen");
