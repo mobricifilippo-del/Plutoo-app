@@ -3929,7 +3929,7 @@ await db.collection("notifications").doc(oldLikeNotifId).delete().catch(() => {}
     await ensureChatForMatch(d);
   }
 
-  showMatchAnimation(d.name, nextMatchColor);
+  showMatchAnimation(d.name, "❤️");
 
 } else {
 
