@@ -415,6 +415,12 @@ document.getElementById("btnLogout")?.addEventListener("click", async () => {
     localStorage.setItem("currentView", "home");
     localStorage.setItem("entered", "0");
 
+    localStorage.removeItem("dogs");
+
+if (window.state && Array.isArray(window.state.dogs)) {
+  window.state.dogs = [];
+}
+
     Object.keys(localStorage).forEach((k) => {
   if (k.startsWith("f_")) {
     localStorage.removeItem(k);
