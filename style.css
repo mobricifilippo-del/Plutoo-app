@@ -3034,6 +3034,7 @@ display: none !important;
   flex-direction:column;
   gap:.1rem;
   min-width:0;
+  flex:1;
 }
 
 .notif-list .notif-main{
