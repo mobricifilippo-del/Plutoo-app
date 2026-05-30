@@ -1301,7 +1301,6 @@ const state = {
   // Swipe & rewards
 swipeCount: 0,
 nextRewardAt: 10,
-matchCount: 0,
 rewardOpen: false,
 
   // Match / amicizie / chat
