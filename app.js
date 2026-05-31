@@ -6954,6 +6954,7 @@ if   (!pendingFiles.length) return;
             if (c) c.textContent = state.lang === "it" ? " — Errore lettura profilo" : " — Profile read error";
             publishBar.style.display = "none";
           });
+      });
       };
     }
   };
