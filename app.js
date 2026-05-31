@@ -7117,6 +7117,22 @@ if (isGalleryOwner) {
 galleryBlock.appendChild(ph);
     }
 
+    if (!isGalleryOwner && images.length === 0) {
+  const empty = document.createElement("div");
+  const isPlusGallery = d.plus === true && d.plusStatus === "active";
+
+  empty.className = "gallery-empty-card";
+  empty.classList.toggle("gallery-empty-plus", isPlusGallery);
+
+  empty.innerHTML = `
+    <div class="gallery-empty-icon">📷</div>
+    <div class="gallery-empty-text">Nessuna immagine del DOG caricata</div>
+  `;
+
+  galleryBlock.appendChild(empty);
+  return;
+    }
+
     const addPh = document.createElement("div");
     addPh.className = "ph";
 
