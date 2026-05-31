@@ -2798,27 +2798,27 @@ display: none !important;
 }
 
 .msg-preview{
-  color:rgba(255,255,255,0.78);
-  font-weight:650;
-  font-size:.86rem;
-  line-height:1.28;
-  margin-top:2px;
+  color:rgba(255,255,255,0.68);
+  font-weight:500;
+  font-size:.84rem;
+  line-height:1.25;
+  margin-top:1px;
 
   overflow:hidden;
   text-overflow:ellipsis;
 
   display:-webkit-box;
-  -webkit-line-clamp:2;
+  -webkit-line-clamp:1;
   -webkit-box-orient:vertical;
 
   max-width:100%;
 }
 
 .msg-meta{
-  color:rgba(255,255,255,0.56);
-  font-size:.74rem;
-  line-height:1.1;
-  margin-top:4px;
+  color:rgba(255,255,255,0.38);
+  font-size:.68rem;
+  line-height:1;
+  margin-top:6px;
 
   white-space:nowrap;
   overflow:hidden;
