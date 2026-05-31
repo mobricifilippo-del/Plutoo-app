@@ -6515,6 +6515,11 @@ const newDogId = dogRef.id;
         km: 0,
         verified: false,
         photoUrl: photoUrl,
+        
+        availability: {
+  breeding: false,
+  walks: false
+},
         createdAt: createdAt,
         updatedAt: createdAt
       }, { merge: true });
