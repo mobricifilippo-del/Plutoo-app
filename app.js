@@ -7700,7 +7700,10 @@ availabilityBox.style.background = "rgba(255,255,255,.03)";
 
 const availabilityTitle = document.createElement("div");
 availabilityTitle.style.fontWeight = "900";
-availabilityTitle.style.color = "#CDA434";
+availabilityTitle.style.color =
+  (d.plus === true && d.plusStatus === "active")
+    ? "#CDA434"
+    : "#a78bfa";
 availabilityTitle.textContent = "Disponibilità DOG";
 
 const currentAvailability = d.availability && typeof d.availability === "object"
