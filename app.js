@@ -8726,10 +8726,10 @@ if (chatDogAvatar) {
   state.currentDogId = dogId;
   state.currentChatId = chatId;
 
-  chatList.innerHTML = "";
+  chatList.innerHTML = `<div class="chat-loading">${state.lang === "it" ? "Caricamento messaggi…" : "Loading messages…"}</div>`;
 
-  // Carica history completa
-  loadChatHistory(chatId, dogName);
+// Carica history completa
+loadChatHistory(chatId, dogName);
 
   // ✅ LETTO quando apro la chat (serve per far scalare il badge)
   const openedFrom = state._openChatFromTab || "";
