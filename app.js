@@ -8844,35 +8844,34 @@ const applyChatRules = (hasMatchValue) => {
     }
 
   const hasMatch = (chatPane.dataset.hasMatch === "1") || !!(state.matches && state.matches[dogId]);
-    const hasAccepted = String(chatPane.dataset.status || "") === "accepted";
-  const msgCount = Number(chatPane.dataset.msgCount || 0);
+const msgCount = Number(chatPane.dataset.msgCount || 0);
 
-  if (!state.plus) {
-    if (msgCount === 0) {
-      if (state.rewardOpen) return;
-      state.rewardOpen = true;
-      showRewardVideoMock("chat", () => {
-        state.rewardOpen = false;
-        sendChatMessage(text, dogId, hasMatch, msgCount);
-      });
-      return;
-    } else if (!hasMatch && !hasAccepted && msgCount >= 1) {
+const _perm = getChatPermission({
+  hasMatch: hasMatch,
+  status: String(chatPane.dataset.status || ""),
+  msgCount: msgCount,
+  plus: state.plus
+});
 
-      showPlutooAlert(
-  state.lang === "it"
-    ? "Serve un match per continuare"
-    : "Match required to continue",
-  {
-    title: "Plutoo",
-    confirmText: "OK"
-  }
-);
-return;
-      
-    }
-  }
+if (!_perm.canSend) {
+  showPlutooAlert(
+    getChatPlaceholder(_perm.placeholderKey, state.lang),
+    { title: "Plutoo", confirmText: "OK" }
+  );
+  return;
+}
 
-  sendChatMessage(text, dogId, hasMatch, msgCount);
+if (_perm.needsReward) {
+  if (state.rewardOpen) return;
+  state.rewardOpen = true;
+  showRewardVideoMock("chat", () => {
+    state.rewardOpen = false;
+    sendChatMessage(text, dogId, hasMatch, msgCount);
+  });
+  return;
+}
+
+sendChatMessage(text, dogId, hasMatch, msgCount);
 });
 
 async function sendChatMessage(text, dogId, hasMatch, msgCount) {
