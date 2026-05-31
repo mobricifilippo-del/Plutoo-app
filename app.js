@@ -9011,12 +9011,12 @@ localStorage.setItem(
 );
 
 // Regole input
-if (!state.plus && !hasMatch && state.chatMessagesSent[safeDogId] >= 1) {
+if (!state.plus && !hasMatch && nextStatus !== "accepted" && state.chatMessagesSent[safeDogId] >= 1) {
   chatInput.disabled = true;
   chatInput.placeholder =
-    state.lang === "it"
-      ? "Match necessario per continuare"
-      : "Match needed to continue";
+  state.lang === "it"
+    ? "Attendi una risposta per continuare"
+    : "Wait for a reply to continue";
 } else {
   chatInput.disabled = false;
   chatInput.placeholder =
