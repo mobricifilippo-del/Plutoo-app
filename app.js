@@ -8804,7 +8804,7 @@ if (chatDogAvatar) {
         sendChatMessage(text, dogId, hasMatch, msgCount);
       });
       return;
-    } else if (!hasMatch && msgCount >= 1) {
+    } else if (!hasMatch && !hasAccepted && msgCount >= 1) {
 
       showPlutooAlert(
   state.lang === "it"
