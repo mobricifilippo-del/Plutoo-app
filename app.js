@@ -6933,9 +6933,11 @@ if   (!pendingFiles.length) return;
                     images = nextGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
 
                     pendingFiles = [];
-        if (c) c.textContent = state.lang === "it"
-  ? (newItems.length === 1 ? " — Immagine caricata con successo" : " — Immagini caricate con successo")
-  : (newItems.length === 1 ? " — Image uploaded successfully" : " — Images uploaded successfully");
+                 showToast(
+                 state.lang === "it"
+                 ? (newItems.length === 1 ? "✅ Immagine caricata" : "✅ Immagini caricate")
+                 : (newItems.length === 1 ? "✅ Image uploaded" : "✅ Images uploaded")
+);
 
                     setTimeout(() => {
                       if (c) c.textContent = "";
