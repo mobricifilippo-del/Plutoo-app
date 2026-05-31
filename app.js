@@ -8766,23 +8766,18 @@ if (chatDogAvatar) {
 });
   }
 
-  // Funzione locale per applicare le regole input (UNA sola fonte: hasMatch vero/falso)
-  const applyChatRules = (hasMatchValue) => {
-  const msgCount =
-  Number(chatPane.dataset.msgCount || 0);
+  // Funzione locale per applicare le regole input (fonte unica: getChatPermission)
+const applyChatRules = (hasMatchValue) => {
+  const _perm = getChatPermission({
+    hasMatch: hasMatchValue,
+    status: String(chatPane.dataset.status || ""),
+    msgCount: Number(chatPane.dataset.msgCount || 0),
+    plus: state.plus
+  });
 
-    if (!state.plus && !hasMatchValue && msgCount >= 1) {
-      chatInput.disabled = true;
-      chatInput.placeholder = state.lang === "it"
-        ? "Match necessario per continuare"
-        : "Match needed to continue";
-    } else {
-      chatInput.disabled = false;
-      chatInput.placeholder = state.lang === "it"
-        ? "Scrivi un messaggio…"
-        : "Type a message…";
-    }
-  };
+  chatInput.disabled = _perm.disabled;
+  chatInput.placeholder = getChatPlaceholder(_perm.placeholderKey, state.lang);
+};
 
   // 1) Applica subito una regola “provvisoria” (cache locale, se esiste)
   const localHasMatch = !!(state.matches && state.matches[dogId]);
