@@ -8792,6 +8792,7 @@ if (chatDogAvatar) {
     }
 
   const hasMatch = (chatPane.dataset.hasMatch === "1") || !!(state.matches && state.matches[dogId]);
+    const hasAccepted = String(chatPane.dataset.status || "") === "accepted";
   const msgCount = Number(chatPane.dataset.msgCount || 0);
 
   if (!state.plus) {
