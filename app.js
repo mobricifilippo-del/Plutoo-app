@@ -8727,6 +8727,10 @@ if (chatDogAvatar) {
 // Carica history completa
 await loadChatHistory(chatId, dogName);
 
+  // Mostra pannello chat
+chatPane.classList.remove("hidden");
+chatPane.classList.add("show");
+
   // ✅ LETTO quando apro la chat (serve per far scalare il badge)
   const openedFrom = state._openChatFromTab || "";
   state._openChatFromTab = ""; // reset
