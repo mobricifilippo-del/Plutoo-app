@@ -7162,7 +7162,14 @@ galleryBlock.appendChild(ph);
 
     addBtn.onclick = () => {
       if (!isGalleryOwner) return;
-      if (images.length >= maxPhotos) return;
+
+      if (images.length >= maxPhotos) {
+        if (typeof showToast === "function") {
+          showToast("⚠️ Hai raggiunto il limite di 5 immagini");
+        }
+        return;
+      }
+
       input.value = "";
       input.click();
     };
