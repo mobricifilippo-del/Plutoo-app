@@ -6321,35 +6321,125 @@ location.reload();
 
   const createDogZoneInput = document.getElementById("createDogZone");
 if (createDogZoneInput && isCreate) {
+
+  let _geoRunning = false;
+
   createDogZoneInput.addEventListener("click", () => {
 
     if (!createDogZoneInput.readOnly) return;
+    if (_geoRunning) return;
+    _geoRunning = true;
 
-    if (!navigator.geolocation) {
+    // ── MODALE GEO ────────────────────────────────────────────────
+    function showGeoModal(phase) {
+      // inietta keyframes una sola volta
+      if (!document.getElementById("_plutooGeoStyle")) {
+        const st = document.createElement("style");
+        st.id = "_plutooGeoStyle";
+        st.textContent =
+          "@keyframes _plSpinAnim { to { transform: rotate(360deg); } }";
+        document.head.appendChild(st);
+      }
+
+      // evita duplicati
+      const existing = document.getElementById("_plutooGeoModal");
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+      const overlay = document.createElement("div");
+      overlay.id = "_plutooGeoModal";
+      overlay.style.cssText =
+        "position:fixed;inset:0;z-index:99999;" +
+        "background:rgba(0,0,0,.62);" +
+        "display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;";
+
+      const title    = phase === 1
+        ? (state.lang === "it" ? "Attendi..."    : "Please wait…")
+        : (state.lang === "it" ? "Quasi fatto…"  : "Almost there…");
+      const subtitle = phase === 1
+        ? (state.lang === "it" ? "Sto rilevando la tua posizione" : "Detecting your position")
+        : (state.lang === "it" ? "Sto trovando la tua zona"       : "Finding your area");
+
+      overlay.innerHTML =
+        '<div style="' +
+          'width:min(88vw,320px);' +
+          'background:#171022;' +
+          'border:1px solid rgba(205,164,52,.55);' +
+          'border-radius:20px;' +
+          'padding:28px 22px 24px;' +
+          'box-shadow:0 20px 50px rgba(0,0,0,.55);' +
+          'color:#fff;' +
+          'text-align:center;' +
+          'box-sizing:border-box;">' +
+
+          // emoji cane
+          '<div style="font-size:2rem;margin-bottom:10px;">🐶</div>' +
+
+          // titolo gold
+          '<div style="' +
+            'font-weight:900;font-size:1.05rem;' +
+            'color:#CDA434;margin-bottom:6px;">' +
+            title +
+          '</div>' +
+
+          // sottotitolo
+          '<div id="_plutooGeoText" style="' +
+            'font-size:.875rem;font-weight:600;' +
+            'color:rgba(232,232,232,.82);' +
+            'margin-bottom:20px;line-height:1.4;">' +
+            subtitle +
+          '</div>' +
+
+          // spinner
+          '<div style="' +
+            'width:32px;height:32px;margin:0 auto;' +
+            'border:3px solid rgba(205,164,52,.18);' +
+            'border-top-color:#CDA434;' +
+            'border-radius:50%;' +
+            'animation:_plSpinAnim .75s linear infinite;">' +
+          '</div>' +
+
+        '</div>';
+
+      document.body.appendChild(overlay);
+    }
+
+    function updateGeoModal(phase) {
+      const existing = document.getElementById("_plutooGeoModal");
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      showGeoModal(phase);
+    }
+
+    function closeGeoModal() {
+      const modal = document.getElementById("_plutooGeoModal");
+      if (modal && modal.parentNode) modal.parentNode.removeChild(modal);
+      _geoRunning = false;
+    }
+
+    function enableManualFallback() {
+      closeGeoModal();
       createDogZoneInput.value = "";
       createDogZoneInput.readOnly = false;
       createDogZoneInput.removeAttribute("inputmode");
-      createDogZoneInput.placeholder = state.lang === "it" ? "Inserisci zona manualmente" : "Enter area manually";
+      createDogZoneInput.placeholder =
+        state.lang === "it" ? "Inserisci zona manualmente" : "Enter area manually";
       createDogZoneInput.focus();
+    }
+    // ── FINE MODALE GEO ───────────────────────────────────────────
+
+    if (!navigator.geolocation) {
+      enableManualFallback();
       return;
     }
 
-    createDogZoneInput.value = state.lang === "it" ? "Rilevamento posizione..." : "Detecting location...";
+    // FASE 1 — GPS
+    showGeoModal(1);
 
     let geoWatchId = null;
-    let geoDone = false;
-
-    function enableManualFallback() {
-      createDogZoneInput.value = "";
-      createDogZoneInput.readOnly = false;
-      createDogZoneInput.removeAttribute("inputmode");
-      createDogZoneInput.placeholder = state.lang === "it" ? "Inserisci zona manualmente" : "Enter area manually";
-      createDogZoneInput.focus();
-    }
+    let geoDone    = false;
 
     geoWatchId = navigator.geolocation.watchPosition(
-      p => {
 
+      p => {
         if (geoDone) return;
         geoDone = true;
 
@@ -6362,34 +6452,42 @@ if (createDogZoneInput && isCreate) {
           lon: p.coords.longitude
         };
 
-        createDogZoneInput.value = state.lang === "it" ? "Rilevamento zona..." : "Detecting area...";
+        // FASE 2 — NOMINATIM
+        updateGeoModal(2);
 
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo.lat}&lon=${state.geo.lon}&addressdetails=1&accept-language=it`)
+        fetch(
+          "https://nominatim.openstreetmap.org/reverse?format=jsonv2" +
+          "&lat=" + state.geo.lat +
+          "&lon=" + state.geo.lon +
+          "&addressdetails=1&accept-language=it"
+        )
           .then(r => {
             if (!r.ok) throw new Error();
             return r.json();
           })
           .then(data => {
-            const a = data && data.address ? data.address : {};
-            const city = a.city || a.town || a.village || a.municipality || "";
+            const a     = data && data.address ? data.address : {};
+            const city  = a.city || a.town || a.village || a.municipality || "";
             const region = a.region || a.state || "";
             const label = [city, region].filter(Boolean).join(", ");
 
             if (label) {
+              // FASE 3 — SUCCESSO
               createDogZoneInput.value = label;
+              closeGeoModal();
             } else {
+              // Nominatim ok ma label vuota — FASE 5
               enableManualFallback();
             }
           })
-          .catch((e) => {
+          .catch(e => {
             console.error("ZONE REVERSE GEOCODING ERROR:", e);
+            // FASE 5 — ERRORE NOMINATIM
             enableManualFallback();
           });
-
       },
 
-      (err) => {
-
+      err => {
         if (geoDone) return;
         geoDone = true;
 
@@ -6397,6 +6495,7 @@ if (createDogZoneInput && isCreate) {
           navigator.geolocation.clearWatch(geoWatchId);
         }
 
+        // FASE 4 — ERRORE GPS
         enableManualFallback();
       },
 
