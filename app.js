@@ -8788,7 +8788,7 @@ if (chatDogAvatar) {
     }
 
   const hasMatch = (chatPane.dataset.hasMatch === "1") || !!(state.matches && state.matches[dogId]);
-  const msgCount = state.chatMessagesSent[dogId] || 0;
+  const msgCount = Number(chatPane.dataset.msgCount || 0);
 
   if (!state.plus) {
     if (msgCount === 0) {
