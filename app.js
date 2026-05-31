@@ -9063,19 +9063,22 @@ localStorage.setItem(
 );
 
 // Regole input
-if (!state.plus && !hasMatch && nextStatus !== "accepted" && state.chatMessagesSent[safeDogId] >= 1) {
-  chatInput.disabled = true;
-  chatInput.placeholder =
-  state.lang === "it"
-    ? "Attendi una risposta per continuare"
-    : "Wait for a reply to continue";
-} else {
-  chatInput.disabled = false;
-  chatInput.placeholder =
-    state.lang === "it"
-      ? "Scrivi un messaggio…"
-      : "Type a message…";
-}
+const _chatPh = {
+  write_message:  { it: "Scrivi un messaggio…", en: "Type a message…" },
+  wait_for_reply: { it: "Attendi una risposta per continuare", en: "Wait for a reply to continue" }
+};
+
+const _perm = getChatPermission({
+  hasMatch: hasMatch,
+  status: nextStatus,
+  msgCount: (msgCount || 0) + 1,
+  plus: state.plus
+});
+
+const _ph = _chatPh[_perm.placeholderKey] || _chatPh.write_message;
+
+chatInput.disabled = _perm.disabled;
+chatInput.placeholder = state.lang === "it" ? _ph.it : _ph.en;
         
 
   } catch (err) {
