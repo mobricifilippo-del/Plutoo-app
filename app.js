@@ -9067,11 +9067,6 @@ localStorage.setItem(
 );
 
 // Regole input
-const _chatPh = {
-  write_message:  { it: "Scrivi un messaggio…", en: "Type a message…" },
-  wait_for_reply: { it: "Attendi una risposta per continuare", en: "Wait for a reply to continue" }
-};
-
 const _perm = getChatPermission({
   hasMatch: hasMatch,
   status: nextStatus,
@@ -9079,10 +9074,8 @@ const _perm = getChatPermission({
   plus: state.plus
 });
 
-const _ph = _chatPh[_perm.placeholderKey] || _chatPh.write_message;
-
 chatInput.disabled = _perm.disabled;
-chatInput.placeholder = state.lang === "it" ? _ph.it : _ph.en;
+chatInput.placeholder = getChatPlaceholder(_perm.placeholderKey, state.lang);
         
 
   } catch (err) {
