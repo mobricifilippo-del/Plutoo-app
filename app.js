@@ -8661,7 +8661,7 @@ function getChatPlaceholder(placeholderKey, lang) {
 }
 
   // =========== Chat ===========
-function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
+async function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   if (!chatPane || !chatList || !chatInput) return;
 
   const selfUid = window.PLUTOO_UID || "anonymous";
