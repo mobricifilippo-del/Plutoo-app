@@ -8714,10 +8714,6 @@ if (chatDogAvatar) {
   chatDogAvatar.alt = dogName;
 }
 
-  // Mostra pannello chat
-  chatPane.classList.remove("hidden");
-  chatPane.classList.add("show");
-
   // Salva metadati correnti
   chatPane.dataset.dogId = dogId;
   chatPane.dataset.chatId = chatId;
