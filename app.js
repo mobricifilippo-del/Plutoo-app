@@ -7791,6 +7791,18 @@ availabilityBox.appendChild(availabilityWalksLabel);
           const uid = (window.PLUTOO_UID) || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
           if (!uid) throw new Error("Login richiesto");
 
+          if (!storage) throw new Error("Storage non pronto");
+
+  const uid = (window.PLUTOO_UID) || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
+  if (!uid) throw new Error("Login richiesto");
+
+  await Promise.allSettled([
+    storage.ref().child(`dogs/${uid}/profile.jpg`).delete(),
+    storage.ref().child(`dogs/${uid}/profile.png`).delete(),
+    storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.jpg`).delete(),
+    storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.png`).delete()
+  ]);
+
           const ext = selectedProfilePhotoFile.type && selectedProfilePhotoFile.type.includes("png") ? "png" : "jpg";
           const storageRef = storage.ref().child(`dogs/${uid}/profile.${ext}`);
 
