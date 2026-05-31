@@ -6817,8 +6817,14 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
 
     if (pubBtn) {
       pubBtn.onclick = () => {
-        if (!isGalleryOwner) return;
+      if (!isGalleryOwner) return;
 if   (!pendingFiles.length) return;
+        if (state.rewardOpen) return;
+
+        state.rewardOpen = true;
+
+        showRewardVideoMock("gallery", () => {
+          state.rewardOpen = false;
 
         const c = document.getElementById("plutooGalleryPendingCount");
 
