@@ -8996,6 +8996,9 @@ await db.collection("chats").doc(chatId).update({
   [`dogIds.${otherUid}`]: safeDogId
 });
 
+    chatPane.dataset.status = nextStatus;
+chatPane.dataset.folder = nextFolder;
+
 if (typeof loadMessagesLists === "function") loadMessagesLists();
     if (typeof showToast === "function") {
   showToast("✅ Messaggio inviato");
