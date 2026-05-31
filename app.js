@@ -7377,8 +7377,20 @@ if (btnSettings0) {
     card.className = "plutoo-profile-settings-card";
     card.style.margin = "12px";
     card.style.borderRadius = "18px";
-    card.style.border = "1px solid rgba(255,255,255,.10)";
-    card.style.background = "#121218";
+    card.style.border =
+  (d.plus === true && d.plusStatus === "active")
+    ? "1px solid rgba(205,164,52,.55)"
+    : "1px solid rgba(167,139,250,.38)";
+
+card.style.background =
+  (d.plus === true && d.plusStatus === "active")
+    ? "linear-gradient(180deg, #1a1510 0%, #121218 100%)"
+    : "linear-gradient(180deg, #17142a 0%, #121218 100%)";
+
+card.style.boxShadow =
+  (d.plus === true && d.plusStatus === "active")
+    ? "0 22px 70px rgba(0,0,0,.62), 0 0 30px rgba(205,164,52,.20)"
+    : "0 22px 70px rgba(0,0,0,.62), 0 0 30px rgba(167,139,250,.18)";
     card.style.padding = "14px";
     card.style.display = "flex";
     card.style.flexDirection = "column";
