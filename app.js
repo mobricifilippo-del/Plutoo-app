@@ -9030,6 +9030,10 @@ await db.collection("chats").doc(chatId).set({
   [selfUid]: (msgCount || 0) + 1
 },
 
+  unreadByUid: {
+  [otherUid]: firebase.firestore.FieldValue.increment(1)
+},
+
   lastMessageText: text,
   lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
   lastSenderUid: selfUid,
