@@ -7489,9 +7489,15 @@ btnChangePhoto.addEventListener("click", () => {
     photoRow.appendChild(btnChangePhoto);
     photoRow.appendChild(btnRemovePhoto);
 
-    const nameLabel = document.createElement("div");
+    const sectionColor =
+  (d.plus === true && d.plusStatus === "active")
+    ? "#CDA434"
+    : "#a78bfa";
+
+const nameLabel = document.createElement("div");
     nameLabel.style.opacity = ".85";
-    nameLabel.style.fontWeight = "800";
+    nameLabel.style.fontWeight = "900";
+    nameLabel.style.color = sectionColor;
     nameLabel.textContent = (state.lang === "it") ? "Nome DOG" : "DOG name";
 
     const nameInput = document.createElement("input");
@@ -7506,7 +7512,8 @@ btnChangePhoto.addEventListener("click", () => {
 
     const breedLabel = document.createElement("div");
     breedLabel.style.opacity = ".85";
-    breedLabel.style.fontWeight = "800";
+    breedLabel.style.fontWeight = "900";
+    breedLabel.style.color = sectionColor;
     breedLabel.textContent = (state.lang === "it") ? "Razza" : "Breed";
 
     const breedInput = document.createElement("input");
