@@ -7108,6 +7108,12 @@ del.onclick = (ev) => {
                 .filter(Boolean)
                 .slice(0, maxPhotos);
 
+              showToast(
+  state.lang === "it"
+    ? "✅ Immagine eliminata"
+    : "✅ Image deleted"
+);
+
               renderGallery();
             });
         })
