@@ -7586,7 +7586,8 @@ document.addEventListener("click", (e) => {
 
     const ageLabel = document.createElement("div");
     ageLabel.style.opacity = ".85";
-    ageLabel.style.fontWeight = "800";
+    ageLabel.style.fontWeight = "900";
+    ageLabel.style.color = sectionColor;
     ageLabel.textContent = (state.lang === "it") ? "Età" : "Age";
 
     const ageInput = document.createElement("input");
@@ -7603,7 +7604,8 @@ document.addEventListener("click", (e) => {
 
     const sexLabel = document.createElement("div");
     sexLabel.style.opacity = ".85";
-    sexLabel.style.fontWeight = "800";
+    sexLabel.style.fontWeight = "900";
+    sexLabel.style.color = sectionColor;
     sexLabel.textContent = (state.lang === "it") ? "Sesso" : "Sex";
 
     const sexInput = document.createElement("select");
@@ -7622,7 +7624,8 @@ document.addEventListener("click", (e) => {
 
     const zoneLabel = document.createElement("div");
     zoneLabel.style.opacity = ".85";
-    zoneLabel.style.fontWeight = "800";
+    zoneLabel.style.fontWeight = "900";
+    zoneLabel.style.color = sectionColor;
     zoneLabel.textContent = (state.lang === "it") ? "Zona" : "Area";
 
     const zoneInput = document.createElement("input");
