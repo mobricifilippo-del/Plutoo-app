@@ -8739,6 +8739,7 @@ if (chatDogAvatar) {
         const fsHasMatch = data.match === true;
 
         chatPane.dataset.hasMatch = fsHasMatch ? "1" : "0";
+        chatPane.dataset.status = String(data.status || "");
         chatPane.dataset.msgCount =
        String(data.messageCountByUid && data.messageCountByUid[window.PLUTOO_UID]
     ? data.messageCountByUid[window.PLUTOO_UID]
