@@ -8729,7 +8729,7 @@ if (chatDogAvatar) {
   chatList.innerHTML = "";
 
 // Carica history completa
-loadChatHistory(chatId, dogName);
+await loadChatHistory(chatId, dogName);
 
   // ✅ LETTO quando apro la chat (serve per far scalare il badge)
   const openedFrom = state._openChatFromTab || "";
