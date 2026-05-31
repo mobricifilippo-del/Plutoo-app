@@ -8726,7 +8726,7 @@ if (chatDogAvatar) {
   state.currentDogId = dogId;
   state.currentChatId = chatId;
 
-  chatList.innerHTML = `<div class="chat-loading">${state.lang === "it" ? "Caricamento messaggi…" : "Loading messages…"}</div>`;
+  chatList.innerHTML = "";
 
 // Carica history completa
 loadChatHistory(chatId, dogName);
