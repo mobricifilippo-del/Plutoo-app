@@ -8603,6 +8603,53 @@ async function loadChatHistory(chatId, dogName) {
   }
 }
 
+function getChatPermission({ hasMatch, status, msgCount, plus } = {}) {
+  const safeStatus = String(status || "");
+  const safeMsgCount = Number(msgCount || 0);
+
+  const isPlus = plus === true;
+  const isMatch = hasMatch === true;
+  const isAccepted = safeStatus === "accepted";
+
+  if (isPlus) {
+    return {
+      canSend: true,
+      needsReward: false,
+      reason: "plus",
+      disabled: false,
+      placeholderKey: "write_message"
+    };
+  }
+
+  if (isMatch || isAccepted) {
+    return {
+      canSend: true,
+      needsReward: false,
+      reason: "unlocked",
+      disabled: false,
+      placeholderKey: "write_message"
+    };
+  }
+
+  if (safeMsgCount === 0) {
+    return {
+      canSend: true,
+      needsReward: true,
+      reason: "free_first_message_reward",
+      disabled: false,
+      placeholderKey: "write_message"
+    };
+  }
+
+  return {
+    canSend: false,
+    needsReward: false,
+    reason: "wait_for_reply",
+    disabled: true,
+    placeholderKey: "wait_for_reply"
+  };
+}
+
   // =========== Chat ===========
 function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   if (!chatPane || !chatList || !chatInput) return;
