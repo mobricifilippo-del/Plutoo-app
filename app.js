@@ -7694,9 +7694,10 @@ zoneInput.addEventListener("click", () => {
 });
 
     const bioLabel = document.createElement("div");
-    bioLabel.style.opacity = ".85";
-    bioLabel.style.fontWeight = "800";
-    bioLabel.textContent = "Bio";
+bioLabel.style.opacity = ".85";
+bioLabel.style.fontWeight = "900";
+bioLabel.style.color = sectionColor;
+bioLabel.textContent = "Bio";
 
     const bio = document.createElement("textarea");
     bio.rows = 5;
