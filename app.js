@@ -7125,9 +7125,9 @@ galleryBlock.appendChild(ph);
   empty.classList.toggle("gallery-empty-plus", isPlusGallery);
 
   empty.innerHTML = `
-    <div class="gallery-empty-icon">📷</div>
-    <div class="gallery-empty-text">Nessuna immagine del DOG caricata</div>
-  `;
+  <div class="gallery-empty-icon">📷🐶</div>
+  <div class="gallery-empty-text">Nessuna immagine caricata</div>
+`;
 
   galleryBlock.appendChild(empty);
   return;
