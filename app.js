@@ -6323,17 +6323,31 @@ location.reload();
 if (createDogZoneInput && isCreate) {
   createDogZoneInput.addEventListener("click", () => {
 
+    if (!createDogZoneInput.readOnly) return;
+
     if (!navigator.geolocation) {
-      createDogZoneInput.value = state.lang === "it" ? "Geolocalizzazione non disponibile" : "Geolocation unavailable";
+      createDogZoneInput.value = "";
+      createDogZoneInput.readOnly = false;
+      createDogZoneInput.removeAttribute("inputmode");
+      createDogZoneInput.placeholder = state.lang === "it" ? "Inserisci zona manualmente" : "Enter area manually";
+      createDogZoneInput.focus();
       return;
     }
 
     createDogZoneInput.value = state.lang === "it" ? "Rilevamento posizione..." : "Detecting location...";
 
     let geoWatchId = null;
-let geoDone = false;
+    let geoDone = false;
 
-geoWatchId = navigator.geolocation.watchPosition(
+    function enableManualFallback() {
+      createDogZoneInput.value = "";
+      createDogZoneInput.readOnly = false;
+      createDogZoneInput.removeAttribute("inputmode");
+      createDogZoneInput.placeholder = state.lang === "it" ? "Inserisci zona manualmente" : "Enter area manually";
+      createDogZoneInput.focus();
+    }
+
+    geoWatchId = navigator.geolocation.watchPosition(
       p => {
 
         if (geoDone) return;
@@ -6348,47 +6362,45 @@ geoWatchId = navigator.geolocation.watchPosition(
           lon: p.coords.longitude
         };
 
-        createDogZoneInput.value = state.lang === "it" ? "Posizione rilevata" : "Location detected";
+        createDogZoneInput.value = state.lang === "it" ? "Rilevamento zona..." : "Detecting area...";
 
-fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo.lat}&lon=${state.geo.lon}&addressdetails=1&accept-language=it`)
-  .then(r => {
-    if (!r.ok) throw new Error();
-    return r.json();
-  })
-  .then(data => {
-    const a = data && data.address ? data.address : {};
-    const city = a.city || a.town || a.village || a.municipality || "";
-    const region = a.region || a.state || "";
-    const label = [city, region].filter(Boolean).join(", ");
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${state.geo.lat}&lon=${state.geo.lon}&addressdetails=1&accept-language=it`)
+          .then(r => {
+            if (!r.ok) throw new Error();
+            return r.json();
+          })
+          .then(data => {
+            const a = data && data.address ? data.address : {};
+            const city = a.city || a.town || a.village || a.municipality || "";
+            const region = a.region || a.state || "";
+            const label = [city, region].filter(Boolean).join(", ");
 
-    if (label) {
-      createDogZoneInput.value = label;
-    }
-    
-  })
+            if (label) {
+              createDogZoneInput.value = label;
+            } else {
+              enableManualFallback();
+            }
+          })
+          .catch((e) => {
+            console.error("ZONE REVERSE GEOCODING ERROR:", e);
+            enableManualFallback();
+          });
 
-  .catch((e) => {
-  console.error("ZONE REVERSE GEOCODING ERROR:", e);
-}); 
-        
       },
-      
+
       (err) => {
 
-  if (geoDone) return;
-  geoDone = true;
+        if (geoDone) return;
+        geoDone = true;
 
-  if (geoWatchId !== null) {
-    navigator.geolocation.clearWatch(geoWatchId);
-  }
+        if (geoWatchId !== null) {
+          navigator.geolocation.clearWatch(geoWatchId);
+        }
 
-  createDogZoneInput.value = state.lang === "it"
-  ? "Posizione non rilevata"
-  : "Location not detected";
-},
+        enableManualFallback();
+      },
 
-      { enableHighAccuracy:true, timeout:20000, maximumAge:0 }
-      
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
     );
   });
 }
