@@ -7811,7 +7811,18 @@ availabilityBox.appendChild(availabilityWalksLabel);
         }
 
         if (removeProfilePhoto) {
-          nextPhotoUrl = "";
+  const uid = (window.PLUTOO_UID) || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
+
+  if (storage && uid) {
+    await Promise.allSettled([
+      storage.ref().child(`dogs/${uid}/profile.jpg`).delete(),
+      storage.ref().child(`dogs/${uid}/profile.png`).delete(),
+      storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.jpg`).delete(),
+      storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.png`).delete()
+    ]);
+  }
+
+  nextPhotoUrl = "";
         }
 
         if (db) {
