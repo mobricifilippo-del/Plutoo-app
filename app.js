@@ -9012,8 +9012,16 @@ const isReplyToRequest =
   String(existingChatData.lastSenderUid) !== String(selfUid);
 
 let nextMatch = hasMatch === true;
-let nextStatus = hasMatch === true || isReplyToRequest ? "accepted" : "pending";
-let nextFolder = hasMatch === true || isReplyToRequest ? "inbox" : "requests";
+
+const alreadyAccepted = String(existingChatData.status || "") === "accepted";
+
+let nextStatus = (hasMatch === true || isReplyToRequest || alreadyAccepted)
+  ? "accepted"
+  : "pending";
+
+let nextFolder = (hasMatch === true || isReplyToRequest || alreadyAccepted)
+  ? "inbox"
+  : "requests";
 
 await db.collection("chats").doc(chatId).set({
   members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
