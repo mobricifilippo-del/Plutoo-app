@@ -9005,6 +9005,8 @@ if (typeof loadMessagesLists === "function") loadMessagesLists();
 state.chatMessagesSent[safeDogId] =
   (msgCount || 0) + 1;
 
+    chatPane.dataset.msgCount = String((msgCount || 0) + 1);
+
 localStorage.setItem(
   "chatMessagesSent",
   JSON.stringify(state.chatMessagesSent)
