@@ -8650,6 +8650,16 @@ function getChatPermission({ hasMatch, status, msgCount, plus } = {}) {
   };
 }
 
+function getChatPlaceholder(placeholderKey, lang) {
+  const map = {
+    write_message: { it: "Scrivi un messaggio…", en: "Type a message…" },
+    wait_for_reply: { it: "Attendi una risposta per continuare", en: "Wait for a reply to continue" }
+  };
+
+  const entry = map[placeholderKey] || map.write_message;
+  return lang === "it" ? entry.it : entry.en;
+}
+
   // =========== Chat ===========
 function openChat(chatIdOrDog, maybeDogId, maybeOtherUid) {
   if (!chatPane || !chatList || !chatInput) return;
