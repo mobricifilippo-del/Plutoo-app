@@ -7786,10 +7786,6 @@ availabilityBox.appendChild(availabilityWalksLabel);
         let nextPhotoUrl = null;
 
         if (selectedProfilePhotoFile) {
-          if (!storage) throw new Error("Storage non pronto");
-
-          const uid = (window.PLUTOO_UID) || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
-          if (!uid) throw new Error("Login richiesto");
 
           if (!storage) throw new Error("Storage non pronto");
 
