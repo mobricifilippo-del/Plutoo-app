@@ -8760,6 +8760,9 @@ if (chatDogAvatar) {
     window.db.collection("chats").doc(chatId).set({
   lastMessageReadByUid: {
     [selfUid]: true
+  },
+  unreadByUid: {
+    [selfUid]: 0
   }
 }, { merge: true }).catch((e) => {
   console.error("mark chat read failed:", e);
