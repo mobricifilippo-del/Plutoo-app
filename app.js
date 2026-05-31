@@ -8751,7 +8751,10 @@ if (chatDogAvatar) {
           localStorage.setItem("matches", JSON.stringify(state.matches));
         }
 
-        applyChatRules(fsHasMatch);
+        applyChatRules(
+  fsHasMatch ||
+  String(data.status || "") === "accepted"
+);
       })
       .catch((err) => {
         console.error("openChat -> read match failed:", err);
