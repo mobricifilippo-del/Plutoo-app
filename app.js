@@ -7158,7 +7158,7 @@ galleryBlock.appendChild(ph);
     addBtn.className = "add-photo";
     addBtn.textContent = "+ " + (state.lang === "it" ? "Aggiungi" : "Add");
 
-    addBtn.disabled = images.length >= maxPhotos;
+    addBtn.disabled = false;
 
     addBtn.onclick = () => {
       if (!isGalleryOwner) return;
