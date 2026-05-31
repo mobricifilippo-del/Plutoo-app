@@ -7361,6 +7361,7 @@ if (btnSettings0) {
 
     const wrap = document.createElement("div");
     wrap.id = "plutooProfileSettingsView";
+    wrap.classList.add("plutoo-profile-settings-wrap");
     wrap.classList.toggle("profile-plus", d.plus === true && d.plusStatus === "active");
     wrap.style.position = "fixed";
     wrap.style.left = "0";
@@ -7373,6 +7374,7 @@ if (btnSettings0) {
     wrap.style.flexDirection = "column";
 
     const card = document.createElement("div");
+    card.className = "plutoo-profile-settings-card";
     card.style.margin = "12px";
     card.style.borderRadius = "18px";
     card.style.border = "1px solid rgba(255,255,255,.10)";
