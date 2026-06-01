@@ -9693,7 +9693,11 @@ btnPublishDogBoard.textContent = "Pubblicazione in corso...";
           await storageRef.put(blob);
           const url = await storageRef.getDownloadURL();
 
-          photoUrls.push(url);
+        photoUrls.push({
+         url,
+        storagePath: path
+         });
+          
         } catch (e) {
           console.error("DogBoard upload error:", e);
         }
