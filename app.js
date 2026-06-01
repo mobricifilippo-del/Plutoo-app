@@ -9542,7 +9542,17 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
        dogAvatar: String(payload.dogAvatar || "./plutoo-icon-192.png"),
        zone: String(payload.zone || ""),
        text: String(payload.text || ""),
-       photos: Array.isArray(payload.photos) ? payload.photos.filter(p => typeof p === "string" && p.startsWith("http")) : [],
+
+       photos: Array.isArray(payload.photos)
+  ? payload.photos
+      .map(p => {
+        if (typeof p === "string" && p.startsWith("http")) return p;
+        if (p && typeof p === "object" && typeof p.url === "string" && p.url.startsWith("http")) return p.url;
+        return "";
+      })
+      .filter(Boolean)
+  : [],
+       
        createdAtClient: nowValue
      }))}"
      role="button"
