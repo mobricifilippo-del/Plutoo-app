@@ -9671,7 +9671,7 @@ if (!text && !hasPhotos) return;
   return;
     }
 
-    const originalPublishText = btnPublishDogBoard.textContent;
+btnPublishDogBoard.dataset.originalText = btnPublishDogBoard.textContent;
 btnPublishDogBoard.dataset.busy = "1";
 btnPublishDogBoard.disabled = true;
 btnPublishDogBoard.textContent = "Pubblicazione in corso...";
@@ -9738,7 +9738,7 @@ btnPublishDogBoard.textContent = "Pubblicazione in corso...";
     if (btnPublishDogBoard) {
       btnPublishDogBoard.dataset.busy = "0";
 btnPublishDogBoard.disabled = false;
-btnPublishDogBoard.textContent = originalPublishText;
+btnPublishDogBoard.textContent = btnPublishDogBoard.dataset.originalText || "Pubblica";
     }
   }
 }
