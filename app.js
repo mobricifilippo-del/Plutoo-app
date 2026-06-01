@@ -9671,8 +9671,10 @@ if (!text && !hasPhotos) return;
   return;
     }
 
-    btnPublishDogBoard.dataset.busy = "1";
-    btnPublishDogBoard.disabled = true;
+    const originalPublishText = btnPublishDogBoard.textContent;
+btnPublishDogBoard.dataset.busy = "1";
+btnPublishDogBoard.disabled = true;
+btnPublishDogBoard.textContent = "Pubblicazione in corso...";
 
     const now = Date.now();
 
@@ -9735,7 +9737,8 @@ if (!text && !hasPhotos) return;
   } finally {
     if (btnPublishDogBoard) {
       btnPublishDogBoard.dataset.busy = "0";
-      btnPublishDogBoard.disabled = false;
+btnPublishDogBoard.disabled = false;
+btnPublishDogBoard.textContent = originalPublishText;
     }
   }
 }
