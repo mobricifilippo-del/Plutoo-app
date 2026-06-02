@@ -9500,6 +9500,7 @@ await window.db.collection("chats").doc(chatId).set({
   title: "Plutoo",
   confirmText: "OK"
 });
+      closeViewer();
 
     } catch (e) {
       console.error("DogBoard viewer send error:", e);
