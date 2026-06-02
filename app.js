@@ -2845,7 +2845,7 @@ if (!snap || snap.empty) {
       return b.lastMessageAt - a.lastMessageAt;
     });
 
-   const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab, dogAvatar) => {
+  const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab, dogAvatar, chatSource = "", dogBoardPostId = "") => {
   const row = document.createElement("div");
   row.className = "msg-item";
 
