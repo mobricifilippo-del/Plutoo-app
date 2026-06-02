@@ -9382,6 +9382,8 @@ function openDogBoardViewer(post){
             </div>`
           : ""}
 
+        <div id="dogBoardRepliesList"></div>
+
         ${isOwner && String(post.id || "")
           ? `<button id="dogboardDeletePost" class="btn danger small" type="button">
               🗑️ Elimina
