@@ -2839,6 +2839,35 @@ display: none !important;
   text-overflow:ellipsis;
 }
 
+.msg-dogboard-badge{
+  display:inline-flex;
+  align-items:center;
+
+  width:fit-content;
+
+  margin-top:2px;
+
+  padding:3px 8px;
+
+  border-radius:999px;
+
+  background:rgba(205,164,52,.14);
+
+  border:1px solid rgba(205,164,52,.35);
+
+  color:#E8CE7A;
+
+  font-size:.72rem;
+
+  font-weight:800;
+
+  line-height:1.1;
+
+  box-shadow:
+    0 0 10px rgba(205,164,52,.10),
+    inset 0 0 0 1px rgba(205,164,52,.08);
+}
+
 .msg-preview{
   color:rgba(255,255,255,0.68);
   font-weight:500;
