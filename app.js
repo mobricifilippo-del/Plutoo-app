@@ -9391,7 +9391,65 @@ function openDogBoardViewer(post){
           : ""}
 
       </div>
-    `;
+  `;
+
+  if (window.db && String(post.id || "")) {
+    window.db
+      .collection("dogBoardReplies")
+      .where("dogBoardPostId", "==", String(post.id || ""))
+      .orderBy("createdAt", "asc")
+      .get()
+      .then((snap) => {
+        const repliesList = document.getElementById("dogBoardRepliesList");
+        if (!repliesList) return;
+
+        if (!snap || snap.empty) {
+          repliesList.innerHTML = "";
+          return;
+        }
+
+        let html = "";
+
+        snap.forEach((docSnap) => {
+          const r = docSnap.data() || {};
+
+          const avatar = String(r.senderDogAvatar || "./plutoo-icon-192.png");
+          const name   = String(r.senderDogName || "DOG");
+          const text   = String(r.text || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+
+          let dateText = "";
+          if (r.createdAt && typeof r.createdAt.toDate === "function") {
+            dateText = r.createdAt.toDate().toLocaleString();
+          }
+
+          html += `
+            <div class="dogboard-reply-item">
+              <img
+                src="${avatar}"
+                class="dogboard-reply-avatar"
+                alt="${name}"
+                onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"
+              >
+              <div class="dogboard-reply-body">
+                <div class="dogboard-reply-name">${name}</div>
+                <div class="dogboard-reply-text">${text}</div>
+                ${dateText ? `<div class="dogboard-reply-date">${dateText}</div>` : ""}
+              </div>
+            </div>
+          `;
+        });
+
+        repliesList.innerHTML = html;
+      })
+      .catch((e) => {
+        console.error("dogBoardReplies load error:", e);
+      });
+  }
 
    const composerEl = input?.closest(".chat-composer");
 
