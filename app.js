@@ -2870,6 +2870,7 @@ if (!snap || snap.empty) {
   ${avatar}
   <div class="msg-main">
     <div class="msg-title">${nameLine}</div>
+    ${chatSource === "dogboard" && dogBoardPostId ? `<div class="msg-dogboard-badge">📌 Annuncio Bacheca DOG</div>` : ``}
     ${previewLine ? `<div class="msg-preview">${previewLine}</div>` : ``}
     <div class="msg-meta">${dateText}</div>
     </div>
