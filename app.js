@@ -9432,20 +9432,6 @@ if (sendBtn) {
         return;
       }
 
-      const pair = [selfUid, otherUid].sort();
-const chatId = `${pair[0]}__${pair[1]}`;
-
-await window.db.collection("messages").add({
-        chatId,
-        senderUid: selfUid,
-        text,
-        type: "text",
-        source: "dogboard",
-        dogBoardPostId: String(post.id || ""),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        isRead: false
-      });
-
       const selfDogId = String(window.PLUTOO_DOG_ID || "");
 const selfDog = Array.isArray(state.dogs)
   ? state.dogs.find(x => x && String(x.id) === selfDogId)
@@ -9462,35 +9448,18 @@ const selfDogAvatar = String(
   "./plutoo-icon-192.png"
 );
 
-await window.db.collection("chats").doc(chatId).set({
-  members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
-  lastMessageText: text,
-  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-  lastSenderUid: selfUid,
-  match: false,
-  status: "pending",
-  folder: "requests",
-  source: "dogboard",
+await window.db.collection("dogBoardReplies").add({
   dogBoardPostId: String(post.id || ""),
-
-  dogName: selfDogName,
-  dogAvatar: selfDogAvatar,
-
-  names: {
-    [selfUid]: selfDogName,
-    [otherUid]: String(post.dogName || "DOG")
-  },
-
-  avatars: {
-    [selfUid]: selfDogAvatar,
-    [otherUid]: String(post.dogAvatar || "./plutoo-icon-192.png")
-  },
-
-  dogIds: {
-    [selfUid]: selfDogId,
-    [otherUid]: dogId
-  }
-}, { merge: true });
+  ownerUid: otherUid,
+  ownerDogId: dogId,
+  senderUid: selfUid,
+  senderDogId: selfDogId,
+  senderDogName: selfDogName,
+  senderDogAvatar: selfDogAvatar,
+  text,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  isRead: false
+});
 
       input.value = "";
       sendBtn.disabled = true;
