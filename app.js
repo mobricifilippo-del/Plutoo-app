@@ -9576,10 +9576,14 @@ function renderDogBoardItem(payload, nowValue, mode = "prepend"){
 
       ${Array.isArray(payload.photos)
   ? (() => {
-      const validUrls = payload.photos.filter(p =>
-        typeof p === "string" &&
-        p.startsWith("http")
-      );
+
+    const validUrls = payload.photos
+  .map(p => {
+    if (typeof p === "string" && p.startsWith("http")) return p;
+    if (p && typeof p === "object" && typeof p.url === "string" && p.url.startsWith("http")) return p.url;
+    return "";
+  })
+  .filter(Boolean);
 
       return validUrls.length
         ? `<div class="dogboard-photos">
