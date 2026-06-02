@@ -9501,7 +9501,6 @@ await window.db.collection("chats").doc(chatId).set({
   confirmText: "OK"
 });
       closeViewer();
-     openChat(chatId, dogId, otherUid);
 
     } catch (e) {
       console.error("DogBoard viewer send error:", e);
