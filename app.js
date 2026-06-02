@@ -9436,8 +9436,6 @@ if (sendBtn) {
 const chatId = `${pair[0]}__${pair[1]}`;
 
 await window.db.collection("messages").add({
-
-await window.db.collection("messages").add({
         chatId,
         senderUid: selfUid,
         text,
