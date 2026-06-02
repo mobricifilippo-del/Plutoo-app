@@ -3263,7 +3263,9 @@ restoreBtn?.addEventListener("click", async (e) => {
       dogId,
       otherUid,
       "requests",
-      dogAvatar
+      dogAvatar,
+      chat.source || "",
+      chat.dogBoardPostId || ""
     )
   );
 });
