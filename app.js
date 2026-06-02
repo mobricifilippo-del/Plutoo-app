@@ -9393,46 +9393,17 @@ function openDogBoardViewer(post){
 
    const composerEl = input?.closest(".chat-composer");
 
-let existingDogBoardChat = false;
-let existingDogBoardPending = false;
-
-try {
-  const selfUid = String(window.PLUTOO_UID || "");
-  const otherUid = String(post.ownerUid || "");
-
-  if (selfUid && otherUid && window.db) {
-    const pair = [selfUid, otherUid].sort();
-    const chatId = `${pair[0]}__${pair[1]}`;
-    const chatSnap = await window.db.collection("chats").doc(chatId).get();
-    const chatData = chatSnap && chatSnap.exists ? (chatSnap.data() || {}) : {};
-
-    existingDogBoardChat =
-      chatSnap &&
-      chatSnap.exists &&
-      String(chatData.source || "") === "dogboard" &&
-      String(chatData.dogBoardPostId || "") === String(post.id || "");
-
-    existingDogBoardPending =
-      existingDogBoardChat &&
-      String(chatData.status || "") === "pending";
-  }
-} catch (_) {}
-
 if (composerEl) {
-  composerEl.style.display = (isOwner || existingDogBoardChat) ? "none" : "";
+  composerEl.style.display = isOwner ? "none" : "";
 }
 
 if (input) {
   input.value = "";
-  input.placeholder = existingDogBoardPending
-    ? "Richiesta già inviata. Attendi la risposta del proprietario."
-    : "Rispondi all’annuncio";
-  input.disabled = existingDogBoardChat;
+  input.placeholder = "Rispondi all’annuncio";
 }
 
 if (sendBtn) {
-  sendBtn.style.display = (isOwner || existingDogBoardChat) ? "none" : "";
-  sendBtn.disabled = existingDogBoardChat;
+  sendBtn.style.display = isOwner ? "none" : "";
   sendBtn.onclick = async () => {
     
     try {
