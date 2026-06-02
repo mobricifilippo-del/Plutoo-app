@@ -9433,9 +9433,34 @@ if (sendBtn) {
       }
 
       const pair = [selfUid, otherUid].sort();
-      const chatId = `${pair[0]}__${pair[1]}`;
+const chatId = `${pair[0]}__${pair[1]}`;
 
-      await window.db.collection("messages").add({
+const existingChatSnap = await window.db
+  .collection("chats")
+  .doc(chatId)
+  .get();
+
+if (existingChatSnap.exists) {
+  const existingChat = existingChatSnap.data() || {};
+
+  if (
+    String(existingChat.source || "") === "dogboard" &&
+    String(existingChat.dogBoardPostId || "") === String(post.id || "") &&
+    String(existingChat.status || "") === "pending"
+  ) {
+    await showPlutooAlert(
+      "Attendi risposta per proseguire la conversazione",
+      {
+        title: "Plutoo",
+        confirmText: "OK"
+      }
+    );
+
+    return;
+  }
+}
+
+await window.db.collection("messages").add({
         chatId,
         senderUid: selfUid,
         text,
