@@ -9495,8 +9495,7 @@ await window.db.collection("chats").doc(chatId).set({
       input.value = "";
       sendBtn.disabled = true;
       sendBtn.textContent = "Inviato";
-
-      if (typeof loadMessagesLists === "function") loadMessagesLists();
+      
       await showPlutooAlert("Messaggio inviato", {
   title: "Plutoo",
   confirmText: "OK"
