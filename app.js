@@ -2822,6 +2822,8 @@ if (!snap || snap.empty) {
   dogIds: data.dogIds || {},
   status: data.status || null,
   folder: data.folder || null,
+  source: data.source || "",
+  dogBoardPostId: data.dogBoardPostId || "",
   spam: data.spam === true,
   deletedByUid: data.deletedByUid || {},
   spamByUid: data.spamByUid || {}
