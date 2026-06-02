@@ -9440,17 +9440,51 @@ if (sendBtn) {
         isRead: false
       });
 
-      await window.db.collection("chats").doc(chatId).set({
-        members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
-        lastMessageText: text,
-        lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
-        lastSenderUid: selfUid,
-        match: false,
-        status: "pending",
-        folder: "requests",
-        source: "dogboard",
-        dogBoardPostId: String(post.id || "")
-      }, { merge: true });
+      const selfDogId = String(window.PLUTOO_DOG_ID || "");
+const selfDog = Array.isArray(state.dogs)
+  ? state.dogs.find(x => x && String(x.id) === selfDogId)
+  : null;
+
+const selfDogName = String(
+  (selfDog && selfDog.name) ||
+  window.PLUTOO_DOG_NAME ||
+  "DOG"
+);
+
+const selfDogAvatar = String(
+  (selfDog && (selfDog.photoUrl || selfDog.img || selfDog.avatar)) ||
+  "./plutoo-icon-192.png"
+);
+
+await window.db.collection("chats").doc(chatId).set({
+  members: firebase.firestore.FieldValue.arrayUnion(selfUid, otherUid),
+  lastMessageText: text,
+  lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(),
+  lastSenderUid: selfUid,
+  match: false,
+  status: "pending",
+  folder: "requests",
+  source: "dogboard",
+  dogBoardPostId: String(post.id || ""),
+
+  dogName: selfDogName,
+  dogAvatar: selfDogAvatar,
+
+  names: {
+    [selfUid]: selfDogName,
+    [otherUid]: String(post.dogName || "DOG")
+  },
+
+  avatars: {
+    [selfUid]: selfDogAvatar,
+    [otherUid]: String(post.dogAvatar || "./plutoo-icon-192.png")
+  },
+
+  dogIds: {
+    [selfUid]: selfDogId,
+    [otherUid]: dogId
+  }
+}, { merge: true });
 
       input.value = "";
       sendBtn.disabled = true;
