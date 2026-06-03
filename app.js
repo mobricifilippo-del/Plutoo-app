@@ -9842,34 +9842,29 @@ await window.db.collection("dogBoardReplies").add({
       };
     }
 
-    const reportPostBtn = document.getElementById("dogboardReportPost");
-    if (reportPostBtn) {
-      reportPostBtn.onclick = async () => {
-        const reporterUid = String(window.PLUTOO_UID || "");
-        const targetUid = String(post.ownerUid || "");
-        const postId = String(post.id || "");
+    reportPostBtn.onclick = async () => {
+  const reporterUid = String(window.PLUTOO_UID || "");
+  const targetUid   = String(post.ownerUid || "");
+  const postId      = String(post.id || "");
 
-        if (!reporterUid || !targetUid || !postId || !window.db) return;
+  if (!reporterUid || !targetUid || !postId || !window.db) return;
 
-        const reason = await showDogBoardReplyReportReasonModal();
-        if (!reason) return;
+  try {
+    await window.db.collection("reports").add({
+      type:           "dogboard_post",
+      dogBoardPostId: postId,
+      reporterUid,
+      targetUid,
+      createdAt:      firebase.firestore.FieldValue.serverTimestamp(),
+      status:         "open"
+    });
 
-        try {
-          await window.db.collection("reports").add({
-            type: "dogboard_post",
-            dogBoardPostId: postId,
-            reporterUid,
-            targetUid,
-            reason,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            status: "open"
-          });
-
-          if (typeof showToast === "function") showToast("🚩 Segnalazione inviata");
-        } catch (err) {
-          console.error("dogboard post report error:", err);
-        }
-      };
+    if (typeof showToast === "function") showToast("Segnalazione inviata con successo");
+  } catch (err) {
+    console.error("dogboard post report error:", err);
+  }
+};
+      
     }
 
   } catch(e){
