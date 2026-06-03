@@ -1265,6 +1265,75 @@ function showPlutooConfirm(message, options = {}) {
   });
 }
 
+function showDogBoardReplyReportReasonModal() {
+  return new Promise((resolve) => {
+    const modal = document.createElement("div");
+    modal.className = "plutoo-report-choice-backdrop";
+
+    modal.innerHTML = `
+      <div class="plutoo-report-choice-box">
+        <div class="plutoo-report-choice-title">Segnala reply</div>
+
+        <div class="plutoo-report-choice-list">
+          ${["Spam", "Linguaggio offensivo", "Truffa", "Minori", "Contenuto sessuale", "Razzismo / Bullismo"].map((reason) => `
+            <button type="button" class="plutoo-report-choice" data-reason="${reason}">
+              <span class="plutoo-report-check">○</span>
+              <span>${reason}</span>
+            </button>
+          `).join("")}
+        </div>
+
+        <div class="plutoo-report-error" hidden>Seleziona un motivo</div>
+
+        <div class="plutoo-report-choice-actions">
+          <button type="button" class="btn ghost small" data-cancel="1">Annulla</button>
+          <button type="button" class="btn accent small" data-confirm="1">Invia segnalazione</button>
+        </div>
+      </div>
+    `;
+
+    let selectedReason = "";
+
+    modal.querySelectorAll(".plutoo-report-choice").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        selectedReason = String(btn.getAttribute("data-reason") || "");
+
+        modal.querySelectorAll(".plutoo-report-choice").forEach((b) => {
+          b.classList.toggle("selected", b === btn);
+          const check = b.querySelector(".plutoo-report-check");
+          if (check) check.textContent = b === btn ? "✓" : "○";
+        });
+
+        const err = modal.querySelector(".plutoo-report-error");
+        if (err) err.hidden = true;
+      });
+    });
+
+    const close = (value) => {
+      if (modal.parentNode) modal.remove();
+      resolve(value || "");
+    };
+
+    modal.querySelector("[data-cancel='1']")?.addEventListener("click", () => close(""));
+
+    modal.querySelector("[data-confirm='1']")?.addEventListener("click", () => {
+      if (!selectedReason) {
+        const err = modal.querySelector(".plutoo-report-error");
+        if (err) err.hidden = false;
+        return;
+      }
+
+      close(selectedReason);
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) close("");
+    });
+
+    document.body.appendChild(modal);
+  });
+}
+
 function autodetectLang(){
   return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
 }
