@@ -9397,6 +9397,23 @@ function openDogBoardViewer(post){
       </div>
   `;
 
+    const postProfileOpen = content.querySelector(".dogboard-viewer-open-profile");
+if (postProfileOpen) {
+  postProfileOpen.onclick = () => {
+    const dogId = String(post.dogId || "");
+    if (!dogId || typeof openFreshDogProfile !== "function") return;
+
+    pane.classList.remove("show");
+    pane.classList.add("hidden");
+
+    openFreshDogProfile(dogId, {
+      id: dogId,
+      ownerUid: String(post.ownerUid || ""),
+      name: String(post.dogName || "DOG")
+    });
+  };
+}
+
   if (window.db && String(post.id || "")) {
     window.db
       .collection("dogBoardReplies")
