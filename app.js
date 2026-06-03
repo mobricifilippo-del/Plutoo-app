@@ -9562,24 +9562,56 @@ const canDeleteReply =
         };
 
         el.querySelectorAll(".msg-swipe-actions button").forEach((btn) => {
-          btn.addEventListener("click", async (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  e.stopImmediatePropagation();
+  btn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
 
-  if (!btn.classList.contains("msg-delete-btn")) return;
+    const replyId = String(el.getAttribute("data-reply-id") || "");
+    const targetUid = String(el.getAttribute("data-reply-sender-uid") || "");
+    const reporterUid = String(window.PLUTOO_UID || "");
+    const dogBoardPostId = String(post.id || "");
 
-  const replyId = String(el.getAttribute("data-reply-id") || "");
-  const canDelete = el.getAttribute("data-can-delete") === "1";
+    if (btn.classList.contains("msg-delete-btn")) {
+      const canDelete = el.getAttribute("data-can-delete") === "1";
 
-  if (!replyId || !canDelete || !window.db) return;
+      if (!replyId || !canDelete || !window.db) return;
 
-  try {
-    await window.db.collection("dogBoardReplies").doc(replyId).delete();
-    el.remove();
-  } catch (err) {
-    console.error("delete dogBoard reply error:", err);
-  }
+      try {
+        await window.db.collection("dogBoardReplies").doc(replyId).delete();
+        el.remove();
+      } catch (err) {
+        console.error("delete dogBoard reply error:", err);
+      }
+
+      return;
+    }
+
+    if (!btn.classList.contains("msg-spam-btn")) return;
+    if (!replyId || !targetUid || !reporterUid || !dogBoardPostId || !window.db) return;
+
+    const reason = await showDogBoardReplyReportReasonModal();
+    if (!reason) return;
+
+    try {
+      await window.db.collection("reports").add({
+        type: "dogboard_reply",
+        replyId,
+        dogBoardPostId,
+        reporterUid,
+        targetUid,
+        reason,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: "open"
+      });
+
+      if (typeof showToast === "function") {
+        showToast("🚩 Segnalazione inviata");
+      }
+    } catch (err) {
+      console.error("dogboard reply report error:", err);
+    }
+  });
 });
         });
 
