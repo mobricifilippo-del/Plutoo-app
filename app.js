@@ -9802,21 +9802,31 @@ await window.db.collection("dogBoardReplies").add({
     pane.classList.remove("hidden");
     pane.classList.add("show");
 
-    const deleteBtn = document.getElementById("dogboardDeletePost");
-    if (deleteBtn){
-      deleteBtn.onclick = () => {
-        if (!post.id || !window.db) return;
+  const deleteBtn = document.getElementById("dogboardDeletePost");
+if (deleteBtn){
+  deleteBtn.onclick = async () => {
+    if (!post.id || !window.db) return;
 
-        window.db.collection("dogBoardPosts").doc(String(post.id)).delete()
-          .then(() => {
-            closeViewer();
-            if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
-          })
-          .catch((e) => {
-            console.error("DogBoard delete post error:", e);
-          });
-      };
-    }
+    const ok = await showPlutooConfirm("Vuoi eliminare l'annuncio?", {
+      title: "Plutoo",
+      confirmText: "Accetto",
+      cancelText: "Annulla",
+      danger: true
+    });
+
+    if (!ok) return;
+
+    window.db.collection("dogBoardPosts").doc(String(post.id)).delete()
+      .then(() => {
+        closeViewer();
+        if (typeof showToast === "function") showToast("Annuncio eliminato");
+        if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
+      })
+      .catch((e) => {
+        console.error("DogBoard delete post error:", e);
+      });
+  };
+}
 
   } catch(e){
     console.error("openDogBoardViewer error:", e);
