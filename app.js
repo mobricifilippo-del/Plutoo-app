@@ -9404,15 +9404,7 @@ function openDogBoardViewer(post){
         if (!repliesList) return;
 
         if (!snap || snap.empty) {
-
-  alert(
-    "DOGBOARD REPLIES CHECK\n" +
-    "then: SI\n" +
-    "snap.empty: " + (!!(snap && snap.empty)) + "\n" +
-    "snap.size: " + (snap && typeof snap.size === "number" ? snap.size : "non disponibile")
-  );
-
-  repliesList.innerHTML = "";
+    repliesList.innerHTML = "";
   return;
         }
 
