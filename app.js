@@ -9464,8 +9464,8 @@ if (postProfileOpen) {
             </div>
 
             <div class="msg-swipe-actions">
-              <button type="button" class="msg-delete-btn">Elimina</button>
-              <button type="button" class="msg-spam-btn">Segnala</button>
+              <button type="button" class="msg-delete-btn" title="Elimina">🗑️</button>
+<button type="button" class="msg-spam-btn" title="Segnala">🚩</button>
             </div>
           </div>
         `;
