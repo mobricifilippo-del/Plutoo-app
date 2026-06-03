@@ -9809,7 +9809,7 @@ if (deleteBtn){
 
     const ok = await showPlutooConfirm("Vuoi eliminare l'annuncio?", {
       title: "Plutoo",
-      confirmText: "Accetto",
+      confirmText: "Elimina",
       cancelText: "Annulla",
       danger: true
     });
