@@ -9493,11 +9493,25 @@ const canDeleteReply =
         };
 
         el.querySelectorAll(".msg-swipe-actions button").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-          });
+          btn.addEventListener("click", async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+
+  if (!btn.classList.contains("msg-delete-btn")) return;
+
+  const replyId = String(el.getAttribute("data-reply-id") || "");
+  const canDelete = el.getAttribute("data-can-delete") === "1";
+
+  if (!replyId || !canDelete || !window.db) return;
+
+  try {
+    await window.db.collection("dogBoardReplies").doc(replyId).delete();
+    el.remove();
+  } catch (err) {
+    console.error("delete dogBoard reply error:", err);
+  }
+});
         });
 
         el.addEventListener("touchstart", (e) => {
