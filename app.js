@@ -9444,13 +9444,6 @@ function openDogBoardViewer(post){
           `;
         });
 
-        alert(
-  "DOGBOARD REPLIES CHECK\n" +
-  "then: SI\n" +
-  "snap.size: " + (snap && typeof snap.size === "number" ? snap.size : "non disponibile") + "\n" +
-  "html: " + (html && html.trim() ? "PIENO" : "VUOTO")
-);
-
 repliesList.innerHTML = html;
         
       })
