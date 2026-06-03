@@ -9589,7 +9589,12 @@ if (postProfileOpen) {
     }
 
     if (!btn.classList.contains("msg-spam-btn")) return;
-    if (!replyId || !targetUid || !reporterUid || !dogBoardPostId || !window.db) return;
+if (!replyId || !targetUid || !reporterUid || !dogBoardPostId || !window.db) return;
+
+if (reporterUid === targetUid) {
+  if (typeof showToast === "function") showToast("Non puoi segnalare un tuo commento");
+  return;
+}
 
     const reason = await showDogBoardReplyReportReasonModal();
     if (!reason) return;
