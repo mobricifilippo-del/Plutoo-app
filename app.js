@@ -9433,6 +9433,11 @@ if (postProfileOpen) {
         snap.forEach((docSnap) => {
           const r = docSnap.data() || {};
 
+          const replyId = String(docSnap.id || "");
+const canDeleteReply =
+  String(post.ownerUid || "") === String(window.PLUTOO_UID || "") ||
+  String(r.senderUid || "") === String(window.PLUTOO_UID || "");
+
           const avatar = String(r.senderDogAvatar || "./plutoo-icon-192.png");
           const name   = String(r.senderDogName || "DOG");
           const text   = String(r.text || "")
