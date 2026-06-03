@@ -9448,7 +9448,7 @@ if (postProfileOpen) {
           }
 
           html += `
-            <div class="dogboard-reply-item">
+            <div class="dogboard-reply-item" data-reply-dog-id="${String(r.senderDogId || "").replace(/"/g, "&quot;")}">
               <img
                 src="${avatar}"
                 class="dogboard-reply-avatar"
