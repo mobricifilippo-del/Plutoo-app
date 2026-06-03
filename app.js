@@ -9349,7 +9349,11 @@ function openDogBoardViewer(post){
     content.innerHTML = `
       <div class="dogboard-viewer">
 
-        <div class="dogboard-viewer-name">${String(post.dogName || "")}</div>
+        <div
+  class="dogboard-viewer-name dogboard-viewer-open-profile"
+  data-dog-id="${String(post.dogId || "").replace(/"/g, "&quot;")}"
+  role="button"
+>${String(post.dogName || "")}</div>
 
         ${String(post.zone || "").trim()
           ? `<div class="dogboard-zone">${String(post.zone)
