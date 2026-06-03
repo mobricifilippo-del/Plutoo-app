@@ -1265,14 +1265,16 @@ function showPlutooConfirm(message, options = {}) {
   });
 }
 
-function showDogBoardReplyReportReasonModal() {
+function showDogBoardReplyReportReasonModal(title) {
+  const modalTitle = title || "Segnala";
+
   return new Promise((resolve) => {
     const modal = document.createElement("div");
     modal.className = "plutoo-report-choice-backdrop";
 
     modal.innerHTML = `
       <div class="plutoo-report-choice-box">
-        <div class="plutoo-report-choice-title">Segnala reply</div>
+        <div class="plutoo-report-choice-title">${modalTitle}</div>
 
         <div class="plutoo-report-choice-list">
           ${["Spam", "Linguaggio offensivo", "Truffa", "Minori", "Contenuto sessuale", "Razzismo / Bullismo"].map((reason) => `
@@ -1287,7 +1289,7 @@ function showDogBoardReplyReportReasonModal() {
 
         <div class="plutoo-report-choice-actions">
           <button type="button" class="btn ghost small" data-cancel="1">Annulla</button>
-          <button type="button" class="btn accent small" data-confirm="1">Invia segnalazione</button>
+          <button type="button" class="btn plutoo-report-confirm-btn small" data-confirm="1">Invia segnalazione</button>
         </div>
       </div>
     `;
