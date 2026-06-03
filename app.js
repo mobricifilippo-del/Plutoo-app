@@ -9613,24 +9613,32 @@ if (postProfileOpen) {
     if (!btn.classList.contains("msg-spam-btn")) return;
 if (!replyId || !targetUid || !reporterUid || !dogBoardPostId || !window.db) return;
 
-try {
-  await window.db.collection("reports").add({
-    type: "dogboard_reply",
-    replyId,
-    dogBoardPostId,
-    reporterUid,
-    targetUid,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    status: "open"
-  });
-
-  if (typeof showToast === "function") {
-    showToast("Segnalazione inviata con successo");
-  }
-} catch (err) {
-  console.error("dogboard reply report error:", err);
+if (reporterUid === targetUid) {
+  if (typeof showToast === "function") showToast("Non puoi segnalare un tuo commento");
+  return;
 }
 
+    const reason = await showDogBoardReplyReportReasonModal();
+    if (!reason) return;
+
+    try {
+      await window.db.collection("reports").add({
+        type: "dogboard_reply",
+        replyId,
+        dogBoardPostId,
+        reporterUid,
+        targetUid,
+        reason,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        status: "open"
+      });
+
+      if (typeof showToast === "function") {
+        showToast("🚩 Segnalazione inviata");
+      }
+    } catch (err) {
+      console.error("dogboard reply report error:", err);
+    }
   });
 });
 
@@ -9842,7 +9850,7 @@ await window.db.collection("dogBoardReplies").add({
       };
     }
 
-  const reportPostBtn = document.getElementById("dogboardReportPost");
+    const reportPostBtn = document.getElementById("dogboardReportPost");
     if (reportPostBtn) {
       reportPostBtn.onclick = async () => {
         const reporterUid = String(window.PLUTOO_UID || "");
@@ -9851,19 +9859,21 @@ await window.db.collection("dogBoardReplies").add({
 
         if (!reporterUid || !targetUid || !postId || !window.db) return;
 
+        const reason = await showDogBoardReplyReportReasonModal();
+        if (!reason) return;
+
         try {
           await window.db.collection("reports").add({
             type: "dogboard_post",
             dogBoardPostId: postId,
             reporterUid,
             targetUid,
+            reason,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             status: "open"
           });
 
-          if (typeof showToast === "function") {
-            showToast("Segnalazione inviata con successo");
-          }
+          if (typeof showToast === "function") showToast("🚩 Segnalazione inviata");
         } catch (err) {
           console.error("dogboard post report error:", err);
         }
