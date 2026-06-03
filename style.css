@@ -2724,20 +2724,49 @@ display: none !important;
 .dogboard-reply-item{
   display:flex;
   align-items:flex-start;
-  gap:.55rem;
-  padding:.55rem .65rem;
-  border-radius:14px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(138,123,255,.14);
+  gap:.65rem;
+
+  padding:.75rem .8rem;
+
+  border-radius:16px;
+
+  background:rgba(10,10,18,.82);
+
+  border:1px solid rgba(138,123,255,.18);
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,.22),
+    inset 0 0 0 1px rgba(255,255,255,.03);
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    transform .2s ease;
+}
+
+.dogboard-reply-item:hover{
+  border-color:rgba(138,123,255,.30);
+
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.28),
+    0 0 12px rgba(138,123,255,.12),
+    inset 0 0 0 1px rgba(255,255,255,.04);
 }
 
 .dogboard-reply-avatar{
-  width:34px;
-  height:34px;
-  flex:0 0 34px;
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+
   border-radius:999px;
+
   object-fit:cover;
+
   display:block;
+
+  border:2px solid rgba(138,123,255,.28);
+
+  box-shadow:0 0 10px rgba(138,123,255,.12);
 }
 
 .dogboard-reply-body{
@@ -2746,24 +2775,39 @@ display: none !important;
 }
 
 .dogboard-reply-name{
-  font-size:.85rem;
-  font-weight:800;
-  color:#fff;
-  line-height:1.15;
+  font-size:.88rem;
+
+  font-weight:900;
+
+  color:var(--violet-glow);
+
+  line-height:1.2;
+
+  letter-spacing:.01em;
 }
 
 .dogboard-reply-text{
-  font-size:.88rem;
-  line-height:1.25;
-  color:rgba(255,255,255,.9);
+  margin-top:.2rem;
+
+  font-size:.92rem;
+
+  line-height:1.45;
+
+  color:rgba(255,255,255,.92);
+
   word-break:break-word;
-  margin-top:.12rem;
 }
 
 .dogboard-reply-date{
+  margin-top:.35rem;
+
   font-size:.72rem;
-  color:rgba(255,255,255,.5);
-  margin-top:.18rem;
+
+  font-weight:700;
+
+  color:rgba(255,255,255,.48);
+
+  letter-spacing:.02em;
 }
 
 /* ===============================
