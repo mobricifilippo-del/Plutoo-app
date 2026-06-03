@@ -9503,7 +9503,6 @@ if (postProfileOpen) {
           const r = docSnap.data() || {};
 
         const replyId = String(docSnap.id || "");
-        const replySenderUid = String(r.senderUid || "");
         const canDeleteReply =
   
   String(post.ownerUid || "") === String(window.PLUTOO_UID || "") ||
