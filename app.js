@@ -9584,9 +9584,23 @@ if (postProfileOpen) {
 
       if (!replyId || !canDelete || !window.db) return;
 
+      const ok = await showPlutooConfirm("Vuoi eliminare il commento?", {
+        title: "Plutoo",
+        confirmText: "Elimina",
+        cancelText: "Annulla",
+        danger: true
+      });
+
+      if (!ok) return;
+
       try {
         await window.db.collection("dogBoardReplies").doc(replyId).delete();
+
         el.remove();
+
+        if (typeof showToast === "function") {
+          showToast("Commento eliminato");
+        }
       } catch (err) {
         console.error("delete dogBoard reply error:", err);
       }
