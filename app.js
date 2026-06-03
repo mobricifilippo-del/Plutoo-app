@@ -9447,8 +9447,9 @@ if (postProfileOpen) {
             dateText = r.createdAt.toDate().toLocaleString();
           }
 
-          html += `
-            <div class="dogboard-reply-item" data-reply-dog-id="${String(r.senderDogId || "").replace(/"/g, "&quot;")}">
+        html += `
+          <div class="dogboard-reply-item msg-item" data-reply-dog-id="${String(r.senderDogId || "").replace(/"/g, "&quot;")}">
+            <div class="msg-swipe-front">
               <img
                 src="${avatar}"
                 class="dogboard-reply-avatar"
@@ -9461,22 +9462,115 @@ if (postProfileOpen) {
                 ${dateText ? `<div class="dogboard-reply-date">${dateText}</div>` : ""}
               </div>
             </div>
-          `;
+
+            <div class="msg-swipe-actions">
+              <button type="button" class="msg-delete-btn">Elimina</button>
+              <button type="button" class="msg-spam-btn">Segnala</button>
+            </div>
+          </div>
+        `;
+      });
+
+      repliesList.innerHTML = html;
+
+      repliesList.querySelectorAll(".dogboard-reply-item").forEach((el) => {
+        let startX = 0;
+        let startY = 0;
+        let movedX = 0;
+        let movedY = 0;
+        let isSwipeLocked = false;
+        let blockNextClick = false;
+
+        const closeOtherDogBoardReplyRows = () => {
+          repliesList.querySelectorAll(".dogboard-reply-item.msg-item.swipe-open").forEach((row) => {
+            if (row !== el) row.classList.remove("swipe-open");
+          });
+        };
+
+        el.querySelectorAll(".msg-swipe-actions button").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+          });
         });
 
-repliesList.innerHTML = html;
+        el.addEventListener("touchstart", (e) => {
+          const t = e.touches && e.touches[0];
+          if (!t) return;
 
-        repliesList.querySelectorAll(".dogboard-reply-item").forEach((el) => {
-  el.onclick = () => {
-    const dogId = String(el.getAttribute("data-reply-dog-id") || "");
-    if (!dogId || typeof openFreshDogProfile !== "function") return;
+          startX = t.clientX;
+          startY = t.clientY;
+          movedX = 0;
+          movedY = 0;
+          isSwipeLocked = false;
+          blockNextClick = false;
+        }, { passive: true });
 
-    pane.classList.remove("show");
-    pane.classList.add("hidden");
+        el.addEventListener("touchmove", (e) => {
+          const t = e.touches && e.touches[0];
+          if (!t) return;
 
-    openFreshDogProfile(dogId, { id: dogId });
-  };
-});
+          movedX = t.clientX - startX;
+          movedY = t.clientY - startY;
+
+          if (!isSwipeLocked && Math.abs(movedX) > 18 && Math.abs(movedX) > Math.abs(movedY) * 1.4) {
+            isSwipeLocked = true;
+          }
+
+          if (!isSwipeLocked) return;
+
+          if (movedX < -28) {
+            blockNextClick = true;
+            closeOtherDogBoardReplyRows();
+            el.classList.add("swipe-open");
+            e.preventDefault();
+          }
+
+          if (movedX > 28) {
+            blockNextClick = true;
+            el.classList.remove("swipe-open");
+            e.preventDefault();
+          }
+        }, { passive: false });
+
+        el.addEventListener("touchend", () => {
+          if (isSwipeLocked && movedX < -36) {
+            blockNextClick = true;
+            closeOtherDogBoardReplyRows();
+            el.classList.add("swipe-open");
+          }
+
+          if (isSwipeLocked && movedX > 24) {
+            blockNextClick = true;
+            el.classList.remove("swipe-open");
+          }
+
+          setTimeout(() => {
+            blockNextClick = false;
+          }, 180);
+        }, { passive: true });
+
+        el.onclick = (e) => {
+          if (blockNextClick) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+
+          if (e.target && e.target.closest && e.target.closest(".msg-swipe-actions")) {
+            return;
+          }
+
+          const dogId = String(el.getAttribute("data-reply-dog-id") || "");
+          if (!dogId || typeof openFreshDogProfile !== "function") return;
+
+          pane.classList.remove("show");
+          pane.classList.add("hidden");
+
+          openFreshDogProfile(dogId, { id: dogId });
+        };
+      });
         
       })
       .catch((e) => {
