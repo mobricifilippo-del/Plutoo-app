@@ -9613,32 +9613,24 @@ if (postProfileOpen) {
     if (!btn.classList.contains("msg-spam-btn")) return;
 if (!replyId || !targetUid || !reporterUid || !dogBoardPostId || !window.db) return;
 
-if (reporterUid === targetUid) {
-  if (typeof showToast === "function") showToast("Non puoi segnalare un tuo commento");
-  return;
+try {
+  await window.db.collection("reports").add({
+    type: "dogboard_reply",
+    replyId,
+    dogBoardPostId,
+    reporterUid,
+    targetUid,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    status: "open"
+  });
+
+  if (typeof showToast === "function") {
+    showToast("Segnalazione inviata con successo");
+  }
+} catch (err) {
+  console.error("dogboard reply report error:", err);
 }
 
-    const reason = await showDogBoardReplyReportReasonModal();
-    if (!reason) return;
-
-    try {
-      await window.db.collection("reports").add({
-        type: "dogboard_reply",
-        replyId,
-        dogBoardPostId,
-        reporterUid,
-        targetUid,
-        reason,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        status: "open"
-      });
-
-      if (typeof showToast === "function") {
-        showToast("🚩 Segnalazione inviata");
-      }
-    } catch (err) {
-      console.error("dogboard reply report error:", err);
-    }
   });
 });
 
