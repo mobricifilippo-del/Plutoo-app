@@ -9397,7 +9397,6 @@ function openDogBoardViewer(post){
     window.db
       .collection("dogBoardReplies")
       .where("dogBoardPostId", "==", String(post.id || ""))
-      .orderBy("createdAt", "asc")
       .get()
       .then((snap) => {
         const repliesList = document.getElementById("dogBoardRepliesList");
