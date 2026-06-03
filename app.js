@@ -9800,13 +9800,14 @@ btnPublishDogBoard.textContent = "Pubblicazione in corso...";
       createdAtClient: now
     };
 
-    await window.db.collection("dogBoardPosts").add(payload);
+   const ref = await window.db.collection("dogBoardPosts").add(payload);
+    payload.id = ref.id;
 
     dogBoardSelectedPhotos = [];
     if (dogBoardPreview) dogBoardPreview.innerHTML = "";
     if (dogBoardPhotos) dogBoardPhotos.value = "";
 
-    renderDogBoardItem(payload, now, "prepend");
+    renderDogBoardItem(payload, now, "prepend"); 
 
     dogBoardText.value = "";
 
