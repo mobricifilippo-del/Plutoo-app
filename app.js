@@ -9613,7 +9613,6 @@ const canDeleteReply =
     }
   });
 });
-        });
 
         el.addEventListener("touchstart", (e) => {
           const t = e.touches && e.touches[0];
