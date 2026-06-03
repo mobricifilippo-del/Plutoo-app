@@ -9463,6 +9463,12 @@ function openDogBoardViewer(post){
             </button>`
           : ""}
 
+        ${!isOwner && String(post.id || "")
+          ? `<button id="dogboardReportPost" class="btn ghost small" type="button">
+              🚩 Segnala annuncio
+            </button>`
+          : ""}
+
       </div>
   `;
 
