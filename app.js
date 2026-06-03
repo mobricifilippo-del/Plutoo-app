@@ -9465,6 +9465,18 @@ if (postProfileOpen) {
         });
 
 repliesList.innerHTML = html;
+
+        repliesList.querySelectorAll(".dogboard-reply-item").forEach((el) => {
+  el.onclick = () => {
+    const dogId = String(el.getAttribute("data-reply-dog-id") || "");
+    if (!dogId || typeof openFreshDogProfile !== "function") return;
+
+    pane.classList.remove("show");
+    pane.classList.add("hidden");
+
+    openFreshDogProfile(dogId, { id: dogId });
+  };
+});
         
       })
       .catch((e) => {
