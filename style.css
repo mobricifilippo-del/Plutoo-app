@@ -2714,6 +2714,58 @@ display: none !important;
   border:1px solid rgba(138,123,255,.16);
 }
 
+#dogBoardRepliesList{
+  display:flex;
+  flex-direction:column;
+  gap:.55rem;
+  margin-top:.4rem;
+}
+
+.dogboard-reply-item{
+  display:flex;
+  align-items:flex-start;
+  gap:.55rem;
+  padding:.55rem .65rem;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(138,123,255,.14);
+}
+
+.dogboard-reply-avatar{
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  border-radius:999px;
+  object-fit:cover;
+  display:block;
+}
+
+.dogboard-reply-body{
+  min-width:0;
+  flex:1;
+}
+
+.dogboard-reply-name{
+  font-size:.85rem;
+  font-weight:800;
+  color:#fff;
+  line-height:1.15;
+}
+
+.dogboard-reply-text{
+  font-size:.88rem;
+  line-height:1.25;
+  color:rgba(255,255,255,.9);
+  word-break:break-word;
+  margin-top:.12rem;
+}
+
+.dogboard-reply-date{
+  font-size:.72rem;
+  color:rgba(255,255,255,.5);
+  margin-top:.18rem;
+}
+
 /* ===============================
    INSTAGRAM-LIKE LIST (msg-item)
    =============================== */
