@@ -9795,7 +9795,7 @@ await window.db.collection("dogBoardReplies").add({
   };
 }
 
-    const closeViewer = () => {
+  const closeViewer = () => {
       pane.classList.remove("show");
       pane.classList.add("hidden");
       if (input) input.value = "";
@@ -9808,31 +9808,61 @@ await window.db.collection("dogBoardReplies").add({
     pane.classList.remove("hidden");
     pane.classList.add("show");
 
-  const deleteBtn = document.getElementById("dogboardDeletePost");
-if (deleteBtn){
-  deleteBtn.onclick = async () => {
-    if (!post.id || !window.db) return;
+    const deleteBtn = document.getElementById("dogboardDeletePost");
+    if (deleteBtn){
+      deleteBtn.onclick = async () => {
+        if (!post.id || !window.db) return;
 
-    const ok = await showPlutooConfirm("Vuoi eliminare l'annuncio?", {
-      title: "Plutoo",
-      confirmText: "Elimina",
-      cancelText: "Annulla",
-      danger: true
-    });
+        const ok = await showPlutooConfirm("Vuoi eliminare l'annuncio?", {
+          title: "Plutoo",
+          confirmText: "Elimina",
+          cancelText: "Annulla",
+          danger: true
+        });
 
-    if (!ok) return;
+        if (!ok) return;
 
-    window.db.collection("dogBoardPosts").doc(String(post.id)).delete()
-      .then(() => {
-        closeViewer();
-        if (typeof showToast === "function") showToast("Annuncio eliminato");
-        if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
-      })
-      .catch((e) => {
-        console.error("DogBoard delete post error:", e);
-      });
-  };
-}
+        window.db.collection("dogBoardPosts").doc(String(post.id)).delete()
+          .then(() => {
+            closeViewer();
+            if (typeof showToast === "function") showToast("Annuncio eliminato");
+            if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
+          })
+          .catch((e) => {
+            console.error("DogBoard delete post error:", e);
+          });
+      };
+    }
+
+    const reportPostBtn = document.getElementById("dogboardReportPost");
+    if (reportPostBtn) {
+      reportPostBtn.onclick = async () => {
+        const reporterUid = String(window.PLUTOO_UID || "");
+        const targetUid = String(post.ownerUid || "");
+        const postId = String(post.id || "");
+
+        if (!reporterUid || !targetUid || !postId || !window.db) return;
+
+        const reason = await showDogBoardReplyReportReasonModal();
+        if (!reason) return;
+
+        try {
+          await window.db.collection("reports").add({
+            type: "dogboard_post",
+            dogBoardPostId: postId,
+            reporterUid,
+            targetUid,
+            reason,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            status: "open"
+          });
+
+          if (typeof showToast === "function") showToast("🚩 Segnalazione inviata");
+        } catch (err) {
+          console.error("dogboard post report error:", err);
+        }
+      };
+    }
 
   } catch(e){
     console.error("openDogBoardViewer error:", e);
