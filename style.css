@@ -2722,10 +2722,6 @@ display: none !important;
 }
 
 .dogboard-reply-item{
-  position:relative;
-
-  width:100%;
-
   display:flex;
   align-items:flex-start;
   gap:.65rem;
@@ -2746,10 +2742,6 @@ display: none !important;
     border-color .2s ease,
     box-shadow .2s ease,
     transform .2s ease;
-
-  cursor:pointer;
-
-  overflow:hidden;
 }
 
 .dogboard-reply-item:hover{
