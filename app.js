@@ -9523,7 +9523,7 @@ if (postProfileOpen) {
           }
 
         html += `
-          <div class="dogboard-reply-item msg-item" data-reply-id="${replyId.replace(/"/g, "&quot;")}" data-can-delete="${canDeleteReply ? "1" : "0"}" data-reply-dog-id="${String(r.senderDogId || "").replace(/"/g, "&quot;")}">
+          <div class="dogboard-reply-item msg-item" data-reply-id="${replyId.replace(/"/g, "&quot;")}" data-can-delete="${canDeleteReply ? "1" : "0"}" data-reply-dog-id="${String(r.senderDogId || "").replace(/"/g, "&quot;")}" data-reply-sender-uid="${String(r.senderUid || "").replace(/"/g, "&quot;")}">
             <div class="msg-swipe-front">
               <img
                 src="${avatar}"
