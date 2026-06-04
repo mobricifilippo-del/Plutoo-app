@@ -10125,6 +10125,12 @@ async function loadDogBoardPosts(){
   }
 }
 
+if (btnRefreshDogBoard) {
+  btnRefreshDogBoard.addEventListener("click", () => {
+    loadDogBoardPosts();
+  });
+}
+
     async function publishDogBoardTextOnly(){
   try {
     if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) return;
