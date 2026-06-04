@@ -9938,15 +9938,42 @@ await window.db.collection("dogBoardReplies").add({
 
         if (!ok) return;
 
-        window.db.collection("dogBoardPosts").doc(String(post.id)).delete()
-          .then(() => {
-            closeViewer();
-            if (typeof showToast === "function") showToast("Annuncio eliminato");
-            if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
-          })
-          .catch((e) => {
-            console.error("DogBoard delete post error:", e);
-          });
+        try {
+  const postId = String(post.id || "");
+  const postRef = window.db.collection("dogBoardPosts").doc(postId);
+
+  const postSnap = await postRef.get();
+  const postData = postSnap && postSnap.exists ? (postSnap.data() || {}) : {};
+  const realPhotos = Array.isArray(postData.photos) ? postData.photos : [];
+
+  if (window.storage && realPhotos.length) {
+    await Promise.all(
+      realPhotos
+        .map(p => String(p.storagePath || "").trim())
+        .filter(Boolean)
+        .map(path => window.storage.ref().child(path).delete().catch(() => {}))
+    );
+  }
+
+  const repliesSnap = await window.db
+    .collection("dogBoardReplies")
+    .where("dogBoardPostId", "==", postId)
+    .get();
+
+  await Promise.all(
+    repliesSnap.docs.map(doc => doc.ref.delete().catch(() => {}))
+  );
+
+  await postRef.delete();
+
+  closeViewer();
+  if (typeof showToast === "function") showToast("Annuncio eliminato");
+  if (typeof loadDogBoardPosts === "function") loadDogBoardPosts();
+
+} catch (e) {
+  console.error("DogBoard delete post error:", e);
+        }
+        
       };
     }
 
