@@ -9896,8 +9896,8 @@ await window.db.collection("dogBoardReplies").add({
 });
 
       input.value = "";
-      sendBtn.disabled = true;
-      sendBtn.textContent = "Inviato";
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Invia";
       
       await showPlutooAlert("Messaggio inviato", {
   title: "Plutoo",
