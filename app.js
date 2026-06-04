@@ -9848,6 +9848,25 @@ if (sendBtn) {
       }
 
       const selfDogId = String(window.PLUTOO_DOG_ID || "");
+
+      const repliesSnap = await window.db
+  .collection("dogBoardReplies")
+  .where("dogBoardPostId", "==", String(post.id || ""))
+  .where("senderDogId", "==", selfDogId)
+  .get();
+
+const count = repliesSnap && typeof repliesSnap.size === "number"
+  ? repliesSnap.size
+  : 0;
+
+if (count >= 2) {
+  await showPlutooAlert("Hai raggiunto il limite di 2 commenti per questo annuncio.", {
+    title: "Plutoo",
+    confirmText: "OK"
+  });
+  return;
+}
+      
 const selfDog = Array.isArray(state.dogs)
   ? state.dogs.find(x => x && String(x.id) === selfDogId)
   : null;
