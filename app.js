@@ -9387,6 +9387,68 @@ chatInput.placeholder = getChatPlaceholder(_perm.placeholderKey, state.lang);
   
 }
 
+if (typeof window.openPlutooImageViewer !== "function") {
+  window.openPlutooImageViewer = function(src) {
+    if (!src) return;
+
+    const old = document.getElementById("plutooImageViewer");
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+
+    const wrap = document.createElement("div");
+    wrap.id = "plutooImageViewer";
+    wrap.style.position = "fixed";
+    wrap.style.left = "0";
+    wrap.style.top = "0";
+    wrap.style.right = "0";
+    wrap.style.bottom = "0";
+    wrap.style.background = "rgba(0,0,0,.82)";
+    wrap.style.zIndex = "99999";
+    wrap.style.display = "flex";
+    wrap.style.alignItems = "center";
+    wrap.style.justifyContent = "center";
+    wrap.style.padding = "18px";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "";
+    img.style.maxWidth = "100%";
+    img.style.maxHeight = "100%";
+    img.style.objectFit = "contain";
+    img.style.borderRadius = "16px";
+    img.style.background = "#0b0b0f";
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "✕";
+    close.style.position = "fixed";
+    close.style.top = "14px";
+    close.style.left = "14px";
+    close.style.zIndex = "100000";
+    close.style.border = "0";
+    close.style.borderRadius = "999px";
+    close.style.padding = "10px 14px";
+    close.style.fontSize = "18px";
+    close.style.fontWeight = "900";
+    close.style.background = "rgba(20,20,20,.8)";
+    close.style.color = "#fff";
+
+    const closeViewer = () => {
+      if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+      if (close && close.parentNode) close.parentNode.removeChild(close);
+    };
+
+    close.addEventListener("click", closeViewer);
+
+    wrap.addEventListener("click", (e) => {
+      if (e.target === wrap) closeViewer();
+    });
+
+    wrap.appendChild(img);
+    document.body.appendChild(wrap);
+    document.body.appendChild(close);
+  };
+}
+
 function escapeDogBoardHtml(value){
   return String(value || "")
     .replace(/&/g, "&amp;")
