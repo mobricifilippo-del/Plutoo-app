@@ -9500,6 +9500,14 @@ if (postProfileOpen) {
   };
 }
 
+    content.querySelectorAll(".dogboard-photo").forEach((img) => {
+  img.addEventListener("click", () => {
+    const src = img.getAttribute("src") || "";
+    if (!src || src === "./plutoo-icon-192.png") return;
+    openPlutooImageViewer(src);
+  });
+});
+
   if (window.db && String(post.id || "")) {
     window.db
       .collection("dogBoardReplies")
