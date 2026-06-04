@@ -8784,19 +8784,17 @@ storageRef.delete()
   if (profileClose) profileClose.onclick = () => closeProfilePage();
 
   window.closeProfilePage = () => {
-  state._previousProfileDog = null;
+  if (state._previousProfileDog) {
+    const previousDog = state._previousProfileDog;
+    state._previousProfileDog = null;
+    window.openFreshDogProfile(previousDog.id, previousDog);
+    return;
+  }
 
   profilePage.classList.add("hidden");
-
-  let previousView = state.viewHistory.pop() || "nearby";
-  if (previousView === "profile") previousView = state.viewHistory.pop() || "nearby";
-
+  const previousView = state.viewHistory.pop() || "nearby";
   setActiveView(previousView);
   state.currentDogProfile = null;
-
-  try {
-    history.replaceState({ view: previousView }, "", "");
-  } catch (_) {}
 };
 
   function isSelfieUnlocked(id) {
