@@ -9420,11 +9420,20 @@ function openDogBoardViewer(post){
     content.innerHTML = `
       <div class="dogboard-viewer">
 
-        <div
+      <div
   class="dogboard-viewer-name dogboard-viewer-open-profile"
   data-dog-id="${String(post.dogId || "").replace(/"/g, "&quot;")}"
   role="button"
->${String(post.dogName || "")}</div>
+  style="display:flex;align-items:center;gap:10px;"
+>
+  <img
+    src="${String(post.dogAvatar || "./plutoo-icon-192.png").replace(/"/g, "&quot;")}"
+    alt="${String(post.dogName || "DOG").replace(/"/g, "&quot;")}"
+    style="width:42px;height:42px;border-radius:50%;object-fit:cover;background:#0b0b0f;"
+    onerror="this.onerror=null;this.src='./plutoo-icon-192.png';"
+  >
+  <span>${String(post.dogName || "")}</span>
+</div>
 
         ${String(post.zone || "").trim()
           ? `<div class="dogboard-zone">${String(post.zone)
