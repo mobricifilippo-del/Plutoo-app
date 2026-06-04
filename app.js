@@ -6094,6 +6094,8 @@ if (isCreate) {
     });
   }
 
+  window.openPlutooImageViewer = openPlutooImageViewer;
+
    // CREATE: preview cliccabile apre viewer (oltre al picker già esistente)
   if (isCreate) {
     const p = document.getElementById("createDogPhotoPreview");
