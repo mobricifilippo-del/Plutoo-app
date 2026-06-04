@@ -9500,18 +9500,6 @@ if (postProfileOpen) {
   };
 }
 
-    content.querySelectorAll(".dogboard-photo").forEach((img) => {
-  img.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const src = String(img.getAttribute("src") || "").trim();
-    if (!src || typeof openPlutooImageViewer !== "function") return;
-
-    openPlutooImageViewer(src);
-  });
-});
-
   if (window.db && String(post.id || "")) {
     window.db
       .collection("dogBoardReplies")
