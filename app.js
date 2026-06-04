@@ -9506,7 +9506,7 @@ if (postProfileOpen) {
   img.addEventListener("click", () => {
     const src = img.getAttribute("src") || "";
     if (!src || src === "./plutoo-icon-192.png") return;
-    openPlutooImageViewer(src);
+    window.openPlutooImageViewer(src);
   });
 });
 
