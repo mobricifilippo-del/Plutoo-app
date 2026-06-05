@@ -5137,6 +5137,12 @@ row.addEventListener("click", (e) => {
     const targetDogId = String(data.targetDogId || "");
     if (!targetDogId) continue;
 
+    const blockedDogIds = Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+  ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id))
+  : [];
+
+if (blockedDogIds.includes(targetDogId)) continue;
+
     const dogSnap = await db.collection("dogs").doc(targetDogId).get();
     if (!dogSnap.exists) continue;
 
