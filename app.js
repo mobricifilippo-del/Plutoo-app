@@ -10857,6 +10857,19 @@ size: String(data.size || "")
 }
 
   function getVisibleMediaList(story) {
+
+    const blockedDogIds = new Set(
+  Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+    ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id))
+    : []
+);
+
+const storyDogId = String(story.dogId || story.userId || story.ownerUid || "");
+
+if (storyDogId && blockedDogIds.has(storyDogId)) {
+  return [];
+}
+    
   const hasMatch = !!state.matches[story.userId];
   const hasFriendship = !!state.friendships[story.userId];
 
