@@ -3059,6 +3059,12 @@ if (!snap || snap.empty) {
       return b.lastMessageAt - a.lastMessageAt;
     });
 
+    const _blockedChatIds = new Set(
+  Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+    ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id))
+    : []
+);
+
   const makeRow = (titleText, dateText, chatId, dogId, otherUid, sourceTab, dogAvatar, chatSource = "", dogBoardPostId = "") => {
   const row = document.createElement("div");
   row.className = "msg-item";
