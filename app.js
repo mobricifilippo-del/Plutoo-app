@@ -1336,6 +1336,85 @@ function showDogBoardReplyReportReasonModal(title) {
   });
 }
 
+function showProfileReportContentModal() {
+  return new Promise((resolve) => {
+    const modal = document.createElement("div");
+    modal.className = "plutoo-report-choice-backdrop";
+
+    modal.innerHTML = `
+      <div class="plutoo-report-choice-box">
+        <div class="plutoo-report-choice-title">Segnala contenuti</div>
+
+        <div class="plutoo-report-choice-list">
+          ${[
+            { type: "dog_profile", label: "Segnala profilo" },
+            { type: "dog_profile_photo", label: "Segnala foto profilo" },
+            { type: "gallery_photo", label: "Segnala immagini" },
+            { type: "dog_selfie", label: "Segnala selfie" },
+            { type: "story", label: "Segnala aggiornamento" },
+            { type: "owner_social", label: "Segnala social" }
+          ].map((item) => `
+            <button type="button" class="plutoo-report-choice" data-type="${item.type}" data-label="${item.label}">
+              <span class="plutoo-report-check">○</span>
+              <span>${item.label}</span>
+            </button>
+          `).join("")}
+        </div>
+
+        <div class="plutoo-report-error" hidden>Seleziona un contenuto</div>
+
+        <div class="plutoo-report-choice-actions">
+          <button type="button" class="btn ghost small" data-cancel="1">Annulla</button>
+          <button type="button" class="btn plutoo-report-confirm-btn small" data-confirm="1">Continua</button>
+        </div>
+      </div>
+    `;
+
+    let selected = null;
+
+    modal.querySelectorAll(".plutoo-report-choice").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        selected = {
+          type: String(btn.getAttribute("data-type") || ""),
+          label: String(btn.getAttribute("data-label") || "")
+        };
+
+        modal.querySelectorAll(".plutoo-report-choice").forEach((b) => {
+          b.classList.toggle("selected", b === btn);
+          const check = b.querySelector(".plutoo-report-check");
+          if (check) check.textContent = b === btn ? "✓" : "○";
+        });
+
+        const err = modal.querySelector(".plutoo-report-error");
+        if (err) err.hidden = true;
+      });
+    });
+
+    const close = (value) => {
+      if (modal.parentNode) modal.remove();
+      resolve(value || null);
+    };
+
+    modal.querySelector("[data-cancel='1']")?.addEventListener("click", () => close(null));
+
+    modal.querySelector("[data-confirm='1']")?.addEventListener("click", () => {
+      if (!selected || !selected.type) {
+        const err = modal.querySelector(".plutoo-report-error");
+        if (err) err.hidden = false;
+        return;
+      }
+
+      close(selected);
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) close(null);
+    });
+
+    document.body.appendChild(modal);
+  });
+}
+
 function autodetectLang(){
   return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
 }
