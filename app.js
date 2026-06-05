@@ -8194,6 +8194,20 @@ if (typeof window.refreshCreateDogCTA === "function") {
     card.appendChild(bioLabel);
     card.appendChild(bio);
     card.appendChild(availabilityBox);
+
+    const btnBlockedProfiles = document.createElement("button");
+btnBlockedProfiles.type = "button";
+btnBlockedProfiles.className = "btn ghost";
+btnBlockedProfiles.style.width = "100%";
+btnBlockedProfiles.style.justifyContent = "flex-start";
+btnBlockedProfiles.textContent = "⛔ Profili bloccati";
+
+btnBlockedProfiles.addEventListener("click", () => {
+  openBlockedProfilesList(myDogId);
+});
+
+card.appendChild(btnBlockedProfiles);
+    
     card.appendChild(feedback);
     card.appendChild(row);
 
