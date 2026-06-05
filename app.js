@@ -12185,9 +12185,9 @@ function openBlockedProfilesList(myDogId) {
         nameEl.style.cssText = "flex:1;font-weight:700;";  
         nameEl.textContent = blockedDogName;  
   
-        const icon = document.createElement("div");  
-        icon.textContent = "🆗";  
-        icon.style.cssText = "font-size:1.3rem;flex-shrink:0;";  
+         const icon = document.createElement("div");
+icon.textContent = "Sblocca";
+icon.style.cssText = "font-size:.82rem;font-weight:700;color:#CDA434;flex-shrink:0;padding:6px 10px;border-radius:10px;border:1px solid rgba(205,164,52,.35);"; 
   
         row.appendChild(avatar);  
         row.appendChild(nameEl);  
