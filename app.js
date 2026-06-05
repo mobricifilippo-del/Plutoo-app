@@ -4897,8 +4897,17 @@ _db.collection("followers").doc(docId).delete()
     const dogId = (typeof dog === "string") ? dog : dog.id;
     if (!dogId) return;
 
-    const followers = getFollowers(dogId);
-    const following = getFollowing(dogId);
+    const blockedDogIds = new Set(
+      Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+        ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id))
+        : []
+    );
+
+    const followers = getFollowers(dogId)
+      .filter(id => !blockedDogIds.has(String(id)));
+
+    const following = getFollowing(dogId)
+      .filter(id => !blockedDogIds.has(String(id)));
 
     const followersCountEl = $("followersCount");
     const followingCountEl = $("followingCount");
