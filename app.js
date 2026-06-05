@@ -8635,6 +8635,43 @@ if (openChatBtn) {
   };
 }
 
+  const reportProfileContentBtn = $("btnReportProfileContent");
+if (reportProfileContentBtn) {
+  reportProfileContentBtn.onclick = async () => {
+    if (!d || !d.id) return;
+
+    const selectedContent = await showProfileReportContentModal();
+    if (!selectedContent || !selectedContent.type) return;
+
+    const reason = await showDogBoardReplyReportReasonModal("Segnala contenuti");
+    if (!reason) return;
+
+    const reporterUid = String(window.PLUTOO_UID || "");
+    const reporterDogId = String(window.PLUTOO_DOG_ID || "");
+    const targetDogId = String(d.id || "");
+    const targetOwnerUid = String(d.ownerUid || "");
+
+    if (!reporterUid || !reporterDogId || !targetDogId || !targetOwnerUid || !db) return;
+
+    await db.collection("reports").add({
+      type: selectedContent.type,
+      contentType: selectedContent.type,
+      contentLabel: selectedContent.label || "",
+      reporterUid,
+      reporterDogId,
+      targetOwnerUid,
+      targetDogId,
+      reason: String(reason || ""),
+      status: "open",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    if (typeof showToast === "function") {
+      showToast("✅ Segnalazione inviata con successo");
+    }
+  };
+}
+
   const likeDogBtn = $("btnLikeDog");
 if (likeDogBtn) {
   likeDogBtn.onclick = async () => {
