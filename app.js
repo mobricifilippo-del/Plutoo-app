@@ -12102,6 +12102,114 @@ function plutooConfirmDelete(message) {
   });
 }
 
+function openBlockedProfilesList(myDogId) {  
+  const closeExisting = (id) => {  
+    const old = document.getElementById(id);  
+    if (old && old.parentNode) old.parentNode.removeChild(old);  
+  };  
+  
+  closeExisting("plutooBlockedListView");  
+  
+  const _db = window.db;  
+  if (!myDogId || !_db) return;  
+  
+  const wrap = document.createElement("div");  
+  wrap.id = "plutooBlockedListView";  
+  wrap.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.86);display:flex;flex-direction:column;";  
+  
+  const card = document.createElement("div");  
+  card.style.cssText = "margin:12px;border-radius:18px;border:1px solid rgba(167,139,250,.38);background:linear-gradient(180deg,#17142a 0%,#121218 100%);box-shadow:0 22px 70px rgba(0,0,0,.62);padding:14px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto;";  
+  
+  const titleEl = document.createElement("div");  
+  titleEl.style.cssText = "font-weight:900;font-size:1.28rem;text-align:center;color:#CDA434;margin-bottom:10px;";  
+  titleEl.textContent = "Profili bloccati";  
+  
+  const btnBack = document.createElement("button");  
+  btnBack.type = "button";  
+  btnBack.className = "btn ghost";  
+  btnBack.textContent = "← Indietro";  
+  btnBack.addEventListener("click", () => closeExisting("plutooBlockedListView"));  
+  
+  const listEl = document.createElement("div");  
+  listEl.style.cssText = "display:flex;flex-direction:column;gap:8px;";  
+  listEl.textContent = "Caricamento...";  
+  
+  card.appendChild(titleEl);  
+  card.appendChild(btnBack);  
+  card.appendChild(listEl);  
+  wrap.appendChild(card);  
+  document.body.appendChild(wrap);  
+  
+  _db.collection("blocks")  
+    .where("blockerDogId", "==", myDogId)  
+    .get()  
+    .then((snap) => {  
+      listEl.innerHTML = "";  
+  
+      if (snap.empty) {  
+        listEl.textContent = "Nessun profilo bloccato.";  
+        return;  
+      }  
+  
+      snap.forEach((docSnap) => {  
+        const data = docSnap.data() || {};  
+        const blockedDogId   = String(data.blockedDogId   || "");  
+        const blockedDogName = String(data.blockedDogName || "DOG");  
+        const blockedAvatar  = String(data.blockedDogAvatar || "./plutoo-icon-192.png");  
+        const blockDocId     = `${myDogId}_${blockedDogId}`;  
+  
+        const row = document.createElement("div");  
+        row.style.cssText = "display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);cursor:pointer;";  
+  
+        const avatar = document.createElement("img");  
+        avatar.src = blockedAvatar;  
+        avatar.alt = blockedDogName;  
+        avatar.style.cssText = "width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;";  
+        avatar.onerror = () => { avatar.src = "./plutoo-icon-192.png"; };  
+  
+        const nameEl = document.createElement("div");  
+        nameEl.style.cssText = "flex:1;font-weight:700;";  
+        nameEl.textContent = blockedDogName;  
+  
+        const icon = document.createElement("div");  
+        icon.textContent = "🆗";  
+        icon.style.cssText = "font-size:1.3rem;flex-shrink:0;";  
+  
+        row.appendChild(avatar);  
+        row.appendChild(nameEl);  
+        row.appendChild(icon);  
+  
+        row.addEventListener("click", async () => {  
+          const ok = await showPlutooConfirm(  
+            `Vuoi sbloccare ${blockedDogName}?`,  
+            {  
+              title: "Plutoo",  
+              confirmText: "Sblocca",  
+              cancelText: "Annulla"  
+            }  
+          );  
+          if (!ok) return;  
+  
+          await _db.collection("blocks").doc(blockDocId).delete();  
+  
+          if (Array.isArray(state.blockedDogIds)) {  
+            state.blockedDogIds = state.blockedDogIds.filter(id => id !== blockedDogId);  
+            window.PLUTOO_BLOCKED_DOG_IDS = state.blockedDogIds;  
+          }  
+  
+          row.remove();  
+  
+          showToast("✅ Hai sbloccato " + blockedDogName);  
+        });  
+  
+        listEl.appendChild(row);  
+      });  
+    })  
+    .catch(() => {  
+      listEl.textContent = "Errore caricamento profili bloccati.";  
+    });  
+}
+
 function showToast(message, type = "success") {
   let toast = document.getElementById("plutoo-toast");
 
