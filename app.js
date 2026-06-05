@@ -3934,12 +3934,19 @@ likesSnap.forEach(doc => {
     }
   }
 
-   const deck = swipeSourceDogs
+   const blockedDogIds = new Set(
+  Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+    ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id))
+    : []
+);
+
+const deck = swipeSourceDogs
     .filter(d=>mode==="love" ? true : d.mode===mode)
     .filter(d=>{
       if (!d) return false;
       if (myDogId && String(d.id || "") === myDogId) return false;
       if (myUid && String(d.ownerUid || "") === myUid) return false;
+      if (blockedDogIds.has(String(d.id || ""))) return false;
       if (swipedIds.includes(String(d.id || ""))) return false;
       
       return true;
