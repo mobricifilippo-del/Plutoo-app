@@ -8655,17 +8655,18 @@ if (reportProfileContentBtn) {
     if (!reporterUid || !reporterDogId || !targetDogId || !targetOwnerUid || !db) return;
 
     await db.collection("reports").add({
-      type: selectedContent.type,
-      contentType: selectedContent.type,
-      contentLabel: selectedContent.label || "",
-      reporterUid,
-      reporterDogId,
-      targetOwnerUid,
-      targetDogId,
-      reason: String(reason || ""),
-      status: "open",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+  type: selectedContent.type,
+  contentType: selectedContent.type,
+  contentLabel: selectedContent.label || "",
+  reporterUid,
+  reporterDogId,
+  targetUid: String(d.ownerUid || ""),
+  targetOwnerUid,
+  targetDogId,
+  reason: String(reason || ""),
+  status: "open",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
 
     if (typeof showToast === "function") {
       showToast("✅ Segnalazione inviata con successo");
