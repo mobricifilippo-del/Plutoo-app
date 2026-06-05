@@ -2086,6 +2086,14 @@ if (state.entered) {
   }
 } catch (_) {}
 
+  try {
+  const _cachedBlocks = JSON.parse(localStorage.getItem("plutoo_blocked_ids") || "[]");
+  if (Array.isArray(_cachedBlocks)) {
+    state.blockedDogIds = _cachedBlocks;
+    window.PLUTOO_BLOCKED_DOG_IDS = _cachedBlocks;
+  }
+} catch (_) {}
+
   if (viewToRestore === "profile") {
   setActiveView("profile");
 
