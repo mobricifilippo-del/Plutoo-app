@@ -8674,6 +8674,52 @@ if (reportProfileContentBtn) {
   };
 }
 
+  const blockProfileBtn = $("btnBlockProfileVisual");
+if (blockProfileBtn) {
+  blockProfileBtn.onclick = async () => {
+    const blockerUid = String(window.PLUTOO_UID || "");
+    const blockerDogId = String(window.PLUTOO_DOG_ID || "");
+    const blockedDogId = String(d && d.id ? d.id : "");
+    const blockedUid = String(d && d.ownerUid ? d.ownerUid : "");
+    const _db = window.db || db;
+
+    if (!blockerUid || !blockerDogId || !blockedDogId || !blockedUid || !_db) return;
+    if (blockerDogId === blockedDogId || blockerUid === blockedUid) return;
+
+    const ok = await showPlutooConfirm(
+      "Vuoi bloccare questo profilo?",
+      {
+        title: "Plutoo",
+        confirmText: "Blocca",
+        cancelText: "Annulla",
+        danger: false
+      }
+    );
+
+    if (!ok) return;
+
+    const blockId = `${blockerDogId}_${blockedDogId}`;
+
+    await _db.collection("blocks").doc(blockId).set({
+      blockerUid,
+      blockerDogId,
+      blockerDogName: String(window.PLUTOO_DOG_NAME || ""),
+      blockerDogAvatar: "",
+
+      blockedUid,
+      blockedDogId,
+      blockedDogName: String(d.name || ""),
+      blockedDogAvatar: String(d.avatar || d.img || ""),
+
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    if (typeof showToast === "function") {
+      showToast("✅ Profilo bloccato con successo");
+    }
+  };
+}
+
   const likeDogBtn = $("btnLikeDog");
 if (likeDogBtn) {
   likeDogBtn.onclick = async () => {
