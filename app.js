@@ -2211,20 +2211,8 @@ window.openProfilePage(dog);
 setActiveView("nearby");
 }
 
-} else {
-    if (
-      viewToRestore === "nearby" &&
-      window.PLUTOO_DOG_ID &&
-      typeof loadBlockedDogIds === "function"
-    ) {
-      loadBlockedDogIds().then(() => {
-        setActiveView(viewToRestore);
-      }).catch(() => {
-        setActiveView(viewToRestore);
-      });
     } else {
-      setActiveView(viewToRestore);
-    }
+    setActiveView(viewToRestore);
   }
 
 showAdBanner();
