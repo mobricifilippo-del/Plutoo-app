@@ -3741,6 +3741,14 @@ btnDogBoardBack?.addEventListener("click", () => {
 function renderNearby(){
   if(!nearGrid) return;
 
+  if (
+    window.PLUTOO_DOG_ID &&
+    !Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+  ) {
+    nearGrid.innerHTML = "";
+    return;
+  }
+
   const list = filteredDogs();
 
   const blockedSignature = Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
