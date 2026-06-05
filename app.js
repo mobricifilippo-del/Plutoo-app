@@ -2212,8 +2212,20 @@ setActiveView("nearby");
 }
 
 } else {
-    setActiveView(viewToRestore);
-}
+    if (
+      viewToRestore === "nearby" &&
+      window.PLUTOO_DOG_ID &&
+      typeof loadBlockedDogIds === "function"
+    ) {
+      loadBlockedDogIds().then(() => {
+        setActiveView(viewToRestore);
+      }).catch(() => {
+        setActiveView(viewToRestore);
+      });
+    } else {
+      setActiveView(viewToRestore);
+    }
+  }
 
 showAdBanner();
 }
