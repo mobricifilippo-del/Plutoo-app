@@ -3840,8 +3840,15 @@ const sourceDogs = hasActiveFilters ? realDogs : [...realDogs, ...DOGS];
     
 const myDogId = String(window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id") || "");
 
+const blockedDogIds = new Set(
+  Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+    ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id))
+    : []
+);
+
 return sourceDogs
 .filter(d => !myDogId || String(d.id) !== myDogId)
+.filter(d => !blockedDogIds.has(String(d.id || "")))
 .filter(d => !d.km || d.km <= (f.distKm || 999))
 
   .filter(d => {
