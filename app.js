@@ -5940,6 +5940,8 @@ profileContent.innerHTML = `
         <button id="btnOpenChat" class="btn primary">
           ${state.lang === "it" ? "Invia messaggio" : "Send message"}
         </button>
+
+        <button id="btnReportProfileContent" class="btn ghost">🚩 Segnala contenuti</button>
       `
   }
 </div>
