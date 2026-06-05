@@ -830,6 +830,52 @@ console.error("bindCreateDogButtonsOnce error:", e);
 }
 })();
 
+async function loadBlockedDogIds() {
+  try {
+    const myDogId = String(window.PLUTOO_DOG_ID || "").trim();
+    const _db = window.db || null;
+
+    const blockedSet = new Set();
+
+    if (!myDogId || !_db) {
+      state.blockedDogIds = [];
+      window.PLUTOO_BLOCKED_DOG_IDS = [];
+      return [];
+    }
+
+    const blockedByMeSnap = await _db
+      .collection("blocks")
+      .where("blockerDogId", "==", myDogId)
+      .get();
+
+    blockedByMeSnap.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+      const blockedDogId = String(data.blockedDogId || "").trim();
+      if (blockedDogId) blockedSet.add(blockedDogId);
+    });
+
+    const blockedMeSnap = await _db
+      .collection("blocks")
+      .where("blockedDogId", "==", myDogId)
+      .get();
+
+    blockedMeSnap.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+      const blockerDogId = String(data.blockerDogId || "").trim();
+      if (blockerDogId) blockedSet.add(blockerDogId);
+    });
+
+    state.blockedDogIds = Array.from(blockedSet);
+    window.PLUTOO_BLOCKED_DOG_IDS = state.blockedDogIds;
+
+    return state.blockedDogIds;
+  } catch (_) {
+    state.blockedDogIds = [];
+    window.PLUTOO_BLOCKED_DOG_IDS = [];
+    return [];
+  }
+}
+
 // ✅ DOG presence check (Firestore source of truth)
 // (wrappato in IIFE async per evitare await fuori contesto)
 window.plutooDogPresenceCheck = async function plutooDogPresenceCheck() {
