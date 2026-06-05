@@ -3750,7 +3750,7 @@ function renderNearby(){
     window.PLUTOO_DOG_ID &&
     !Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
   ) {
-    return;
+    window.PLUTOO_BLOCKED_DOG_IDS = [];
   }
 
   const list = filteredDogs();
