@@ -5942,6 +5942,7 @@ profileContent.innerHTML = `
         </button>
 
         <button id="btnReportProfileContent" class="btn ghost">🚩 Segnala contenuti</button>
+        <button id="btnBlockProfileVisual" class="btn ghost">⛔ Blocca profilo</button>
       `
   }
 </div>
