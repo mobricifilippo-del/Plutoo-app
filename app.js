@@ -4953,6 +4953,12 @@ _db.collection("followers").doc(docId).delete()
     const dogSnap = await db.collection("dogs").doc(followerDogId).get();
     if (!dogSnap.exists) continue;
 
+    const blockedDogIds = Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+  ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id))
+  : [];
+
+if (blockedDogIds.includes(followerDogId)) continue;
+
     const dogData = dogSnap.data() || {};
 
     const realDog = {
