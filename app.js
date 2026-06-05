@@ -3343,6 +3343,10 @@ restoreBtn?.addEventListener("click", async (e) => {
   return;
       }
 
+      const _otherUidCheck = (Array.isArray(chat.members) ? chat.members : []).find((uid) => uid !== selfUid) || null;
+const _dogIdCheck = (_otherUidCheck && chat.dogIds && chat.dogIds[_otherUidCheck]) || chat.dogId || null;
+if (_dogIdCheck && _blockedChatIds.has(String(_dogIdCheck))) return;
+
       if (chat.spamByUid && chat.spamByUid[selfUid] === true) {
   const otherUid =
     (Array.isArray(chat.members) ? chat.members : []).find((uid) => uid !== selfUid) || null;
