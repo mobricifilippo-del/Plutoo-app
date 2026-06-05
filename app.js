@@ -3743,8 +3743,12 @@ function renderNearby(){
 
   const list = filteredDogs();
 
-  const nextSignature = list.map(d => String(d.id)).join("|");
-  const currentSignature = nearGrid.dataset.renderSignature || "";
+  const blockedSignature = Array.isArray(window.PLUTOO_BLOCKED_DOG_IDS)
+  ? window.PLUTOO_BLOCKED_DOG_IDS.map(id => String(id)).sort().join("|")
+  : "";
+
+const nextSignature = `${list.map(d => String(d.id)).join("|")}::blocked=${blockedSignature}`;
+const currentSignature = nearGrid.dataset.renderSignature || "";
 
   if (!list.length){
     nearGrid.dataset.renderSignature = "";
