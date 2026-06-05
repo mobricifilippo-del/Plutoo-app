@@ -8793,6 +8793,18 @@ if (blockProfileBtn) {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
+    await loadBlockedDogIds();
+
+localStorage.setItem("currentView", "nearby");
+localStorage.removeItem("currentProfileDogId");
+
+profilePage?.classList.remove("active");
+profilePage?.classList.add("hidden");
+
+setActiveView("nearby");
+renderNearby();
+renderSwipe("love");
+
     if (typeof showToast === "function") {
       showToast("✅ Profilo bloccato con successo");
     }
