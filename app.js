@@ -9824,15 +9824,20 @@ if (reporterUid === targetUid) {
 
     try {
       await window.db.collection("reports").add({
-        type: "dogboard_reply",
-        replyId,
-        dogBoardPostId,
-        reporterUid,
-        targetUid,
-        reason,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        status: "open"
-      });
+  type: "dogboard_reply",
+  contentType: "dogboard_reply",
+  contentLabel: "",
+  replyId,
+  dogBoardPostId,
+  reporterUid,
+  reporterDogId: String(window.PLUTOO_DOG_ID || ""),
+  targetUid,
+  targetOwnerUid: String(targetUid),
+  targetDogId: String(el.getAttribute("data-reply-dog-id") || ""),
+  reason,
+  status: "open",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
 
       if (typeof showToast === "function") {
         showToast("🚩 Segnalazione inviata");
