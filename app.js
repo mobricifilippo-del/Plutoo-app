@@ -10116,14 +10116,19 @@ await window.db.collection("dogBoardReplies").add({
 
         try {
           await window.db.collection("reports").add({
-            type: "dogboard_post",
-            dogBoardPostId: postId,
-            reporterUid,
-            targetUid,
-            reason,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            status: "open"
-          });
+  type: "dogboard_post",
+  contentType: "dogboard_post",
+  contentLabel: "",
+  dogBoardPostId: postId,
+  reporterUid,
+  reporterDogId: String(window.PLUTOO_DOG_ID || ""),
+  targetUid,
+  targetOwnerUid: String(post.ownerUid || ""),
+  targetDogId: String(post.dogId || ""),
+  reason,
+  status: "open",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
 
           if (typeof showToast === "function") showToast("🚩 Segnalazione inviata");
         } catch (err) {
