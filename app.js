@@ -921,7 +921,12 @@ window.PLUTOO_DOG_NAME = dogName;
 
 // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)  
 window.PLUTOO_READONLY = !hasDog;
+
   await loadBlockedDogIds();
+
+if (state.currentView === "nearby" && typeof renderNearby === "function") {
+  renderNearby();
+}
 
 // UI CTA aggiornata (mai sparire)  
 if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
