@@ -12209,28 +12209,28 @@ icon.style.cssText = "font-size:.82rem;font-weight:700;color:#CDA434;flex-shrink
         row.appendChild(nameEl);  
         row.appendChild(icon);  
   
-        row.addEventListener("click", async () => {  
-          const ok = await showPlutooConfirm(  
-            `Vuoi sbloccare ${blockedDogName}?`,  
-            {  
-              title: "Plutoo",  
-              confirmText: "Sblocca",  
-              cancelText: "Annulla"  
-            }  
-          );  
-          if (!ok) return;  
-  
-          await _db.collection("blocks").doc(blockDocId).delete();  
-  
-          if (Array.isArray(state.blockedDogIds)) {  
-            state.blockedDogIds = state.blockedDogIds.filter(id => id !== blockedDogId);  
-            window.PLUTOO_BLOCKED_DOG_IDS = state.blockedDogIds;  
-          }  
-  
-          row.remove();  
-  
-          showToast("✅ Hai sbloccato " + blockedDogName);  
-        });  
+      row.addEventListener("click", async () => {  
+  const ok = await showPlutooConfirm(  
+    `Vuoi sbloccare ${blockedDogName}?`,  
+    {  
+      title: "Plutoo",  
+      confirmText: "Sblocca",  
+      cancelText: "Annulla"  
+    }  
+  );  
+  if (!ok) return;  
+
+  await _db.collection("blocks").doc(blockDocId).delete();  
+
+  await loadBlockedDogIds();
+
+  renderNearby();
+  renderSwipe("love");
+
+  row.remove();  
+
+  showToast("✅ Hai sbloccato " + blockedDogName);  
+});
   
         listEl.appendChild(row);  
       });  
