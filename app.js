@@ -868,6 +868,8 @@ async function loadBlockedDogIds() {
     state.blockedDogIds = Array.from(blockedSet);
     window.PLUTOO_BLOCKED_DOG_IDS = state.blockedDogIds;
 
+    try { localStorage.setItem("plutoo_blocked_ids", JSON.stringify(state.blockedDogIds)); } catch (_) {}
+
     return state.blockedDogIds;
   } catch (_) {
     state.blockedDogIds = [];
