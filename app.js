@@ -3593,11 +3593,31 @@ function setActiveView(name){
   state.currentView = name;
 
   // 🔄 Mantieni allineato lo stato delle Stories
-  try {
-    if (!Array.isArray(StoriesState.stories) || StoriesState.stories.length === 0) {
-      StoriesState.loadStories();
-    }
-  } catch (e) {}
+try {
+  if (!Array.isArray(StoriesState.stories) || StoriesState.stories.length === 0) {
+    StoriesState.loadStoriesFromFirestore()
+      .then((ok) => {
+        if (
+          ok !== true ||
+          !Array.isArray(StoriesState.stories) ||
+          StoriesState.stories.length === 0
+        ) {
+          StoriesState.loadStories();
+        }
+
+        if (typeof renderStoriesBar === "function") {
+          renderStoriesBar();
+        }
+      })
+      .catch(() => {
+        StoriesState.loadStories();
+
+        if (typeof renderStoriesBar === "function") {
+          renderStoriesBar();
+        }
+      });
+  }
+} catch (e) {}
 
   [viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), profilePage].forEach(v => {
     if (!v) return;
