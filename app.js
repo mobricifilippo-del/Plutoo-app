@@ -6638,6 +6638,9 @@ showPlutooBlockingLoader("Eliminazione in corso...😓");
           location.reload();  
         })  
         .catch((err) => {  
+
+          window.__plutooDeleteAccountBusy = false;
+      hidePlutooBlockingLoader();
             
       // ✅ non blocco mai l'app
 
