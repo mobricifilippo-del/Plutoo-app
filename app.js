@@ -1713,6 +1713,8 @@ try {
 if (state.entered === true) {
   homeScreen?.classList.add("hidden");
   appScreen?.classList.remove("hidden");
+} else {
+  homeScreen?.classList.remove("hidden");
 }
 
 // ============ STORIES – Config & State ============
