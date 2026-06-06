@@ -6552,6 +6552,11 @@ return Promise.all([delDogs, delUserDoc])
   .catch((err) => { throw err; });
    }); 
 };
+
+      if (window.__plutooDeleteAccountBusy === true) return;
+window.__plutooDeleteAccountBusy = true;
+
+showPlutooBlockingLoader("Eliminazione in corso...😓");
       
       deleteFromFirebase()  
         .then(() => {  
