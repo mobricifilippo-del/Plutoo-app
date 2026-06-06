@@ -1071,6 +1071,20 @@ auth.onAuthStateChanged(async (user) => {
 const linkRegister = document.getElementById("linkRegister");
 const linkDeleteAccountHome = document.getElementById("linkDeleteAccountHome");
 
+    if (linkDeleteAccountHome) {
+  linkDeleteAccountHome.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    showPlutooAlert(
+      "Per motivi di coerenza e sicurezza, l'eliminazione dell'account è disponibile dopo la creazione di un profilo DOG. 🐶",
+      {
+        title: "Plutoo",
+        confirmText: "Ho capito"
+      }
+    );
+  });
+    }
+
   if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
   const authKey = `firebase:authUser:${firebase.app().options.apiKey}:[DEFAULT]`;
