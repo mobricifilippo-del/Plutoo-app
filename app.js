@@ -6361,6 +6361,11 @@ if (!ok) return;
       const deleteFromFirebase = () => {
   if (!uid || !user || !db) return Promise.resolve();
 
+        const safeDeleteStoragePath = (path) => {
+  if (!path || !window.storage) return Promise.resolve();
+  return window.storage.ref().child(path).delete().catch(() => {});
+};
+
   const deleteQuery = (query) => {
     return query.get()
       .then((snap) => {
