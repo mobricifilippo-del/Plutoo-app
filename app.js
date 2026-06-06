@@ -1069,6 +1069,7 @@ auth.onAuthStateChanged(async (user) => {
   try {
    const linkLogin = document.getElementById("linkLogin");
 const linkRegister = document.getElementById("linkRegister");
+const linkDeleteAccountHome = document.getElementById("linkDeleteAccountHome");
 
   if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
