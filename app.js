@@ -1772,6 +1772,7 @@ try {
 } catch (_) {}
 
 return true;
+     },
     
     cleanExpiredStories() {
   const now = Date.now();
