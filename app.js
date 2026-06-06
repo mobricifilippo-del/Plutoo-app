@@ -1309,6 +1309,36 @@ function showPlutooAlert(message, options = {}) {
   });
 }
 
+function showPlutooBlockingLoader(message) {
+  const old = document.getElementById("plutooBlockingLoader");
+  if (old) old.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "plutooBlockingLoader";
+  modal.style.cssText = "position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;";
+
+  modal.innerHTML = `
+    <div style="width:min(88vw,340px);background:#171022;border:1px solid rgba(205,164,52,.45);border-radius:20px;padding:22px;color:#fff;text-align:center;box-shadow:0 18px 45px rgba(0,0,0,.45);">
+      <div style="width:42px;height:42px;border:4px solid rgba(255,255,255,.18);border-top-color:#CDA434;border-radius:50%;margin:0 auto 14px;animation:plutooSpin .8s linear infinite;"></div>
+      <div style="font-weight:900;color:#CDA434;font-size:1.05rem;">${message || "Eliminazione in corso...😓"}</div>
+    </div>
+  `;
+
+  if (!document.getElementById("plutooBlockingLoaderStyle")) {
+    const st = document.createElement("style");
+    st.id = "plutooBlockingLoaderStyle";
+    st.textContent = "@keyframes plutooSpin{to{transform:rotate(360deg)}}";
+    document.head.appendChild(st);
+  }
+
+  document.body.appendChild(modal);
+}
+
+function hidePlutooBlockingLoader() {
+  const modal = document.getElementById("plutooBlockingLoader");
+  if (modal) modal.remove();
+}
+
 function showPlutooConfirm(message, options = {}) {
   return showPlutooModal({
     title: options.title || "Plutoo",
