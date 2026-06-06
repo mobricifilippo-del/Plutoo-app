@@ -10630,6 +10630,10 @@ btnPublishDogBoard.textContent = "Pubblicazione in corso...";
   } catch (err) {
     console.error("publishDogBoardTextOnly error", err);
 
+    if (window.storage && photoUrls.length) {
+  Promise.all(photoUrls.map(p => window.storage.ref().child(p.storagePath).delete().catch(() => {})));
+    }
+
     showPlutooAlert(
   (state.lang === "it" ? "Errore durante la pubblicazione:\n" : "Publish failed:\n") +
   String((err && (err.message || err.code)) || err || "errore sconosciuto"),
