@@ -3599,7 +3599,19 @@ function setActiveView(name){
   // 🔄 Mantieni allineato lo stato delle Stories
 try {
   if (!Array.isArray(StoriesState.stories) || StoriesState.stories.length === 0) {
-    StoriesState.loadStories();
+    let cachedStories = [];
+
+    try {
+      cachedStories = JSON.parse(localStorage.getItem("plutoo_cached_stories") || "[]");
+    } catch (_) {
+      cachedStories = [];
+    }
+
+    if (Array.isArray(cachedStories) && cachedStories.length > 0) {
+      StoriesState.stories = cachedStories;
+    } else {
+      StoriesState.loadStories();
+    }
   }
 } catch (e) {}
 
