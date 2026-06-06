@@ -1020,6 +1020,31 @@ window.auth = auth;
 window.db = db;
 window.storage = storage;
 
+window.getCompatibleDogDocs = async function getCompatibleDogDocs(dogId, ownerUid, legacyDogDocs) {
+  const legacy = (legacyDogDocs && typeof legacyDogDocs === "object") ? legacyDogDocs : {};
+
+  try {
+    const id = String(dogId || "").trim();
+    const owner = String(ownerUid || "").trim();
+    const uid = String(window.PLUTOO_UID || "").trim();
+    const _db = window.db || null;
+
+    if (!id || !owner || !uid || owner !== uid || !_db) return legacy;
+
+    const snap = await _db.collection("dogsPrivate").doc(id).collection("dogDocs").get();
+    if (!snap || snap.empty) return legacy;
+
+    const docs = {};
+    snap.forEach((docSnap) => {
+      docs[String(docSnap.id)] = docSnap.data() || {};
+    });
+
+    return docs;
+  } catch (_) {
+    return legacy;
+  }
+};
+
 // ✅ run subito al load (ma SOLO quando la funzione esiste davvero)
 (function runPresenceWhenReady(){
   try {
