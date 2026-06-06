@@ -9036,16 +9036,29 @@ if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
   for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
 
   const blob = new Blob([bytes], { type: mime });
-  const storageRef = window.storage.ref().child(`dogs/${d.id}/selfie/selfie.jpg`);
+        
+  const storagePath = `dogs/${d.id}/selfie/selfie.jpg`;
+const storageRef = window.storage.ref().child(storagePath);
 
-  storageRef.put(blob, { contentType: mime })
-    .then(() => storageRef.getDownloadURL())
-    .then((url) => {
-      return window.db.collection("dogs").doc(d.id).set({
-        selfieUrl: url
-      }, { merge: true }).then(() => url);
-    })
-    .then((url) => {
+storageRef.put(blob, { contentType: mime })
+  .then(() => storageRef.getDownloadURL())
+  .then((url) => {
+    return window.db.collection("dogs").doc(d.id).set({
+      selfieUrl: url
+    }, { merge: true })
+      .then(() => url)
+      .catch((err) => {
+        return window.storage.ref().child(storagePath).delete()
+          .catch((deleteErr) => {
+            console.error("SELFIE ROLLBACK STORAGE ERROR:", deleteErr);
+          })
+          .then(() => {
+            throw err;
+          });
+      });
+  })
+  .then((url) => {
+      
       d.selfieUrl = url;
 const img = qs(".selfie .img", profileContent);
 if (img) img.src = url;
