@@ -8550,6 +8550,7 @@ if (existingDoc) {
           }
         }, { merge: true });
       })
+      .catch((err) => { storageRef.delete().catch(() => {}); throw err; })
       .then(() => {
         if (typeof showToast === "function") {
           showToast("✅ Documento DOG eliminato");
