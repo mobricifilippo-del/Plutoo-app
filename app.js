@@ -12179,6 +12179,10 @@ return;
   } catch (err) {
     console.error("publishStory Firebase error:", err);
 
+    if (storageRef) {
+  storageRef.delete().catch(() => {});
+    }
+
     const msg = state.lang === "it"
       ? "Errore nella pubblicazione dell'aggiornamento. Riprova."
       : "Update publish error. Please retry.";
