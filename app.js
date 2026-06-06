@@ -1071,8 +1071,8 @@ auth.onAuthStateChanged(async (user) => {
 const linkRegister = document.getElementById("linkRegister");
 const linkDeleteAccountHome = document.getElementById("linkDeleteAccountHome");
 
-    if (linkDeleteAccountHome) {
-  linkDeleteAccountHome.addEventListener("click", (e) => {
+if (linkDeleteAccountHome) {
+  linkDeleteAccountHome.onclick = (e) => {
     e.preventDefault();
 
     showPlutooAlert(
@@ -1082,8 +1082,8 @@ const linkDeleteAccountHome = document.getElementById("linkDeleteAccountHome");
         confirmText: "Ho capito"
       }
     );
-  });
-    }
+  };
+}
 
   if (!user) {
   const explicitLogout = sessionStorage.getItem("plutoo_explicit_logout") === "1";
