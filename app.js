@@ -3595,27 +3595,7 @@ function setActiveView(name){
   // 🔄 Mantieni allineato lo stato delle Stories
 try {
   if (!Array.isArray(StoriesState.stories) || StoriesState.stories.length === 0) {
-    StoriesState.loadStoriesFromFirestore()
-      .then((ok) => {
-        if (
-          ok !== true ||
-          !Array.isArray(StoriesState.stories) ||
-          StoriesState.stories.length === 0
-        ) {
-          StoriesState.loadStories();
-        }
-
-        if (typeof renderStoriesBar === "function") {
-          renderStoriesBar();
-        }
-      })
-      .catch(() => {
-        StoriesState.loadStories();
-
-        if (typeof renderStoriesBar === "function") {
-          renderStoriesBar();
-        }
-      });
+    StoriesState.loadStories();
   }
 } catch (e) {}
 
