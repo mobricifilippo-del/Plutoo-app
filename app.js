@@ -6409,6 +6409,8 @@ if (!ok) return;
       .catch(() => {});
   };
 
+        return cleanupStorage().then(() => {
+
   const delDogs = db.collection("dogs").where("ownerUid", "==", uid).get()
     .then((snap) => {
       const dogIds = [];
@@ -6504,6 +6506,7 @@ if (!ok) return;
   return Promise.all([delDogs, delUserDoc, delAuth])
     .then(() => {})
     .catch((err) => { throw err; });
+   }); 
 };
       
       deleteFromFirebase()  
