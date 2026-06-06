@@ -1766,8 +1766,12 @@ saveStories() {
   }
 
   this.stories = realStories;
-  return true;
-},
+
+try {
+  localStorage.setItem("plutoo_cached_stories", JSON.stringify(realStories));
+} catch (_) {}
+
+return true;
     
     cleanExpiredStories() {
   const now = Date.now();
