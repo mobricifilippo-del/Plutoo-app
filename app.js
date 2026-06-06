@@ -5778,19 +5778,46 @@ try {
   }
 } catch (_) {}
 
-      const freshDog = {
-        ...fallback,
-        ...data,
-        id: snap.id,
-        img: String(data.photoUrl || data.img || fallback.img || "./plutoo-icon-192.png"),
-        avatar: String(data.photoUrl || data.img || fallback.avatar || fallback.img || "./plutoo-icon-192.png"),
-        dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
-        ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
-        selfieUrl: String(data.selfieUrl || ""),
-        ownerUid,
-        plus,
-        plusStatus
-      };
+      let privateDogDocs = null;
+
+try {
+  const isPrivateDocsOwner =
+    String(ownerUid || "") === String(window.PLUTOO_UID || "");
+
+  if (isPrivateDocsOwner && window.db) {
+    const privateDocsSnap = await window.db
+      .collection("dogsPrivate")
+      .doc(String(snap.id))
+      .collection("dogDocs")
+      .get();
+
+    if (privateDocsSnap && !privateDocsSnap.empty) {
+      privateDogDocs = {};
+
+      privateDocsSnap.forEach((docSnap) => {
+        privateDogDocs[String(docSnap.id)] = docSnap.data() || {};
+      });
+    }
+  }
+} catch (_) {
+  privateDogDocs = null;
+}
+
+const freshDog = {
+  ...fallback,
+  ...data,
+  id: snap.id,
+  img: String(data.photoUrl || data.img || fallback.img || "./plutoo-icon-192.png"),
+  avatar: String(data.photoUrl || data.img || fallback.avatar || fallback.img || "./plutoo-icon-192.png"),
+  dogDocs: (privateDogDocs && typeof privateDogDocs === "object")
+    ? privateDogDocs
+    : ((data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {}),
+  ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
+  selfieUrl: String(data.selfieUrl || ""),
+  ownerUid,
+  plus,
+  plusStatus
+};
 
       if (typeof window.openProfilePage === "function") {
 
