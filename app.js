@@ -6366,6 +6366,37 @@ if (!ok) return;
   return window.storage.ref().child(path).delete().catch(() => {});
 };
 
+        const cleanupStorage = () => {
+  const paths = [];
+
+  return db.collection("dogs").where("ownerUid", "==", uid).get()
+    .then((snap) => {
+      snap.forEach((doc) => {
+        const d = doc.data() || {};
+        const dogId = String(doc.id);
+
+        paths.push(`dogs/${uid}/${dogId}/profile.jpg`);
+        paths.push(`dogs/${uid}/${dogId}/profile.png`);
+        paths.push(`dogs/${uid}/profile.jpg`);
+        paths.push(`dogs/${uid}/profile.png`);
+        paths.push(`dogs/${dogId}/selfie/selfie.jpg`);
+
+        const gallery = Array.isArray(d.gallery) ? d.gallery : [];
+        gallery.forEach((item) => {
+          if (item && item.storagePath) paths.push(String(item.storagePath));
+        });
+
+        const dogDocs = (d.dogDocs && typeof d.dogDocs === "object") ? d.dogDocs : {};
+        Object.values(dogDocs).forEach((docObj) => {
+          if (docObj && docObj.storagePath) paths.push(String(docObj.storagePath));
+        });
+      });
+
+      return Promise.all(paths.map((path) => safeDeleteStoragePath(path)));
+    })
+    .catch(() => {});
+};
+
   const deleteQuery = (query) => {
     return query.get()
       .then((snap) => {
