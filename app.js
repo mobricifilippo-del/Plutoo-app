@@ -8235,18 +8235,23 @@ availabilityBox.appendChild(availabilityWalksLabel);
   const uid = (window.PLUTOO_UID) || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
   if (!uid) throw new Error("Login richiesto");
 
-  await Promise.allSettled([
-    storage.ref().child(`dogs/${uid}/profile.jpg`).delete(),
-    storage.ref().child(`dogs/${uid}/profile.png`).delete(),
-    storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.jpg`).delete(),
-    storage.ref().child(`dogs/${uid}/${String(d.id)}/profile.png`).delete()
-  ]);
+  const ext = selectedProfilePhotoFile.type && selectedProfilePhotoFile.type.includes("png") ? "png" : "jpg";
+const oldPhotoUrl = String(d.photoUrl || d.img || "");
+const uploadedPath = `dogs/${uid}/profile.${ext}`;
+const uploadedPathEncoded = encodeURIComponent(uploadedPath);
+const uploadedWasOldPath =
+  oldPhotoUrl.includes(uploadedPathEncoded) ||
+  oldPhotoUrl.includes(uploadedPath);
 
-          const ext = selectedProfilePhotoFile.type && selectedProfilePhotoFile.type.includes("png") ? "png" : "jpg";
-          const storageRef = storage.ref().child(`dogs/${uid}/profile.${ext}`);
+const storageRef = storage.ref().child(uploadedPath);
 
-          await storageRef.put(selectedProfilePhotoFile, { contentType: selectedProfilePhotoFile.type || "image/jpeg" });
-          nextPhotoUrl = await storageRef.getDownloadURL();
+try {
+  await storageRef.put(selectedProfilePhotoFile, { contentType: selectedProfilePhotoFile.type || "image/jpeg" });
+  nextPhotoUrl = await storageRef.getDownloadURL();
+} catch (e) {
+  throw e;
+}
+          
         }
 
         if (removeProfilePhoto) {
