@@ -8293,19 +8293,7 @@ try {
             updateData.photoUrl = nextPhotoUrl;
           }
 
-   try {
-  await dogRef.set(updateData, { merge: true });
-
-  if (selectedProfilePhotoFile && storage) {
-    const otherExt = ext === "png" ? "jpg" : "png";
-    await storage.ref().child(`dogs/${uid}/profile.${otherExt}`).delete().catch(() => {});
-  }
-} catch (e) {
-  if (selectedProfilePhotoFile && storageRef && uploadedWasOldPath !== true) {
-    await storageRef.delete().catch(() => {});
-  }
-  throw e;
-   }
+   await dogRef.set(updateData, { merge: true });
           
         }
 
