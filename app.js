@@ -6957,6 +6957,11 @@ const newDogId = dogRef.id;
       }, { merge: true });
     } catch (e) {
       if (errorDiv) {
+
+        if (uploadedProfileStoragePath && window.storage) {
+  await window.storage.ref().child(uploadedProfileStoragePath).delete().catch(() => {});
+        }
+        
         errorDiv.textContent = state.lang === "it"
           ? "❌ Errore salvataggio profilo (Firestore)"
           : "❌ Profile save error (Firestore)";
