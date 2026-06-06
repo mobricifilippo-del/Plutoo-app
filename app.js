@@ -1646,7 +1646,20 @@ const btnRefreshDogBoard = $("btnRefreshDogBoard");
 
   const storyLikeBtn = $("storyLikeBtn");
 
-const adBanner = $("adBanner"); const matchOverlay = $("matchOverlay");
+const adBanner = $("adBanner");
+const matchOverlay = $("matchOverlay");
+
+try {
+  if (localStorage.getItem("plutoo_account_deleted_feedback") === "1") {
+    localStorage.removeItem("plutoo_account_deleted_feedback");
+
+    setTimeout(() => {
+      if (typeof showToast === "function") {
+        showToast("✅ Account eliminato");
+      }
+    }, 700);
+  }
+} catch (_) {}
 
 if (state.entered === true) {
   homeScreen?.classList.add("hidden");
