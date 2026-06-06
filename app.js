@@ -994,7 +994,13 @@ breeding: data.availability && typeof data.availability === "object"
   ? data.availability.breeding === true
   : data.breeding === true,
 size: String(data.size || ""),
-    dogDocs: (data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {},
+    
+    dogDocs: await window.getCompatibleDogDocs(
+  String(uid),
+  String(data.ownerUid || uid || ""),
+  data.dogDocs
+),
+    
     ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
     selfieUrl: String(data.selfieUrl || "")
   });
