@@ -10528,6 +10528,8 @@ if (btnRefreshDogBoard) {
 }
 
     async function publishDogBoardTextOnly(){
+    let photoUrls = [];
+      
   try {
     if (!btnPublishDogBoard || !dogBoardText || !dogBoardList || !window.db) return;
     if (btnPublishDogBoard.dataset.busy === "1") return;
@@ -10578,7 +10580,6 @@ btnPublishDogBoard.textContent = "Pubblicazione in corso...";
     const now = Date.now();
 
     // ================= UPLOAD FOTO (FILE -> STORAGE -> URL) =================
-    let photoUrls = [];
 
     if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
       for (let i = 0; i < dogBoardSelectedPhotos.length; i++) {
