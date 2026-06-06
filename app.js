@@ -1118,8 +1118,12 @@ const linkDeleteAccountHome = document.getElementById("linkDeleteAccountHome");
     }
 
     if (linkRegister) {
-      linkRegister.style.display = "none";
-    }
+  linkRegister.style.display = "none";
+}
+
+if (linkDeleteAccountHome) {
+  linkDeleteAccountHome.style.display = "";
+}
 
     try {
       if (db && window.PLUTOO_UID) {
