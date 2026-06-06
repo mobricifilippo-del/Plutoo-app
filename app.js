@@ -6895,10 +6895,13 @@ const newDogId = dogRef.id;
 
     // upload foto profilo su Storage
     let photoUrl = "";
+    let uploadedProfileStoragePath = "";
     try {
       const blob = dataUrlToBlob(state.createDogDraft.photoDataUrl);
       const ext = (blob.type && blob.type.includes("png")) ? "png" : "jpg";
-      const storageRef = window.storage.ref().child(`dogs/${uid}/${newDogId}/profile.${ext}`);
+
+      uploadedProfileStoragePath = `dogs/${uid}/${newDogId}/profile.${ext}`;
+     const storageRef = window.storage.ref().child(uploadedProfileStoragePath);
 
       // feedback inline "salvataggio..."
       if (errorDiv) {
