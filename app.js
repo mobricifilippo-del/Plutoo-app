@@ -7273,12 +7273,20 @@ if   (!pendingFiles.length) return;
 
                     renderGallery();
                   })
-                  .catch(() => {
-                    pendingFiles = [];
-                    if (c) c.textContent = state.lang === "it" ? " — Errore salvataggio" : " — Save error";
-                    publishBar.style.display = "none";
-                  });
-              });
+
+                .catch(() => {
+  if (window.storage && newItems.length) {
+    Promise.all(newItems.map(item =>
+      window.storage.ref().child(item.storagePath).delete().catch(() => {})
+    ));
+  }
+
+  pendingFiles = [];
+  if (c) c.textContent = state.lang === "it" ? " — Errore salvataggio" : " — Save error";
+  publishBar.style.display = "none";
+});
+                
+  });
           })
           .catch(() => {
             pendingFiles = [];
