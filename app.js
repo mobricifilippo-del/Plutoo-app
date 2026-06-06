@@ -6499,13 +6499,14 @@ if (!ok) return;
 
   const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});
 
-  const delAuth = user.delete().catch((err) => {
-    return Promise.reject(err);
-  });
-
-  return Promise.all([delDogs, delUserDoc, delAuth])
-    .then(() => {})
-    .catch((err) => { throw err; });
+return Promise.all([delDogs, delUserDoc])
+  .then(() => {
+    return user.delete().catch((err) => {
+      return Promise.reject(err);
+    });
+  })
+  .then(() => {})
+  .catch((err) => { throw err; });
    }); 
 };
       
@@ -6583,6 +6584,7 @@ if (!ok) return;
             localStorage.removeItem("currentView");
             localStorage.setItem("entered", "0");
             localStorage.setItem("currentView", "home");
+            localStorage.setItem("plutoo_account_deleted_feedback", "1");
           } catch (_) {}
 
           location.reload();  
