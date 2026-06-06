@@ -740,9 +740,9 @@ try {
           verified: !!data.verified,
 
           // ✅ campi mancanti reali
-          dogDocs: (data.dogDocs && typeof data.dogDocs === "object")
-            ? data.dogDocs
-            : {},
+        dogDocs: (myDog && myDog.dogDocs && typeof myDog.dogDocs === "object")
+  ? myDog.dogDocs
+  : ((data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {}),
 
           ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object")
             ? data.ownerSocial
