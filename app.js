@@ -8735,11 +8735,29 @@ if (existingDoc) {
 
         return window.db.collection("dogs").doc(dogId).get();
       })
-      .then((snap) => {
+      
+      .then(async (snap) => {
         const fresh = snap && snap.exists ? { ...d, id: snap.id, ...(snap.data() || {}) } : d;
 fresh.img = String(fresh.photoUrl || fresh.img || d.img || "./plutoo-icon-192.png");
 fresh.plus = d.plus === true;
 fresh.plusStatus = d.plusStatus || "";
+fresh.dogDocs = await window.getCompatibleDogDocs(
+  String(fresh.id),
+  String(fresh.ownerUid || d.ownerUid || fresh.id || ""),
+  fresh.dogDocs
+);
+
+try {
+  if (Array.isArray(state.dogs)) {
+    state.dogs = state.dogs.map(dog =>
+      String(dog.id) === String(fresh.id)
+        ? { ...dog, ...fresh }
+        : dog
+    );
+    localStorage.setItem("dogs", JSON.stringify(state.dogs));
+  }
+} catch (_) {}
+
 openProfilePage(fresh);
         })
 
