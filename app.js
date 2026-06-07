@@ -8840,21 +8840,21 @@ if (duplicateDocName) {
       storageRef.put(file)
         .then(() => storageRef.getDownloadURL())
         .then((url) => {
-          return window.db.collection("dogs").doc(dogId).set({
-
-            dogDocs: {
-  [docName]: {
+          
+    return window.db
+  .collection("dogsPrivate")
+  .doc(String(dogId))
+  .collection("dogDocs")
+  .doc(String(docName))
+  .set({
     url,
     storagePath,
     uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
     fileName: file.name || "",
     fileSize: Number(file.size || 0),
     fileType: file.type || ""
-  }
-},
-dogDocsStatus: "uploaded"
-            
-          }, { merge: true });
+  }, { merge: true });
+          
         })
         .then(() => {
           if (statusEl) {
