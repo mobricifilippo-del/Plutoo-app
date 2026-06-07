@@ -739,10 +739,11 @@ try {
           img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
           verified: !!data.verified,
 
-          // ✅ campi mancanti reali
-        dogDocs: (myDog && myDog.dogDocs && typeof myDog.dogDocs === "object")
-  ? myDog.dogDocs
-  : ((data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {}),
+          dogDocs: await window.getCompatibleDogDocs(
+  String(myId),
+  String(ownerUid || myId || ""),
+  data.dogDocs
+),
 
           ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object")
             ? data.ownerSocial
