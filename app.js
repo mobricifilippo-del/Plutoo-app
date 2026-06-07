@@ -6493,7 +6493,9 @@ if (!ok) return;
 };
 
         const cleanupStorage = () => {
+          
   const paths = [];
+  const docPromises = [];
 
   return db.collection("dogs").where("ownerUid", "==", uid).get()
     .then((snap) => {
@@ -6512,13 +6514,26 @@ if (!ok) return;
           if (item && item.storagePath) paths.push(String(item.storagePath));
         });
 
-      const dogDocs = (d.dogDocs && typeof d.dogDocs === "object") ? d.dogDocs : {};
-Object.values(dogDocs).forEach((docObj) => {
-  if (docObj && docObj.storagePath) paths.push(String(docObj.storagePath));
-});
-   });
+        const legacyDogDocs = (d.dogDocs && typeof d.dogDocs === "object") ? d.dogDocs : {};
+        Object.values(legacyDogDocs).forEach((docObj) => {
+          if (docObj && docObj.storagePath) paths.push(String(docObj.storagePath));
+        });
 
-      return Promise.all(paths.map((path) => safeDeleteStoragePath(path)));
+        docPromises.push(window.getCompatibleDogDocs(
+          String(dogId),
+          String(d.ownerUid || uid || ""),
+          d.dogDocs
+        ).then((dogDocs) => {
+          Object.values(dogDocs || {}).forEach((docObj) => {
+            if (docObj && docObj.storagePath) paths.push(String(docObj.storagePath));
+          });
+        }));
+      });
+
+      return Promise.all(docPromises).then(() => {
+        return Promise.all(paths.map((path) => safeDeleteStoragePath(path)));
+      });
+      
     })
     .catch(() => {});
 };
