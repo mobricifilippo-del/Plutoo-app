@@ -5879,7 +5879,13 @@ const freshDog = {
     ? privateDogDocs
     : ((data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {}),
   ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
-  selfieUrl: String(data.selfieUrl || ""),
+
+  selfieUrl: await window.getCompatibleSelfieUrl(
+  String(myId),
+  String(ownerUid || myId || ""),
+  data.selfieUrl
+),
+  
   ownerUid,
   plus,
   plusStatus
