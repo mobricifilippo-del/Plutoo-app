@@ -777,9 +777,7 @@ try {
     } catch (_) {}
   }
 
-  if (typeof window.openFreshDogProfile === "function") {
-  window.openFreshDogProfile(myId, myDog || { id: myId });
-} else if (typeof window.openProfilePage === "function") {
+  if (typeof window.openProfilePage === "function") {
   window.openProfilePage(myDog || { id: myId });
   }
 
