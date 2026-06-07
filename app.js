@@ -6512,10 +6512,15 @@ if (!ok) return;
           if (item && item.storagePath) paths.push(String(item.storagePath));
         });
 
-        const dogDocs = (d.dogDocs && typeof d.dogDocs === "object") ? d.dogDocs : {};
-        Object.values(dogDocs).forEach((docObj) => {
-          if (docObj && docObj.storagePath) paths.push(String(docObj.storagePath));
-        });
+      const dogDocs = await window.getCompatibleDogDocs(
+  String(doc.id),
+  String(d.ownerUid || uid || ""),
+  d.dogDocs
+);
+Object.values(dogDocs).forEach((docObj) => {
+  if (docObj && docObj.storagePath) paths.push(String(docObj.storagePath));
+});
+        
       });
 
       return Promise.all(paths.map((path) => safeDeleteStoragePath(path)));
