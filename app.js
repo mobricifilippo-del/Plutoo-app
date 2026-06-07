@@ -2289,7 +2289,11 @@ window.openProfilePage(dog);
         img: (data.img || data.photoUrl || "./plutoo-icon-192.png"),
         verified: !!data.verified,
         ownerSocial: (data.ownerSocial || {}),
-        dogDocs: (data.dogDocs || {}),
+        dogDocs: await window.getCompatibleDogDocs(
+          String(doc.id),
+          String(ownerUid || doc.id || ""),
+          data.dogDocs
+        ),
         selfieUrl: (data.selfieUrl || "")
       };
 
