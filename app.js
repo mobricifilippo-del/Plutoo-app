@@ -749,11 +749,7 @@ try {
             ? data.ownerSocial
             : {},
 
-          selfieUrl: await window.getCompatibleSelfieUrl(
-  String(myId),
-  String(ownerUid || myId || ""),
-  data.selfieUrl
-),
+          selfieUrl: String(data.selfieUrl || ""),
           
           ownerUid,
           plus,
