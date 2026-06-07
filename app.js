@@ -8727,7 +8727,7 @@ if (existingDoc) {
   .delete();
         
       })
-      .catch((err) => { storageRef.delete().catch(() => {}); throw err; })
+      .catch((err) => { throw err; })
       .then(() => {
         if (typeof showToast === "function") {
           showToast("✅ Documento DOG eliminato");
