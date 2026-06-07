@@ -8719,11 +8719,12 @@ if (existingDoc) {
     deleteStorage
       .then(() => {
 
-        return window.db.collection("dogs").doc(dogId).set({
-  dogDocs: {
-    [docName]: firebase.firestore.FieldValue.delete()
-  }
-}, { merge: true });
+    return window.db
+  .collection("dogsPrivate")
+  .doc(String(dogId))
+  .collection("dogDocs")
+  .doc(String(docName))
+  .delete();
         
       })
       .catch((err) => { storageRef.delete().catch(() => {}); throw err; })
