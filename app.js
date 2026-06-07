@@ -1028,6 +1028,31 @@ window.db = db;
 window.storage = storage;
 
 window.getCompatibleDogDocs = async function getCompatibleDogDocs(dogId, ownerUid, legacyDogDocs) {
+
+  window.getCompatibleSelfieUrl = async function getCompatibleSelfieUrl(dogId, ownerUid, legacySelfieUrl) {
+  const legacy = String(legacySelfieUrl || "").trim();
+
+  try {
+    const id = String(dogId || "").trim();
+    const owner = String(ownerUid || "").trim();
+    const uid = String(window.PLUTOO_UID || "").trim();
+    const _db = window.db || null;
+
+    if (!id || !owner || !uid || !_db) return legacy;
+
+    const snap = await _db.collection("dogsPrivate").doc(id).get();
+
+    if (!snap || !snap.exists) return legacy;
+
+    const data = snap.data() || {};
+
+    return String(data.selfieUrl || legacy || "").trim();
+
+  } catch (_) {
+    return legacy;
+  }
+};
+  
   const legacy = (legacyDogDocs && typeof legacyDogDocs === "object") ? legacyDogDocs : {};
 
   try {
