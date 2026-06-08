@@ -6579,8 +6579,18 @@ if (!ok) return;
 );
 
    return Promise.all(docPromises).then(() => {
-  window.__plutooDeleteStoragePaths = paths.filter(Boolean);
-  return Promise.resolve(window.__plutooDeleteStoragePaths);
+  const filteredPaths = paths.filter(Boolean);
+const retentionUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+
+return db.collection("deletedAccounts").doc(uid).set({
+  uid: String(uid),
+  storagePaths: filteredPaths,
+  deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  retentionUntil: firebase.firestore.Timestamp.fromDate(retentionUntil),
+  legalHold: false,
+  purgeStatus: "pending",
+  accountStatus: "retained"
+}, { merge: true }).then(() => filteredPaths).catch(() => filteredPaths);
 });
       
     })
