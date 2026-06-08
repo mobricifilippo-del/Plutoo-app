@@ -1179,8 +1179,7 @@ if (linkDeleteAccountHome) {
 }
 
 if (linkDeleteAccountHome) {
-  linkDeleteAccountHome.style.display =
-    window.PLUTOO_HAS_DOG ? "none" : "";
+  linkDeleteAccountHome.style.display = "";
 }
 
     try {
