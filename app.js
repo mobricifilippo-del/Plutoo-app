@@ -1191,7 +1191,92 @@ if (linkDeleteAccountHome) {
 const userData = snap && snap.exists ? (snap.data() || {}) : {};
 
 if (userData.deleted === true && userData.accountStatus === "deleted") {
-  try { await window.auth.signOut(); } catch (_) {}
+
+  const _restoreDeletedAccount = async () => {
+    const _uid = String(window.PLUTOO_UID || "");
+    if (!_uid || !db) throw new Error("uid o db mancante");
+
+    await db.collection("users").doc(_uid).set({
+      deleted: false,
+      accountStatus: "active",
+      publicVisible: true,
+      deletedAt: firebase.firestore.FieldValue.delete(),
+      deletedByUid: firebase.firestore.FieldValue.delete()
+    }, { merge: true });
+
+    const _dogSnap = await db.collection("dogs").where("ownerUid", "==", _uid).get();
+    await Promise.all(_dogSnap.docs.map((d) => d.ref.set({
+      deleted: false,
+      publicVisible: true,
+      deletedAt: firebase.firestore.FieldValue.delete(),
+      deletedByUid: firebase.firestore.FieldValue.delete()
+    }, { merge: true })));
+
+    await db.collection("deletedAccounts").doc(_uid).set({
+      accountStatus: "restored",
+      restoredAt: firebase.firestore.FieldValue.serverTimestamp(),
+      purgeStatus: "cancelled"
+    }, { merge: true });
+  };
+
+  const _confirmed = await showPlutooConfirm(
+    "Abbiamo trovato un account eliminato.\n\nVuoi ripristinare il tuo account?",
+    { title: "Plutoo", confirmText: "Sì, ripristina", cancelText: "No, esci" }
+  );
+
+  if (!_confirmed) {
+    try { await window.auth.signOut(); } catch (_) {}
+    return;
+  }
+
+  await showPlutooAlert(
+    "🎬 Guarda un breve video per ripristinare il tuo account",
+    { title: "Plutoo", confirmText: "OK" }
+  );
+
+  try {
+    await _restoreDeletedAccount();
+  } catch (_err) {
+    await showPlutooAlert("Errore nel ripristino. Riprova.", { title: "Plutoo", confirmText: "OK" });
+    try { await window.auth.signOut(); } catch (_) {}
+    return;
+  }
+
+  window.__booted = true;
+  if (typeof init === "function") await init();
+  runPresenceAfterAuth();
+
+  try { localStorage.setItem("entered", "1"); } catch (_) {}
+  state.entered = true;
+
+  const _flash  = document.getElementById("whiteFlash");
+  const _logo   = document.getElementById("heroLogo");
+  const _app    = document.getElementById("appScreen");
+  const _home   = document.getElementById("homeScreen");
+
+  if (_logo) {
+    _logo.classList.remove("heartbeat-violet", "heartbeat-violet-wow");
+    void _logo.offsetWidth;
+    _logo.classList.add("heartbeat-violet-wow");
+  }
+  if (_flash) _flash.classList.add("active");
+
+  setTimeout(() => {
+    if (_app) _app.classList.remove("hidden");
+    setActiveView("nearby");
+    state.currentView = "nearby";
+  }, 500);
+
+  setTimeout(() => {
+    if (_home) _home.classList.add("hidden");
+    if (_flash) _flash.classList.remove("active");
+    if (_logo) { _logo.style.transition = "opacity 1.5s ease-out"; _logo.style.opacity = "0"; }
+  }, 2000);
+
+  setTimeout(() => {
+    if (_logo) { _logo.classList.remove("heartbeat-violet-wow"); _logo.style.opacity = ""; _logo.style.transition = ""; }
+  }, 3500);
+
   return;
 }
 
