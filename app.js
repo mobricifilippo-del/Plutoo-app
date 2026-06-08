@@ -6559,6 +6559,16 @@ if (!ok) return;
         }));
       });
 
+      docPromises.push(
+  db.collection("dogBoardPosts").where("dogId","==",dogId).get().then((s)=>{
+    s.forEach((d)=>{
+      (d.data().photos||[]).forEach((p)=>{
+        if(p&&p.storagePath) paths.push(String(p.storagePath));
+      });
+    });
+  }).catch(()=>{})
+);
+
       return Promise.all(docPromises).then(() => {
         return Promise.all(paths.map((path) => safeDeleteStoragePath(path)));
       });
