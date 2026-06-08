@@ -8936,6 +8936,10 @@ fresh.dogDocs = await window.getCompatibleDogDocs(
   fresh.dogDocs
 );
 
+    if (fresh.dogDocs && typeof fresh.dogDocs === "object") {
+  delete fresh.dogDocs[docName];
+    }
+
 try {
   if (Array.isArray(state.dogs)) {
     state.dogs = state.dogs.map(dog =>
