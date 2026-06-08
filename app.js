@@ -6578,9 +6578,10 @@ if (!ok) return;
   }).catch(()=>{})
 );
 
-      return Promise.all(docPromises).then(() => {
-        return Promise.all(paths.map((path) => safeDeleteStoragePath(path)));
-      });
+   return Promise.all(docPromises).then(() => {
+  window.__plutooDeleteStoragePaths = paths.filter(Boolean);
+  return Promise.resolve(window.__plutooDeleteStoragePaths);
+});
       
     })
     .catch(() => {});
