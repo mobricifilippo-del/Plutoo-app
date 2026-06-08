@@ -6675,7 +6675,17 @@ if (!ok) return;
               );
 
               chatJobs.push(
-                chatDoc.ref.delete().catch((err) => {
+                
+              chatDoc.ref.set({
+  deletedByUid: {
+    [uid]: true
+  },
+  accountDeletedByUid: {
+    [uid]: true
+  },
+  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+}, { merge: true }).catch((err) => {
+                
                   showPlutooAlert(
                     "CHAT DELETE ERROR\n" +
                     "code: " + (err && err.code ? err.code : "") + "\n" +
