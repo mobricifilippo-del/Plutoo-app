@@ -6182,12 +6182,12 @@ profileContent.innerHTML = `
       </div>
     </div>
 
-    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-trust" data-type="trust" style="pointer-events:none">
+    <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-trust" data-type="trust" style="pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
   ${
     docsCount >= 3
       ? `
-        <div class="doc-icon" style="font-size:2rem;line-height:1">👑</div>
-        <div class="doc-status uploaded">Profilo completo</div>
+        <div class="doc-icon" style="font-size:2rem;line-height:1;margin-bottom:6px">👑</div>
+        <div class="doc-status uploaded" style="margin:0;text-align:center">Profilo completo</div>
       `
       : docsCount >= 1
         ? `
