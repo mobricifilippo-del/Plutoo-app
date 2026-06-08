@@ -391,8 +391,19 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
   });
 
   // LOGOUT (dentro pannello "già loggato")
-document.getElementById("btnLogout")?.addEventListener("click", async () => {
+
+  document.getElementById("btnLogout")?.addEventListener("click", async () => {
   sessionStorage.setItem("plutoo_explicit_logout", "1");
+
+  // ✅ SPEGNI LISTENER FIRESTORE PRIMA DEL SIGNOUT
+  try { if (typeof __notifUnsub === "function") __notifUnsub(); } catch (_) {}
+  __notifUnsub = null;
+  __notifInited = false;
+  __notifDogId = null;
+
+  try { if (typeof __msgBadgeUnsub === "function") __msgBadgeUnsub(); } catch (_) {}
+  __msgBadgeUnsub = null;
+
   try {
     await window.auth.signOut();
   } catch (_) {}
