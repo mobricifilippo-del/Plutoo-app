@@ -6718,10 +6718,9 @@ if (!ok) return;
 
 return Promise.all([delDogs, delUserDoc])
   .then(() => {
-    return user.delete().catch((err) => {
-      return Promise.reject(err);
-    });
+    return Promise.resolve();
   })
+  
   .then(() => {})
   .catch((err) => { throw err; });
    }); 
