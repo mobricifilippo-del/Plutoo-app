@@ -12366,25 +12366,21 @@ if (loader) loader.classList.remove("hidden");
   StoriesState.__publishing = true;
 
   try {
-    pruneStories24h();
+  pruneStories24h();
 
-    pruneStories24h();
+  // ✅ 24h guard — secondo controllo al momento della scrittura reale
+  if (!state.plus && !StoriesState.canUploadStory()) {
+    showPlutooAlert(
+      state.lang === "it"
+        ? "Hai già un Aggiornamento DOG attivo.\nCon il piano Free puoi pubblicare 1 aggiornamento ogni 24h.\nCon Plutoo Plus hai aggiornamenti illimitati."
+        : "You already have an active DOG Update.\nWith the Free plan you can publish 1 update every 24h.\nWith Plutoo Plus you have unlimited updates.",
+      { title: "Plutoo", confirmText: "OK" }
+    );
+    StoriesState.__publishing = false;
+    return;
+  }
 
-    // ✅ 24h guard — secondo controllo al momento della scrittura reale
-    if (!state.plus && !StoriesState.canUploadStory()) {
-      showPlutooAlert(
-        state.lang === "it"
-          ? "Hai già un Aggiornamento DOG attivo.\nCon il piano Free puoi pubblicare 1 aggiornamento ogni 24h.\nCon Plutoo Plus hai aggiornamenti illimitati."
-          : "You already have an active DOG Update.\nWith the Free plan you can publish 1 update every 24h.\nWith Plutoo Plus you have unlimited updates.",
-        { title: "Plutoo", confirmText: "OK" }
-      );
-      StoriesState.__publishing = false;
-      return;
-    }
-
-    const preview = $("uploadPreview");
-
-    const preview = $("uploadPreview");
+  const preview = $("uploadPreview");
 
     // fallback se uploadedFile perso
     if (!StoriesState.uploadedFile && preview && preview.dataset && preview.dataset.mediaUrl) {
