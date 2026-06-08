@@ -6708,7 +6708,13 @@ if (!ok) return;
       return Promise.all(jobs);
     });
 
-  const delUserDoc = db.collection("users").doc(uid).delete().catch(() => {});
+          const delUserDoc = db.collection("users").doc(uid).set({
+  deleted: true,
+  accountStatus: "deleted",
+  publicVisible: false,
+  deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  deletedByUid: String(uid)
+}, { merge: true }).catch(() => {});
 
 return Promise.all([delDogs, delUserDoc])
   .then(() => {
