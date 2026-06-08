@@ -5925,12 +5925,28 @@ const selfieUnlocked = isOwner || isSelfieUnlocked(d.id);
   
   if (!state.selfieUntilByDog || typeof state.selfieUntilByDog !== "object") state.selfieUntilByDog = {};
 
+  const isDocsOwner =
+  (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id;
+
   const dogDocs = d.dogDocs || {};
 
-  const docsCount = [
-  dogDocs.vaccines && dogDocs.vaccines.url,
-  dogDocs.pedigree && dogDocs.pedigree.url,
-  dogDocs.microchip && dogDocs.microchip.url
+  const dogDocsPublic = d.dogDocsPublic || {};
+
+const hasDogDoc = (name) => {
+  if (isDocsOwner) {
+    return !!(dogDocs[name] && dogDocs[name].url);
+  }
+
+  return !!(
+    dogDocsPublic[name] &&
+    dogDocsPublic[name].uploaded === true
+  );
+};
+
+const docsCount = [
+  hasDogDoc("vaccines"),
+  hasDogDoc("pedigree"),
+  hasDogDoc("microchip")
 ].filter(Boolean).length;
 
 const docsTrustLabel =
@@ -5950,9 +5966,6 @@ const docsTrustLabel =
   const isCreate = (d && d.isCreate === true) || (d && d.id === "__create__");
   const isFallbackPhoto = !d.img;
   const heroImg = isCreate ? "" : (d.img || "./plutoo-icon-192.png");
-
-  const isDocsOwner =
-  (window.PLUTOO_DOG_ID || localStorage.getItem("plutoo_dog_id")) === d.id;
 
 profileContent.innerHTML = `
 
@@ -6140,11 +6153,13 @@ profileContent.innerHTML = `
     <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-vaccines" data-type="dog">
       <div class="doc-icon">💉</div>
       <div class="doc-label">${state.lang === "it" ? "Vaccini" : "Vaccines"}</div>
-      <div class="doc-status ${dogDocs.vaccines && dogDocs.vaccines.url ? "uploaded" : "pending"}">
-        ${dogDocs.vaccines && dogDocs.vaccines.url
-          ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
-          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : (state.lang === "it" ? "Documento assente" : "Document missing"))}
-      </div>
+      <div class="doc-status ${hasDogDoc("vaccines") ? "uploaded" : "pending"}">
+  ${hasDogDoc("vaccines")
+    ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
+    : (isDocsOwner
+        ? (state.lang === "it" ? "Da caricare" : "Upload")
+        : (state.lang === "it" ? "Documento assente" : "Document missing"))}
+</div>
     </div>
 
     <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-pedigree" data-type="dog">
