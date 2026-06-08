@@ -6569,6 +6569,15 @@ if (!ok) return;
   }).catch(()=>{})
 );
 
+      docPromises.push(
+  db.collection("stories").where("ownerUid","==",uid).get().then((s)=>{
+    s.forEach((d)=>{
+      const data = d.data() || {};
+      if(data.storagePath) paths.push(String(data.storagePath));
+    });
+  }).catch(()=>{})
+);
+
       return Promise.all(docPromises).then(() => {
         return Promise.all(paths.map((path) => safeDeleteStoragePath(path)));
       });
