@@ -6165,8 +6165,8 @@ profileContent.innerHTML = `
     <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-pedigree" data-type="dog">
       <div class="doc-icon">📜</div>
       <div class="doc-label">${state.lang === "it" ? "Pedigree" : "Pedigree"}</div>
-      <div class="doc-status ${dogDocs.pedigree && dogDocs.pedigree.url ? "uploaded" : "pending"}">
-        ${dogDocs.pedigree && dogDocs.pedigree.url
+      <div class="doc-status ${hasDogDoc("pedigree") ? "uploaded" : "pending"}">
+        ${hasDogDoc("pedigree")
           ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
           : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : (state.lang === "it" ? "Documento assente" : "Document missing"))}
       </div>
@@ -6175,8 +6175,8 @@ profileContent.innerHTML = `
     <div class="doc-item ${d.plus === true && d.plusStatus === "active" ? "doc-item-plus" : ""}" data-doc="dog-microchip" data-type="dog">
       <div class="doc-icon">🔬</div>
       <div class="doc-label">${state.lang === "it" ? "Microchip" : "Microchip"}</div>
-      <div class="doc-status ${dogDocs.microchip && dogDocs.microchip.url ? "uploaded" : "pending"}">
-        ${dogDocs.microchip && dogDocs.microchip.url
+      <div class="doc-status ${hasDogDoc("microchip") ? "uploaded" : "pending"}">
+        ${hasDogDoc("microchip")
           ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
           : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : (state.lang === "it" ? "Documento assente" : "Document missing"))}
       </div>
