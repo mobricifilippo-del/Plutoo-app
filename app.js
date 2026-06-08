@@ -6647,7 +6647,13 @@ if (!ok) return;
         jobs.push(deleteQuery(db.collection("messages").where("fromUid", "==", uid)));
         jobs.push(deleteQuery(db.collection("messages").where("toUid", "==", uid)));
 
-        jobs.push(doc.ref.delete().catch(() => {}));
+        jobs.push(doc.ref.set({
+  deleted: true,
+  publicVisible: false,
+  deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  deletedByUid: String(uid)
+}, { merge: true }).catch(() => {}));
+        
       });
 
       dogIds.forEach((dogId) => {
