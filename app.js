@@ -8737,7 +8737,13 @@ if (existingDoc) {
   .doc(String(dogId))
   .collection("dogDocs")
   .doc(String(docName))
-  .delete();
+  .delete()
+  .then(() => {
+    return window.db.collection("dogs").doc(String(dogId)).update({
+      [`dogDocsPublic.${docName}`]:
+        firebase.firestore.FieldValue.delete()
+    });
+  });
         
       })
       .catch((err) => { throw err; })
