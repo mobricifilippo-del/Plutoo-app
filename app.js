@@ -1189,6 +1189,12 @@ if (linkDeleteAccountHome) {
         const snap = await ref.get();
 
 const userData = snap && snap.exists ? (snap.data() || {}) : {};
+
+if (userData.deleted === true && userData.accountStatus === "deleted") {
+  try { await window.auth.signOut(); } catch (_) {}
+  return;
+}
+
 const userPlusActive = userData.plus === true && userData.plusStatus === "active";
 
 state.plus = userPlusActive;
