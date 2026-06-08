@@ -6560,7 +6560,7 @@ if (!ok) return;
       });
 
       docPromises.push(
-  db.collection("dogBoardPosts").where("dogId","==",dogId).get().then((s)=>{
+  db.collection("dogBoardPosts").where("ownerUid","==",uid).get().then((s)=>{
     s.forEach((d)=>{
       (d.data().photos||[]).forEach((p)=>{
         if(p&&p.storagePath) paths.push(String(p.storagePath));
