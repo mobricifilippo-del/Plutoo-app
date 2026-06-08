@@ -11145,9 +11145,13 @@ async function init(){
       const snap = await window.db.collection("dogs").get();
       const realDogs = [];
 
-      for (const doc of snap.docs) {
+    for (const doc of snap.docs) {
   const data = doc.data() || {};
+
+  if (data.deleted === true || data.publicVisible === false) continue;
+
   const name = String(data.name || "").trim();
+        
   if (!name) continue;
 
   const ownerUid = String(data.ownerUid || "");
