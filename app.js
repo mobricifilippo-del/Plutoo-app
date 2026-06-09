@@ -9148,6 +9148,10 @@ showRewardVideoMock("documents", () => {
           }
 
           const rewardKey = finalUrl;
+
+          const rewardUntilKey = "plutoo_social_reward_until_" + rewardKey;
+const rewardUntil = Number(localStorage.getItem(rewardUntilKey) || "0");
+          
           if (state.plus || state.socialRewardViewed[rewardKey]) {
            window.location.href = finalUrl;
             return;
