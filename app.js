@@ -2437,40 +2437,6 @@ setActiveView("nearby");
 showAdBanner();
 }
 
-  function openSponsor(){
-  const url = "https://www.gelatofido.it/";
-
-  // HOME o vista "Vicino a te": nessun reward, apertura diretta
-  if (!state.entered || state.currentView === "nearby") {
-    window.open(url, "_blank", "noopener");
-    return;
-  }
-
-  // Utenti PLUS: mai reward
-  if (state.plus){
-    window.open(url, "_blank", "noopener");
-    return;
-  }
-
-  // Altre viste senza Plus: reward prima dello sponsor
-  if (state.rewardOpen) return;
-  state.rewardOpen = true;
-
-  showRewardVideoMock("sponsor", () => {
-    state.rewardOpen = false;
-    window.open(url, "_blank", "noopener");
-  });
-  }
-
-  sponsorLink?.addEventListener("click",(e)=>{
-    e.preventDefault();
-    openSponsor();
-  });
-  sponsorLinkApp?.addEventListener("click",(e)=>{
-    e.preventDefault();
-    openSponsor();
-  });
-
   ethicsButton?.addEventListener("click", ()=> openSheltersMaps() );
 
   // ============ PLUS ============
