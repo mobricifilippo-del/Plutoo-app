@@ -925,9 +925,13 @@ const data = (doc && doc.exists) ? (doc.data() || {}) : null;
 const dogId = hasDog ? String(uid) : null;
 const dogName = hasDog ? String(data.name || "").trim() : "";
 
-// Stato globale (runtime)  
-window.PLUTOO_HAS_DOG = hasDog;  
+// Stato globale (runtime)
+window.PLUTOO_HAS_DOG = hasDog;
 window.PLUTOO_DOG_ID = dogId;
+
+const _ldah = document.getElementById("linkDeleteAccountHome");
+if (_ldah) _ldah.style.display = hasDog ? "none" : "";
+  
 window.CURRENT_USER_DOG_ID = dogId || "";
 CURRENT_USER_DOG_ID = dogId || "";
 window.PLUTOO_DOG_NAME = dogName;  
