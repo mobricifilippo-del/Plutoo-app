@@ -1745,8 +1745,6 @@ rewardOpen: false,
   const appScreen    = $("appScreen");
   const heroLogo     = $("heroLogo");
   const btnEnter     = $("btnEnter");
-  const sponsorLink  = $("sponsorLink");
-  const sponsorLinkApp = $("sponsorLinkApp");
   const ethicsButton = $("ethicsButton");
   const btnMsgBack   = $("btnMsgBack");
   const btnPlus      = $("btnPlus");
