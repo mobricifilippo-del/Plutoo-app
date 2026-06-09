@@ -9142,6 +9142,11 @@ showRewardVideoMock("documents", () => {
 
          if (!finalUrl) return; 
 
+          if (String(d.ownerUid || "") === String(window.PLUTOO_UID || "")) {
+  window.location.href = finalUrl;
+  return;
+          }
+
           const rewardKey = finalUrl;
           if (state.plus || state.socialRewardViewed[rewardKey]) {
            window.location.href = finalUrl;
