@@ -9152,7 +9152,7 @@ showRewardVideoMock("documents", () => {
           const rewardUntilKey = "plutoo_social_reward_until_" + rewardKey;
 const rewardUntil = Number(localStorage.getItem(rewardUntilKey) || "0");
           
-          if (state.plus || state.socialRewardViewed[rewardKey]) {
+          if (state.plus || (state.socialRewardViewed[rewardKey] && rewardUntil > Date.now())) {
            window.location.href = finalUrl;
             return;
           }
@@ -9160,10 +9160,14 @@ const rewardUntil = Number(localStorage.getItem(rewardUntilKey) || "0");
           state.rewardOpen = true;
 
           showRewardVideoMock("social", () => {
-            state.rewardOpen = false;
-            state.socialRewardViewed[rewardKey] = true;
-            window.location.href = finalUrl;
-          });
+  state.rewardOpen = false;
+  localStorage.setItem(
+    rewardUntilKey,
+    String(Date.now() + 60 * 60 * 1000)
+  );
+  state.socialRewardViewed[rewardKey] = true;
+  window.location.href = finalUrl;
+});
         });
       });
 
