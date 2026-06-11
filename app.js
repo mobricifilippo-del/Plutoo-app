@@ -2104,7 +2104,7 @@ return true;
       plusPeriod: "/mese",
       activatePlus: "Attiva Plutoo Plus",
       cancel: "Annulla",
-      mapsShelters: "Rifugi nelle vicinanze",
+      mapsShelters: "canili vicino a me",
       noProfiles: "Nessun profilo. Modifica i filtri.",
       years: "anni"
     },
@@ -2169,7 +2169,7 @@ return true;
       plusPeriod: "/month",
       activatePlus: "Activate Plutoo Plus",
       cancel: "Cancel",
-      mapsShelters: "animal shelters nearby",
+      mapsShelters: "dog shelters near me",
       noProfiles: "No profiles. Adjust filters.",
       years: "yrs"
     }
