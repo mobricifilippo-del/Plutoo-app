@@ -464,10 +464,12 @@ a{color:inherit;text-decoration:none}
 @media (max-width:520px){.hero-logo{width:260px;height:260px}}
 
 .home-sponsor{text-align:center;padding:.6rem 1rem;border-top:1px solid var(--line);margin-top:80px}
+
 .sponsor-title{
 font-weight:800;
 color:var(--gold);
 font-size:1.05rem;
+margin-top:1rem;
 margin-bottom:.8rem;
 text-align:center;
 width:100%;
