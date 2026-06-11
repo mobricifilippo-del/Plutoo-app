@@ -530,7 +530,7 @@ text-align:center;
 
 /* Link legali - generici (HOME + APP) */
 .legal-links{
-  margin:1rem 0 .7rem;
+  margin:2rem 0 .7rem;
   font-size:.9rem;
   width:100%;
   display:flex;
