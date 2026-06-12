@@ -2118,7 +2118,15 @@ const I18N = {
     years: "anni",
     custom_search: "Ricerca personalizzata",
     create_dog_profile: "Crea profilo DOG",
+    pet_places_tab: "LuoghiPET 🐾 ▼",
+    pet_place_vets: "🏥 Veterinari",
+    pet_place_groomers: "✂️ Toelettature",
+    pet_place_shops: "🛒 Negozi",
+    pet_place_trainers: "🎓 Addestratori",
+    pet_place_kennels: "🏠 Pensioni",
+    pet_place_parks: "🌳 Parchi",
   },
+  
   en: {
     brand: "Plutoo",
     login: "Login",
@@ -2193,6 +2201,13 @@ const I18N = {
     years: "yrs",
     custom_search: "Custom search",
     create_dog_profile: "Create DOG profile",
+    pet_places_tab: "Pet Places 🐾 ▼",
+    pet_place_vets: "🏥 Vets",
+    pet_place_groomers: "✂️ Groomers",
+    pet_place_shops: "🛒 Shops",
+    pet_place_trainers: "🎓 Trainers",
+    pet_place_kennels: "🏠 Boarding",
+    pet_place_parks: "🌳 Parks",
   }
 };
 
