@@ -749,6 +749,15 @@
   window.addEventListener("error", function (e) {
     var isResourceError = !!(e && e.target && e.target !== window);
 
+    if (isResourceError) {
+      try {
+        var t = e.target;
+        var url = (t && (t.src || t.href)) ? (t.src || t.href) : "";
+        console.warn("RESOURCE ERROR:", url || t);
+      } catch (_) {}
+      return;
+    }
+
     var msg = (e && e.message) ? e.message : (isResourceError ? "Resource load error" : "Unknown error");
     var src = (e && e.filename) ? e.filename : "";
     var line = (e && typeof e.lineno === "number") ? e.lineno : "";
