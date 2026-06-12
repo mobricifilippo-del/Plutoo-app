@@ -11289,6 +11289,24 @@ btnPublishDogBoard?.addEventListener("click", () => {
   }
 
   async function showRewardVideoMock(type, onClose){
+
+    // --- ANDROID: rewarded reale ---
+    if (window.AndroidBridge && typeof window.AndroidBridge.showRewarded === "function") {
+      window.onRewardEarned = function() {
+        window.onRewardEarned = null;
+        window.onRewardFailed = null;
+        if (onClose) onClose();
+      };
+      window.onRewardFailed = function() {
+        window.onRewardEarned = null;
+        window.onRewardFailed = null;
+        return;
+      };
+      window.AndroidBridge.showRewarded();
+      return;
+    }
+
+    // --- BROWSER: mock invariato ---
     const msg = {
       it: {
         swipe: `🎬 Reward Video Mock\n\nSwipe: ${state.swipeCount}\nProssima soglia: ${state.nextRewardAt}\n\nTipo: Swipe Unlock`,
@@ -11312,11 +11330,11 @@ btnPublishDogBoard?.addEventListener("click", () => {
     const text = (msg[state.lang] && msg[state.lang][type]) || (msg.it && msg.it[type]) || "Ad";
 
     await showPlutooAlert(text, {
-  title: "Plutoo",
-  confirmText: "OK"
-});
+      title: "Plutoo",
+      confirmText: "OK"
+    });
 
-if (onClose) onClose();
+    if (onClose) onClose();
   }
 
   // ============ Init ============
