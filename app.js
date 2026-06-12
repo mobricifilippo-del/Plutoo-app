@@ -3371,18 +3371,18 @@ if (!snap || snap.empty) {
   </div>
 
   <div class="msg-swipe-actions">
-    <button class="msg-delete-btn" title="Elimina chat">
-      🗑️
-    </button>
+    <button class="msg-delete-btn" title="${t("deleteChat")}">
+  🗑️
+</button>
 
     ${sourceTab === "spam" ? `
-      <button class="msg-restore-btn" title="Ripristina">
-        ↩️
-      </button>
+    <button class="msg-restore-btn" title="${t("restore")}">
+  ↩️
+</button>
     ` : `
-      <button class="msg-spam-btn" title="Spam">
-        🚫
-      </button>
+      <button class="msg-spam-btn" title="${t("spam")}">
+  🚫
+</button>
     `}
   </div>
 `;
@@ -3397,14 +3397,14 @@ deleteBtn?.addEventListener("click", async (e) => {
   if (!selfUid || !chatId) return;
 
   const ok = await showPlutooConfirm(
-    "Eliminare questa chat dalla tua lista?",
-    {
-      title: "Plutoo",
-      confirmText: "Elimina",
-      cancelText: "Annulla",
-      danger: false
-    }
-  );
+  t("confirmDeleteChat"),
+  {
+    title: "Plutoo",
+    confirmText: t("delete"),
+    cancelText: t("cancel"),
+    danger: false
+  }
+);
 
   if (!ok) return;
 
@@ -3423,7 +3423,7 @@ deleteBtn?.addEventListener("click", async (e) => {
     } catch (_) {}
 
     if (typeof showToast === "function") {
-      showToast("🗑️ Chat eliminata");
+      showToast(t("🗑️ chatDeleted"));
     }
 
   } catch (err) {
@@ -3445,14 +3445,14 @@ spamBtn?.addEventListener("click", async (e) => {
   if (!selfUid || !chatId) return;
 
   const ok = await showPlutooConfirm(
-    "Spostare questa chat nello Spam?",
-    {
-      title: "Plutoo",
-      confirmText: "Spam",
-      cancelText: "Annulla",
-      danger: false
-    }
-  );
+  t("confirmSpamChat"),
+  {
+    title: "Plutoo",
+    confirmText: t("spam"),
+    cancelText: t("cancel"),
+    danger: false
+  }
+);
 
   if (!ok) return;
 
@@ -3466,7 +3466,7 @@ spamBtn?.addEventListener("click", async (e) => {
     loadMessagesLists();
 
     if (typeof showToast === "function") {
-      showToast("🚫 Chat spostata in Spam");
+      showToast(t("🚫 chatMovedSpam"));
     }
 
   } catch (err) {
@@ -3501,7 +3501,7 @@ restoreBtn?.addEventListener("click", async (e) => {
     } catch (_) {}
 
     if (typeof showToast === "function") {
-      showToast("↩️ Chat ripristinata");
+      showToast(t("↩️ chatRestored"));
     }
 
   } catch (err) {
