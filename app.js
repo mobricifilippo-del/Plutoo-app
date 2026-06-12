@@ -2910,7 +2910,7 @@ function __renderNotifs(items) {
   notifList.innerHTML = "";
 
   if (!items || !items.length) {
-    notifList.innerHTML = `<p class="sheet-empty">Nessuna notifica</p>`;
+    notifList.innerHTML = `<p class="sheet-empty">${t("notificationsEmpty")}</p>`;
     return;
   }
 
