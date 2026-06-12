@@ -2960,7 +2960,7 @@ function __renderNotifs(items) {
       <div class="notif-txt">
         <div class="notif-main">${main}</div>
       </div>
-      <button type="button" class="notif-delete-btn" title="Elimina notifica">🗑️</button>
+    <button type="button" class="notif-delete-btn" title="${t("deleteNotification")}">🗑️</button>
     `;
 
     const deleteBtn = row.querySelector(".notif-delete-btn");
