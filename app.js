@@ -2125,6 +2125,13 @@ const I18N = {
     pet_place_trainers: "🎓 Addestratori",
     pet_place_kennels: "🏠 Pensioni",
     pet_place_parks: "🌳 Parchi",
+    plusFeatureBadge: "Badge dorato Plus",
+    plusFeatureNoAds: "Zero pubblicità",
+    plusFeatureUnlimitedSwipes: "Swipe illimitati",
+    plusFeatureDogBoard: "Bacheca DOG libera",
+    plusFeatureAdvancedSearch: "Ricerca personalizzata avanzata",
+    plusFeaturePremiumExperience: "Esperienza premium totale",
+    plusYearPeriod: "/anno",
   },
   
   en: {
@@ -2208,6 +2215,13 @@ const I18N = {
     pet_place_trainers: "🎓 Trainers",
     pet_place_kennels: "🏠 Boarding",
     pet_place_parks: "🌳 Parks",
+    plusFeatureBadge: "Gold Plus badge",
+    plusFeatureNoAds: "No ads",
+    plusFeatureUnlimitedSwipes: "Unlimited swipes",
+    plusFeatureDogBoard: "Free DOG Board",
+    plusFeatureAdvancedSearch: "Advanced custom search",
+    plusFeaturePremiumExperience: "Total premium experience",
+    plusYearPeriod: "/year",
   }
 };
 
