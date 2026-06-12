@@ -219,48 +219,47 @@
 
   <!-- MESSAGGI -->
   <div id="viewMessages" class="view">
-    <div class="messages-topbar">
-      <button id="btnMsgBack" class="btn back-btn">
-        <span class="back-icon">←</span>
-      </button>
+  <div class="messages-topbar">
+    <button id="btnMsgBack" class="btn back-btn">
+      <span class="back-icon">←</span>
+    </button>
 
-      <img src="plutoo-icon-192.png" class="messages-logo" alt="Plutoo">
+    <img src="plutoo-icon-192.png" class="messages-logo" alt="Plutoo">
 
-      <div class="messages-top-tabs">
-        <button class="msg-top-tab active" data-tab="tabInbox">Ricevuti</button>
-        <button class="msg-top-tab" data-tab="tabMatches">Match</button>
-        <button class="msg-top-tab" data-tab="tabRequests">Richieste</button>
-        <button class="msg-top-tab" data-tab="tabSpam">Spam</button>
-      </div>
-    </div>
-
-    <div class="messages-body">
-      <div id="tabInbox" class="messages-list active">
-        <p class="empty-state hidden-empty" data-i18n="msgEmptyInbox">
-          Nessun messaggio ricevuto.
-        </p>
-      </div>
-
-      <div id="tabMatches" class="messages-list">
-        <p class="empty-state hidden-empty" data-i18n="msgEmptyMatches">
-          Ancora nessun match. Inizia a mettere 💛 in Accoppiamento!
-        </p>
-      </div>
-
-      <div id="tabRequests" class="messages-list">
-        <p class="empty-state hidden-empty" data-i18n="msgEmptyRequests">
-          Nessuna richiesta di messaggi.
-        </p>
-      </div>
-
-      <div id="tabSpam" class="messages-list">
-        <p class="empty-state hidden-empty" data-i18n="msgEmptySpam">
-          Nessun messaggio in spam.
-        </p>
-      </div>
+    <div class="messages-top-tabs">
+      <button class="msg-top-tab active" data-tab="tabInbox" data-i18n="messagesInbox">Ricevuti</button>
+      <button class="msg-top-tab" data-tab="tabMatches" data-i18n="messagesMatches">Match</button>
+      <button class="msg-top-tab" data-tab="tabRequests" data-i18n="messagesRequests">Richieste</button>
+      <button class="msg-top-tab" data-tab="tabSpam" data-i18n="messagesSpam">Spam</button>
     </div>
   </div>
-  <!-- fine MESSAGGI -->
+
+  <div class="messages-body">
+    <div id="tabInbox" class="messages-list active">
+      <p class="empty-state hidden-empty" data-i18n="msgEmptyInbox">
+        Nessun messaggio ricevuto.
+      </p>
+    </div>
+
+    <div id="tabMatches" class="messages-list">
+      <p class="empty-state hidden-empty" data-i18n="msgEmptyMatches">
+        Ancora nessun match. Inizia a mettere 💛 in Accoppiamento!
+      </p>
+    </div>
+
+    <div id="tabRequests" class="messages-list">
+      <p class="empty-state hidden-empty" data-i18n="msgEmptyRequests">
+        Nessuna richiesta di messaggi.
+      </p>
+    </div>
+
+    <div id="tabSpam" class="messages-list">
+      <p class="empty-state hidden-empty" data-i18n="msgEmptySpam">
+        Nessun messaggio in spam.
+      </p>
+    </div>
+  </div>
+</div> <!-- fine MESSAGGI -->
 
  <!-- BACHECA DOG -->
 <div id="viewDogBoard" class="view">
