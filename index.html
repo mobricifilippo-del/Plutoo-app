@@ -155,9 +155,10 @@
   <span id="notifDot" class="notif-dot hidden"></span>
    </button>
 
-   <button id="btnDogBoard" class="btn small ghost" type="button" aria-label="Bacheca DOG">
-     Bacheca DOG
+   <button id="btnDogBoard" class="btn small ghost" type="button" aria-label="Bacheca DOG" data-i18n="dogboard_title">
+  Bacheca DOG
    </button>
+    
   </div>
 </div>
 
@@ -261,59 +262,59 @@
   </div>
   <!-- fine MESSAGGI -->
 
-  <!-- BACHECA DOG -->
-  <div id="viewDogBoard" class="view">
-    <div class="messages-topbar">
-      <button id="btnDogBoardBack" class="btn back-btn">
-        <span class="back-icon">←</span>
-      </button>
-      <img src="plutoo-icon-192.png" class="messages-logo" alt="Plutoo">
+ <!-- BACHECA DOG -->
+<div id="viewDogBoard" class="view">
+  <div class="messages-topbar">
+    <button id="btnDogBoardBack" class="btn back-btn">
+      <span class="back-icon">←</span>
+    </button>
+    <img src="plutoo-icon-192.png" class="messages-logo" alt="Plutoo">
 
-      <div class="messages-top-tabs">
-        <button class="msg-top-tab active" type="button">Bacheca DOG</button>
-      </div>
-    </div>
-
-    <div class="messages-body">
-      <div id="dogBoardList" class="messages-list active">
-        <div class="dogboard-empty-state"></div>
-      </div>
-    </div>
-
-    <div id="dogBoardComposer" class="dogboard-composer">
-      <div class="dogboard-composer-card">
-
-        <div class="dogboard-composer-head">
-          <div class="dogboard-composer-title">Pubblica annuncio</div>
-          <div class="dogboard-composer-subtitle">Testo + max 3 foto</div>
-        </div>
-
-        <div class="dogboard-composer-field">
-          <textarea id="dogBoardText" maxlength="300" placeholder="Scrivi il tuo annuncio..."></textarea>
-        </div>
-
-        <div class="dogboard-composer-actions">
-          <input id="dogBoardPhotos" type="file" accept="image/*" multiple hidden>
-
-          <label for="dogBoardPhotos" class="btn ghost" id="btnDogBoardPhotos">
-            Aggiungi foto
-          </label>
-
-          <button id="btnPublishDogBoard" class="btn primary" type="button">
-            Pubblica annuncio
-          </button>
-        </div>
-
-        <div class="dogboard-composer-note">
-          Puoi caricare fino a 3 foto.
-        </div>
-
-        <div id="dogBoardPreview" class="dogboard-photos-preview"></div>
-
-      </div>
+    <div class="messages-top-tabs">
+      <button class="msg-top-tab active" type="button" data-i18n="dogboard_title">Bacheca DOG</button>
     </div>
   </div>
-  <!-- fine BACHECA DOG -->
+
+  <div class="messages-body">
+    <div id="dogBoardList" class="messages-list active">
+      <div class="dogboard-empty-state"></div>
+    </div>
+  </div>
+
+  <div id="dogBoardComposer" class="dogboard-composer">
+    <div class="dogboard-composer-card">
+
+      <div class="dogboard-composer-head">
+        <div class="dogboard-composer-title" data-i18n="dogboard_publish_ad">Pubblica annuncio</div>
+        <div class="dogboard-composer-subtitle" data-i18n="dogboard_text_max_photos">Testo + max 3 foto</div>
+      </div>
+
+      <div class="dogboard-composer-field">
+        <textarea id="dogBoardText" maxlength="300" data-i18n-placeholder="dogboard_write_ad" placeholder="Scrivi il tuo annuncio..."></textarea>
+      </div>
+
+      <div class="dogboard-composer-actions">
+        <input id="dogBoardPhotos" type="file" accept="image/*" multiple hidden>
+
+        <label for="dogBoardPhotos" class="btn ghost" id="btnDogBoardPhotos" data-i18n="dogboard_add_photo">
+          Aggiungi foto
+        </label>
+
+        <button id="btnPublishDogBoard" class="btn primary" type="button" data-i18n="dogboard_publish_ad">
+          Pubblica annuncio
+        </button>
+      </div>
+
+      <div class="dogboard-composer-note" data-i18n="dogboard_max_3_photos">
+        Puoi caricare fino a 3 foto.
+      </div>
+
+      <div id="dogBoardPreview" class="dogboard-photos-preview"></div>
+
+    </div>
+  </div>
+</div>
+<!-- fine BACHECA DOG -->
 
 </div><!-- fine .content -->
 
