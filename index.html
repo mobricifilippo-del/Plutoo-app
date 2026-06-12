@@ -30,92 +30,76 @@
   
   <!-- ==================== HOME SCREEN ==================== -->
   <div id="homeScreen" class="home hidden">
-    <div class="home-top">
-      <div class="container">
-        <div class="home-bar">
-          <!-- Logo + Brand -->
-          <div class="home-left">
-            <div class="logo-row">
-              <img src="plutoo-icon-192.png" alt="Plutoo" class="logo-small">
-              <h1 class="brand" data-i18n="brand">Plutoo</h1>
-            </div>
+  <div class="home-top">
+    <div class="container">
+      <div class="home-bar">
+        <div class="home-left">
+          <div class="logo-row">
+            <img src="plutoo-icon-192.png" alt="Plutoo" class="logo-small">
+            <h1 class="brand" data-i18n="brand">Plutoo</h1>
           </div>
-          <div class="home-center"></div>
-          <!-- Lang + Auth -->
-          <div class="home-right">
-            <div class="lang-flags">
-              <button id="langIT" class="btn tiny ghost" aria-label="Italiano">🇮🇹</button>
-              <button id="langEN" class="btn tiny ghost" aria-label="English">🇬🇧</button>
-            </div>
+        </div>
 
-            <div class="auth-links">
-  <a id="linkLogin" href="#" data-i18n="login">Login</a>
-  <a id="linkRegister" href="#" data-i18n="register">Registrati</a>
-  <a id="linkDeleteAccountHome" href="#" style="display:none;">Elimina</a>
-            </div>
-            
+        <div class="home-center"></div>
+
+        <div class="home-right">
+          <div class="lang-flags">
+            <button id="langIT" class="btn tiny ghost" aria-label="Italiano">🇮🇹</button>
+            <button id="langEN" class="btn tiny ghost" aria-label="English">🇬🇧</button>
+          </div>
+
+          <div class="auth-links">
+            <a id="linkLogin" href="#" data-i18n="login">Login</a>
+            <a id="linkRegister" href="#" data-i18n="register">Registrati</a>
+            <a id="linkDeleteAccountHome" href="#" style="display:none;" data-i18n="delete">Elimina</a>
           </div>
         </div>
       </div>
     </div>
-  
-    <!-- Hero -->
-<div class="home-hero">
-  <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo">
-  <button id="btnEnter" class="btn primary xl" data-i18n="enter">Entra</button>
-</div>
-
-    <div class="sponsor-card">
-
-  <div class="sponsor-title">
-    🐶 Cos'è Plutoo
   </div>
 
-  <div class="sponsor-copy">
-
-    <div style="display:inline-block;text-align:left;">
-
-  <div><span style="color:#b06cff;">🟣</span> Social per l'accoppiamento dei DOG</div>
-
-  <div><span style="color:#b06cff;">🟣</span> Crea il profilo del tuo DOG</div>
-
-  <div><span style="color:#b06cff;">🟣</span> Trova compagnia compatibile</div>
-
-  <div><span style="color:#b06cff;">🟣</span> Condividi aggiornamenti</div>
-
-  <div><span style="color:#b06cff;">🟣</span> Scopri servizi PET</div>
-
-  <div><span style="color:#b06cff;">🟣</span> Bacheca per amici a 4 zampe</div>
-
-</div>
-
+  <div class="home-hero">
+    <img id="heroLogo" src="plutoo-icon-512.png" alt="Plutoo" class="hero-logo">
+    <button id="btnEnter" class="btn primary xl" data-i18n="enter">Entra</button>
   </div>
 
-    </div>
- 
-
-<button id="ethicsButton" class="btn ethics">
-  <span>🏠</span>
-
-  <div class="ethics-lines">
-    <div class="l1" data-i18n="ethicsLine1">
-      Non abbandonare mai i tuoi amici
+  <div class="sponsor-card">
+    <div class="sponsor-title" data-i18n="home_what_is_plutoo">
+      🐶 Cos'è Plutoo
     </div>
 
-    <div class="l2" data-i18n="ethicsLine2">
-      (rifugi nelle vicinanze)
+    <div class="sponsor-copy">
+      <div style="display:inline-block;text-align:left;">
+        <div><span style="color:#b06cff;">🟣</span> <span data-i18n="home_intro_social">Social per l'accoppiamento dei DOG</span></div>
+        <div><span style="color:#b06cff;">🟣</span> <span data-i18n="home_intro_create">Crea il profilo del tuo DOG</span></div>
+        <div><span style="color:#b06cff;">🟣</span> <span data-i18n="home_intro_find">Trova compagnia compatibile</span></div>
+        <div><span style="color:#b06cff;">🟣</span> <span data-i18n="home_intro_updates">Condividi aggiornamenti</span></div>
+        <div><span style="color:#b06cff;">🟣</span> <span data-i18n="home_intro_services">Scopri servizi PET</span></div>
+        <div><span style="color:#b06cff;">🟣</span> <span data-i18n="home_intro_dogboard">Bacheca per amici a 4 zampe</span></div>
+      </div>
     </div>
   </div>
-</button>
 
-<div class="legal-links legal-purple">
-  <a href="termini.html">Termini</a> ·
-  <a href="privacy.html">Privacy</a> ·
-  <a href="contatti.html">Contatti</a>
-</div>
-</div>
+  <button id="ethicsButton" class="btn ethics">
+    <span>🏠</span>
 
+    <div class="ethics-lines">
+      <div class="l1" data-i18n="ethicsLine1">
+        Non abbandonare mai i tuoi amici
+      </div>
+
+      <div class="l2" data-i18n="ethicsLine2">
+        (rifugi nelle vicinanze)
+      </div>
+    </div>
+  </button>
+
+  <div class="legal-links legal-purple">
+    <a href="termini.html">Termini</a> ·
+    <a href="privacy.html">Privacy</a> ·
+    <a href="contatti.html">Contatti</a>
   </div>
+</div>
   
   <!-- ==================== APP SCREEN ==================== -->
   <div id="appScreen" class="app hidden">
