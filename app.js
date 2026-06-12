@@ -2132,6 +2132,7 @@ const I18N = {
     plusFeatureAdvancedSearch: "Ricerca personalizzata avanzata",
     plusFeaturePremiumExperience: "Esperienza premium totale",
     plusYearPeriod: "/anno",
+    onlySelfie: "Solo con selfie",
   },
   
   en: {
@@ -2222,6 +2223,7 @@ const I18N = {
     plusFeatureAdvancedSearch: "Advanced custom search",
     plusFeaturePremiumExperience: "Total premium experience",
     plusYearPeriod: "/year",
+    onlySelfie: "Only with selfie",
   }
 };
 
