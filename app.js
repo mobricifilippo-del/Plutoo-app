@@ -2133,6 +2133,12 @@ const I18N = {
     plusFeaturePremiumExperience: "Esperienza premium totale",
     plusYearPeriod: "/anno",
     onlySelfie: "Solo con selfie",
+    dogboard_title: "Bacheca DOG",
+    dogboard_publish_ad: "Pubblica annuncio",
+    dogboard_text_max_photos: "Testo + max 3 foto",
+    dogboard_write_ad: "Scrivi il tuo annuncio...",
+    dogboard_add_photo: "Aggiungi foto",
+    dogboard_max_3_photos: "Puoi caricare fino a 3 foto.",
   },
   
   en: {
@@ -2224,6 +2230,12 @@ const I18N = {
     plusFeaturePremiumExperience: "Total premium experience",
     plusYearPeriod: "/year",
     onlySelfie: "Only with selfie",
+    dogboard_title: "DOG Board",
+    dogboard_publish_ad: "Publish post",
+    dogboard_text_max_photos: "Text + max 3 photos",
+    dogboard_write_ad: "Write your post...",
+    dogboard_add_photo: "Add photo",
+    dogboard_max_3_photos: "You can upload up to 3 photos.",
   }
 };
 
