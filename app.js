@@ -2106,7 +2106,7 @@ return true;
       cancel: "Annulla",
       mapsShelters: "canili vicino a me",
       noProfiles: "Nessun profilo. Modifica i filtri.",
-      years: "anni"
+      years: "anni",
       custom_search: "Ricerca personalizzata",
       create_dog_profile: "Crea profilo DOG",
     },
@@ -2173,7 +2173,7 @@ return true;
       cancel: "Cancel",
       mapsShelters: "dog shelters near me",
       noProfiles: "No profiles. Adjust filters.",
-      years: "yrs"
+      years: "yrs",
       custom_search: "Custom search",
       create_dog_profile: "Create DOG profile",
     }
