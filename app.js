@@ -2657,9 +2657,9 @@ if (adBanner) {
   }
 
   if (activatePlus) {
-    activatePlus.textContent = state.plus
-      ? "Disattiva Plus"
-      : "Attiva Plutoo Plus";
+  activatePlus.textContent = state.plus
+    ? t("deactivatePlus")
+    : t("activatePlus");
   }
 
   if (planMonthly && planYearly) {
