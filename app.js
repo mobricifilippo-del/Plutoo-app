@@ -2175,7 +2175,14 @@ return true;
     }
   };
 
-  const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
+  function t(key){
+  const lang = state.lang || "it";
+  return (
+    (I18N && I18N[lang] && I18N[lang][key]) ||
+    (I18N && I18N.it && I18N.it[key]) ||
+    key
+  );
+  }
 
   function applyTranslations(){
     qa("[data-i18n]").forEach(el => {
