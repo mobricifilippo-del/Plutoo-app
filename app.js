@@ -9878,6 +9878,11 @@ await loadChatHistory(chatId, dogName);
 chatPane.classList.remove("hidden");
 chatPane.classList.add("show");
 
+  if (state._openChatFromTab === "profile") {
+  chatPane.classList.add("over-profile");
+}
+state._openChatFromTab = "";
+
   // ✅ LETTO quando apro la chat (serve per far scalare il badge)
   const openedFrom = state._openChatFromTab || "";
   state._openChatFromTab = ""; // reset
