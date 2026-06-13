@@ -11273,12 +11273,12 @@ btnPublishDogBoard?.addEventListener("click", () => {
   function openSheltersMaps(){ openMapsQuery(t("mapsShelters")); }
 
   function openMapsQuery(q){
-    if (state.geo){
-      const url = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
-      window.open(url,"_blank","noopener");
-    } else {
-      window.open(`https://www.google.com/maps/search/${encodeURIComponent(q)}`,"_blank","noopener");
-    }
+  if (state.geo){
+    const url = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
+    window.location.href = url;
+  } else {
+    window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+  }
   }
 
   // ============ Ads mock ============
