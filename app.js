@@ -11290,22 +11290,21 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
   // ============ Ads mock ============
   function showAdBanner(){
-
   if (!adBanner) return;
 
-  // Home: nessun banner
-  if (!state.entered || state.currentView === "home") {
+  const homeScreen = document.getElementById("homeScreen");
+  const homeVisible = homeScreen && !homeScreen.classList.contains("hidden");
+
+  if (!state.entered || homeVisible) {
     adBanner.style.display = "none";
     return;
   }
 
-  // Plus: nessun banner
   if (state.plus) {
     adBanner.style.display = "none";
     return;
   }
 
-  // App Free: banner visibile
   adBanner.style.display = "";
   }
 
