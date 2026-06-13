@@ -11290,18 +11290,23 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
   // ============ Ads mock ============
   function showAdBanner(){
+
   if (!adBanner) return;
 
-  const homeScreen = document.getElementById("homeScreen");
-  const homeVisible = homeScreen && !homeScreen.classList.contains("hidden");
-
-  const shouldHideBanner = !state.entered || homeVisible || state.plus;
-
-  adBanner.style.display = shouldHideBanner ? "none" : "";
-
-  if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
-    window.AndroidBridge.setBannerVisible(!shouldHideBanner);
+  // Home: nessun banner
+  if (!state.entered || state.currentView === "home") {
+    adBanner.style.display = "none";
+    return;
   }
+
+  // Plus: nessun banner
+  if (state.plus) {
+    adBanner.style.display = "none";
+    return;
+  }
+
+  // App Free: banner visibile
+  adBanner.style.display = "";
   }
 
   async function showRewardVideoMock(type, onClose){
