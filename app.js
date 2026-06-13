@@ -11295,17 +11295,13 @@ btnPublishDogBoard?.addEventListener("click", () => {
   const homeScreen = document.getElementById("homeScreen");
   const homeVisible = homeScreen && !homeScreen.classList.contains("hidden");
 
-  if (!state.entered || homeVisible) {
-    adBanner.style.display = "none";
-    return;
-  }
+  const shouldHideBanner = !state.entered || homeVisible || state.plus;
 
-  if (state.plus) {
-    adBanner.style.display = "none";
-    return;
-  }
+  adBanner.style.display = shouldHideBanner ? "none" : "";
 
-  adBanner.style.display = "";
+  if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
+    window.AndroidBridge.setBannerVisible(!shouldHideBanner);
+  }
   }
 
   async function showRewardVideoMock(type, onClose){
