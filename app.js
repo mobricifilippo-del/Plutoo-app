@@ -9315,7 +9315,8 @@ if (openChatBtn) {
       return;
     }
 
-    openChat(d);
+    setActiveView("messages");
+openChat(d);
   };
 }
 
