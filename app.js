@@ -11293,20 +11293,16 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
   if (!adBanner) return;
 
-  // Home: nessun banner
-  if (!state.entered || state.currentView === "home") {
-    adBanner.style.display = "none";
-    return;
-  }
+  const shouldShow =
+    state.entered &&
+    state.currentView !== "home" &&
+    !state.plus;
 
-  // Plus: nessun banner
-  if (state.plus) {
-    adBanner.style.display = "none";
-    return;
-  }
+  adBanner.style.display = shouldShow ? "" : "none";
 
-  // App Free: banner visibile
-  adBanner.style.display = "";
+  if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
+    window.AndroidBridge.setBannerVisible(shouldShow);
+  }
   }
 
   async function showRewardVideoMock(type, onClose){
