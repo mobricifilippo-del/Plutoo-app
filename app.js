@@ -11318,11 +11318,13 @@ btnPublishDogBoard?.addEventListener("click", () => {
         window.onRewardFailed = null;
         if (onClose) onClose();
       };
+      
       window.onRewardFailed = function() {
         window.onRewardEarned = null;
         window.onRewardFailed = null;
-        return;
+        state.rewardOpen = false;
       };
+      
       window.AndroidBridge.showRewarded();
       return;
     }
