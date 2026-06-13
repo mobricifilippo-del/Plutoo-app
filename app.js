@@ -2718,7 +2718,11 @@ goldFiltersBox?.classList.toggle("plus-active", !!state.plus);
 
 if (adBanner) {
     adBanner.style.display = state.plus ? "none" : "";
-  }
+}
+
+if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
+    window.AndroidBridge.setBannerVisible(!state.plus);
+}
 
   if (activatePlus) {
   activatePlus.textContent = state.plus
