@@ -9315,7 +9315,7 @@ if (openChatBtn) {
       return;
     }
 
-    setActiveView("messages");
+    state._openChatFromTab = "profile";
 openChat(d);
   };
 }
