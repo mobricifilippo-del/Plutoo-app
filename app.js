@@ -11273,11 +11273,18 @@ btnPublishDogBoard?.addEventListener("click", () => {
   function openSheltersMaps(){ openMapsQuery(t("mapsShelters")); }
 
   function openMapsQuery(q){
-  if (state.geo){
-    const url = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
-    window.location.href = url;
+  if (window.AndroidBridge && typeof window.AndroidBridge.openUrl === "function") {
+    if (state.geo){
+      window.AndroidBridge.openUrl(`geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`);
+    } else {
+      window.AndroidBridge.openUrl(`https://www.google.com/maps/search/${encodeURIComponent(q)}`);
+    }
   } else {
-    window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+    if (state.geo){
+      window.location.href = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
+    } else {
+      window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+    }
   }
   }
 
