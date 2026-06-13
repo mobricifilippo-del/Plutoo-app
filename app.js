@@ -9971,7 +9971,7 @@ const applyChatRules = (hasMatchValue) => {
 }
 
   function closeChatPane(){
-    chatPane.classList.remove("show");
+    chatPane.classList.remove("show", "over-profile");
     setTimeout(()=>chatPane.classList.add("hidden"), 250);
   }
   closeChat?.addEventListener("click", closeChatPane);
