@@ -11319,21 +11319,22 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
     // --- ANDROID: rewarded reale ---
     if (window.AndroidBridge && typeof window.AndroidBridge.showRewarded === "function") {
-      window.onRewardEarned = function() {
-        window.onRewardEarned = null;
-        window.onRewardFailed = null;
-        if (onClose) onClose();
-      };
-      
-      window.onRewardFailed = function() {
-        window.onRewardEarned = null;
-        window.onRewardFailed = null;
-        state.rewardOpen = false;
-      };
-      
-      window.AndroidBridge.showRewarded();
-      return;
-    }
+  window.onRewardEarned = function() {
+    window.onRewardEarned = null;
+    window.onRewardFailed = null;
+    state.rewardOpen = false;
+    if (onClose) onClose();
+  };
+  
+  window.onRewardFailed = function() {
+    window.onRewardEarned = null;
+    window.onRewardFailed = null;
+    state.rewardOpen = false;
+  };
+  
+  window.AndroidBridge.showRewarded();
+  return;
+}
 
     // --- BROWSER: mock invariato ---
     const msg = {
