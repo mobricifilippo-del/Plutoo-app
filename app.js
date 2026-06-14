@@ -6389,7 +6389,7 @@ profileContent.innerHTML = `
           <div class="doc-icon" style="display:flex;align-items:center;justify-content:center;height:100%;font-size:2.2rem;line-height:1">✅</div>
         `
         : `
-          <div class="doc-status pending" style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center">${state.lang === "it" ? "Completa profilo" : "Complete profile"}</div>
+          <div class="doc-status pending" style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center">${state.lang === "it" ? "Nessun documento caricato" : "No document uploaded"}</div>
         `
   }
 </div>
