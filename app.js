@@ -2720,8 +2720,8 @@ if (adBanner) {
     adBanner.style.display = state.plus ? "none" : "";
 }
 
-if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
-    window.AndroidBridge.setBannerVisible(!state.plus);
+if (typeof showAdBanner === "function") {
+    showAdBanner();
 }
 
   if (activatePlus) {
