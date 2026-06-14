@@ -11455,6 +11455,9 @@ async function init(){
   String(data.ownerUid || doc.id || ""),
   data.dogDocs
 ),
+dogDocsPublic: (data.dogDocsPublic && typeof data.dogDocsPublic === "object")
+  ? data.dogDocsPublic
+  : {},
     
     verified: !!data.verified,
     bio: String(data.bio || ""),
