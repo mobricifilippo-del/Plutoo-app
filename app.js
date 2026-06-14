@@ -6054,10 +6054,6 @@ const freshDog = {
   ? privateDogDocs
   : ((data.dogDocs && typeof data.dogDocs === "object") ? data.dogDocs : {}),
 
-dogDocsPublic: (data.dogDocsPublic && typeof data.dogDocsPublic === "object")
-  ? data.dogDocsPublic
-  : {},
-
 ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
 
   selfieUrl: String(data.selfieUrl || ""),
