@@ -1330,8 +1330,7 @@ if (typeof updatePlusUI === "function") {
 
 // Disabilita PWA/Service Worker dentro l'app Android (WebView)
 const isAndroidWebView =
-  (typeof window.AndroidBridge !== "undefined" && window.AndroidBridge !== null) ||
-  (navigator.userAgent.includes("Android") && navigator.userAgent.includes("wv"));
+  navigator.userAgent.includes("Android") && navigator.userAgent.includes("wv");
 
 if (isAndroidWebView) {
   // Stoppa eventuali service worker (evita doppia icona PWA)
@@ -2721,8 +2720,8 @@ if (adBanner) {
     adBanner.style.display = state.plus ? "none" : "";
 }
 
-if (typeof showAdBanner === "function") {
-    showAdBanner();
+if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
+    window.AndroidBridge.setBannerVisible(!state.plus);
 }
 
   if (activatePlus) {
@@ -9652,13 +9651,8 @@ storageRef.delete()
         localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
         window.openFreshDogProfile(d.id, d);
       };
-      if (!state.plus) {
-  if (state.rewardOpen) return;
-  state.rewardOpen = true;
-  showRewardVideoMock("selfie", unlock);
-} else {
-  unlock();
-      }
+      if (!state.plus) showRewardVideoMock("selfie", unlock);
+      else unlock();
     }
   };
 
@@ -11246,12 +11240,10 @@ btnPublishDogBoard?.addEventListener("click", () => {
     }
 
     if (typeof showRewardVideoMock === "function") {
-  if (state.rewardOpen) return;
-  state.rewardOpen = true;
-  showRewardVideoMock("dogboard_publish", () => {
-    publishDogBoardTextOnly();
-  });
-  return;
+      showRewardVideoMock("dogboard_publish", () => {
+        publishDogBoardTextOnly();
+      });
+      return;
     }
 
     publishDogBoardTextOnly();
@@ -11327,22 +11319,21 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
     // --- ANDROID: rewarded reale ---
     if (window.AndroidBridge && typeof window.AndroidBridge.showRewarded === "function") {
-  window.onRewardEarned = function() {
-    window.onRewardEarned = null;
-    window.onRewardFailed = null;
-    state.rewardOpen = false;
-    if (onClose) onClose();
-  };
-  
-  window.onRewardFailed = function() {
-    window.onRewardEarned = null;
-    window.onRewardFailed = null;
-    state.rewardOpen = false;
-  };
-  
-  window.AndroidBridge.showRewarded();
-  return;
-}
+      window.onRewardEarned = function() {
+        window.onRewardEarned = null;
+        window.onRewardFailed = null;
+        if (onClose) onClose();
+      };
+      
+      window.onRewardFailed = function() {
+        window.onRewardEarned = null;
+        window.onRewardFailed = null;
+        state.rewardOpen = false;
+      };
+      
+      window.AndroidBridge.showRewarded();
+      return;
+    }
 
     // --- BROWSER: mock invariato ---
     const msg = {
