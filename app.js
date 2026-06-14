@@ -12049,6 +12049,7 @@ try {
 } catch (_) {}
 
 return;
+  }
 
   const newVisible = getVisibleMediaList(story);
   if (StoriesState.currentMediaIndex >= newVisible.length) {
