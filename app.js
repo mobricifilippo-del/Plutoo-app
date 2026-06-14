@@ -1330,7 +1330,8 @@ if (typeof updatePlusUI === "function") {
 
 // Disabilita PWA/Service Worker dentro l'app Android (WebView)
 const isAndroidWebView =
-  navigator.userAgent.includes("Android") && navigator.userAgent.includes("wv");
+  (typeof window.AndroidBridge !== "undefined" && window.AndroidBridge !== null) ||
+  (navigator.userAgent.includes("Android") && navigator.userAgent.includes("wv"));
 
 if (isAndroidWebView) {
   // Stoppa eventuali service worker (evita doppia icona PWA)
