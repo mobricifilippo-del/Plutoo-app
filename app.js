@@ -6466,9 +6466,9 @@ if (slot && window.StoriesState && Array.isArray(StoriesState.stories)) {
     `;
 
     const btn = slot.querySelector(".story-circle");
-if (btn && typeof openStoryViewerFromBar === "function") {
+if (btn && typeof openDogStoryViewer === "function") {
   btn.onclick = function () {
-    openStoryViewerFromBar(story.userId);
+    openDogStoryViewer(story.userId, 0);
   };
 }
 
