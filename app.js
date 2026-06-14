@@ -9651,8 +9651,13 @@ storageRef.delete()
         localStorage.setItem("selfieUntilByDog", JSON.stringify(state.selfieUntilByDog));
         window.openFreshDogProfile(d.id, d);
       };
-      if (!state.plus) showRewardVideoMock("selfie", unlock);
-      else unlock();
+      if (!state.plus) {
+  if (state.rewardOpen) return;
+  state.rewardOpen = true;
+  showRewardVideoMock("selfie", unlock);
+} else {
+  unlock();
+      }
     }
   };
 
