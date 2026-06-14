@@ -12030,6 +12030,11 @@ if (!ok) return;
     );
     
     StoriesState.saveStories();
+
+const openedFromBeforeClose = StoriesState.openedFrom;
+const profileDogId = String(state.currentDogProfile?.id || "");
+const storyDogId = String(StoriesState.currentStoryUserId || "");
+
 closeStoryViewer();
 renderStoriesBar();
 
