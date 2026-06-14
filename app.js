@@ -11311,7 +11311,6 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
   // ============ Ads mock ============
   function showAdBanner(){
-
   if (!adBanner) return;
 
   const shouldShow =
@@ -11319,11 +11318,13 @@ btnPublishDogBoard?.addEventListener("click", () => {
     state.currentView !== "home" &&
     !state.plus;
 
-  adBanner.style.display = shouldShow ? "" : "none";
-
   if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
+    adBanner.style.display = "none";
     window.AndroidBridge.setBannerVisible(shouldShow);
+    return;
   }
+
+  adBanner.style.display = shouldShow ? "" : "none";
   }
 
   async function showRewardVideoMock(type, onClose){
