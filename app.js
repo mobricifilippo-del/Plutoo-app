@@ -11318,13 +11318,11 @@ btnPublishDogBoard?.addEventListener("click", () => {
     state.currentView !== "home" &&
     !state.plus;
 
-  if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
-    adBanner.style.display = "none";
-    window.AndroidBridge.setBannerVisible(shouldShow);
-    return;
-  }
-
   adBanner.style.display = shouldShow ? "" : "none";
+
+  if (window.AndroidBridge && typeof window.AndroidBridge.setBannerVisible === "function") {
+    window.AndroidBridge.setBannerVisible(shouldShow);
+  }
   }
 
   async function showRewardVideoMock(type, onClose){
