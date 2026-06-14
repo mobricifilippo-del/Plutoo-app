@@ -46,6 +46,8 @@
     }
   ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  { "source": "/app-ads.txt", "destination": "/app-ads.txt" },
+  { "source": "/ads.txt", "destination": "/ads.txt" },
+  { "source": "/(.*)", "destination": "/index.html" }
+]
 }
