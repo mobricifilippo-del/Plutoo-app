@@ -6352,8 +6352,8 @@ profileContent.innerHTML = `
   ${hasDogDoc("vaccines")
     ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
     : (isDocsOwner
-        ? (state.lang === "it" ? "Da caricare" : "Upload")
-        : (state.lang === "it" ? "Documento assente" : "Document missing"))}
+    ? (state.lang === "it" ? "Da caricare" : "Upload")
+    : "")}
 </div>
     </div>
 
@@ -6363,7 +6363,7 @@ profileContent.innerHTML = `
       <div class="doc-status ${hasDogDoc("pedigree") ? "uploaded" : "pending"}">
         ${hasDogDoc("pedigree")
           ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
-          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : (state.lang === "it" ? "Documento assente" : "Document missing"))}
+          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : "")}
       </div>
     </div>
 
@@ -6373,7 +6373,7 @@ profileContent.innerHTML = `
       <div class="doc-status ${hasDogDoc("microchip") ? "uploaded" : "pending"}">
         ${hasDogDoc("microchip")
           ? (state.lang === "it" ? "✓ Caricato" : "✓ Uploaded")
-          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : (state.lang === "it" ? "Documento assente" : "Document missing"))}
+          : (isDocsOwner ? (state.lang === "it" ? "Da caricare" : "Upload") : "")}
       </div>
     </div>
 
