@@ -1021,7 +1021,10 @@ size: String(data.size || ""),
 ),
     
     ownerSocial: (data.ownerSocial && typeof data.ownerSocial === "object") ? data.ownerSocial : {},
-    selfieUrl: String(data.selfieUrl || "")
+dogDocsPublic: (data.dogDocsPublic && typeof data.dogDocsPublic === "object")
+  ? data.dogDocsPublic
+  : {},
+selfieUrl: String(data.selfieUrl || "")
   });
  }
   
