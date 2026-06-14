@@ -12028,11 +12028,27 @@ if (!ok) return;
     StoriesState.stories = StoriesState.stories.filter(
       s => s.userId !== StoriesState.currentStoryUserId
     );
+    
     StoriesState.saveStories();
-    closeStoryViewer();
-    renderStoriesBar();
-    return;
+closeStoryViewer();
+renderStoriesBar();
+
+try {
+  const profileDogId = String(state.currentDogProfile?.id || "");
+  const storyDogId = String(StoriesState.currentStoryUserId || "");
+
+  if (
+    StoriesState.openedFrom === "profile" &&
+    state.currentDogProfile &&
+    profileDogId &&
+    profileDogId === storyDogId &&
+    typeof window.openProfilePage === "function"
+  ) {
+    window.openProfilePage(state.currentDogProfile);
   }
+} catch (_) {}
+
+return;
 
   const newVisible = getVisibleMediaList(story);
   if (StoriesState.currentMediaIndex >= newVisible.length) {
