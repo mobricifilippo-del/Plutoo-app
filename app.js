@@ -11245,10 +11245,12 @@ btnPublishDogBoard?.addEventListener("click", () => {
     }
 
     if (typeof showRewardVideoMock === "function") {
-      showRewardVideoMock("dogboard_publish", () => {
-        publishDogBoardTextOnly();
-      });
-      return;
+  if (state.rewardOpen) return;
+  state.rewardOpen = true;
+  showRewardVideoMock("dogboard_publish", () => {
+    publishDogBoardTextOnly();
+  });
+  return;
     }
 
     publishDogBoardTextOnly();
