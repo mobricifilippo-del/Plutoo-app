@@ -2520,11 +2520,14 @@ window.openProfilePage(dog);
         verified: !!data.verified,
         ownerSocial: (data.ownerSocial || {}),
         dogDocs: await window.getCompatibleDogDocs(
-          String(doc.id),
-          String(ownerUid || doc.id || ""),
-          data.dogDocs
-        ),
-        selfieUrl: (data.selfieUrl || "")
+  String(doc.id),
+  String(ownerUid || doc.id || ""),
+  data.dogDocs
+),
+dogDocsPublic: (data.dogDocsPublic && typeof data.dogDocsPublic === "object")
+  ? data.dogDocsPublic
+  : {},
+selfieUrl: (data.selfieUrl || "")
       };
 
       if (typeof window.openFreshDogProfile === "function") {
