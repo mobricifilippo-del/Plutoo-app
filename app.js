@@ -676,7 +676,19 @@ window.__createDogBindDone = true;
     }
 };
 
-// prima passata (stato corrente)  
+// prima passata: usa prima la cache DOG locale per evitare flash CTA al refresh
+try {
+  const cHas  = localStorage.getItem("plutoo_has_dog") === "1";
+  const cId   = localStorage.getItem("plutoo_dog_id") || "";
+  const cName = localStorage.getItem("plutoo_dog_name") || "";
+
+  if (cHas && cId) {
+    window.PLUTOO_HAS_DOG = true;
+    window.PLUTOO_DOG_ID = cId;
+    window.PLUTOO_DOG_NAME = cName;
+  }
+} catch (_) {}
+
 window.refreshCreateDogCTA();  
 
 const clickHandler = async (ev) => {  
