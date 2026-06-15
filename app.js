@@ -4933,8 +4933,6 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
     localStorage.setItem("f_sex", state.filters.sex);
     localStorage.setItem("f_ageMin", state.filters.ageMin||"");
     localStorage.setItem("f_ageMax", state.filters.ageMax||"");
-    localStorage.setItem("f_weight", state.filters.weight||"");
-    localStorage.setItem("f_height", state.filters.height||"");
     localStorage.setItem("f_pedigree", state.filters.pedigree||"");
     localStorage.setItem("f_breeding", state.filters.breeding||"");
     localStorage.setItem("f_size", state.filters.size||"");
