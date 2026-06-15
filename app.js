@@ -4938,6 +4938,7 @@ qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
     localStorage.setItem("f_pedigree", state.filters.pedigree||"");
     localStorage.setItem("f_breeding", state.filters.breeding||"");
     localStorage.setItem("f_size", state.filters.size||"");
+    localStorage.setItem("f_onlySelfie", state.filters.onlySelfie ? "1" : "0");
   }
 
   // ============ Sezione Social nel profilo ============
