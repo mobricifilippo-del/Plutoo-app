@@ -907,9 +907,7 @@ async function loadBlockedDogIds() {
 
 window.plutooDogPresenceCheck = async function plutooDogPresenceCheck() {
   // ✅ GUARD CONCORRENZA: una sola esecuzione alla volta
-  if (window.__presenceInFlight) return;
-window.__presenceInFlight = true;
-const isAuthoritativePresence = !!window.PLUTOO_UID;
+  const isAuthoritativePresence = !!window.PLUTOO_UID;
 
 try {
 
