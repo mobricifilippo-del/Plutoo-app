@@ -1046,9 +1046,11 @@ selfieUrl: String(data.selfieUrl || "")
 } catch (_) {}
 
 } catch (err) {
-// (FIX) fallback safe: NON forzo "DOG assente" e NON tocco cache/stato.
-// Se auth/db non sono pronti al refresh, mantengo lo stato/cached e aggiorno solo UI.
+// (FIX) fallback safe: NON forzo "DOG assente" ...
+// Se auth/db non sono pronti al refresh ...
 if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+} finally {
+window.__presenceInFlight = false;
 }
 };
 
