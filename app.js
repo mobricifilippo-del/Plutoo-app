@@ -11266,16 +11266,24 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
-    if (!state.plus && ["vets","groomers","shops"].includes(cat)){
-      if (state.rewardOpen) return;
-      state.rewardOpen = true;
-      showRewardVideoMock("services", ()=>{
-        state.rewardOpen = false;
-        openMapsQueryAfterReward(cat);
-      });
-      return;
+  const rewardCats = ["vets","groomers","shops","trainers","kennels"];
+
+  if (!state.plus && rewardCats.includes(cat)){
+    if (state.rewardOpen) {
+      state.rewardOpen = false;
     }
-    openMapsQueryAfterReward(cat);
+
+    state.rewardOpen = true;
+
+    showRewardVideoMock("services", ()=>{
+      state.rewardOpen = false;
+      openMapsQueryAfterReward(cat);
+    });
+
+    return;
+  }
+
+  openMapsQueryAfterReward(cat);
   }
 
   function openMapsQueryAfterReward(cat){
