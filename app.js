@@ -908,9 +908,10 @@ async function loadBlockedDogIds() {
 window.plutooDogPresenceCheck = async function plutooDogPresenceCheck() {
   // ✅ GUARD CONCORRENZA: una sola esecuzione alla volta
   if (window.__presenceInFlight) return;
-  window.__presenceInFlight = true;
+window.__presenceInFlight = true;
+const isAuthoritativePresence = !!window.PLUTOO_UID;
 
-  try {
+try {
 
 // ✅ BOOTSTRAP SEMPRE da cache (prima di Firestore)  
 // Così al refresh NON perdi "🐶 Nome" per timing auth/db.  
