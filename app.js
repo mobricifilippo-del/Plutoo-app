@@ -1054,9 +1054,7 @@ selfieUrl: String(data.selfieUrl || "")
 // (FIX) fallback safe: NON forzo "DOG assente" ...
 // Se auth/db non sono pronti al refresh ...
 if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
-} finally {
-window.__presenceInFlight = false;
-}
+} 
 };
 
 // Firebase handles
