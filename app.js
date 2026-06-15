@@ -905,10 +905,12 @@ async function loadBlockedDogIds() {
   }
 }
 
-// ✅ DOG presence check (Firestore source of truth)
-// (wrappato in IIFE async per evitare await fuori contesto)
 window.plutooDogPresenceCheck = async function plutooDogPresenceCheck() {
-try {
+  // ✅ GUARD CONCORRENZA: una sola esecuzione alla volta
+  if (window.__presenceInFlight) return;
+  window.__presenceInFlight = true;
+
+  try {
 
 // ✅ BOOTSTRAP SEMPRE da cache (prima di Firestore)  
 // Così al refresh NON perdi "🐶 Nome" per timing auth/db.  
