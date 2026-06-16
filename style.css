@@ -2088,7 +2088,9 @@ padding:24px;
     0 0 26px rgba(205,164,52,.95),
     0 0 40px rgba(138,123,255,.95);
 }
+
 .modal-body p{color:var(--muted);font-size:1rem;margin:.3rem 0 1.2rem}
+
 .plus-features{
   list-style:none;padding:0;margin:1rem 0;text-align:left;
 }
@@ -2105,14 +2107,6 @@ padding:24px;
   box-shadow:0 6px 18px rgba(0,0,0,.55);
 }
 .plus-features .check{color:var(--gold);font-size:1.2rem;font-weight:900}
-
-.plus-selector{
-  display:flex;
-  flex-direction:row;
-  justify-content:center;
-  gap:1rem;
-  margin-top:1.3rem;
-}
 
 .plan-card{
   appearance:none;
