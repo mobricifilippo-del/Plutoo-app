@@ -742,6 +742,8 @@ padding: 0 .5rem;
   box-shadow:none;
   border:none;
   padding:0;
+  display:flex;
+  justify-content:center;
 }
 
 .dropdown-menu{
