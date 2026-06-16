@@ -3431,8 +3431,6 @@ display: none !important;
 
 .notif-dot.hidden{ display:none !important; }
 
-.notif-content{ padding:.9rem 1.1rem 1rem; }
-
 .notif-list .notif-item{
   display:flex;
   align-items:center;
