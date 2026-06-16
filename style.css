@@ -2327,7 +2327,6 @@ padding:24px;
   box-shadow:0 0 12px rgba(138,123,255,.3);
 }
 
-.privacy-icon{font-size:1.8rem;line-height:1}
 .privacy-info{display:flex;flex-direction:column;gap:.2rem}
 .privacy-info strong{font-size:.98rem;font-weight:700;color:#F8F8F8}
 .privacy-info span{font-size:.85rem;color:#B0B0B0}
