@@ -1454,13 +1454,6 @@ body.story-open #storiesBar {
 }
 
 /* SEZIONE STORIES NEL PROFILO */
-.pp-stories-section{
-  background:rgba(138,123,255,.06);
-  border:1px solid rgba(138,123,255,.25);
-  border-radius:12px;
-  padding:.9rem;
-  margin:1rem 0;
-}
 
 .pp-story-item{
   position:relative;
