@@ -2258,11 +2258,6 @@ padding:24px;
   background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.3);
 }
 
-/* ================= REWARD VIDEO MODAL ================= */
-
-.reward-placeholder{color:#B0B0B0;font-size:.9rem;text-align:center}
-.reward-placeholder div:first-child{font-size:2rem;margin-bottom:.5rem}
-
 /* ✅ FIX: CHAT MODALE CENTRATA NEL PROFILO */
 .chat-pane{
   position:fixed;
