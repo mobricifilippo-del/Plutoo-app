@@ -723,16 +723,28 @@ padding: 0 .5rem;
   right:auto;
   transform:translateX(-50%);
   min-width:220px;
-  background:var(--panel);border:1px solid var(--violet);border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(138,123,255,.2);
-  padding:.5rem;z-index:999;display:none;
+  background:linear-gradient(180deg,#1c1a36 0%,#141225 100%);
+  border:1px solid rgba(205,164,52,.42);
+  border-radius:18px;
+  box-shadow:
+    0 0 0 1px rgba(138,123,255,.18),
+    0 14px 34px rgba(0,0,0,.58),
+    0 0 24px rgba(138,123,255,.22),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  padding:.55rem;
+  z-index:999;
+  display:none;
 }
 .dropdown.open .dropdown-menu{display:block}
 
 .tab.dropdown.open #tabLuoghi{
-  color:var(--violet-glow);
-  background:rgba(138,123,255,.18);
-  box-shadow:0 6px 18px rgba(138,123,255,.35);
+  color:#F3D98B;
+  background:linear-gradient(180deg, rgba(205,164,52,.18), rgba(138,123,255,.14));
+  border:1px solid rgba(205,164,52,.42);
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.42),
+    0 0 20px rgba(205,164,52,.18),
+    inset 0 1px 0 rgba(255,255,255,.08);
 }
 
 .menu-item{
@@ -741,6 +753,7 @@ padding: 0 .5rem;
   text-align:left;
   background:transparent;
   border:0;
+  border-bottom:1px solid rgba(255,255,255,.07);
   color:var(--text);
   font-size:1.12rem;
   font-weight:800;
@@ -749,6 +762,10 @@ padding: 0 .5rem;
   cursor:pointer;
   transition:background .15s, transform .15s, color .15s;
   line-height:1.25;
+}
+
+.menu-item:last-child{
+  border-bottom:0;
 }
 
 .menu-item:hover{
