@@ -1936,12 +1936,6 @@ padding:24px;
   padding:.6rem .8rem;border-radius:10px;background:rgba(138,123,255,.06);
   border:1px solid rgba(138,123,255,.2);
 }
-.switcher{position:relative;width:42px;height:24px;display:inline-block;flex-shrink:0}
-.switcher input{position:absolute;opacity:0;width:0;height:0}
-.switcher .track{
-  position:absolute;inset:0;background:#2a2a3e;border-radius:24px;
-  transition:.3s;cursor:pointer;
-}
 
 .f-gold{position:relative}
 
