@@ -2312,8 +2312,9 @@ padding:24px;
 }
 
 .story-select option{background:#18182A;color:#F8F8F8}
-.privacy-options{display:flex;flex-direction:column;gap:.7rem}
+
 .privacy-option{cursor:pointer}
+
 .privacy-option input[type="radio"]{display:none}
 
 .privacy-card{
