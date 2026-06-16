@@ -2241,17 +2241,6 @@ padding:24px;
   width:100%;height:auto;max-height:400px;object-fit:cover;
 }
 
-.filter-btn{
-  display:flex;flex-direction:column;align-items:center;gap:.4rem;
-  background:rgba(138,123,255,.08);border:2px solid transparent;border-radius:12px;
-  padding:.6rem .4rem;cursor:pointer;transition:all .2s ease;
-  font-size:.8rem;color:#B0B0B0;
-}
-
-.filter-btn:hover{
-  background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.3);
-}
-
 /* ✅ FIX: CHAT MODALE CENTRATA NEL PROFILO */
 .chat-pane{
   position:fixed;
