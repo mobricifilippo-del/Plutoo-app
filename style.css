@@ -717,7 +717,12 @@ padding: 0 .5rem;
 }
 
 .dropdown-menu{
-  position:absolute;top:calc(100% + .35rem);right:0;min-width:180px;
+  position:absolute;
+  top:calc(100% + .45rem);
+  left:50%;
+  right:auto;
+  transform:translateX(-50%);
+  min-width:220px;
   background:var(--panel);border:1px solid var(--violet);border-radius:12px;
   box-shadow:0 8px 20px rgba(0,0,0,.45), inset 0 0 0 1px rgba(138,123,255,.2);
   padding:.5rem;z-index:999;display:none;
