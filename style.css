@@ -493,7 +493,6 @@ transition:transform .2s,box-shadow .2s;
 }
 
 .sponsor-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(205,164,52,.22)}
-.sponsor-logo{width:48px;height:48px;object-fit:contain;border-radius:10px;background:#fff}
 
 .sponsor-copy{
 font-size:.9rem;
