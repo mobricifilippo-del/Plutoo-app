@@ -742,20 +742,6 @@ padding: 0 .5rem;
     inset 0 0 0 1px rgba(138,123,255,.18);
 }
 
-.tab.active{
-  color:#F3D98B;
-  background:
-    linear-gradient(180deg, rgba(205,164,52,.20) 0%, rgba(138,123,255,.16) 100%);
-  border-color:rgba(232,206,122,.70);
-
-  box-shadow:
-    0 12px 28px rgba(0,0,0,.48),
-    0 0 24px rgba(205,164,52,.22),
-    0 0 24px rgba(138,123,255,.20),
-    inset 0 1px 0 rgba(255,255,255,.14),
-    inset 0 0 0 1px rgba(205,164,52,.16);
-}
-
 .tab:hover{color:var(--text);background:rgba(138,123,255,.08)}
 
 .tab.active{
