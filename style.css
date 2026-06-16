@@ -746,23 +746,38 @@ padding: 0 .5rem;
 
 .dropdown-menu{
   position:absolute;
-  top:calc(100% + .45rem);
+  top:calc(100% + .55rem);
   left:50%;
   right:auto;
   transform:translateX(-50%);
-  min-width:220px;
-  background:linear-gradient(180deg,#1c1a36 0%,#141225 100%);
+
+  min-width:245px;
+
+  background:
+    linear-gradient(180deg,
+      rgba(34,29,63,.96) 0%,
+      rgba(22,18,43,.96) 55%,
+      rgba(14,12,30,.98) 100%);
+
   border:1px solid rgba(205,164,52,.42);
-  border-radius:18px;
+  border-radius:20px;
+
+  padding:.7rem;
+
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+
   box-shadow:
-    0 0 0 1px rgba(138,123,255,.18),
-    0 14px 34px rgba(0,0,0,.58),
-    0 0 24px rgba(138,123,255,.22),
-    inset 0 1px 0 rgba(255,255,255,.08);
-  padding:.55rem;
+    0 18px 42px rgba(0,0,0,.60),
+    0 0 26px rgba(138,123,255,.18),
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 0 0 1px rgba(205,164,52,.08);
+
+  overflow:hidden;
   z-index:999;
   display:none;
 }
+
 .dropdown.open .dropdown-menu{display:block}
 
 .tab.dropdown.open #tabLuoghi{
@@ -776,20 +791,33 @@ padding: 0 .5rem;
 }
 
 .menu-item{
-  display:block;
+  display:flex;
+  align-items:center;
+  gap:.8rem;
+
   width:100%;
-  text-align:left;
-  background:transparent;
-  border:0;
-  border-bottom:1px solid rgba(255,255,255,.07);
-  color:var(--text);
+
+  background:rgba(255,255,255,.02);
+
+  border:1px solid rgba(255,255,255,.04);
+  border-radius:14px;
+
+  color:#F7F7F7;
+
   font-size:1.12rem;
   font-weight:800;
-  padding:.9rem 1rem;
-  border-radius:10px;
+
+  padding:1rem 1rem;
+
+  margin:.18rem 0;
+
+  transition:
+    background .18s,
+    transform .18s,
+    border-color .18s,
+    box-shadow .18s;
+
   cursor:pointer;
-  transition:background .15s, transform .15s, color .15s;
-  line-height:1.25;
 }
 
 .menu-item:last-child{
@@ -798,8 +826,14 @@ padding: 0 .5rem;
 
 .menu-item:hover{
   background:rgba(205,164,52,.10);
+  border-color:rgba(205,164,52,.28);
   color:#F3D98B;
-  transform:translateX(2px);
+
+  transform:translateX(4px);
+
+  box-shadow:
+    0 8px 18px rgba(205,164,52,.10),
+    inset 0 1px 0 rgba(255,255,255,.05);
 }
 
 /* ================= STORIES BAR ================= */
