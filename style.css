@@ -2258,39 +2258,6 @@ padding:24px;
   background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.3);
 }
 
-.story-select{
-  width:100%;padding:.7rem .9rem;background:rgba(138,123,255,.08);
-  border:1px solid rgba(138,123,255,.3);border-radius:12px;color:#F8F8F8;
-  font-size:.95rem;cursor:pointer;transition:all .2s ease;
-}
-
-.story-select:hover,.story-select:focus{
-  background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.5);outline:none;
-}
-
-.story-select option{background:#18182A;color:#F8F8F8}
-
-.privacy-option{cursor:pointer}
-
-.privacy-option input[type="radio"]{display:none}
-
-.privacy-card{
-  display:flex;align-items:center;gap:.8rem;padding:.9rem 1rem;
-  background:rgba(138,123,255,.08);border:2px solid transparent;
-  border-radius:12px;transition:all .2s ease;
-}
-
-.privacy-option input:checked + .privacy-card{
-  border-color:#8A7BFF;background:rgba(138,123,255,.2);
-  box-shadow:0 0 12px rgba(138,123,255,.3);
-}
-
-.privacy-info{display:flex;flex-direction:column;gap:.2rem}
-.privacy-info strong{font-size:.98rem;font-weight:700;color:#F8F8F8}
-.privacy-info span{font-size:.85rem;color:#B0B0B0}
-.story-actions{display:flex;gap:.7rem;margin-top:1.5rem}
-.story-actions .btn{flex:1}
-
 /* CSS Filters */
 .filter-none{filter:none}
 .filter-grayscale{filter:grayscale(1)}
