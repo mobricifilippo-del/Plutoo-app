@@ -495,7 +495,6 @@ transition:transform .2s,box-shadow .2s;
 .sponsor-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(205,164,52,.22)}
 
 .sponsor-copy{
-font-size:.9rem;
 color:var(--muted);
 margin-top:.15rem;
 text-align:center;
