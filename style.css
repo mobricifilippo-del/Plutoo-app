@@ -639,6 +639,27 @@ text-align:center;
 #btnDogBoard{
   grid-column:1 / -1;
   justify-self:center;
+
+  min-width:132px;
+  height:42px;
+  padding:0 .95rem;
+
+  border-radius:16px;
+  border:1px solid rgba(205,164,52,.46);
+
+  background:
+    linear-gradient(180deg, rgba(35,30,58,.92) 0%, rgba(14,12,30,.90) 100%);
+
+  color:#F7F7F7;
+  font-weight:900;
+  letter-spacing:.2px;
+
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.42),
+    0 0 18px rgba(205,164,52,.12),
+    0 0 16px rgba(138,123,255,.14),
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 0 0 1px rgba(138,123,255,.16);
 }
 
 .topbar .logo{
