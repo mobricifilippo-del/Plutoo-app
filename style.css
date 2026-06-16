@@ -2277,8 +2277,6 @@ padding:24px;
   width:100%;height:auto;max-height:400px;object-fit:cover;
 }
 
-.story-customize{display:flex;flex-direction:column;gap:1.5rem;padding:1rem 0}
-
 .filter-btn{
   display:flex;flex-direction:column;align-items:center;gap:.4rem;
   background:rgba(138,123,255,.08);border:2px solid transparent;border-radius:12px;
