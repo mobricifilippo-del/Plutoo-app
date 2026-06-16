@@ -427,9 +427,13 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
     localStorage.setItem("entered", "0");
 
     localStorage.removeItem("dogs");
+localStorage.removeItem("friendships");
 
 if (window.state && Array.isArray(window.state.dogs)) {
   window.state.dogs = [];
+}
+if (window.state) {
+  window.state.friendships = {};
 }
 
     Object.keys(localStorage).forEach((k) => {
