@@ -2246,8 +2246,6 @@ padding:24px;
 }
 
 /* ================= UPLOAD STORY MODAL ================= */
-.story-upload-modal{max-width:540px}
-
 .upload-step{display:none}
 
 .upload-step.active{display:block}
