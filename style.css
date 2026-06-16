@@ -963,31 +963,34 @@ padding: 0 .5rem;
 }
 @keyframes progressFill{to{width:100%}}
 .story-progress-bar.completed .story-progress-fill{width:100%}
-.story-top-info{display:flex;align-items:center;justify-content:space-between}
+
 .story-user-info{display:flex;align-items:center;gap:.6rem}
+
 .story-user-avatar{
   width:36px;height:36px;border-radius:50%;object-fit:cover;
   border:2px solid rgba(138,123,255,.6);
 }
 .story-user-name{font-size:.95rem;font-weight:700;color:#fff}
+
 .story-timestamp{font-size:.82rem;color:rgba(255,255,255,.7);margin-left:.4rem}
+
 .story-close-btn{
   width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);
   border:0;color:#fff;font-size:1.3rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:all .2s ease;
 }
 .story-close-btn:hover{background:rgba(0,0,0,.7);transform:scale(1.1)}
-.story-content-wrapper{
-  position:relative;width:100%;height:100%;
-  display:flex;align-items:center;justify-content:center;
-}
+
+
 .story-content{
   width:100%;max-width:480px;height:100%;
   display:flex;align-items:center;justify-content:center;position:relative;
 }
+
 .story-content img,.story-content video{
   width:100%;max-height:100%;object-fit:contain;
 }
+
 .story-nav-prev,.story-nav-next{
   position:absolute;top:0;bottom:0;width:35%;background:transparent;
   border:0;cursor:pointer;z-index:904;outline:none;
@@ -995,12 +998,7 @@ padding: 0 .5rem;
 
 .story-nav-prev{left:0}
 .story-nav-next{right:0}
-.story-privacy-badge{
-  position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.7);backdrop-filter:blur(8px);
-  padding:.5rem .9rem;border-radius:20px;font-size:.85rem;color:#fff;
-  border:1px solid rgba(138,123,255,.4);
-}
+
 
 .story-like-btn{
   position:absolute;
