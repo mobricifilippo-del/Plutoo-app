@@ -742,18 +742,6 @@ padding: 0 .5rem;
     inset 0 0 0 1px rgba(138,123,255,.18);
 }
 
-.tab:hover{
-  color:#F3D98B;
-  background:
-    linear-gradient(180deg, rgba(205,164,52,.16) 0%, rgba(26,20,48,.9) 100%);
-  border-color:rgba(232,206,122,.62);
-  box-shadow:
-    0 12px 26px rgba(0,0,0,.48),
-    0 0 22px rgba(205,164,52,.18),
-    0 0 18px rgba(138,123,255,.18),
-    inset 0 1px 0 rgba(255,255,255,.12);
-}
-
 .tab.active{
   color:#F3D98B;
   background:
