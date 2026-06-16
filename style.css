@@ -2258,17 +2258,6 @@ padding:24px;
   background:rgba(138,123,255,.15);border-color:rgba(138,123,255,.3);
 }
 
-.filter-btn.active{
-  border-color:#8A7BFF;background:rgba(138,123,255,.2);color:#F8F8F8;
-  box-shadow:0 0 12px rgba(138,123,255,.3);
-}
-
-.filter-btn.locked{opacity:.5;cursor:not-allowed;position:relative}
-
-.filter-btn.locked::after{
-  content:"🔒";position:absolute;top:.3rem;right:.3rem;font-size:.9rem;
-}
-
 .story-select{
   width:100%;padding:.7rem .9rem;background:rgba(138,123,255,.08);
   border:1px solid rgba(138,123,255,.3);border-radius:12px;color:#F8F8F8;
