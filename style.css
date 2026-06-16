@@ -21,7 +21,7 @@ html,body{
   padding:0;
   background:var(--bg-main);
   color:var(--text);
-  font-family:...
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   overflow-x:hidden;
 }
 
