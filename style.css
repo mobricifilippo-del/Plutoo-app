@@ -2285,12 +2285,6 @@ padding:24px;
 }
 
 .story-customize{display:flex;flex-direction:column;gap:1.5rem;padding:1rem 0}
-.customize-section{display:flex;flex-direction:column;gap:.8rem}
-.customize-title{font-size:1.05rem;font-weight:800;color:#F8F8F8;margin:0}
-
-.filters-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.7rem;
-}
 
 .filter-btn{
   display:flex;flex-direction:column;align-items:center;gap:.4rem;
@@ -2312,11 +2306,6 @@ padding:24px;
 
 .filter-btn.locked::after{
   content:"🔒";position:absolute;top:.3rem;right:.3rem;font-size:.9rem;
-}
-
-.filter-preview{
-  width:60px;height:60px;border-radius:8px;
-  background:linear-gradient(135deg,#121226,#18182A);
 }
 
 .story-select{
