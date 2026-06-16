@@ -3902,12 +3902,6 @@ display: none !important;
   justify-content:center;
 }
 
-.plutoo-confirm-backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.55);
-}
-
 .plutoo-confirm-box{
   position:relative;
   z-index:2;
