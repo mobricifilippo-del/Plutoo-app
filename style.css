@@ -3369,7 +3369,6 @@ display: none !important;
 }
 
 /* SVG campanella: contorno oro + interno bianco (forzato) */
-.notif-svg{ display:block; }
 .notif-fill{ fill:#ffffff !important; }
 .notif-stroke{
   fill:none !important;
