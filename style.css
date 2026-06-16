@@ -677,11 +677,11 @@ padding: 0 .5rem;
 
 .tab{
   appearance:none;
-  border:1px solid rgba(138,123,255,.25);
-  background:rgba(20,20,30,.6);
-  color:var(--muted);
+  border:1px solid rgba(205,164,52,.34);
+  background:linear-gradient(180deg, rgba(24,20,46,.86), rgba(13,10,28,.82));
+  color:rgba(255,255,255,.86);
   font-size:.88rem;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:.3px;
 
   padding:.58rem .75rem;
@@ -692,8 +692,10 @@ padding: 0 .5rem;
   position:relative;
 
   box-shadow:
-    0 2px 6px rgba(0,0,0,.4),
-    inset 0 0 0 1px rgba(138,123,255,.15);
+    0 8px 18px rgba(0,0,0,.36),
+    0 0 14px rgba(138,123,255,.10),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(138,123,255,.16);
 }
 
 .tab:hover{color:var(--text);background:rgba(138,123,255,.08)}
