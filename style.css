@@ -2455,21 +2455,6 @@ padding:24px;
   transition: opacity 1.8s ease-out;
 }
 
-/* Logo durante flash */
-#heroLogo.flash-mode {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 9999 !important;
-  opacity: 1 !important;
-  transition: opacity 1.5s ease-out !important;
-}
-
-#heroLogo.flash-mode.fade-out {
-  opacity: 0 !important;
-}
-
 /* Logo sopra il flash */
 #heroLogo {
   position: relative;
