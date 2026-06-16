@@ -428,12 +428,16 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
 
     localStorage.removeItem("dogs");
 localStorage.removeItem("friendships");
+localStorage.removeItem("matches");
+localStorage.removeItem("chatMessagesSent");
 
 if (window.state && Array.isArray(window.state.dogs)) {
   window.state.dogs = [];
 }
 if (window.state) {
   window.state.friendships = {};
+  window.state.matches = {};
+  window.state.chatMessagesSent = {};
 }
 
     Object.keys(localStorage).forEach((k) => {
