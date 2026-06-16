@@ -428,6 +428,7 @@ a{color:inherit;text-decoration:none}
   justify-content:flex-end;
   white-space:nowrap;
   min-width:0;
+  padding-right:12px;
 }
 
 .auth-links a{
