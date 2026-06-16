@@ -518,10 +518,16 @@ line-height:1.45;
 
   margin:2rem auto 0;
 
-  background:transparent;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18,16,34,.92),
+      rgba(10,9,22,.96)
+    );
+
   color:var(--muted);
 
-  border:1px solid var(--line);
+  border:1px solid rgba(205,164,52,.58);
   border-radius:22px;
 
   padding:.65rem .9rem;
@@ -530,8 +536,12 @@ line-height:1.45;
   text-align:center;
 
   box-shadow:
-    0 10px 24px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.04);
+    0 12px 28px rgba(0,0,0,.34),
+    0 0 14px rgba(205,164,52,.18),
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 0 0 1px rgba(205,164,52,.10);
+
+  transition:all .2s ease;
 }
 
 .ethics-lines{
