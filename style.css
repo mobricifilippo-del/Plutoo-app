@@ -2730,9 +2730,12 @@ display: none !important;
   gap:.75rem;
   padding:.85rem;
   border-radius:16px;
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(138,123,255,.14);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+  background:linear-gradient(160deg,#1c1430 0%,#130f1e 100%);
+  border:1.5px solid rgba(139,92,246,.42);
+  box-shadow:
+    0 6px 28px rgba(109,40,217,.18),
+    0 2px 8px rgba(0,0,0,.32),
+    inset 0 0 0 1px rgba(255,255,255,.03);
 }
 
 .dogboard-avatar{
