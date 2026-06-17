@@ -2672,7 +2672,6 @@ activatePlus?.addEventListener("click", async ()=> {
     }
 
     const plan = state.plusPlan || "monthly";
-    const price = plan === "yearly" ? "€40/anno" : "€4.99/mese";
 
     const ok = await showPlutooConfirm(`Attivare Plutoo Plus?\nPiano scelto: ${price}`, {
       title: "Plutoo",
