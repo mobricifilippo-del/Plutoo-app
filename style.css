@@ -2666,7 +2666,8 @@ display: none !important;
 }
 
 .dogboard-composer-field textarea::placeholder{
-  color:rgba(255,255,255,.42);
+  color:rgba(180,160,255,.36);
+  font-style:italic;
 }
 
 .dogboard-composer-actions{
