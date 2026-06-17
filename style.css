@@ -2697,6 +2697,19 @@ display: none !important;
   color:#CDA434;
 }
 
+#btnPublishDogBoard.btn.primary{
+  background:linear-gradient(135deg,#E8CE7A 0%,#CDA434 55%,#B8891F 100%);
+  color:#12091D;
+  border:none;
+  border-radius:14px;
+  font-weight:900;
+  letter-spacing:.02em;
+  box-shadow:
+    0 4px 20px rgba(205,164,52,.38),
+    0 1px 4px rgba(0,0,0,.28),
+    inset 0 0 0 1px rgba(255,255,255,.18);
+}
+
 .dogboard-composer-note{
   font-size:.8rem;
   color:rgba(255,255,255,.6);
