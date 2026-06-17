@@ -2712,7 +2712,9 @@ display: none !important;
 
 .dogboard-composer-note{
   font-size:.8rem;
-  color:rgba(255,255,255,.6);
+  color:rgba(200,180,255,.62);
+  font-weight:500;
+  letter-spacing:.01em;
 }
 
 .dogboard-photos-preview{
