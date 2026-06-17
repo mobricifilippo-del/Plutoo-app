@@ -2472,19 +2472,20 @@ padding:24px;
 }
 
 /* barra messaggi ATTACCATA in alto */
+
 .messages-topbar {
-position: sticky;
-top: 0;
-z-index: 999;
-display: flex;
-align-items:flex-start;
-gap: 16px;
-padding: 16px 20px;
-min-height: 85px;
-background: #0d021a;
-border-bottom: 2px solid rgba(177, 154, 255, 0.3);
-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  min-height: 76px;
+  background: #0d021a;
+  border-bottom: 2px solid rgba(177, 154, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
 }
 
 /* logo MOLTO più grande con glow */
