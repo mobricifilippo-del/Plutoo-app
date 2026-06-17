@@ -2680,6 +2680,22 @@ display: none !important;
   justify-content:center;
 }
 
+#btnDogBoardPhotos.btn.ghost{
+  border:1.5px solid rgba(139,92,246,.52);
+  color:rgba(196,181,255,.92);
+  background:rgba(139,92,246,.07);
+  border-radius:13px;
+  font-weight:700;
+  transition:border-color .18s ease, background .18s ease, color .18s ease;
+}
+
+#btnDogBoardPhotos.btn.ghost:hover,
+#btnDogBoardPhotos.btn.ghost:active{
+  border-color:rgba(205,164,52,.65);
+  background:rgba(205,164,52,.08);
+  color:#CDA434;
+}
+
 .dogboard-composer-note{
   font-size:.8rem;
   color:rgba(255,255,255,.6);
