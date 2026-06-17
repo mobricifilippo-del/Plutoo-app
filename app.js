@@ -2654,6 +2654,7 @@ activatePlus?.addEventListener("click", async ()=> {
       }, { merge: true });
 
       state.plus = false;
+      localStorage.removeItem("plutoo_plus");
 
       if (typeof window.refreshCreateDogCTA === "function") {
   window.refreshCreateDogCTA();
