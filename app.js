@@ -2682,10 +2682,7 @@ activatePlus?.addEventListener("click", async ()=> {
 }
 
 window.AndroidBridge.purchasePlus(plan);
-return;
-
-    window.AndroidBridge.purchasePlus(plan);
-return;
+    return;
 
   } catch (e) {
     await showPlutooAlert("Errore gestione Plutoo Plus.", {
