@@ -2673,44 +2673,19 @@ activatePlus?.addEventListener("click", async ()=> {
 
     const plan = state.plusPlan || "monthly";
 
-    const ok = await showPlutooConfirm(`Attivare Plutoo Plus?\nPiano scelto: ${price}`, {
-      title: "Plutoo",
-      confirmText: "Attiva",
-      cancelText: "Annulla"
-    });
+    if (!window.AndroidBridge || typeof window.AndroidBridge.purchasePlus !== "function") {
+  await showPlutooAlert("Acquisto disponibile solo sull'app Android.", {
+    title: "Plutoo",
+    confirmText: "OK"
+  });
+  return;
+}
 
-    if (!ok) return;
+window.AndroidBridge.purchasePlus(plan);
+return;
 
-    const payload = {
-      plus: true,
-      plusPlan: plan,
-      plusProvider: "manual_beta",
-      plusStatus: "active",
-      plusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      plusExpireAt: null,
-      plusAutoRenewing: false
-    };
-
-    if (!data.plusSince) {
-      payload.plusSince = firebase.firestore.FieldValue.serverTimestamp();
-    }
-
-    await ref.set(payload, { merge: true });
-
-    state.plus = true;
-    
-    if (typeof window.refreshCreateDogCTA === "function") {
-  window.refreshCreateDogCTA();
-    }
-    
-    state.plusPlan = plan;
-    updatePlusUI();
-    closePlusModal();
-
-    await showPlutooAlert(`Plutoo Plus attivato! 💎\nPiano scelto: ${price}`, {
-      title: "Plutoo",
-      confirmText: "OK"
-    });
+    window.AndroidBridge.purchasePlus(plan);
+return;
 
   } catch (e) {
     await showPlutooAlert("Errore gestione Plutoo Plus.", {
