@@ -2744,9 +2744,11 @@ display: none !important;
   height:52px;
   border-radius:999px;
   overflow:hidden;
-  border:2px solid rgba(138,123,255,.45);
-  box-shadow:0 0 14px rgba(138,123,255,.18);
-  background:rgba(255,255,255,.04);
+  border:2px solid rgba(139,92,246,.62);
+  box-shadow:
+    0 0 0 1px rgba(205,164,52,.08),
+    0 0 18px rgba(109,40,217,.26);
+  background:linear-gradient(160deg,#1c1430 0%,#130f1e 100%);
 }
 
 .dogboard-avatar img{
