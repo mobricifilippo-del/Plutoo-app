@@ -2773,9 +2773,10 @@ display: none !important;
 
 .dogboard-title{
   font-size:.98rem;
-  font-weight:800;
-  color:#fff;
+  font-weight:900;
+  color:#CDA434;
   line-height:1.2;
+  letter-spacing:.01em;
 }
 
 .dogboard-time{
