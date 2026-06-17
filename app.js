@@ -2726,6 +2726,74 @@ function openPlusModal(){
   updatePlusUI();
 }
 
+window.onPlusPurchased = async function(planId) {
+  try {
+    const validPlans = ["monthly", "yearly"];
+    const resolvedPlan = validPlans.includes(planId) ? planId : null;
+
+    if (!resolvedPlan) {
+      await showPlutooAlert("Errore: piano non riconosciuto.", {
+        title: "Plutoo",
+        confirmText: "OK"
+      });
+      return;
+    }
+
+    const uid = window.PLUTOO_UID || (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : "");
+
+    if (!uid || !window.db) {
+      await showPlutooAlert("Errore: utente non identificato.", {
+        title: "Plutoo",
+        confirmText: "OK"
+      });
+      return;
+    }
+
+    const ref = window.db.collection("users").doc(String(uid));
+    const snap = await ref.get();
+    const data = snap && snap.exists ? (snap.data() || {}) : {};
+
+    const payload = {
+      plus: true,
+      plusPlan: resolvedPlan,
+      plusProvider: "google_play",
+      plusStatus: "active",
+      plusAutoRenewing: true,
+      plusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      plusExpireAt: null
+    };
+
+    if (!data.plusSince) {
+      payload.plusSince = firebase.firestore.FieldValue.serverTimestamp();
+    }
+
+    await ref.set(payload, { merge: true });
+
+    state.plus = true;
+    state.plusPlan = resolvedPlan;
+    localStorage.setItem("plutoo_plus", "yes");
+
+    if (typeof window.refreshCreateDogCTA === "function") {
+      window.refreshCreateDogCTA();
+    }
+
+    updatePlusUI();
+    closePlusModal();
+
+    const price = resolvedPlan === "yearly" ? "€49,99/anno" : "€4,99/mese";
+    await showPlutooAlert(`Plutoo Plus attivato! 💎\nPiano scelto: ${price}`, {
+      title: "Plutoo",
+      confirmText: "OK"
+    });
+
+  } catch (e) {
+    await showPlutooAlert("Errore attivazione Plutoo Plus.", {
+      title: "Plutoo",
+      confirmText: "OK"
+    });
+  }
+};
+
 function closePlusModal(){ 
   plusModal?.classList.add("hidden"); 
 }
