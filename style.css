@@ -2640,9 +2640,10 @@ display: none !important;
 }
 
 .dogboard-composer-title{
-  font-size:1rem;
-  font-weight:800;
-  color:#fff;
+  font-weight:900;
+  color:#CDA434;
+  font-size:1.02rem;
+  letter-spacing:0.01em;
 }
 
 .dogboard-composer-subtitle{
