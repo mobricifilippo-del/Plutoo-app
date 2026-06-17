@@ -2647,8 +2647,8 @@ display: none !important;
 }
 
 .dogboard-composer-subtitle{
-  font-size:.82rem;
-  color:rgba(255,255,255,.62);
+  color:rgba(200,180,255,.72);
+  font-size:.83rem;
 }
 
 .dogboard-composer-field textarea{
