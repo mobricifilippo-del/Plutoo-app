@@ -355,7 +355,7 @@ document.getElementById("btnForgotPass")?.addEventListener("click", async () => 
     await window.auth.sendPasswordResetEmail(email);
     setAuthError("login", "✅ Email di recupero inviata");
   } catch (err) {
-    setAuthError("login", err?.message || "Errore recupero password");
+  setAuthError("login", translateAuthError(err));
   }
 });
 
