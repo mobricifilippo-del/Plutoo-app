@@ -12150,11 +12150,13 @@ return;
   }
 
   function getTimeAgo(timestamp) {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-    if (seconds < 60) return "ora";
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m fa`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h fa`;
-    return `${Math.floor(seconds / 86400)}g fa`;
+  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  const isEn = state.lang === "en";
+
+  if (seconds < 60) return isEn ? "now" : "ora";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${isEn ? "ago" : "fa"}`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ${isEn ? "ago" : "fa"}`;
+  return `${Math.floor(seconds / 86400)}${isEn ? "d ago" : "g fa"}`;
   }
 
   function triggerFlash() {
