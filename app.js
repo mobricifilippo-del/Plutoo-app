@@ -4154,10 +4154,13 @@ btnDogBoardBack?.addEventListener("click", () => {
    }
     }
 
-  window.addEventListener("popstate", (e)=>{
-    e.preventDefault();
+  window.handleAndroidBack = function () {
+  if (typeof goBack === "function") {
     goBack();
-  });
+    return "HANDLED";
+  }
+  return null;
+};
 
   if (state.entered){
     history.pushState({view: "app"}, "", "");
