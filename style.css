@@ -2502,7 +2502,6 @@ filter: drop-shadow(0 0 10px rgba(177, 154, 255, 0.6));
 display: flex;
 gap: 10px;
 flex: 1;
-justify-content: center;
 overflow-x: auto;
 -webkit-overflow-scrolling: touch;
 scrollbar-width: none;
