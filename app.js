@@ -1818,7 +1818,6 @@ const dogBoardText = $("dogBoardText");
 const dogBoardPhotos = $("dogBoardPhotos");
 const dogBoardPreview = $("dogBoardPreview");
 const btnPublishDogBoard = $("btnPublishDogBoard");
-const btnRefreshDogBoard = $("btnRefreshDogBoard");
 
   const loveCard     = $("loveCard");
   const loveImg      = $("loveImg");
