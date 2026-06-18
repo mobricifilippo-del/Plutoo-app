@@ -770,6 +770,17 @@ try {
           img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
           verified: !!data.verified,
 
+          availability: {
+  breeding:
+    data.availability &&
+    typeof data.availability === "object" &&
+    data.availability.breeding === true,
+  walks:
+    data.availability &&
+    typeof data.availability === "object" &&
+    data.availability.walks === true
+},
+
           dogDocs: await window.getCompatibleDogDocs(
   String(myId),
   String(ownerUid || myId || ""),
