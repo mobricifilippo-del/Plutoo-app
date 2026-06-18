@@ -1,364 +1,263 @@
-# 🐶 **Plutoo**  
-Il primo social network pensato per i **DOGS**: trova nuovi amici, condividi momenti, scopri i DOG vicino a te e trova partner per l’**accoppiamento responsabile**.
+🐶 Plutoo
+
+🇮🇹 Italiano
+
+Plutoo è una piattaforma dedicata ai proprietari di DOGS che desiderano creare un profilo completo del proprio amico a quattro zampe, trovare DOGS compatibili e promuovere un accoppiamento responsabile attraverso informazioni, documenti e strumenti dedicati al mondo PET.
+
+Plutoo unisce community, ricerca avanzata e servizi dedicati ai DOGS in un'unica esperienza accessibile da qualsiasi dispositivo e utilizzabile in tutto il mondo.
 
 ---
 
-## 🇮🇹 FUNZIONALITÀ PRINCIPALI
+🐶 Principi Plutoo
 
-### 🔥 Vicino a Te  
-La bacheca automatica dei DOG nella tua zona:  
-- Griglia 2×N veloce e scorrevole  
-- Apertura profilo dedicato con un tap  
-- Cornici animate violette  
-- Storie stile Instagram  
-- Like alle Stories  
-- Sistema Follow / Seguiti (salvato in locale)
+- 💜 Promuovere un accoppiamento responsabile, privilegiando compatibilità e benessere dei DOGS.
+- 📄 Valorizzare documenti, informazioni e trasparenza, aiutando i proprietari a compiere scelte consapevoli.
+- 🐕 Favorire l'incontro tra DOGS della stessa razza o con caratteristiche compatibili attraverso strumenti di ricerca dedicati.
+- 🤝 Creare una community rispettosa, dove il confronto tra proprietari sia basato su correttezza, collaborazione e fiducia.
+- 🌍 Rendere Plutoo accessibile da qualsiasi dispositivo e utilizzabile in tutto il mondo.
 
 ---
 
-### 💜 Accoppiamento (Swipe)  
-Sistema swipe stile dating app:  
-- Swipe sinistra = 🥲  
-- Swipe destra = 💛  
-- Animazioni, tilt, glow viola  
-- Match overlay con grande cuore ❤️‍🔥 pulsante  
-- Bio, razza, età, distanza  
-- Reward video da 5 secondi per utenti non-Plus  
-- Focus su accoppiamento responsabile
+✨ Funzionalità
+
+👤 Account
+
+- Registrazione
+- Login
+- Recupero password
+- Gestione account
+
+🐶 Profilo DOG
+
+- Foto profilo
+- Galleria immagini
+- 🤳 Selfie DOG & Proprietario
+- Bio
+- Documenti DOG
+- Badge Plutoo
+- Social del proprietario
+- Modifica profilo
+
+💜 Accoppiamento Responsabile
+
+- Sistema Swipe
+- Match reciproco
+- Chat dedicate
+- Ricerca per razza
+- Ricerca per caratteristiche
+- Filtri avanzati
+- Compatibilità documentale
+
+📍 Vicino a Te
+
+- Ricerca di DOGS nelle vicinanze
+- Apertura profili dedicati
+- Ricerca personalizzata
+- Filtri base
+- Filtri Plutoo Plus
+
+📢 Aggiornamenti DOGS
+
+- Pubblicazione immagini
+- Viewer fullscreen
+- Like
+- Feed aggiornamenti
+
+👥 Community
+
+- Follow / Following
+- Notifiche
+- Chat private
+
+🏥 LuoghiPET
+
+- Veterinari
+- Toelettature
+- Negozi
+- Addestratori
+- Pensioni
+- Parchi
+
+💎 Plutoo Plus
+
+- ⭐ Profilo Gold
+- 🚫 Esperienza senza pubblicità
+- ♾️ Swipe illimitati
+- 🔎 Ricerca avanzata
+- 💎 Funzioni Premium dedicate
 
 ---
 
-### 💬 Messaggistica  
-- Tab: Ricevuti / Inviati / Match / Richieste / Spam  
-- Empty state chiari (“Nessun messaggio…”)  
-- Chat con composer fisso in fondo  
-- Reward video (5s) solo sul **primo messaggio** dopo il match (per non-Plus)  
-- Nessuna pubblicità per gli utenti Plus
+💻 Stack Tecnologico
+
+- HTML5
+- CSS3
+- JavaScript Vanilla
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Storage
+- Google Play Billing
+- Google AdMob
+- Vercel
 
 ---
 
-### 📸 Storie dei DOG  
-- Upload foto/video (mock locale)  
-- Viewer a schermo intero stile Instagram  
-- Navigazione avanti/indietro  
-- Like ❤️ alla story  
-- Filtri & Musica (interfaccia pronta, logica mock)  
-- Pulsante **← Indietro** per chiudere il viewer
+🔒 Privacy & Sicurezza
+
+Plutoo integra sistemi dedicati alla gestione di:
+
+- Autenticazione utenti
+- Profili DOG
+- Documenti DOG
+- Immagini e contenuti
+- Privacy Policy
+- Termini di Servizio
+- Gestione account
 
 ---
 
-### 📱 SELFIE CON IL TUO AMICO A 4 ZAMPE  
-Funzione integrata per scattare selfie con il proprio DOG.  
-Sblocco tramite reward video (per non-Plus).
+🌍 Lingue
 
-**__SELFIE CON IL TUO AMICO A 4 ZAMPE__**
-
----
-
-### 📄 Profilo DOG — Pagina Dedicata  
-- Foto profilo fullscreen  
-- Galleria immagini (max 5 foto, salvate in `localStorage`)  
-- Sezione Documenti (mock, pronta per futuro backend)  
-- Badge verificato previsto per futura verifica documenti  
-- Sistema Follow / Seguiti per ogni DOG  
-- Like sulla foto profilo  
-- Sezione **Social del proprietario** personalizzabile:
-  - Facebook  
-  - Instagram  
-  - TikTok  
-- Pulsante **“Modifica social”** visibile solo sul proprio DOG, con salvataggio in `localStorage`
+- 🇮🇹 Italiano
+- 🇬🇧 English
 
 ---
 
-### 📍 LuoghiPET  
-Sezione dedicata alle attività utili per DOG:  
-- 🏥 Veterinari  
-- ✂️ Toelettature  
-- 🛒 Negozi  
-- 🎓 Addestratori  
-- 🏠 Pensioni  
-- 🌳 Parchi  
+📬 Contatti
 
-Ogni voce apre **Google Maps** con la categoria corrispondente.  
-Per utenti non-Plus è previsto un reward video da 5s prima dell’apertura (mock).
+Email ufficiale
+
+plutoo.team@gmail.com
 
 ---
 
-### 💎 Plutoo Plus (Mock)  
-Stato salvato in `localStorage` (`plutoo_plus = "yes"`).  
-Funzioni previste per Plus:
+🐶 Plutoo
 
-- Nessuna pubblicità  
-- Nessun video reward  
-- Swipe illimitati  
-- Messaggi illimitati  
-- Tutti i filtri Gold sbloccati  
-- Stories avanzate (durata maggiore, meno limiti)  
-- Supporto prioritario
+🇬🇧 English
+
+Plutoo is a platform designed for DOG owners who want to create a complete profile for their companion, find compatible DOGS, and promote responsible breeding through information, documentation and dedicated PET tools.
+
+Plutoo brings together community features, advanced search tools and PET services into a single experience accessible from any device and available worldwide.
 
 ---
 
-### 🟣 Ricerca Personalizzata
+🐶 Plutoo Principles
 
-**Filtri base (gratuiti):**  
-- Distanza (slider km)  
-- Razza con autocomplete intelligente  
-- Sesso (Maschio / Femmina / Tutti)
-
-**Filtri Gold (riservati a Plus):**  
-- Solo DOG con badge verificato ✅  
-- Età minima / massima  
-- Peso minimo  
-- Altezza minima  
-- Presenza Pedigree (Sì / No / Indifferente)  
-- Disponibile per accoppiamento (Sì / No / Indifferente)  
-- Taglia (Piccola / Media / Grande)
+- 💜 Promote responsible breeding, prioritizing compatibility and the well-being of DOGS.
+- 📄 Encourage transparency through documents, information and informed decisions.
+- 🐕 Help owners find DOGS of the same breed or with compatible characteristics using dedicated search tools.
+- 🤝 Build a respectful community based on trust, collaboration and responsible ownership.
+- 🌍 Make Plutoo accessible from any device and available worldwide.
 
 ---
 
-### 📢 Monetizzazione (Mock di test)
+✨ Features
 
-**Reward video da 5 secondi (test):**  
-- Primo messaggio dopo il match  
-- Apertura LuoghiPET  
-- Sblocco selfie  
-- Milestone swipe (10 e poi ogni +5 swipe)
+👤 Account
 
-**Banner fisso (mock):**  
-- Banner test AdMob visibile in tutte le sezioni interne dell’app  
-- Non visibile nella Home
+- Registration
+- Login
+- Password recovery
+- Account management
 
-**Sponsor ufficiale:**  
-- Mostrato **solo in Home**  
-- Nessun reward video al click  
-- Testo: *“Fido, il gelato per i nostri amici a quattro zampe”*
+🐶 DOG Profile
 
----
+- Profile picture
+- Image gallery
+- 🤳 DOG & Owner selfie
+- Biography
+- DOG documents
+- Plutoo Badge
+- Owner social links
+- Profile editing
 
-### 🔐 Privacy & Sicurezza
+💜 Responsible Breeding
 
-- Attualmente nessun backend: tutti i dati sono mock e/o salvati in locale (`localStorage`)  
-- Nessuna trasmissione verso server esterni nella versione di test  
-- Presenti link a **Termini**, **Privacy** e **Contatti**  
-- ⚠️ **Nota importante**: prima del rilascio pubblico su store dovrà essere fatto un controllo finale di:
-  - Termini di Servizio
-  - Informativa Privacy
-  - Coerenza con funzionalità reali (accoppiamento, follow, social, stories, ads, abbonamenti)
+- Swipe system
+- Mutual match
+- Dedicated chat
+- Breed search
+- Characteristics search
+- Advanced filters
+- Document compatibility
 
----
+📍 Nearby
 
-### 💡 Stack Tecnico
+- Discover nearby DOGS
+- Dedicated profile pages
+- Personalized search
+- Standard filters
+- Plutoo Plus filters
 
-- WebApp single-page (HTML + CSS + JavaScript vanilla)  
-- PWA con `manifest.json`  
-- Ottimizzata per **Android WebView**  
-- Tema grafico: nero/viola con accenti oro  
-- Animazioni CSS per swipe, match (cuore ❤️‍🔥) e hover  
-- Uso moderato di `localStorage` per stato utente (Plus, gallery, social, follow, likes)
+📢 DOG Updates
 
----
+- Image publishing
+- Fullscreen viewer
+- Likes
+- Updates feed
 
-### 🚀 Roadmap (Post-test)
+👥 Community
 
-- Integrazione backend **Firebase**:
-  - Firebase Auth (login/registrazione sicura)
-  - Firestore (profili reali, match, follow, messaggi)
-  - Storage (foto DOG, stories, documenti)
-- Integrazione **AdMob reale** (banner + rewarded)  
-- Integrazione **Google Play Billing** per Plutoo Plus  
-- Notifiche push (Firebase Cloud Messaging)  
-- Miglioramenti UI/UX finali  
-- QA completo su dispositivi reali Android e pubblicazione su Google Play
+- Follow / Following
+- Notifications
+- Private chats
 
----
+🏥 PET Places
 
-### 📬 Supporto
+- Veterinarians
+- Groomers
+- Pet shops
+- Trainers
+- Boarding facilities
+- Parks
 
-- Email: **plutoo.team@gmail.com**  
-- Instagram: **@plutoo.app**
+💎 Plutoo Plus
 
----
-
----
-
-# 🇬🇧 Plutoo — Official README
-
-A social network designed **for DOGS**, to help them meet new friends, share moments, discover nearby dogs and find partners for **responsible breeding**.
-
----
-
-## 🌟 MAIN FEATURES
-
-### 🔥 Nearby  
-Automatic feed of dogs around you:  
-- Fast 2×N grid  
-- Tap to open full dog profile  
-- Purple animated borders  
-- Instagram-like Stories  
-- Story likes ❤️  
-- Local Follow / Following system (stored in `localStorage`)
+- ⭐ Gold Profile
+- 🚫 Ad-free experience
+- ♾️ Unlimited swipes
+- 🔎 Advanced search
+- 💎 Dedicated Premium features
 
 ---
 
-### 💜 Breeding (Swipe)  
-Dating-app style swipe experience:  
-- Swipe left = 🥲  
-- Swipe right = 💛  
-- Smooth tilt & purple glow animations  
-- Animated match overlay with a big pulsing ❤️‍🔥 heart  
-- Detailed bio, breed, age, distance  
-- 5-second reward video for non-Plus users  
-- Focus on **responsible breeding**
+💻 Technology Stack
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Storage
+- Google Play Billing
+- Google AdMob
+- Vercel
 
 ---
 
-### 💬 Messaging System  
-- Tabs: Inbox / Sent / Matches / Requests / Spam  
-- Clear empty states (“No messages…”)  
-- Fixed composer at the bottom  
-- Reward video (5s) only on the **first message** after a match (for non-Plus)  
-- No ads for Plus users
+🔒 Privacy & Security
+
+Plutoo includes dedicated systems for:
+
+- User authentication
+- DOG profiles
+- DOG documents
+- Images and content management
+- Privacy Policy
+- Terms of Service
+- Account management
 
 ---
 
-### 📸 DOG Stories  
-- Photo / video upload (local mock in current version)  
-- Fullscreen Instagram-style viewer  
-- Previous / next story navigation  
-- ❤️ Like button for each story  
-- Filters & Music (UI ready, logic mocked)  
-- **← Back** button to close the story viewer
+🌍 Languages
+
+- 🇮🇹 Italian
+- 🇬🇧 English
 
 ---
 
-### 📱 SELFIE WITH YOUR FOUR-LEGGED FRIEND  
-Integrated selfie feature together with your DOG.  
-Unlocked via reward video (for non-Plus users).
+📬 Contact
 
-**__SELFIE WITH YOUR FOUR-LEGGED FRIEND__**
+Official email
 
----
-
-### 📄 Dedicated DOG Profile Page  
-- Fullscreen profile picture  
-- Image gallery (up to 5 photos, stored in `localStorage`)  
-- Documents section (mock, ready for future backend)  
-- “Verified” badge planned for future document checks  
-- Follow / Following per DOG  
-- Likes on profile picture  
-- **Owner Social Links** (fully editable):
-  - Facebook  
-  - Instagram  
-  - TikTok  
-- **“Edit social”** button visible only on the current user’s DOG, with data stored locally
-
----
-
-### 📍 PET Places  
-Utility section for pet-related services:  
-- 🏥 Vets  
-- ✂️ Groomers  
-- 🛒 Shops  
-- 🎓 Trainers  
-- 🏠 Kennels / Shelters  
-- 🌳 Parks  
-
-Each category opens **Google Maps** with the correct query.  
-For non-Plus users a 5-second reward video is shown before opening (mock).
-
----
-
-### 💎 Plutoo Plus (Mock)
-
-Stored in `localStorage` as `plutoo_plus = "yes"`.
-
-Planned Plus benefits:
-
-- No ads at all  
-- No rewarded videos  
-- Unlimited swipes  
-- Unlimited messages  
-- All Gold filters unlocked  
-- Advanced Stories features  
-- Priority support
-
----
-
-### 🟣 Advanced Search
-
-**Free filters:**  
-- Distance slider  
-- Breed textbox with smart autocomplete  
-- Gender (Male / Female / All)
-
-**Gold filters (Plus only):**  
-- Verified only  
-- Min / Max age  
-- Min weight  
-- Min height  
-- Pedigree (Yes / No / Indifferent)  
-- Breeding availability (Yes / No / Indifferent)  
-- Size (Small / Medium / Large)
-
----
-
-### 📢 Monetization (Test Mock)
-
-**5-second reward videos:**  
-- First chat message after a match  
-- PET Places click  
-- Selfie unlocking  
-- Swipe milestones (10 and then every +5)
-
-**Fixed banner (mock):**  
-- Test AdMob banner visible inside the app views  
-- Not visible on the Home screen
-
-**Sponsor:**  
-- Shown **only on Home**  
-- No reward video on sponsor click  
-- Copy: *“Fido, the ice cream for our four-legged friends”* (IT copy in app)
-
----
-
-### 🔐 Privacy & Security
-
-- No backend yet: all data are mocks and/or stored locally  
-- No data sent to external servers in this test version  
-- Terms, Privacy and Contacts pages are linked in the UI  
-- ⚠️ **Important**: before public release, a full legal & privacy review must be done:
-  - Terms of Service  
-  - Privacy Policy  
-  - Real alignment with final features (breeding, follow, social links, stories, ads, subscriptions)
-
----
-
-### 💡 Tech Stack
-
-- Single-page WebApp (HTML + CSS + vanilla JS)  
-- PWA with `manifest.json`  
-- Optimized for Android WebView  
-- Dark purple & black theme with gold accents  
-- CSS animations for swipe, match (big ❤️‍🔥 heart) and main interactions  
-- Controlled usage of `localStorage` for non-critical state (Plus, gallery, social, follow, likes)
-
----
-
-### 🚀 Roadmap (After Test Phase)
-
-- Backend integration with **Firebase**:
-  - Firebase Auth (secure login/registration)
-  - Firestore (real profiles, matches, follows, messages)
-  - Storage (DOG photos, stories, documents)
-- Real **AdMob** integration (banner + rewarded)  
-- **Google Play Billing** for Plutoo Plus  
-- Push Notifications (Firebase Cloud Messaging)  
-- Final UI/UX polishing  
-- QA on real Android devices & Google Play release
-
----
-
-### 📬 Support
-
-- Email: **plutoo.team@gmail.com**  
-- Instagram: **@plutoo.app**
+plutoo.team@gmail.com
