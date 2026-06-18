@@ -2507,6 +2507,10 @@ overflow-x: auto;
 scrollbar-width: none;
 }
 
+#viewDogBoard .messages-top-tabs{
+  justify-content:center;
+}
+
 .messages-top-tabs::-webkit-scrollbar {
 display: none;
 }
