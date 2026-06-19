@@ -7332,52 +7332,6 @@ if (createDogZoneInput && isCreate) {
   });
 }
 
-  const createDogBreedInput = document.getElementById("createDogBreed");
-
-if (createDogBreedInput && !document.getElementById("createDogBreedsList")) {
-  const createDogBreedsList = document.createElement("div");
-  createDogBreedsList.id = "createDogBreedsList";
-  createDogBreedsList.className = "breeds-list";
-  createDogBreedsList.style.display = "none";
-
-  createDogBreedInput.parentNode.appendChild(createDogBreedsList);
-
-  createDogBreedInput.addEventListener("input", () => {
-    const query = (createDogBreedInput.value || "").trim().toLowerCase();
-
-    createDogBreedsList.innerHTML = "";
-    createDogBreedsList.style.display = "none";
-
-    if (!query) return;
-
-    const matches = (Array.isArray(state.breeds) ? state.breeds : [])
-      .slice()
-      .sort((a, b) => String(a).localeCompare(String(b)))
-      .filter(b => String(b || "").toLowerCase().startsWith(query))
-      .slice(0, 16);
-
-    if (!matches.length) return;
-
-    createDogBreedsList.innerHTML = matches
-      .map(b => `<div class="item">${b}</div>`)
-      .join("");
-
-    createDogBreedsList.style.display = "block";
-
-    qa(".item", createDogBreedsList).forEach(item => {
-      item.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        createDogBreedInput.value = item.textContent || "";
-        createDogBreedsList.innerHTML = "";
-        createDogBreedsList.style.display = "none";
-        createDogBreedInput.blur();
-      });
-    });
-  });
-}
-
       const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
