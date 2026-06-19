@@ -1954,27 +1954,6 @@ padding:24px;
 .suggestions .item{padding:.55rem .75rem;cursor:pointer;font-size:.9rem}
 .suggestions .item:hover{background:rgba(138,123,255,.12)}
 
-.breeds-list{
-  background:var(--panel);
-  border:1px solid var(--violet);
-  max-height:180px;
-  overflow-y:auto;
-  margin-top:.3rem;
-  border-radius:12px;
-  display:none;
-  position:relative;
-  z-index:20;
-}
-
-.breeds-list .item{
-  padding:.55rem .75rem;
-  cursor:pointer;
-}
-
-.breeds-list .item:hover{
-  background:rgba(138,123,255,.12);
-}
-
 /* ================= MODALE ================= */
 .modal{
   position:fixed;inset:0;z-index:2000;
