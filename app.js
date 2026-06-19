@@ -4872,43 +4872,6 @@ async function ensureChatForMatch(dog) {
   }
 }
 
-function bindBreedAutocomplete(input, list) {
-  if (!input || !list) return;
-
-  input.addEventListener("input", () => {
-    const raw = (input.value || "").trim();
-    const query = raw.toLowerCase();
-
-    list.innerHTML = "";
-    list.style.display = "none";
-
-    if (!query) return;
-
-    const matches = (Array.isArray(state.breeds) ? state.breeds : [])
-      .slice()
-      .sort((a, b) => String(a).localeCompare(String(b)))
-      .filter(b => String(b || "").toLowerCase().startsWith(query))
-      .slice(0, 16);
-
-    if (!matches.length) return;
-
-    list.innerHTML = matches.map(b => `<div class="item">${b}</div>`).join("");
-    list.style.display = "block";
-
-    qa(".item", list).forEach(item => {
-      item.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        input.value = item.textContent || "";
-        list.innerHTML = "";
-        list.style.display = "none";
-        input.blur();
-      });
-    });
-  });
-}
-
   // ============ Ricerca ============
   if (btnSearchPanel) {
     btnSearchPanel.addEventListener("click", (e)=>{
