@@ -4143,6 +4143,11 @@ btnDogBoardBack?.addEventListener("click", () => {
    }
     }
 
+window.plutooGoBack = function () {
+  goBack();
+  return "HANDLED";
+};
+
   window.addEventListener("popstate", (e)=>{
     e.preventDefault();
     goBack();
