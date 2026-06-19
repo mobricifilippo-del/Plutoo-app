@@ -770,17 +770,6 @@ try {
           img: String(data.photoUrl || data.img || "./plutoo-icon-192.png"),
           verified: !!data.verified,
 
-          availability: {
-  breeding:
-    data.availability &&
-    typeof data.availability === "object" &&
-    data.availability.breeding === true,
-  walks:
-    data.availability &&
-    typeof data.availability === "object" &&
-    data.availability.walks === true
-},
-
           dogDocs: await window.getCompatibleDogDocs(
   String(myId),
   String(ownerUid || myId || ""),
@@ -955,12 +944,11 @@ const uid =
 if (!uid || !window.db) return;
 
  const doc = await window.db.collection("dogs").doc(String(uid)).get();
- const data = (doc && doc.exists) ? (doc.data() || {}) : null;
+const data = (doc && doc.exists) ? (doc.data() || {}) : null;
 
  const hasDog = !!(data && String(data.name || "").trim().length > 0);
- const dogId = hasDog ? String(uid) : null;
- const dogName = hasDog ? String(data.name || "").trim() : "";
-  const dogAvatar = hasDog ? String(data.photoUrl || data.img || "") : "";
+const dogId = hasDog ? String(uid) : null;
+const dogName = hasDog ? String(data.name || "").trim() : "";
 
 // Stato globale (runtime)
 // ✅ AUTOREVOLEZZA: solo chiamata autorevole (window.PLUTOO_UID già valorizzato) può degradare a hasDog=false.
@@ -975,7 +963,6 @@ if (isAuthoritativePresence || hasDog) {
   window.CURRENT_USER_DOG_ID = dogId || "";
   CURRENT_USER_DOG_ID = dogId || "";
   window.PLUTOO_DOG_NAME = dogName;
-  window.PLUTOO_DOG_AVATAR = dogAvatar;
 
   // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
   window.PLUTOO_READONLY = !hasDog;
@@ -1703,6 +1690,10 @@ function showProfileReportContentModal() {
   });
 }
 
+function autodetectLang(){
+  return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
+}
+
 let CURRENT_USER_DOG_ID =
 window.PLUTOO_DOG_ID ||
 localStorage.getItem("plutoo_dog_id") ||
@@ -1814,6 +1805,7 @@ const dogBoardText = $("dogBoardText");
 const dogBoardPhotos = $("dogBoardPhotos");
 const dogBoardPreview = $("dogBoardPreview");
 const btnPublishDogBoard = $("btnPublishDogBoard");
+const btnRefreshDogBoard = $("btnRefreshDogBoard");
 
   const loveCard     = $("loveCard");
   const loveImg      = $("loveImg");
@@ -4151,13 +4143,10 @@ btnDogBoardBack?.addEventListener("click", () => {
    }
     }
 
-  window.handleAndroidBack = function () {
-  if (typeof goBack === "function") {
+  window.addEventListener("popstate", (e)=>{
+    e.preventDefault();
     goBack();
-    return "HANDLED";
-  }
-  return null;
-};
+  });
 
   if (state.entered){
     history.pushState({view: "app"}, "", "");
@@ -4870,7 +4859,7 @@ async function ensureChatForMatch(dog) {
   } catch (err) {
     console.error("Errore ensureChatForMatch:", err);
   }
-}
+} 
 
   // ============ Ricerca ============
   if (btnSearchPanel) {
@@ -11132,6 +11121,12 @@ async function loadDogBoardPosts(){
   }
 }
 
+if (btnRefreshDogBoard) {
+  btnRefreshDogBoard.addEventListener("click", () => {
+    loadDogBoardPosts();
+  });
+}
+
     async function publishDogBoardTextOnly(){
     let photoUrls = [];
       
@@ -12146,13 +12141,11 @@ return;
   }
 
   function getTimeAgo(timestamp) {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  const isEn = state.lang === "en";
-
-  if (seconds < 60) return isEn ? "now" : "ora";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${isEn ? "ago" : "fa"}`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ${isEn ? "ago" : "fa"}`;
-  return `${Math.floor(seconds / 86400)}${isEn ? "d ago" : "g fa"}`;
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return "ora";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m fa`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h fa`;
+    return `${Math.floor(seconds / 86400)}g fa`;
   }
 
   function triggerFlash() {
