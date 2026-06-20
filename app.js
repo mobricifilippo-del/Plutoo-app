@@ -11384,13 +11384,13 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
     showRewardVideoMock("services", ()=>{
       state.rewardOpen = false;
-      openMapsQueryAfterReward(cat);
+      openPetPlacesView(cat);
     });
 
     return;
   }
 
-  openMapsQueryAfterReward(cat);
+  openPetPlacesView(cat);
   }
 
   function openMapsQueryAfterReward(cat){
