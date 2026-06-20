@@ -11428,12 +11428,32 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
 function openPetPlacesView(cat) {
   if (!state.geo) {
-    showPlutooAlert(
-      state.lang === "it"
-        ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
-        : "Location unavailable. Please enable geolocation and try again.",
-      { title: "Plutoo", confirmText: "OK" }
+    if (!navigator.geolocation) {
+      showPlutooAlert(
+        state.lang === "it"
+          ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
+          : "Location unavailable. Please enable geolocation and try again.",
+        { title: "Plutoo", confirmText: "OK" }
+      );
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      function(p) {
+        state.geo = { lat: p.coords.latitude, lon: p.coords.longitude };
+        openPetPlacesView(cat);
+      },
+      function() {
+        showPlutooAlert(
+          state.lang === "it"
+            ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
+            : "Location unavailable. Please enable geolocation and try again.",
+          { title: "Plutoo", confirmText: "OK" }
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
+
     return;
   }
 
