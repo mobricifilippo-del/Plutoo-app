@@ -11474,23 +11474,29 @@ showPlutooBlockingLoader(
 }
 
 function fetchOverpass(cat, lat, lon) {
+  
   const tagMap = {
-    vets:     "amenity=veterinary",
-    groomers: "shop=pet_grooming",
-    shops:    "shop=pet",
-    trainers: "amenity=dog_training",
-    kennels:  "amenity=animal_boarding",
-    parks:    "leisure=park"
-  };
+  vets:     ["amenity=veterinary", "healthcare=veterinary"],
+  groomers: ["shop=pet_grooming"],
+  shops:    ["shop=pet"],
+  trainers: ["amenity=dog_training"],
+  kennels:  ["amenity=animal_boarding"],
+  parks:    ["leisure=park"]
+};
 
-  const tag   = tagMap[cat] || "amenity=veterinary";
-  const query =
-    "[out:json][timeout:10];" +
-    "(" +
-      "node[" + tag + "](around:5000," + lat + "," + lon + ");" +
-      "way["  + tag + "](around:5000," + lat + "," + lon + ");" +
-    ");" +
-    "out center 20;";
+const tags = tagMap[cat] || ["amenity=veterinary"];
+
+var lines = "";
+
+tags.forEach(function(tag) {
+  lines += "node[" + tag + "](around:10000," + lat + "," + lon + ");";
+  lines += "way["  + tag + "](around:10000," + lat + "," + lon + ");";
+});
+
+const query =
+  "[out:json][timeout:15];" +
+  "(" + lines + ");" +
+  "out center 50;";
 
   fetch("https://overpass-api.de/api/interpreter", {
     method:  "POST",
