@@ -3997,7 +3997,7 @@ try {
     v.classList.add("hidden");
   });
 
-  if (name === "profile" || name === "messages" || name === "dogboard") {
+  if (name === "profile" || name === "messages" || name === "dogboard" || name === "petplaces") {
     mainTopbar?.classList.add("hidden");
   } else {
     mainTopbar?.classList.remove("hidden");
