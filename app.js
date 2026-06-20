@@ -10233,11 +10233,12 @@ statusEl.dataset.status = "sent";
 
 // Listener: quando isRead diventa true -> ✓✓
 // (NB: lo diventerà true SOLO se l’altro apre da "Ricevuti", come hai deciso tu)
-msgRef.onSnapshot((doc) => {
+const _readUnsub = msgRef.onSnapshot((doc) => {
   const m = doc && doc.exists ? (doc.data() || {}) : {};
   if (m.isRead === true) {
     statusEl.textContent = "✓✓";
     statusEl.dataset.status = "read";
+    _readUnsub();
   }
 }, () => {});
 
