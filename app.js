@@ -6333,8 +6333,9 @@ profileContent.innerHTML = `
 
   </div>${ isCreate ? ` <div class="pp-badges pp-create-inline" style="margin-top:.75rem"> <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Nome DOG" : "DOG name"}" style="padding:.45rem .55rem;flex:1;min-width:42%"> <input id="createDogName" type="text" value="" placeholder="${state.lang === "it" ? "Nome DOG *" : "DOG name *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%"> </span>
 
-<span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Razza" : "Breed"}" style="padding:.45rem .55rem;flex:1;min-width:42%">
-        <input id="createDogBreed" type="text" value="" placeholder="${state.lang === "it" ? "Razza *" : "Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%">
+<span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Razza" : "Breed"}" style="padding:.45rem .55rem;flex:1;min-width:42%;position:relative;">
+        <input id="createDogBreed" type="text" value="" placeholder="${state.lang === "it" ? "Razza *" : "Breed *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%" autocomplete="off">
+        <div id="createDogBreedsList" style="display:none;position:absolute;z-index:9999;background:#1a1530;border:1px solid rgba(205,164,52,.35);border-radius:12px;max-height:180px;overflow-y:auto;width:100%;left:0;top:100%;box-shadow:0 8px 24px rgba(0,0,0,.45);"></div>
       </span>
 
  <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Zona" : "Area"}" style="padding:.45rem .55rem;flex:1;min-width:42%">
