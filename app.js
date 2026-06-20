@@ -11444,14 +11444,11 @@ function openPetPlacesView(cat) {
         openPetPlacesView(cat);
       },
       
-      function(err) {
+      function() {
   showPlutooAlert(
-    (state.lang === "it"
+    state.lang === "it"
       ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
-      : "Location unavailable. Please enable geolocation and try again.")
-    + "\n\nDEBUG ANDROID GEO"
-    + "\ncode: " + (err ? err.code : "?")
-    + "\nmessage: " + (err ? err.message : "?"),
+      : "Location unavailable. Please enable geolocation and try again.",
     { title: "Plutoo", confirmText: "OK" }
   );
 },
