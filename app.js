@@ -11557,7 +11557,7 @@ function fetchOverpass(cat, lat, lon) {
         debugMsg,
         { title: "Plutoo", confirmText: "OK" }
       );
-    }),
+    })
     
     .finally(function() {
       hidePlutooBlockingLoader();
