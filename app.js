@@ -4099,6 +4099,11 @@ btnDogBoardBack?.addEventListener("click", () => {
   setActiveView(prev);
 });
 
+const btnPetPlacesBack = document.getElementById("btnPetPlacesBack");
+btnPetPlacesBack?.addEventListener("click", () => {
+  setActiveView("nearby");
+});
+
     function goBack(){
     // Se è aperta la lightbox della galleria profilo, chiudila
     const lb = document.querySelector(".lightbox");
