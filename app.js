@@ -4131,6 +4131,18 @@ btnDogBoardBack?.addEventListener("click", () => {
       return;
     }
 
+    if (state.currentView === "messages"){
+      const prev = state.previousViewForMessages || "nearby";
+      setActiveView(prev === "profile" ? "nearby" : prev);
+      return;
+    }
+
+    if (state.currentView === "dogboard"){
+      const prev = state.previousViewForMessages || "nearby";
+      setActiveView(prev === "profile" ? "nearby" : prev);
+      return;
+    }
+
     if (state.currentView === "love" || state.currentView === "friendship"){
       setActiveView("nearby");
       return;
