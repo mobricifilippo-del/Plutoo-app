@@ -11504,8 +11504,23 @@ function fetchOverpass(cat, lat, lon) {
     .then(function(data) {
       if (!data || !Array.isArray(data.elements)) throw new Error("overpass_parse");
 
-      var places = data.elements
-        .map(function(el) {
+      var catLabelMap = {
+  vets:     state.lang === "it" ? "Veterinari nelle vicinanze"         : "Veterinarians nearby",
+  groomers: state.lang === "it" ? "Toelettature nelle vicinanze"       : "Pet groomers nearby",
+  shops:    state.lang === "it" ? "Negozi per animali nelle vicinanze" : "Pet shops nearby",
+  trainers: state.lang === "it" ? "Addestratori cani nelle vicinanze"  : "Dog trainers nearby",
+  kennels:  state.lang === "it" ? "Pensioni per cani nelle vicinanze"  : "Dog boarding nearby",
+  parks:    state.lang === "it" ? "Parchi nelle vicinanze"             : "Parks nearby"
+};
+
+var categoryLabel = catLabelMap[cat] ||
+  (state.lang === "it"
+    ? "Servizi animali nelle vicinanze"
+    : "Pet services nearby");
+
+var places = data.elements
+  .map(function(el) {
+          
           var elLat = (el.lat !== undefined) ? el.lat : (el.center ? el.center.lat : null);
           var elLon = (el.lon !== undefined) ? el.lon : (el.center ? el.center.lon : null);
           if (elLat === null || elLon === null) return null;
