@@ -11605,7 +11605,12 @@ function renderPetPlacesCards(places) {
     }
 
     card.addEventListener("click", function() {
-      openMapsQuery(place.categoryLabel);
+      var url = "https://www.google.com/maps/dir/?api=1&destination=" + place.lat + "," + place.lon + "&travelmode=driving";
+      if (window.AndroidBridge && typeof window.AndroidBridge.openUrl === "function") {
+        window.AndroidBridge.openUrl(url);
+      } else {
+        window.location.href = url;
+      }
     });
 
     listEl.appendChild(card);
