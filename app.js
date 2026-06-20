@@ -7596,6 +7596,65 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
   });
 }
 
+  // ✅ AUTOCOMPLETE RAZZE — Crea profilo DOG
+if (isCreate) {
+  const _cbInp  = document.getElementById("createDogBreed");
+  const _cbList = document.getElementById("createDogBreedsList");
+
+  if (_cbInp && _cbList) {
+    const _ALIAS = state.lang === "it"
+      ? { "meticcio":    { label: "Meticcio",   canonical: "Mixed Breed" },
+          "razza mista": { label: "Razza mista", canonical: "Mixed Breed" } }
+      : { "mix breed":   { label: "Mix Breed",   canonical: "Mixed Breed" },
+          "mixed breed": { label: "Mixed Breed", canonical: "Mixed Breed" } };
+
+    _cbInp.addEventListener("input", () => {
+      const raw = (_cbInp.value || "").trim();
+      const v   = raw.toLowerCase();
+
+      _cbList.innerHTML = "";
+      _cbList.style.display = "none";
+      _cbInp.dataset.canonical = "";
+
+      if (!v) return;
+
+      const aliasHit = _ALIAS[v] || null;
+      const query    = ((aliasHit ? aliasHit.canonical : raw) || "").toLowerCase();
+
+      let matches = state.breeds
+        .filter(b => (b || "").toLowerCase().startsWith(query))
+        .slice(0, 16);
+
+      if (aliasHit) matches = [aliasHit.canonical];
+      if (!matches.length) return;
+
+      _cbList.innerHTML = matches.map(b => {
+        const label = aliasHit ? aliasHit.label : b;
+        return `<div class="item" data-label="${label}" data-canonical="${b}" style="padding:8px 12px;cursor:pointer;">${label}</div>`;
+      }).join("");
+
+      _cbList.style.display = "block";
+
+      _cbList.querySelectorAll(".item").forEach(it => {
+        it.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          _cbInp.value = it.getAttribute("data-label") || it.textContent;
+          _cbInp.dataset.canonical = it.getAttribute("data-canonical") || it.textContent;
+          _cbList.style.display = "none";
+          _cbInp.blur();
+        });
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (e.target !== _cbInp && !_cbList.contains(e.target)) {
+        _cbList.style.display = "none";
+      }
+    });
+  }
+}
+
   // ✅ PROFILO DOG REALE — PUBLISH MODE (Firestore source of truth)
   // Questo blocco NON deve MAI bloccare chat/like/follow quando l'utente è loggato senza DOG.
   // In modalità "solo mail" restano cliccabili i profili demo: si blocca SOLO upload (gestito altrove).
