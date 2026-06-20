@@ -3991,7 +3991,7 @@ try {
   }
 } catch (e) {}
 
-  [viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), profilePage].forEach(v => {
+  [viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), document.getElementById("viewPetPlaces"), profilePage].forEach(v => {
     if (!v) return;
     v.classList.remove("active");
     v.classList.add("hidden");
