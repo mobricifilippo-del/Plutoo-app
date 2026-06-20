@@ -9755,7 +9755,9 @@ storageRef.delete()
   }
 
   profilePage.classList.add("hidden");
+
   const previousView = state.viewHistory.pop() || "nearby";
+  state._skipHistoryPush = true;
   setActiveView(previousView);
   state.currentDogProfile = null;
 };
