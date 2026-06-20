@@ -3960,10 +3960,7 @@ function setActiveView(name){
   }
 
   localStorage.setItem("currentView", name);
-
-  if (state._skipHistoryPush === true) {
-    state._skipHistoryPush = false;
-  } else if (state.currentView !== name && state.currentView){
+  if (state.currentView !== name && state.currentView){
     state.viewHistory.push(state.currentView);
   }
 
