@@ -11476,13 +11476,13 @@ showPlutooBlockingLoader(
 function fetchOverpass(cat, lat, lon) {
   
   const tagMap = {
-  vets:     ["amenity=veterinary", "healthcare=veterinary"],
-  groomers: ["shop=pet_grooming"],
-  shops:    ["shop=pet"],
-  trainers: ["amenity=dog_training"],
-  kennels:  ["amenity=animal_boarding"],
-  parks:    ["leisure=park"]
-};
+    vets:     ["amenity=veterinary", "healthcare=veterinary"],
+    groomers: ["shop=pet_grooming", "shop=grooming", "amenity=grooming"],
+    shops:    ["shop=pet"],
+    trainers: ["leisure=dog_park", "sport=dog_agility"],
+    kennels:  ["amenity=kennels", "amenity=animal_boarding"],
+    parks:    ["leisure=park", "leisure=dog_park"]
+  };
 
 const tags = tagMap[cat] || ["amenity=veterinary"];
 
