@@ -7397,6 +7397,20 @@ if (btnSaveDogDraft0 && isCreate) {
       return;
     }
 
+    // ✅ BLOCCO GEO OBBLIGATORIO
+if (!state.geo || typeof state.geo.lat !== "number" || typeof state.geo.lon !== "number") {
+  await showPlutooAlert(
+    state.lang === "it"
+      ? "Senza geolocalizzazione non puoi creare il profilo DOG.\nTocca il campo Zona per rilevare la tua posizione."
+      : "Without geolocation you cannot create your DOG profile.\nTap the Zone field to detect your position.",
+    { title: "Plutoo", confirmText: "OK" }
+  );
+  return;
+}
+
+const dogLat = state.geo.lat;
+const dogLon = state.geo.lon;
+
     // =========================
     // ✅ FIREBASE (PRODUCTION): Storage + Firestore (source of truth)
     // =========================
