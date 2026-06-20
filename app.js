@@ -11451,6 +11451,83 @@ function openPetPlacesView(cat) {
   }
 }
 
+function fetchOverpass(cat, lat, lon) {
+  const tagMap = {
+    vets:     "amenity=veterinary",
+    groomers: "shop=pet_grooming",
+    shops:    "shop=pet",
+    trainers: "amenity=dog_training",
+    kennels:  "amenity=animal_boarding",
+    parks:    "leisure=park"
+  };
+
+  const tag   = tagMap[cat] || "amenity=veterinary";
+  const query =
+    "[out:json][timeout:10];" +
+    "(" +
+      "node[" + tag + "](around:5000," + lat + "," + lon + ");" +
+      "way["  + tag + "](around:5000," + lat + "," + lon + ");" +
+    ");" +
+    "out center 20;";
+
+  fetch("https://overpass-api.de/api/interpreter", {
+    method:  "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body:    "data=" + encodeURIComponent(query)
+  })
+    .then(function(r) {
+      if (!r.ok) throw new Error("overpass_http");
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data || !Array.isArray(data.elements)) throw new Error("overpass_parse");
+
+      var places = data.elements
+        .map(function(el) {
+          var elLat = (el.lat !== undefined) ? el.lat : (el.center ? el.center.lat : null);
+          var elLon = (el.lon !== undefined) ? el.lon : (el.center ? el.center.lon : null);
+          if (elLat === null || elLon === null) return null;
+
+          var tags    = el.tags || {};
+          var dLat    = (elLat - lat) * Math.PI / 180;
+          var dLon    = (elLon - lon) * Math.PI / 180;
+          var a       = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(lat * Math.PI / 180) * Math.cos(elLat * Math.PI / 180) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          var km      = 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          var street  = tags["addr:street"]      || "";
+          var number  = tags["addr:housenumber"] || "";
+          var address = [street, number].filter(Boolean).join(" ");
+
+          return {
+            name:    tags.name || (state.lang === "it" ? "Luogo senza nome" : "Unnamed place"),
+            km:      km,
+            address: address,
+            lat:     elLat,
+            lon:     elLon
+          };
+        })
+        .filter(Boolean)
+        .sort(function(a, b) { return a.km - b.km; })
+        .slice(0, 10);
+
+      if (typeof renderPetPlacesCards === "function") {
+        renderPetPlacesCards(places);
+      }
+    })
+    .catch(function() {
+      showPlutooAlert(
+        state.lang === "it"
+          ? "Errore durante la ricerca. Controlla la connessione e riprova."
+          : "Search error. Check your connection and try again.",
+        { title: "Plutoo", confirmText: "OK" }
+      );
+    })
+    .finally(function() {
+      hidePlutooBlockingLoader();
+    });
+}
+
   // ============ Ads mock ============
   function showAdBanner(){
   if (!adBanner) return;
