@@ -11443,14 +11443,19 @@ function openPetPlacesView(cat) {
         state.geo = { lat: p.coords.latitude, lon: p.coords.longitude };
         openPetPlacesView(cat);
       },
-      function() {
-        showPlutooAlert(
-          state.lang === "it"
-            ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
-            : "Location unavailable. Please enable geolocation and try again.",
-          { title: "Plutoo", confirmText: "OK" }
-        );
-      },
+      
+      function(err) {
+  showPlutooAlert(
+    (state.lang === "it"
+      ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
+      : "Location unavailable. Please enable geolocation and try again.")
+    + "\n\nDEBUG ANDROID GEO"
+    + "\ncode: " + (err ? err.code : "?")
+    + "\nmessage: " + (err ? err.message : "?"),
+    { title: "Plutoo", confirmText: "OK" }
+  );
+},
+      
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
 
