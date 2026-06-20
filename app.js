@@ -11537,11 +11537,12 @@ var places = data.elements
           var address = [street, number].filter(Boolean).join(" ");
 
           return {
-            name:    tags.name || (state.lang === "it" ? "Luogo senza nome" : "Unnamed place"),
-            km:      km,
-            address: address,
-            lat:     elLat,
-            lon:     elLon
+            name:          tags.name || (state.lang === "it" ? "Luogo senza nome" : "Unnamed place"),
+            km:            km,
+            address:       address,
+            lat:           elLat,
+            lon:           elLon,
+            categoryLabel: categoryLabel
           };
         })
         .filter(Boolean)
@@ -11604,9 +11605,7 @@ function renderPetPlacesCards(places) {
     }
 
     card.addEventListener("click", function() {
-      openMapsQuery(
-        "geo:" + place.lat + "," + place.lon + "?q=" + encodeURIComponent(place.name)
-      );
+      openMapsQuery(place.categoryLabel);
     });
 
     listEl.appendChild(card);
