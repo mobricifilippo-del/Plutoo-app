@@ -7687,158 +7687,164 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
 
     if (pubBtn) {
       pubBtn.onclick = () => {
-      if (!isGalleryOwner) return;
-if   (!pendingFiles.length) return;
+        if (!isGalleryOwner) return;
+        if (!pendingFiles.length) return;
         if (state.rewardOpen) return;
 
-        state.rewardOpen = true;
+        function doUpload() {
+          const c = document.getElementById("plutooGalleryPendingCount");
 
-        showRewardVideoMock("gallery", () => {
-          state.rewardOpen = false;
+          if (!window.db || !window.storage) {
+            if (c) c.textContent = state.lang === "it" ? " — Errore Firebase" : " — Firebase error";
+            return;
+          }
 
-        const c = document.getElementById("plutooGalleryPendingCount");
+          if (c) c.textContent = state.lang === "it" ? " — Caricamento in corso..." : " — Uploading...";
 
-        if (!window.db || !window.storage) {
-          if (c) c.textContent = state.lang === "it" ? " — Errore Firebase" : " — Firebase error";
-          return;
+          const dogRef = window.db.collection("dogs").doc(String(dogId));
+
+          dogRef.get()
+            .then((dogSnap) => {
+              const data = (dogSnap && dogSnap.exists) ? (dogSnap.data() || {}) : {};
+              const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
+
+              const remaining = maxPhotos - currentGallery.length;
+              const toAdd = pendingFiles.slice(0, remaining);
+
+              if (!toAdd.length) {
+                pendingFiles = [];
+                if (c) c.textContent = "";
+                publishBar.style.display = "none";
+                return;
+              }
+
+              const stamp = Date.now();
+
+              const uploads = toAdd.map((file, index) => {
+                const ext = (file.type && file.type.includes("png")) ? "png" : "jpg";
+                const fileName = "gallery_" + stamp + "_" + index + "." + ext;
+                const storagePath = `dogs/${dogId}/gallery/${fileName}`;
+                const storageRef = window.storage.ref().child(storagePath);
+
+                const optimizeImage = (file) => new Promise((resolve) => {
+                  const img = new Image();
+                  const url = URL.createObjectURL(file);
+
+                  img.onload = () => {
+                    const maxSide = 1280;
+                    let w = img.width;
+                    let h = img.height;
+
+                    if (w > h && w > maxSide) {
+                      h = Math.round(h * maxSide / w);
+                      w = maxSide;
+                    } else if (h > maxSide) {
+                      w = Math.round(w * maxSide / h);
+                      h = maxSide;
+                    }
+
+                    const canvas = document.createElement("canvas");
+                    canvas.width = w;
+                    canvas.height = h;
+
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    canvas.toBlob((blob) => {
+                      URL.revokeObjectURL(url);
+                      resolve(blob || file);
+                    }, "image/jpeg", 0.82);
+                  };
+
+                  img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    resolve(file);
+                  };
+
+                  img.src = url;
+                });
+
+                return optimizeImage(file)
+                  .then((optimizedFile) => storageRef.put(optimizedFile, { contentType: "image/jpeg" }))
+                  .then(() => storageRef.getDownloadURL())
+                  .then((downloadUrl) => ({
+                    index: index,
+                    item: {
+                      url: downloadUrl,
+                      storagePath: storagePath,
+                      createdAt: new Date().toISOString()
+                    }
+                  }))
+                  .catch(() => null);
+              });
+
+              Promise.all(uploads)
+                .then((results) => {
+                  const newItems = results
+                    .filter(x => x && x.item)
+                    .sort((a, b) => a.index - b.index)
+                    .map(x => x.item);
+
+                  if (!newItems.length) {
+                    pendingFiles = [];
+                    if (c) c.textContent = state.lang === "it" ? " — Errore caricamento" : " — Upload error";
+                    publishBar.style.display = "none";
+                    return;
+                  }
+
+                  const nextGallery = currentGallery.concat(newItems).slice(0, maxPhotos);
+
+                  dogRef.set({ gallery: nextGallery }, { merge: true })
+                    .then(() => {
+                      images = nextGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
+
+                      pendingFiles = [];
+                      showToast(
+                        state.lang === "it"
+                          ? (newItems.length === 1 ? "✅ Immagine caricata" : "✅ Immagini caricate")
+                          : (newItems.length === 1 ? "✅ Image uploaded" : "✅ Images uploaded")
+                      );
+
+                      setTimeout(() => {
+                        if (c) c.textContent = "";
+                        publishBar.style.display = "none";
+                      }, 700);
+
+                      renderGallery();
+                    })
+                    .catch(() => {
+                      if (window.storage && newItems.length) {
+                        Promise.all(newItems.map(item =>
+                          window.storage.ref().child(item.storagePath).delete().catch(() => {})
+                        ));
+                      }
+
+                      pendingFiles = [];
+                      if (c) c.textContent = state.lang === "it" ? " — Errore salvataggio" : " — Save error";
+                      publishBar.style.display = "none";
+                    });
+                });
+            })
+            .catch(() => {
+              pendingFiles = [];
+              const c = document.getElementById("plutooGalleryPendingCount");
+              if (c) c.textContent = state.lang === "it" ? " — Errore lettura profilo" : " — Profile read error";
+              publishBar.style.display = "none";
+            });
         }
 
-        if (c) c.textContent = state.lang === "it" ? " — Caricamento in corso..." : " — Uploading...";
-
-        const dogRef = window.db.collection("dogs").doc(String(dogId));
-
-        dogRef.get()
-          .then((dogSnap) => {
-            const data = (dogSnap && dogSnap.exists) ? (dogSnap.data() || {}) : {};
-            const currentGallery = Array.isArray(data.gallery) ? data.gallery : [];
-
-            const remaining = maxPhotos - currentGallery.length;
-            const toAdd = pendingFiles.slice(0, remaining);
-
-            if (!toAdd.length) {
-              pendingFiles = [];
-              if (c) c.textContent = "";
-              publishBar.style.display = "none";
-              return;
-            }
-
-            const stamp = Date.now();
-
-            const uploads = toAdd.map((file, index) => {
-  const ext = (file.type && file.type.includes("png")) ? "png" : "jpg";
-  const fileName = "gallery_" + stamp + "_" + index + "." + ext;
-  const storagePath = `dogs/${dogId}/gallery/${fileName}`;
-  const storageRef = window.storage.ref().child(storagePath);
-
-  const optimizeImage = (file) => new Promise((resolve) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-
-    img.onload = () => {
-      const maxSide = 1280;
-      let w = img.width;
-      let h = img.height;
-
-      if (w > h && w > maxSide) {
-        h = Math.round(h * maxSide / w);
-        w = maxSide;
-      } else if (h > maxSide) {
-        w = Math.round(w * maxSide / h);
-        h = maxSide;
-      }
-
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, w, h);
-
-      canvas.toBlob((blob) => {
-        URL.revokeObjectURL(url);
-        resolve(blob || file);
-      }, "image/jpeg", 0.82);
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(file);
-    };
-
-    img.src = url;
-  });
-
-  return optimizeImage(file)
-    .then((optimizedFile) => storageRef.put(optimizedFile, { contentType: "image/jpeg" }))
-    .then(() => storageRef.getDownloadURL())
-    .then((downloadUrl) => ({
-      index: index,
-      item: {
-        url: downloadUrl,
-        storagePath: storagePath,
-        createdAt: new Date().toISOString()
-      }
-    }))
-    .catch(() => null);
-});
-
-            Promise.all(uploads)
-              .then((results) => {
-                const newItems = results
-                  .filter(x => x && x.item)
-                  .sort((a, b) => a.index - b.index)
-                  .map(x => x.item);
-
-                if (!newItems.length) {
-                  pendingFiles = [];
-                  if (c) c.textContent = state.lang === "it" ? " — Errore caricamento" : " — Upload error";
-                  publishBar.style.display = "none";
-                  return;
-                }
-
-                const nextGallery = currentGallery.concat(newItems).slice(0, maxPhotos);
-
-                dogRef.set({ gallery: nextGallery }, { merge: true })
-                  .then(() => {
-                    images = nextGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
-
-                    pendingFiles = [];
-                 showToast(
-                 state.lang === "it"
-                 ? (newItems.length === 1 ? "✅ Immagine caricata" : "✅ Immagini caricate")
-                 : (newItems.length === 1 ? "✅ Image uploaded" : "✅ Images uploaded")
-);
-
-                    setTimeout(() => {
-                      if (c) c.textContent = "";
-                      publishBar.style.display = "none";
-                    }, 700);
-
-                    renderGallery();
-                  })
-
-                .catch(() => {
-  if (window.storage && newItems.length) {
-    Promise.all(newItems.map(item =>
-      window.storage.ref().child(item.storagePath).delete().catch(() => {})
-    ));
-  }
-
-  pendingFiles = [];
-  if (c) c.textContent = state.lang === "it" ? " — Errore salvataggio" : " — Save error";
-  publishBar.style.display = "none";
-});
-                
-  });
-          })
-          .catch(() => {
-            pendingFiles = [];
-            if (c) c.textContent = state.lang === "it" ? " — Errore lettura profilo" : " — Profile read error";
-            publishBar.style.display = "none";
+        if (state.plus) {
+          doUpload();
+        } else {
+          state.rewardOpen = true;
+          showRewardVideoMock("gallery", () => {
+            state.rewardOpen = false;
+            doUpload();
           });
-      });
+        }
       };
     }
+    
   };
 
   const showPublishBar = () => {
