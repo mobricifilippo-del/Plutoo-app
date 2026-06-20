@@ -2460,7 +2460,7 @@ padding:24px;
   min-height: 0;
   padding-top: 0 !important;
   margin-top: 0 !important;
-  background: #0d021a !important;
+  background: #000000 !important;
   overflow: hidden;
 }
 
@@ -2469,7 +2469,7 @@ padding:24px;
   flex-direction:column;
   padding-top:0 !important;
   margin-top:0 !important;
-  background:#0d021a !important;
+  background: #000000 !important;
 }
 
 /* barra messaggi ATTACCATA in alto */
@@ -2483,7 +2483,7 @@ padding:24px;
   gap: 16px;
   padding: 12px 20px;
   min-height: 76px;
-  background: #0d021a;
+  background:#000000;
   border-bottom: 2px solid rgba(177, 154, 255, 0.3);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   flex-shrink: 0;
