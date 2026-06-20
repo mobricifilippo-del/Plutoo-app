@@ -4053,9 +4053,17 @@ try {
     viewMessages.classList.remove("hidden");
     viewMessages.classList.add("active");
   }
-  }
+}
 
-  document.documentElement.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
+if (name === "petplaces") {
+  const el = document.getElementById("viewPetPlaces");
+  if (el) {
+    el.classList.remove("hidden");
+    el.classList.add("active");
+  }
+}
+
+document.documentElement.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
 document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
 
 if (appScreen) {
