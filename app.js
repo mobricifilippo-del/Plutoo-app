@@ -11373,7 +11373,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
   // ============ Maps / servizi ============
   function openMapsCategory(cat){
-  const rewardCats = ["vets","groomers","shops","trainers","kennels"];
+  const rewardCats = ["vets","groomers","shops","trainers","kennels","parks"];
 
   if (!state.plus && rewardCats.includes(cat)){
     if (state.rewardOpen) {
