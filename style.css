@@ -3840,3 +3840,66 @@ display: none !important;
   line-height:1;
   box-shadow:0 0 14px rgba(205,164,52,.12);
 }
+
+/* ================= LUOGHI PET INTERNI ================= */
+
+#viewPetPlaces {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  background: #000000 !important;
+  overflow: hidden;
+}
+
+#viewPetPlaces.active {
+  display: flex;
+}
+
+#petPlacesList {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.pet-place-card {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #000000;
+  border: 1px solid rgba(177, 154, 255, 0.18);
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, transform .15s ease;
+}
+
+.pet-place-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(205, 164, 52, 0.38);
+}
+
+.pet-place-card:active {
+  transform: scale(0.99);
+}
+
+.pet-place-card__name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.pet-place-card__distance {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #CDA434;
+}
+
+.pet-place-card__address {
+  font-size: .82rem;
+  color: rgba(255, 255, 255, 0.52);
+}
