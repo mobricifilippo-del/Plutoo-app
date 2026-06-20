@@ -7494,6 +7494,8 @@ const newDogId = dogRef.id;
         sex: sex,
         bio: bio || "",
         zone: zone || "",
+        lat: dogLat,
+        lon: dogLon,
         km: 0,
         verified: false,
         photoUrl: photoUrl,
