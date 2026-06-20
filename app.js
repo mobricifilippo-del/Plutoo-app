@@ -3965,7 +3965,9 @@ function setActiveView(name){
   }
 
   if ((name === "messages" || name === "dogboard") && state.currentView !== name){
-    state.previousViewForMessages = state.currentView || "nearby";
+  state.previousViewForMessages = state.currentView === "profile"
+    ? (state.previousViewForMessages || "nearby")
+    : (state.currentView || "nearby");
   }
 
   state.currentView = name;
