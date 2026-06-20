@@ -11535,26 +11535,11 @@ function fetchOverpass(cat, lat, lon) {
         renderPetPlacesCards(places);
       }
     })
-    .catch(
-      
-      function(err) {
-      const isAndroid =
-        navigator.userAgent.includes("Android") ||
-        (window.AndroidBridge && typeof window.AndroidBridge.openUrl === "function");
-
-      const baseMsg = state.lang === "it"
-        ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
-        : "Location unavailable. Please enable geolocation and try again.";
-
-      const debugMsg = isAndroid
-        ? baseMsg +
-          "\n\nDEBUG ANDROID GEO" +
-          "\ncode: " + (err ? err.code : "?") +
-          "\nmessage: " + (err ? err.message : "?")
-        : baseMsg;
-
+    .catch(function() {
       showPlutooAlert(
-        debugMsg,
+        state.lang === "it"
+          ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
+          : "Location unavailable. Please enable geolocation and try again.",
         { title: "Plutoo", confirmText: "OK" }
       );
     })
