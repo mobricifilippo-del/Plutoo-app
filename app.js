@@ -11424,6 +11424,33 @@ btnPublishDogBoard?.addEventListener("click", () => {
   }
   }
 
+// ============ Luoghi PET interni ============
+
+function openPetPlacesView(cat) {
+  if (!state.geo) {
+    showPlutooAlert(
+      state.lang === "it"
+        ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
+        : "Location unavailable. Please enable geolocation and try again.",
+      { title: "Plutoo", confirmText: "OK" }
+    );
+    return;
+  }
+
+  const titleEl = document.getElementById("petPlacesTitle");
+  if (titleEl) titleEl.textContent = t("pet_place_" + cat);
+
+  showPlutooBlockingLoader(
+    state.lang === "it" ? "Ricerca in corso..." : "Searching..."
+  );
+
+  if (typeof fetchOverpass === "function") {
+    fetchOverpass(cat, state.geo.lat, state.geo.lon);
+  } else {
+    hidePlutooBlockingLoader();
+  }
+}
+
   // ============ Ads mock ============
   function showAdBanner(){
   if (!adBanner) return;
