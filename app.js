@@ -11458,9 +11458,11 @@ function openPetPlacesView(cat) {
   }
 
   const titleEl = document.getElementById("petPlacesTitle");
-  if (titleEl) titleEl.textContent = t("pet_place_" + cat);
+if (titleEl) titleEl.textContent = t("pet_place_" + cat);
 
-  showPlutooBlockingLoader(
+setActiveView("petplaces");
+
+showPlutooBlockingLoader(
     state.lang === "it" ? "Ricerca in corso..." : "Searching..."
   );
 
