@@ -4156,6 +4156,11 @@ btnPetPlacesBack?.addEventListener("click", () => {
       return;
     }
 
+      if (state.currentView === "petplaces"){
+  setActiveView("nearby");
+  return;
+      }
+
     if (state.currentView === "love" || state.currentView === "friendship"){
       setActiveView("nearby");
       return;
