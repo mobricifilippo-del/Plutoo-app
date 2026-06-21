@@ -11910,8 +11910,33 @@ size: String(data.size || ""),
       
       }
 
-      state.dogs = realDogs;
-      localStorage.setItem("dogs", JSON.stringify(realDogs));
+      // Calcolo km reale e filtro 100 km client-side
+const _uLat = (typeof window.PLUTOO_USER_LAT === "number") ? window.PLUTOO_USER_LAT : null;
+const _uLon = (typeof window.PLUTOO_USER_LON === "number") ? window.PLUTOO_USER_LON : null;
+
+if (_uLat !== null && _uLon !== null) {
+  function _hav(lat1, lon1, lat2, lon2) {
+    const R = 6371, toR = Math.PI / 180;
+    const dLat = (lat2 - lat1) * toR, dLon = (lon2 - lon1) * toR;
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(lat1*toR) * Math.cos(lat2*toR) * Math.sin(dLon/2)**2;
+    return parseFloat((R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1));
+  }
+
+  realDogs.forEach(d => {
+    if (typeof d.lat === "number" && typeof d.lon === "number") {
+      d.km = _hav(_uLat, _uLon, d.lat, d.lon);
+    }
+  });
+
+  state.dogs = realDogs.filter(d =>
+    typeof d.lat === "number" && typeof d.lon === "number" && d.km <= 100
+  );
+} else {
+  state.dogs = realDogs;
+}
+
+localStorage.setItem("dogs", JSON.stringify(state.dogs));
 
       if (state.entered && typeof renderNearby === "function") {
   renderNearby();
