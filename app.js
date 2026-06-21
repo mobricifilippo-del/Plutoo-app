@@ -7180,7 +7180,6 @@ if (createDogZoneInput && isCreate) {
 
   createDogZoneInput.addEventListener("click", () => {
 
-    if (!createDogZoneInput.readOnly) return;
     if (_geoRunning) return;
     _geoRunning = true;
 
