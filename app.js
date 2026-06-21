@@ -11898,8 +11898,11 @@ availability: {
 breeding: data.availability && typeof data.availability === "object"
   ? data.availability.breeding === true
   : data.breeding === true,
-size: String(data.size || "")
+size: String(data.size || ""),
+    lat: typeof data.lat === "number" ? data.lat : null,
+    lon: typeof data.lon === "number" ? data.lon : null
   });
+      
       }
 
       state.dogs = realDogs;
