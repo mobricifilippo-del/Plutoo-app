@@ -11856,12 +11856,26 @@ for (const doc of snap.docs) {
 
   const ownerUid = String(data.ownerUid || "");
 
-  const dogPlus =
-  data.plus === true &&
-  data.plusStatus === "active";
+  let dogPlus = false;
+let dogPlusStatus = "";
 
-const dogPlusStatus =
-  String(data.plusStatus || "");
+try {
+  if (ownerUid && window.db) {
+    const userSnap = await window.db.collection("users").doc(ownerUid).get();
+    const userData = userSnap && userSnap.exists
+      ? (userSnap.data() || {})
+      : {};
+
+    dogPlus =
+      userData.plus === true &&
+      userData.plusStatus === "active";
+
+    dogPlusStatus = String(userData.plusStatus || "");
+  }
+} catch (_) {
+  dogPlus = false;
+  dogPlusStatus = "";
+}
 
   realDogs.push({
     id: doc.id,
