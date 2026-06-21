@@ -2751,7 +2751,12 @@ window.onPlusPurchased = async function(planId) {
 
     await ref.set(payload, { merge: true });
 
-    state.plus = true;
+await window.db.collection("dogs").doc(String(uid)).set({
+  plus: true,
+  plusStatus: "active"
+}, { merge: true });
+
+state.plus = true;
     state.plusPlan = resolvedPlan;
     localStorage.setItem("plutoo_plus", "yes");
 
