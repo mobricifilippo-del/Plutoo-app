@@ -537,11 +537,9 @@ flash.classList.add("active");
 
 const targetView = state.currentView || "nearby";
 
-setTimeout(function _enterWait() {
+setTimeout(() => {
 
-if (!window.__initDone) { setTimeout(_enterWait, 80); return; }
-
-appScreen?.classList.remove("hidden");  
+appScreen?.classList.remove("hidden"); 
 document.body.classList.remove("story-open");  
 
 if (typeof initStories === "function") {  
