@@ -1053,6 +1053,11 @@ dogDocsPublic: (data.dogDocsPublic && typeof data.dogDocsPublic === "object")
   : {},
 selfieUrl: String(data.selfieUrl || "")
   });
+  // Esponi posizione utente per calcolo distanza
+  if (typeof data.lat === "number" && typeof data.lon === "number") {
+    window.PLUTOO_USER_LAT = data.lat;
+    window.PLUTOO_USER_LON = data.lon;
+  }
  }
   
   localStorage.setItem("dogs", JSON.stringify(state.dogs));
