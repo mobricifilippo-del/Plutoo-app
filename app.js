@@ -7353,16 +7353,20 @@ if (createDogZoneInput && isCreate) {
       },
 
       err => {
-        if (geoDone) return;
-        geoDone = true;
+  if (geoDone) return;
+  geoDone = true;
 
-        if (geoWatchId !== null) {
-          navigator.geolocation.clearWatch(geoWatchId);
-        }
+  if (geoWatchId !== null) {
+    navigator.geolocation.clearWatch(geoWatchId);
+  }
 
-        // FASE 4 — ERRORE GPS
-        enableManualFallback();
-      },
+  // FASE 4 — ERRORE GPS
+  if (err && err.code === 1) {
+    enableManualFallback(true);
+  } else {
+    enableManualFallback(false);
+  }
+},
 
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
     );
