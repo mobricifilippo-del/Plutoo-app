@@ -748,15 +748,26 @@ let plusStatus = "";
 
 try {
   if (ownerUid && window.db) {
-    const userSnap = await window.db.collection("users").doc(ownerUid).get();
-    const userData = userSnap && userSnap.exists ? (userSnap.data() || {}) : {};
 
-    plus = userData.plus === true;
-    plusStatus = String(userData.plusStatus || "");
+    if (!_usersCache[ownerUid]) {
+      const userSnap = await window.db.collection("users").doc(ownerUid).get();
+      _usersCache[ownerUid] =
+        userSnap && userSnap.exists
+          ? (userSnap.data() || {})
+          : {};
+    }
+
+    const userData = _usersCache[ownerUid];
+
+    dogPlus =
+      userData.plus === true &&
+      userData.plusStatus === "active";
+
+    dogPlusStatus = String(userData.plusStatus || "");
   }
 } catch (_) {
-  plus = false;
-  plusStatus = "";
+  dogPlus = false;
+  dogPlusStatus = "";
 }
 
         myDog = {
