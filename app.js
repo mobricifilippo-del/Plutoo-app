@@ -7269,14 +7269,15 @@ if (createDogZoneInput && isCreate) {
     }
 
     function enableManualFallback() {
-      closeGeoModal();
-      createDogZoneInput.value = "";
-      createDogZoneInput.readOnly = false;
-      createDogZoneInput.removeAttribute("inputmode");
-      createDogZoneInput.placeholder =
-        state.lang === "it" ? "Inserisci zona manualmente" : "Enter area manually";
-      createDogZoneInput.focus();
+  closeGeoModal();
+  showPlutooAlert(
+    state.lang === "it"
+      ? "Senza geolocalizzazione non puoi creare il profilo DOG.\nTocca di nuovo il campo Zona per riprovare."
+      : "Without geolocation you cannot create your DOG profile.\nTap the Zone field again to retry.",
+    { title: "Plutoo", confirmText: "OK" }
+  );
     }
+    
     // ── FINE MODALE GEO ───────────────────────────────────────────
 
     if (!navigator.geolocation) {
