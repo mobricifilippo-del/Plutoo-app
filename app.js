@@ -11830,8 +11830,9 @@ try {
   if (window.db) {
     const snap = await window.db.collection("dogs").get();
       const realDogs = [];
+const _usersCache = {};
 
-    for (const doc of snap.docs) {
+for (const doc of snap.docs) {
   const data = doc.data() || {};
 
   if (data.deleted === true || data.publicVisible === false) continue;
