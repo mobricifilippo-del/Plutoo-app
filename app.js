@@ -759,15 +759,15 @@ try {
 
     const userData = _usersCache[ownerUid];
 
-    dogPlus =
-      userData.plus === true &&
-      userData.plusStatus === "active";
+    plus =
+  userData.plus === true &&
+  userData.plusStatus === "active";
 
-    dogPlusStatus = String(userData.plusStatus || "");
+plusStatus = String(userData.plusStatus || "");
   }
 } catch (_) {
-  dogPlus = false;
-  dogPlusStatus = "";
+  plus = false;
+plusStatus = "";
 }
 
         myDog = {
