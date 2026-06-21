@@ -11826,9 +11826,28 @@ async function init(){
     if (sizeFilter) sizeFilter.value = state.filters.size;
   }
 
-  try {
-    if (window.db) {
-      const snap = await window.db.collection("dogs").get();
+   // Lettura posizione utente corrente prima del loop
+try {
+  const _uid = window.PLUTOO_UID ||
+    (window.auth && window.auth.currentUser ? window.auth.currentUser.uid : null);
+
+  if (_uid && window.db) {
+    const _myDoc = await window.db.collection("dogs").doc(String(_uid)).get();
+
+    if (_myDoc && _myDoc.exists) {
+      const _myData = _myDoc.data() || {};
+
+      if (typeof _myData.lat === "number" && typeof _myData.lon === "number") {
+        window.PLUTOO_USER_LAT = _myData.lat;
+        window.PLUTOO_USER_LON = _myData.lon;
+      }
+    }
+  }
+} catch (_) {}
+
+try {
+  if (window.db) {
+    const snap = await window.db.collection("dogs").get();
       const realDogs = [];
 
     for (const doc of snap.docs) {
