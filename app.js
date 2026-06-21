@@ -7285,6 +7285,17 @@ if (createDogZoneInput && isCreate) {
       return;
     }
 
+    // FASE 0 — MODALE INFORMATIVA
+    showPlutooAlert(
+      state.lang === "it"
+        ? "Per completare il profilo DOG devi consentire la geolocalizzazione.\n\nLa posizione serve per mostrare la zona e la distanza dagli altri DOG.\n\nLe coordinate precise non saranno visibili agli utenti."
+        : "To complete your DOG profile you must allow geolocation.\n\nYour position is used to show your area and distance from other DOGs.\n\nYour exact coordinates will not be visible to other users.",
+      {
+        title: state.lang === "it" ? "Posizione richiesta" : "Location required",
+        confirmText: state.lang === "it" ? "Continua" : "Continue"
+      }
+    ).then(() => {
+
     // FASE 1 — GPS
     showGeoModal(1);
 
@@ -7355,6 +7366,8 @@ if (createDogZoneInput && isCreate) {
 
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
     );
+
+    }); // chiusura .then() modale informativa
   });
 }
 
