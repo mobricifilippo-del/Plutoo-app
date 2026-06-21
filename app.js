@@ -2657,13 +2657,18 @@ activatePlus?.addEventListener("click", async ()=> {
       if (!ok) return;
 
       await ref.set({
-        plus: false,
-        plusStatus: "cancelled",
-        plusAutoRenewing: false,
-        plusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+  plus: false,
+  plusStatus: "cancelled",
+  plusAutoRenewing: false,
+  plusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+}, { merge: true });
 
-      state.plus = false;
+await window.db.collection("dogs").doc(String(uid)).set({
+  plus: false,
+  plusStatus: "cancelled"
+}, { merge: true });
+
+state.plus = false;
       localStorage.removeItem("plutoo_plus");
 
       if (typeof window.refreshCreateDogCTA === "function") {
