@@ -3971,7 +3971,7 @@ msgLists.forEach((list) => {
 function setActiveView(name){
   // ✅ GUARD: se arriva una view sconosciuta (es. "notifications"), non lasciare schermo nero
   try {
-    const allowed = { nearby:1, love:1, dogboard:1, play:1, profile:1, messages:1, petplaces:1 };
+    const allowed = { nearby:1, love:1, dogboard:1, play:1, profile:1, messages:1 };
     if (!allowed[String(name || "")]) name = "nearby";
   } catch (_) {
     name = "nearby";
