@@ -952,6 +952,7 @@ const data = (doc && doc.exists) ? (doc.data() || {}) : null;
  const hasDog = !!(data && String(data.name || "").trim().length > 0);
 const dogId = hasDog ? String(uid) : null;
 const dogName = hasDog ? String(data.name || "").trim() : "";
+const dogAvatar = hasDog ? String(data.photoUrl || data.img || "./plutoo-icon-192.png") : "./plutoo-icon-192.png";
 
 // Stato globale (runtime)
 // ✅ AUTOREVOLEZZA: solo chiamata autorevole (window.PLUTOO_UID già valorizzato) può degradare a hasDog=false.
@@ -966,6 +967,7 @@ if (isAuthoritativePresence || hasDog) {
   window.CURRENT_USER_DOG_ID = dogId || "";
   CURRENT_USER_DOG_ID = dogId || "";
   window.PLUTOO_DOG_NAME = dogName;
+  window.PLUTOO_DOG_AVATAR = dogAvatar;
 
   // ✅ VETRINA: se non hai DOG, app in sola lettura (blocca interazioni)
   window.PLUTOO_READONLY = !hasDog;
