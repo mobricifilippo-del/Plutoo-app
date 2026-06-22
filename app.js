@@ -11480,7 +11480,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
 });
 
 // ============ Maps / servizi ============
-  function openMapsCategory(cat){
+function openMapsCategory(cat){
   const rewardCats = ["vets","groomers","shops","trainers","kennels","parks"];
 
   if (!state.plus && rewardCats.includes(cat)){
@@ -11490,7 +11490,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
     state.rewardOpen = true;
 
-    showRewardVideoMock("services", ()=>{
+    showRewardVideoMock("services", () => {
       state.rewardOpen = false;
       openMapsQueryAfterReward(cat);
     });
@@ -11499,24 +11499,27 @@ btnPublishDogBoard?.addEventListener("click", () => {
   }
 
   openMapsQueryAfterReward(cat);
-  }
+}
 
-  function openMapsQueryAfterReward(cat){
-    const map = {
-      vets: state.lang==="it" ? "Veterinari nelle vicinanze" : "Veterinarians nearby",
-      groomers: state.lang==="it" ? "Toelettature nelle vicinanze" : "Pet groomers nearby",
-      shops: state.lang==="it" ? "Negozio pet nelle vicinanze" : "Pet shop nearby",
-      trainers: state.lang==="it" ? "Addestratori DOG nelle vicinanze" : "DOG trainers nearby",
-      kennels: state.lang==="it" ? "Pensioni per DOG nelle vicinanze" : "DOG boarding nearby",
-      parks: state.lang==="it" ? "Parchi nelle vicinanze" : "Parks nearby"
-    };
-    const q = map[cat] || (state.lang==="it" ? "Servizi animali nelle vicinanze" : "Pet services nearby");
-    openMapsQuery(q);
-  }
+function openMapsQueryAfterReward(cat){
+  const map = {
+    vets: state.lang === "it" ? "Veterinari nelle vicinanze" : "Veterinarians nearby",
+    groomers: state.lang === "it" ? "Toelettature nelle vicinanze" : "Pet groomers nearby",
+    shops: state.lang === "it" ? "Negozio pet nelle vicinanze" : "Pet shop nearby",
+    trainers: state.lang === "it" ? "Addestratori DOG nelle vicinanze" : "DOG trainers nearby",
+    kennels: state.lang === "it" ? "Pensioni per DOG nelle vicinanze" : "DOG boarding nearby",
+    parks: state.lang === "it" ? "Parchi nelle vicinanze" : "Parks nearby"
+  };
 
-  function openSheltersMaps(){ openMapsQuery(t("mapsShelters")); }
+  const q = map[cat] || (state.lang === "it" ? "Servizi animali nelle vicinanze" : "Pet services nearby");
+  openMapsQuery(q);
+}
 
-  function openMapsQuery(q){
+function openSheltersMaps(){
+  openMapsQuery(t("mapsShelters"));
+}
+
+function openMapsQuery(q){
   if (window.AndroidBridge && typeof window.AndroidBridge.openUrl === "function") {
     if (state.geo){
       window.AndroidBridge.openUrl(`geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`);
@@ -11530,7 +11533,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
       window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`);
     }
   }
-  }
+}
 
   // ============ Ads mock ============
   function showAdBanner(){
