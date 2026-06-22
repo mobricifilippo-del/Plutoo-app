@@ -11582,26 +11582,34 @@ function openPetPlacesView(cat) {
 
       openPetPlacesView(cat);
     },
-    function() {
-      if (geoDone) return;
-      geoDone = true;
+    
+    function(err) {
+if (geoDone) return;
+geoDone = true;
 
-      if (geoWatchId !== null) {
-        navigator.geolocation.clearWatch(geoWatchId);
-      }
-
-      showPlutooAlert(
-        state.lang === "it"
-          ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
-          : "Location unavailable. Please enable geolocation and try again.",
-        { title: "Plutoo", confirmText: "OK" }
-      );
-    },
-    { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
-  );
-
-  return;
+  if (geoWatchId !== null) {
+    navigator.geolocation.clearWatch(geoWatchId);
   }
+
+  showPlutooAlert(
+    "GEO ERROR\ncode: " + (err && err.code) + "\nmessage: " + (err && err.message),
+    { title: "Plutoo Debug", confirmText: "OK" }
+  );
+  return;
+
+  showPlutooAlert(
+    state.lang === "it"
+      ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
+      : "Location unavailable. Please enable geolocation and try again.",
+    { title: "Plutoo", confirmText: "OK" }
+  );
+},
+{ enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+
+);
+
+return;
+}
 
   const titleEl = document.getElementById("petPlacesTitle");
 if (titleEl) titleEl.textContent = t("pet_place_" + cat);
