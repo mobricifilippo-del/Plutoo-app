@@ -12939,8 +12939,13 @@ return;
       localStorage.getItem("plutoo_dog_name") ||
       "DOG";
 
-    const dogAvatar =
+    const currentDogForStory = Array.isArray(state.dogs)
+  ? state.dogs.find(d => d && String(d.id) === String(dogId))
+  : null;
+
+const dogAvatar =
   window.PLUTOO_DOG_AVATAR ||
+  (currentDogForStory && (currentDogForStory.photoUrl || currentDogForStory.img)) ||
   "plutoo-icon-192.png";
 
     const storyDoc = {
