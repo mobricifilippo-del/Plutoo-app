@@ -11697,7 +11697,16 @@ var places = data.elements
           var address = [street, number].filter(Boolean).join(" ");
 
           return {
-            name:          tags.name || (state.lang === "it" ? "Luogo senza nome" : "Unnamed place"),
+
+            name: tags.name || ({
+  vets:     state.lang === "it" ? "Veterinario nelle vicinanze" : "Veterinarian nearby",
+  groomers: state.lang === "it" ? "Toelettatura nelle vicinanze" : "Pet grooming nearby",
+  shops:    state.lang === "it" ? "Negozio pet nelle vicinanze" : "Pet shop nearby",
+  trainers: state.lang === "it" ? "Addestratore nelle vicinanze" : "Dog trainer nearby",
+  kennels:  state.lang === "it" ? "Pensione DOG nelle vicinanze" : "DOG boarding nearby",
+  parks:    state.lang === "it" ? "Parco nelle vicinanze" : "Park nearby"
+}[cat] || (state.lang === "it" ? "Servizio PET nelle vicinanze" : "Pet service nearby")),
+            
             km:            km,
             address:       address,
             lat:           elLat,
