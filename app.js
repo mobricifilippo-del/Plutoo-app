@@ -11496,7 +11496,7 @@ btnPublishDogBoard?.addEventListener("click", () => {
   }
 });
 
-  // ============ Maps / servizi ============
+// ============ Maps / servizi ============
   function openMapsCategory(cat){
   const rewardCats = ["vets","groomers","shops","trainers","kennels","parks"];
 
@@ -11509,25 +11509,25 @@ btnPublishDogBoard?.addEventListener("click", () => {
 
     showRewardVideoMock("services", ()=>{
       state.rewardOpen = false;
-      openPetPlacesView(cat);
+      openMapsQueryAfterReward(cat);
     });
 
     return;
   }
 
-  openPetPlacesView(cat);
+  openMapsQueryAfterReward(cat);
   }
 
   function openMapsQueryAfterReward(cat){
     const map = {
-      vets: state.lang==="it" ? "cliniche veterinarie vicino a me" : "veterinary clinics near me",
-      groomers: state.lang==="it" ? "toelettature vicino a me" : "pet groomers near me",
-      shops: state.lang==="it" ? "negozi per animali vicino a me" : "pet shops near me",
-      trainers: state.lang==="it" ? "addestratori cani vicino a me" : "dog trainers near me",
-      kennels: state.lang==="it" ? "pensioni per dogs vicino a me" : "dog kennels near me",
-      parks: state.lang==="it" ? "parchi vicino a me" : "parks near me"
+      vets: state.lang==="it" ? "Veterinari nelle vicinanze" : "Veterinarians nearby",
+      groomers: state.lang==="it" ? "Toelettature nelle vicinanze" : "Pet groomers nearby",
+      shops: state.lang==="it" ? "Negozio pet nelle vicinanze" : "Pet shop nearby",
+      trainers: state.lang==="it" ? "Addestratori DOG nelle vicinanze" : "DOG trainers nearby",
+      kennels: state.lang==="it" ? "Pensioni per DOG nelle vicinanze" : "DOG boarding nearby",
+      parks: state.lang==="it" ? "Parchi nelle vicinanze" : "Parks nearby"
     };
-    const q = map[cat] || (state.lang==="it" ? "servizi animali vicino a me" : "pet services near me");
+    const q = map[cat] || (state.lang==="it" ? "Servizi animali nelle vicinanze" : "Pet services nearby");
     openMapsQuery(q);
   }
 
@@ -11544,272 +11544,10 @@ btnPublishDogBoard?.addEventListener("click", () => {
     if (state.geo){
       window.location.href = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
     } else {
-      window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+      window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`);
     }
   }
   }
-
-  // ============ Luoghi PET interni ============
-
-function openPetPlacesView(cat) {
-  if (!state.geo) {
-  if (!navigator.geolocation) {
-    showPlutooAlert(
-      state.lang === "it"
-        ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
-        : "Location unavailable. Please enable geolocation and try again.",
-      { title: "Plutoo", confirmText: "OK" }
-    );
-    return;
-  }
-
-  let geoWatchId = null;
-  let geoDone = false;
-
-  geoWatchId = navigator.geolocation.watchPosition(
-    function(p) {
-      if (geoDone) return;
-      geoDone = true;
-
-      if (geoWatchId !== null) {
-        navigator.geolocation.clearWatch(geoWatchId);
-      }
-
-      state.geo = {
-        lat: p.coords.latitude,
-        lon: p.coords.longitude
-      };
-
-      openPetPlacesView(cat);
-    },
-    
-    function(err) {
-if (geoDone) return;
-geoDone = true;
-
-  if (geoWatchId !== null) {
-    navigator.geolocation.clearWatch(geoWatchId);
-  }
-
-  showPlutooAlert(
-    "GEO ERROR\ncode: " + (err && err.code) + "\nmessage: " + (err && err.message),
-    { title: "Plutoo Debug", confirmText: "OK" }
-  );
-  return;
-
-  showPlutooAlert(
-    state.lang === "it"
-      ? "Posizione non disponibile. Abilita la geolocalizzazione e riprova."
-      : "Location unavailable. Please enable geolocation and try again.",
-    { title: "Plutoo", confirmText: "OK" }
-  );
-},
-{ enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
-
-);
-
-return;
-}
-
-  const titleEl = document.getElementById("petPlacesTitle");
-if (titleEl) titleEl.textContent = t("pet_place_" + cat);
-
-setActiveView("petplaces");
-
-showPlutooBlockingLoader(
-    state.lang === "it" ? "Ricerca in corso..." : "Searching..."
-  );
-
-  if (typeof fetchOverpass === "function") {
-    fetchOverpass(cat, state.geo.lat, state.geo.lon);
-  } else {
-    hidePlutooBlockingLoader();
-  }
-}
-
-function fetchOverpass(cat, lat, lon) {
-  
-  const tagMap = {
-    vets:     ["amenity=veterinary", "healthcare=veterinary"],
-    groomers: ["shop=pet_grooming", "shop=grooming", "amenity=grooming", "craft=groomer"],
-    shops:    ["shop=pet", "shop=pet_food"],
-    trainers: ["leisure=dog_park", "sport=dog_agility", "office=animal_training", "animal_training=yes"],
-    kennels:  ["amenity=kennels", "amenity=animal_boarding", "tourism=dog_kennel"],
-    parks:    ["leisure=park", "leisure=dog_park"]
-  };
-
-  const tags = tagMap[cat] || ["amenity=veterinary"];
-
-  var lines = "";
-
-  tags.forEach(function(tag) {
-    lines += "node[" + tag + "](around:10000," + lat + "," + lon + ");";
-    lines += "way["  + tag + "](around:10000," + lat + "," + lon + ");";
-  });
-
-  const query =
-    "[out:json][timeout:20];" +
-    "(" + lines + ");" +
-    "out center 50;";
-
-  const overpassEndpoints = [
-    "https://overpass-api.de/api/interpreter",
-    "https://overpass.private.coffee/api/interpreter",
-    "https://z.overpass-api.de/api/interpreter"
-  ];
-
-  function fetchFromEndpoint(index) {
-    if (index >= overpassEndpoints.length) {
-      return Promise.reject(new Error("overpass_all_failed"));
-    }
-
-    return fetch(overpassEndpoints[index], {
-      method:  "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body:    "data=" + encodeURIComponent(query)
-    })
-      .then(function(r) {
-        if (!r.ok) {
-          throw new Error("overpass_http");
-        }
-
-        return r.json();
-      })
-      .catch(function() {
-        return fetchFromEndpoint(index + 1);
-      });
-  }
-
-  fetchFromEndpoint(0)
-    .then(function(data) {
-      if (!data || !Array.isArray(data.elements)) throw new Error("overpass_parse");
-
-      var catLabelMap = {
-        vets:     state.lang === "it" ? "Veterinari nelle vicinanze"         : "Veterinarians nearby",
-        groomers: state.lang === "it" ? "Toelettature nelle vicinanze"       : "Pet groomers nearby",
-        shops:    state.lang === "it" ? "Negozi per animali nelle vicinanze" : "Pet shops nearby",
-        trainers: state.lang === "it" ? "Addestratori cani nelle vicinanze"  : "Dog trainers nearby",
-        kennels:  state.lang === "it" ? "Pensioni per cani nelle vicinanze"  : "Dog boarding nearby",
-        parks:    state.lang === "it" ? "Parchi nelle vicinanze"             : "Parks nearby"
-      };
-
-      var categoryLabel = catLabelMap[cat] ||
-        (state.lang === "it"
-          ? "Servizi animali nelle vicinanze"
-          : "Pet services nearby");
-
-      var fallbackNameMap = {
-        vets:     state.lang === "it" ? "Veterinario nelle vicinanze" : "Veterinarian nearby",
-        groomers: state.lang === "it" ? "Toelettatura nelle vicinanze" : "Pet grooming nearby",
-        shops:    state.lang === "it" ? "Negozio pet nelle vicinanze" : "Pet shop nearby",
-        trainers: state.lang === "it" ? "Addestratore nelle vicinanze" : "Dog trainer nearby",
-        kennels:  state.lang === "it" ? "Pensione DOG nelle vicinanze" : "DOG boarding nearby",
-        parks:    state.lang === "it" ? "Parco nelle vicinanze" : "Park nearby"
-      };
-
-      var fallbackName = fallbackNameMap[cat] ||
-        (state.lang === "it"
-          ? "Servizio PET nelle vicinanze"
-          : "Pet service nearby");
-
-      var places = data.elements
-        .map(function(el) {
-          
-          var elLat = (el.lat !== undefined) ? el.lat : (el.center ? el.center.lat : null);
-          var elLon = (el.lon !== undefined) ? el.lon : (el.center ? el.center.lon : null);
-          if (elLat === null || elLon === null) return null;
-
-          var tags    = el.tags || {};
-          var dLat    = (elLat - lat) * Math.PI / 180;
-          var dLon    = (elLon - lon) * Math.PI / 180;
-          var a       = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                        Math.cos(lat * Math.PI / 180) * Math.cos(elLat * Math.PI / 180) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-          var km      = 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-          var street  = tags["addr:street"]      || "";
-          var number  = tags["addr:housenumber"] || "";
-          var address = [street, number].filter(Boolean).join(" ");
-
-          return {
-            name:          tags.name || fallbackName,
-            km:            km,
-            address:       address,
-            lat:           elLat,
-            lon:           elLon,
-            categoryLabel: categoryLabel
-          };
-        })
-        .filter(Boolean)
-        .sort(function(a, b) { return a.km - b.km; })
-        .slice(0, 10);
-
-      if (typeof renderPetPlacesCards === "function") {
-        renderPetPlacesCards(places);
-      }
-    })
-    .catch(function() {
-      showPlutooAlert(
-        state.lang === "it"
-          ? "Errore durante la ricerca. Controlla la connessione e riprova."
-          : "Search error. Check your connection and try again.",
-        { title: "Plutoo", confirmText: "OK" }
-      );
-    })
-    .finally(function() {
-      hidePlutooBlockingLoader();
-    });
-}
-
-function renderPetPlacesCards(places) {
-  const listEl = document.getElementById("petPlacesList");
-  if (!listEl) return;
-
-  listEl.innerHTML = "";
-
-  if (!places || !places.length) {
-    showPlutooAlert(
-      state.lang === "it"
-        ? "Nessun luogo trovato nelle vicinanze."
-        : "No places found nearby.",
-      { title: "Plutoo", confirmText: "OK" }
-    );
-    return;
-  }
-
-  places.forEach(function(place) {
-    const card = document.createElement("div");
-    card.className = "pet-place-card";
-
-    const name = document.createElement("div");
-    name.className = "pet-place-card__name";
-    name.textContent = place.name;
-
-    const distance = document.createElement("div");
-    distance.className = "pet-place-card__distance";
-    distance.textContent = fmtKm(place.km);
-
-    card.appendChild(name);
-    card.appendChild(distance);
-
-    if (place.address) {
-      const address = document.createElement("div");
-      address.className = "pet-place-card__address";
-      address.textContent = place.address;
-      card.appendChild(address);
-    }
-
-    card.addEventListener("click", function() {
-      var url = "https://www.google.com/maps/dir/?api=1&destination=" + place.lat + "," + place.lon + "&travelmode=driving";
-      if (window.AndroidBridge && typeof window.AndroidBridge.openUrl === "function") {
-        window.AndroidBridge.openUrl(url);
-      } else {
-        window.location.href = url;
-      }
-    });
-
-    listEl.appendChild(card);
-  });
-}
 
   // ============ Ads mock ============
   function showAdBanner(){
