@@ -11638,48 +11638,82 @@ function fetchOverpass(cat, lat, lon) {
     parks:    ["leisure=park", "leisure=dog_park"]
   };
 
-const tags = tagMap[cat] || ["amenity=veterinary"];
+  const tags = tagMap[cat] || ["amenity=veterinary"];
 
-var lines = "";
+  var lines = "";
 
-tags.forEach(function(tag) {
-  lines += "node[" + tag + "](around:10000," + lat + "," + lon + ");";
-  lines += "way["  + tag + "](around:10000," + lat + "," + lon + ");";
-});
+  tags.forEach(function(tag) {
+    lines += "node[" + tag + "](around:10000," + lat + "," + lon + ");";
+    lines += "way["  + tag + "](around:10000," + lat + "," + lon + ");";
+  });
 
-const query =
-  "[out:json][timeout:15];" +
-  "(" + lines + ");" +
-  "out center 50;";
+  const query =
+    "[out:json][timeout:20];" +
+    "(" + lines + ");" +
+    "out center 50;";
 
-  fetch("https://overpass-api.de/api/interpreter", {
-    method:  "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body:    "data=" + encodeURIComponent(query)
-  })
-    .then(function(r) {
-      if (!r.ok) throw new Error("overpass_http");
-      return r.json();
+  const overpassEndpoints = [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+    "https://z.overpass-api.de/api/interpreter"
+  ];
+
+  function fetchFromEndpoint(index) {
+    if (index >= overpassEndpoints.length) {
+      return Promise.reject(new Error("overpass_all_failed"));
+    }
+
+    return fetch(overpassEndpoints[index], {
+      method:  "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body:    "data=" + encodeURIComponent(query)
     })
+      .then(function(r) {
+        if (!r.ok) {
+          throw new Error("overpass_http");
+        }
+
+        return r.json();
+      })
+      .catch(function() {
+        return fetchFromEndpoint(index + 1);
+      });
+  }
+
+  fetchFromEndpoint(0)
     .then(function(data) {
       if (!data || !Array.isArray(data.elements)) throw new Error("overpass_parse");
 
       var catLabelMap = {
-  vets:     state.lang === "it" ? "Veterinari nelle vicinanze"         : "Veterinarians nearby",
-  groomers: state.lang === "it" ? "Toelettature nelle vicinanze"       : "Pet groomers nearby",
-  shops:    state.lang === "it" ? "Negozi per animali nelle vicinanze" : "Pet shops nearby",
-  trainers: state.lang === "it" ? "Addestratori cani nelle vicinanze"  : "Dog trainers nearby",
-  kennels:  state.lang === "it" ? "Pensioni per cani nelle vicinanze"  : "Dog boarding nearby",
-  parks:    state.lang === "it" ? "Parchi nelle vicinanze"             : "Parks nearby"
-};
+        vets:     state.lang === "it" ? "Veterinari nelle vicinanze"         : "Veterinarians nearby",
+        groomers: state.lang === "it" ? "Toelettature nelle vicinanze"       : "Pet groomers nearby",
+        shops:    state.lang === "it" ? "Negozi per animali nelle vicinanze" : "Pet shops nearby",
+        trainers: state.lang === "it" ? "Addestratori cani nelle vicinanze"  : "Dog trainers nearby",
+        kennels:  state.lang === "it" ? "Pensioni per cani nelle vicinanze"  : "Dog boarding nearby",
+        parks:    state.lang === "it" ? "Parchi nelle vicinanze"             : "Parks nearby"
+      };
 
-var categoryLabel = catLabelMap[cat] ||
-  (state.lang === "it"
-    ? "Servizi animali nelle vicinanze"
-    : "Pet services nearby");
+      var categoryLabel = catLabelMap[cat] ||
+        (state.lang === "it"
+          ? "Servizi animali nelle vicinanze"
+          : "Pet services nearby");
 
-var places = data.elements
-  .map(function(el) {
+      var fallbackNameMap = {
+        vets:     state.lang === "it" ? "Veterinario nelle vicinanze" : "Veterinarian nearby",
+        groomers: state.lang === "it" ? "Toelettatura nelle vicinanze" : "Pet grooming nearby",
+        shops:    state.lang === "it" ? "Negozio pet nelle vicinanze" : "Pet shop nearby",
+        trainers: state.lang === "it" ? "Addestratore nelle vicinanze" : "Dog trainer nearby",
+        kennels:  state.lang === "it" ? "Pensione DOG nelle vicinanze" : "DOG boarding nearby",
+        parks:    state.lang === "it" ? "Parco nelle vicinanze" : "Park nearby"
+      };
+
+      var fallbackName = fallbackNameMap[cat] ||
+        (state.lang === "it"
+          ? "Servizio PET nelle vicinanze"
+          : "Pet service nearby");
+
+      var places = data.elements
+        .map(function(el) {
           
           var elLat = (el.lat !== undefined) ? el.lat : (el.center ? el.center.lat : null);
           var elLon = (el.lon !== undefined) ? el.lon : (el.center ? el.center.lon : null);
@@ -11697,16 +11731,7 @@ var places = data.elements
           var address = [street, number].filter(Boolean).join(" ");
 
           return {
-
-            name: tags.name || ({
-  vets:     state.lang === "it" ? "Veterinario nelle vicinanze" : "Veterinarian nearby",
-  groomers: state.lang === "it" ? "Toelettatura nelle vicinanze" : "Pet grooming nearby",
-  shops:    state.lang === "it" ? "Negozio pet nelle vicinanze" : "Pet shop nearby",
-  trainers: state.lang === "it" ? "Addestratore nelle vicinanze" : "Dog trainer nearby",
-  kennels:  state.lang === "it" ? "Pensione DOG nelle vicinanze" : "DOG boarding nearby",
-  parks:    state.lang === "it" ? "Parco nelle vicinanze" : "Park nearby"
-}[cat] || (state.lang === "it" ? "Servizio PET nelle vicinanze" : "Pet service nearby")),
-            
+            name:          tags.name || fallbackName,
             km:            km,
             address:       address,
             lat:           elLat,
