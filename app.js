@@ -11631,10 +11631,10 @@ function fetchOverpass(cat, lat, lon) {
   
   const tagMap = {
     vets:     ["amenity=veterinary", "healthcare=veterinary"],
-    groomers: ["shop=pet_grooming", "shop=grooming", "amenity=grooming"],
-    shops:    ["shop=pet"],
-    trainers: ["leisure=dog_park", "sport=dog_agility"],
-    kennels:  ["amenity=kennels", "amenity=animal_boarding"],
+    groomers: ["shop=pet_grooming", "shop=grooming", "amenity=grooming", "craft=groomer"],
+    shops:    ["shop=pet", "shop=pet_food"],
+    trainers: ["leisure=dog_park", "sport=dog_agility", "office=animal_training", "animal_training=yes"],
+    kennels:  ["amenity=kennels", "amenity=animal_boarding", "tourism=dog_kennel"],
     parks:    ["leisure=park", "leisure=dog_park"]
   };
 
