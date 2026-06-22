@@ -4009,17 +4009,17 @@ try {
   }
 } catch (e) {}
 
-  [viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), document.getElementById("viewPetPlaces"), profilePage].forEach(v => {
+  [viewNearby, viewLove, viewPlay, viewMessages, document.getElementById("viewDogBoard"), profilePage].forEach(v => {
     if (!v) return;
     v.classList.remove("active");
     v.classList.add("hidden");
   });
 
-  if (name === "profile" || name === "messages" || name === "dogboard" || name === "petplaces") {
-    mainTopbar?.classList.add("hidden");
-  } else {
-    mainTopbar?.classList.remove("hidden");
-  }
+  if (name === "profile" || name === "messages" || name === "dogboard") {
+  mainTopbar?.classList.add("hidden");
+} else {
+  mainTopbar?.classList.remove("hidden");
+}
 
  if (name === "dogboard") {
   const el = document.getElementById("viewDogBoard");
@@ -4073,19 +4073,12 @@ try {
   }
 }
 
-if (name === "petplaces") {
-  const el = document.getElementById("viewPetPlaces");
-  if (el) {
-    el.classList.remove("hidden");
-    el.classList.add("active");
-  }
-}
+document.documentElement.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
 
-document.documentElement.style.overflowY = (name === "dogboard" || name === "messages" || name === "petplaces") ? "hidden" : "auto";
-document.body.style.overflowY = (name === "dogboard" || name === "messages" || name === "petplaces") ? "hidden" : "auto";
+document.body.style.overflowY = (name === "dogboard" || name === "messages") ? "hidden" : "auto";
 
 if (appScreen) {
-  if (name === "dogboard" || name === "messages" || name === "petplaces") {
+  if (name === "dogboard" || name === "messages") {
     appScreen.style.minHeight = "0px";
     appScreen.style.height = `${window.innerHeight}px`;
     appScreen.style.overflow = "hidden";
@@ -4173,11 +4166,6 @@ btnPetPlacesBack?.addEventListener("click", () => {
       setActiveView(prev === "profile" ? "nearby" : prev);
       return;
     }
-
-      if (state.currentView === "petplaces"){
-  setActiveView("nearby");
-  return;
-      }
 
     if (state.currentView === "love" || state.currentView === "friendship"){
       setActiveView("nearby");
