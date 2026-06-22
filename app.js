@@ -11530,7 +11530,7 @@ function openMapsQuery(q){
     if (state.geo){
       window.location.href = `geo:${state.geo.lat},${state.geo.lon}?q=${encodeURIComponent(q)}`;
     } else {
-      window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`);
+      window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
     }
   }
 }
