@@ -3276,14 +3276,15 @@ async function __markAllNotifsRead(toDogId) {
       snap.forEach((docSnap) => {
         const data = docSnap.data() || {};
         items.push({
-          id: docSnap.id,
-          type: data.type || "",
-          fromUid: data.fromUid || "",
-          fromDogId: data.fromDogId || "",
-          toDogId: data.toDogId || "",
-          createdAt: data.createdAt || null,
-          read: data.read === true
-        });
+  id: docSnap.id,
+  type: data.type || "",
+  fromUid: data.fromUid || "",
+  fromDogId: data.fromDogId || "",
+  fromDogName: String(data.fromDogName || ""),
+  toDogId: data.toDogId || "",
+  createdAt: data.createdAt || null,
+  read: data.read === true
+});
       });
 
       // ordine lato client (robusto anche se qualche doc non ha createdAt)
