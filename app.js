@@ -11630,7 +11630,23 @@ async function init(){
 
 try {
   if (window.db) {
-    const snap = await window.db.collection("dogs").get();
+
+    const _uLat = (typeof window.PLUTOO_USER_LAT === "number") ? window.PLUTOO_USER_LAT : null;
+const _uLon = (typeof window.PLUTOO_USER_LON === "number") ? window.PLUTOO_USER_LON : null;
+
+let snap;
+if (_uLat !== null) {
+  const deltaLat = 100 / 111.32;
+  const minLat = _uLat - deltaLat;
+  const maxLat = _uLat + deltaLat;
+  snap = await window.db.collection("dogs")
+    .where("lat", ">=", minLat)
+    .where("lat", "<=", maxLat)
+    .get();
+} else {
+  snap = await window.db.collection("dogs").get();
+}
+    
       const realDogs = [];
 const _usersCache = {};
 
@@ -11712,10 +11728,6 @@ size: String(data.size || ""),
   });
       
       }
-
-      // Calcolo km reale e filtro 100 km client-side
-const _uLat = (typeof window.PLUTOO_USER_LAT === "number") ? window.PLUTOO_USER_LAT : null;
-const _uLon = (typeof window.PLUTOO_USER_LON === "number") ? window.PLUTOO_USER_LON : null;
 
 if (_uLat !== null && _uLon !== null) {
   function _hav(lat1, lon1, lat2, lon2) {
