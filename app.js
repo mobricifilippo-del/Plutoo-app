@@ -11682,6 +11682,8 @@ try {
   dogPlusStatus = "";
 }
 
+  if (typeof data.lat !== "number" || typeof data.lon !== "number") continue;
+
   realDogs.push({
     id: doc.id,
     ownerUid: ownerUid,
