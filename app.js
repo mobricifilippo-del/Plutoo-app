@@ -5293,17 +5293,20 @@ _db.collection("followers").doc(docId).set({
 .then(() => {
   
   // ✅ NOTIFICA (source of truth): follow
-const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
+
+  const notifId = `follow_${String(selfDogId)}_${String(targetDogId)}`;
 _db.collection("notifications").doc(notifId).set({
   type: "follow",
   fromUid: String(selfUid),
   fromDogId: String(selfDogId),
+  fromDogName: String(window.PLUTOO_DOG_NAME || ""),
   toDogId: String(targetDogId),
   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   read: false
 }, { merge: true }).catch((e) => {
   console.error("followDog notification Firestore:", e);
 });
+  
   if (typeof showToast === "function") showToast("Hai iniziato a seguire 🐕");
 })
 .catch((e) => {
