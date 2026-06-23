@@ -11737,7 +11737,7 @@ if (_uLat !== null) {
     .where("lat", "<=", maxLat)
     .get();
 } else {
-  snap = await window.db.collection("dogs").get();
+  return;
 }
     
       const realDogs = [];
