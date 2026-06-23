@@ -3025,7 +3025,7 @@ function __renderNotifs(items) {
 
     const fromId = String(n.fromDogId || n.fromdogId || n.followerDogId || n.actorDogId || n.dogId || "").trim();
 
-    let fromDogName = "";
+    let fromDogName = String(n.fromDogName || "");
     let fromDogAvatar = "./plutoo-icon-192.png";
 
     try {
