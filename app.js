@@ -5117,29 +5117,40 @@ function generateSocialSection(d) {
 async function rebuildFollowersStateFromFirestore() {
   if (!db) return;
 
-  state.followersByDog = {};
-  state.followingByDog = {};
+  const myDogId = String(
+    window.PLUTOO_DOG_ID ||
+    (typeof CURRENT_USER_DOG_ID !== "undefined" ? CURRENT_USER_DOG_ID : "") ||
+    ""
+  );
 
-  const snap = await db.collection("followers").get();
+  if (!myDogId) return;
 
-  snap.forEach((doc) => {
-    const data = doc.data() || {};
-    const followerDogId = String(data.followerDogId || "");
-    const targetDogId = String(data.targetDogId || "");
+  if (!state.followersByDog || typeof state.followersByDog !== "object") state.followersByDog = {};
+  if (!state.followingByDog || typeof state.followingByDog !== "object") state.followingByDog = {};
 
-    if (!followerDogId || !targetDogId) return;
+  try {
+    const followersSnap = await db.collection("followers")
+      .where("targetDogId", "==", myDogId)
+      .get();
+    const followerIds = [];
+    followersSnap.forEach((doc) => {
+      const id = String((doc.data() || {}).followerDogId || "");
+      if (id && !followerIds.includes(id)) followerIds.push(id);
+    });
+    state.followersByDog[myDogId] = followerIds;
+  } catch (_) {}
 
-    if (!state.followingByDog[followerDogId]) state.followingByDog[followerDogId] = [];
-    if (!state.followersByDog[targetDogId]) state.followersByDog[targetDogId] = [];
-
-    if (!state.followingByDog[followerDogId].includes(targetDogId)) {
-      state.followingByDog[followerDogId].push(targetDogId);
-    }
-
-    if (!state.followersByDog[targetDogId].includes(followerDogId)) {
-      state.followersByDog[targetDogId].push(followerDogId);
-    }
-  });
+  try {
+    const followingSnap = await db.collection("followers")
+      .where("followerDogId", "==", myDogId)
+      .get();
+    const followingIds = [];
+    followingSnap.forEach((doc) => {
+      const id = String((doc.data() || {}).targetDogId || "");
+      if (id && !followingIds.includes(id)) followingIds.push(id);
+    });
+    state.followingByDog[myDogId] = followingIds;
+  } catch (_) {}
 
   persistFollowState();
 }
