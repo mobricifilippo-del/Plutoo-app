@@ -5489,6 +5489,9 @@ if (blockedDogIds.includes(followerDogId)) continue;
       ownerUid: String(dogData.ownerUid || "")
     };
 
+    const myDogId = String(window.PLUTOO_DOG_ID || "");
+    const isOwner = !!myDogId && (dogId === myDogId);
+
     const row = document.createElement("div");
     row.className = "msg-item";
     row.innerHTML = `
@@ -5500,15 +5503,17 @@ if (blockedDogIds.includes(followerDogId)) continue;
         </div>
       </div>
 
-      <div class="msg-swipe-actions">
-        <button
-          type="button"
-          class="msg-spam-btn"
-          data-remove-follower="${realDog.id}"
-        >
-          Rimuovi follower
-        </button>
-      </div>
+      ${isOwner ? `
+  <div class="msg-swipe-actions">
+    <button
+      type="button"
+      class="msg-spam-btn"
+      data-remove-follower="${realDog.id}"
+    >
+      Rimuovi follower
+    </button>
+  </div>
+  ` : ""}
     `;
 
     const removeFollowerBtn = row.querySelector('button[data-remove-follower]');
