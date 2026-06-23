@@ -1357,14 +1357,14 @@ if (typeof updatePlusUI === "function") {
       console.error("users/{uid} upsert error:", e);
     }
 
-    runPresenceAfterAuth();
+    await runPresenceAfterAuth();
 
-    if (typeof rebuildFollowersStateFromFirestore === "function") rebuildFollowersStateFromFirestore();
+if (typeof rebuildFollowersStateFromFirestore === "function") rebuildFollowersStateFromFirestore();
 
-    if (!window.__booted) {
-      window.__booted = true;
-      if (typeof init === "function") init();
-    }
+if (!window.__booted) {
+  window.__booted = true;
+  if (typeof init === "function") await init();
+}
 
   } catch (e) {
     console.error("onAuthStateChanged error:", e);
