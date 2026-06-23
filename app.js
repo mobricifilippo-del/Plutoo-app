@@ -1062,6 +1062,10 @@ selfieUrl: String(data.selfieUrl || "")
   if (typeof data.lat === "number" && typeof data.lon === "number") {
     window.PLUTOO_USER_LAT = data.lat;
     window.PLUTOO_USER_LON = data.lon;
+
+    if (typeof loadNearbyDogs === "function") {
+  await loadNearbyDogs();
+    }
   }
  }
   
