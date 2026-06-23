@@ -1130,7 +1130,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   .finally(() => {
 
 auth.onAuthStateChanged(async (user) => {
-  const runPresenceAfterAuth = () => {
+  const runPresenceAfterAuth = async () => {
   try {
   const enterBtn = document.getElementById("btnEnter");
   const logged = !!user;
@@ -1152,7 +1152,7 @@ auth.onAuthStateChanged(async (user) => {
 
   try {
     if (typeof window.plutooDogPresenceCheck === "function") {
-      window.plutooDogPresenceCheck();
+      await window.plutooDogPresenceCheck();
     }
   } catch (_) {}
 };
