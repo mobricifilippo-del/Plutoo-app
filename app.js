@@ -8221,7 +8221,17 @@ galleryBlock.appendChild(ph);
 })();
 
       // ✅ safe: update follower UI
-if (typeof updateFollowerUI === "function") updateFollowerUI(d);
+if (typeof updateFollowerUI === "function") {
+  const _extDogId = d && d.id ? String(d.id) : "";
+  const _myDogId = String(window.PLUTOO_DOG_ID || (typeof CURRENT_USER_DOG_ID !== "undefined" ? CURRENT_USER_DOG_ID : "") || "");
+  if (_extDogId && _extDogId !== _myDogId && typeof _ensureFollowDataForDog === "function") {
+    _ensureFollowDataForDog(_extDogId).then(() => {
+      if (typeof updateFollowerUI === "function") updateFollowerUI(d);
+    });
+  } else {
+    updateFollowerUI(d);
+  }
+}
 
 // ✅ crea followBtn dopo il render profilo, senza toccare template string
 if (!isCreate && d && d.id && CURRENT_USER_DOG_ID && CURRENT_USER_DOG_ID !== d.id) {
