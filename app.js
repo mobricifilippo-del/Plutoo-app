@@ -5531,27 +5531,38 @@ if (blockedDogIds.includes(followerDogId)) continue;
     const removeFollowerBtn = row.querySelector('button[data-remove-follower]');
 
     removeFollowerBtn?.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
 
-      try {
-        await db.collection("followers").doc(`${followerDogId}_${dogId}`).delete();
+  const ok = await showPlutooConfirm(
+    "Vuoi eliminare questo follower?",
+    {
+      title: "Rimuovi follower",
+      confirmText: "Rimuovi",
+      cancelText: "Annulla",
+      danger: true
+    }
+  );
+  if (!ok) return;
 
-        if (typeof rebuildFollowersStateFromFirestore === "function") {
-          await rebuildFollowersStateFromFirestore();
-        }
+  try {
+    await db.collection("followers").doc(`${followerDogId}_${dogId}`).delete();
 
-        if (typeof updateFollowerUI === "function") {
-          updateFollowerUI(dogId);
-          updateFollowerUI(followerDogId);
-        }
+    if (typeof rebuildFollowersStateFromFirestore === "function") {
+      await rebuildFollowersStateFromFirestore();
+    }
 
-        openFollowersList(dogId);
-      } catch (e) {
-        console.error("remove follower direct delete error:", e);
-      }
-    });
+    if (typeof updateFollowerUI === "function") {
+      updateFollowerUI(dogId);
+      updateFollowerUI(followerDogId);
+    }
+
+    openFollowersList(dogId);
+  } catch (e) {
+    console.error("remove follower direct delete error:", e);
+  }
+});
 
     let startX = 0;
     let startY = 0;
