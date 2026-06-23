@@ -5155,6 +5155,47 @@ async function rebuildFollowersStateFromFirestore() {
   persistFollowState();
 }
 
+async function _ensureFollowDataForDog(dogId) {
+  if (!dogId || !db) return;
+  if (!state.followersByDog || typeof state.followersByDog !== "object") state.followersByDog = {};
+  if (!state.followingByDog || typeof state.followingByDog !== "object") state.followingByDog = {};
+
+  if (
+    Array.isArray(state.followersByDog[dogId]) &&
+    Array.isArray(state.followingByDog[dogId])
+  ) return;
+
+  try {
+    const followersSnap = await db.collection("followers")
+      .where("targetDogId", "==", dogId)
+      .get();
+
+    const followerIds = [];
+
+    followersSnap.forEach((doc) => {
+      const id = String((doc.data() || {}).followerDogId || "");
+      if (id && !followerIds.includes(id)) followerIds.push(id);
+    });
+
+    state.followersByDog[dogId] = followerIds;
+  } catch (_) {}
+
+  try {
+    const followingSnap = await db.collection("followers")
+      .where("followerDogId", "==", dogId)
+      .get();
+
+    const followingIds = [];
+
+    followingSnap.forEach((doc) => {
+      const id = String((doc.data() || {}).targetDogId || "");
+      if (id && !followingIds.includes(id)) followingIds.push(id);
+    });
+
+    state.followingByDog[dogId] = followingIds;
+  } catch (_) {}
+}
+
   function persistFollowState() {
   }
 
