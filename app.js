@@ -11770,10 +11770,15 @@ let dogPlusStatus = "";
 
 try {
   if (ownerUid && window.db) {
-    const userSnap = await window.db.collection("users").doc(ownerUid).get();
-    const userData = userSnap && userSnap.exists
-      ? (userSnap.data() || {})
-      : {};
+    let userData = _usersCache[ownerUid];
+
+    if (!userData) {
+      const userSnap = await window.db.collection("users").doc(ownerUid).get();
+      userData = userSnap && userSnap.exists
+        ? (userSnap.data() || {})
+        : {};
+      _usersCache[ownerUid] = userData;
+    }
 
     dogPlus =
       userData.plus === true &&
