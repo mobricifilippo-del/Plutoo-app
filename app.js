@@ -3729,7 +3729,7 @@ restoreBtn?.addEventListener("click", async (e) => {
     }
 
     state._openChatFromTab = sourceTab || "";
-    openChat(chatId, dogId, otherUid);
+    openChat(chatId, dogId, otherUid, nameLine);
   });
 
   if (!window.__msgSwipeOutsideBound) {
