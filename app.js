@@ -8894,6 +8894,7 @@ availabilityBox.appendChild(availabilityWalksLabel);
         const db = window.db || null;
         const storage = window.storage || null;
         let nextPhotoUrl = null;
+        let uploadedProfilePhotoRef = null;
 
         if (selectedProfilePhotoFile) {
 
@@ -8914,6 +8915,7 @@ const storageRef = storage.ref().child(uploadedPath);
 
 try {
   await storageRef.put(selectedProfilePhotoFile, { contentType: selectedProfilePhotoFile.type || "image/jpeg" });
+uploadedProfilePhotoRef = storageRef;
   nextPhotoUrl = await storageRef.getDownloadURL();
 } catch (e) {
   throw e;
@@ -9031,7 +9033,12 @@ if (typeof window.refreshCreateDogCTA === "function") {
         }, 450);
 
       } catch (e) {
-        console.error("Profile bio save error:", e);
+        try {
+  if (uploadedProfilePhotoRef) {
+    await uploadedProfilePhotoRef.delete();
+  }
+} catch (_) {}
+        
         feedback.style.border = "1px solid rgba(255,80,80,.45)";
         feedback.style.background = "rgba(255,0,0,.08)";
         feedback.style.color = "#ffb3b3";
