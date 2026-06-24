@@ -6198,6 +6198,11 @@ window.openFreshDogProfile = function openFreshDogProfile(dogId, fallbackDog) {
 
       const data = snap.data() || {};
 
+    if (data.deleted === true || data.publicVisible === false) {
+  if (typeof showToast === "function") showToast("Profilo non disponibile");
+  return;
+    }
+
     const ownerUid = String(data.ownerUid || fallback.ownerUid || snap.id || "");
 let plus = false;
 let plusStatus = "";
