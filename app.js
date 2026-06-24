@@ -9455,6 +9455,7 @@ if (duplicateDocName) {
       }
 
       window.__plutooDocUploadBusy = true;
+      let uploadedDocStorageRef = null;
 
       storageRef.put(file)
   .then(() => storageRef.getDownloadURL())
