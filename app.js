@@ -11726,8 +11726,16 @@ async function init(){
 try {
   if (window.db) {
 
-    const _uLat = (typeof window.PLUTOO_USER_LAT === "number") ? window.PLUTOO_USER_LAT : null;
-const _uLon = (typeof window.PLUTOO_USER_LON === "number") ? window.PLUTOO_USER_LON : null;
+  const _storedLat = parseFloat(localStorage.getItem("plutoo_user_lat") || "");
+const _storedLon = parseFloat(localStorage.getItem("plutoo_user_lon") || "");
+
+const _uLat = (typeof window.PLUTOO_USER_LAT === "number")
+  ? window.PLUTOO_USER_LAT
+  : (Number.isFinite(_storedLat) ? _storedLat : null);
+
+const _uLon = (typeof window.PLUTOO_USER_LON === "number")
+  ? window.PLUTOO_USER_LON
+  : (Number.isFinite(_storedLon) ? _storedLon : null);
 
 let snap;
 if (_uLat !== null) {
