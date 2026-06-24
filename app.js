@@ -9458,7 +9458,10 @@ if (duplicateDocName) {
       let uploadedDocStorageRef = null;
 
       storageRef.put(file)
-  .then(() => storageRef.getDownloadURL())
+  .then(() => {
+  uploadedDocStorageRef = storageRef;
+  return storageRef.getDownloadURL();
+})
   .then((url) => {
     
 return window.db
@@ -9527,6 +9530,9 @@ openProfilePage(fresh);
         
         .catch((err) => {
           console.error("dog document upload error:", err);
+          if (uploadedDocStorageRef) {
+  uploadedDocStorageRef.delete().catch(() => {});
+          }
 
           if (statusEl) {
             statusEl.textContent = "❌ Errore caricamento";
