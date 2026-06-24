@@ -3203,6 +3203,9 @@ dog.bio = (dog.bio != null) ? String(dog.bio) : "";
           if (fd.img != null) dog.img = String(fd.img);
           if (fd.breed != null) dog.breed = String(fd.breed);
           if (fd.bio != null) dog.bio = String(fd.bio);
+          if (fd.ownerUid != null) dog.ownerUid = String(fd.ownerUid);
+          dog.plus = (fd.plus === true);
+          dog.plusStatus = String(fd.plusStatus || "");
         }
 
         else if (!base) {
