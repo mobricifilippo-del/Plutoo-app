@@ -3194,6 +3194,12 @@ async function __openDogProfileById(dogId) {
         var snap = await _db.collection("dogs").doc(dogId).get();
         if (snap && snap.exists) {
           var fd = snap.data() || {};
+
+          if (fd.deleted === true || fd.publicVisible === false) {
+  if (typeof showToast === "function") showToast("Profilo non disponibile");
+  return false;
+          }
+          
           // sovrascrivi SOLO campi noti del tuo modello (niente invenzioni)
           if (fd.id != null) dog.id = String(fd.id);
           if (fd.name != null) dog.name = String(fd.name);
