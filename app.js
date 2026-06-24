@@ -1060,8 +1060,10 @@ selfieUrl: String(data.selfieUrl || "")
   });
   // Esponi posizione utente per calcolo distanza
   if (typeof data.lat === "number" && typeof data.lon === "number") {
-    window.PLUTOO_USER_LAT = data.lat;
-    window.PLUTOO_USER_LON = data.lon;
+  window.PLUTOO_USER_LAT = data.lat;
+  window.PLUTOO_USER_LON = data.lon;
+  localStorage.setItem("plutoo_user_lat", String(data.lat));
+  localStorage.setItem("plutoo_user_lon", String(data.lon));
   }
  }
   
