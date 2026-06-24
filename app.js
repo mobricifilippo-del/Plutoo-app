@@ -3175,16 +3175,13 @@ async function __openDogProfileById(dogId) {
       } catch (_) {}
     }
 
-    // Se non esiste nemmeno nei mock, NON aprire profilo vuoto (evita nero)
-    if (!base) return false;
-
-    // Oggetto coerente con il TUO modello
-    var dog = Object.assign({}, base);
-    dog.id = String(dog.id || dogId);
-    dog.name = (dog.name != null) ? String(dog.name) : "";
-    dog.img = (dog.img != null) ? String(dog.img) : "";
-    dog.breed = (dog.breed != null) ? String(dog.breed) : "";
-    dog.bio = (dog.bio != null) ? String(dog.bio) : "";
+    // Se non è in cache, costruiamo un DOG minimo; Firestore lo completerà sotto
+var dog = base ? Object.assign({}, base) : { id: dogId, name: "", img: "", breed: "", bio: "" };
+dog.id = String(dog.id || dogId);
+dog.name = (dog.name != null) ? String(dog.name) : "";
+dog.img = (dog.img != null) ? String(dog.img) : "";
+dog.breed = (dog.breed != null) ? String(dog.breed) : "";
+dog.bio = (dog.bio != null) ? String(dog.bio) : "";
 
     // 2) Firestore (source of truth quando ci saranno i profili reali)
     // Se esiste dogs/{dogId}, sovrascrive SOLO i campi presenti nel doc
