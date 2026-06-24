@@ -3204,6 +3204,12 @@ dog.bio = (dog.bio != null) ? String(dog.bio) : "";
           if (fd.breed != null) dog.breed = String(fd.breed);
           if (fd.bio != null) dog.bio = String(fd.bio);
         }
+
+        else if (!base) {
+  if (typeof showToast === "function") showToast("Profilo non disponibile");
+  return false;
+        }
+        
       } catch (_) {}
     }
 
