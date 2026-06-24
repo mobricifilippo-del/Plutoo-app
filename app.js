@@ -10024,9 +10024,11 @@ async function loadChatHistory(chatId, dogName) {
 
     // 1) Prendo TUTTI i messaggi della chat (senza orderBy per non “perdere” doc)
     const snap = await db
-      .collection("messages")
-      .where("chatId", "==", chatId)
-      .get();
+  .collection("messages")
+  .where("chatId", "==", chatId)
+  .orderBy("createdAt", "desc")
+  .limit(50)
+  .get();
 
     const msgs = [];
 
