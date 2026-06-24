@@ -3204,8 +3204,18 @@ dog.bio = (dog.bio != null) ? String(dog.bio) : "";
           if (fd.breed != null) dog.breed = String(fd.breed);
           if (fd.bio != null) dog.bio = String(fd.bio);
           if (fd.ownerUid != null) dog.ownerUid = String(fd.ownerUid);
-          dog.plus = (fd.plus === true);
-          dog.plusStatus = String(fd.plusStatus || "");
+
+          try {
+  const _ownerUid = String(fd.ownerUid || dogId);
+  const _uSnap = await _db.collection("users").doc(_ownerUid).get();
+  const _u = _uSnap && _uSnap.exists ? (_uSnap.data() || {}) : {};
+  dog.plus = (_u.plus === true);
+  dog.plusStatus = String(_u.plusStatus || "");
+} catch (_) {
+  dog.plus = false;
+  dog.plusStatus = "";
+          }
+          
         }
 
         else if (!base) {
