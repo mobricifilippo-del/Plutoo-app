@@ -11745,6 +11745,7 @@ if (_uLat !== null) {
   snap = await window.db.collection("dogs")
     .where("lat", ">=", minLat)
     .where("lat", "<=", maxLat)
+    .limit(200)
     .get();
 } else {
   snap = await window.db.collection("dogs").get();
