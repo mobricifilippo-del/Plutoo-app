@@ -10194,7 +10194,7 @@ if (selfUid && otherUid) {
   (state.dogs || []).find(d => String(d.id) === String(dogId)) ||
   (DOGS.find(d => String(d.id) === String(dogId)) || null);
   
-  const dogName = (dog && dog.name) || (state.lang === "en" ? "DOG" : "Dog");
+  const dogName = (dog && dog.name) || (maybeDogName ? String(maybeDogName) : (state.lang === "en" ? "DOG" : "Dog"));
 
   const chatDogName = document.getElementById("chatDogName");
 const chatDogAvatar = document.getElementById("chatDogAvatar");
