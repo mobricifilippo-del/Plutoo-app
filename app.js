@@ -11506,6 +11506,10 @@ btnPublishDogBoard.dataset.originalText = btnPublishDogBoard.textContent;
 btnPublishDogBoard.dataset.busy = "1";
 btnPublishDogBoard.disabled = true;
 btnPublishDogBoard.textContent = "Pubblicazione in corso...";
+    
+    if (typeof showPlutooBlockingLoader === "function") {
+  showPlutooBlockingLoader("Stiamo pubblicando il tuo annuncio");
+    }
 
     const now = Date.now();
 
