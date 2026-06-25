@@ -12617,17 +12617,17 @@ function openUploadModal() {
   pruneStories24h();
 
   // ✅ FREE: 1 aggiornamento attivo ogni 24h — PLUS: illimitati
-  if (!StoriesState.canUploadStory()) {
-    const msg = state.lang === "it"
-      ? "Hai già un Aggiornamento DOG attivo.\nCon il piano Free puoi pubblicare 1 aggiornamento ogni 24h.\nCon Plutoo Plus hai aggiornamenti illimitati."
-      : "You already have an active DOG Update.\nWith the Free plan you can publish 1 update every 24h.\nWith Plutoo Plus you have unlimited updates.";
+if (!StoriesState.canUploadStory()) {
+  const msg = state.lang === "it"
+    ? "1 aggiornamento ogni 24 ore.\n\nPassa a Plutoo Plus per pubblicare senza limiti."
+    : "1 update every 24 hours.\n\nUpgrade to Plutoo Plus to publish without limits.";
 
-    showPlutooAlert(msg, {
-  title: "Plutoo",
-  confirmText: "OK"
-});
-    return;
-  }
+  showPlutooAlert(msg, {
+    title: "Plutoo",
+    confirmText: "OK"
+  });
+  return;
+}
 
   resetUploadModalUI();
   $("uploadStoryModal")?.classList.remove("hidden");
@@ -13020,16 +13020,16 @@ if (loader) loader.classList.remove("hidden");
   pruneStories24h();
 
   // ✅ 24h guard — secondo controllo al momento della scrittura reale
-  if (!state.plus && !StoriesState.canUploadStory()) {
-    showPlutooAlert(
-      state.lang === "it"
-        ? "Hai già un Aggiornamento DOG attivo.\nCon il piano Free puoi pubblicare 1 aggiornamento ogni 24h.\nCon Plutoo Plus hai aggiornamenti illimitati."
-        : "You already have an active DOG Update.\nWith the Free plan you can publish 1 update every 24h.\nWith Plutoo Plus you have unlimited updates.",
-      { title: "Plutoo", confirmText: "OK" }
-    );
-    StoriesState.__publishing = false;
-    return;
-  }
+if (!state.plus && !StoriesState.canUploadStory()) {
+  showPlutooAlert(
+    state.lang === "it"
+      ? "1 aggiornamento ogni 24 ore.\n\nPassa a Plutoo Plus per pubblicare senza limiti."
+      : "1 update every 24 hours.\n\nUpgrade to Plutoo Plus to publish without limits.",
+    { title: "Plutoo", confirmText: "OK" }
+  );
+  StoriesState.__publishing = false;
+  return;
+}
 
   const preview = $("uploadPreview");
 
