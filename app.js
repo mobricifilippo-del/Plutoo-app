@@ -10053,7 +10053,9 @@ async function loadChatHistory(chatId, dogName) {
     const snap = await db
   .collection("messages")
   .where("chatId", "==", chatId)
-  .get();
+.orderBy("createdAt", "desc")
+.limit(50)
+.get();
 
     const msgs = [];
 
