@@ -11572,6 +11572,11 @@ btnPublishDogBoard.textContent = "Pubblicazione in corso...";
 );
     
   } finally {
+
+    if (typeof hidePlutooBlockingLoader === "function") {
+  hidePlutooBlockingLoader();
+    }
+    
     if (btnPublishDogBoard) {
       btnPublishDogBoard.dataset.busy = "0";
 btnPublishDogBoard.disabled = false;
