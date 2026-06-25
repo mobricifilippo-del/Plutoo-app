@@ -10229,6 +10229,8 @@ if (chatDogAvatar) {
   chatPane.dataset.chatId = chatId;
   chatPane.dataset.otherUid = otherUid;
   chatPane.dataset.hasMatch = "0";
+  chatPane.dataset.status = "";
+  chatPane.dataset.msgCount = "0";
   state.currentDogId = dogId;
   state.currentChatId = chatId;
 
