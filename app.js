@@ -3564,6 +3564,42 @@ deleteBtn?.addEventListener("click", async (e) => {
       }
     }, { merge: true });
 
+    const chatSnapAfterDelete = await db.collection("chats").doc(chatId).get();
+const chatDataAfterDelete = chatSnapAfterDelete && chatSnapAfterDelete.exists
+  ? (chatSnapAfterDelete.data() || {})
+  : {};
+
+const membersAfterDelete = Array.isArray(chatDataAfterDelete.members)
+  ? chatDataAfterDelete.members.map((uid) => String(uid))
+  : [];
+
+const deletedByUidAfterDelete =
+  chatDataAfterDelete.deletedByUid &&
+  typeof chatDataAfterDelete.deletedByUid === "object"
+    ? chatDataAfterDelete.deletedByUid
+    : {};
+
+const allMembersDeleted =
+  membersAfterDelete.length > 0 &&
+  membersAfterDelete.every((uid) => deletedByUidAfterDelete[uid] === true);
+
+if (allMembersDeleted) {
+  const messagesSnap = await db
+    .collection("messages")
+    .where("chatId", "==", chatId)
+    .get();
+
+  const batch = db.batch();
+
+  messagesSnap.forEach((docSnap) => {
+    batch.delete(docSnap.ref);
+  });
+
+  batch.delete(db.collection("chats").doc(chatId));
+
+  await batch.commit();
+}
+
     loadMessagesLists();
 
     try {
