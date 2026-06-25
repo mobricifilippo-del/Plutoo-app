@@ -11259,6 +11259,13 @@ await window.db.collection("dogBoardReplies").add({
 
 } catch (e) {
   console.error("DogBoard delete post error:", e);
+
+          if (typeof showToast === "function") {
+  showToast("Errore eliminazione: " + (e.code || e.message || String(e)));
+} else {
+  alert("Errore eliminazione: " + (e.code || e.message || String(e)));
+          }
+          
         }
         
       };
