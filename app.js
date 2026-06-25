@@ -3558,11 +3558,9 @@ deleteBtn?.addEventListener("click", async (e) => {
 
   try {
 
-    await db.collection("chats").doc(chatId).set({
-  deletedByUid: {
-    [selfUid]: true
-  }
-}, { merge: true });
+    await db.collection("chats").doc(chatId).update({
+  [`deletedByUid.${selfUid}`]: true
+});
 
     const chatSnapAfterDelete = await db.collection("chats").doc(chatId).get();
 const chatDataAfterDelete = chatSnapAfterDelete && chatSnapAfterDelete.exists
