@@ -8082,15 +8082,8 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
             });
         }
 
-        if (state.plus) {
-          doUpload();
-        } else {
-          state.rewardOpen = true;
-          showRewardVideoMock("gallery", () => {
-            state.rewardOpen = false;
-            doUpload();
-          });
-        }
+        doUpload();
+        
       };
     }
     
