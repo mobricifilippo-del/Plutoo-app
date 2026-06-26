@@ -8838,7 +8838,7 @@ zoneInput.addEventListener("click", () => {
   },
   {
     enableHighAccuracy: true,
-    timeout: 10000,
+    timeout: 15000,
     maximumAge: 0
   }
 );
