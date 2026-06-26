@@ -8828,18 +8828,21 @@ zoneInput.addEventListener("click", () => {
     },
     
     (error) => {
-  showPlutooAlert(
-    `GPS DEBUG
+  const code = error && error.code;
 
-Code: ${error && error.code}
+  zoneInput.value =
+    code === 3
+      ? (state.lang === "it" ? "Tempo scaduto. Riprova." : "Timeout. Try again.")
+      : code === 2
+        ? (state.lang === "it" ? "Posizione non disponibile" : "Location unavailable")
+        : (state.lang === "it" ? "Permesso negato" : "Permission denied");
+},
 
-Message: ${error && error.message}`,
-    {
-      title: "Debug GPS",
-      confirmText: "OK"
-    }
-  );
-    },
+{
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 0
+}
     
     {
       enableHighAccuracy: true,
