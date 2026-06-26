@@ -9029,8 +9029,17 @@ uploadedProfilePhotoRef = storageRef;
     breeding: availabilityBreedingInput.checked === true,
     walks: availabilityWalksInput.checked === true
   },
+            
   updatedAt: ts
 };
+
+const savedLat = Number(zoneInput.dataset.lat);
+const savedLon = Number(zoneInput.dataset.lon);
+
+if (Number.isFinite(savedLat) && Number.isFinite(savedLon)) {
+  updateData.lat = savedLat;
+  updateData.lon = savedLon;
+}
 
           if (nextPhotoUrl !== null) {
             updateData.photoUrl = nextPhotoUrl;
