@@ -1,0 +1,1812 @@
+[
+  {
+    "id": "english_pointer",
+    "it": "Pointer inglese",
+    "en": "English Pointer"
+  },
+  {
+    "id": "english_setter",
+    "it": "Setter inglese",
+    "en": "English Setter"
+  },
+  {
+    "id": "kerry_blue_terrier",
+    "it": "Kerry Blue Terrier",
+    "en": "Kerry Blue Terrier"
+  },
+  {
+    "id": "cairn_terrier",
+    "it": "Cairn Terrier",
+    "en": "Cairn Terrier"
+  },
+  {
+    "id": "english_cocker_spaniel",
+    "it": "Cocker Spaniel Inglese",
+    "en": "English Cocker Spaniel"
+  },
+  {
+    "id": "gordon_setter",
+    "it": "Gordon setter",
+    "en": "Gordon Setter"
+  },
+  {
+    "id": "airedale_terrier",
+    "it": "Airedale Terrier",
+    "en": "Airedale Terrier"
+  },
+  {
+    "id": "australian_terrier",
+    "it": "Australian Terrier",
+    "en": "Australian Terrier"
+  },
+  {
+    "id": "bedlington_terrier",
+    "it": "Bedlington Terrier",
+    "en": "Bedlington Terrier"
+  },
+  {
+    "id": "border_terrier",
+    "it": "Border Terrier",
+    "en": "Border Terrier"
+  },
+  {
+    "id": "bull_terrier",
+    "it": "Bull Terrier taglia normale",
+    "en": "Bull Terrier"
+  },
+  {
+    "id": "fox_terrier_smooth",
+    "it": "Fox Terrier a pelo liscio",
+    "en": "Fox Terrier (Smooth)"
+  },
+  {
+    "id": "english_toy_terrier_black_and_tan",
+    "it": "English Toy Terrier Black and Tan",
+    "en": "English Toy Terrier (Black & Tan)"
+  },
+  {
+    "id": "swedish_vallhund",
+    "it": "Västgötaspets",
+    "en": "Swedish Vallhund"
+  },
+  {
+    "id": "belgian_shepherd_dog",
+    "it": "Cane da pastore belga",
+    "en": "Belgian Shepherd Dog"
+  },
+  {
+    "id": "old_english_sheepdog",
+    "it": "Old English Sheepdog",
+    "en": "Old English Sheepdog"
+  },
+  {
+    "id": "griffon_nivernais",
+    "it": "Griffon nivernais",
+    "en": "Griffon Nivernais"
+  },
+  {
+    "id": "briquet_griffon_vendeen",
+    "it": "Briquet griffon vendéen",
+    "en": "Briquet Griffon Vendeen"
+  },
+  {
+    "id": "ariegeois",
+    "it": "Ariégeois",
+    "en": "Ariegeois"
+  },
+  {
+    "id": "gascon_saintongeois",
+    "it": "Gascon saintongeois",
+    "en": "Gascon Saintongeois"
+  },
+  {
+    "id": "great_gascony_blue",
+    "it": "Grand bleu de Gascogne",
+    "en": "Great Gascony Blue"
+  },
+  {
+    "id": "poitevin",
+    "it": "Poitevin",
+    "en": "Poitevin"
+  },
+  {
+    "id": "billy",
+    "it": "Billy",
+    "en": "Billy"
+  },
+  {
+    "id": "artois_hound",
+    "it": "Chien d'Artois",
+    "en": "Artois Hound"
+  },
+  {
+    "id": "porcelaine",
+    "it": "Porcelaine",
+    "en": "Porcelaine"
+  },
+  {
+    "id": "small_blue_gascony",
+    "it": "Petit bleu de Gascogne",
+    "en": "Small Blue Gascony"
+  },
+  {
+    "id": "blue_gascony_griffon",
+    "it": "Griffon bleu de Gascogne",
+    "en": "Blue Gascony Griffon"
+  },
+  {
+    "id": "grand_basset_griffon_vendeen",
+    "it": "Grand Basset griffon vendéen",
+    "en": "Grand Basset Griffon Vendeen"
+  },
+  {
+    "id": "norman_artesien_basset",
+    "it": "Basset artésien normand",
+    "en": "Norman Artesien Basset"
+  },
+  {
+    "id": "blue_gascony_basset",
+    "it": "Basset bleu de Gascogne",
+    "en": "Blue Gascony Basset"
+  },
+  {
+    "id": "basset_fauve_de_bretagne",
+    "it": "Basset fauve de Bretagne",
+    "en": "Basset Fauve De Bretagne"
+  },
+  {
+    "id": "portuguese_water_dog",
+    "it": "Cão de agua Português",
+    "en": "Portuguese Water Dog"
+  },
+  {
+    "id": "welsh_corgi_cardigan",
+    "it": "Welsh Corgi Cardigan",
+    "en": "Welsh Corgi (Cardigan)"
+  },
+  {
+    "id": "welsh_corgi_pembroke",
+    "it": "Welsh Corgi Pembroke",
+    "en": "Welsh Corgi (Pembroke)"
+  },
+  {
+    "id": "irish_soft_coated_wheaten_terrier",
+    "it": "Irish Soft Coated Wheaten Terrier",
+    "en": "Irish Soft Coated Wheaten Terrier"
+  },
+  {
+    "id": "yugoslavian_shepherd_dog_sharplanina",
+    "it": "Cane da pastore di Ciarplanina",
+    "en": "Yugoslavian Shepherd Dog - Sharplanina"
+  },
+  {
+    "id": "jamthund",
+    "it": "Jämthund",
+    "en": "Jämthund"
+  },
+  {
+    "id": "basenji",
+    "it": "Basenji",
+    "en": "Basenji"
+  },
+  {
+    "id": "beauce_sheepdog",
+    "it": "Cane da pastore di Beauce",
+    "en": "Beauce Sheepdog"
+  },
+  {
+    "id": "bernese_mountain_dog",
+    "it": "Bovaro del Bernese",
+    "en": "Bernese Mountain Dog"
+  },
+  {
+    "id": "appenzell_cattle_dog",
+    "it": "Bovaro dell'Appenzell",
+    "en": "Appenzell Cattle Dog"
+  },
+  {
+    "id": "entlebuch_cattle_dog",
+    "it": "Bovaro dell'Entlebuch",
+    "en": "Entlebuch Cattle Dog"
+  },
+  {
+    "id": "karelian_bear_dog",
+    "it": "Cane da Orso della Carelia",
+    "en": "Karelian Bear Dog"
+  },
+  {
+    "id": "finnish_spitz",
+    "it": "Spitz finnico",
+    "en": "Finnish Spitz"
+  },
+  {
+    "id": "newfoundland",
+    "it": "Terranova",
+    "en": "Newfoundland"
+  },
+  {
+    "id": "finnish_hound",
+    "it": "Segugio finlandese",
+    "en": "Finnish Hound"
+  },
+  {
+    "id": "polish_hound",
+    "it": "Segugio polacco",
+    "en": "Polish Hound"
+  },
+  {
+    "id": "komondor",
+    "it": "Komondor",
+    "en": "Komondor"
+  },
+  {
+    "id": "kuvasz",
+    "it": "Kuvasz",
+    "en": "Kuvasz"
+  },
+  {
+    "id": "puli",
+    "it": "Puli",
+    "en": "Puli"
+  },
+  {
+    "id": "pumi",
+    "it": "Pumi",
+    "en": "Pumi"
+  },
+  {
+    "id": "hungarian_short_haired_pointer_vizsla",
+    "it": "Bracco ungherese a pelo corto",
+    "en": "Hungarian Short-Haired Pointer (Vizsla)"
+  },
+  {
+    "id": "great_swiss_mountain_dog",
+    "it": "Grande Bovaro Svizzero",
+    "en": "Great Swiss Mountain Dog"
+  },
+  {
+    "id": "swiss_hound",
+    "it": "Segugi svizzeri",
+    "en": "Swiss Hound"
+  },
+  {
+    "id": "small_swiss_hound",
+    "it": "Piccoli segugi svizzeri",
+    "en": "Small Swiss Hound"
+  },
+  {
+    "id": "st_bernard",
+    "it": "Cane di S. Bernardo",
+    "en": "St. Bernard"
+  },
+  {
+    "id": "coarse_haired_styrian_hound",
+    "it": "Segugio della Stiria a pelo ruvido",
+    "en": "Coarse-Haired Styrian Hound"
+  },
+  {
+    "id": "austrian_black_and_tan_hound",
+    "it": "Segugio austriaco",
+    "en": "Austrian Black and Tan Hound"
+  },
+  {
+    "id": "austrian_pinscher",
+    "it": "Pinscher austriaco",
+    "en": "Austrian  Pinscher"
+  },
+  {
+    "id": "maltese",
+    "it": "Maltese",
+    "en": "Maltese"
+  },
+  {
+    "id": "fawn_brittany_griffon",
+    "it": "Griffon fauve de Bretagne",
+    "en": "Fawn Brittany Griffon"
+  },
+  {
+    "id": "petit_basset_griffon_vendeen",
+    "it": "Petit Basset griffon vendéen",
+    "en": "Petit Basset Griffon Vendeen"
+  },
+  {
+    "id": "tyrolean_hound",
+    "it": "Segugio tirolese",
+    "en": "Tyrolean Hound"
+  },
+  {
+    "id": "lakeland_terrier",
+    "it": "Lakeland Terrier",
+    "en": "Lakeland Terrier"
+  },
+  {
+    "id": "manchester_terrier",
+    "it": "Manchester Terrier",
+    "en": "Manchester Terrier"
+  },
+  {
+    "id": "norwich_terrier",
+    "it": "Norwich Terrier",
+    "en": "Norwich Terrier"
+  },
+  {
+    "id": "scottish_terrier",
+    "it": "Scottish Terrier",
+    "en": "Scottish Terrier"
+  },
+  {
+    "id": "sealyham_terrier",
+    "it": "Sealyham Terrier",
+    "en": "Sealyham Terrier"
+  },
+  {
+    "id": "skye_terrier",
+    "it": "Skye Terrier",
+    "en": "Skye Terrier"
+  },
+  {
+    "id": "staffordshire_bull_terrier",
+    "it": "Staffordshire Bull Terrier",
+    "en": "Staffordshire Bull Terrier"
+  },
+  {
+    "id": "continental_toy_spaniel",
+    "it": "Epagneul nano continentale",
+    "en": "Continental Toy Spaniel"
+  },
+  {
+    "id": "welsh_terrier",
+    "it": "Welsh Terrier",
+    "en": "Welsh Terrier"
+  },
+  {
+    "id": "griffon_bruxellois",
+    "it": "Griffone di Bruxelles",
+    "en": "Griffon Bruxellois"
+  },
+  {
+    "id": "griffon_belge",
+    "it": "Griffone belga",
+    "en": "Griffon Belge"
+  },
+  {
+    "id": "petit_brabancon",
+    "it": "Piccolo Brabantino",
+    "en": "Petit Brabançon"
+  },
+  {
+    "id": "schipperke",
+    "it": "Schipperke",
+    "en": "Schipperke"
+  },
+  {
+    "id": "bloodhound",
+    "it": "Chien de Saint Hubert",
+    "en": "Bloodhound"
+  },
+  {
+    "id": "west_highland_white_terrier",
+    "it": "West Highland White Terrier",
+    "en": "West Highland White Terrier"
+  },
+  {
+    "id": "yorkshire_terrier",
+    "it": "Yorkshire Terrier",
+    "en": "Yorkshire Terrier"
+  },
+  {
+    "id": "catalan_sheepdog",
+    "it": "Cane da pastore catalano",
+    "en": "Catalan Sheepdog"
+  },
+  {
+    "id": "shetland_sheepdog",
+    "it": "Cane da pastore scozzese",
+    "en": "Shetland Sheepdog"
+  },
+  {
+    "id": "ibizan_podenco",
+    "it": "Podenco Ibicenco",
+    "en": "Ibizan Podenco"
+  },
+  {
+    "id": "burgos_pointing_dog",
+    "it": "Bracco di Burgos",
+    "en": "Burgos Pointing Dog"
+  },
+  {
+    "id": "spanish_mastiff",
+    "it": "Mastino spagnolo",
+    "en": "Spanish Mastiff"
+  },
+  {
+    "id": "pyrenean_mastiff",
+    "it": "Mastino dei Pirenei",
+    "en": "Pyrenean Mastiff"
+  },
+  {
+    "id": "portuguese_sheepdog",
+    "it": "Cão da Serra de Aires",
+    "en": "Portuguese Sheepdog"
+  },
+  {
+    "id": "portuguese_warren_hound_portuguese_podengo",
+    "it": "Podenco Portoghese",
+    "en": "Portuguese Warren Hound-Portuguese Podengo"
+  },
+  {
+    "id": "brittany_spaniel",
+    "it": "Epagneul breton",
+    "en": "Brittany Spaniel"
+  },
+  {
+    "id": "rafeiro_of_alentejo",
+    "it": "Rafeiro do Alentejo",
+    "en": "Rafeiro Of Alentejo"
+  },
+  {
+    "id": "german_spitz",
+    "it": "Spitz tedeschi",
+    "en": "German Spitz"
+  },
+  {
+    "id": "german_wire_haired_pointing_dog",
+    "it": "Cane da ferma tedesco a pelo duro",
+    "en": "German Wire- Haired Pointing Dog"
+  },
+  {
+    "id": "weimaraner",
+    "it": "Weimaraner",
+    "en": "Weimaraner"
+  },
+  {
+    "id": "westphalian_dachsbracke",
+    "it": "Segugio della Westfalia",
+    "en": "Westphalian Dachsbracke"
+  },
+  {
+    "id": "french_bulldog",
+    "it": "Bouledogue francese",
+    "en": "French Bulldog"
+  },
+  {
+    "id": "kleiner_munsterlander",
+    "it": "Piccolo Münsterländer",
+    "en": "Kleiner Münsterländer"
+  },
+  {
+    "id": "german_hunting_terrier",
+    "it": "Deutscher Jagdterrier",
+    "en": "German Hunting Terrier"
+  },
+  {
+    "id": "german_spaniel",
+    "it": "Spaniel tedesco",
+    "en": "German Spaniel"
+  },
+  {
+    "id": "french_water_dog",
+    "it": "Barbet",
+    "en": "French Water Dog"
+  },
+  {
+    "id": "blue_picardy_spaniel",
+    "it": "Epagneul bleu de Picardie",
+    "en": "Blue Picardy Spaniel"
+  },
+  {
+    "id": "wire_haired_pointing_griffon_korthals",
+    "it": "Griffone a pelo duro",
+    "en": "Wire-Haired Pointing Griffon Korthals"
+  },
+  {
+    "id": "picardy_spaniel",
+    "it": "Epagneul picard",
+    "en": "Picardy Spaniel"
+  },
+  {
+    "id": "clumber_spaniel",
+    "it": "Clumber Spaniel",
+    "en": "Clumber Spaniel"
+  },
+  {
+    "id": "curly_coated_retriever",
+    "it": "Curly Coated Retriever",
+    "en": "Curly Coated Retriever"
+  },
+  {
+    "id": "golden_retriever",
+    "it": "Golden Retriever",
+    "en": "Golden Retriever"
+  },
+  {
+    "id": "briard",
+    "it": "Cane da Pastore di Brie",
+    "en": "Briard"
+  },
+  {
+    "id": "pont_audemer_spaniel",
+    "it": "Epagneul de Pont-Audemer",
+    "en": "Pont-Audemer Spaniel"
+  },
+  {
+    "id": "saint_germain_pointer",
+    "it": "Bracco Saint Germain",
+    "en": "Saint Germain Pointer"
+  },
+  {
+    "id": "dogue_de_bordeaux",
+    "it": "Dogue de Bordeaux",
+    "en": "Dogue De Bordeaux"
+  },
+  {
+    "id": "deutsch_langhaar",
+    "it": "Cane da ferma tedesco a pelo lungo",
+    "en": "Deutsch Langhaar"
+  },
+  {
+    "id": "large_munsterlander",
+    "it": "Grande Münsterländer",
+    "en": "Large Munsterlander"
+  },
+  {
+    "id": "german_short_haired_pointing_dog",
+    "it": "Cane da ferma tedesco a pelo corto",
+    "en": "German Short- Haired Pointing Dog"
+  },
+  {
+    "id": "irish_red_setter",
+    "it": "Setter irlandese",
+    "en": "Irish Red Setter"
+  },
+  {
+    "id": "flat_coated_retriever",
+    "it": "Flat Coated Retriever",
+    "en": "Flat Coated Retriever"
+  },
+  {
+    "id": "labrador_retriever",
+    "it": "Labrador Retriever",
+    "en": "Labrador Retriever"
+  },
+  {
+    "id": "field_spaniel",
+    "it": "Field Spaniel",
+    "en": "Field Spaniel"
+  },
+  {
+    "id": "irish_water_spaniel",
+    "it": "Irish Water Spaniel",
+    "en": "Irish Water Spaniel"
+  },
+  {
+    "id": "english_springer_spaniel",
+    "it": "Springer Spaniel inglese",
+    "en": "English Springer Spaniel"
+  },
+  {
+    "id": "welsh_springer_spaniel",
+    "it": "Welsh Springer Spaniel",
+    "en": "Welsh Springer Spaniel"
+  },
+  {
+    "id": "sussex_spaniel",
+    "it": "Sussex Spaniel",
+    "en": "Sussex Spaniel"
+  },
+  {
+    "id": "king_charles_spaniel",
+    "it": "King Charles Spaniel",
+    "en": "King Charles Spaniel"
+  },
+  {
+    "id": "smalandsstovare",
+    "it": "Smålandsstövare",
+    "en": "Smålandsstövare"
+  },
+  {
+    "id": "drever",
+    "it": "Drever",
+    "en": "Drever"
+  },
+  {
+    "id": "schillerstovare",
+    "it": "Schillerstövare",
+    "en": "Schillerstövare"
+  },
+  {
+    "id": "hamiltonstovare",
+    "it": "Hamiltonstövare",
+    "en": "Hamiltonstövare"
+  },
+  {
+    "id": "french_pointing_dog_gascogne_type",
+    "it": "Bracco francese tipo Gascogne",
+    "en": "French Pointing Dog - Gascogne Type"
+  },
+  {
+    "id": "french_pointing_dog_pyrenean_type",
+    "it": "Bracco francese tipo Pirenei",
+    "en": "French Pointing Dog - Pyrenean Type"
+  },
+  {
+    "id": "swedish_lapphund",
+    "it": "Lapphund",
+    "en": "Swedish Lapphund"
+  },
+  {
+    "id": "cavalier_king_charles_spaniel",
+    "it": "Cavalier King Charles Spaniel",
+    "en": "Cavalier King Charles Spaniel"
+  },
+  {
+    "id": "pyrenean_mountain_dog",
+    "it": "Cane da Montagna dei Pirenei",
+    "en": "Pyrenean Mountain Dog"
+  },
+  {
+    "id": "pyrenean_sheepdog_smooth_faced",
+    "it": "Cane da pastore dei Pirenei a faccia rasa",
+    "en": "Pyrenean Sheepdog - Smooth Faced"
+  },
+  {
+    "id": "irish_terrier",
+    "it": "Irish Terrier",
+    "en": "Irish Terrier"
+  },
+  {
+    "id": "boston_terrier",
+    "it": "Boston Terrier",
+    "en": "Boston Terrier"
+  },
+  {
+    "id": "long_haired_pyrenean_sheepdog",
+    "it": "Cane da pastore dei Pirenei a pelo lungo",
+    "en": "Long-Haired Pyrenean Sheepdog"
+  },
+  {
+    "id": "slovakian_chuvach",
+    "it": "Slovensky Cuvac",
+    "en": "Slovakian Chuvach"
+  },
+  {
+    "id": "dobermann",
+    "it": "Dobermann",
+    "en": "Dobermann"
+  },
+  {
+    "id": "boxer",
+    "it": "Boxer",
+    "en": "Boxer"
+  },
+  {
+    "id": "leonberger",
+    "it": "Leonberger",
+    "en": "Leonberger"
+  },
+  {
+    "id": "rhodesian_ridgeback",
+    "it": "Rhodesian Ridgeback",
+    "en": "Rhodesian Ridgeback"
+  },
+  {
+    "id": "rottweiler",
+    "it": "Rottweiler",
+    "en": "Rottweiler"
+  },
+  {
+    "id": "dachshund",
+    "it": "Bassotto",
+    "en": "Dachshund"
+  },
+  {
+    "id": "bulldog",
+    "it": "Bulldog",
+    "en": "Bulldog"
+  },
+  {
+    "id": "serbian_hound",
+    "it": "Segugio Serbo",
+    "en": "Serbian Hound"
+  },
+  {
+    "id": "istrian_short_haired_hound",
+    "it": "Segugio dell'Istria a pelo raso",
+    "en": "Istrian Short-Haired Hound"
+  },
+  {
+    "id": "istrian_wire_haired_hound",
+    "it": "Segugio dell'Istria a pelo duro",
+    "en": "Istrian Wire-Haired Hound"
+  },
+  {
+    "id": "dalmatian",
+    "it": "Dalmata",
+    "en": "Dalmatian"
+  },
+  {
+    "id": "posavatz_hound",
+    "it": "Segugio Posavatz",
+    "en": "Posavatz Hound"
+  },
+  {
+    "id": "bosnian_broken_haired_hound_called_barak",
+    "it": "Segugio della Bosnia a pelo duro",
+    "en": "Bosnian Broken-Haired Hound - Called Barak"
+  },
+  {
+    "id": "collie_rough",
+    "it": "Cane da pastore scozzese a pelo lungo",
+    "en": "Collie Rough"
+  },
+  {
+    "id": "bullmastiff",
+    "it": "Bullmastiff",
+    "en": "Bullmastiff"
+  },
+  {
+    "id": "greyhound",
+    "it": "Greyhound",
+    "en": "Greyhound"
+  },
+  {
+    "id": "english_foxhound",
+    "it": "Foxhound",
+    "en": "English Foxhound"
+  },
+  {
+    "id": "irish_wolfhound",
+    "it": "Levriero irlandese",
+    "en": "Irish Wolfhound"
+  },
+  {
+    "id": "beagle",
+    "it": "Beagle",
+    "en": "Beagle"
+  },
+  {
+    "id": "whippet",
+    "it": "Whippet",
+    "en": "Whippet"
+  },
+  {
+    "id": "basset_hound",
+    "it": "Basset Hound",
+    "en": "Basset Hound"
+  },
+  {
+    "id": "deerhound",
+    "it": "Levriero Inglese",
+    "en": "Deerhound"
+  },
+  {
+    "id": "italian_spinone",
+    "it": "Spinone italiano",
+    "en": "Italian Spinone"
+  },
+  {
+    "id": "german_shepherd_dog",
+    "it": "Cane da pastore tedesco",
+    "en": "German Shepherd Dog"
+  },
+  {
+    "id": "american_cocker_spaniel",
+    "it": "Cocker americano",
+    "en": "American Cocker Spaniel"
+  },
+  {
+    "id": "dandie_dinmont_terrier",
+    "it": "Dandie Dinmont Terrier",
+    "en": "Dandie Dinmont Terrier"
+  },
+  {
+    "id": "fox_terrier_wire",
+    "it": "Fox Terrier a pelo ruvido",
+    "en": "Fox Terrier (Wire)"
+  },
+  {
+    "id": "castro_laboreiro_dog",
+    "it": "Cão de Castro Laboreiro",
+    "en": "Castro Laboreiro Dog"
+  },
+  {
+    "id": "bouvier_des_ardennes",
+    "it": "Bovaro delle Ardenne",
+    "en": "Bouvier Des Ardennes"
+  },
+  {
+    "id": "poodle",
+    "it": "Barboni",
+    "en": "Poodle"
+  },
+  {
+    "id": "estrela_mountain_dog",
+    "it": "Cane da Sierra di Estrela",
+    "en": "Estrela Mountain Dog"
+  },
+  {
+    "id": "french_spaniel",
+    "it": "Epagneul français",
+    "en": "French Spaniel"
+  },
+  {
+    "id": "picardy_sheepdog",
+    "it": "Cane da pastore di Picardia",
+    "en": "Picardy Sheepdog"
+  },
+  {
+    "id": "ariege_pointing_dog",
+    "it": "Bracco d'Ariège",
+    "en": "Ariege Pointing Dog"
+  },
+  {
+    "id": "bourbonnais_pointing_dog",
+    "it": "Bracco del Bourbonnais",
+    "en": "Bourbonnais Pointing Dog"
+  },
+  {
+    "id": "auvergne_pointer",
+    "it": "Bracco d'Auvergne",
+    "en": "Auvergne Pointer"
+  },
+  {
+    "id": "giant_schnauzer",
+    "it": "Riesenschnauzer",
+    "en": "Giant Schnauzer"
+  },
+  {
+    "id": "schnauzer",
+    "it": "Schnauzer",
+    "en": "Schnauzer"
+  },
+  {
+    "id": "miniature_schnauzer",
+    "it": "Zwergschnauzer",
+    "en": "Miniature Schnauzer"
+  },
+  {
+    "id": "german_pinscher",
+    "it": "Pinscher tedesco",
+    "en": "German Pinscher"
+  },
+  {
+    "id": "miniature_pinscher",
+    "it": "Zwergpinscher",
+    "en": "Miniature Pinscher"
+  },
+  {
+    "id": "affenpinscher",
+    "it": "Affenpinscher",
+    "en": "Affenpinscher"
+  },
+  {
+    "id": "portuguese_pointing_dog",
+    "it": "Bracco portoghese",
+    "en": "Portuguese Pointing Dog"
+  },
+  {
+    "id": "sloughi",
+    "it": "Levriero Arabo",
+    "en": "Sloughi"
+  },
+  {
+    "id": "finnish_lapponian_dog",
+    "it": "Lapinkoira",
+    "en": "Finnish Lapponian Dog"
+  },
+  {
+    "id": "hovawart",
+    "it": "Hovawart",
+    "en": "Hovawart"
+  },
+  {
+    "id": "bouvier_des_flandres",
+    "it": "Bovaro delle Fiandre",
+    "en": "Bouvier Des Flandres"
+  },
+  {
+    "id": "kromfohrlander",
+    "it": "Kromfohrländer",
+    "en": "Kromfohrländer"
+  },
+  {
+    "id": "borzoi_russian_hunting_sighthound",
+    "it": "Levriero russo",
+    "en": "Borzoi - Russian Hunting Sighthound"
+  },
+  {
+    "id": "bergamasco_shepherd_dog",
+    "it": "Cane da pastore bergamasco",
+    "en": "Bergamasco Shepherd Dog"
+  },
+  {
+    "id": "italian_volpino",
+    "it": "Volpino italiano",
+    "en": "Italian Volpino"
+  },
+  {
+    "id": "bolognese",
+    "it": "Bolognese",
+    "en": "Bolognese"
+  },
+  {
+    "id": "neapolitan_mastiff",
+    "it": "Mastino napoletano",
+    "en": "Neapolitan Mastiff"
+  },
+  {
+    "id": "italian_rough_haired_segugio",
+    "it": "Segugio italiano a pelo forte",
+    "en": "Italian Rough-Haired Segugio"
+  },
+  {
+    "id": "cirneco_dell_etna",
+    "it": "Cirneco dell’Etna",
+    "en": "Cirneco Dell'Etna"
+  },
+  {
+    "id": "italian_sighthound",
+    "it": "Piccolo levriero italiano",
+    "en": "Italian Sighthound"
+  },
+  {
+    "id": "maremma_and_the_abruzzes_sheepdog",
+    "it": "Cane da pastore maremmano-abruzzese",
+    "en": "Maremma and The Abruzzes Sheepdog"
+  },
+  {
+    "id": "italian_pointing_dog",
+    "it": "Bracco italiano",
+    "en": "Italian Pointing Dog"
+  },
+  {
+    "id": "norwegian_hound",
+    "it": "Dunker",
+    "en": "Norwegian Hound"
+  },
+  {
+    "id": "spanish_hound",
+    "it": "Sabueso Español",
+    "en": "Spanish Hound"
+  },
+  {
+    "id": "chow_chow",
+    "it": "Chow Chow",
+    "en": "Chow Chow"
+  },
+  {
+    "id": "japanese_chin",
+    "it": "Chin",
+    "en": "Japanese Chin"
+  },
+  {
+    "id": "pekingese",
+    "it": "Pechinese",
+    "en": "Pekingese"
+  },
+  {
+    "id": "shih_tzu",
+    "it": "Shih Tzu",
+    "en": "Shih Tzu"
+  },
+  {
+    "id": "tibetan_terrier",
+    "it": "Tibetan Terrier",
+    "en": "Tibetan Terrier"
+  },
+  {
+    "id": "canadian_eskimo_dog",
+    "it": "Canadian Eskimo Dog",
+    "en": "Canadian Eskimo Dog"
+  },
+  {
+    "id": "samoyed",
+    "it": "Samoiedo",
+    "en": "Samoyed"
+  },
+  {
+    "id": "hanoverian_scent_hound",
+    "it": "Hannoverscher Schweisshund",
+    "en": "Hanoverian Scent Hound"
+  },
+  {
+    "id": "hellenic_hound",
+    "it": "Segugio ellenico",
+    "en": "Hellenic Hound"
+  },
+  {
+    "id": "bichon_frise",
+    "it": "Bichon à poil frisé",
+    "en": "Bichon Frise"
+  },
+  {
+    "id": "pudelpointer",
+    "it": "Pudelpointer",
+    "en": "Pudelpointer"
+  },
+  {
+    "id": "bavarian_mountain_scent_hound",
+    "it": "Bayerischer Gebirgsschweisshund",
+    "en": "Bavarian Mountain Scent Hound"
+  },
+  {
+    "id": "chihuahua",
+    "it": "Chihuahua",
+    "en": "Chihuahua"
+  },
+  {
+    "id": "french_tricolour_hound",
+    "it": "Français tricolore",
+    "en": "French Tricolour Hound"
+  },
+  {
+    "id": "french_white_and_black_hound",
+    "it": "Français blanc et noir",
+    "en": "French White & Black Hound"
+  },
+  {
+    "id": "wetterhoun",
+    "it": "Spaniel Olandese",
+    "en": "Wetterhoun"
+  },
+  {
+    "id": "stabijhoun",
+    "it": "Stabijhoun",
+    "en": "Stabijhoun"
+  },
+  {
+    "id": "dutch_shepherd_dog",
+    "it": "Cane da pastore olandese",
+    "en": "Dutch Shepherd Dog"
+  },
+  {
+    "id": "drentsche_partridge_dog",
+    "it": "Epagneul olandese di Drent",
+    "en": "Drentsche Partridge Dog"
+  },
+  {
+    "id": "fila_brasileiro",
+    "it": "Fila Brasileiro",
+    "en": "Fila Brasileiro"
+  },
+  {
+    "id": "landseer_european_continental_type",
+    "it": "Landseer",
+    "en": "Landseer (European Continental Type)"
+  },
+  {
+    "id": "lhasa_apso",
+    "it": "Lhasa Apso",
+    "en": "Lhasa Apso"
+  },
+  {
+    "id": "afghan_hound",
+    "it": "Levriero afgano",
+    "en": "Afghan Hound"
+  },
+  {
+    "id": "serbian_tricolour_hound",
+    "it": "Segugio serbo tricolore (ex segugio tricolore",
+    "en": "Serbian Tricolour Hound"
+  },
+  {
+    "id": "tibetan_mastiff",
+    "it": "Tibetan mastiff",
+    "en": "Tibetan Mastiff"
+  },
+  {
+    "id": "tibetan_spaniel",
+    "it": "Tibetan Spaniel",
+    "en": "Tibetan Spaniel"
+  },
+  {
+    "id": "deutsch_stichelhaar",
+    "it": "Cane da ferma tedesco a pelo ruvido",
+    "en": "Deutsch Stichelhaar"
+  },
+  {
+    "id": "little_lion_dog",
+    "it": "Piccolo cane leone",
+    "en": "Little Lion Dog"
+  },
+  {
+    "id": "xoloitzcuintle",
+    "it": "Xoloitzcuintle",
+    "en": "Xoloitzcuintle"
+  },
+  {
+    "id": "great_dane",
+    "it": "Alano",
+    "en": "Great Dane"
+  },
+  {
+    "id": "australian_silky_terrier",
+    "it": "Australian Silky Terrier",
+    "en": "Australian Silky Terrier"
+  },
+  {
+    "id": "norwegian_buhund",
+    "it": "Norsk Buhund",
+    "en": "Norwegian Buhund"
+  },
+  {
+    "id": "mudi",
+    "it": "Mudi",
+    "en": "Mudi"
+  },
+  {
+    "id": "hungarian_wire_haired_pointer",
+    "it": "Bracco ungherese a pelo duro",
+    "en": "Hungarian Wire-Haired Pointer"
+  },
+  {
+    "id": "hungarian_greyhound",
+    "it": "Levriero ungherese",
+    "en": "Hungarian Greyhound"
+  },
+  {
+    "id": "hungarian_hound_transylvanian_scent_hound",
+    "it": "Segugio della Transilvania",
+    "en": "Hungarian Hound - Transylvanian Scent Hound"
+  },
+  {
+    "id": "norwegian_elkhound_grey",
+    "it": "Norsk Elghund Grigio",
+    "en": "Norwegian Elkhound Grey"
+  },
+  {
+    "id": "alaskan_malamute",
+    "it": "Alaskan Malamute",
+    "en": "Alaskan Malamute"
+  },
+  {
+    "id": "slovakian_hound",
+    "it": "Slovensky Kopov",
+    "en": "Slovakian Hound"
+  },
+  {
+    "id": "bohemian_wire_haired_pointing_griffon",
+    "it": "Cane da ferma boemo a pelo ruvido",
+    "en": "Bohemian Wire-Haired Pointing Griffon"
+  },
+  {
+    "id": "cesky_terrier",
+    "it": "Terrier boemo",
+    "en": "Cesky Terrier"
+  },
+  {
+    "id": "atlas_mountain_dog_aidi",
+    "it": "Cane dell'Atlas",
+    "en": "Atlas Mountain Dog (Aidi)"
+  },
+  {
+    "id": "pharaoh_hound",
+    "it": "Pharaoh Hound",
+    "en": "Pharaoh Hound"
+  },
+  {
+    "id": "majorca_mastiff",
+    "it": "Perro dogo mallorquin",
+    "en": "Majorca Mastiff"
+  },
+  {
+    "id": "havanese",
+    "it": "Bichon Havanais",
+    "en": "Havanese"
+  },
+  {
+    "id": "polish_lowland_sheepdog",
+    "it": "Cane da pastore di Vallée",
+    "en": "Polish Lowland Sheepdog"
+  },
+  {
+    "id": "polish_tatra_shepherd",
+    "it": "Cane da pastore di Tatra",
+    "en": "Polish Tatra Shepherd"
+  },
+  {
+    "id": "pug",
+    "it": "Carlino",
+    "en": "Pug"
+  },
+  {
+    "id": "alpine_dachsbracke",
+    "it": "Alpenläendische Dachsbracke",
+    "en": "Alpine Dachsbracke"
+  },
+  {
+    "id": "akita",
+    "it": "Akita",
+    "en": "Akita"
+  },
+  {
+    "id": "shiba",
+    "it": "Shiba",
+    "en": "Shiba"
+  },
+  {
+    "id": "japanese_terrier",
+    "it": "Terrier Giapponese",
+    "en": "Japanese Terrier"
+  },
+  {
+    "id": "tosa",
+    "it": "Tosa",
+    "en": "Tosa"
+  },
+  {
+    "id": "hokkaido",
+    "it": "Hokkaïdo",
+    "en": "Hokkaido"
+  },
+  {
+    "id": "japanese_spitz",
+    "it": "Spitz giapponese",
+    "en": "Japanese Spitz"
+  },
+  {
+    "id": "chesapeake_bay_retriever",
+    "it": "Chesapeake Bay Retriever",
+    "en": "Chesapeake Bay Retriever"
+  },
+  {
+    "id": "mastiff",
+    "it": "Mastiff",
+    "en": "Mastiff"
+  },
+  {
+    "id": "norwegian_lundehund",
+    "it": "Norsk Lundehund",
+    "en": "Norwegian Lundehund"
+  },
+  {
+    "id": "hygen_hound",
+    "it": "Hygenhund",
+    "en": "Hygen Hound"
+  },
+  {
+    "id": "halden_hound",
+    "it": "Haldenstøver",
+    "en": "Halden Hound"
+  },
+  {
+    "id": "norwegian_elkhound_black",
+    "it": "Norsk Elghund Nero",
+    "en": "Norwegian Elkhound Black"
+  },
+  {
+    "id": "saluki",
+    "it": "Saluki",
+    "en": "Saluki"
+  },
+  {
+    "id": "siberian_husky",
+    "it": "Siberian Husky",
+    "en": "Siberian Husky"
+  },
+  {
+    "id": "bearded_collie",
+    "it": "Bearded Collie",
+    "en": "Bearded Collie"
+  },
+  {
+    "id": "norfolk_terrier",
+    "it": "Norfolk Terrier",
+    "en": "Norfolk Terrier"
+  },
+  {
+    "id": "canaan_dog",
+    "it": "Canaan Dog",
+    "en": "Canaan Dog"
+  },
+  {
+    "id": "greenland_dog",
+    "it": "Groenlandese",
+    "en": "Greenland Dog"
+  },
+  {
+    "id": "brazilian_tracker",
+    "it": "Rastreador Brasileiro",
+    "en": "Brazilian Tracker"
+  },
+  {
+    "id": "norrbottenspitz",
+    "it": "Norrbottenspets",
+    "en": "Norrbottenspitz"
+  },
+  {
+    "id": "croatian_shepherd_dog",
+    "it": "Cane da pastore croato",
+    "en": "Croatian Shepherd Dog"
+  },
+  {
+    "id": "karst_shepherd_dog",
+    "it": "Cane da pastore di Karst",
+    "en": "Karst Shepherd Dog"
+  },
+  {
+    "id": "montenegrin_mountain_hound",
+    "it": "Segugio montenegrino da montagna (ex segugio",
+    "en": "Montenegrin Mountain Hound"
+  },
+  {
+    "id": "old_danish_pointing_dog",
+    "it": "Gammel Dansk Hønsehund",
+    "en": "Old Danish Pointing Dog"
+  },
+  {
+    "id": "grand_griffon_vendeen",
+    "it": "Grand griffon vendéen",
+    "en": "Grand Griffon Vendeen"
+  },
+  {
+    "id": "coton_de_tulear",
+    "it": "Coton de Tuléar",
+    "en": "Coton De Tulear"
+  },
+  {
+    "id": "lapponian_herder",
+    "it": "Lapinporokoïra",
+    "en": "Lapponian Herder"
+  },
+  {
+    "id": "spanish_greyhound",
+    "it": "Levriero Spagnolo",
+    "en": "Spanish Greyhound"
+  },
+  {
+    "id": "american_staffordshire_terrier",
+    "it": "American Staffordshire Terrier",
+    "en": "American Staffordshire Terrier"
+  },
+  {
+    "id": "australian_cattle_dog",
+    "it": "Australian Cattle Dog",
+    "en": "Australian Cattle Dog"
+  },
+  {
+    "id": "chinese_crested_dog",
+    "it": "Chinese Crested Dog",
+    "en": "Chinese Crested Dog"
+  },
+  {
+    "id": "icelandic_sheepdog",
+    "it": "Iceland Dog",
+    "en": "Icelandic Sheepdog"
+  },
+  {
+    "id": "beagle_harrier",
+    "it": "Beagle Harrier",
+    "en": "Beagle Harrier"
+  },
+  {
+    "id": "eurasian",
+    "it": "Eurasier",
+    "en": "Eurasian"
+  },
+  {
+    "id": "dogo_argentino",
+    "it": "Dogo Argentino",
+    "en": "Dogo Argentino"
+  },
+  {
+    "id": "australian_kelpie",
+    "it": "Cane da pastore australiano",
+    "en": "Australian Kelpie"
+  },
+  {
+    "id": "otterhound",
+    "it": "Otterhound",
+    "en": "Otterhound"
+  },
+  {
+    "id": "harrier",
+    "it": "Harrier",
+    "en": "Harrier"
+  },
+  {
+    "id": "collie_smooth",
+    "it": "Cane da pastore scozzese a pelo corto",
+    "en": "Collie Smooth"
+  },
+  {
+    "id": "border_collie",
+    "it": "Border Collie",
+    "en": "Border Collie"
+  },
+  {
+    "id": "romagna_water_dog",
+    "it": "Lagotto Romagnolo",
+    "en": "Romagna Water Dog"
+  },
+  {
+    "id": "german_hound",
+    "it": "Segugio tedesco",
+    "en": "German Hound"
+  },
+  {
+    "id": "black_and_tan_coonhound",
+    "it": "Black and Tan Coonhound",
+    "en": "Black and Tan Coonhound"
+  },
+  {
+    "id": "american_water_spaniel",
+    "it": "American Water Spaniel",
+    "en": "American Water Spaniel"
+  },
+  {
+    "id": "irish_glen_of_imaal_terrier",
+    "it": "Irish Glen of Imaal Terrier",
+    "en": "Irish Glen Of Imaal Terrier"
+  },
+  {
+    "id": "american_foxhound",
+    "it": "American Foxhound",
+    "en": "American Foxhound"
+  },
+  {
+    "id": "russian_european_laika",
+    "it": "Laika Russo-Europeo",
+    "en": "Russian-European Laika"
+  },
+  {
+    "id": "east_siberian_laika",
+    "it": "Laika della Siberia Orientale",
+    "en": "East Siberian Laika"
+  },
+  {
+    "id": "west_siberian_laika",
+    "it": "Laika della Siberia Occidentale",
+    "en": "West Siberian Laika"
+  },
+  {
+    "id": "azawakh",
+    "it": "Azawakh",
+    "en": "Azawakh"
+  },
+  {
+    "id": "dutch_smoushond",
+    "it": "Smoushond Olandese",
+    "en": "Dutch Smoushond"
+  },
+  {
+    "id": "shar_pei",
+    "it": "Shar Pei",
+    "en": "Shar Pei"
+  },
+  {
+    "id": "peruvian_hairless_dog",
+    "it": "Perro sin pelo del Perù",
+    "en": "Peruvian Hairless Dog"
+  },
+  {
+    "id": "saarloos_wolfhond",
+    "it": "Cane lupo di Saarloos",
+    "en": "Saarloos Wolfhond"
+  },
+  {
+    "id": "nova_scotia_duck_tolling_retriever",
+    "it": "Nova Scotia Duck Tolling Retriever",
+    "en": "Nova Scotia Duck Tolling Retriever"
+  },
+  {
+    "id": "dutch_schapendoes",
+    "it": "Schapendoes",
+    "en": "Dutch Schapendoes"
+  },
+  {
+    "id": "nederlandse_kooikerhondje",
+    "it": "Kooikerhondje",
+    "en": "Nederlandse Kooikerhondje"
+  },
+  {
+    "id": "broholmer",
+    "it": "Broholmer",
+    "en": "Broholmer"
+  },
+  {
+    "id": "french_white_and_orange_hound",
+    "it": "Français blanc et orange",
+    "en": "French White and Orange Hound"
+  },
+  {
+    "id": "kai",
+    "it": "Kai",
+    "en": "Kai"
+  },
+  {
+    "id": "kishu",
+    "it": "Kishu",
+    "en": "Kishu"
+  },
+  {
+    "id": "shikoku",
+    "it": "Shikoku",
+    "en": "Shikoku"
+  },
+  {
+    "id": "wirehaired_slovakian_pointer",
+    "it": "Cane da ferma slovacco a pelo duro",
+    "en": "Wirehaired Slovakian Pointer"
+  },
+  {
+    "id": "majorca_shepherd_dog",
+    "it": "Cane da pastore Mallorquin",
+    "en": "Majorca Shepherd Dog"
+  },
+  {
+    "id": "great_anglo_french_tricolour_hound",
+    "it": "Grand anglo-français tricolore",
+    "en": "Great Anglo-French Tricolour Hound"
+  },
+  {
+    "id": "great_anglo_french_white_and_black_hound",
+    "it": "Grand anglo-français blanc et noir",
+    "en": "Great Anglo-French White and Black Hound"
+  },
+  {
+    "id": "great_anglo_french_white_and_orange_hound",
+    "it": "Grand anglo-français blanc et orange",
+    "en": "Great Anglo-French White & Orange Hound"
+  },
+  {
+    "id": "medium_sized_anglo_french_hound",
+    "it": "Anglo-Français de petite vénerie",
+    "en": "Medium-Sized Anglo-French Hound"
+  },
+  {
+    "id": "south_russian_shepherd_dog",
+    "it": "Cane da pastore della Russia meridionale",
+    "en": "South Russian Shepherd Dog"
+  },
+  {
+    "id": "russian_black_terrier",
+    "it": "Terrier nero russo",
+    "en": "Russian Black Terrier"
+  },
+  {
+    "id": "caucasian_shepherd_dog",
+    "it": "Cane da pastore del Caucaso",
+    "en": "Caucasian Shepherd Dog"
+  },
+  {
+    "id": "canarian_warren_hound",
+    "it": "Podenco Canario",
+    "en": "Canarian Warren Hound"
+  },
+  {
+    "id": "irish_red_and_white_setter",
+    "it": "Setter irlandese rosso-bianco",
+    "en": "Irish Red and White Setter"
+  },
+  {
+    "id": "kangal_shepherd_dog",
+    "it": "Kangal Çöban Köpeği (ex cane da pastore",
+    "en": "Kangal Shepherd Dog"
+  },
+  {
+    "id": "czechoslovakian_wolfdog",
+    "it": "Cane lupo Cecoslovacco",
+    "en": "Czechoslovakian Wolfdog"
+  },
+  {
+    "id": "polish_greyhound",
+    "it": "Levriero polacco",
+    "en": "Polish Greyhound"
+  },
+  {
+    "id": "korea_jindo_dog",
+    "it": "Korea Jindo Dog",
+    "en": "Korea Jindo Dog"
+  },
+  {
+    "id": "central_asia_shepherd_dog",
+    "it": "Cane da pastore dell'Asia Centrale",
+    "en": "Central Asia Shepherd Dog"
+  },
+  {
+    "id": "spanish_water_dog",
+    "it": "Perro de Agua Español",
+    "en": "Spanish Water Dog"
+  },
+  {
+    "id": "italian_short_haired_segugio",
+    "it": "Segugio italiano a pelo raso",
+    "en": "Italian Short-Haired Segugio"
+  },
+  {
+    "id": "thai_ridgeback_dog",
+    "it": "Thai Ridgeback Dog",
+    "en": "Thai Ridgeback Dog"
+  },
+  {
+    "id": "parson_russell_terrier",
+    "it": "Parson Russell Terrier",
+    "en": "Parson Russell Terrier"
+  },
+  {
+    "id": "saint_miguel_cattle_dog",
+    "it": "Cão Fila de São Miguel",
+    "en": "Saint Miguel Cattle Dog"
+  },
+  {
+    "id": "brazilian_terrier",
+    "it": "Terrier Brasileiro",
+    "en": "Brazilian Terrier"
+  },
+  {
+    "id": "australian_shepherd",
+    "it": "Pastore Australiano",
+    "en": "Australian Shepherd"
+  },
+  {
+    "id": "italian_cane_corso",
+    "it": "Cane Corso",
+    "en": "Italian Cane Corso"
+  },
+  {
+    "id": "american_akita",
+    "it": "Akita americano",
+    "en": "American Akita"
+  },
+  {
+    "id": "jack_russell_terrier",
+    "it": "Jack Russel Terrier",
+    "en": "Jack Russell Terrier"
+  },
+  {
+    "id": "presa_canario",
+    "it": "Presa Canario",
+    "en": "Presa Canario"
+  },
+  {
+    "id": "white_swiss_shepherd_dog",
+    "it": "Pastore Svizzero Bianco",
+    "en": "White Swiss Shepherd Dog"
+  },
+  {
+    "id": "taiwan_dog",
+    "it": "Taiwan Dog",
+    "en": "Taiwan Dog"
+  },
+  {
+    "id": "romanian_mioritic_shepherd_dog",
+    "it": "Romanian Mioritic Sheperd Dog",
+    "en": "Romanian Mioritic Shepherd Dog"
+  },
+  {
+    "id": "romanian_carpathian_shepherd_dog",
+    "it": "Romanian Carpathian Sheperd Dog",
+    "en": "Romanian Carpathian Shepherd Dog"
+  },
+  {
+    "id": "australian_stumpy_tail_cattle_dog",
+    "it": "Australian Stumpy Tail Cattle Dog",
+    "en": "Australian Stumpy Tail Cattle Dog"
+  },
+  {
+    "id": "russian_toy",
+    "it": "Russian Toy",
+    "en": "Russian Toy"
+  },
+  {
+    "id": "cimarron_uruguayo",
+    "it": "Cimarron Uruguayo",
+    "en": "Cimarrón Uruguayo"
+  },
+  {
+    "id": "polish_hunting_dog",
+    "it": "Gonczy Polski",
+    "en": "Polish Hunting Dog"
+  },
+  {
+    "id": "bosnian_and_herzegovinian_croatian_shepherd_dog",
+    "it": "Tornjak",
+    "en": "Bosnian and Herzegovinian - Croatian Shepherd Dog"
+  },
+  {
+    "id": "danish_swedish_farmdog",
+    "it": "Dansk-Svensk Gardshund",
+    "en": "Danish-Swedish Farmdog"
+  },
+  {
+    "id": "romanian_bucovina_shepherd",
+    "it": "Ciobanesc Romanesc De Bucovina",
+    "en": "Romanian Bucovina Shepherd"
+  },
+  {
+    "id": "thai_bangkaew_dog",
+    "it": "Thai Bangkaew Dog",
+    "en": "Thai Bangkaew Dog"
+  },
+  {
+    "id": "miniature_bull_terrier",
+    "it": "Bull Terrier miniatura",
+    "en": "Miniature Bull Terrier"
+  },
+  {
+    "id": "lancashire_heeler",
+    "it": "Lancashire Heeler",
+    "en": "Lancashire Heeler"
+  },
+  {
+    "id": "segugio_maremmano",
+    "it": "Segugio maremmano",
+    "en": "Segugio Maremmano"
+  },
+  {
+    "id": "kintamani_bali_dog",
+    "it": "Kintamani-Bali Dog",
+    "en": "Kintamani-Bali Dog"
+  },
+  {
+    "id": "prague_ratter",
+    "it": "Prazsky Krysarik",
+    "en": "Prague Ratter"
+  },
+  {
+    "id": "bohemian_shepherd_dog",
+    "it": "Chodský Pes",
+    "en": "Bohemian Shepherd Dog"
+  },
+  {
+    "id": "yakutian_laika",
+    "it": "Yakutskaya Laika",
+    "en": "Yakutian Laika"
+  },
+  {
+    "id": "estonian_hound",
+    "it": "Eesti Hagijas",
+    "en": "Estonian Hound"
+  },
+  {
+    "id": "miniature_american_shepherd",
+    "it": "Miniature American Shepherd",
+    "en": "Miniature American Shepherd"
+  },
+  {
+    "id": "transmontano_mastiff",
+    "it": "Cao De Gado Transmontano",
+    "en": "Transmontano Mastiff"
+  },
+  {
+    "id": "continental_bulldog",
+    "it": "Continental Bulldog",
+    "en": "Continental Bulldog"
+  },
+  {
+    "id": "valencian_terrier",
+    "it": "Gos Rater Valencià",
+    "en": "Valencian Terrier"
+  },
+  {
+    "id": "andalusian_terrier_sherry_terrier",
+    "it": "Ratonero Bodeguero Andaluz",
+    "en": "Andalusian Terrier, Sherry Terrier"
+  },
+  {
+    "id": "kazakh_tazy",
+    "it": "Kazakh Tazy",
+    "en": "Kazakh Tazy"
+  },
+  {
+    "id": "romanian_raven_shepherd_dog",
+    "it": "Ciobanesc Romanesc Corb",
+    "en": "Romanian Raven Shepherd Dog"
+  },
+  {
+    "id": "brazilian_campeiro_bulldog",
+    "it": "Brazilian Campeiro Bulldog",
+    "en": "Brazilian Campeiro Bulldog"
+  },
+  {
+    "id": "mixed_breed",
+    "it": "Mixed Breed",
+    "en": "Mixed Breed"
+  },
+  {
+    "id": "meticcio",
+    "it": "Meticcio",
+    "en": "Mongrel"
+  }
+]
