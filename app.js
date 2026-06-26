@@ -8823,11 +8823,21 @@ zoneInput.addEventListener("click", () => {
             : "Location not found";
         });
     },
-    () => {
-      zoneInput.value = state.lang === "it"
-        ? "Permesso negato"
-        : "Permission denied";
-    },
+    
+    (error) => {
+  showPlutooAlert(
+    `GPS DEBUG
+
+Code: ${error && error.code}
+
+Message: ${error && error.message}`,
+    {
+      title: "Debug GPS",
+      confirmText: "OK"
+    }
+  );
+    }
+    
     {
       enableHighAccuracy: true,
       timeout: 10000,
