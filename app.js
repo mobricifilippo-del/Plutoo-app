@@ -8836,7 +8836,7 @@ Message: ${error && error.message}`,
       confirmText: "OK"
     }
   );
-    }
+    },
     
     {
       enableHighAccuracy: true,
