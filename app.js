@@ -8796,6 +8796,9 @@ zoneInput.addEventListener("click", () => {
       const lat = p.coords.latitude;
       const lon = p.coords.longitude;
 
+      zoneInput.dataset.lat = String(lat);
+      zoneInput.dataset.lon = String(lon);
+
       fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=${state.lang === "it" ? "it" : "en"}`)
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(data => {
