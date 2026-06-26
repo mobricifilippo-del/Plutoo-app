@@ -12463,6 +12463,17 @@ async function deleteStoryFromFirebase(storyId, storagePath) {
   );
   if (!story) return;
 
+    const currentUid =
+  (window.auth &&
+   window.auth.currentUser &&
+   window.auth.currentUser.uid)
+    ? String(window.auth.currentUser.uid)
+    : String(window.PLUTOO_UID || "");
+
+if (String(story.ownerUid || "") !== currentUid) {
+  return;
+}
+
   const visibleMedia = getVisibleMediaList(story);
   const currentMedia = visibleMedia[StoriesState.currentMediaIndex];
   if (!currentMedia) return;
