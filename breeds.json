@@ -1800,13 +1800,8 @@
     "en": "Brazilian Campeiro Bulldog"
   },
   {
-    "id": "mixed_breed",
-    "it": "Mixed Breed",
-    "en": "Mixed Breed"
-  },
-  {
-    "id": "meticcio",
-    "it": "Meticcio",
-    "en": "Mongrel"
+  "id": "mixed_breed",
+  "it": "Meticcio",
+  "en": "Mixed Breed"
   }
 ]
