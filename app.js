@@ -8792,64 +8792,57 @@ zoneInput.addEventListener("click", () => {
     : "Detecting location...";
 
   navigator.geolocation.getCurrentPosition(
-    (p) => {
-      const lat = p.coords.latitude;
-      const lon = p.coords.longitude;
+  (p) => {
+    const lat = p.coords.latitude;
+    const lon = p.coords.longitude;
 
-      zoneInput.dataset.lat = String(lat);
-      zoneInput.dataset.lon = String(lon);
+    zoneInput.dataset.lat = String(lat);
+    zoneInput.dataset.lon = String(lon);
 
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=${state.lang === "it" ? "it" : "en"}`)
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(data => {
-          const a = data && data.address ? data.address : {};
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=${state.lang === "it" ? "it" : "en"}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => {
+        const a = data && data.address ? data.address : {};
 
-          const city =
-            a.city ||
-            a.town ||
-            a.village ||
-            a.hamlet ||
-            "";
+        const city =
+          a.city ||
+          a.town ||
+          a.village ||
+          a.hamlet ||
+          "";
 
-          const region =
-            a.state ||
-            a.county ||
-            "";
+        const region =
+          a.state ||
+          a.county ||
+          "";
 
-          const label = [city, region].filter(Boolean).join(", ");
+        const label = [city, region].filter(Boolean).join(", ");
 
-          zoneInput.value = label || (state.lang === "it" ? "Posizione trovata" : "Location found");
-        })
-        .catch(() => {
-          zoneInput.value = state.lang === "it"
-            ? "Posizione non trovata"
-            : "Location not found";
-        });
-    },
-    
-    (error) => {
-  const code = error && error.code;
+        zoneInput.value = label || (state.lang === "it" ? "Posizione trovata" : "Location found");
+      })
+      .catch(() => {
+        zoneInput.value = state.lang === "it"
+          ? "Posizione non trovata"
+          : "Location not found";
+      });
+  },
+  (error) => {
+    const code = error && error.code;
 
-  zoneInput.value =
-    code === 3
-      ? (state.lang === "it" ? "Tempo scaduto. Riprova." : "Timeout. Try again.")
-      : code === 2
-        ? (state.lang === "it" ? "Posizione non disponibile" : "Location unavailable")
-        : (state.lang === "it" ? "Permesso negato" : "Permission denied");
-},
-
-{
-  enableHighAccuracy: true,
-  timeout: 10000,
-  maximumAge: 0
-}
-    
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    }
-  );
+    zoneInput.value =
+      code === 3
+        ? (state.lang === "it" ? "Tempo scaduto. Riprova." : "Timeout. Try again.")
+        : code === 2
+          ? (state.lang === "it" ? "Posizione non disponibile" : "Location unavailable")
+          : (state.lang === "it" ? "Permesso negato" : "Permission denied");
+  },
+  {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  }
+);
+  
 });
 
     const bioLabel = document.createElement("div");
