@@ -4455,7 +4455,27 @@ const blockedDogIds = new Set(
 return sourceDogs
 .filter(d => !myDogId || String(d.id) !== myDogId)
 .filter(d => !blockedDogIds.has(String(d.id || "")))
-.filter(d => !d.km || d.km <= (f.distKm || 999))
+
+  .filter(d => {
+  if (d.isDemo) return true;
+  const uLat = typeof window.PLUTOO_USER_LAT === "number"
+    ? window.PLUTOO_USER_LAT
+    : parseFloat(localStorage.getItem("plutoo_user_lat") || "");
+  const uLon = typeof window.PLUTOO_USER_LON === "number"
+    ? window.PLUTOO_USER_LON
+    : parseFloat(localStorage.getItem("plutoo_user_lon") || "");
+  if (!Number.isFinite(uLat) || !Number.isFinite(uLon)) return false;
+  if (typeof d.lat !== "number" || typeof d.lon !== "number") return false;
+  const toR = Math.PI / 180;
+  const dLat = (d.lat - uLat) * toR;
+  const dLon = (d.lon - uLon) * toR;
+  const a = Math.sin(dLat/2)**2 + Math.cos(uLat*toR) * Math.cos(d.lat*toR) * Math.sin(dLon/2)**2;
+  const distKm = 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const maxKm = (state.currentView === "nearby")
+    ? Math.min(Number(f.distKm) || 50, 50)
+    : (Number(f.distKm) || 50);
+  return distKm <= maxKm;
+})
 
   .filter(d => {
   if (!f.verified || !state.plus) return true;
