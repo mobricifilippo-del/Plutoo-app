@@ -4369,7 +4369,7 @@ const currentSignature = nearGrid.dataset.renderSignature || "";
       <div class="card-info">
       <h3>${d.name}</h3>
      ${d.plus === true && d.plusStatus === "active" ? `<div class="plus-badge-card">💎 Utente Plus</div>` : ""}
-        <p class="meta">${d.breed} · ${d.age} ${t("years")} · ${d.zone || fmtKm(d.km)}</p>
+        <p class="meta">${window.breedLabel(d.breed)} · ${d.age} ${t("years")} · ${d.zone || fmtKm(d.km)}</p>
         <p class="bio">${d.bio||""}</p>
       </div>
     </article>`;
