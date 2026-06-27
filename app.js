@@ -7868,20 +7868,20 @@ if (isCreate) {
 
       if (!v) return;
 
-      const aliasHit = _ALIAS[v] || null;
-      const query    = ((aliasHit ? aliasHit.canonical : raw) || "").toLowerCase();
+      const matches = state.breeds
+  .filter(b => b && b.id && (
+    (b[_lang] || b.en || "").toLowerCase().startsWith(v) ||
+    String(b.it || "").toLowerCase().startsWith(v) ||
+    String(b.en || "").toLowerCase().startsWith(v)
+  ))
+  .slice(0, 16);
 
-      let matches = state.breeds
-        .filter(b => (b || "").toLowerCase().startsWith(query))
-        .slice(0, 16);
-
-      if (aliasHit) matches = [aliasHit.canonical];
-      if (!matches.length) return;
+if (!matches.length) return;
 
       _cbList.innerHTML = matches.map(b => {
-        const label = aliasHit ? aliasHit.label : b;
-        return `<div class="item" data-label="${label}" data-canonical="${b}" style="padding:8px 12px;cursor:pointer;">${label}</div>`;
-      }).join("");
+  const label = b[_lang] || b.en;
+  return `<div class="item" data-label="${label}" data-canonical="${b.id}" style="padding:8px 12px;cursor:pointer;">${label}</div>`;
+}).join("");
 
       _cbList.style.display = "block";
 
