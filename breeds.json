@@ -1086,7 +1086,7 @@
   },
   {
     "id": "serbian_tricolour_hound",
-    "it": "Segugio serbo tricolore (ex segugio tricolore",
+    "it": "Segugio serbo tricolore",
     "en": "Serbian Tricolour Hound"
   },
   {
@@ -1326,7 +1326,7 @@
   },
   {
     "id": "montenegrin_mountain_hound",
-    "it": "Segugio montenegrino da montagna (ex segugio",
+    "it": "Segugio montenegrino da montagna",
     "en": "Montenegrin Mountain Hound"
   },
   {
@@ -1581,7 +1581,7 @@
   },
   {
     "id": "kangal_shepherd_dog",
-    "it": "Kangal Çöban Köpeği (ex cane da pastore",
+    "it": "Cane da pastore Kangal",
     "en": "Kangal Shepherd Dog"
   },
   {
@@ -1651,7 +1651,7 @@
   },
   {
     "id": "jack_russell_terrier",
-    "it": "Jack Russel Terrier",
+    "it": "Jack Russell Terrier",
     "en": "Jack Russell Terrier"
   },
   {
@@ -1671,12 +1671,12 @@
   },
   {
     "id": "romanian_mioritic_shepherd_dog",
-    "it": "Romanian Mioritic Sheperd Dog",
+    "it": "Cane da pastore mioritico romeno",
     "en": "Romanian Mioritic Shepherd Dog"
   },
   {
     "id": "romanian_carpathian_shepherd_dog",
-    "it": "Romanian Carpathian Sheperd Dog",
+    "it": "Cane da pastore dei Carpazi romeno",
     "en": "Romanian Carpathian Shepherd Dog"
   },
   {
@@ -1800,8 +1800,8 @@
     "en": "Brazilian Campeiro Bulldog"
   },
   {
-  "id": "mixed_breed",
-  "it": "Meticcio",
-  "en": "Mixed Breed"
+    "id": "mixed_breed",
+    "it": "Meticcio",
+    "en": "Mixed Breed"
   }
 ]
