@@ -4437,7 +4437,16 @@ return sourceDogs
   
 .filter(d => (!state.plus || !f.onlySelfie) ? true : !!String(d.selfieUrl || "").trim())
 .filter(d => (!f.sex) ? true : d.sex === f.sex)
-.filter(d => (!f.breed) ? true : d.breed.toLowerCase().startsWith(f.breed.toLowerCase()))
+  
+.filter(d => {
+  if (!f.breed) return true;
+
+  const filterId = window.breedId(f.breed);
+  const dogId = window.breedId(d.breed);
+
+  return dogId === filterId;
+})
+  
 .filter(d => { if (!state.plus || !f.ageMin) return true; return d.age >= parseInt(f.ageMin); })
 .filter(d => { if (!state.plus || !f.ageMax) return true; return d.age <= parseInt(f.ageMax); })
   
