@@ -11866,7 +11866,11 @@ async function init(){
 
   updatePlusUI();
 
-  if(breedInput) breedInput.value = state.filters.breed;
+  if(breedInput) {
+  breedInput.value = state.filters.breed ? window.breedLabel(state.filters.breed) : "";
+  breedInput.dataset.canonical = state.filters.breed || "";
+  }
+  
   if(distRange) distRange.value  = state.filters.distKm;
   if(distLabel) distLabel.textContent = `${distRange.value} km`;
   if(onlyVerified) onlyVerified.checked = !!state.filters.verified;
