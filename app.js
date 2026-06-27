@@ -4604,7 +4604,7 @@ if(noBtn) {
   title.textContent = `${d.name}`;
 
   const metaParts = [
-    d.breed ? String(d.breed) : "",
+    d.breed ? window.breedLabel(d.breed) : "",
     d.age ? `${d.age} ${t("years")}` : "",
     d.zone ? String(d.zone) : fmtKm(d.km)
   ].filter(Boolean);
