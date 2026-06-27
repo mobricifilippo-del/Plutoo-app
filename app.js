@@ -8715,7 +8715,8 @@ const nameLabel = document.createElement("div");
 
     const breedInput = document.createElement("input");
     breedInput.type = "text";
-    breedInput.value = String(d.breed || "");
+    breedInput.value = d.breed ? window.breedLabel(d.breed) : "";
+    breedInput.dataset.canonical = d.breed ? window.breedId(d.breed) : "";
     breedInput.style.width = "100%";
     breedInput.style.background = "transparent";
     breedInput.style.border = "1px solid rgba(255,255,255,.12)";
