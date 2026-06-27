@@ -5034,56 +5034,56 @@ async function ensureChatForMatch(dog) {
   distRange?.addEventListener("input", ()=> distLabel.textContent = `${distRange.value} km`);
 
   breedInput?.addEventListener("input", ()=>{
-  const raw = (breedInput.value||"").trim();
+  const raw = (breedInput.value || "").trim();
   const v = raw.toLowerCase();
 
-  // reset UI
-  breedsList.innerHTML=""; 
-  breedsList.style.display="none";
+  breedsList.innerHTML = "";
+  breedsList.style.display = "none";
   breedInput.dataset.canonical = "";
 
   if (!v) return;
 
-  // ✅ ALIAS: mostra IT/EN ma salva sempre canonical (Mixed Breed)
-const ALIAS = {
-  "meticcio":   { label: "Meticcio",   canonical: "Mixed Breed" },
-  "mix breed":  { label: "Mix Breed",  canonical: "Mixed Breed" },
-  "mixed breed":{ label: "Mixed Breed",canonical: "Mixed Breed" }
-};
+  const lang = state.lang || "it";
 
-const aliasHit = ALIAS[v] || null;
+  let matches = state.breeds
+    .filter(b => {
+      if (!b) return false;
 
-// query per cercare nella lista razze (che contiene "Mixed Breed")
-const query = ((aliasHit ? aliasHit.canonical : raw) || "").toLowerCase();
+      if (typeof b === "string") {
+        return b.toLowerCase().startsWith(v);
+      }
 
-let matches = state.breeds
-  .filter(b => (b || "").toLowerCase().startsWith(query))
-  .slice(0, 16);
+      return (
+        String(b.id || "").toLowerCase().startsWith(v) ||
+        String(b.it || "").toLowerCase().startsWith(v) ||
+        String(b.en || "").toLowerCase().startsWith(v)
+      );
+    })
+    .slice(0, 16);
 
-// se è un alias ESATTO, forzo 1 risultato con la label giusta
-if (aliasHit) matches = [aliasHit.canonical];
+  if (!matches.length) return;
 
-if (!matches.length) return;
+  breedsList.innerHTML = matches.map(b => {
+    if (typeof b === "string") {
+      return `<div class="item" data-label="${b}" data-canonical="${b}">${b}</div>`;
+    }
 
-breedsList.innerHTML = matches.map(b => {
-  const canonical = b;
-  const label = aliasHit ? aliasHit.label : b;
-  return `<div class="item" data-label="${label}" data-canonical="${canonical}">${label}</div>`;
-}).join("");
+    const label = b[lang] || b.en || b.it || b.id;
+    return `<div class="item" data-label="${label}" data-canonical="${b.id}">${label}</div>`;
+  }).join("");
 
   breedsList.style.display = "block";
 
-qa(".item",breedsList).forEach(it=>it.addEventListener("click",(e)=>{
-  e.preventDefault();
-  e.stopPropagation();
+  qa(".item", breedsList).forEach(it => it.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  breedInput.value = it.getAttribute("data-label") || it.textContent;
-  breedInput.dataset.canonical = it.getAttribute("data-canonical") || it.textContent;
+    breedInput.value = it.getAttribute("data-label") || it.textContent;
+    breedInput.dataset.canonical = it.getAttribute("data-canonical") || it.textContent;
 
-  // chiudi lista e togli focus così NON si riapre subito
-  breedsList.style.display = "none";
-  breedInput.blur();
-}));
+    breedsList.style.display = "none";
+    breedInput.blur();
+  }));
 });
   
   document.addEventListener("click",(e)=>{
