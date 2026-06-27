@@ -3627,6 +3627,15 @@ if (!snap || snap.empty) {
   </div>
 `;
 
+  const avatarImg = row.querySelector(".msg-avatar");
+  avatarImg?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dogId && typeof window.openFreshDogProfile === "function") {
+      window.openFreshDogProfile(String(dogId));
+    }
+  });
+
   const deleteBtn = row.querySelector(".msg-delete-btn");
 
 deleteBtn?.addEventListener("click", async (e) => {
