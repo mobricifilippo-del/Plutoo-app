@@ -8747,19 +8747,32 @@ breedInput.addEventListener("input", () => {
   const aliasHit = ALIAS[v] || null;
   const query = ((aliasHit ? aliasHit.canonical : raw) || "").toLowerCase();
 
-  let matches = state.breeds
-    .filter(b => (b || "").toLowerCase().startsWith(query))
-    .slice(0, 16);
+  const lang = state.lang || "it";
 
-  if (aliasHit) matches = [aliasHit.canonical];
+let matches = state.breeds
+  .filter(b => {
+    if (!b) return false;
+    if (typeof b === "string") return b.toLowerCase().startsWith(query);
+    return (
+      String(b.id || "").toLowerCase().startsWith(query) ||
+      String(b.it || "").toLowerCase().startsWith(query) ||
+      String(b.en || "").toLowerCase().startsWith(query)
+    );
+  })
+  .slice(0, 16);
 
-  if (!matches.length) return;
+if (aliasHit) matches = [{ id: aliasHit.canonical, it: aliasHit.label, en: aliasHit.label }];
 
-  profileBreedsList.innerHTML = matches.map(b => {
-    const canonical = b;
-    const label = aliasHit ? aliasHit.label : b;
-    return `<div class="item" data-label="${label}" data-canonical="${canonical}">${label}</div>`;
-  }).join("");
+if (!matches.length) return;
+
+profileBreedsList.innerHTML = matches.map(b => {
+  if (typeof b === "string") {
+    return `<div class="item" data-label="${b}" data-canonical="${b}">${b}</div>`;
+  }
+
+  const label = b[lang] || b.en || b.it || b.id;
+  return `<div class="item" data-label="${label}" data-canonical="${b.id}">${label}</div>`;
+}).join("");
 
   profileBreedsList.style.display = "block";
 
