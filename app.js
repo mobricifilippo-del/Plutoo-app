@@ -5632,7 +5632,7 @@ if (blockedDogIds.includes(followerDogId)) continue;
         <img class="sheet-avatar" src="${realDog.img}" alt="${realDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
         <div class="sheet-info">
           <div class="sheet-name">${realDog.name} ${realDog.verified ? "✅" : ""}</div>
-          <div class="sheet-meta">${realDog.breed}</div>
+          <div class="sheet-meta">${window.breedLabel(realDog.breed)}</div>
         </div>
       </div>
 
@@ -5832,7 +5832,7 @@ if (blockedDogIds.includes(targetDogId)) continue;
         <img class="sheet-avatar" src="${realDog.img}" alt="${realDog.name}" onerror="this.onerror=null;this.src='./plutoo-icon-192.png';">
         <div class="sheet-info">
           <div class="sheet-name">${realDog.name} ${realDog.verified ? "✅" : ""}</div>
-          <div class="sheet-meta">${realDog.breed}</div>
+          <div class="sheet-meta">${window.breedLabel(realDog.breed)}</div>
         </div>
       </div>
 
