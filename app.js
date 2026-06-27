@@ -2482,16 +2482,23 @@ window.breedId = function(rawValue) {
 };
 
   // ============ Razze ============
-  fetch("breeds.json").then(r=>r.json()).then(arr=>{
-    if (Array.isArray(arr)) state.breeds = arr.sort();
-  }).catch(()=>{
-    state.breeds = [
-      "Barboncino","Bassotto","Beagle","Border Collie","Bulldog Francese",
-      "Carlino","Chihuahua","Cocker Spaniel","Golden Retriever","Husky",
-      "Jack Russell","Labrador","Maltese","Pastore Tedesco","Shih Tzu",
-      "Meticcio",
-    ].sort();
-  });
+fetch("breeds.json").then(r=>r.json()).then(arr=>{
+  if (Array.isArray(arr) && arr.length && arr[0].id) {
+    state.breeds = arr.slice().sort((a, b) => {
+      const lang = state.lang || "it";
+      return (a[lang] || a.en || "").localeCompare(b[lang] || b.en || "", lang);
+    });
+  } else if (Array.isArray(arr)) {
+    state.breeds = arr.sort();
+  }
+}).catch(()=>{
+  state.breeds = [
+    { id: "poodle", it: "Barboncino", en: "Poodle" },
+    { id: "dachshund", it: "Bassotto", en: "Dachshund" },
+    { id: "beagle", it: "Beagle", en: "Beagle" },
+    { id: "mixed_breed", it: "Meticcio", en: "Mixed Breed" }
+  ];
+});
 
   // =========== Restore in APP ===========
 if (state.entered) {
