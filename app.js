@@ -1102,6 +1102,10 @@ selfieUrl: String(data.selfieUrl || "")
   window.PLUTOO_USER_LON = data.lon;
   localStorage.setItem("plutoo_user_lat", String(data.lat));
   localStorage.setItem("plutoo_user_lon", String(data.lon));
+
+    if (state.entered && state.currentView === "nearby" && typeof renderNearby === "function") {
+  renderNearby();
+    }
   }
  }
   
