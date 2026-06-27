@@ -468,14 +468,14 @@ a{color:inherit;text-decoration:none}
 @media (max-width:520px){.hero-logo{width:260px;height:260px}}
 
 @media (max-width:480px){
-  .home-bar{gap:.3rem;flex-wrap:nowrap}
+  .home-bar{gap:.45rem;flex-wrap:nowrap}
   .home-center{display:none}
-  .logo-small{width:30px;height:30px}
-  .brand{font-size:1.15rem}
-  .lang-flags{gap:.15rem}
-  .home-right{gap:.25rem}
-  .auth-links{gap:.15rem;padding-right:4px;margin-right:0;margin-left:.2rem;font-size:.75rem}
-  .auth-links a{padding:.12rem .22rem}
+  .logo-small{width:34px;height:34px}
+  .brand{font-size:1.35rem}
+  .lang-flags{gap:.25rem}
+  .home-right{gap:.35rem}
+  .auth-links{gap:.25rem;padding-right:6px;margin-right:0;margin-left:.35rem;font-size:.85rem}
+  .auth-links a{padding:.16rem .32rem}
 }
 
 .sponsor-title{
