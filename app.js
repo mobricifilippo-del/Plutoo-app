@@ -7856,11 +7856,7 @@ if (isCreate) {
   const _cbList = document.getElementById("createDogBreedsList");
 
   if (_cbInp && _cbList) {
-    const _ALIAS = state.lang === "it"
-      ? { "meticcio":    { label: "Meticcio",   canonical: "Mixed Breed" },
-          "razza mista": { label: "Razza mista", canonical: "Mixed Breed" } }
-      : { "mix breed":   { label: "Mix Breed",   canonical: "Mixed Breed" },
-          "mixed breed": { label: "Mixed Breed", canonical: "Mixed Breed" } };
+    const _lang = state.lang || "it";
 
     _cbInp.addEventListener("input", () => {
       const raw = (_cbInp.value || "").trim();
