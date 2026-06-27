@@ -154,6 +154,45 @@ col  = col  || "-";
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  // ================= BLOCCO WEB PUBBLICO / SOLO APP + OWNER =================
+const PLUTOO_OWNER_CODE = "Liberoanita";
+
+const plutooParams = new URLSearchParams(window.location.search);
+const plutooIsAndroidApp = plutooParams.get("app") === "android";
+const plutooIsOwnerWeb = plutooParams.get("owner") === PLUTOO_OWNER_CODE;
+
+if (!plutooIsAndroidApp && !plutooIsOwnerWeb) {
+  try {
+    localStorage.setItem("entered", "0");
+  } catch (_) {}
+
+  document.body.innerHTML = `
+    <div style="position:fixed;inset:0;z-index:999999;background:#000;display:flex;align-items:center;justify-content:center;padding:22px;box-sizing:border-box;">
+      <div style="width:min(92vw,420px);background:#171022;border:1px solid rgba(205,164,52,.45);border-radius:20px;padding:22px;text-align:center;color:#fff;box-shadow:0 18px 45px rgba(0,0,0,.45);">
+
+        <div style="font-weight:900;color:#CDA434;font-size:1.2rem;margin-bottom:12px;">
+          Plutoo
+        </div>
+
+        <div style="font-weight:800;line-height:1.45;margin-bottom:22px;">
+          Per utilizzare i servizi Plutoo è necessario scaricare l'app ufficiale.
+        </div>
+
+        <a
+          href="https://play.google.com/store/apps/details?id=com.plutoo.app"
+          target="_blank"
+          style="display:inline-block;padding:13px 24px;background:#CDA434;color:#171022;text-decoration:none;border-radius:12px;font-weight:900;font-size:15px;">
+          Scarica l'app
+        </a>
+
+      </div>
+    </div>
+  `;
+
+  return;
+}
+  
   const authSheet = document.getElementById("authSheet");
   const linkLogin = document.getElementById("linkLogin");
   const linkRegister = document.getElementById("linkRegister");
