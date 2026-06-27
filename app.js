@@ -2434,6 +2434,53 @@ const DOGS = [
     availability:{ breeding:false, walks:false }, size:"medium" },
 ];
 
+// ── BREED HELPERS ─────────────────────────────────────────────────────────────
+window.breedLabel = function(id) {
+  if (!id) return "";
+  const lang = (window.state && window.state.lang) || "it";
+  const breeds = (window.state && Array.isArray(window.state.breeds))
+    ? window.state.breeds
+    : [];
+
+  const raw = String(id).trim();
+  const v = raw.toLowerCase();
+
+  const entry = breeds.find(b =>
+    b &&
+    (
+      b.id === raw ||
+      String(b.id || "").toLowerCase() === v ||
+      String(b.it || "").toLowerCase() === v ||
+      String(b.en || "").toLowerCase() === v
+    )
+  );
+
+  if (entry) return entry[lang] || entry.en || entry.it || raw;
+
+  return raw;
+};
+
+window.breedId = function(rawValue) {
+  if (!rawValue) return "";
+  const breeds = (window.state && Array.isArray(window.state.breeds))
+    ? window.state.breeds
+    : [];
+
+  const raw = String(rawValue).trim();
+  const v = raw.toLowerCase();
+
+  const hit = breeds.find(b =>
+    b &&
+    (
+      String(b.id || "").toLowerCase() === v ||
+      String(b.it || "").toLowerCase() === v ||
+      String(b.en || "").toLowerCase() === v
+    )
+  );
+
+  return hit ? hit.id : raw;
+};
+
   // ============ Razze ============
   fetch("breeds.json").then(r=>r.json()).then(arr=>{
     if (Array.isArray(arr)) state.breeds = arr.sort();
