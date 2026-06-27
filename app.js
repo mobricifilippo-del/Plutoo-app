@@ -175,9 +175,8 @@ if (!plutooIsAndroidApp && !plutooIsOwnerWeb) {
           Plutoo
         </div>
 
-        <div style="font-weight:800;line-height:1.45;margin-bottom:22px;">
-          Per utilizzare i servizi Plutoo è necessario scaricare l'app ufficiale.
-        </div>
+        <div style="font-weight:800;line-height:1.35;">Per usare i servizi Plutoo scarica l’app ufficiale.</div>
+          <a href="https://play.google.com/store/apps/details?id=com.plutoo.app" target="_blank" rel="noopener" style="display:inline-block;margin-top:14px;color:#CDA434;font-weight:900;text-decoration:none;">Scarica da Google Play</a>
 
         <a
           href="https://play.google.com/store/apps/details?id=com.plutoo.app"
