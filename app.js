@@ -7609,7 +7609,9 @@ if (btnSaveDogDraft0 && isCreate) {
     const errorDiv = document.getElementById("createDogErrors");
 
     const name = nameInput ? nameInput.value.trim() : "";
-    const breed = breedInput ? breedInput.value.trim() : "";
+    const breed = breedInput
+  ? (breedInput.dataset.canonical || breedInput.value || "").trim()
+  : "";
     const age = ageInput ? ageInput.value : "";
     const sex = sexSelect ? sexSelect.value : "";
     const bio = bioInput ? bioInput.value.trim() : "";
