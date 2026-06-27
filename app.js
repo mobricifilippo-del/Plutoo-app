@@ -1702,10 +1702,6 @@ function showProfileReportContentModal() {
   });
 }
 
-function autodetectLang(){
-  return (navigator.language||"it").toLowerCase().startsWith("en")?"en":"it";
-}
-
 let CURRENT_USER_DOG_ID =
 window.PLUTOO_DOG_ID ||
 localStorage.getItem("plutoo_dog_id") ||
