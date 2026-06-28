@@ -7460,8 +7460,9 @@ if (createDogZoneInput && isCreate) {
 
   createDogZoneInput.addEventListener("click", () => {
 
-    if (_geoRunning) return;
-    _geoRunning = true;
+    if (createDogZoneInput.dataset.manualFallback === "1") return;
+if (_geoRunning) return;
+_geoRunning = true;
 
     // ── MODALE GEO ────────────────────────────────────────────────
     function showGeoModal(phase) {
