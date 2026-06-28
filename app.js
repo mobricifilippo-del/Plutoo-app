@@ -7557,15 +7557,15 @@ _geoRunning = true;
   createDogZoneInput.removeAttribute("readonly");
   createDogZoneInput.removeAttribute("inputmode");
   const msgIT = permissionDenied
-    ? "Hai negato l'accesso alla posizione.\n\nPer creare il profilo DOG devi abilitare la geolocalizzazione.\n\nApri le impostazioni del browser o dell'app, abilita la posizione per Plutoo, poi torna qui e tocca di nuovo il campo Zona."
+    ? "Hai negato l'accesso alla posizione. Puoi comunque scrivere la tua città nel campo Zona e selezionarla dai suggerimenti."
     : "Impossibile rilevare la tua posizione.\n\nAssicurati che il GPS sia attivo e la connessione funzioni, poi tocca di nuovo il campo Zona per riprovare.";
   const msgEN = permissionDenied
-    ? "You denied location access.\n\nTo create your DOG profile you must enable geolocation.\n\nOpen your browser or app settings, enable location for Plutoo, then come back and tap the Zone field again."
+    ? "You denied access to your location. You can still type your city in the Area field and select it from the suggestions."
     : "Could not detect your position.\n\nMake sure GPS is enabled and your connection works, then tap the Zone field again to retry.";
   showPlutooAlert(
     state.lang === "it" ? msgIT : msgEN,
     {
-      title: state.lang === "it" ? "Geolocalizzazione necessaria" : "Geolocation required",
+      title: state.lang === "it" ? "Posizione non concessa" : "Location not granted",
       confirmText: "OK"
     }
   );
