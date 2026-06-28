@@ -7626,6 +7626,7 @@ if (createDogZoneInput && isCreate) {
             if (label) {
               // FASE 3 — SUCCESSO
               createDogZoneInput.value = label;
+              createDogZoneInput.dataset.selectedLabel = label;
               closeGeoModal();
             } else {
               // Nominatim ok ma label vuota — FASE 5
