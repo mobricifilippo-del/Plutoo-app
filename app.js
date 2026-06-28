@@ -9384,6 +9384,10 @@ if (typeof window.refreshCreateDogCTA === "function") {
     card.appendChild(sexInput);
     card.appendChild(zoneLabel);
     card.appendChild(zoneInput);
+    const zoneList = document.createElement("div");
+    zoneList.className = "breed-list";
+    zoneList.style.display = "none";
+    card.appendChild(zoneList);
     card.appendChild(bioLabel);
     card.appendChild(bio);
     card.appendChild(availabilityBox);
