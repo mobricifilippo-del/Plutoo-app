@@ -7745,6 +7745,8 @@ if (results.length === 0) {
     createDogZoneList.appendChild(row);
   });
 }
+
+createDogZoneList.style.display = "block";
               
       })
       
