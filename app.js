@@ -9388,6 +9388,96 @@ if (typeof window.refreshCreateDogCTA === "function") {
     zoneList.className = "breed-list";
     zoneList.style.display = "none";
     card.appendChild(zoneList);
+
+        const zoneList = document.createElement("div");
+    zoneList.className = "breed-list";
+    zoneList.style.display = "none";
+    card.appendChild(zoneList);
+
+    let zoneSearchTimer = null;
+
+    zoneInput.addEventListener("input", () => {
+      const q = String(zoneInput.value || "").trim();
+
+      delete zoneInput.dataset.selectedLabel;
+      delete zoneInput.dataset.lat;
+      delete zoneInput.dataset.lon;
+
+      if (zoneSearchTimer) clearTimeout(zoneSearchTimer);
+
+      zoneList.innerHTML = "";
+      zoneList.style.display = "none";
+
+      if (q.length < 2) return;
+
+      zoneSearchTimer = setTimeout(() => {
+        fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lang=${state.lang === "it" ? "it" : "en"}`)
+          .then(r => r.ok ? r.json() : Promise.reject())
+          .then(data => {
+            const features = Array.isArray(data && data.features) ? data.features : [];
+
+            const results = features.map((f) => {
+              const p = f && f.properties ? f.properties : {};
+              const coords = f && f.geometry && Array.isArray(f.geometry.coordinates)
+                ? f.geometry.coordinates
+                : [];
+
+              const lon = Number(coords[0]);
+              const lat = Number(coords[1]);
+
+              const label = [
+                p.name,
+                p.city || p.town || p.village || p.county,
+                p.state,
+                p.country
+              ].filter(Boolean).join(", ");
+
+              return { label, lat, lon };
+            }).filter(item => item.label && Number.isFinite(item.lat) && Number.isFinite(item.lon));
+
+            zoneList.innerHTML = "";
+
+            if (!results.length) {
+              const row = document.createElement("div");
+              row.className = "item";
+              row.style.padding = "10px 12px";
+              row.style.opacity = "0.7";
+              row.style.cursor = "default";
+              row.textContent = state.lang === "it"
+                ? "Nessuna località trovata"
+                : "No location found";
+              zoneList.appendChild(row);
+            } else {
+              results.forEach((item) => {
+                const row = document.createElement("div");
+                row.className = "item";
+                row.style.padding = "10px 12px";
+                row.style.cursor = "pointer";
+                row.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+                row.textContent = item.label;
+
+                row.addEventListener("click", () => {
+                  zoneInput.value = item.label;
+                  zoneInput.dataset.selectedLabel = item.label;
+                  zoneInput.dataset.lat = String(item.lat);
+                  zoneInput.dataset.lon = String(item.lon);
+                  zoneList.innerHTML = "";
+                  zoneList.style.display = "none";
+                });
+
+                zoneList.appendChild(row);
+              });
+            }
+
+            zoneList.style.display = "block";
+          })
+          .catch(() => {
+            zoneList.innerHTML = "";
+            zoneList.style.display = "none";
+          });
+      }, 350);
+    });
+    
     card.appendChild(bioLabel);
     card.appendChild(bio);
     card.appendChild(availabilityBox);
