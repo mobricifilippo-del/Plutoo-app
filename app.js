@@ -7666,11 +7666,27 @@ if (createDogZoneInput && isCreate) {
   createDogZoneInput.addEventListener("input", () => {
   const value = (createDogZoneInput.value || "").trim();
   const selected = (createDogZoneInput.dataset.selectedLabel || "").trim();
+  const createDogZoneList = document.getElementById("createDogZoneList");
+
+  if (createDogZoneInput._zoneSearchTimer) {
+    clearTimeout(createDogZoneInput._zoneSearchTimer);
+  }
+
+  if (createDogZoneList) {
+    createDogZoneList.innerHTML = "";
+    createDogZoneList.style.display = "none";
+  }
 
   if (selected && value !== selected) {
     createDogZoneInput.dataset.selectedLabel = "";
     state.geo = null;
   }
+
+  if (!value || value.length < 2) return;
+
+  createDogZoneInput._zoneSearchTimer = setTimeout(() => {
+    // STEP 4: base debounce pronta. Photon non ancora collegato.
+  }, 350);
 });
 
       const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
