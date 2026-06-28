@@ -7064,53 +7064,76 @@ if (isCreate) {
   }
 
   // Change file
-  if (createDogPhotoInput) {
-    createDogPhotoInput.addEventListener("change", () => {
-      const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
-      if (!file) return;
+if (createDogPhotoInput) {
+  createDogPhotoInput.addEventListener("change", () => {
+    const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-      const dataUrl = e.target.result;
+    if (!state.createDogDraft) state.createDogDraft = {};
 
-  if (!state.createDogDraft) state.createDogDraft = {};
-  state.createDogDraft.photoDataUrl = dataUrl;
+    state.createDogDraft.photoProcessing = true;
 
-  if (previewImg) {
-    previewImg.src = dataUrl;
-    previewImg.style.display = "block";
-  }
+    if (createDogPhotoFeedback) {
+      createDogPhotoFeedback.textContent = state.lang === "it"
+        ? "Elaborazione foto..."
+        : "Processing photo...";
+      createDogPhotoFeedback.style.display = "block";
+    }
 
-  if (emptyBox) emptyBox.style.display = "none";
-  if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
-  if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
-};
+    window.plutooImageToJpegBlob(file)
+      .then((jpegBlob) => {
+        if (state.createDogDraft.photoPreviewUrl) {
+          URL.revokeObjectURL(state.createDogDraft.photoPreviewUrl);
+        }
 
-      reader.readAsDataURL(file);
-    });
-  }
+        const previewUrl = URL.createObjectURL(jpegBlob);
 
-  // Remove foto
-  if (btnRemoveCreateDogPhoto) {
-    btnRemoveCreateDogPhoto.addEventListener("click", () => {
-      if (!state.createDogDraft) state.createDogDraft = {};
+        state.createDogDraft.photoBlob = jpegBlob;
+        state.createDogDraft.photoPreviewUrl = previewUrl;
+        state.createDogDraft.photoDataUrl = previewUrl;
+        state.createDogDraft.photoProcessing = false;
 
-      // invece di mettere stringa vuota: pulisco davvero
-      if ("photoDataUrl" in state.createDogDraft) delete state.createDogDraft.photoDataUrl;
+        if (previewImg) {
+          previewImg.src = previewUrl;
+          previewImg.style.display = "block";
+        }
 
-      if (previewImg) {
-        previewImg.removeAttribute("src");
-        previewImg.style.display = "none";
-      }
+        if (emptyBox) emptyBox.style.display = "none";
 
-      // torna al box
-      if (emptyBox) emptyBox.style.display = "flex";
+        if (createDogPhotoFeedback) {
+          createDogPhotoFeedback.textContent = state.lang === "it"
+            ? "Foto caricata ✅"
+            : "Photo loaded ✅";
+          createDogPhotoFeedback.style.display = "block";
+        }
 
-      if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "none";
-      btnRemoveCreateDogPhoto.style.display = "none";
-      if (createDogPhotoInput) createDogPhotoInput.value = "";
-    });
-  }
+        if (btnRemoveCreateDogPhoto) {
+          btnRemoveCreateDogPhoto.style.display = "inline-flex";
+        }
+      })
+      .catch((err) => {
+        console.error("plutooImageToJpegBlob error (createDog):", err);
+
+        state.createDogDraft.photoProcessing = false;
+
+        if (createDogPhotoFeedback) {
+          createDogPhotoFeedback.textContent = "";
+          createDogPhotoFeedback.style.display = "none";
+        }
+
+        showPlutooAlert(
+          state.lang === "it"
+            ? "Non è stato possibile elaborare questa foto.\n\nUsa un'immagine JPG, PNG, WEBP, HEIC o HEIF."
+            : "This photo could not be processed.\n\nUse a JPG, PNG, WEBP, HEIC or HEIF image.",
+          {
+            title: "Plutoo",
+            confirmText: "OK"
+          }
+        );
+
+        createDogPhotoInput.value = "";
+      });
+  });
 }
 
 // ✅ VIEWER IMMAGINI (sempre con chiusura)
