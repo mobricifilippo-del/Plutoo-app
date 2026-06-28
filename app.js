@@ -7739,6 +7739,15 @@ if (results.length === 0) {
     row.style.cursor = "pointer";
     row.style.borderBottom = "1px solid rgba(255,255,255,.08)";
     row.textContent = item.label;
+
+    row.addEventListener("click", () => {
+      createDogZoneInput.value = item.label;
+      createDogZoneInput.dataset.selectedLabel = item.label;
+      state.geo = { lat: item.lat, lon: item.lon };
+      createDogZoneList.innerHTML = "";
+      createDogZoneList.style.display = "none";
+    });
+
     createDogZoneList.appendChild(row);
   });
 }
