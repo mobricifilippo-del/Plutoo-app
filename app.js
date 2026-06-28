@@ -6617,8 +6617,9 @@ profileContent.innerHTML = `
         <div id="createDogBreedsList" style="display:none;position:absolute;z-index:9999;background:#1a1530;border:1px solid rgba(205,164,52,.35);border-radius:12px;max-height:180px;overflow-y:auto;width:100%;left:0;top:100%;box-shadow:0 8px 24px rgba(0,0,0,.45);"></div>
       </span>
 
- <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Zona" : "Area"}" style="padding:.45rem .55rem;flex:1;min-width:42%">
-  <input id="createDogZone" type="text" value="" readonly inputmode="none" placeholder="${state.lang === "it" ? "Zona *" : "Area *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%">
+  <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Zona" : "Area"}" style="padding:.45rem .55rem;flex:1;min-width:42%;position:relative;">
+  <input id="createDogZone" type="text" value="" autocomplete="off" placeholder="${state.lang === "it" ? "Zona *" : "Area *"}" style="background:transparent;border:0;outline:none;color:inherit;width:100%">
+  <div id="createDogZoneList" style="display:none;position:absolute;z-index:9999;background:#1a1530;border:1px solid rgba(205,164,52,.35);border-radius:12px;max-height:180px;overflow-y:auto;width:100%;left:0;top:100%;box-shadow:0 8px 24px rgba(0,0,0,.45);"></div>
 </span>
 
       <span class="badge create-req" data-req="1" data-label="${state.lang === "it" ? "Età" : "Age"}" style="padding:.45rem .55rem;flex:1;min-width:42%">
