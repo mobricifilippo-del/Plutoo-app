@@ -153,6 +153,151 @@ col  = col  || "-";
 
 })();
 
+// ═══════════════════════════════════════════════════════════════
+// PLUTOO — HELPER IMMAGINI GLOBALE (MICRO PATCH 1)
+// Converte qualsiasi formato smartphone (JPG, PNG, WEBP, HEIC, HEIF)
+// in un Blob JPEG pronto per preview e upload Firebase Storage.
+// NON fa upload. NON aggiorna UI. NON tocca Firebase né Firestore.
+// Unica API pubblica: window.plutooImageToJpegBlob(file) → Promise<Blob>
+// ═══════════════════════════════════════════════════════════════
+window.plutooImageToJpegBlob = async function (file) {
+
+  if (!file || (!(file instanceof File) && !(file instanceof Blob))) {
+    throw new Error("plutooImageToJpegBlob: input non valido");
+  }
+
+  const MAX_SIDE = 1280;
+  const QUALITY  = 0.82;
+
+  const resizeToJpeg = (imgEl) => new Promise((resolve, reject) => {
+    let w = imgEl.naturalWidth  || imgEl.width  || 0;
+    let h = imgEl.naturalHeight || imgEl.height || 0;
+
+    if (!w || !h) {
+      reject(new Error("plutooImageToJpegBlob: dimensioni immagine non valide"));
+      return;
+    }
+
+    if (w > h && w > MAX_SIDE) {
+      h = Math.round(h * MAX_SIDE / w);
+      w = MAX_SIDE;
+    } else if (h > MAX_SIDE) {
+      w = Math.round(w * MAX_SIDE / h);
+      h = MAX_SIDE;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width  = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(imgEl, 0, 0, w, h);
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("plutooImageToJpegBlob: canvas.toBlob ha restituito null"));
+        return;
+      }
+      resolve(blob);
+    }, "image/jpeg", QUALITY);
+  });
+
+  const blobToJpeg = (blob) => new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resizeToJpeg(img).then(resolve).catch(reject);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("plutooImageToJpegBlob: impossibile decodificare il Blob immagine"));
+    };
+
+    img.src = url;
+  });
+
+  const mime = (file.type || "").toLowerCase();
+  const name = (file.name || "").toLowerCase();
+
+  const isHeic =
+    mime === "image/heic" ||
+    mime === "image/heif" ||
+    name.endsWith(".heic") ||
+    name.endsWith(".heif");
+
+  if (isHeic) {
+
+    if (!window.heic2any) {
+      await new Promise((resolve, reject) => {
+        const existing = document.getElementById("__plutooHeic2AnyScript");
+        if (existing) {
+          existing.addEventListener("load", resolve);
+          existing.addEventListener("error", () =>
+            reject(new Error("plutooImageToJpegBlob: caricamento heic2any fallito"))
+          );
+          return;
+        }
+
+        const s = document.createElement("script");
+        s.id = "__plutooHeic2AnyScript";
+        s.src = "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";
+        s.onload = resolve;
+        s.onerror = () =>
+          reject(new Error("plutooImageToJpegBlob: caricamento heic2any fallito"));
+        document.head.appendChild(s);
+      });
+    }
+
+    if (typeof window.heic2any !== "function") {
+      throw new Error("plutooImageToJpegBlob: heic2any non disponibile dopo il caricamento");
+    }
+
+    const result = await window.heic2any({
+      blob: file,
+      toType: "image/jpeg",
+      quality: QUALITY
+    });
+
+    const jpegBlob = Array.isArray(result) ? result[0] : result;
+
+    if (!jpegBlob || !(jpegBlob instanceof Blob)) {
+      throw new Error("plutooImageToJpegBlob: heic2any non ha restituito un Blob valido");
+    }
+
+    return blobToJpeg(jpegBlob);
+  }
+
+  if (!mime.startsWith("image/")) {
+    throw new Error(
+      "plutooImageToJpegBlob: il file non è un'immagine (" + (mime || "tipo sconosciuto") + ")"
+    );
+  }
+
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resizeToJpeg(img).then(resolve).catch(reject);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error(
+        "plutooImageToJpegBlob: browser non riesce a decodificare il file (" + (mime || "tipo sconosciuto") + ")"
+      ));
+    };
+
+    img.src = url;
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
 
   // ================= BLOCCO WEB PUBBLICO / SOLO APP + OWNER =================
