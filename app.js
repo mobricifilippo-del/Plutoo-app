@@ -6918,78 +6918,32 @@ if (isCreate) {
     });
   }
 
-  // Change file
-if (createDogPhotoInput) {
-  createDogPhotoInput.addEventListener("change", () => {
-    const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
-    if (!file) return;
+    // Change file
+  if (createDogPhotoInput) {
+    createDogPhotoInput.addEventListener("change", () => {
+      const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
+      if (!file) return;
 
-    if (!state.createDogDraft) state.createDogDraft = {};
+      const reader = new FileReader();
+      reader.onload = (e) => {
+      const dataUrl = e.target.result;
 
-    state.createDogDraft.photoProcessing = true;
+  if (!state.createDogDraft) state.createDogDraft = {};
+  state.createDogDraft.photoDataUrl = dataUrl;
 
-    if (createDogPhotoFeedback) {
-      createDogPhotoFeedback.textContent = state.lang === "it"
-        ? "Elaborazione foto..."
-        : "Processing photo...";
-      createDogPhotoFeedback.style.display = "block";
-    }
+  if (previewImg) {
+    previewImg.src = dataUrl;
+    previewImg.style.display = "block";
+  }
 
-    window.plutooImageToJpegBlob(file)
-      .then((jpegBlob) => {
-        if (state.createDogDraft.photoPreviewUrl) {
-          URL.revokeObjectURL(state.createDogDraft.photoPreviewUrl);
-        }
+  if (emptyBox) emptyBox.style.display = "none";
+  if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
+  if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
+};
 
-        const previewUrl = URL.createObjectURL(jpegBlob);
-
-        state.createDogDraft.photoBlob = jpegBlob;
-        state.createDogDraft.photoPreviewUrl = previewUrl;
-        state.createDogDraft.photoDataUrl = previewUrl;
-        state.createDogDraft.photoProcessing = false;
-
-        if (previewImg) {
-          previewImg.src = previewUrl;
-          previewImg.style.display = "block";
-        }
-
-        if (emptyBox) emptyBox.style.display = "none";
-
-        if (createDogPhotoFeedback) {
-          createDogPhotoFeedback.textContent = state.lang === "it"
-            ? "Foto caricata ✅"
-            : "Photo loaded ✅";
-          createDogPhotoFeedback.style.display = "block";
-        }
-
-        if (btnRemoveCreateDogPhoto) {
-          btnRemoveCreateDogPhoto.style.display = "inline-flex";
-        }
-      })
-      .catch((err) => {
-        console.error("plutooImageToJpegBlob error (createDog):", err);
-
-        state.createDogDraft.photoProcessing = false;
-
-        if (createDogPhotoFeedback) {
-          createDogPhotoFeedback.textContent = "";
-          createDogPhotoFeedback.style.display = "none";
-        }
-
-        showPlutooAlert(
-          state.lang === "it"
-            ? "Non è stato possibile elaborare questa foto.\n\nUsa un'immagine JPG, PNG, WEBP, HEIC o HEIF."
-            : "This photo could not be processed.\n\nUse a JPG, PNG, WEBP, HEIC or HEIF image.",
-          {
-            title: "Plutoo",
-            confirmText: "OK"
-          }
-        );
-
-        createDogPhotoInput.value = "";
-      });
-  });
-}
+      reader.readAsDataURL(file);
+    });
+  }
 
 // ✅ VIEWER IMMAGINI (sempre con chiusura)
 (function () {
