@@ -7663,6 +7663,16 @@ if (createDogZoneInput && isCreate) {
   });
 }
 
+  createDogZoneInput.addEventListener("input", () => {
+  const value = (createDogZoneInput.value || "").trim();
+  const selected = (createDogZoneInput.dataset.selectedLabel || "").trim();
+
+  if (selected && value !== selected) {
+    createDogZoneInput.dataset.selectedLabel = "";
+    state.geo = null;
+  }
+});
+
       const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
   const btnSaveDogDraft = btnSaveDogDraft0.cloneNode(true);
