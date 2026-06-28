@@ -9389,11 +9389,6 @@ if (typeof window.refreshCreateDogCTA === "function") {
     zoneList.style.display = "none";
     card.appendChild(zoneList);
 
-        const zoneList = document.createElement("div");
-    zoneList.className = "breed-list";
-    zoneList.style.display = "none";
-    card.appendChild(zoneList);
-
     let zoneSearchTimer = null;
 
     zoneInput.addEventListener("input", () => {
