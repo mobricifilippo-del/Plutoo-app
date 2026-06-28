@@ -10183,9 +10183,10 @@ storageRef.delete()
   state.currentDogProfile = null;
 };
 
-  function isSelfieUnlocked(id) {
+    function isSelfieUnlocked(id) {
     return Date.now() < (state.selfieUntilByDog[id] || 0);
   }
+}
 };
 
 // Carica i messaggi da Firestore per una chat (ROBUSTO: ordina lato JS)
