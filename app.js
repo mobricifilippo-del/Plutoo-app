@@ -7550,6 +7550,11 @@ if (createDogZoneInput && isCreate) {
 
     function enableManualFallback(permissionDenied) {
   closeGeoModal();
+  createDogZoneInput.dataset.manualFallback = "1";
+  createDogZoneInput.readOnly = false;
+  createDogZoneInput.disabled = false;
+  createDogZoneInput.removeAttribute("readonly");
+  createDogZoneInput.removeAttribute("inputmode");
   const msgIT = permissionDenied
     ? "Hai negato l'accesso alla posizione.\n\nPer creare il profilo DOG devi abilitare la geolocalizzazione.\n\nApri le impostazioni del browser o dell'app, abilita la posizione per Plutoo, poi torna qui e tocca di nuovo il campo Zona."
     : "Impossibile rilevare la tua posizione.\n\nAssicurati che il GPS sia attivo e la connessione funzioni, poi tocca di nuovo il campo Zona per riprovare.";
