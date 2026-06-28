@@ -9019,8 +9019,10 @@ document.addEventListener("click", (e) => {
     zoneInput.style.padding = "10px 12px";
     zoneInput.style.color = "inherit";
 
-    zoneInput.readOnly = true;
-zoneInput.style.cursor = "pointer";
+    zoneInput.readOnly = false;
+zoneInput.removeAttribute("readonly");
+zoneInput.removeAttribute("inputmode");
+zoneInput.style.cursor = "text";
 
 zoneInput.addEventListener("click", () => {
   if (!navigator.geolocation) return;
