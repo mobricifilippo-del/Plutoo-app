@@ -7663,7 +7663,8 @@ if (createDogZoneInput && isCreate) {
   });
 }
 
-  createDogZoneInput.addEventListener("input", () => {
+  if (createDogZoneInput && isCreate) {
+createDogZoneInput.addEventListener("input", () => {
   const value = (createDogZoneInput.value || "").trim();
   const selected = (createDogZoneInput.dataset.selectedLabel || "").trim();
   const createDogZoneList = document.getElementById("createDogZoneList");
@@ -7752,7 +7753,8 @@ if (results.length === 0) {
       });
     
   }, 350);
-});
+  });
+  }
 
       const btnSaveDogDraft0 = document.getElementById("btnSaveDogDraft");
 if (btnSaveDogDraft0 && isCreate) {
