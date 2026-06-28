@@ -7721,7 +7721,30 @@ if (createDogZoneInput && isCreate) {
           return true;
         }).slice(0, 6);
 
-        console.log("Photon normalized results:", results);
+        createDogZoneList.innerHTML = "";
+
+if (results.length === 0) {
+  const row = document.createElement("div");
+  row.className = "item";
+  row.style.padding = "10px 12px";
+  row.style.opacity = "0.7";
+  row.style.cursor = "default";
+  row.textContent = state.lang === "it"
+    ? "Nessuna località trovata"
+    : "No location found";
+  createDogZoneList.appendChild(row);
+} else {
+  results.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "item";
+    row.style.padding = "10px 12px";
+    row.style.cursor = "pointer";
+    row.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+    row.textContent = item.label;
+    createDogZoneList.appendChild(row);
+  });
+}
+              
       })
       
       .catch((err) => {
