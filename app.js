@@ -7695,7 +7695,35 @@ if (createDogZoneInput && isCreate) {
         }
         return response.json();
       })
-      .then(() => {})
+      
+            .then((data) => {
+        const features = Array.isArray(data && data.features) ? data.features : [];
+        const seenLabels = new Set();
+
+        const results = features.map((feature) => {
+          const props = feature && feature.properties ? feature.properties : {};
+          const geometry = feature && feature.geometry ? feature.geometry : {};
+          const coordinates = Array.isArray(geometry.coordinates) ? geometry.coordinates : [];
+
+          const lon = Number(coordinates[0]);
+          const lat = Number(coordinates[1]);
+          const name = String(props.name || "").trim();
+          const place = String(props.city || props.town || props.village || props.municipality || name || "").trim();
+          const area = String(props.county || props.state || "").trim();
+          const country = String(props.country || "").trim();
+          const label = [place, area, country].filter(Boolean).join(", ");
+
+          return { label, lat, lon };
+        }).filter((item) => {
+          if (!item.label || !Number.isFinite(item.lat) || !Number.isFinite(item.lon)) return false;
+          if (seenLabels.has(item.label)) return false;
+          seenLabels.add(item.label);
+          return true;
+        }).slice(0, 6);
+
+        console.log("Photon normalized results:", results);
+      })
+      
       .catch((err) => {
         console.warn("Photon search failed:", err);
       });
