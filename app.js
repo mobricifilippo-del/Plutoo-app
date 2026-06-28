@@ -7685,7 +7685,21 @@ if (createDogZoneInput && isCreate) {
   if (!value || value.length < 2) return;
 
   createDogZoneInput._zoneSearchTimer = setTimeout(() => {
-    // STEP 4: base debounce pronta. Photon non ancora collegato.
+    
+    fetch(
+      "https://photon.komoot.io/api/?limit=5&q=" + encodeURIComponent(value)
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Photon HTTP " + response.status);
+        }
+        return response.json();
+      })
+      .then(() => {})
+      .catch((err) => {
+        console.warn("Photon search failed:", err);
+      });
+    
   }, 350);
 });
 
