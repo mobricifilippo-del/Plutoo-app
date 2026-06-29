@@ -9383,11 +9383,25 @@ if (typeof window.refreshCreateDogCTA === "function") {
     card.appendChild(sexLabel);
     card.appendChild(sexInput);
     card.appendChild(zoneLabel);
-    card.appendChild(zoneInput);
-    const zoneList = document.createElement("div");
-    zoneList.className = "breed-list";
-    zoneList.style.display = "none";
-    card.appendChild(zoneList);
+const zoneList = document.createElement("div");
+zoneList.className = "breed-list";
+zoneList.style.display = "none";
+zoneList.style.position = "absolute";
+zoneList.style.zIndex = "9999";
+zoneList.style.background = "#1a1530";
+zoneList.style.border = "1px solid rgba(205,164,52,.35)";
+zoneList.style.borderRadius = "12px";
+zoneList.style.maxHeight = "180px";
+zoneList.style.overflowY = "auto";
+zoneList.style.width = "100%";
+zoneList.style.left = "0";
+zoneList.style.top = "100%";
+zoneList.style.boxShadow = "0 8px 24px rgba(0,0,0,.45)";
+const zoneWrap = document.createElement("div");
+zoneWrap.style.position = "relative";
+zoneWrap.appendChild(zoneInput);
+zoneWrap.appendChild(zoneList);
+card.appendChild(zoneWrap);
 
     let zoneSearchTimer = null;
 
