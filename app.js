@@ -4287,7 +4287,32 @@ const currentSignature = nearGrid.dataset.renderSignature || "";
 
   if (!list.length){
     nearGrid.dataset.renderSignature = "";
-    nearGrid.innerHTML = `<p class="soft" style="padding:.5rem">${t("noProfiles")}</p>`;
+
+    const isIt = state.lang === "it";
+    const emptyTitle = isIt ? "Nessun DOG nelle vicinanze" : "No DOGs nearby";
+    const emptyMsg = isIt
+      ? "Al momento non ci sono DOG compatibili nella tua zona. Puoi riprovare più tardi oppure modificare i filtri di ricerca."
+      : "At the moment there are no compatible DOGs in your area. You can try again later or adjust your search filters.";
+    const emptyBtn = isIt ? "Ho capito" : "OK";
+
+    nearGrid.innerHTML = `
+      <div class="card" style="grid-column:1/-1;padding:22px;text-align:center;border:1px solid rgba(205,164,52,.35);background:rgba(23,16,34,.92);border-radius:18px;">
+        <div style="font-size:42px;margin-bottom:10px;">🐶</div>
+        <h3 style="margin:0 0 8px;color:#CDA434;font-weight:900;">${emptyTitle}</h3>
+        <p class="soft" style="margin:0 auto;max-width:320px;line-height:1.4;">${emptyMsg}</p>
+      </div>
+    `;
+
+    if (!window.__PLUTOO_NEARBY_EMPTY_MODAL_SHOWN__) {
+      window.__PLUTOO_NEARBY_EMPTY_MODAL_SHOWN__ = true;
+      try {
+        showPlutooAlert(emptyMsg, {
+          title: emptyTitle,
+          confirmText: emptyBtn
+        });
+      } catch (_) {}
+    }
+
     return;
   }
 
