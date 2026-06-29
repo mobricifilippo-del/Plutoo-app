@@ -8871,15 +8871,30 @@ breedInput.addEventListener("input", () => {
 
   const lang = state.lang || "it";
 
+const labelKey = (lang === "it") ? "it" : "en";
+
 let matches = state.breeds
   .filter(b => {
     if (!b) return false;
-    if (typeof b === "string") return b.toLowerCase().startsWith(query);
-    return (
-      String(b.id || "").toLowerCase().startsWith(query) ||
-      String(b.it || "").toLowerCase().startsWith(query) ||
-      String(b.en || "").toLowerCase().startsWith(query)
-    );
+
+    if (typeof b === "string") {
+      return b.toLowerCase().startsWith(query);
+    }
+
+    return String(b[labelKey] || "")
+      .toLowerCase()
+      .startsWith(query);
+  })
+  .sort((a, z) => {
+    const aLabel = typeof a === "string"
+      ? a
+      : String(a[labelKey] || "");
+
+    const zLabel = typeof z === "string"
+      ? z
+      : String(z[labelKey] || "");
+
+    return aLabel.localeCompare(zLabel, lang);
   })
   .slice(0, 16);
 
