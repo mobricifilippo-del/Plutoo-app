@@ -9346,89 +9346,101 @@ zoneWrap.appendChild(zoneInput);
 zoneWrap.appendChild(zoneList);
 card.appendChild(zoneWrap);
 
-    let zoneSearchTimer = null;
-
     zoneInput.addEventListener("input", () => {
-      const q = String(zoneInput.value || "").trim();
+  const value = (zoneInput.value || "").trim();
+  const selected = (zoneInput.dataset.selectedLabel || "").trim();
 
-      delete zoneInput.dataset.selectedLabel;
-      delete zoneInput.dataset.lat;
-      delete zoneInput.dataset.lon;
+  if (zoneInput._zoneSearchTimer) {
+    clearTimeout(zoneInput._zoneSearchTimer);
+  }
 
-      if (zoneSearchTimer) clearTimeout(zoneSearchTimer);
+  zoneList.innerHTML = "";
+  zoneList.style.display = "none";
 
-      zoneList.innerHTML = "";
-      zoneList.style.display = "none";
+  if (selected && value !== selected) {
+    zoneInput.dataset.selectedLabel = "";
+    delete zoneInput.dataset.lat;
+    delete zoneInput.dataset.lon;
+  }
 
-      if (q.length < 2) return;
+  if (!value || value.length < 2) return;
 
-      zoneSearchTimer = setTimeout(() => {
-        fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lang=${state.lang === "it" ? "it" : "en"}`)
-          .then(r => r.ok ? r.json() : Promise.reject())
-          .then(data => {
-            const features = Array.isArray(data && data.features) ? data.features : [];
+  zoneInput._zoneSearchTimer = setTimeout(() => {
+    fetch(
+      "https://photon.komoot.io/api/?limit=5&q=" + encodeURIComponent(value)
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Photon HTTP " + response.status);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const features = Array.isArray(data && data.features) ? data.features : [];
+        const seenLabels = new Set();
 
-            const results = features.map((f) => {
-              const p = f && f.properties ? f.properties : {};
-              const coords = f && f.geometry && Array.isArray(f.geometry.coordinates)
-                ? f.geometry.coordinates
-                : [];
+        const results = features.map((feature) => {
+          const props = feature && feature.properties ? feature.properties : {};
+          const geometry = feature && feature.geometry ? feature.geometry : {};
+          const coordinates = Array.isArray(geometry.coordinates) ? geometry.coordinates : [];
 
-              const lon = Number(coords[0]);
-              const lat = Number(coords[1]);
+          const lon = Number(coordinates[0]);
+          const lat = Number(coordinates[1]);
+          const name = String(props.name || "").trim();
+          const place = String(props.city || props.town || props.village || props.municipality || name || "").trim();
+          const area = String(props.county || props.state || "").trim();
+          const country = String(props.country || "").trim();
+          const label = [place, area, country].filter(Boolean).join(", ");
 
-              const label = [
-                p.name,
-                p.city || p.town || p.village || p.county,
-                p.state,
-                p.country
-              ].filter(Boolean).join(", ");
+          return { label, lat, lon };
+        }).filter((item) => {
+          if (!item.label || !Number.isFinite(item.lat) || !Number.isFinite(item.lon)) return false;
+          if (seenLabels.has(item.label)) return false;
+          seenLabels.add(item.label);
+          return true;
+        }).slice(0, 6);
 
-              return { label, lat, lon };
-            }).filter(item => item.label && Number.isFinite(item.lat) && Number.isFinite(item.lon));
+        zoneList.innerHTML = "";
 
-            zoneList.innerHTML = "";
+        if (results.length === 0) {
+          const row = document.createElement("div");
+          row.className = "item";
+          row.style.padding = "10px 12px";
+          row.style.opacity = "0.7";
+          row.style.cursor = "default";
+          row.textContent = state.lang === "it"
+            ? "Nessuna località trovata"
+            : "No location found";
+          zoneList.appendChild(row);
+        } else {
+          results.forEach((item) => {
+            const row = document.createElement("div");
+            row.className = "item";
+            row.style.padding = "10px 12px";
+            row.style.cursor = "pointer";
+            row.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+            row.textContent = item.label;
 
-            if (!results.length) {
-              const row = document.createElement("div");
-              row.className = "item";
-              row.style.padding = "10px 12px";
-              row.style.opacity = "0.7";
-              row.style.cursor = "default";
-              row.textContent = state.lang === "it"
-                ? "Nessuna località trovata"
-                : "No location found";
-              zoneList.appendChild(row);
-            } else {
-              results.forEach((item) => {
-                const row = document.createElement("div");
-                row.className = "item";
-                row.style.padding = "10px 12px";
-                row.style.cursor = "pointer";
-                row.style.borderBottom = "1px solid rgba(255,255,255,.08)";
-                row.textContent = item.label;
+            row.addEventListener("click", () => {
+              zoneInput.value = item.label;
+              zoneInput.dataset.selectedLabel = item.label;
+              zoneInput.dataset.lat = String(item.lat);
+              zoneInput.dataset.lon = String(item.lon);
+              zoneList.innerHTML = "";
+              zoneList.style.display = "none";
+            });
 
-                row.addEventListener("click", () => {
-                  zoneInput.value = item.label;
-                  zoneInput.dataset.selectedLabel = item.label;
-                  zoneInput.dataset.lat = String(item.lat);
-                  zoneInput.dataset.lon = String(item.lon);
-                  zoneList.innerHTML = "";
-                  zoneList.style.display = "none";
-                });
-
-                zoneList.appendChild(row);
-              });
-            }
-
-            zoneList.style.display = "block";
-          })
-          .catch(() => {
-            zoneList.innerHTML = "";
-            zoneList.style.display = "none";
+            zoneList.appendChild(row);
           });
-      }, 350);
-    });
+        }
+
+        zoneList.style.display = "block";
+      })
+      .catch((err) => {
+        console.warn("Photon search failed:", err);
+      });
+  }, 350);
+});
     
     card.appendChild(bioLabel);
     card.appendChild(bio);
