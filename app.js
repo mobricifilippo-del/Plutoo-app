@@ -9197,6 +9197,13 @@ uploadedProfilePhotoRef = storageRef;
           }
 
           await dogRef.set(updateData, { merge: true });
+
+          if (Number.isFinite(updateData.lat) && Number.isFinite(updateData.lon)) {
+  window.PLUTOO_USER_LAT = updateData.lat;
+  window.PLUTOO_USER_LON = updateData.lon;
+  localStorage.setItem("plutoo_user_lat", String(updateData.lat));
+  localStorage.setItem("plutoo_user_lon", String(updateData.lon));
+          }
           
         }
 
