@@ -7987,12 +7987,14 @@ if (isCreate) {
 
       if (!v) return;
 
+      const _labelKey = (_lang === "it") ? "it" : "en";
       const matches = state.breeds
-  .filter(b => b && b.id && (
-    (b[_lang] || b.en || "").toLowerCase().startsWith(v) ||
-    String(b.it || "").toLowerCase().startsWith(v) ||
-    String(b.en || "").toLowerCase().startsWith(v)
-  ))
+  .filter(b => b && b.id &&
+    String(b[_labelKey] || "").toLowerCase().startsWith(v)
+  )
+  .sort((a, z) =>
+    String(a[_labelKey] || "").localeCompare(String(z[_labelKey] || ""), _lang)
+  )
   .slice(0, 16);
 
 if (!matches.length) return;
