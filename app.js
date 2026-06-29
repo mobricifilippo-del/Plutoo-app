@@ -8834,19 +8834,41 @@ btnChangePhoto.addEventListener("click", () => {
   photoInput.click();
 });
 
-    photoInput.addEventListener("change", () => {
+    photoInput.addEventListener("change", async () => {
       const file = photoInput.files && photoInput.files[0] ? photoInput.files[0] : null;
       if (!file) return;
 
-      selectedProfilePhotoFile = file;
-      removeProfilePhoto = false;
-      photoPreview.src = URL.createObjectURL(file);
+      try {
+        const result = await window.plutooNormalizeImageFile(file);
+        if (!result || !result.dataUrl) throw new Error("Immagine non leggibile");
+
+        selectedProfilePhotoFile = await fetch(result.dataUrl).then((r) => r.blob());
+        removeProfilePhoto = false;
+        photoPreview.src = result.dataUrl;
 
       feedback.style.display = "block";
       feedback.style.border = "1px solid rgba(205,164,52,.35)";
       feedback.style.background = "rgba(205,164,52,.10)";
       feedback.style.color = "#CDA434";
-      feedback.textContent = (state.lang === "it") ? "Foto selezionata" : "Photo selected";
+
+        feedback.textContent = (state.lang === "it") ? "Foto selezionata" : "Photo selected";
+      } catch (err) {
+        selectedProfilePhotoFile = null;
+        removeProfilePhoto = false;
+        photoInput.value = "";
+
+        await showPlutooAlert(
+          state.lang === "it"
+            ? "❌ Foto non leggibile o non convertibile. Scegli un'altra immagine."
+            : "❌ Photo not readable or not convertible. Choose another image.",
+          {
+            title: "Plutoo",
+            confirmText: "OK"
+          }
+        );
+      }
+      
+
     });
 
     btnRemovePhoto.addEventListener("click", () => {
