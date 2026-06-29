@@ -6896,13 +6896,21 @@ if (isCreate) {
 
   // Change file
   if (createDogPhotoInput) {
-    createDogPhotoInput.addEventListener("change", () => {
+    createDogPhotoInput.addEventListener("change", async () => {
       const file = createDogPhotoInput.files && createDogPhotoInput.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-      const dataUrl = e.target.result;
+      try {
+        if (typeof window.plutooNormalizeImageFile !== "function") {
+          throw new Error("Normalizzazione immagini non disponibile");
+        }
+
+        const result = await window.plutooNormalizeImageFile(file);
+        if (!result || !result.dataUrl) {
+          throw new Error("Immagine non leggibile");
+        }
+
+        const dataUrl = result.dataUrl;
 
   if (!state.createDogDraft) state.createDogDraft = {};
   state.createDogDraft.photoDataUrl = dataUrl;
@@ -6915,9 +6923,33 @@ if (isCreate) {
   if (emptyBox) emptyBox.style.display = "none";
   if (createDogPhotoFeedback) createDogPhotoFeedback.style.display = "block";
   if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "inline-flex";
-};
+      } catch (err) {
+        if (!state.createDogDraft) state.createDogDraft = {};
+        if ("photoDataUrl" in state.createDogDraft) delete state.createDogDraft.photoDataUrl;
 
-      reader.readAsDataURL(file);
+        if (previewImg) {
+          previewImg.removeAttribute("src");
+          previewImg.style.display = "none";
+        }
+
+        if (emptyBox) emptyBox.style.display = "flex";
+
+        if (typeof showPlutooAlert === "function") {
+          await showPlutooAlert(
+            "Foto non leggibile o non convertibile. Scegli un'altra immagine.",
+            {
+              title: "Foto non supportata",
+              confirmText: "OK"
+            }
+          );
+        } else if (createDogPhotoFeedback) {
+          createDogPhotoFeedback.textContent = "❌ Foto non leggibile o non convertibile. Scegli un'altra immagine.";
+          createDogPhotoFeedback.style.display = "block";
+        }
+
+        if (btnRemoveCreateDogPhoto) btnRemoveCreateDogPhoto.style.display = "none";
+        createDogPhotoInput.value = "";
+      }
     });
   }
 
