@@ -1445,6 +1445,32 @@ const qs = (s, r=document) => r.querySelector(s);
 const qa = (s, r=document) => r ? Array.from(r.querySelectorAll(s)) : [];
 const $all = qa;
 
+window.plutooNormalizeImageFile = async function plutooNormalizeImageFile(file) {
+  if (!file) throw new Error("Nessuna immagine selezionata");
+
+  const type = String(file.type || "").toLowerCase();
+  const name = String(file.name || "").toLowerCase();
+  const isHeic = type === "image/heic" || type === "image/heif" || name.endsWith(".heic") || name.endsWith(".heif");
+
+  const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(String(e.target && e.target.result || ""));
+    reader.onerror = () => reject(new Error("Immagine non leggibile"));
+    reader.readAsDataURL(blob);
+  });
+
+  if (isHeic) {
+    if (typeof window.heic2any !== "function") throw new Error("Convertitore HEIC non disponibile");
+    const converted = await window.heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+    const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
+    if (!jpegBlob) throw new Error("Conversione HEIC non riuscita");
+    return { file, dataUrl: await blobToDataUrl(jpegBlob), mime: "image/jpeg" };
+  }
+
+  if (!type.startsWith("image/")) throw new Error("Il file selezionato non è un'immagine");
+  return { file, dataUrl: await blobToDataUrl(file), mime: type || "image/jpeg" };
+};
+
 function showPlutooModal(options = {}) {
   return new Promise((resolve) => {
     const title = options.title || "Plutoo";
