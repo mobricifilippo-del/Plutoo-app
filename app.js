@@ -1249,6 +1249,10 @@ if (linkDeleteAccountHome) {
     linkRegister.style.display = "";
   }
 
+    if (linkDeleteAccountHome) {
+  linkDeleteAccountHome.style.display = "none";
+    }
+
   runPresenceAfterAuth();
   return;
   }
