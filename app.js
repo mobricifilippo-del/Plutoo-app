@@ -9197,34 +9197,61 @@ uploadedProfilePhotoRef = storageRef;
             ? firebase.firestore.FieldValue.serverTimestamp()
             : new Date();
 
-          const updateData = {
-  name: newName,
-  breed: newBreed,
-  age: newAge,
-  sex: newSex,
-  zone: newZone,
-  bio: newBio,
-  availability: {
-    breeding: availabilityBreedingInput.checked === true,
-    walks: availabilityWalksInput.checked === true
-  },
-            
-  updatedAt: ts
-};
+          // --- PATCH SICUREZZA SALVATAGGIO: nessun campo undefined/vuoto/NaN ---
+          const updateData = {};
 
-const savedLat = Number(zoneInput.dataset.lat);
-const savedLon = Number(zoneInput.dataset.lon);
+          // name: scrivi solo se non vuoto
+          if (newName) {
+            updateData.name = newName;
+          }
 
-if (Number.isFinite(savedLat) && Number.isFinite(savedLon)) {
-  updateData.lat = savedLat;
-  updateData.lon = savedLon;
-}
+          // breed: scrivi solo se non vuoto
+          if (newBreed) {
+            updateData.breed = newBreed;
+          }
 
+          // age: scrivi solo se intero valido > 0
+          if (Number.isFinite(newAge) && newAge > 0) {
+            updateData.age = newAge;
+          }
+
+          // sex: scrivi solo se non vuoto
+          if (newSex) {
+            updateData.sex = newSex;
+          }
+
+          // zone: scrivi solo se non vuoto
+          if (newZone) {
+            updateData.zone = newZone;
+          }
+
+          // bio: sempre scrivibile (anche vuota — è facoltativa)
+          updateData.bio = newBio;
+
+          // availability: sempre scrivibile
+          updateData.availability = {
+            breeding: availabilityBreedingInput.checked === true,
+            walks: availabilityWalksInput.checked === true
+          };
+
+          updateData.updatedAt = ts;
+
+          // lat/lon: solo se entrambi finiti e zona selezionata da autocomplete
+          const savedLat = Number(zoneInput.dataset.lat);
+          const savedLon = Number(zoneInput.dataset.lon);
+          if (Number.isFinite(savedLat) && Number.isFinite(savedLon) &&
+              savedLat !== 0 && savedLon !== 0) {
+            updateData.lat = savedLat;
+            updateData.lon = savedLon;
+          }
+
+          // photoUrl: scrivi solo se c'è nuova foto o rimozione esplicita
+          // (nextPhotoUrl === null = nessuna azione → non toccare Firestore)
           if (nextPhotoUrl !== null) {
             updateData.photoUrl = nextPhotoUrl;
           }
 
-   await dogRef.set(updateData, { merge: true });
+          await dogRef.set(updateData, { merge: true });
           
         }
 
