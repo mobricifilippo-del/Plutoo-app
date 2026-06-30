@@ -7308,22 +7308,22 @@ return db.collection("deletedAccounts").doc(uid).set({
       });
 
       dogIds.forEach((dogId) => {
-        jobs.push(deleteQuery(db.collection("matches").where("dogIds", "array-contains", dogId)));
-      });
+  jobs.push(deleteQuery(db.collection("matches").where("dogIds", "array-contains", dogId), true));
+});
 
-      jobs.push(deleteQuery(db.collection("matches").where("uids", "array-contains", uid)));
+jobs.push(deleteQuery(db.collection("matches").where("uids", "array-contains", uid), true));
 
-      jobs.push(
-        db.collection("chats").where("members", "array-contains", uid).get()
-          .then((csnap) => {
-            const chatJobs = [];
+jobs.push(
+  db.collection("chats").where("members", "array-contains", uid).get()
+    .then((csnap) => {
+      const chatJobs = [];
 
-            csnap.forEach((chatDoc) => {
-              const chatId = String(chatDoc.id);
+      csnap.forEach((chatDoc) => {
+        const chatId = String(chatDoc.id);
 
-              chatJobs.push(
-                deleteQuery(db.collection("messages").where("chatId", "==", chatId))
-              );
+        chatJobs.push(
+          deleteQuery(db.collection("messages").where("chatId", "==", chatId))
+        );
 
               chatJobs.push(
                 
