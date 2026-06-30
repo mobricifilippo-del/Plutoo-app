@@ -8601,7 +8601,7 @@ galleryBlock.appendChild(ph);
 
   };
 
-  input.onchange = () => {
+  input.onchange = async () => {
     if (!isGalleryOwner) {
       input.value = "";
       return;
@@ -8615,8 +8615,29 @@ galleryBlock.appendChild(ph);
     const toQueue = files.slice(0, remaining);
     if (!toQueue.length) return;
 
-    pendingFiles = toQueue;
-    showPublishBar();
+    try {
+      const normalizedFiles = [];
+
+      for (const file of toQueue) {
+        const result = await window.plutooNormalizeImageFile(file);
+        const blob = await fetch(result.dataUrl).then((r) => r.blob());
+        const mime = result.mime || blob.type || "image/jpeg";
+        const ext = mime.includes("png") ? "png" : "jpg";
+
+        normalizedFiles.push(
+          new File([blob], "gallery." + ext, { type: mime })
+        );
+      }
+
+      pendingFiles = normalizedFiles;
+      showPublishBar();
+    } catch (err) {
+      pendingFiles = [];
+      await showPlutooAlert(
+        "Foto non leggibile o non convertibile. Scegli un'altra immagine.",
+        { title: "Plutoo", confirmText: "OK" }
+      );
+    }
   };
 
   renderGallery();
