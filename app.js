@@ -12228,16 +12228,27 @@ function openMapsQuery(q){
     // --- ANDROID: rewarded reale ---
     if (window.AndroidBridge && typeof window.AndroidBridge.showRewarded === "function") {
       window.onRewardEarned = function() {
-        window.onRewardEarned = null;
-        window.onRewardFailed = null;
-        if (onClose) onClose();
-      };
+    window.onRewardEarned = null;
+    window.onRewardFailed = null;
+
+    if (onClose) onClose();
+
+    if (window.AndroidBridge &&
+        typeof window.AndroidBridge.preloadRewarded === "function") {
+        window.AndroidBridge.preloadRewarded();
+    }
+};
       
       window.onRewardFailed = function() {
-        window.onRewardEarned = null;
-        window.onRewardFailed = null;
-        state.rewardOpen = false;
-      };
+    window.onRewardEarned = null;
+    window.onRewardFailed = null;
+    state.rewardOpen = false;
+
+    if (window.AndroidBridge &&
+        typeof window.AndroidBridge.preloadRewarded === "function") {
+        window.AndroidBridge.preloadRewarded();
+    }
+};
       
       window.AndroidBridge.showRewarded();
       return;
