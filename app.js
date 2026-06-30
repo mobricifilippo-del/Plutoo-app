@@ -1452,6 +1452,19 @@ window.plutooNormalizeImageFile = async function plutooNormalizeImageFile(file) 
   const name = String(file.name || "").toLowerCase();
 
   const isHeic =
+
+    await showPlutooAlert(
+  "DEBUG NORMALIZER\n" +
+  "type: " + type +
+  "\nname: " + name +
+  "\nisHeic: " + isHeic +
+  "\nheic2any: " + typeof window.heic2any,
+  {
+    title: "Debug Foto",
+    confirmText: "OK"
+  }
+);
+  
   type === "image/heic" ||
   type === "image/heif" ||
   ((!type || type === "application/octet-stream") &&
