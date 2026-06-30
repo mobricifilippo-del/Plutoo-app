@@ -11975,18 +11975,35 @@ btnPublishDogBoard.textContent = btnPublishDogBoard.dataset.originalText || "Pub
 
 let dogBoardSelectedPhotos = [];
 
-dogBoardPhotos?.addEventListener("change", () => {
+dogBoardPhotos?.addEventListener("change", async () => {
   try {
     const newFiles = Array.from(dogBoardPhotos.files || [])
-      .filter(f => f && String(f.type || "").startsWith("image/"));
+      .filter(f => f && (String(f.type || "").startsWith("image/") || /\.(heic|heif)$/i.test(String(f.name || ""))));
 
-    dogBoardSelectedPhotos = [...dogBoardSelectedPhotos, ...newFiles].slice(0, 3);
+    const normalizedPhotos = [];
+    for (const file of newFiles) {
+      const result = await window.plutooNormalizeImageFile(file);
+      if (!result || !result.dataUrl) throw new Error("Immagine non leggibile");
+      normalizedPhotos.push(result);
+    }
+
+    dogBoardSelectedPhotos = [...dogBoardSelectedPhotos, ...normalizedPhotos].slice(0, 3);
 
     renderDogBoardPreview();
 
     dogBoardPhotos.value = "";
   } catch (e) {
     console.error("DogBoard photo select error:", e);
+    dogBoardPhotos.value = "";
+    await showPlutooAlert(
+      state.lang === "it"
+        ? "❌ Foto non leggibile o non convertibile. Scegli un'altra immagine."
+        : "❌ Photo not readable or not convertible. Choose another image.",
+      {
+        title: "Plutoo",
+        confirmText: "OK"
+      }
+    );
   }
 });
 
