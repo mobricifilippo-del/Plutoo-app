@@ -1493,16 +1493,17 @@ try {
     quality: 0.92
   });
 } catch (err) {
-  await showPlutooAlert(
-    "HEIC2ANY ERROR\n\n" +
-    "message: " + (err && err.message ? String(err.message) : String(err)) +
-    "\nname: " + (err && err.name ? String(err.name) : "") +
-    "\nstack: " + (err && err.stack ? String(err.stack).split("\n")[0] : ""),
-    {
-      title: "Debug HEIC",
-      confirmText: "OK"
-    }
-  );
+  const message = err && err.message ? String(err.message) : String(err);
+
+  if (message.includes("already browser readable")) {
+    const dataUrl = await blobToDataUrl(file);
+    return {
+      file,
+      dataUrl,
+      mime: type || "image/jpeg"
+    };
+  }
+
   throw err;
 }
 
