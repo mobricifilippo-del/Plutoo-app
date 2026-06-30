@@ -1509,27 +1509,9 @@ try {
 
 const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
 
-if (!jpegBlob) {
-  await showPlutooAlert(
-    "DEBUG\nheic2any ha restituito un blob nullo.",
-    {
-      title: "Debug HEIC",
-      confirmText: "OK"
-    }
-  );
-}
-
 if (!jpegBlob) throw new Error("Conversione HEIC non riuscita");
 
 const dataUrl = await blobToDataUrl(jpegBlob);
-
-await showPlutooAlert(
-  "DEBUG\nConversione completata.\nMime: image/jpeg",
-  {
-    title: "Debug HEIC",
-    confirmText: "OK"
-  }
-);
 
 return {
   file,
