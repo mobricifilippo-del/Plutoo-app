@@ -7266,28 +7266,28 @@ return db.collection("deletedAccounts").doc(uid).set({
         const dogId = String(doc.id);
         dogIds.push(dogId);
 
-        jobs.push(deleteQuery(db.collection("followers").where("targetDogId", "==", dogId)));
-        jobs.push(deleteQuery(db.collection("followers").where("followerDogId", "==", dogId)));
+        jobs.push(deleteQuery(db.collection("followers").where("targetDogId", "==", dogId), true));
+        jobs.push(deleteQuery(db.collection("followers").where("followerDogId", "==", dogId), true));
 
         jobs.push(deleteQuery(db.collection("dogBoardPosts").where("dogId", "==", dogId)));
         jobs.push(deleteQuery(db.collection("dogBoardPosts").where("ownerUid", "==", uid)));
         jobs.push(deleteQuery(db.collection("dogBoardPosts").where("uid", "==", uid)));
 
-        jobs.push(deleteQuery(db.collection("likes").where("fromDogId", "==", dogId)));
-        jobs.push(deleteQuery(db.collection("likes").where("toDogId", "==", dogId)));
-        jobs.push(deleteQuery(db.collection("likes").where("fromUid", "==", uid)));
-        jobs.push(deleteQuery(db.collection("likes").where("toUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("likes").where("fromDogId", "==", dogId), true));
+        jobs.push(deleteQuery(db.collection("likes").where("toDogId", "==", dogId), true));
+        jobs.push(deleteQuery(db.collection("likes").where("fromUid", "==", uid), true));
+        jobs.push(deleteQuery(db.collection("likes").where("toUid", "==", uid), true));
 
-        jobs.push(deleteQuery(db.collection("swipes").where("fromDogId", "==", dogId)));
-        jobs.push(deleteQuery(db.collection("swipes").where("toDogId", "==", dogId)));
-        jobs.push(deleteQuery(db.collection("swipes").where("fromUid", "==", uid)));
-        jobs.push(deleteQuery(db.collection("swipes").where("toUid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("swipes").where("fromDogId", "==", dogId), true));
+        jobs.push(deleteQuery(db.collection("swipes").where("toDogId", "==", dogId), true));
+        jobs.push(deleteQuery(db.collection("swipes").where("fromUid", "==", uid), true));
+        jobs.push(deleteQuery(db.collection("swipes").where("toUid", "==", uid), true));
 
-        jobs.push(deleteQuery(db.collection("notifications").where("fromDogId", "==", dogId)));
-        jobs.push(deleteQuery(db.collection("notifications").where("toDogId", "==", dogId)));
-        jobs.push(deleteQuery(db.collection("notifications").where("fromUid", "==", uid)));
-        jobs.push(deleteQuery(db.collection("notifications").where("toUid", "==", uid)));
-        jobs.push(deleteQuery(db.collection("notifications").where("uid", "==", uid)));
+        jobs.push(deleteQuery(db.collection("notifications").where("fromDogId", "==", dogId), true));
+        jobs.push(deleteQuery(db.collection("notifications").where("toDogId", "==", dogId), true));
+        jobs.push(deleteQuery(db.collection("notifications").where("fromUid", "==", uid), true));
+        jobs.push(deleteQuery(db.collection("notifications").where("toUid", "==", uid), true));
+        jobs.push(deleteQuery(db.collection("notifications").where("uid", "==", uid), true));
 
         jobs.push(deleteQuery(db.collection("stories").where("dogId", "==", dogId)));
         jobs.push(deleteQuery(db.collection("stories").where("ownerUid", "==", uid)));
