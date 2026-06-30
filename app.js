@@ -1351,7 +1351,11 @@ if (userData.deleted === true && userData.accountStatus === "deleted") {
   runPresenceAfterAuth();
 
   try { localStorage.setItem("entered", "1"); } catch (_) {}
-  state.entered = true;
+state.entered = true;
+
+if (window.AndroidBridge && typeof window.AndroidBridge.preloadRewarded === "function") {
+  window.AndroidBridge.preloadRewarded();
+}
 
   const _flash  = document.getElementById("whiteFlash");
   const _logo   = document.getElementById("heroLogo");
