@@ -1486,15 +1486,56 @@ await showPlutooAlert(
 
     let converted;
 
-converted = await window.heic2any({
-  blob: file,
-  toType: "image/jpeg",
-  quality: 0.92
-});
+try {
+  converted = await window.heic2any({
+    blob: file,
+    toType: "image/jpeg",
+    quality: 0.92
+  });
+} catch (err) {
+  await showPlutooAlert(
+    "HEIC2ANY ERROR\n\n" +
+    "message: " + (err && err.message ? String(err.message) : String(err)) +
+    "\nname: " + (err && err.name ? String(err.name) : "") +
+    "\nstack: " + (err && err.stack ? String(err.stack).split("\n")[0] : ""),
+    {
+      title: "Debug HEIC",
+      confirmText: "OK"
+    }
+  );
+  throw err;
+}
+
+const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
+
+if (!jpegBlob) {
+  await showPlutooAlert(
+    "DEBUG\nheic2any ha restituito un blob nullo.",
+    {
+      title: "Debug HEIC",
+      confirmText: "OK"
+    }
+  );
+}
+
+if (!jpegBlob) throw new Error("Conversione HEIC non riuscita");
+
+const dataUrl = await blobToDataUrl(jpegBlob);
+
+await showPlutooAlert(
+  "DEBUG\nConversione completata.\nMime: image/jpeg",
+  {
+    title: "Debug HEIC",
+    confirmText: "OK"
+  }
+);
+
+return {
+  file,
+  dataUrl,
+  mime: "image/jpeg"
+};
     
-    const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
-    if (!jpegBlob) throw new Error("Conversione HEIC non riuscita");
-    return { file, dataUrl: await blobToDataUrl(jpegBlob), mime: "image/jpeg" };
   }
 
   if (!type.startsWith("image/")) throw new Error("Il file selezionato non è un'immagine");
