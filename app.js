@@ -10276,14 +10276,16 @@ if (uploadSelfieBtn) uploadSelfieBtn.onclick = () => {
     if (!fileInput) return;
 
     fileInput.value = "";
-    fileInput.onchange = () => {
+    fileInput.onchange = async () => {
       const file = fileInput.files && fileInput.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
-      
-      reader.onload = e => {
-  const dataUrl   = e.target.result;
+      try {
+  const result = await window.plutooNormalizeImageFile(file);
+  if (!result || !result.dataUrl) throw new Error("Immagine non leggibile");
+
+  const dataUrl = result.dataUrl;
+        
   const selfieFeedback = qs("#selfieFeedback", profileContent);
 
   if (selfieFeedback) {
@@ -10346,9 +10348,17 @@ if (deleteSelfieBtn && !!window.PLUTOO_UID && d.ownerUid === window.PLUTOO_UID) 
         selfieFeedback.style.display = "block";
       }
     });
-};
-
-      reader.readAsDataURL(file);
+} catch (err) {
+        await showPlutooAlert(
+          state.lang === "it"
+            ? "❌ Selfie non leggibile o non convertibile. Scegli un'altra immagine."
+            : "❌ Selfie not readable or not convertible. Choose another image.",
+          {
+            title: "Plutoo",
+            confirmText: "OK"
+          }
+        );
+      }
     };
 
     fileInput.click();
