@@ -8839,6 +8839,17 @@ btnChangePhoto.addEventListener("click", () => {
       if (!file) return;
 
       try {
+
+        await showPlutooAlert(
+  "heic2any: " + typeof window.heic2any +
+  "\nfile.type: " + String(file.type || "") +
+  "\nfile.name: " + String(file.name || ""),
+  {
+    title: "Debug HEIC",
+    confirmText: "OK"
+  }
+);
+        
         const result = await window.plutooNormalizeImageFile(file);
         if (!result || !result.dataUrl) throw new Error("Immagine non leggibile");
 
