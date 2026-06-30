@@ -1452,8 +1452,12 @@ window.plutooNormalizeImageFile = async function plutooNormalizeImageFile(file) 
   const name = String(file.name || "").toLowerCase();
 
   const isHeic =
+  type === "image/heic" ||
+  type === "image/heif" ||
+  ((!type || type === "application/octet-stream") &&
+    (name.endsWith(".heic") || name.endsWith(".heif")));
 
-    await showPlutooAlert(
+await showPlutooAlert(
   "DEBUG NORMALIZER\n" +
   "type: " + type +
   "\nname: " + name +
