@@ -1461,7 +1461,26 @@ window.plutooNormalizeImageFile = async function plutooNormalizeImageFile(file) 
 
   if (isHeic) {
     if (typeof window.heic2any !== "function") throw new Error("Convertitore HEIC non disponibile");
-    const converted = await window.heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+
+    let converted;
+
+try {
+  converted = await window.heic2any({
+    blob: file,
+    toType: "image/jpeg",
+    quality: 0.92
+  });
+} catch (err) {
+  await showPlutooAlert(
+    "ERRORE HEIC:\n" + String(err && err.message ? err.message : err),
+    {
+      title: "Debug HEIC",
+      confirmText: "OK"
+    }
+  );
+  throw err;
+}
+    
     const jpegBlob = Array.isArray(converted) ? converted[0] : converted;
     if (!jpegBlob) throw new Error("Conversione HEIC non riuscita");
     return { file, dataUrl: await blobToDataUrl(jpegBlob), mime: "image/jpeg" };
