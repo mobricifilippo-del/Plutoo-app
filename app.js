@@ -1456,11 +1456,6 @@ window.plutooNormalizeImageFile = async function plutooNormalizeImageFile(file) 
   type === "image/heif" ||
   ((!type || type === "application/octet-stream") &&
     (name.endsWith(".heic") || name.endsWith(".heif")));
-  
-  type === "image/heic" ||
-  type === "image/heif" ||
-  ((!type || type === "application/octet-stream") &&
-    (name.endsWith(".heic") || name.endsWith(".heif")));
 
   const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
     const reader = new FileReader();
