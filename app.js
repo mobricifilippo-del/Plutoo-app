@@ -8171,7 +8171,7 @@ let images = _existingGallery.map(x => x && x.url ? x.url : "").filter(Boolean);
 
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = "image/*";
+  input.accept = "image/*,.heic,.heif";
   input.multiple = true;
   input.style.display = "none";
   document.body.appendChild(input);
