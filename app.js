@@ -11899,10 +11899,11 @@ btnPublishDogBoard.textContent = "Pubblicazione in corso...";
 
     if (Array.isArray(dogBoardSelectedPhotos) && dogBoardSelectedPhotos.length) {
       for (let i = 0; i < dogBoardSelectedPhotos.length; i++) {
-        const file = dogBoardSelectedPhotos[i];
+                const file = dogBoardSelectedPhotos[i];
 
         try {
-          const blob = file;
+          if (!file || !file.dataUrl) throw new Error("Immagine non leggibile");
+          const blob = await fetch(file.dataUrl).then(r => r.blob());
           const path = `dogs/${dogId}/dogBoard/${Date.now()}_${i}.jpg`;
           const storageRef = window.storage.ref().child(path);
 
@@ -12013,33 +12014,27 @@ function renderDogBoardPreview(){
 
     dogBoardPreview.innerHTML = "";
 
-    dogBoardSelectedPhotos.forEach((file, index) => {
-      const reader = new FileReader();
+        dogBoardSelectedPhotos.forEach((item, index) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "dogboard-photo-wrapper";
 
-      reader.onload = () => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "dogboard-photo-wrapper";
+      const img = document.createElement("img");
+      img.src = String(item && item.dataUrl ? item.dataUrl : "");
+      img.className = "dogboard-photo";
 
-        const img = document.createElement("img");
-        img.src = String(reader.result || "");
-        img.className = "dogboard-photo";
+      const btnRemove = document.createElement("button");
+      btnRemove.textContent = "✕";
+      btnRemove.className = "dogboard-photo-remove";
 
-        const btnRemove = document.createElement("button");
-        btnRemove.textContent = "✕";
-        btnRemove.className = "dogboard-photo-remove";
-
-        btnRemove.onclick = () => {
-          dogBoardSelectedPhotos = dogBoardSelectedPhotos.filter((_, i) => i !== index);
-          renderDogBoardPreview();
-        };
-
-        wrapper.appendChild(img);
-        wrapper.appendChild(btnRemove);
-
-        dogBoardPreview.appendChild(wrapper);
+      btnRemove.onclick = () => {
+        dogBoardSelectedPhotos = dogBoardSelectedPhotos.filter((_, i) => i !== index);
+        renderDogBoardPreview();
       };
 
-      reader.readAsDataURL(file);
+      wrapper.appendChild(img);
+      wrapper.appendChild(btnRemove);
+
+      dogBoardPreview.appendChild(wrapper);
     });
 
   } catch (e) {
