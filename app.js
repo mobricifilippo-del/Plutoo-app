@@ -7229,17 +7229,26 @@ return db.collection("deletedAccounts").doc(uid).set({
     .catch(() => {});
 };
 
-  const deleteQuery = (query) => {
+  const deleteQuery = (query, hardDelete) => {
   return query.get()
     .then((snap) => {
       const jobs = [];
       snap.forEach((doc) => {
-        jobs.push(doc.ref.set({
-          deleted: true,
-          publicVisible: false,
-          deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          deletedByUid: String(uid)
-        }, { merge: true }).catch(() => {}));
+        if (hardDelete === true) {
+          jobs.push(doc.ref.delete().catch(() => {}));
+        } else {
+          jobs.push(
+            doc.ref.set(
+              {
+                deleted: true,
+                publicVisible: false,
+                deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                deletedByUid: String(uid)
+              },
+              { merge: true }
+            ).catch(() => {})
+          );
+        }
       });
       return Promise.all(jobs);
     })
