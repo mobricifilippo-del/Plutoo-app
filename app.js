@@ -1456,18 +1456,6 @@ window.plutooNormalizeImageFile = async function plutooNormalizeImageFile(file) 
   type === "image/heif" ||
   ((!type || type === "application/octet-stream") &&
     (name.endsWith(".heic") || name.endsWith(".heif")));
-
-await showPlutooAlert(
-  "DEBUG NORMALIZER\n" +
-  "type: " + type +
-  "\nname: " + name +
-  "\nisHeic: " + isHeic +
-  "\nheic2any: " + typeof window.heic2any,
-  {
-    title: "Debug Foto",
-    confirmText: "OK"
-  }
-);
   
   type === "image/heic" ||
   type === "image/heif" ||
