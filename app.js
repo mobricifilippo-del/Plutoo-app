@@ -897,8 +897,16 @@ document.addEventListener("click", (ev) => {
 }, true);  
 
 // ✅ quando qualcuno aggiorna lo stato DOG altrove, può forzare refresh chiamando questo evento  
-window.addEventListener("plutoo:dog-changed", () => {  
-  if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();  
+window.addEventListener("plutoo:dog-changed", () => {
+  if (typeof window.refreshCreateDogCTA === "function") window.refreshCreateDogCTA();
+
+  if (state.currentView === "nearby" && typeof renderNearby === "function") {
+    renderNearby();
+  }
+
+  if (state.currentView === "love" && typeof renderSwipe === "function") {
+    renderSwipe("love");
+  }
 });
 
 } catch (e) {
