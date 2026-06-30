@@ -1450,7 +1450,12 @@ window.plutooNormalizeImageFile = async function plutooNormalizeImageFile(file) 
 
   const type = String(file.type || "").toLowerCase();
   const name = String(file.name || "").toLowerCase();
-  const isHeic = type === "image/heic" || type === "image/heif" || name.endsWith(".heic") || name.endsWith(".heif");
+
+  const isHeic =
+  type === "image/heic" ||
+  type === "image/heif" ||
+  ((!type || type === "application/octet-stream") &&
+    (name.endsWith(".heic") || name.endsWith(".heif")));
 
   const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
     const reader = new FileReader();
