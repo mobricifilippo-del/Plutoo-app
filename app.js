@@ -8045,6 +8045,11 @@ localStorage.setItem("dogs", JSON.stringify(state.dogs));
       window.PLUTOO_DOG_ID = newDogId;
       window.PLUTOO_DOG_NAME = name;
 
+      window.PLUTOO_USER_LAT = dogLat;
+window.PLUTOO_USER_LON = dogLon;
+localStorage.setItem("plutoo_user_lat", String(dogLat));
+localStorage.setItem("plutoo_user_lon", String(dogLon));
+
       // se nel codice esiste CURRENT_USER_DOG_ID, lo allinei qui
       window.CURRENT_USER_DOG_ID = newDogId;
       try { CURRENT_USER_DOG_ID = newDogId; } catch (_) {}
